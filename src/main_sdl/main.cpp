@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
 	Mix_OpenAudio(44100, AUDIO_S16, 2, 800);
 	Mix_AllocateChannels(100);
 
+    fprintf(stderr, "Starting gameMain()\n");
 	gameMain();
 
 	Mix_CloseAudio();

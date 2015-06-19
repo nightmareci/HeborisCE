@@ -131,7 +131,7 @@ C7V3.1EX YGS2K
 @—á‚¦‚ÎADT–C“™‚ÅT-spinƒ_ƒuƒ‹EƒgƒŠƒvƒ‹‚ğs‚¤‚ÆƒgƒŠƒvƒ‹‚ªƒ_ƒuƒ‹‚Æ•\¦‚³‚ê‚é“™
 
 C7V3.0EX VS REPLAY AVAILABLE
-EVSƒŠƒvƒŒƒC‚Ì‚¸‚ê‚ğC³@c‚Å‚«‚½‚ÆM‚¶‚½‚¢(MEƒÖEL) 
+EVSƒŠƒvƒŒƒC‚Ì‚¸‚ê‚ğC³@c‚Å‚«‚½‚ÆM‚¶‚½‚¢(MEƒÖEL)
 @iVSƒ‚[ƒhŠJn‚Ìƒ^ƒCƒ~ƒ“ƒO‚ªAƒvƒŒƒC‚ÆƒŠƒvƒŒƒC‚ÅƒvƒŒƒCƒ„[ŠÔ‚É1ƒtƒŒ‚ÌŒë·‚ª‚ ‚Á‚½i¨ƒXƒe[ƒ^ƒXNo.10jj
 EVSƒ‰ƒEƒ“ƒhŠÔ‚ÅBIGƒ‚[ƒh‚ªˆÛ‚³‚ê‚È‚©‚Á‚½–â‘è‚ğC³
 Ehebospr‚ğpng‰»‚µ‚Ä‚©‚çA‚Ç‚¤‚àŠg‘åk¬•`‰æ‚É“§‰ßF‚ªãè‚­”²‚¯‚Ä‚¢‚È‚©‚Á‚½‚Ì‚ÅA“§‰ß‚·‚é•”•ª‚ÌF‚ğ•ÏX
@@ -632,7 +632,7 @@ int		gmflag1[2];			// ƒŒƒxƒ‹300“Ë“ü‚Éu’iˆÊ1v ˆÈã u4•ª15•b(15300)vˆÈ“à‚Å1‚
 int		gmflag2[2];			// ƒŒƒxƒ‹500“Ë“ü‚Éu’iˆÊS4vˆÈã u7•ª30•b(27000)vˆÈ“à‚Å1‚É‚È‚é
 int		gmflag1_e[2];		// gmflag1‚Ì”»’è‚ğ‚µ‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
 int		gmflag2_e[2];		// gmflag2‚Ì”»’è‚ğ‚µ‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
-int		gmflag3[2];			// 
+int		gmflag3[2];			//
 int		gmflag3_e[2];			//
 
 // #1.60c7g7’Ç‰Á•Ï”
@@ -1088,7 +1088,7 @@ int		isreflect[2];			//REFLECT
 int		isallclear[2];			//ALLCLEAR
 
 // ’iˆÊƒ|ƒCƒ“ƒg‚ª1‚ÂŒ¸‚é‚Ü‚Å‚ÌŠÔ
-int		glimit[33] = 
+int		glimit[33] =
 {//
 	100, 80, 80, 60, 50, 50, 40, 40, 40,		//  0` 8
 	30, 30, 25, 25, 20, 20, 20, 15, 15,		//  9`17
@@ -1147,20 +1147,20 @@ int		ave_laptime3[2];	//ƒZƒNƒVƒ‡ƒ“‚Ì•½‹ÏˆÚ“®ŠÔ
 int		gup3rank[2];			//ƒ‰ƒ“ƒN0-2
 int		gup3sp_adjust[2];		//ƒ‰ƒ“ƒN‚É‚ ‚í‚¹‚ÄƒXƒs[ƒh’²®
 int		qualityflag[2];			//2‰ñˆÈão‚È‚¢‚æ‚¤‚É
-int		skillflag[2];			
+int		skillflag[2];
 int		tr2[2];					//‰Â•Ï‘¬ƒŒƒxƒ‹
 int		border_rank[2];			//
 int		border_time[20] =		//ƒ‰ƒ“ƒN‚²‚Æ‚ÌŠî€ƒ^ƒCƒ€
 {
 	17, 15, 14, 13, 10, 10, 12, 13, 13,		//  0` 8
 	13, 13, 13, 13, 13, 13, 12, 12, 11,		//  9`17
-	11, 10		// 18`20 
+	11, 10		// 18`20
 };
 int		border_time59[20] =		//ƒ‰ƒ“ƒN‚²‚Æ‚ÌŠî€ƒ^ƒCƒ€
 {
 	17, 15, 14, 13, 10, 10, 11, 12, 12,		//  0` 8
 	12, 12, 12, 12, 12, 11, 11, 10, 10,		//  9`17
-	9, 9		// 18`20 
+	9, 9		// 18`20
 };
 int		border_time48[20] =		//ƒ‰ƒ“ƒN‚²‚Æ‚ÌŠî€ƒ^ƒCƒ€
 {
@@ -1199,7 +1199,7 @@ int		hide_tomoyoinf = 1;
 int		erasecnt[2];
 
 int		item_mode[2];	// ƒAƒCƒeƒ€ƒ‚[ƒh
-int		hebo_plus[2];	// TGM+ 
+int		hebo_plus[2];	// TGM+
 
 int		fastmirror = 0;	// ƒ~ƒ‰[‚ÌƒtƒB[ƒ‹ƒh‰ñ“]‚ğ‚‘¬‰»@‡ŒvŠÔ‚Í“¯‚¶
 
@@ -1449,27 +1449,27 @@ char	*string[STRING_MAX];
 #include "script/ranking2.c"		// ƒ‰ƒ“ƒLƒ“ƒO2
 #include "script/ranking3.c"		// ƒ‰ƒ“ƒLƒ“ƒO3
 #include "readini.c"				// ini“Ç‚İ‚İ
-	
+
 //¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
 //  ƒƒCƒ“
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void gameMain(void) {
 	int		i, y, temp;
-	
+
 	do
 	{
 #include "heboris.ini"				// hoge İ’è‚ğ“Ç‚İ‚Ş
 #include "heboris_user.ini"			// ƒ†[ƒU[İ’è‚ğ“Ç‚İ‚Ş #1.60c7l7
-	
+
 		LoadIniFile("heboris.ini");
 		LoadIniFile("heboris_user.ini");
 		LoadIniFile("heboris_cpp.ini");
 		YGS2kInit();
 		loopFlag = true;
-	
+
 		y = 0;
 		restart = 0;
-	
+
 		// •¶š—ñƒoƒbƒtƒ@‚Ì‰Šú‰»
 		for ( i = 0 ; i < STRING_MAX ; i ++ )
 		{
@@ -1477,16 +1477,17 @@ void gameMain(void) {
 		}
 
 		initialize();
-		
+
+
 		loop {
 			StopAllWaves();
 			StopAllBGM();
-			
+
 			backupSetups();	// İ’è“à—e‚ğƒoƒbƒNƒAƒbƒv #1.60c7o6
 			domirror = 0;	// ‹¾‘œ‚ğ–³Œø‚É
-			
+
 			if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
-			
+
 			title();
 
 #if		0
@@ -1509,7 +1510,7 @@ void gameMain(void) {
 			loop {
 	//			spriteTime();
 				KeyInput();
-				
+
 				// ƒŠƒvƒŒƒC’†‚Ì‘‘—‚è
 				noredraw = 0;
 				if(playback && !demo) {
@@ -1534,46 +1535,46 @@ void gameMain(void) {
 						dispLinfo = !dispLinfo;
 					playback = 1;
 				}
-				
+
 				count = (count + 1) % 65536;
-				
+
 				// ”wŒi”ñ•\¦İ’è’Ç‰Á #1.60c7i9
 				if(!skip_viewbg) viewBack();
-				
+
 				viewFldBackground();
-				
+
 				// ƒXƒ^ƒbƒtƒ[ƒ‹ #1.60c7n5
 				for(i = 0; i < fast + 1; i++) {
 					staffRoll(0);
 					staffExecute(0);
-					
+
 					if(maxPlay) {
 						staffRoll(1);
 						staffExecute(1);
 					}
 				}
-				
+
 				viewField();
-				
+
 				for(i = 0; i < fast + 1; i++) {
 					playerExecute();
-					
-					
+
+
 					// ‰‰o–³‚µİ’è’Ç‰Á #1.60c7i9
 					if((i > 0) && (!skip_obj)) objectExecute();
-					
+
 					noredraw = 1;
 				}
-				
+
 				viewPreview();
-				
+
 				// ƒXƒRƒAEƒ^ƒCƒ€•\¦–³‚µİ’è’Ç‰Á #1.60c7i9
 				if(!skip_viewscore) viewScore();
-				
+
 				// ‰‰o–³‚µİ’è’Ç‰Á #1.60c7i9
 				if(!skip_obj) objectExecute();
-				
-				
+
+
 				lastProc();
 
 				spriteTime();
@@ -1630,7 +1631,7 @@ void lastProc(void) {
 			if(((count % 80) >= 20) && (!tspin_c[0]) && (sgrade[0] < min_sgrade) && (gflash[0] == 0))
 				printFont(18 - 12 * maxPlay, 26, "DEMO", 1);
 			ExBltRect(55,31 , 35, 64*rots[0] ,32*fontc[rots[0]],64,32);
-			
+
 			if(!english)
 				ExBltRect(55,31, 69, 64*rots[0] ,320,64,32);
 			else
@@ -1639,23 +1640,23 @@ void lastProc(void) {
 			showControl();
 		}
 		ExBltRect(87,136, 140, (count%6)*48 ,(count%30/6)*48,48,48);
-		
+
 		ExBltRect(77, 0, 176,  count % 320, 20, 320 - (count % 320), 8);
 		ExBltRect(77, 320 - (count % 320), 176,  0, 20, count % 320, 8);
-		
+
 		ExBltRect(77, count % 320, 144,  0, 28, 320 - (count % 320), 8);
 		ExBltRect(77, 0, 144, 320 - (count % 320), 28, count % 320, 8);
-		
+
 		if(count % 80 < 40) {
 			ExBltRect(81,53,154,0,204,213,19);
 		}
-		
+
 		if(getDrawRate() != 1) ExBltRect(3,101,120 - 23 * maxPlay,99,83,118,29);
-		
+
 		demo = 0;
 		cpu_flag[0] = 0;
 		cpu_flag[1] = 0;
-		
+
 		if(getPushState(0, 4) || getPushState(1, 4)) {
 			StopAllBGM();
 			StopSE(40);
@@ -1679,7 +1680,7 @@ void lastProc(void) {
 			cpu_flag[1] = 0;
 			rots[0] = setupBak[4] % 10;
 			rots[1] = setupBak[4] / 10;
-			
+
 			if(ranking_type==0){//demotime‚Íƒfƒ‚•\¦‰ñ”
 				RankingProc_1(demotime);
 			}else if(ranking_type==1){
@@ -1687,7 +1688,7 @@ void lastProc(void) {
 			}else{
 				RankingProc_3(demotime,0);
 			}
-			
+
 			if(gameMode[0] == 4){
 				gameMode[0] = 0;
 				gameMode[1] = 0;
@@ -1712,14 +1713,14 @@ void lastProc(void) {
 	} else {
 		mpc4[0] = 0;
 	}
-	
+
 	if((IsPushKey(pausekey[0]) || (mpc4[0] == 1))) {
-		if( ((stat[0] >= 3) && (stat[0] <= 8) && (stat[0] != 7)) || (stat[0] == 13) || (stat[0] == 15) || 
+		if( ((stat[0] >= 3) && (stat[0] <= 8) && (stat[0] != 7)) || (stat[0] == 13) || (stat[0] == 15) ||
 			(stat[0] == 22) || ((stat[0] >= 25) && (stat[0] != 30) && (stat[0] != 36)) || (debug) ) {
 			if(pause[0]) {
 				// ƒ|[ƒY‰ğœ
 				pause[0] = 0;
-				
+
 				if(gameMode[0] == 0)
 					ReplayWave(57);
 				else
@@ -1727,31 +1728,31 @@ void lastProc(void) {
 			} else {
 				// ƒ|[ƒY
 				pause[0] = 1;
-				
+
 				if(gameMode[0] == 0)
 					PauseWave(57);
 				else
 					PauseWave(56);
 			}
-			
+
 			if(gameMode[0] == 4)
 				pause[1] = !pause[1];
 		}
 	}
-	
+
 	if(!playback) {
 		if(getPressState(1, 9)) mpc4[1]++;
 		else mpc4[1] = 0;
 	} else {
 		mpc4[0] = 0;
 	}
-	
+
 	if((IsPushKey(pausekey[1]) || (mpc4[1] == 1))) {
 		if( ((stat[1] >= 3) && (stat[1] <= 8) && (stat[1] != 7)) || (stat[1] == 13) || (stat[1] == 15) || (debug) ) {
 			if(pause[1]) {
 				// ƒ|[ƒY‰ğœ
 				pause[1] = 0;
-				
+
 				if(gameMode[1] == 0)
 					ReplayWave(57);
 				else
@@ -1759,13 +1760,13 @@ void lastProc(void) {
 			} else {
 				// ƒ|[ƒY
 				pause[1] = 1;
-				
+
 				if(gameMode[1] == 0)
 					PauseWave(57);
 				else
 					PauseWave(56);
 			}
-			
+
 			if(gameMode[1] == 4)
 				pause[0] = !pause[0];
 		}
@@ -1786,7 +1787,7 @@ void lastProc(void) {
 				fadec = 0;
 			else
 				fadec = tomoyo_ehfinal_c[pl]-460;
-		
+
 			for(tmp = 0; tmp <= 1 ; tmp++)
 				for(i = 0; i < 20; i++)
 					for(j = 0 + 4 * pl; j < 10 + 4 * pl; j++)
@@ -1816,14 +1817,14 @@ void lastProc(void) {
 	}else{
 		SetSecondaryOffset(0,0);
 	}
-	
+
 	/* FPS•\¦ */
 	// heboris.ini‚Ìİ’è‚ÅFPS‚ğ”ñ•\¦‚É‚Å‚«‚é#1.60c7e
 	if(!hide_fps) {
 		sprintf(string[0], "%3d/%2dFPS", GetRealFPS(), GetFPS() );	// FPS‚Ìæ“¾(‘ª’è’l)
 		printTinyFont(130, 233, string[0]);
 	}
-	
+
 	// NEXT‰B‚µ
 	if(IsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
 		// next•\¦ŒÂ”‚Í0`6 #1.60c7q3
@@ -1836,7 +1837,7 @@ void lastProc(void) {
 		if(hnext[1] > 6) hnext[1] = 0;
 		if((hnext[1] > max_hnext[1]) && onRecord[1]) max_hnext[1] = hnext[1];
 	}
-	
+
 	if(flag || demo) {
 		pause[0] = 0;
 		pause[1] = 0;
@@ -1862,7 +1863,7 @@ void title(void) {
 	playback = 0;
 	cpu_flag[0] = 0;
 	cpu_flag[1] = 0;
-	
+
 	tmp_maxPlay = maxPlay;	// ƒvƒŒƒCl”‚ğƒoƒbƒNƒAƒbƒv
 
 	// ‰æ–ÊˆÊ’uC³ via C++ Port
@@ -1894,17 +1895,17 @@ void title(void) {
 		}
 		ExBltRect(77, 0, 106,  count % 320, 4, 320 - (count % 320), 8);
 		ExBltRect(77, 320 - (count % 320), 106,  0, 4, count % 320, 8);
-		
+
 		ExBltRect(77, count % 320, 20,  0, 4, 320 - (count % 320), 8);
 		ExBltRect(77, 0, 20, 320 - (count % 320), 4, count % 320, 8);
-		
-		
+
+
 		ExBltRect(77, 0, 176 + ofs,  count % 320, 20, 320 - (count % 320), 8);
 		ExBltRect(77, 320 - (count % 320), 176 + ofs,  0, 20, count % 320, 8);
-		
+
 		ExBltRect(77, count % 320, 144 - (ofs / 5),  0, 28, 320 - (count % 320), 8);
 		ExBltRect(77, 0, 144 - (ofs / 5), 320 - (count % 320), 28, count % 320, 8);
-		
+
 		ExBlt(7, 0, 0);
 
 		// ’˜ìŒ •\¦
@@ -1924,7 +1925,7 @@ void title(void) {
 			if(count % 80 < 40) {
 				ExBltRect(81,53,154,0,204,213,19);
 			}
-			
+
 			// ‚Ç‚¿‚ç‚©‚ÌƒXƒ^[ƒgƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚çƒ‚[ƒh1‚Ö
 			for(player = 0; player < 2; player++) {
 				if(getPushState(player, 4)) {
@@ -1943,7 +1944,7 @@ void title(void) {
 				testmenu();
 				if(restart) mode = 2;
 			}
-			
+
 			// “ü—Í‘Ò‚¿‚Ì‚¾‚¯ƒfƒ‚‰æ–Ê‚Ö#1.60c7g4
 			if(democ > 1000) {
 				doDemoMode();
@@ -1965,12 +1966,12 @@ void title(void) {
 			printFont(15, 24, "SECTION TIME RANKING", (fontc[rots[0]]) * (game == 6));
 			printFont(15, 25, "SETTING",              (fontc[rots[0]]) * (game == 7));
 			printFont(15, 26, "OPTION",               (fontc[rots[0]]) * (game == 8));
-			
+
 			// ‚Ç‚¿‚ç‚©‚ÌƒWƒ‡ƒCƒXƒeƒBƒbƒN‚Åƒ‚[ƒhƒZƒŒƒNƒg
 			for(player = 0; player < 1+maxPlay; player++) {
 				// ‰Ÿ‚µ‚Á‚Ï‚È‚µˆÚ“® #1.60c7n4
 				padRepeat2(player);
-				
+
 				// ã‚Ö
 				if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 				if(getPressState(player, 0)) {
@@ -1999,7 +2000,7 @@ void title(void) {
 					PlayWave(10);
 					mode = 2;
 					domirror = 0;	//‹¾‘œ‚ÍÅ‰‚Í–³ŒøA•K—v‚É‰‚¶‚Ä1‚É‚·‚é
-					
+
 					// ƒ\ƒƒ‚[ƒh
 					if(game == 0) {
 						enterSoloMode(player);
@@ -2085,7 +2086,7 @@ void title(void) {
 void enterSoloMode(int player) {
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
-	
+
 	domirror = 1;	// ‹¾‘œ‚ğ—LŒø
 	onRecord[0] = 0;
 	onRecord[1] = 0;
@@ -2105,7 +2106,7 @@ void enterSoloMode(int player) {
 	level_shirase_start = p_shirase_start_level;
 	raise_shirase_lines = p_shirase_line;
 	raise_shirase_interval = p_shirase_interval;
-	
+
 	stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
 	statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
 	statc[player * 10 + 1] = 2;			// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.2(SOLO MODEƒ‚[ƒhƒZƒŒƒNƒg)
@@ -2116,7 +2117,7 @@ void enterSoloMode(int player) {
 /* VERSUS MODE‚É“ü‚é */
 void enterVersusMode(int player) {
 	int i;
-	
+
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
 	onRecord[0] = 0;
@@ -2124,7 +2125,7 @@ void enterVersusMode(int player) {
 	gameMode[0] = 4;
 	gameMode[1] = 4;
 	gameAllInit();	// ƒQ[ƒ€‘S‘Ì‰Šú‰»
-	
+
 	backno = 61;
 
 	// SHIRASEŠÖŒW#1.60c7f4
@@ -2136,7 +2137,7 @@ void enterVersusMode(int player) {
 	for(i=0;i<2;i++){
 		vslevel[i] = 0;
 		gameMode[i] = 4;				// VSƒ‚[ƒh
-		
+
 		stat[i] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
 		statc[i * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
 		statc[i * 10 + 1] = 16;			// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.16
@@ -2170,19 +2171,19 @@ void enterVersusMode(int player) {
 void enterPracticeMode(int player) {
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
-	
+
 	gameMode[0] = 5;				// PRACTICEƒ‚[ƒh æ‚ÉƒZƒbƒg #1.60c7g3
 	gameMode[1] = 5;
 	onRecord[0] = 0;
 	onRecord[1] = 0;
-	
+
 	bakhold = p_hold;				// #1.60c7j5
-	
+
 	p_nextblock = nextblock;
 
 	versusInit(0);	// NEXT‰Šú‰»
 	if(maxPlay) versusInit(1);
-	
+
 	gameAllInit();
 
 	// PRACTICE‚Å‚Ì‚¹‚èã‚ª‚èŠJnƒŒƒxƒ‹‚Í0 #1.60c7i2
@@ -2205,7 +2206,7 @@ void enterPracticeMode(int player) {
 	stat[1] = 10;					// 2P‚ÍƒXƒe[ƒ^ƒXNo.10 (WAIT)
 
 	loadWait(0, def_p_sp);					// ƒfƒtƒHƒ‹ƒgİ’è“Ç‚İ‚İ
-	
+
 	// ƒoƒbƒNƒAƒbƒv‚ÉƒfƒtƒHƒ‹ƒgİ’è‚ğ“ü‚ê‚é
 	b_wait1[0] = wait1[0];
 	b_wait2[0] = wait2[0];
@@ -2217,14 +2218,14 @@ void enterPracticeMode(int player) {
 /* MISSION MODE‚É“ü‚é */
 void enterMissionMode(int player) {
 	gameMode[0] = 8;
-	
+
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
-	
+
 	domirror = 0;
 	onRecord[0] = 0;
 	onRecord[1] = 0;
-	
+
 	versusInit(0);	// 1P NEXT‚ğ‰Šú‰»
 	p_over1000=0;
 	gameAllInit();	// ƒQ[ƒ€‘S‘Ì‰Šú‰»
@@ -2232,18 +2233,18 @@ void enterMissionMode(int player) {
 	stat[0] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
 	statc[0 * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
 	statc[0 * 10 + 1] = 23;			// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.23(MISSION MODEƒ‚[ƒhƒZƒŒƒNƒg)
-	
+
 	stat[1] = 10;					// 2P‚ÍƒXƒe[ƒ^ƒXNo.10 (WAIT)
-	
+
 	// ƒfƒtƒHƒ‹ƒg‚Ì–â‘èƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İ
 	loadMissionData(mission_file);
-	
+
 	c_mission = 0;
 	c_norm[0] = 0;
 	c_norm[1] = 0;
 	clear_mission = 0;
 	eraser_now_lines = 0;
-	
+
 	vslevel[0] = 0;
 }
 
@@ -2252,10 +2253,10 @@ void enterMissionMode(int player) {
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void doDemoMode(void) {
 	int		player,tmp;
-	
+
 	demo = 1;
 	demotime = (demotime + 1) & 3;
-	
+
 	rots[0] = Rand(9);
 	rots[1] = Rand(9);
 	if(Rand(10) < 6){	//VSƒfƒ‚
@@ -2281,11 +2282,11 @@ void doDemoMode(void) {
 		backno = Rand(12);
 		bgmlv = 0;
 	}
-	
+
 	gameAllInit();
 	versusInit(0);
 	versusInit(1);
-	
+
 	if(gameMode[0] == 4){
 		backno = 61;
 		bgmlv = 10;
@@ -2326,11 +2327,11 @@ void playerInitial(int player) {
 		stage_time[i + player * 30];
 		st_other[i + player * 30];		//—‚Æ‚µ‚½ƒuƒƒbƒN”
 	}
-	
+
 	for(i = 0;i<20;i++){
 		lvstop_time[i + player * 20];
 	}
-	
+
 	if(gameMode[player]!= 5){
 		nextc[player] = 0;
 		next[player] = nextb[0 + player * 1400];
@@ -2341,7 +2342,7 @@ void playerInitial(int player) {
 	//hold[player] = -1;				// hold‰Šú‰»	#1.60c
 	if (gameMode[player] == 5) hold[player] = bakhold;
 	else hold[player] = -1; // hold‰Šú‰» #1.60c
-	
+
 	hold_used[player] = 0;			// HOLD‚µ‚½‰ñ” #1.60c7i1
 
 	kickc[player] = 0;	// ‰i‹v°R‚è–h~—p #1.60c3
@@ -2370,7 +2371,7 @@ void playerInitial(int player) {
 	BigMove[player] = bigtype;	//#1.60c7m6
 	IsBig[player] = 0;
 	IsBigStart[player] = 0;
-	
+
 	wait1[player] = 26;
 	wait2[player] = 40;
 	wait3[player] = 28;
@@ -2387,7 +2388,7 @@ void playerInitial(int player) {
 	xray_counter[player] = 0;	// #1.60c7p9ex
 	iscolor[player] = 0;		// #1.60c7p9ex
 	color_counter[player] = 0;	// #1.60c7p9ex
-	
+
 	if(gameMode[player] != 5) {
 		// #1.60c7j5
 		fmirror = 0;
@@ -2404,7 +2405,7 @@ void playerInitial(int player) {
 	rollroll_flag[player] = 0;	// #1.60c7l8
 	xray_flag[player] = 0;		// #1.60c7p9ex
 	color_flag[player] = 0;		// #1.60c7p9ex
-	
+
 	isrotatelock[player] = 0;		//‰ñ“]••‚¶
 	isholdlock[player] = 0;			//HOLD••‚¶
 	istimestop[player] = 0;			//ŠÔ’â~
@@ -2427,12 +2428,12 @@ void playerInitial(int player) {
 	ismiss[player] = 0;
 	isallclear[player] = 0;
 	isfakenext[player] = 0;
-	
+
 	isblind[player] = 0;			//ƒuƒ‰ƒCƒ“ƒhON/OFF§Œä
 	blind_flag[player] = 0;			//ƒuƒ‰ƒCƒ“ƒh‚Ì—L–³
 	isthunder[player] = 0;
 	thunder_timer = 0;
-	
+
 	tomoyo_rise[player] = 0;
 	tomoyo_rise_t[player] = 0;
 	hnext_flag[player] = 0;
@@ -2441,10 +2442,10 @@ void playerInitial(int player) {
 	tomoyo_domirror[player] = 0;
 	tomoyo_ehfinal_c[player] = 0;
 	fpbas_mode[player] = 0;
-	
+
 	item_mode[player] = 0;
 	hebo_plus[player] = 0;
-	
+
 	stat[player] = 0;
 
 	bgmlv = 0;
@@ -2472,26 +2473,26 @@ void playerInitial(int player) {
 	timelimit2[player] = 0;
 	// #1.60c7k1
 	shadow_timer_flag[player] = 0;
-	
+
 	// #1.60c7k4
 	allclear[player] = 0;
-	
+
 	// #1.60c7l5
 	stage[player] = 0;			// ƒXƒe[ƒW”Ô†
 	stime[player] = 60 * 60;	// ƒXƒe[ƒWƒ^ƒCƒ€
 	ltime[player] = 180 * 60;	// ƒŠƒ~ƒbƒgƒ^ƒCƒ€
 	ctime[player] = 0;			// ƒNƒŠƒAƒ^ƒCƒ€
-	
+
 	// #1.60c7l7
 	rest_pblock[player] = 0;
-	
+
 	// #1.60c7l8
 	sclear[player] = 0;
-	
+
 	// #1.60c7m3
 	clearnum[player] = 0;		//ƒNƒŠƒAƒXƒe[ƒW”
 	clearp[player] = 0;			//ƒNƒŠƒA—¦
-	
+
 	// #1.60c7m9
 	c_cblk[player] = 0;
 	c_cblk_r[player] = 0;
@@ -2508,32 +2509,32 @@ void playerInitial(int player) {
 	// #1.60c7n3
 	rescue[player] = 0;
 	REflag[player] = 0;
-	
+
 	// #1.60c7n6
 	tspin_c[player] = 0;
 	tspin_flag[player] = 0;
-	
+
 	// #1.60c7n8
 	replay_save[player] = 1;
 	time2[player] = 0;
-	
+
 	// #1.60c7o1
 	sgrade[player] = -1;
-	
+
 	// #1.60c7o2
 	cpu_flag[player] = 0;
-	
+
 	// #1.60c7o6
 	endtime[player] = 0;
-	
+
 	// #1.60c7o7
 	t_training[player] = 0;
-	
+
 	stp[player] = 0;
 	stg[player] = 0;
 	sts[player] = 0;
 	stb[player] = 0;
-	
+
 	// #1.60c7q5
 	item_nblk[0 + player * 6] = 0;
 	item_nblk[1 + player * 6] = 0;
@@ -2552,54 +2553,54 @@ void playerInitial(int player) {
 	endingcnt[player] = 0;
 	tomoyo_hanabi[player] = 0;
 	itemappear_c[player]=0;
-	
+
 	laststage[player] = 26;		// laststage‚ğplayer‚²‚Æ‚É #1.60c7r7
-	
+
 	// #1.60c7r9
 	c_mission = 0;
 	c_norm[player] = 0;
 	for(i = 0; i < 4; i++) cycle[i] = 0;
-	
+
 	// #1.60c7s4
 	clear_mission = 0;
 	eraser_now_lines = 0;
-	
+
 	// #1.60c7s6
 	if(gameMode[player] != 4){
 		upLineT[player] = uplinetype;
 		use_item[player] = 0;
 	}
-	
+
 	if(demo)
 		upLineT[player] = 3;
 	upLines[player] = 0;
 	last_tspin[player]=0;
 	b_to_b_flag[player]=0;
 	b_to_b_c[player]=0;
-	
+
 	platinaerase_cnt[player]=0;
 	ext_s[player]=0;
 	timeextend_snd_cnt[player]=0;
-	
+
 	fmirror_cnt[player]=-20;
-	
+
 	staffroll_y_ex[player] = 0;
-	
+
 	tomoyo_opt[player] = 0;
 	heboGB[player] = 0;
-	
+
 	gflash[player] = 0;		// ’iˆÊ‚ªã‚ª‚Á‚½‚É•\¦‚ğŒõ‚ç‚¹‚é‚Ég—p
 	gup_down[player] = 0;	//cool:1‚Æregret:0
 	// #1.60c7t5
 	gpoint[player] = 0;//ƒ|ƒCƒ“ƒg
 	gtime[player] = 0;//ƒ^ƒCƒ€
-	
+
 	skillbai[player]=0;
 	skillg[player] = 0;
 	endlines[player] = 0;
-	
+
 	bgfade_cnt = 0;
-	
+
 	over1000_block[player] = 0;
 
 	for(i=0;i <= 10;i++)
@@ -2609,7 +2610,7 @@ void playerInitial(int player) {
 	if(!playback)
 		max_hnext[player] = hnext[player];
 	death_plus[player] = 0;
-	
+
 	time99[player] = 0;
 	timeN[player] = 0;
 	ave_laptime3[player] = 0;
@@ -2619,15 +2620,15 @@ void playerInitial(int player) {
 	tr2[player] = 0;
 	grade2[player] = 0;
 	border_rank[player] = 0;
-	
+
 	min_speed[player] = 0;
-	
+
 	ndelay[player] = 1;
 	navigation_time[player] = 0;
-	
+
 	novice_mode[player] = 0;
 	novice_flag[player] = 0;
-	
+
 	// #1.60c7u0.5
 	medal_ac[player] = 0;
 	medal_sk[player] = 0;
@@ -2635,7 +2636,7 @@ void playerInitial(int player) {
 	medal_re[player] = 0;
 	medal_st[player] = 0;
 	end_f[player] = 0;
-	
+
 	lasernum[player] = 0;
 	rapid_c[player] = 0;
 	dolaser[player] = 0;
@@ -2643,72 +2644,72 @@ void playerInitial(int player) {
 
 	for(i = 0; i < 4;i++)
 		laserpos[i + 4 * player] = -1;
-	
+
 	donega[player] = 0;
-	
+
 	for(i = 0; i < 10; i++)
 		nega_pos[i + 10 * player] = 0;
-	
+
 	doshotgun[player] = 0;
-	
+
 	for(i = 0; i < 22; i++)
 		shotgunpos[i + 22 * player] = 0;
-	
+
 	doexchg[player] = 0;
 	docopyfld[player] = 0;
-	
+
 	rt_nblk[0 + 6 * player] = 0;
 	rt_nblk[1 + 6 * player] = 0;
 	rt_nblk[2 + 6 * player] = 0;
 	rt_nblk[3 + 6 * player] = 0;
 	rt_nblk[4 + 6 * player] = 0;
 	rt_nblk[5 + 6 * player] = 0;
-	
+
 	isbanana[player] = 0;
 	for(i = 0; i < 10; i++)
 		banana_pos[i + 10 * player] = 0;
 	banana_c[player] = 0;
-	
+
 	examination[player] = 0;
 	exam_grade[player] = 0;
 	purupuru[player] = 0;
-	
+
 	stage_skip_mpc[player] = 0;
 	hebop_interval[player] = 15;
 	harddrop[player] = 0;
-	
+
 	tr_20g[player] = 0;
-	
+
 	dorulet[player] = 0;
 
 	ace_bgmchange[player] = 0;
-	
+
 	are_skipflag[player] = 0;
-	
+
 	hanabi_int[player] = 20;
 
 	stp_point[player] = 0;
-	
+
 	isFreefall[player] = 0;		// ƒtƒŠ[ƒtƒH[ƒ‹
 	Ff_rerise[player] = 0;		// ª‚ÌÁ‹ŒãÄ‚¹‚èã‚°ƒ‰ƒCƒ“”
 	isLmovfield[player] = 0;	// ©MOV FIELD
 	isRmovfield[player] = 0;	// ¨MOV FIELD
 	do180field[player] = 0	;	// 180‹ƒtƒB[ƒ‹ƒh
-	
+
 	ofs_x[player] = 0;
 	ofs_y[player] = 0;
 	ofs_x2[player] = 0;
 	ofs_y2[player] = 0;
-	
+
 	kickc3[player] = 0;
-	
+
 	regretcancel[player] = 0;
 	upLines_waiting[player] = 0;
-	
+
 	devil_minus[player] = 0;
-	
+
 	devil_nextrise[player] = 0;
-	
+
 	FP_bonus[player] = 0;
 	FP_bonus_c[player] = 0;
 	fastroll[player] = 0;
@@ -2718,35 +2719,35 @@ void playerInitial(int player) {
 	ori_opt[player] = 0;
 	squarecnt[player] = 0;
 	scrate[player]=100;
-	
+
 	relaymode[player] = 0;
 	first_rot[player] = rots[player];
 	relayround[player] = 0;
-	
+
 	itemhistory[ 0 + 5 * player ] = 0;
 	itemhistory[ 1 + 5 * player ] = 0;
 	itemhistory[ 2 + 5 * player ] = 0;
 	itemhistory[ 3 + 5 * player ] = 0;
 	itemhistory[ 4 + 5 * player ] = 0;
-	
-	item_num = 39;// ƒAƒCƒeƒ€‚Ì‘”	ƒAƒCƒeƒ€‚ğ’Ç‰Á‚µ‚½‚çXV‚·‚é– 
+
+	item_num = 39;// ƒAƒCƒeƒ€‚Ì‘”	ƒAƒCƒeƒ€‚ğ’Ç‰Á‚µ‚½‚çXV‚·‚é–
 					// 20:C7U0 Å‰  26:C7U1 ƒŒ[ƒU[AƒlƒKƒtƒB[ƒ‹ƒhAƒVƒ‡ƒbƒgƒKƒ“AƒtƒB[ƒ‹ƒhŒğŠ·A
 					// ƒn[ƒhƒuƒƒbƒNAƒVƒƒƒbƒtƒ‹ƒtƒB[ƒ‹ƒh’Ç‰Á@27:ƒ‰ƒ“ƒ_ƒ€’Ç‰Á@31:‘S•”‘µ‚Á‚½
-					
+
 					//1:ƒ~ƒ‰[@2:rollroll 3:death 4:X-RAY 5:COLOR 6:ROTATELOCK 7:HIDENEXT 8:MAGNET 9:TIMESTOP 10:HOLDLOCK
 					//11:¨©REV 12:BOOST 13:FEVER 14:ª«REV 15:REMOTE CON 16:DARK 17:ªDEL 18:«DEL 19:DELEVEN 20:TRANSFORM
 					//21:LASER 22:NEGA 23:SHOTGUN 24:EXCHG 25:HARD 26:SHUFFLE 27:RANDOM 28:FREEFALL 29:©MOV 30¨MOV
-					//31:180‹32:16t 33:REFLECT 34:DOUBLE@35:ALLCLEAR 36:MISS 37:COPYFLD 38:FAKENEXT 39:[] //40:SPOTLIGHT 
+					//31:180‹32:16t 33:REFLECT 34:DOUBLE@35:ALLCLEAR 36:MISS 37:COPYFLD 38:FAKENEXT 39:[] //40:SPOTLIGHT
 					//41:SPINFIELD 42:PRESSFIELD
-					
+
 	vs_style[player] = -1;
 	vs_points[player] = 0;
 	vs_round = 1;
 	item_inter[player] = item_interval;
 	if(item_interval <= 0) item_inter[player] = 1;
-	
+
 	misstimer[player] = 0;
-	
+
 	// ‹Œƒo[ƒWƒ‡ƒ“‚ÌƒŠƒvƒŒƒCƒf[ƒ^‚ğÄ¶‚·‚é‚½‚ß‚ÌƒXƒCƒbƒ` #1.60c7H2
 	repversw = 65;	// 0:1.60c7f3ˆÈ‘O 1:1.60c7f4ˆÈ~ 3:1.60c7g7ˆÈ~ 4:1.60c7h2ˆÈ~ 5:1.60c7h5ˆÈ~ 6:1.60c7i2ˆÈ~
 					// 7:1.60c7j3ˆÈ~ 8:1.60c7k5ˆÈ~ 9:1.60c7k8ˆÈ~ 10:1.60c7n6ˆÈ~ 11:1.60c7o9ˆÈ~ 12:1.60c7p1ˆÈ~
@@ -2762,22 +2763,22 @@ void playerInitial(int player) {
 	item_pronum = 0;
 	for(i = 0; i < 9; i++)
 		relaydata[i + player * 9] = -1;
-	
+
 	for(i = 0 ; i < item_num ; i++){
 		item_pronum = item_pronum + item_pro[i];
 	}
 	for(i = 0; i < 20; i++)
 		st_new[i + player * 20] = 0;	// #1.60c7q7
-	
+
 	for(i = 0; i < 20; i++)
 		repdata[i + player * 20] = -1;
-	
+
 	for(i = 0; i < 10; i++)
 		statc[i + player * 10] = 0;
 
 	for(i = 0; i < 22; i++)
 		erase[i + player * 22] = 0;
-	
+
 	for(i = 0; i < 10; i++)
 		for(j = 0; j < 22; j++) {
 			fld[i + j * 10 + player * 220] = 0;
@@ -2806,7 +2807,7 @@ void gameAllInit(void) {
 
 	bgfadesw = 0;
 	bgfadelv = 0;
-	
+
 	playerInitial(0);
 	playerInitial(1);
 
@@ -2829,7 +2830,7 @@ void versusInit(int player) {
 
 	// ƒcƒ‚‚Ì“Ç‚İ‚İ #1.60c7g3
 	len = 0;
-	
+
 	// tomoyo‚Ìƒpƒ^[ƒ“ #1.60c7l9
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//’Êí
@@ -2922,12 +2923,12 @@ void versusInit(int player) {
 			}
 		}
 	}
-	
+
 	nextc[player] = 0;
 	next[player] = nextb[0 + player * 1400];
-	
+
 //	hole[player] = Rand(10);	//‹[——”‚Ì‚½‚ß‚ÉƒuƒƒbƒNƒVƒƒƒbƒ^[‚ÖˆÚ“®
-	
+
 	// NEXTƒuƒƒbƒN‚ÌF‚ğİ’è #1.60c7m9
 	setNextBlockColors(player, 1);
 }
@@ -3002,7 +3003,7 @@ void guidelineNextInit(int player) {
 	int tmp;
 	int first;
 	int block[7];	// ƒuƒƒbƒN‚ªo‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
-	
+
 	first = 1;
 	//‰è@ƒKƒCƒhƒ‰ƒCƒ“•—‚É‚ànextadjust‚ğ“K—p
 	if( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) ) {
@@ -3015,27 +3016,27 @@ void guidelineNextInit(int player) {
 
 		// ƒuƒƒbƒN‚ªo‚½ƒtƒ‰ƒOON
 		block[tmp] = 1;
-		
+
 		// nextb‚É“ü‚ê‚é
 		nextb[0 + player * 1400] = tmp;
 	} else {
 		first = 0;	//Ÿ‚Å‰Šú‰»‚ğs‚¤
 	}
-	
+
 	for(i = 0; i < 200; i++) {
 		// ‰Šú‰»	nextadjust“K—pAÅ‰‚Í‰Šú‰»‚µ‚È‚¢
 		if(!first)
 			for(j = 0; j < 7; j++) block[j] = 0;
-		
+
 		// ƒcƒ‚ì¬
 		for(j = first; j < 7; j++) {
 			do {
 				tmp = Rand(7);	// ƒcƒ‚‚ğˆø‚­
 			} while(block[tmp] == 1);
-			
+
 			// ƒuƒƒbƒN‚ªo‚½ƒtƒ‰ƒOON
 			block[tmp] = 1;
-			
+
 			// nextb‚É“ü‚ê‚é
 			nextb[i * 7 + j + player * 1400] = tmp;
 		}
@@ -3048,7 +3049,7 @@ void guidelineNextInit(int player) {
 // ‰ñ“]–@‘¥‚ğ•ÏX‚µ‚½‚èNEXTŠÖŒW‚Ì•Ï”‚ğ˜M‚Á‚½‚è‚·‚é“x‚ÉŒÄ‚Ño‚·•K—v‚ ‚è
 void setNextBlockColors(int player, int first) {
 	int i,j, tmp;
-	
+
 	if( first ) {
 		// ‰Šú‰»//ƒuƒƒbƒN‚Ìí—Ş‚ğŒˆ‚ß‚é
 		c_nblk[0 + player * 6] = 1 + next[player];
@@ -3065,7 +3066,7 @@ void setNextBlockColors(int player, int first) {
 			c_nblk[4 + player * 6] = 1 + nextb[( (nextc[player] + player * 1400) + 4 ) % 2800];
 			c_nblk[5 + player * 6] = 1 + nextb[( (nextc[player] + player * 1400) + 5 ) % 2800];
 		}
-		
+
 		// ã‚ÅŒˆ‚Ü‚Á‚½ƒuƒƒbƒNí—Ş‚ğŒ³‚ÉF‚ğ•ÏŠ·‚·‚é #1.60c7p1
 		if( isWRule(player) ) {
 			// ƒ[ƒ‹ƒh
@@ -3086,7 +3087,7 @@ void setNextBlockColors(int player, int first) {
 		}
 
 		if(monochrome_mode[player]==1) {
-			// ƒ‚ƒmƒNƒƒ‚[ƒh 
+			// ƒ‚ƒmƒNƒƒ‚[ƒh
 			for(i = 0; i < 6; i++) {
 						c_nblk[i + player * 6] = 0;
 			}
@@ -3115,13 +3116,13 @@ void setNextBlockColors(int player, int first) {
 		c_nblk[2 + player * 6] = c_nblk[3 + player * 6];
 		c_nblk[3 + player * 6] = c_nblk[4 + player * 6];
 		c_nblk[4 + player * 6] = c_nblk[5 + player * 6];
-		
+
 		// NEXT—Ìˆæ‚ÌÅŒã‚ÌƒuƒƒbƒN‚ÌF‚ğİ’è
 		if( player == 0 )
 			c_nblk[5 + player * 6] = 1 + nextb[(nextc[player] + 5) % 1400];
 		else
 			c_nblk[5 + player * 6] = 1 + nextb[( (nextc[player] + player * 1400) + 5 ) % 2800];
-		
+
 		// F‚ğ•ÏŠ·‚·‚é #1.60c7p1
 		if( isWRule(player) )
 			c_nblk[5 + player * 6] = wcol[ c_nblk[5 + player * 6] - 1 ];
@@ -3129,7 +3130,7 @@ void setNextBlockColors(int player, int first) {
 			c_nblk[5 + player * 6] = acol[ c_nblk[5 + player * 6] - 1 ];
 		else
 			c_nblk[5 + player * 6] = ccol[ c_nblk[5 + player * 6] - 1 ];
-		
+
 		tmp = hnext[player] - 1;
 		if(tmp < 0) tmp = 0;
 		if(monochrome_mode[player] == 1)	//ƒ‚ƒmƒNƒ
@@ -3166,7 +3167,7 @@ void setNextBlockColors(int player, int first) {
 			rt[player] = rt_nblk[0 + 6 * player];
 			rt_nblk[0 + 6 * player] = 0;
 		}
-		
+
 		// ƒAƒCƒeƒ€‚ğ‚¸‚ç‚·
 		item[player] = item_nblk[0 + player * 6];
 		item_nblk[0 + player * 6] = item_nblk[1 + player * 6];
@@ -3207,7 +3208,7 @@ void playerExecute(void) {
 		winner();
 		return;
 	}
-	
+
 	if(flag == -3){
 		winner2();
 		return;
@@ -3221,16 +3222,16 @@ void playerExecute(void) {
 		// ƒsƒ“ƒ`‚©‚ç’Êíó‘Ô‚É–ß‚Á‚½‚ç‘¦~‚ß‚é #1.60c7l6
 		StopSE(40);
 	}
-	
-	
+
+
 	// ƒXƒe[ƒWƒXƒLƒbƒvƒL[’·‰Ÿ‚µ
-	if( IsPressKey(skipKey) ){ 
+	if( IsPressKey(skipKey) ){
 			stage_skip_mpc[0]++;
 			}else{
 			stage_skip_mpc[0]=0;
 	}
 	// ’·‰Ÿ‚µ‚³‚ê‚½‚çÀs
-	if( (gameMode[0] == 6) && (timeOn[0]) && (ltime[0] > 1800) && (stage[0] < 19 ) 
+	if( (gameMode[0] == 6) && (timeOn[0]) && (ltime[0] > 1800) && (stage[0] < 19 )
 	 && (stage_skip_mpc[0] >= 60)) {
 		replay_save[0] = 0;				// ƒŠƒvƒŒƒC‹L˜^•s‰Â #1.60c7n8
 		ltime[0] = ltime[0] - 1800;		// -30•b
@@ -3242,9 +3243,9 @@ void playerExecute(void) {
 		stat[0] = 17;					// ƒXƒe[ƒWI—¹
 		stage_skip_mpc[0] = 0;
 	}
-	
+
 	for(i = 0; i < 1 +maxPlay; i++) {
-		
+
 		if(pause[i]) {
 			if( (count % 40 < 20) && (!debug) ){
 				printFont(17 + 24 * i - 12 * maxPlay, 15, "PAUSE!", fontc[rots[i]]);
@@ -3291,7 +3292,7 @@ void playerExecute(void) {
 			hanabi_frame[i] = hanabi_frame[i] + 3;
 			if(hanabi_waiting[i] > 60)
 				hanabi_frame[i] = hanabi_frame[i] + 3;
-			
+
 			if(hanabi_frame[i] >= 30) {
 				hanabi_waiting[i]--;
 				PlaySE(35);
@@ -3308,9 +3309,9 @@ void playerExecute(void) {
 			objectCreate2(i, 7, Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, Rand(7)+1, 0);
 		}
 
-		
+
 		if(item_timer[i]) item_timer[i]--;
-		
+
 
 		//ƒvƒ‰ƒ`ƒiƒuƒƒbƒNÁ‹ƒTƒEƒ“ƒh
 		if(platinaerase_cnt[i] != 0){
@@ -3358,7 +3359,7 @@ void playerExecute(void) {
 					StopWave(65);
 				if((!IsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
 					PlayWave(50 +bgmlv);
-				isfever[i] = 0;	
+				isfever[i] = 0;
 				item_timer[i] = 0;
 			} else if( (isUDreverse[i]) && (item_timer[i] <= 0) ) {
 				// UD reverse
@@ -3380,9 +3381,9 @@ void playerExecute(void) {
 				// fake NEXT
 				isfakenext[i] = 0;
 				item_timer[i] = 0;
-			} 
+			}
 		}
-		
+
 		// 15•ª‚Å’´‚‘¬#1.60c7h3
 		// ‰¡—­‚ß‚Í‚‘¬‰»‚³‚¹‚È‚¢ #1.60c7k8
 		// speed.def‚Å‘¬“x‚ğ•Ï‚¦‚ç‚ê‚é #1.60c7l2
@@ -3395,7 +3396,7 @@ void playerExecute(void) {
 				wait3[i] = wait3_limit15;
 			}
 		}
-			
+
 		if((istimestop[i]) && (repversw >= 35)){
 			if(stat[i] == 5){
 				drawCBlock (i, blk[i] + 1, 3, 0 , 0 , 0);
@@ -3527,28 +3528,28 @@ void playerExecute(void) {
 		l38: statReplaySave(i);			// 38 -> ƒŠƒvƒŒƒC•Û‘¶ƒƒjƒ…[
 				goto next;
 		next:
-		
+
 		if(isbanana[i])
 			statBanana(i);				// EX -> SHUFFLE FIELD
 
 		// ƒ^ƒCƒ€‘‰Á
 		increment_time(i);
-		
+
 		skip:	;
 	}
-		
+
 
 	// T-SPIN c‚è•\¦ƒtƒŒ[ƒ€”‚ğŒ¸­ #1.60c7n6
 	if(tspin_c[0]) tspin_c[0]--;
 	if(tspin_c[1]) tspin_c[1]--;
-	
+
 	if(b_to_b_c[0]) b_to_b_c[0]--;
 	if(b_to_b_c[1]) b_to_b_c[1]--;
-	
-	
+
+
 	// BGMƒtƒF[ƒhƒAƒEƒg
 	bgmFadeout();
-	
+
 
 
 	// —¼ÒƒQ[ƒ€ƒI[ƒo[‚È‚çˆê’èŠÔŒo‰ßŒãƒ^ƒCƒgƒ‹‚Ö
@@ -3557,7 +3558,7 @@ void playerExecute(void) {
 			versusInit(0);
 			setNextBlockColors(0,1);	// #1.60c7m9
 			hold[0] = -1;
-			
+
 			if(maxPlay) {
 				versusInit(1);
 				setNextBlockColors(1,1);
@@ -3604,7 +3605,7 @@ int doGiveup() {
 	if(giveup_safety) {
 		if(!pause[0] && !pause[1]) return 0;
 	}
-	
+
 	// Ì‚ÄƒQ[ƒL[‚ğjoypad‚ÉŠ„‚è“–‚Ä 1.60c7g7
 	if(getPressState(0, 8)) mpc3[0]++;
 	else mpc3[0] = 0;
@@ -3619,11 +3620,11 @@ int doGiveup() {
 		// Œø‰Ê‰¹’â~
 		StopAllWaves();
 		StopAllBGM();
-		
+
 		// ”wŒi‚ğ–ß‚· #1.60c7o8
 		bgfadesw = 0;
 		if(gameMode[0] != 5) backno = 0;
-		
+
 		pause[0] = 0; // ƒ|[ƒY‰ğœ
 		pause[1] = 0;
 		timeOn[0] = 0;
@@ -3632,8 +3633,8 @@ int doGiveup() {
 		onRecord[1] = 0;
 		cpu_flag[0] = 0;
 		cpu_flag[1] = 0;
-		
-		
+
+
 		// ƒXƒ^ƒbƒtƒ[ƒ‹Á‹ #1.60c7n5
 //		staffInit2();
 		objectClear();
@@ -3651,7 +3652,7 @@ int doGiveup() {
 			// ‘Îíƒ‚[ƒh
 			enterVersusMode(0);
 			flag = 0;
-			
+
 			// WAIT’l‚ğƒoƒbƒNƒAƒbƒv‚©‚ç–ß‚· #1.60c7p4
 			for(i=0; i<2; i++) {
 				wait1[i] = b_wait1[i];
@@ -3660,7 +3661,7 @@ int doGiveup() {
 				waitt[i] = b_waitt[i];
 				sp[i]    = b_sp[i];
 			}
-			
+
 			return 1;
 		} else {
 			// ’Êíƒ‚[ƒh
@@ -3670,22 +3671,22 @@ int doGiveup() {
 			versusInit(1);
 			randommode[0] = 0;
 			randommode[1] = 0;
-			
+
 			tmp1 = stat[0];
 			tmp2 = stat[1];
-			
+
 			if(examination[0]==2){
 				admit_grade[0]=exam_grade[0];//~ŠiŒ±’†‚¾‚Á‚½‚ç‹­§“I‚É—‚Æ‚·
 				PlayerdataSave();//ƒZ[ƒu
 			}
-			
+
 			playerInitial(0);
 			playerInitial(1);
-			
-			
+
+
 			// Ì‚ÄƒQ[‚µ‚½‚Ì“®ì‚ğ‘I‚×‚é‚æ‚¤‚É‚µ‚½#1.60c7i6
 			if(giveup_func == 1) {
-				if(tmp1 != 0){ 
+				if(tmp1 != 0){
 					stat[0] = 2;
 					statc[0 * 10 + 4] = 16;
 				}
@@ -3696,7 +3697,7 @@ int doGiveup() {
 			} else if(giveup_func == 2) {
 				flag = 1;
 			}
-			
+
 			return 1;
 		}
 	}
@@ -3706,7 +3707,7 @@ int doGiveup() {
 /* Œo‰ßƒ^ƒCƒ€‚ğ‘‰Á */
 void increment_time(int player) {
 	int		i, j, k, temp;
-	
+
 	// ƒ[ƒ‹ƒNƒŠƒA
 	if((ending[player] == 2) && (edrec[player] > 3740) && (onRecord[player])) {
 		// ƒXƒ^ƒbƒtƒ[ƒ‹•\¦‚ğÁ‚· #1.60c7n5
@@ -3714,7 +3715,7 @@ void increment_time(int player) {
 		if((gameMode[player] >= 1) && (gameMode[player] <= 2)){
 		if(gameMode[player] == 6)
 			tomoyo_ehfinal_c[player] = 0;
-		
+
 		// ƒ[ƒ‹ƒNƒŠƒA‚ÅGM‚É‚È‚é #1.60c7i2
 		if(enable_grade[player] == 1){//1
 			if(gmflag_r[player]) {
@@ -3722,7 +3723,7 @@ void increment_time(int player) {
 				gflash[player]=120;
 				PlaySE(30);	// rankup.wav
 			}
-		}else if(enable_grade[player]== 2){			
+		}else if(enable_grade[player]== 2){
 			if((gmflag_r[player])&&(endlines[player] >= 20)) {//Á‚¦ƒ[ƒ‹20—ñÁ
 				grade[player]=grade[player] + 3;	//‡Œv+3
 				gflash[player]=120;
@@ -3750,7 +3751,7 @@ void increment_time(int player) {
 				gflash[player]=120;
 				PlaySE(30);	// rankup.wav
 			}
-		}else if(enable_grade[player] == 4){			
+		}else if(enable_grade[player] == 4){
 			if((gmflag_r[player])&&(endlines[player] >= 3)) {//Á‚¦ƒ[ƒ‹
 				grade[player] = grade[player] + endlines[player] / 4;
 				if((grade[player]>= 30)&& (tr[player] >175)&&(viewgrade(player)>=31)){//MM‚ğæ‚Á‚Ä‚È‚¢‚Æ‚¾‚ß
@@ -3772,7 +3773,7 @@ void increment_time(int player) {
 				grade[player]= grade[player] + endlines[player] / 10;
 				if(grade[player] >= 28){
 					grade[player] = 28;
-				}	
+				}
 				if(grade[player]>32)grade[player]=32;
 			}
 		}
@@ -3794,7 +3795,7 @@ void increment_time(int player) {
 				}
 			}
 		}
-		
+
 		stat[player] = 13;
 		for(i=0; i<10; i++) statc[player * 10 + i] = 0;
 		if(item_mode[player]){
@@ -3814,13 +3815,13 @@ void increment_time(int player) {
 			ending[player] = 7;	// PRACTICE‚Í’´’Zk
 			statc[player * 10] = 133;
 		}
-		
+
 		onRecord[player] = 0;					// ƒGƒ“ƒfƒBƒ“ƒOƒ[ƒ‹I—¹‚Æ“¯‚ÉƒŠƒvƒŒƒC‹L˜^I—¹
 		if(gameMode[player] == 8)
 			PlaySE(36);
 		else if(ending[player] == 3)
 			PlaySE(29);
-		
+
 		// ƒtƒB[ƒ‹ƒhƒ^ƒCƒ}[‰ğœ #1.60c7k7
 		disableShadowTimer(player);
 
@@ -3837,13 +3838,13 @@ void increment_time(int player) {
 			temp = 0;
 			for(j = 0; j < 8; j++)
 				temp = temp | (getPressState(player, j) << j) | (getPushState(player, j) << (j + 8));
-			
+
 			replayData[time2[player] + player * 60 * 60 * 20] = temp;
 		}
-		
+
 		time2[player]++;	// ƒŠƒvƒŒƒC—pƒvƒŒƒCŠÔ‚É1/60•bƒvƒ‰ƒX #1.60c7n8
 	}
-	
+
 	// ƒ^ƒCƒ}[‚ª“®ì‚µ‚Ä‚¢‚ê‚Î
 	if(timeOn[player]) {
 		time[player]++;		// ŠÔ‚É1/60•bƒvƒ‰ƒX
@@ -3871,18 +3872,18 @@ void increment_time(int player) {
 		if(tomoyo_ehfinal_c[player] > 480)
 			tomoyo_ehfinal_c[player] = 0;
 	}
-	
+
 	//ƒŒƒxƒ‹ƒXƒgƒbƒv’†‚Ìƒ^ƒCƒ€
 	if((timeOn[player]) && (gameMode[player]<= 2)
 	&&((tc[player] % 100 == 99)||(tc[player] == 998))) {
 		time99[player]++;		// gradeup3‚Åg‚¤
 	}
-	
+
 	//ƒfƒrƒ‹‚Å‚ÌƒŒƒxƒ‹ƒXƒgƒbƒv’†‚Ìƒ^ƒCƒ€
 	if((timeOn[player]) && (gameMode[player] == 3)&&(tc[player] % 100 == 99)) {
 		time99[player]++;		// gradeup3‚Åg‚¤
 	}
-	
+
 	// VSƒ‚[ƒh‚Ì§ŒÀŠÔ‚ğƒJƒEƒ“ƒgƒ_ƒEƒ“ #1.60c7r5
 	if( (timeOn[player]) && (gameMode[player] == 4) && (vs_time != 0) ) {
 		ltime[player]--;
@@ -3924,11 +3925,11 @@ void increment_time(int player) {
 					stat[0] = 7;
 				}
 			}
-			
+
 			for(i=0; i<20; i++) statc[i] = 0;
 		}
 	}
-	
+
 	// TOMOYOƒ‚[ƒh‚Ì§ŒÀŠÔ‚ğƒJƒEƒ“ƒgƒ_ƒEƒ“ #1.60c7l5
 	if( (timeOn[player]) && (gameMode[player] == 6) ) {
 		ctime[player]++;	//ƒvƒŒƒCŠÔ‘‰Á
@@ -3946,7 +3947,7 @@ void increment_time(int player) {
 				}
 			}
 		}
-		
+
 		// 0‚É‚È‚Á‚½‚çƒQ[ƒ€ƒI[ƒo[
 		if(ltime[player] <= 0) {
 			setGameOver(player);
@@ -3962,20 +3963,20 @@ void increment_time(int player) {
 			}
 		}
 	}
-	
+
 	// ACEƒ‚[ƒh‚Ì§ŒÀŠÔ‚ğƒJƒEƒ“ƒgƒ_ƒEƒ“
 	if( (timeOn[player]) && (ltime[player] > 0) &&( (gameMode[player] == 8) || ((gameMode[player] == 7)&&(anothermode[player]!=3)) ) ) {
 		ltime[player]--;
-		
+
 		//‘Ï‹vƒ~ƒbƒVƒ‡ƒ“‚Å‚Ì–³ŒÀ‰ñ“]‘Îô
 		if((gameMode[player] == 8) && (mission_type[c_mission] == 23) && ((kickc[player] > 10) || ((kickc3[player] > 8-(4*(repversw>=43))) && (repversw >= 40))) ){
 			ltime[player]++;
 			printFont(13 + 24 * player - 12 * maxPlay, 29, "PUT THE BLOCK!", (count % 4 / 2) * 2);
 		}
-		
+
 		// 10•b‘O‚ÌŒx‰¹ #1.60c7r9
 		if(ltime[player] == 10 * 60) PlaySE(32);
-		
+
 		// 0‚É‚È‚Á‚½‚çƒQ[ƒ€ƒI[ƒo[i‚½‚¾‚µ‘Ï‹vƒ~ƒbƒVƒ‡ƒ“‚Íœ‚­j
 		if(ltime[player] <= 0) {
 			if(gameMode[player] == 7){	//ACE
@@ -4004,7 +4005,7 @@ void increment_time(int player) {
 			checkEnding(player, 0);
 		}
 	}
-	
+
 	// ƒVƒƒƒhƒEƒ^ƒCƒ}[‚ğƒJƒEƒ“ƒgƒ_ƒEƒ“ #1.60c7j5
 	if((hidden[player] == 8) && (m_roll_blockframe)){
 		for(j = 0;j < fldsizew[player] * (fldsizeh[player] + 1); j++)
@@ -4019,13 +4020,13 @@ void increment_time(int player) {
 				if(fldt[j + player * 220] > 0) fldt[j + player * 220]=fldt[j + player * 220]-1;
 			}
 		}
-			
+
 	}
 	// ’iˆÊƒ|ƒCƒ“ƒgŒ¸­ #1.60C7T5EX
 	if(((enable_grade[player]== 2)||(enable_grade[player]== 3))&&((gameMode[player] == 1) || (gameMode[player] == 2)) ) {
 		if( ((stat[player] == 3) || (stat[player] == 5)) && (combo[player] <= 1) && (!ending[player]) ) {
 			gtime[player]++;
-			
+
 			if(((grade[player] > 0)||(gpoint[player] > 0))&& (gtime[player] >= glimit[grade[player]]) ) {
 				gpoint[player]--;
 				gtime[player] = 0;
@@ -4156,7 +4157,7 @@ void statBlockSutter(int player) {
 
 void statSelectMode(int player) {
 	int i,ranktmp,j,twg_opt[2];
-	
+
 	//statc[player * 10 + 1]++;
 	if(statc[player * 10 + 4] > 0){
 		statc[player * 10 + 4]--;
@@ -4166,47 +4167,47 @@ void statSelectMode(int player) {
 		if(statc[player * 10 + 4] == 0) PlaySE(5);
 	}else
 		statc[player * 10 + 1]++;
-	
+
 	padRepeat(player);
 	padRepeat2(player);
-	
+
 	// ƒ‚[ƒhƒZƒŒƒNƒg‹È
 	if( (!IsPlayMIDI()) && (wavebgm == 0) ) {
 		PlayMIDI();
 	} else if(((stat[1 - player] == 0) || (stat[1 - player] == 10)) && (!IsPlayWave(62)) && (wavebgm >= 1) ) {
 		PlayWave(62);
 	}
-	
+
 
 	printSMALLFont(124 + 192 * player - 96 * maxPlay, 45, "Select", 4);
-	
+
 	if(statc[player * 10 + 2] == 0) {
 		// ƒ‹[ƒ‹ƒZƒŒƒNƒg
 		printSMALLFont(124 + 192 * player - 96 * maxPlay, 54, "   Rot?Rule", 4);
 		printFont(15 + 24 * player - 12 * maxPlay, 12, "<        >", count % 9);
-		
+
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 66,  (statc[player * 10 + 1] % 40) * 3, 28, 30, 8);
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 75,  160 - ((statc[player * 10 + 1] % 40) * 3), 20, 30, 8);
-		
+
 		ExBltRect(77, 170 + 192 * player -96 * maxPlay , 66,  50 + ((statc[player * 10 + 1] % 40) * 3), 28, 30, 8);
 		ExBltRect(77, 170 + 192 * player -96 * maxPlay , 75,  210 - ((statc[player * 10 + 1] % 40) * 3), 20, 30, 8);
-		
+
 		if(statc[player * 10 + 4] < 0){
-			ExBltRect(55,128 + ((16+statc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 84, 
+			ExBltRect(55,128 + ((16+statc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 84,
 				(64*(rots[player]+1))*(rots[player]<8),32*(fontc[(rots[player]+1)*(rots[player]<8)]),
 				(statc[player * 10 + 4]* -4),32);
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 84, 
+			ExBltRect(55,128 + 192 * player -96 * maxPlay , 84,
 				(64*rots[player])+(statc[player * 10 + 4] * -4),32*fontc[rots[player]],((16+statc[player * 10 + 4])* 4),32);
 		} else if(statc[player * 10 + 4] > 0){
-			ExBltRect(55,128 + (statc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 84, 
+			ExBltRect(55,128 + (statc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 84,
 				(64*rots[player]),32*fontc[rots[player]],((16-statc[player * 10 + 4])* 4),32);
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 84, 
+			ExBltRect(55,128 + 192 * player -96 * maxPlay , 84,
 				(64*(rots[player]-1))+576*(rots[player]==0)+((16-statc[player * 10 + 4]) * 4),
 				32*fontc[rots[player]-1+(9*(rots[player]==0))],(statc[player * 10 + 4] * 4),32);
 		} else ExBltRect(55,128 + 192 * player -96 * maxPlay , 84, 64*rots[player] ,32*fontc[rots[player]],64,32);
 
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 64, 64*rots[player] ,384,64,21);
-			
+
 			ExBltRect(87,208 + 48 * player -96 * maxPlay , 40, (statc[player * 10 + 1]%6)*48 ,(statc[player * 10 + 1]%30/6)*48,48,48);
 
 			if(statc[player * 10 + 4] == 0){
@@ -4234,10 +4235,10 @@ void statSelectMode(int player) {
 	} else if(statc[player * 10 + 2] == 1) {
 		// ƒ‚[ƒhƒZƒŒƒNƒg
 		printSMALLFont(124 + 192 * player - 96 * maxPlay, 54, "  Game Mode", 4);
-		
+
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 63,  (count % 40) * 3, 28, 80, 8);
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 160,  160 - ((count % 40) * 3), 20, 80, 8);
-		
+
 		// ƒJ[ƒ\ƒ‹
 		printFont(15 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "b", fontc[rots[player]]);
 		printFont(14 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "<          >", count % 9);
@@ -4317,7 +4318,7 @@ void statSelectMode(int player) {
 			ExBltRect(86, 130+192 * player -96 * maxPlay , 151 , 72 * ori_opt[player], 90, 72, 9);
 			ExBltRect(85, 150+192 * player -96 * maxPlay, 162, 70, 7*(2+ori_opt[player]), 35, 7);
 		}
-		
+
 		// ƒeƒLƒXƒgƒKƒCƒh
 		if(textguide){
 			printFont(15+24 * player - 12 * maxPlay, 26, "<L R>:TYPE", count % 9);
@@ -4362,7 +4363,7 @@ void statSelectMode(int player) {
 				printFont(27 + 8 * player - 12 * maxPlay, 0, "NEXT", 0);
 			}
 		}
-		
+
 		// ƒ‚[ƒhà–¾•¶
 		if ( getDrawRate() == 1 ){
 			if((gameMode[player] >= 6) && (gameMode[player] != 10)) {
@@ -4370,7 +4371,7 @@ void statSelectMode(int player) {
 			} else if(gameMode[player] != 10) {
 				ExBltRect(25, 119 + player * 192 - 96 * maxPlay, 168, 0+(80*(english)), gameMode[player] * 32, 80, 32);
 			}
-		
+
 		}else{
 			if((gameMode[player] >= 6) && (gameMode[player] != 10)) {
 				ExBltRect(25, 119 + player * 192 - 96 * maxPlay, 168, 0+(80*(english)), (gameMode[player] - 2) * 32, 80, 32);
@@ -4392,14 +4393,14 @@ void statSelectMode(int player) {
 					ExBltRect(25, 119 + player * 192 - 96 * maxPlay, 192, 160, 128+(tomoyo_opt[player]*8), 32, 8);
 			}
 		}
-	} 
+	}
 
 	else if(statc[player * 10 + 2] == 2) {
 		// ‚»‚Ì‘¼
 		printSMALLFont(124 + 192 * player - 96 * maxPlay, 54, "    Others", 4);
-		
+
 		printFont(15 + 24 * player - 12 * maxPlay, 10 + (statc[player * 10 + 3] * 2), "b", fontc[rots[player]]);
-		
+
 		// SHIRASE
 		printFont(15 + 24 * player - 12 * maxPlay, 9, "LINE UP", fontc[rots[player]]);
 		if(p_shirase[player]) {
@@ -4408,7 +4409,7 @@ void statSelectMode(int player) {
 			sprintf(string[0], "OFF");
 		}
 		printFont(16 + 24 * player - 12 * maxPlay, 10, string[0], count % 9 * (statc[player * 10 + 3] == 0));
-		
+
 		// UPLINE
 		printFont(15 + 24 * player - 12 * maxPlay, 11, "UPLINE", fontc[rots[player]]);
 		if(upLineT[player]) {
@@ -4417,7 +4418,7 @@ void statSelectMode(int player) {
 			sprintf(string[0], "COPY");
 		}
 		printFont(16 + 24 * player - 12 * maxPlay, 12, string[0], count % 9 * (statc[player * 10 + 3] == 1));
-		
+
 		// HIDDEN
 		printFont(15 + 24 * player - 12 * maxPlay, 13, "HIDDEN", fontc[rots[player]]);
 		sprintf(string[0], "LV %d", hidden[player]);
@@ -4433,13 +4434,13 @@ void statSelectMode(int player) {
 			printFont(16 + 24 * player - 12 * maxPlay, 14, "UNDER M1", count % 9 * (statc[player * 10 + 3] == 2));
 		}
 	}
-	
-	
+
+
 	// ª
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 0) ) {
 		PlaySE(5);
-		
+
 		// ƒ‚[ƒhƒZƒŒƒNƒg
 		if(statc[player * 10 + 2] == 1) {
 			statc[player * 10 + 1] = 0;
@@ -4452,7 +4453,7 @@ void statSelectMode(int player) {
 			relaymode[player] = 0;
 			if(gameMode[player] < 0)
 				gameMode[player] = 10;
-			
+
 			if( (gameMode[player] == 4) || (gameMode[player] == 5) )
 				gameMode[player] = 3;
 			if(gameMode[player] == 8)
@@ -4464,12 +4465,12 @@ void statSelectMode(int player) {
 			if(statc[player * 10 + 3] < 0)statc[player * 10 + 3] = 2;
 		}
 	}
-	
+
 	// «
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 1) ) {
 		PlaySE(5);
-		
+
 		// ƒ‚[ƒhƒZƒŒƒNƒg
 		if(statc[player * 10 + 2] == 1) {
 			statc[player * 10 + 1] = 0;
@@ -4482,7 +4483,7 @@ void statSelectMode(int player) {
 			relaymode[player] = 0;
 			if(gameMode[player] > 10)
 				gameMode[player] = 0;
-			
+
 			if( (gameMode[player] == 4) || (gameMode[player] == 5) )
 				gameMode[player] = 6;
 			if(gameMode[player] == 8)
@@ -4494,7 +4495,7 @@ void statSelectMode(int player) {
 			if(statc[player * 10 + 3] > 2)statc[player * 10 + 3] = 0;
 		}
 	}
-	
+
 	// ©
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 	if( getPressState(player, 2) ) {
@@ -4552,7 +4553,7 @@ void statSelectMode(int player) {
 			}
 		}
 	}
-	
+
 	// ¨
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 	if( getPressState(player, 3) ) {
@@ -4569,22 +4570,22 @@ void statSelectMode(int player) {
 			statc[player * 10 + 1] = 0;
 			//BEGIN
 			novice_mode[player]=!novice_mode[player];
-			
+
 			//MAS
 			enable_grade[player]++;
 			if(enable_grade[player] > 4)
 				enable_grade[player] = 1;
 			//DEVIL
-			devil_minus[player] = !devil_minus[player];	
+			devil_minus[player] = !devil_minus[player];
 			anothermode[player]++;
 			if(anothermode[player] > 3)
 				anothermode[player] = 0;
-				
+
 			tomoyo_opt[player]++;
 			fpbas_mode[player]=0;
 			if(tomoyo_opt[player] > 4)
 				tomoyo_opt[player] = 0;
-				
+
 			std_opt[player]++;
 			if(std_opt[player] > 3)
 				std_opt[player] = 0;
@@ -4609,8 +4610,8 @@ void statSelectMode(int player) {
 			}
 		}
 	}
-	
-	
+
+
 	// Cƒ{ƒ^ƒ“
 	//if(statc[player * 10 + 2] != 0){
 	if( getPressState(player, 6) ) {
@@ -4677,11 +4678,11 @@ void statSelectMode(int player) {
 		squaremode[player] =0;
 		heboGB[player] = 0;
 		relaymode[player] = 0;
-		
+
 		statc[player * 10 + 2]--;
 		statc[player * 10 + 1] = 0;
 		statc[player * 10 + 4] = 0;
-		
+
 		// ƒtƒB[ƒ‹ƒhÁ‹ #1.60c7s6
 		for(i = 0; i < 220; i++) {
 			fld[i + player * 220] = 0;
@@ -4691,19 +4692,19 @@ void statSelectMode(int player) {
 			flds[i + player * 220] = 0;
 			fldubuf[i + player * 220] = 0;
 		}
-		
+
 		if(statc[player * 10 + 2] < 0) {
 			stat[player] = 0;
 			if(stat[1 - player] == 0) flag = 1;
 		}
 	}
-	
+
 	// Aƒ{ƒ^ƒ“
 	if( getPushState(player, 4) ) {
 		PlaySE(10);
 		statc[player * 10 + 1] = 0;
 		statc[player * 10 + 4] = 0;
-		
+
 		// Ÿ‚Ìƒy[ƒW‚Ö
 		if(statc[player * 10 + 3] != 5){
 		statc[player * 10 + 2]++;
@@ -4712,18 +4713,18 @@ void statSelectMode(int player) {
 		if(statc[player * 10 + 2] > (2 - ((mini_select) || (gameMode[player] == 6)) )) {
 			statc[player * 10 + 0] = 1;
 		}
-		
+
 		if(statc[player * 10 + 0]) {
 			// ŠJnˆ—
 			if(upLineT[player] >= 2) upLineT[player] = 0;	// ‚¹‚èã‚ª‚è‚ªRANDOM‚É‚È‚Á‚Ä‚¢‚½‚çSHIRASE‚É‚·‚é
 			if(upLineT[player] == -1) upLineT[player] = 0;
 			StopAllBGM();	// ‰¹Šy’â~
 			backno = 0;		// ”wŒi‰Šú‰»
-			
+
 			// ŠJnƒXƒs[ƒhİ’è
 			start[player] = 0;
 			setStartLevel(player);
-			
+
 			// mini_select‚ª1‚È‚çİ’è‚ğŒÅ’è
 			if(mini_select) {
 
@@ -4734,7 +4735,7 @@ void statSelectMode(int player) {
 					upLineT[player] = 0;
 				}
 			}
-			
+
 			//devil-‚¾‚Æ‚¹‚èã‚ª‚è‚È‚µ
 			if(((enable_grade[player] == 1) && (repversw < 42)) || ((devil_minus[player])&&(gameMode[player] == 3)&&(repversw >= 30))){
 				p_shirase[player] = 0;
@@ -4749,7 +4750,7 @@ void statSelectMode(int player) {
 			if(gameMode[player]!=6){
 			fpbas_mode[player] = 0;
 			}
-			
+
 			if( getPressState(player, 6) ) {
 				if(gameMode[player] == 6) {
 					// ƒ‰ƒ“ƒ_ƒ€ƒ‚[ƒh
@@ -4764,13 +4765,13 @@ void statSelectMode(int player) {
 				IsBig[player] = 0;
 				IsBigStart[player] = 0;
 			}
-			
+
 			if( (!mini_select) && (gameMode[player] == 6) ) {
 				// TOMOYOƒZƒŒƒNƒg
 				if(!randommode[player]) {
 					versusInit(player);
 				}
-				
+
 				stat[player] = 19;
 				statc[player * 10 + 0] = 0;
 				statc[player * 10 + 1] = 0;
@@ -4809,7 +4810,7 @@ void statSelectMode(int player) {
 				if(gameMode[player] == 6) {
 					// TOMOYO‚Ìê‡‚Íƒcƒ‚ƒŠƒZƒbƒg
 				//	versusInit(player);
-					
+
 					// ƒXƒe[ƒWİ’è
 					if(tomoyo_opt[player] == 0){			//TI
 						ltime[player] = 180 * 60;
@@ -4827,7 +4828,7 @@ void statSelectMode(int player) {
 					}
 				versusInit(player);
 				stage[player] = start_stage[player];
-			}else 
+			}else
 				if(((gameMode[player] == 1) || (gameMode[player] == 2))){
 					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (Rand(10) < 2)) ||(getPressState(player,7))){
 						item_mode[player] = 0;
@@ -4847,9 +4848,9 @@ void statSelectMode(int player) {
 				statc[player * 10 + 1] = 0;
 				statc[player * 10 + 2] = 0;
 				statc[player * 10 + 3] = 0;
-				
+
 				if(((gameMode[player] == 1) || (gameMode[player] == 2)) && (examination[player]>0)){
-					
+
 					if((enable_randexam==1)||((enable_randexam==2)&&(enable_grade[player]!=4))){
 						//ƒGƒ‰[‘Îô
 						//w’è‚³‚ê‚½ƒŒƒ“ƒW‚©‚ç‚¸‚ê‚Ä‚¢‚½‚çÅ‚à‹ß‚¢¬‚³‚È’l‚ğ“ü‚ê‚é
@@ -4873,18 +4874,18 @@ void statSelectMode(int player) {
 							if(exam_range[((enable_grade[player] - 1) * 2)+ i] < 0)
 							exam_range[((enable_grade[player] - 1) * 2)+ i]=0;//0
 						}
-					
+
 						//min>max‚Æ‚È‚Á‚Ä‚¢‚½‚çmin=max‚Æ‚·‚é(min‚Émax‚ğ“ü‚ê‚é)
 						if(exam_range[(enable_grade[player] - 1) * 2]>exam_range[((enable_grade[player] - 1) * 2) + 1])
 						exam_range[(enable_grade[player] - 1) * 2]=exam_range[((enable_grade[player] - 1) * 2) + 1];
-						
+
 						//’iˆÊ”F’èŒ±”­¶
 						do{	//Œ±’iˆÊ‚ğİ’è
 							exam_grade[player] = Rand(32) + 1;
 						}while((exam_grade[player] < exam_range[(enable_grade[player] - 1) * 2]) ||
 						(exam_grade[player] > exam_range[((enable_grade[player] - 1) * 2) + 1]));
 					}
-					
+
 					stat[player] = 30;				// Œ±‚Á‚Û‚¢‚Ì
 					statc[player * 10 + 0] = 0;		// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
 					statc[player * 10 + 1] = 0;		// Œ±ŠJnéŒ¾
@@ -4929,15 +4930,15 @@ int Admitgradecheck(int player){
         	        grade_his_buf[j] = grade_his_buf[j - 1];
         	        grade_his_buf[j - 1]= temp1[player];
         	    }
-        	}	
-    	}	
+        	}
+    	}
     	for(i = 0 ; i < 3 ; i++){
 		sort_grade[i] = grade_his_buf[i];//•À‚×‘Ö‚¦
 	}
 	temp1[player]=grade_his[0]+grade_his[1]+grade_his[2];
 	temp2[player]=5-grade_pasttime[player];//Œ±‚©‚çŒo‰ßŠÔ
 	if(admit_grade[player]<32){
-	
+
 		//¸Ši
 		temp2[player]=5-grade_pasttime[player];
 		if(temp2[player]<1)temp2[player]=1;//0‚É‚Í‚µ‚È‚¢
@@ -4945,7 +4946,7 @@ int Admitgradecheck(int player){
 			exam_grade[player]=grade_his[0];
 			return 1;
 		}
-		
+
 		temp1[player]=grade_his[0]+grade_his[1]+grade_his[2]/3;
 		temp2[player]=4-grade_pasttime[player];//Œ±‚©‚çŒo‰ßŠÔ
 		if(temp2[player]<1)temp2[player]=1;//0‚É‚Í‚µ‚È‚¢
@@ -4974,7 +4975,7 @@ int Admitgradecheck(int player){
 				return 2;
 			}
 		}
-		
+
 		if(admit_grade[player] > 18){//m1ˆÈã
 			if((grade_his[0]+grade_his[1]+grade_his[2]) / 3 < admit_grade[player]-4){
 				exam_grade[player]=grade_his[0];
@@ -5025,43 +5026,43 @@ void statSelectStandardSp(int player) {
 
 	sprintf(string[0], "BGM: %d",  p_bgmlv);
 	printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], count % 9 * (statc[player * 10 ]==6));
-	
+
 	if(statc[player * 10] > 0)
 		printFont(15 + 24 * player - 12 * maxPlay, 22, "A:START", count % 9);
 	else
 		printFont(15 + 24 * player - 12 * maxPlay, 22, "A:LOAD", count % 9);
-	
+
 	if(std_opt[player])
 	printFont(15 + 24 * player - 12 * maxPlay, 24, "ULTRA2MIN", 9);
 	else
 	printFont(15 + 24 * player - 12 * maxPlay, 24, "40LINES", 9);
-		
+
 //	printFont(14 + 24 * player - 12 * maxPlay, 9 + statc[player * 10], "b", 1);
 
 	if(backno > bg_max) backno = bg_max;
-	
+
 	// ‰Ÿ‚µ‚Á‚Ï‚È‚µˆÚ“® #1.60c7n4
 	padRepeat(player);
 	padRepeat2(player);
-	
+
 	// ª
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
 		if(getPressState(player, 0)) {
 			PlaySE(5);
 			statc[player * 10]--;
 			if(statc[player * 10] < 0) statc[player * 10] = 6;
-			
+
 			statc[player * 10 + 2] = 1;
 		}
 	}
-	
+
 	// «
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
 		if(getPressState(player, 1)) {
 			PlaySE(5);
 			statc[player * 10]++;
 			if(statc[player * 10] > 6) statc[player * 10] = 0;
-			
+
 			statc[player * 10 + 2] = 1;
 		}
 	}
@@ -5074,7 +5075,7 @@ void statSelectStandardSp(int player) {
 				statc[player * 10 + 1]--;
 				if(statc[player * 10 + 1] < 0) statc[player * 10 + 1] = skip_fwait;
 			}
-			
+
 			// oŒ»
 			if(statc[player * 10] == 1) {
 				wait1[player]--;
@@ -5106,7 +5107,7 @@ void statSelectStandardSp(int player) {
 				if(p_bgmlv < 0) p_bgmlv = 19; // 0ˆÈ‰º‚¾‚Á‚½‚ç1200‚É
 			}
 		}
-	
+
 		// ¨ (Cƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚È‚ª‚ç‚¾‚Æ‚‘¬‚É”’l‚ğ•ÏX‚µ‚Ü‚·)
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 		if(getPressState(player, 3)) {
@@ -5114,10 +5115,10 @@ void statSelectStandardSp(int player) {
 			// FAVORITES
 			if(statc[player * 10] == 0) {
 				statc[player * 10 + 1]++;
-				
+
 				if(statc[player * 10 + 1] > skip_fwait) statc[player * 10 + 1] = 0;
 			}
-			
+
 			// oŒ»
 			if(statc[player * 10] == 1) {
 				wait1[player]++;
@@ -5148,7 +5149,7 @@ void statSelectStandardSp(int player) {
 				if(p_bgmlv > 19) p_bgmlv = 0;
 			}
 		}
-	
+
 
 
 	if(getPushState(player, 5)) {		// Bƒ{ƒ^ƒ“‚Åƒ‚[ƒh‘I‘ğ‰æ–Ê‚É–ß‚é
@@ -5173,7 +5174,7 @@ void statSelectStandardSp(int player) {
 		}
 		// BGMƒoƒOC³ #1.60c7s6
 		bgmlv = p_bgmlv;
-		
+
 		stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
 		statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
 		statc[player * 10 + 1] = 3;			// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.3
@@ -5194,9 +5195,9 @@ void statSelectStartLv(int player) {
 //	printFont(16 + 24 * player - 12 * maxPlay, 6, "SELECT", 4);
 //	printFont(19 + 24 * player - 12 * maxPlay, 7, "LEVEL", 4);
 	printSMALLFont(124 + 192 * player - 96 * maxPlay, 45, "Select Level", 4);
-	
+
 	slv[player] = startlvTbl[i + ori_opt[player] * 14];
-	
+
 	for(i = 0; i <= 13; i++) {
 		if(gameMode[player]==10) {
 			sprintf(string[0], "%4d", startlvTbl[i + ori_opt[player] * 14]);
@@ -5217,29 +5218,29 @@ void statSelectStartLv(int player) {
 	else if(gameMode[player] == 0) backno = startlvTbl[statc[player]] / 10;
 	else if(gameMode[player] == 3) backno = startlvTbl[statc[player] + 42] /3;
 	else backno = startlvTbl[statc[player] + gameMode[player] * 14] /6;
-	
+
 	if(backno > bg_max) backno = bg_max;
-	
+
 	// ‰Ÿ‚µ‚Á‚Ï‚È‚µˆÚ“® #1.60c7n4
 	padRepeat2(player);
-	
+
 	// ª
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, 0)) {
 		PlaySE(5);
 		statc[player * 10]--;
 		if(statc[player * 10] < 0) statc[player * 10] = 13;
-		
+
 		statc[player * 10 + 2] = 1;
 	}
-	
+
 	// «
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, 1)) {
 		PlaySE(5);
 		statc[player * 10]++;
 		if(statc[player * 10] > 13) statc[player * 10] = 0;
-		
+
 		statc[player * 10 + 2] = 1;
 	}
 
@@ -5262,10 +5263,10 @@ void statSelectStartLv(int player) {
 	if((statc[player * 10 + 1] > 15 * 60) || (getPushState(player, 4))) {
 		PlaySE(10);
 		upLines[player] = 0;
-		
+
 		// BGMƒoƒOC³ #1.60c7s6
 		bgmlv = setstartBGM_debug(gameMode[player], player);
-		
+
 		startLvback[0] = statc[player * 10];	// ŠJnƒŒƒxƒ‹‹L‰¯ #1.60c7
 		stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
 		statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
@@ -5297,7 +5298,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 		if(gameMode[pl]!=10) shirase[pl] = (tc[pl] / p_shirase_interval + 1) * p_shirase_interval;
 	else
 		if(gameMode[pl]!=10) shirase[pl] = raise_shirase_interval;
-	
+
 	// jump(gameMode[pl], lbeg, lmas, l20g, ldvl, lver, lpra, ltom, lace, lmis,lstd,lori);
 
 	switch (gameMode[pl]) {
@@ -5318,7 +5319,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 		if(start[pl] < 1000){
 			if(repversw < 40)sp[pl] = lvTableBeg39[tr[pl]];
 			else sp[pl] = lvTableBeg[tr[pl]];
-		} 
+		}
 		wait1[pl] = wait1_Beginner;
 		wait2[pl] = wait2_Beginner;
 		wait3[pl] = wait3_Beginner;
@@ -5408,7 +5409,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 				wait2[pl] = wait2_devil_tbl32[tr[pl] / 10];
 				wait3[pl] = wait3_devil_tbl32[tr[pl] / 10];
 				waitt[pl] = waitt_devil_tbl32[tr[pl] / 10];
-			
+
 			}else if(repversw < 60){
 				wait1[pl] = wait1_devil_tbl[tr[pl] / 10];
 				wait2[pl] = wait2_devil_tbl[tr[pl] / 10];
@@ -5434,15 +5435,15 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 				timelimit[pl] = timelimit_doom_N;
 			else
 				timelimit[pl] = timelimit_doom_H;
-			
+
 			timelimitw[pl] = timelimit[pl];
-			
+
 			timelimitm[pl] = timelimitm_devil;
 			timelimitmw[pl] = timelimitmw_devil;
 			//1000‚Ì‘«Ø‚è‚Í500‚Ì2”{
 			timelimit2[pl] = timelimit[pl] * 2;	// #1.60c7q8
 		}
-		
+
 		goto next;
 	lver:	// Versus
 		sp[pl] = speed_versus;
@@ -5468,7 +5469,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 				waitt[pl] = waitt_tomoyo;
 			}
 			timelimit[pl] = 0;
-		}else {	
+		}else {
 			sp[pl] = lvTabletomoyohebo[lv[pl]];
 			wait1[pl] = wait1_tomoyo;
 			wait2[pl] = wait2_tomoyo;
@@ -5484,7 +5485,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 			wait3[pl] = wait3_Acea_tbl[0];
 			waitt[pl] = waitt_Acea_tbl[0];
 			goto next;
-		
+
 		}else if(anothermode[pl] == 2){//‰ŠúƒAƒiƒU[2“Ç‚İ‚İ
 			sp[pl] = lvTableAcea[0];
 			wait1[pl] = wait1_Acea_tbl[14];
@@ -5510,7 +5511,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 				waitt[pl] = 20;
 			}
 			goto next;
-		
+
 		}else{//ƒm[ƒ}ƒ‹“Ç‚İ‚İ
 			if(repversw < 56)
 				sp[pl] = lvTableAce55[0];
@@ -5532,19 +5533,19 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 				sp[pl] = lvTableAce[0];
 			squaremode[pl] = 1;
 			goto next;
-		
+
 		}else if(std_opt[pl] == 3){//SQUARE“Ç‚İ‚İ
 			if(repversw < 56)
 				sp[pl] = lvTableAce55[0];
 			else
 				sp[pl] = lvTableAce[0];
 			goto next;
-		
+
 		}
 		goto next;
 	lori:	//ORIGINAL
 		if(ori_opt[pl]==0){
-			if(start[pl] < 100){ 
+			if(start[pl] < 100){
 			sp[pl] = lvTableBeg39[lv[pl]];
 			}
 			wait1[pl] = wait1_Beginner;
@@ -5585,7 +5586,7 @@ void setStartLevel(int pl) {				// Šeí‘¬“xİ’èƒ[ƒh (loadReplay‚©‚ç‚à—˜—p) #1.
 void statReady(int player) {
 //	int r_start, r_end, g_start, g_end;
 	int tmp;
-	
+
 	/* ƒRƒ“ƒsƒ…[ƒ^‘€ì #1.60c7o3 */
 	if(playback) {
 		cpu_flag[player] = 0;	// ƒŠƒvƒŒƒC‚ÍCPU‰ğœ #1.60c7o6
@@ -5633,7 +5634,7 @@ void statReady(int player) {
 			BigMove[player] = 1;
 		}
 	}
-	
+
 	padRepeat(player);
 
 	// DEVIL‚Ìƒ‰ƒ“ƒ_ƒ€‚¹‚èã‚ª‚è C7U4.9
@@ -5644,7 +5645,7 @@ void statReady(int player) {
 			} while(devil_nextrise[player] < devil_rise_min[tr[player] / 10]);
 		}
 	}
-	
+
 	// Å‰‚Ìƒ~ƒbƒVƒ‡ƒ“
 	if((statc[player * 10] == 0) && (gameMode[player] == 8) && (c_mission == start_mission) && (c_norm[player] == 0) && (repversw >= 54)){
 		missionSetStatus();
@@ -5661,8 +5662,8 @@ void statReady(int player) {
 		}
 		if(wavebgm >= 1) {
 			if( !IsPlayWave(50 +bgmlv) ) PlayWave(50 +bgmlv);
-		} 
-		
+		}
+
 		if((repversw >= 25) && (sp[player] < min_speed[player]) && (enable_minspeed) || (tomoyo_waits[player]))
 			sp[player] = min_speed[player];
 		if((stage[player] == 44) && (!disable_ehlast_gimmick)){
@@ -5687,7 +5688,7 @@ void statReady(int player) {
 		rest_pblock[player] = getPlatinumBlock(player);
 		onRecord[player] = 1;				// ƒŠƒvƒŒƒC‹L˜^ŠJn#1.60c7n8
 		max_hnext[player] = hnext[player];
-		
+
 		if(rest_pblock[player] == 0) {
 			// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚ª1ŒÂ‚à‚È‚¢ê‡‚Í‘¦ƒGƒ“ƒh #1.60c7r7
 			PlaySE(28);
@@ -5721,7 +5722,7 @@ void statReady(int player) {
 			objectCreate2(player, 10, 0, 0, 0, 0, 0, 0);
 		}
 	}
-	
+
 	if((gameMode[player] == 6) && (statc[player * 10] >= r_start[player])){	// STAGE‚Ì•\¦
 		printFont(17 + 24 * player - 12 * maxPlay, 9, "STAGE", fontc[rots[player]]);
 		if( (stage[player] >= 20) && (stage[player] <= 26) ) {
@@ -5737,17 +5738,17 @@ void statReady(int player) {
 		}
 		printFont(16 + 24 * player - 12 * maxPlay, 10, string[0],  0 );
 	}
-	
+
 	if((statc[player * 10] == 0) && ((ace_irs != 0) && (gameMode[player] != 6) || (gameMode[player] == 4))){
 		onRecord[player] = 1;				// ACE®IRS‚È‚çA‚·‚®ƒŠƒvƒŒƒC‹L˜^ŠJn
 		max_hnext[player] = hnext[player];
 	}
-	
+
 	// MISSIONƒ‚[ƒh‚Ìƒ^[ƒQƒbƒg
 	if( (statc[player * 10] == 0) && (gameMode[player] == 8) && (mission_type[c_mission] == 6) && (c_norm[player] == 0) ) {
 		loadTargetStage();
 	}
-	
+
 	// TOMOYO—pƒXƒ^[ƒg‚ÌƒL[ƒŠƒs[ƒg‹L˜^•Ä¶ #1.60c7n8
 	if((statc[player * 10] == 0) || (repversw < 57)){
 	if( (gameMode[player] == 6) && (stage[player] == start_stage[player]) || (ace_irs != 0) || ((gameMode[player] == 4) && (vs_round == 1))) {
@@ -5760,19 +5761,19 @@ void statReady(int player) {
 		}
 	}
 	}
-	
+
 	if(( gameMode[player] == 7 ) && (anothermode[player] == 0)) {
 		// ACEƒ‚[ƒh‚Ì§ŒÀŠÔİ’è
 		ltime[player] = timeLimitAce[0];
 		lv[player] = 1;
 	}
-	
+
 	if(( gameMode[player] == 7 ) && (anothermode[player] == 1)) {
 		// ACEƒAƒiƒU[ƒ‚[ƒh‚Ì§ŒÀŠÔİ’è
 		ltime[player] = timeLimitAcea[0];
 		lv[player] = 1;
 	}
-	
+
 	if(( gameMode[player] == 7 ) && (anothermode[player] == 2)) {
 		// ACEƒAƒiƒU[2ƒ‚[ƒh‚Ì§ŒÀŠÔİ’è
 		ltime[player] = timeLimitAcea2[0];
@@ -5786,7 +5787,7 @@ void statReady(int player) {
 	if(( gameMode[player] == 9 ) && (std_opt[player] >= 2)) {
 		lv[player] = 1;
 	}
-	
+
 	// READY GO‚Ìƒ^ƒCƒ~ƒ“ƒO‚ğİ’è‚Å‚«‚é‚æ‚¤‚É‚µ‚½ #1.60c7j5
 	if(ready_go_style == 0){	// HEBORIS
 		if(statc[player * 10] < r_start[player]) {
@@ -5798,7 +5799,7 @@ void statReady(int player) {
 		} else if(g_end[player] > g_start[player]) {
 			ExBltRect(3, 121 + player * 192 - 96 * maxPlay, 119 - ((statc[player * 10] - g_start[player]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 8, 0, 0, 78, 17);
 			ExBltRectR(3, 117 + player * 192 - ((g_end[player] - statc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 86 / 16 - 96 * maxPlay,
-				119 - ((g_end[player] - statc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 17 / 16, 0, 17, 86, 17, 
+				119 - ((g_end[player] - statc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 17 / 16, 0, 17, 86, 17,
 				65536 + ((g_end[player] - statc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 8192,
 				65536 + ((g_end[player] - statc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 8192);
 		}
@@ -5846,7 +5847,7 @@ void statReady(int player) {
 			if(wavebgm >= 1) {
 				if( !IsPlayWave(50 +bgmlv) ) PlayWave(50 +bgmlv);
 			}
-			
+
 			stat[player] = 4;
 			statc[player * 10 + 1] = 1;				// 1..Reday!
 			statc[player * 10] = 0;					// ‚ ‚Æ‚©‚½‚Ã‚¯
@@ -5933,9 +5934,9 @@ void statReady(int player) {
 		if( (gameMode[player] == 6) || ((gameMode[0] == 5) && (p_nextpass)) ) {
 			if((!pass_flg[player]) && (getPressState(player, 7))) {
 				PlaySE(6);	// hold.wav
-				
+
 				hold[player] = next[player];
-				
+
 				// HOLDƒ~ƒm‚ÌF‚ğİ’è #1.60c7p1
 				if(p_monochrome_mode==1) {
 					c_hblk[player] = (p_monochrome_mode==2) * 8;
@@ -5947,7 +5948,7 @@ void statReady(int player) {
 					else
 						c_hblk[player] = ccol[next[player]];
 				}
-				
+
 				nextc[player] = (nextc[player] + 1) % 1400;
 				next[player] = nextb[nextc[player] + player * 1400];
 				rt_nblk[0 + 6 * player] = 0;
@@ -5971,7 +5972,7 @@ void statReady(int player) {
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void statBlock(int player) {
 	int i, j,k, m[2],tmp[2],tmp2[2];
-	
+
 	if(dolaser[player]){	//ƒŒ[ƒU[”­“®
 		stat[player] = 26;
 		statc[player * 10 + 0] = 0;
@@ -6031,7 +6032,7 @@ void statBlock(int player) {
 		statc[player * 10 + 4] = 0;
 		doexchg[player] = 0;
 		return;
-	}	
+	}
 	if(do16t[player]){	//16t”­“®
 		stat[player] = 26;
 		statc[player * 10 + 0] = 0;
@@ -6057,9 +6058,9 @@ void statBlock(int player) {
 	if((ending[player] == 0) && (gameMode[player] <= 6) && ((!ismiss[player]) || (repversw < 62))) {
 		if((repversw > 4) && (gameMode[player] >= 3))
 			i = 99;//99‚ÅƒXƒgƒbƒv
-		else 
+		else
 			i = 99 - ((tc[player] > 900));//ƒ}ƒXƒ^[A20G‚Ì998ƒXƒgƒbƒv—p
-			
+
 		if((gameMode[player] == 4) && (repversw >= 61) && (wintype==0) && (vs_goal != 0)){
 			if((tc[player] != vs_goal - 1) && ((!start_flag[player]) || (tc[player] < 0))){
 				tc[player]++;
@@ -6076,25 +6077,25 @@ void statBlock(int player) {
 				if(tc[player] % 100 == i) PlaySE(9);
 			}
 		}
-		
+
 		if(start_flag[player]) start_flag[player] = 0;
-		
+
 		// VS‚ÅƒS[ƒ‹‚ªƒ‰ƒCƒ“§‚Ìê‡
 		if((gameMode[player] == 4) && (wintype == 1))
 			tc[player] = 0;
-		
+
 		if((gameMode[player]!=6)||(tomoyo_opt[player]!=4)||(!fpbas_mode[player])){
 			lv[player] = tc[player];
 		}
 	}
-	
+
 	// TOMOYO‚¹‚èã‚ª‚è
 	if(((gameMode[player] == 6) || ((gameMode[player] == 8) && (mission_type[c_mission] == 6))) && (tomoyo_rise[player] != 0)){
 		tomoyo_rise_t[player]++;
 		if(tomoyo_rise_t[player] % tomoyo_rise[player] == 0)
 			upLines[player] = 1;
 	}
-	
+
 	//HEBO+‚¹‚èã‚ª‚è
 	if(hebo_plus[player]){
 		if(st_bdowncnt[player] >= hebop_interval[player]){
@@ -6106,11 +6107,11 @@ void statBlock(int player) {
 	if(( (gameMode[player] == 7) || (gameMode[player] == 8) ) && (!ending[player])) {
 		timeOn[player] = 1;
 	}
-	
+
 	if((gameMode[player] == 4) || (item_mode[player])){
 		// ƒAƒCƒeƒ€ƒQ[ƒWã¸ #1.60c7n1
 		if( (!noitem) && ( (!ismiss[player]) || ((gameMode[player] != 4) && (repversw >= 62)) ) ) item_g[player]++;
-	
+
 		// Œø‰ÊŠÔ
 		if(IsBig[player] || isfmirror[player] || isrollroll[player] || isxray[player] || iscolor[player] ||
 		isholdlock[player] || ismagnetblock[player] || isremote[player] || istrance[player]||item_monochrome[player]){
@@ -6122,7 +6123,7 @@ void statBlock(int player) {
 	for(i = 0; i < 10; i++) statc[i + player * 10] = 0;
 
 	statc[player * 10 + 4] = (fastlrmove == 0);		// ‰¡•ûŒü‚ÌæsˆÚ“®
-	
+
 	if(rots[player] == 8) statc[player * 10 + 4] = 0;
 
 	// ƒhƒƒbƒvƒ{[ƒiƒX‚ª—İÏ‚³‚ê‚éƒoƒO‚ÌC³‚Ì‚½‚ßAstatEraseBlock‚©‚çˆÚ“® #1.60c7j5
@@ -6130,16 +6131,16 @@ void statBlock(int player) {
 	qdrop[player] = 0;
 
 	hiddenProc(player);
-	
+
 	padRepeat(player);
-	
+
 	// «‚ğ—£‚µ‚Ä‚¢‚éê‡A‰º“ü‚ê§ŒÀ‰ğœ#1.60c7n6
 	if((!getPressState(player, 1-(1*((isUDreverse[player]) && (repversw>=44)) ))) && (repversw >= 10)) down_flag[player] = 0;
 	if(!getPressState(player, 0+(1*((isUDreverse[player]) && (repversw>=44)) ))) up_flag[player] = 0;
-	
+
 	// T-SPINŒ —˜‰Šú‰» #1.60c7n6
 	tspin_flag[player] = 0;
-	
+
 	blk[player] = next[player];
 	dhold[player] = disable_hold;		// holdg—p‰Â”\‚É	#1.60c
 	dhold2[player] = 0;
@@ -6149,7 +6150,7 @@ void statBlock(int player) {
 		next[player] = nextb[nextc[player] + player * 1400];
 	else		//ƒtƒB[ƒo[’†‚Í–_‚Ì‚İoŒ»
 		next[player] = 0;
-	
+
 	// ƒAƒCƒeƒ€oŒ» #1.60c7n1
 	item_coming[player] = 0;
 	if( ((gameMode[player] == 4) || (item_mode[player])) && (item_g[player] > item_inter[player]) ) {
@@ -6230,13 +6231,13 @@ void statBlock(int player) {
 	//novice100
 	} else if((gameMode[player] == 0)&&(novice_mode[player])&&(tc[player] >= 100)&&(novice_flag[player]==0)){
 		PlaySE(9);
-		item_coming[player] = 28;	
+		item_coming[player] = 28;
 		item_name[player] = item_coming[player];//
 		novice_flag[player]=1;
 	//novice200
 	} else if((gameMode[player] == 0)&&(novice_mode[player])&&(tc[player] >= 200)&&(novice_flag[player] ==1)){
 		PlaySE(9);
-		item_coming[player] = 19;	
+		item_coming[player] = 19;
 		item_name[player] = item_coming[player];
 		novice_flag[player]=2;
 	} else {
@@ -6311,10 +6312,10 @@ void statBlock(int player) {
 			// []
 			item_monochrome[player] = 0;
 			item_t[player] = 0;
-		} 
+		}
 	}
 	item_waiting[player] = 0;
-	
+
 		c_cblk[player] = c_nblk[0 + player * 6];
 
 	c_cblk_r[player] = c_nblk[0 + player * 6];
@@ -6330,11 +6331,11 @@ void statBlock(int player) {
 			c_cblk_r[player] = ccol[0];
 		}
 	}
-		
-	
+
+
 	// NEXT—Ìˆæ“à‚ÌƒuƒƒbƒNF‚ğ‚¸‚ç‚·
 	setNextBlockColors(player, 0);
-	
+
 	if(isfever[player]){
 		if(isWRule(player)){
 			c_nblk[0 + player * 6] = wcol[0];
@@ -6352,19 +6353,19 @@ void statBlock(int player) {
 	}
 	if((!isrotatelock[player]) && (!ace_irs))
 		rt[player] = 0;
-			
+
 	setBlockSpawnPosition(player);	//LITE”Å‚æ‚èˆÚA@C7U0
 	bs[player] = 0;
 	bk[player] = 0;
 	bk_D[player] = 0;	//D.R.S—p
-	
+
 	ofs_x[player] = 0;
 	ofs_x2[player] = 0;
-	
+
 	//NEXT’x‰„@1GˆÈã‚Å‚àoŒ»‚µ‚½“_‚ÅÚ’n‚µ‚Ä‚¢‚ê‚Î’x‰„‚³‚¹‚é
 	if( (spawn_y_type) && (heboGB[player]==0) && (blk[player] != 0) ){
 	 	if((rots[player] != 6) && (sp[player] < 60) ||
-	 		(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0)) 
+	 		(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0))
 	 		ndelay[player] = 0;
 	}
 	stat[player] = 5;
@@ -6379,15 +6380,15 @@ void statBlock(int player) {
 		cpuCheckBestSpot(player);
 		navigation_time[player] = 0;
 	}
-	
-	
+
+
 	// I.H.S.	#1.60c
 	doHold(player, 1);	// •ÊŠÖ”‚É“Æ—§ #1.60c7j3
 
 	// (I.R.S.) Initial Rotation System  (c)1998 ARœKA(^^;
 	if(!ace_irs)
 		doIRS(player);		// •ÊŠÖ”‚É“Æ—§ #1.60c7j3
-	
+
 	// ƒuƒƒbƒN‚ª‚ß‚è‚ñ‚Å‚¢‚½‚çƒQ[ƒ€ƒI[ƒo[
 	// ƒQ[ƒ€ƒI[ƒo[‚È‚Á‚Ä‚¢‚È‚¢•Ú’n‚µ‚Ä‚¢‚éê‡‚Í‰¹‚ğ–Â‚ç‚·
 	if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
@@ -6410,7 +6411,7 @@ int checkGameOver(int player) {
 		if((spawn_y_type) && (heboGB[player] == 0) || (heboGB[player] == 1)) ndelay[player] = 0;
 		// ƒQ[ƒ€ƒI[ƒo[ˆ—
 		setGameOver(player);
-		
+
 		return 1;
 	}
 	return 0;
@@ -6419,47 +6420,47 @@ int checkGameOver(int player) {
 /* ƒQ[ƒ€ƒI[ƒo[ˆ— */
 void setGameOver(int player) {
 	int i;
-	
+
 	disableShadowTimer(player);		// ƒVƒƒƒhƒEƒ^ƒCƒ}[‰ğœ #1.60c7k7
-	
+
 	statusClear(player);
 	ismiss[player] = 0;
 	isreflect[player] = 0;
 	isblind[player] = 0;
 	blind_flag[player] = 0;
-	
+
 	hanabi_waiting[player] = 0;//hanabi‚àƒXƒgƒbƒv
 	hanabi_combo[player] = 0;//hanabi‚àƒXƒgƒbƒv
 	if(!(fastroll[player]) || (gameMode[player] == 5))
 		staffInitPl(player);			// ƒXƒ^ƒbƒtƒ[ƒ‹Á‹ #1.60c7n5
-	
+
 	if( (gameMode[player] <= 3) || (gameMode[player] == 5) ) {
 		checkSecretGrade(player);	// — ’iˆÊ”F’è #1.60c7o1
 		if( (sgrade[player] >= min_sgrade) && (gameMode[player] != 5) ) PlaySE(17);
 	}
-	if(!((fastroll[player]) && (ending[player] == 2)) && 
+	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		timeOn[player] = 0;				// ƒ^ƒCƒ}[’â~
 		if(gameMode[player] != 4) onRecord[player] = 0;			// ƒŠƒvƒŒƒC‹L˜^I—¹
 	}
-	
+
 	if((gameMode[player] <= 1)&&(gameMode[player] >= 2)&&(gmflag_r[0]==1)&&(enable_grade[player] == 2)){//Á‚¦ƒ[ƒ‹’†‚É€‚ñ‚¾‚ç’iˆÊ‚ª1ã‚ª‚é
 		grade[player]++;
 		gflash[player]=120;
 	}
-	
+
 	if((gameMode[player] <= 1)&&(gameMode[player] >= 2)&&(gmflag_r[0]==1)&&(enable_grade[player] == 3)){//Á‚¦ƒ[ƒ‹’†‚É€‚ñ‚¾‚çM
 		grade[player]=27;
 		gflash[player]=120;
 	}
 	if((tc[player] - ((tc[player]/100)*100) > 50)&&(enable_grade[player] == 4)){//ŠeƒZƒNƒVƒ‡ƒ“‚ÌŒã”¼(X50`X99)‚Å€‚ñ‚¾‚ç
 		grade[player] = grade[player] + gup3rank[player];
-		
+
 		if(grade[player]>32)grade[player];
 	}
-	
+
 	stat[player] = 7;				// ƒQ[ƒ€ƒI[ƒo[‰æ–Ê‚Ö
-	if(!((fastroll[player]) && (ending[player] == 2)) && 
+	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		if( (stat[1 - player] == 0) || (stat[1 - player] == 10) ) {
 			if(wavebgm) {
@@ -6478,12 +6479,12 @@ void setGameOver(int player) {
 void checkSecretGrade(int player) {
 	int i, j;
 	int uhole, hmode;
-	
+
 	uhole = 0;		// ŒŠ‚ÌˆÊ’u Å‰‚Íˆê”Ô¶
 	hmode = 0;		// Ü‚è•Ô‚µƒtƒ‰ƒO
-	
+
 	sgrade[player] = -1;	// — ’iˆÊ
-	
+
 	for(i = fldsizeh[player]; i > 3; i--) {	// Åã’i‚ÆƒtƒB[ƒ‹ƒhŠO‚Íƒ`ƒFƒbƒN‚µ‚È‚¢
 		for(j = 0; j < fldsizew[player]; j++) {
 			// ŒŠ‚Ì•”•ªˆÈŠO‚ª–„‚Ü‚Á‚Ä‚¢‚È‚¢ê‡‚ÍI—¹
@@ -6491,11 +6492,11 @@ void checkSecretGrade(int player) {
 				return;
 			}
 		}
-		
+
 		// ŒŠ‚ÌˆÊ’u‚ğ•Ï‚¦‚é
 		if(!hmode) {
 			uhole++;
-			
+
 			// Ü‚è•Ô‚µ”»’è
 			if(uhole >= fldsizew[player]) {
 				uhole = fldsizew[player] - 2;
@@ -6505,10 +6506,10 @@ void checkSecretGrade(int player) {
 			uhole--;
 			if(uhole < 0) uhole = 0;
 		}
-		
+
 		sgrade[player]++;	// — ’iˆÊã¸
 	}
-	
+
 	/* GM”»’è */
 	// ¶ã(X:0 Y:1)‚ª–„‚Ü‚Á‚Ä‚¢‚½‚çGM
 	if(fld[1 + fldsizew[player] * 2 + player * 220] != 0) {
@@ -6525,7 +6526,7 @@ void doIRS(int player) {
 	if(repversw >= 43){	//VVer
 	if( getPressState(player, 4) || getPressState(player, 5) || getPressState(player, 6) ) {
 		PlaySE(0);
-		
+
 		// ‰ñ“]‚·‚é•ûŒü‚ğŒˆ‚ß‚é
 		if( !getPressState(player, 5) ) {
 			// A‚Ü‚½‚ÍC
@@ -6540,12 +6541,12 @@ void doIRS(int player) {
 			else
 				bak = 1;	// CLASSIC ‰E‰ñ“]
 		}
-		
+
 		// 180“x‰ñ“]
 		if( ((rots[player] == 7) || (rots[player] == 8)) && getPressState(player, 6) ) {
 			bak = 2;
 		}
-		
+
 		// ‰ñ“]‚Å‚«‚é‚©ƒ`ƒFƒbƒN
 		if( judgeBlock(player, bx[player], by[player], blk[player], bak) == 0 ) {
 			// ‰ñ“]‰Â”\
@@ -6614,7 +6615,7 @@ void doIRS(int player) {
 // ACE®IRS
 void doIRS2(int player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
-	
+
 	// ‰ñ“]•ûŒü‹t“]İ’è‘Î‰ Œƒ‚µ‚­‰˜‚¢orz #1.60c7f8
 	if(getPushState(player, 4) || getPushState(player, 6)) {
 		PlaySE(0);
@@ -6642,7 +6643,7 @@ void doIRS2(int player) {
 			rt_nblk[0 + 6 * player]--;
 		else
 			rt_nblk[0 + 6 * player]++;
-		
+
 		if(rt_nblk[0 + 6 * player] > 3) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] - 4;
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
@@ -6650,7 +6651,7 @@ void doIRS2(int player) {
 //ACEƒJƒXƒ^ƒ€IRS ƒuƒƒbƒNŒÅ’è‚ÌuŠÔ‚Ì‚İ
 void doIRS2plus(int player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
-	
+
 	// ‰ñ“]•ûŒü‹t“]İ’è‘Î‰ Œƒ‚µ‚­‰˜‚¢orz #1.60c7f8
 	if(getPressState(player, 4) || getPressState(player, 6)) {
 		PlaySE(0);
@@ -6678,7 +6679,7 @@ void doIRS2plus(int player) {
 			rt_nblk[0 + 6 * player]--;
 		else
 			rt_nblk[0 + 6 * player]++;
-		
+
 		if(rt_nblk[0 + 6 * player] > 3) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] - 4;
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
@@ -6690,7 +6691,7 @@ void setBlockSpawnPosition(int player) {
 		if(IsBig[player]) {
 			// BIG
 			bx[player] = 2;
-			
+
 			if(isWRule(player)) {
 				by[player] = (blk[player] == 0) * -1;
 			} else {
@@ -6699,7 +6700,7 @@ void setBlockSpawnPosition(int player) {
 		} else {
 			// ’Êí
 			bx[player] = 3;
-			
+
 			if(isWRule(player)) {
 				by[player] = 0;
 			} else {
@@ -6739,7 +6740,7 @@ void statMove(int player) {
 	int tmp;
 	// ’ˆÓFÀÛ‚Ìˆ—‚Í‚±‚Ìƒtƒ@ƒCƒ‹‚É‚Í‚ ‚è‚Ü‚¹‚ñB
 	// ƒ[ƒ‹ƒhƒ‹[ƒ‹‚Ìê‡‚Íworld.cAƒNƒ‰ƒVƒbƒNƒ‹[ƒ‹‚Ìê‡‚Íclassic.c‚É•ªŠò‚µ‚Ü‚·B
-	
+
 	// CPU‚ª‘€ì‚µ‚Ä‚¢‚éê‡‚Í“ü—Í“à—e‚ğŒˆ‚ß‚é #1.60c7o2
 	if((cpu_flag[player]) && (statc[player * 10 + 6] != 1)) {
 		cpuMove(player);
@@ -6765,7 +6766,7 @@ void statMove(int player) {
 			tmp = -1;
 		}
 	}
-	
+
 	if((by[player] >= tmp) || (!spawn_y_type) || (rots[player] == 6))
 		ndelay[player] = 1;
 
@@ -6791,9 +6792,9 @@ void statMove(int player) {
 	}
 	if(spawn_y_type)// ƒtƒB[ƒ‹ƒh˜g
 		viewFldFrame(1,player);
-		
+
 	if((stat[player] != 5) && (repversw >= 57)) return;
-		
+
 	if(timeOn[player]) {
 		timeN[player]++;	//gradeup3‚Åg‚¤
 	}
@@ -6807,11 +6808,11 @@ void doHold(int player, int ihs) {
 	int tmp,first;
 	first = 0;
 	if((disable_hold) || (isholdlock[player] == 1) || (death_plus[player])||(hebo_plus[player])||(heboGB[player])) return;
-	
+
 	if(getPressState(player, 7) && !dhold[player]) {
 		if( (hold_snd != 0) && (((hold_snd == 1) && (ihs)) || (hold_snd == 2)) )
 		PlaySE(6);	// hold.wav #1.60c7f7
-		
+
 		if(hold[player] == -1) {//‹ó‚Á‚Û
 			first = 1;
 			hold[player] = blk[player];
@@ -6819,14 +6820,14 @@ void doHold(int player, int ihs) {
 			nextc[player] = (nextc[player] + 1) % 1400;
 			next[player] = nextb[nextc[player] + player * 1400];
 			hold_used[player] = 1; // ‰ñ” #1.60c7i1
-			
+
 			// ƒuƒƒbƒN‚ÌFİ’è #1.60c7m9
 			c_hblk[player]   = c_cblk_r[player];
-			
+
 			c_cblk[player] = c_nblk[0 + player * 6];
-			
+
 			c_cblk_r[player] = c_nblk[0 + player * 6];
-			
+
 			item_coming[player] = 0;
 			if(ace_irs == 2) tmp = rt[player];
 			// NEXT—Ìˆæ“à‚ÌƒuƒƒbƒNF‚ğ‚¸‚ç‚·
@@ -6838,12 +6839,12 @@ void doHold(int player, int ihs) {
 			dhold2[player] = blk[player];
 			blk[player] = hold[player];
 			hold[player] = dhold[player];
-			
+
 			hold_used[player] = 2; // ‰ñ” #1.60c7i1
-			
+
 			// ƒuƒƒbƒN‚ÌFİ’è #1.60c7m9
 			tmp = c_cblk_r[player];
-			
+
 			//c_cblk[player]   = (c_hblk[player]) * (!isrollroll[player]);
 			if(isrollroll[player]) {
 				// []‘Î‰ #1.60c7p9ex‰ü‘¢
@@ -6851,7 +6852,7 @@ void doHold(int player, int ihs) {
 			} else {
 				c_cblk[player] = c_hblk[player];
 			}
-			
+
 			c_cblk_r[player] = c_hblk[player];
 			c_hblk[player]   = tmp;
 		}
@@ -6860,7 +6861,7 @@ void doHold(int player, int ihs) {
 		kickc[player] = 0;
 		kickc2[player] = 0;
 		kickc3[player] = 0;
-		
+
 		if(cpu_flag[player]) {
 			cp_rot_c[player] = 0;
 			cpuCheckBestSpot(player);
@@ -6869,16 +6870,16 @@ void doHold(int player, int ihs) {
 			cpuCheckBestSpot(player);
 			navigation_time[player] = 0;
 		}
-		
+
 		setBlockSpawnPosition(player);	//LITE”Å‚æ‚èˆÚA@C7U0
 
 		//NEXT’x‰„@1GˆÈã‚Å‚àoŒ»‚µ‚½“_‚ÅÚ’n‚µ‚Ä‚¢‚ê‚Î’x‰„‚³‚¹‚é
 		if( (spawn_y_type) && (heboGB[player]==0) && (blk[player] != 0) ){
 		 	if((rots[player] != 6) && (sp[player] < 60) ||
-		 		(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0)) 
+		 		(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0))
 		 		ndelay[player] = 0;
 		}
-		
+
 		if((!first) && !((ihs) && (ace_irs == 2)) || ((!ace_irs) && (repversw >=47)))
 			rt[player] = 0;
 		if(repversw >= 21){
@@ -6896,7 +6897,7 @@ void doHold(int player, int ihs) {
 			if(ace_irs != 1){
 				doIRS(player);
 			}
-			
+
 			// ‚à‚¤ˆê“xblockse‚ğ–Â‚ç‚· #1.60c7o1
 			if((ishidenext[player] == 0) && ((repversw < 64) || (isfakenext[player] == 0))){
 				PlaySE(21 + next[player]);
@@ -6909,14 +6910,14 @@ void doHold(int player, int ihs) {
 				statc[player * 10 + 4] = (fastlrmove == 0);
 				if(rots[player] == 8) statc[player * 10 + 4] = 0;
 			}
-			
+
 			// ŒÅ’è‚Ü‚Å‚ÌŠÔ‚ğƒŠƒZƒbƒg #1.60c7p5
-			if(repversw >= 13){ 
+			if(repversw >= 13){
 				bk[player] = 0;
 				bk_D[player] = 0;
 			}
 		}
-		
+
 		// ƒuƒƒbƒN‚ª‚ß‚è‚ñ‚Å‚¢‚½‚çƒQ[ƒ€ƒI[ƒo[ #1.60c7l2
 		// ƒQ[ƒ€ƒI[ƒo[‚È‚Á‚Ä‚¢‚È‚¢•Ú’n‚µ‚Ä‚¢‚éê‡‚Í‰¹‚ğ–Â‚ç‚·
 		if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
@@ -6932,27 +6933,27 @@ int isTLS(int player) {
 	if(noredraw) {
 		return 0;
 	}
-	
+
 	//ƒI[ƒ‹ƒhƒXƒ^ƒCƒ‹‚Íí‚É–³Œø
 	if(heboGB[player]){
 		return 0;
 	}
-	
+
 	// tls_view‚ª1‚¾‚Á‚½‚çí‚É—LŒø
 	if(tls_view == 1) {
 		return 1;
 	}
-	
+
 	// tls_view‚ª2‚¾‚Á‚½‚çí‚É–³Œø
 	if(tls_view == 2) {
 		return 0;
 	}
-	
+
 	//ƒtƒB[ƒo[’†‚Íí‚É—LŒø
 	if(isfever[player]) {
 		return 1;
 	}
-	
+
 	// BEGINNER‚Íí‚É—LŒø
 	if(gameMode[player] == 0) {
 		return 1;
@@ -6986,7 +6987,7 @@ int isTLS(int player) {
 			return 1;
 		}
 	}
-	
+
 	// tomoyo #1.60c7l5
 	if(gameMode[player] == 6) {
 		// ‚Æ‚è‚ ‚¦‚¸LV100‚Ü‚Å
@@ -6994,7 +6995,7 @@ int isTLS(int player) {
 			return 1;
 		}
 	}
-	
+
 	// ACE
 	if( (gameMode[player] == 7) || (gameMode[player] == 8) ) {
 		if(heboGB[player] >0){
@@ -7014,7 +7015,7 @@ int isTLS(int player) {
 			}
 		}
 	}
-	
+
 	// ã‚Ì‚Ç‚ê‚É‚à“–‚Ä‚Í‚Ü‚ç‚È‚¢‚È‚çTLS‚Í‚È‚µ
 	return 0;
 }
@@ -7024,7 +7025,7 @@ int isTLS(int player) {
 int isTSpin(int player) {
 	int i, count, tx[4], ty[4];
 	int tmp_x, tmp_y;
-	
+
 	// ”»’è—p‘Š‘ÎÀ•W‚ğİ’è
 	if(IsBig[player]){
 		tx[0] = 1;
@@ -7045,14 +7046,14 @@ int isTSpin(int player) {
 		tx[3] = 2;
 		ty[3] = 2;
 	}
-	
+
 	// ”»’èˆ—
 	count = 0;
-	
+
 	for(i = 0; i < 4; i++) {
 		tmp_x = bx[player] + tx[i];
 		tmp_y = by[player] + ty[i];
-		
+
 		//ARS‚ÅT‚ªãŒü‚«‚Ìê‡
 		//@
 		//@¡
@@ -7060,14 +7061,14 @@ int isTSpin(int player) {
 		//‚±‚ñ‚È”»’è‚¾‚Á‚½‚Ì‚ğC³
 		if((isWRule(player) == 0) && (rt[player] == 2))
 			tmp_y = tmp_y + 1 + (IsBig[player]);
-		
+
 		if(tmp_y >= 0) {
 			if( (tmp_x < 0) || (tmp_x >= 10) || (tmp_y >= 22) || (fld[tmp_x + tmp_y * 10 + player * 220]) ) {
 				count++;
 			}
 		}
 	}
-	
+
 	return count;
 }
 
@@ -7076,12 +7077,12 @@ int isTSpin(int player) {
 int blockEraseJudge(int player) {
 	int		i, j, k, l,sr,ret;
 	int		by2;	// ’²‚×‚éYÀ•W
-	
+
 //	if(IsBig[player]) {
 //		// BIG‚Å‚Íê—pˆ—
 //		return blockBigEraseJudge(player);
 //	}
-	
+
 	// ƒ‰ƒCƒ“‚ª–„‚Ü‚Á‚Ä‚é‚©”»’è
 	ret = 0;
 	for(i = 0; i <= fldsizeh[player]; i++) {
@@ -7094,7 +7095,7 @@ int blockEraseJudge(int player) {
 		erase[i + player * 22] = sr;
 		if (sr) ret++;	//Á‹‚ ‚è
 	}
-	
+
 	// ‘Îí@DEFENCE
 	// ’ê‚©‚çuÁ‚¦‚éƒ‰ƒCƒ“”-1ƒ‰ƒCƒ“v‚ªÁ‹‚³‚ê‚é
 	sr = 0;
@@ -7147,7 +7148,7 @@ int blockEraseJudge(int player) {
 /* BIG—pÁ‹”»’è */
 int blockBigEraseJudge(int player) {
 	int		i, j, sr,ret;
-	
+
 	ret = 0;
 	for(i = 0; i <= fldsizeh[player]; i++) {
 		sr = 1;
@@ -7159,7 +7160,7 @@ int blockBigEraseJudge(int player) {
 		erase[i + player * 22] = sr;
 		if (sr) ret = 1;	//Á‹‚ ‚è
 	}
-	
+
 	if((ret) && ((gameMode[player] == 4) && (upLineT[1 - player] == 3)) && (!disrise)){
 		removeBlock(player, bx[player], by[player], blk[player], rt[player]);
 		for(i = 0; i <= fldsizeh[player]; i++) {
@@ -7173,7 +7174,7 @@ int blockBigEraseJudge(int player) {
 		}
 		setBlock(player, bx[player], by[player], blk[player], rt[player]);
 	}
-	
+
 	return ret;
 }
 
@@ -7224,15 +7225,15 @@ int blockEraseJudgeFf(int player,int mode) {
 // statc[player * 10 + 3] 0‚È‚çƒNƒŠƒA‰‰o@1‚È‚ç’‚‘§‰‰o
 void statRelayselect(int player) {
 	int block,i,j,c;
-	
+
 	timeOn[player] = 0;
 	ndelay[player] = 1;
-	
+
 	pinch[player] = 0;
-	
+
 	padRepeat(player);
 	padRepeat2(player);
-	
+
 	if(statc[player * 10 + 2] == 0){
 		//Œx‰¹‚ª–Â‚Á‚Ä‚¢‚½‚ç~‚ß‚é
 		StopSE(40);
@@ -7252,7 +7253,7 @@ void statRelayselect(int player) {
 						if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
 							objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 						}
-						
+
 						fld[i+ j * fldsizew[player] + player * 220] = 0;
 						fldt[i+ j * fldsizew[player] + player * 220] = 0;		// #1.60c7j5
 						fldi[i+ j * fldsizew[player] + player * 220] = 0;		// #1.60c7n1
@@ -7268,7 +7269,7 @@ void statRelayselect(int player) {
 				statc[player * 10 + 2] = 1;
 			}
 		}else{	//’‚‘§‰‰o
-		
+
 			statc[player * 10 + 1]++;
 			printFont(16 + 24 * player - 12 * maxPlay, 14, "TOP OUT!", (count % 4 / 2) * 2);
 			if(std_opt[player] == 0){
@@ -7323,7 +7324,7 @@ void statRelayselect(int player) {
 				}
 				statc[player * 10]++;
 			}
-			
+
 		}
 		if(statc[player * 10 +2] == 1){
 			statc[player * 10] = 0;
@@ -7375,10 +7376,10 @@ void statRelayselect(int player) {
 			} while(relaydata[player * 9 + rots[player]] != -1);
 			setNextBlockColors(player, 1);
 		}
-		
+
 		printFont(15 + 24 * player - 12 * maxPlay, 5, "SELECT", 4);
 		printFont(15 + 24 * player - 12 * maxPlay, 6, " NEXT ROT.", 4);
-		
+
 		printFont(15 + 24 * player - 12 * maxPlay, 7 + (2 * rots[player]), "b", (count % 2) * fontc[rots[player]]);
 
 		printFont(16 + 24 * player - 12 * maxPlay, 7, "HEBORIS"  ,(relaydata[player * 9 + 0] == -1) * fontc[0]);
@@ -7404,7 +7405,7 @@ void statRelayselect(int player) {
 				}
 			}
 		}
-		
+
 		sprintf(string[0], "%2d", 10 - (statc[player * 10] / 60));
 		printFont(17 + 24 * player - 12 * maxPlay, 25, "TIME", 6);
 		printFont(21 + 24 * player - 12 * maxPlay, 25, string[0], 0);
@@ -7441,7 +7442,7 @@ void statRelayselect(int player) {
 			setNextBlockColors(player, 1);
 			stat[player] = 3;					// Ready
 			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
-			statc[player * 10 + 1] = 0;			// 
+			statc[player * 10 + 1] = 0;			//
 			statc[player * 10 + 2] = 0;
 			statc[player * 10 + 3] = 0;
 		}
@@ -7458,9 +7459,9 @@ void UpLineBlockJudge(int player) {
 		if((gameMode[player] == 4) && (stat[player] == 5)) return;
 
 		UpLineBlock(player);
-		
+
 		by[player] = by[player] - (by[player] >= 0);
-		
+
 		// ˜g“àoŒ»‚Í22’i–Ú‚ÌƒuƒƒbƒN‚ğÁ‚· C7U0
 		if((!spawn_y_type) || (repversw <= 27)){
 		for(j = 0; j < fldsizew[player]; j++) {
@@ -7481,11 +7482,11 @@ void UpLineBlock(int player) {
 	// #1.60c7j5
 	// BIGê—pˆ—‚ğíœiBIG‚Ìd—l•ÏX‚Å•s—v‚Éj#1.60c7o9
 	int		i, j,newhole,h1,h2,riseT;
-	
+
 	riseT = upLineT[player];
 	if((gameMode[player] == 8) && (mission_type[c_mission] == 21) && (stat[player] == 6))
 		riseT = 2;
-	
+
 	if((gameMode[player] == 6) || ((gameMode[player] == 8) && (mission_type[c_mission] == 6))){	// TOMOYO
 		PlaySE(20);
 		//ã‚É‚¸‚ç‚·
@@ -7514,7 +7515,7 @@ void UpLineBlock(int player) {
 		for(j = 0; j < fldsizew[player]; j++) {
 			fldt[j + fldsizew[player] * fldsizeh[player] + player * 220] = (fld[j + fldsizew[player] * fldsizeh[player] + player * 220] != 0) * -1;
 		}
-		
+
 		erase[fldsizeh[player] + player * 22] = 0;
 		upLines[player]--;
 		upLineNo[player]++;
@@ -7533,7 +7534,7 @@ void UpLineBlock(int player) {
 
 	} else if(riseT == 0) { // ƒRƒs[7
 		PlaySE(20);
-		
+
 		// ƒtƒB[ƒ‹ƒh‚ğã‚É‚¸‚ç‚·
 		for(i = 1; i <= fldsizeh[player]; i++) {
 			for(j = 0; j < fldsizew[player]; j++) {
@@ -7562,7 +7563,7 @@ void UpLineBlock(int player) {
 		for(i = 0; i < upLineNoMax; i++) {
 			j = i + upLineNo[player];
 			if(j >= upLineNoMax) j = j - upLineNoMax;
-			
+
 			if(!((upFld[j* 2] == 00000) && (upFld[j* 2 + 1] == 00000)) &&	// ‚¹‚èã‚ª‚èƒtƒB[ƒ‹ƒh‚Ìƒ`ƒFƒbƒN
 				!((upFld[j* 2] == 11111) && (upFld[j* 2 + 1] == 11111))) {
 				upLineNo[player] = j;
@@ -7599,7 +7600,7 @@ void UpLineBlock(int player) {
 		fld[7 + fldsizew[player] * fldsizeh[player] + player * 220] = upFld[upLineNo[player] * 2 + 1] / 100 % 10;
 		fld[8 + fldsizew[player] * fldsizeh[player] + player * 220] = upFld[upLineNo[player] * 2 + 1] / 10 % 10;
 		fld[9 + fldsizew[player] * fldsizeh[player] + player * 220] = upFld[upLineNo[player] * 2 + 1] % 10;
-		
+
 		for(j = 0; j < fldsizew[player]; j++) {
 			fldt[j + fldsizew[player] * fldsizeh[player] + player * 220] = (fld[j + fldsizew[player] * fldsizeh[player] + player * 220] != 0) * -1;
 			if(hidden[player] == 8) fldt[j + fldsizeh[player] * fldsizew[player] + player * 220] = 0;
@@ -7607,7 +7608,7 @@ void UpLineBlock(int player) {
 			fldi[j + fldsizew[player] * fldsizeh[player] + player * 220] = 0;
 			flds[j + fldsizew[player] * fldsizeh[player] + player * 220] = 0;
 		}
-		
+
 		erase[fldsizeh[player] + player * 22] = 0;
 		upLines[player]--;
 
@@ -7716,7 +7717,7 @@ void UpLineBlock(int player) {
 			fldt[j + fldsizeh[player] * fldsizew[player] + player * 220] = (fld[j + fldsizeh[player] * fldsizew[player] + player * 220] != 0) * -1;
 			if(hidden[player] == 8) fldt[j + fldsizeh[player] * fldsizew[player] + player * 220] = -60;
 		}
-		
+
 		// ‚¹‚èã‚ª‚èƒtƒB[ƒ‹ƒh‚ğ‚¸‚ç‚·
 		for(i = 1; i < 22; i++) {
 			for(j = 0; j < 10; j++) {
@@ -7742,7 +7743,7 @@ void statErase(int player) {
 	if(((gameMode[player]==1)||(gameMode[player]==2))&&(enable_grade[player] == 4)){//’u‚­“x‚ÉŒÄ‚Ño‚·•K—v‚ª‚ ‚é
 		GradeUp3(player);
 	}
-	
+
 	if(statc[player * 10 + 3] != 0){
 		if(repversw >= 57){
 			drawCBlock(player, 0, 0, 0, 10, 0);
@@ -7752,14 +7753,14 @@ void statErase(int player) {
 	}
 
 	if(ace_irs) doIRS2(player);
-	
+
 	if((repversw >= 48) && (dhold[player] != disable_hold) && (!ishidenext[player])&& (!isfakenext[player]))
 		dhold[player] = disable_hold;		// holdg—p‰Â”\‚É	#1.60c
 
 	// «‚ğ—£‚µ‚Ä‚¢‚éê‡A‰º“ü‚ê§ŒÀ‰ğœ#1.60c7n6
 	if((!getPressState(player, 1-(1*((isUDreverse[player]) && (repversw>=44)) ))) && (repversw >= 10)) down_flag[player] = 0;
 	if(!getPressState(player, 0+(1*((isUDreverse[player]) && (repversw>=44)) ))) up_flag[player] = 0;
-	
+
 	if((gameMode[player] == 6) && (!ending[player])) {
 		// tomoyoƒ‚[ƒh‚ÅƒNƒŠƒAƒtƒ‰ƒO‚ª1‚É‚È‚Á‚Ä‚¢‚½‚çƒXƒe[ƒWƒNƒŠƒA #1.60c7l8
 		if( sclear[player] ) {
@@ -7791,12 +7792,12 @@ void statErase(int player) {
 			stat[player] = 17;				// ƒXƒe[ƒWI—¹
 			return;
 		}
-		
+
 	}
-	if(((gameMode[player] == 6) || ((gameMode[player] == 8) && (mission_type[c_mission] == 6))) 
+	if(((gameMode[player] == 6) || ((gameMode[player] == 8) && (mission_type[c_mission] == 6)))
 	&& (statc[player * 10] == wait1[player]) && (upLines[player]))
 		UpLineBlockJudge(player);
-		
+
 	if(ismiss[player]){
 		y = Rand(8);
 		ofs_x[player] = y - (8 / 2);
@@ -7804,10 +7805,10 @@ void statErase(int player) {
 		if(statc[player * 10] == wait1[player])
 			PlaySE(45);
 	}
-	
+
 	if(((repversw >= 46) && ((repversw < 48))) && (statc[player * 10] == wait1[player]) && (!ishidenext[player])&& (!isfakenext[player]))
 		dhold[player] = disable_hold;		// holdg—p‰Â”\‚É	#1.60c
-	
+
 	if((isthunder[player]) && (statc[player * 10] == wait1[player])){
 		PlaySE(37);
 		thunder_timer = 30;
@@ -7842,14 +7843,14 @@ void statErase(int player) {
 			// ƒ‰ƒCƒ“Á‹”­¶
 			if(mission_erase[c_mission - 1] > 0) {
 				j = mission_erase[c_mission - 1];
-				
+
 				for(i = checkFieldTop(player); i < 22; i++) {
 					erase[i + player * 22] = 1;
-					
+
 					j--;
 					if(j <= 0) break;
 				}
-				
+
 				stat[player] = 25;
 				statc[player * 10] = 0;
 				statc[player * 10 + 1] = 3;	// Ready
@@ -7882,7 +7883,7 @@ void statErase(int player) {
 				statc[player * 10] = wait1[player];
 				statc[player * 10 + 1] = 3;	// Ready
 			}
-			
+
 			return;
 		}
 	}
@@ -8064,26 +8065,26 @@ void statErase(int player) {
 		docopyfld[player] = 0;
 		return;
 	}
-	
+
 	statc[player * 10]--;
-	
-	
+
+
 	//D.R.S‚ÌAREƒXƒLƒbƒv
-	if( ((rots[player] == 8) && (harddrop[player])) && 
-	((getPushState(player, 0)) || (getPushState(player, 1)) || (getPushState(player, 2)) || 
-	 (getPushState(player, 3)) || (getPushState(player, 4)) || (getPushState(player, 5)) || 
+	if( ((rots[player] == 8) && (harddrop[player])) &&
+	((getPushState(player, 0)) || (getPushState(player, 1)) || (getPushState(player, 2)) ||
+	 (getPushState(player, 3)) || (getPushState(player, 4)) || (getPushState(player, 5)) ||
 	 (getPushState(player, 6)) || (getPushState(player, 7))) )
 		statc[player * 10] = -1;
-	
-	if( ((rots[player] == 8) && (are_skipflag[player])) && 
-	((getPressState(player, 0)) || (getPressState(player, 1)) || (getPressState(player, 2)) || 
-	 (getPressState(player, 3)) || (getPressState(player, 4)) || (getPressState(player, 5)) || 
+
+	if( ((rots[player] == 8) && (are_skipflag[player])) &&
+	((getPressState(player, 0)) || (getPressState(player, 1)) || (getPressState(player, 2)) ||
+	 (getPressState(player, 3)) || (getPressState(player, 4)) || (getPressState(player, 5)) ||
 	 (getPressState(player, 6)) || (getPressState(player, 7))) ){
 	 	are_skipflag[player] = 0;
 		statc[player * 10] = -1;
 	}
-	
-	if((statc[player * 10] < wait1[player] - 1) && (wait1[player] != 0) && 
+
+	if((statc[player * 10] < wait1[player] - 1) && (wait1[player] != 0) &&
 		(cpu_flag[player]) && (rots[player] != 6) && (rots[player] != 8)){
 		for(i=0;i<10;i++) {
 			cp_input[i + player * 10] = 0;
@@ -8091,16 +8092,16 @@ void statErase(int player) {
 	}
 
 	if( (statc[player * 10] < 0) || (rots[player] == 6) ) {
-	
+
 		ofs_x[player] = 0;
 		ofs_x2[player] = 0;
-	
+
 		//ƒGƒ“ƒfƒBƒ“ƒO“Ë“ü‚æ‚è‚à—Dæ‚·‚é‚æ‚¤‚É
 		//i‹@”\‚µ‚È‚­‚È‚é‚©‚çjC7U1
 		// ‚¹‚è‚ ‚ª‚èˆ—iƒ~ƒ‰[’†‚Í‚¹‚èã‚°‚È‚¢j
 		if(fmirror_cnt[player] == -20+(20*(repversw <= 17)))
 			if(UpLineShirase(player)) return;
-		
+
 		// ƒtƒB[ƒ‹ƒhƒ~ƒ‰[‰»ˆ— #1.60c7j5
 		if(fldMirrorProc(player)) return;
 
@@ -8122,11 +8123,11 @@ void statErase(int player) {
 				statc[player * 10 + 3] = 0;	//ƒNƒŠƒA‰‰o
 				return;
 			}
-			
+
 		} else {
 			// ƒŒƒxƒ‹ƒAƒbƒv
 			LevelUp(player);
-			
+
 			// ‚±‚Ìƒo[ƒWƒ‡ƒ“‚©‚çŒÅ’è¨Ÿ‚ğ2ƒtƒŒ[ƒ€k‚ß‚é #1.60c7h2
 			if(repversw < 4)
 				stat[player] = statc[player * 10 + 1];
@@ -8138,7 +8139,7 @@ void statErase(int player) {
 					&&(gameMode[player] != 4) && (gameMode[player] <= 5) ) {
 					rescue[player]++;//‚±‚Ì‰ñ”‚ğ‰æ–Ê‚É•\¦‚µAƒƒ_ƒ‹‚ğŒˆ‚ß‚é
 					REflag[player] = 0;
-					
+
 						if( ( (rescue[player] == 2) && (medal_re[player] == 0) )
 						 || ( (rescue[player] == 4) && (medal_re[player] == 1) )
 						 || ( (rescue[player] == 6) && (medal_re[player] == 2) )
@@ -8151,7 +8152,7 @@ void statErase(int player) {
 				}
 				if( (gameMode[player] == 4) || (item_mode[player]) || (gameMode[player] == 8) ) {
 					// ƒ~ƒbƒVƒ‡ƒ“ƒ‚[ƒh‚Å‚àg—p #1.60c7s5
-					
+
 					// ‘Îí—pƒ[ƒ‹ƒ[ƒ‹ #1.60c7n1
 					if( item_rollroll[player] ) {
 						isrollroll[player] = 1;
@@ -8165,13 +8166,13 @@ void statErase(int player) {
 					// ƒ[ƒ‹ƒ[ƒ‹‰»”»’f #1.60c7j5
 					isrollroll[player] = 0;
 					if((rollroll_flag[player]) && (p_rollroll_interval > 0) && (gameMode[player] >= 5))
-						if((bdowncnt[player] + 1) % p_rollroll_interval == 0) 
+						if((bdowncnt[player] + 1) % p_rollroll_interval == 0)
 							isrollroll[player] = 1;
 
 					// X-RAY”»’f #1.60c7p9ex
 					isxray[player] = 0;
 					if((xray_flag[player]) && (p_xray_interval > 0) && (gameMode[player] >= 5))
-						if((bdowncnt[player] + 1) % p_xray_interval == 0) 
+						if((bdowncnt[player] + 1) % p_xray_interval == 0)
 						{
 							isxray[player] = 1;
 							xray_counter[player] = 0;
@@ -8188,7 +8189,7 @@ void statErase(int player) {
 			if(repversw < 61)
 				for(i = 0; i < 10; i++) statc[i + player * 10] = 0;
 		}
-		
+
 	}
 }
 
@@ -8206,7 +8207,7 @@ int fldMirrorProc(int player) {
 
 	if((repversw <= 17) && (fmirror_cnt[player] < 0))	//c7t2.9ˆÈ‘O‚ÌƒŠƒvƒŒƒC‚ÍƒtƒB[ƒ‹ƒh‰ñ“]–³‚µ
 		fmirror_cnt[player] = 0;
-	
+
 	// fmirror‚ğplayer‚²‚Æ‚É #1.60c7l7
 	if((isfmirror[player]) && (p_fmirror_interval > 0) && ((gameMode[player] >= 4) || (item_mode[player]))) {
 		if( (((gameMode[player] == 4) || (item_mode[player]))&&(bdowncnt[player] % 1 == 0)) || (bdowncnt[player] % p_fmirror_interval == 0) || (gameMode[player] == 8) ) {
@@ -8281,7 +8282,7 @@ int UpLineShirase(int player) {
 			do {
 				devil_nextrise[player] = rand( devil_rise_max[tr[player] / 10] + 1,player);
 			} while(devil_nextrise[player] < devil_rise_min[tr[player] / 10]);
-			
+
 			upLines[player] = 1;
 		}
 	// ‚±‚Ìƒo[ƒWƒ‡ƒ“‚©‚ç‚¹‚èã‚ª‚è‚Ìd—l‚ğ•ÏX #1.60c7i2
@@ -8297,7 +8298,7 @@ int UpLineShirase(int player) {
 			else
 				upLines[player] = 0;
 		}
-		
+
 		// ‚¹‚èã‚ª‚èŠÔŠu‚ğƒŒƒxƒ‹‚Å‚Í‚È‚­Aƒ~ƒm‚ğ’…°‚³‚¹‚½‰ñ”‚É•ÏX #1.60c7i2
 		else if((p_shirase[player] == 1) && (bdowncnt[player] >= shirase[player]) && (tc[player] >= level_shirase_start)) {
 			shirase[player] = (bdowncnt[player] / raise_shirase_interval + 1) * raise_shirase_interval;
@@ -8307,10 +8308,10 @@ int UpLineShirase(int player) {
 				upLines[player] = 0;
 		}
 	}
-	
+
 	UpLineBlockJudge(player);
 	if(upLines[player]) return 1;
-	
+
 	if(repversw >= 47) pinchCheck(player);
 
 	return 0;
@@ -8324,7 +8325,7 @@ void LevelUp(int player) {
 		if(tc[player] / 10 > tr[player]) {
 			tr[player]++;
 			recSectionTime(player);
-			
+
 			// ƒXƒ^ƒbƒtƒ[ƒ‹‚Å‚È‚¢‚È‚çƒXƒs[ƒh’l‚Æwait’l‚ğ•Ï‚¦‚é #1.60c7j8
 			if(!ending[player]) {
 				if(tr[player] < 101){
@@ -8340,7 +8341,7 @@ void LevelUp(int player) {
 					}
 				}
 			}
-		} 
+		}
 	} else if((gameMode[player] == 1)||(gameMode[player] == 2)) {
 		// ƒ}ƒXƒ^[ƒ‚[ƒh,20G‚ÌƒŒƒxƒ‹ƒAƒbƒv”»’è
 		if(((enable_grade[player] != 4)||(repversw<=23))) {
@@ -8416,9 +8417,9 @@ void LevelUp(int player) {
 				tr[player]++;
 				tr2[player]++;
 				recSectionTime(player);
-				
+
 				if(!ending[player]) {
-				
+
 					if(tr[player] % 10 == 0) {//100‚²‚Æ
 						isregret(player);//regret”»’è
 						if(gup3sp_adjust[player] == 2){
@@ -8491,14 +8492,14 @@ void LevelUp(int player) {
 			if(tc[player] / 10 > tr[player]) {
 				tr[player]++;
 				recSectionTime(player);
-			
+
 				if( (!ending[player]) && (tr[player] % 10 == 0) ) {
 					if(tr[player] <= 120) {	// LV1200‚Ü‚Å #1.60c7j5
 						wait1[player] = wait1_devil_tbl17[tr[player] / 10];
 						wait2[player] = wait2_devil_tbl17[tr[player] / 10];
 						wait3[player] = wait3_devil_tbl17[tr[player] / 10];
 						waitt[player] = waitt_devil_tbl17[tr[player] / 10];
-					
+
 						if(grade[player] < 13)
 							grade[player] = tr[player] / 10; // Gradeİ’è #1.60c7j7
 							gflash[player]=120;
@@ -8511,18 +8512,18 @@ void LevelUp(int player) {
 					}
 				}
 			}
-		}else if(repversw == 18){//18-19 
+		}else if(repversw == 18){//18-19
 			if(tc[player] / 10 > tr[player]) {
 				tr[player]++;
 				recSectionTime(player);
-			
+
 				if( (!ending[player]) && (tr[player] % 10 == 0) ) {
 					if(tr[player] <= 120) {	// LV1200‚Ü‚Å #1.60c7j5
 						wait1[player] = wait1_devil_tbl18[tr[player] / 10];
 						wait2[player] = wait2_devil_tbl18[tr[player] / 10];
 						wait3[player] = wait3_devil_tbl18[tr[player] / 10];
 						waitt[player] = waitt_devil_tbl18[tr[player] / 10];
-					
+
 						if(grade[player] < 13)
 							grade[player] = tr[player] / 10; // Gradeİ’è #1.60c7j7
 							gflash[player]=120;
@@ -8539,7 +8540,7 @@ void LevelUp(int player) {
 			if(tc[player] / 10 > tr[player]) {
 				tr[player]++;
 				recSectionTime(player);
-			
+
 				if( (!ending[player]) && (tr[player] % 10 == 0) ) {
 					if((((enable_grade[player] == 1) && (repversw < 42)) || (devil_minus[player]))&&(gameMode[player] == 3)&&(repversw >= 31)){//devil-
 						if(tr[player] <= 120) {	// LV1200‚Ü‚Å #1.60c7j5
@@ -8547,7 +8548,7 @@ void LevelUp(int player) {
 							wait2[player] = wait2_devil_m_tbl[tr[player] / 10];
 							wait3[player] = wait3_devil_m_tbl[tr[player] / 10];
 							waitt[player] = waitt_devil_m_tbl[tr[player] / 10];
-					
+
 							if(!devil_minus[player]){
 								if(grade[player] < 13){//ƒm[ƒ}ƒ‹
 									grade[player] = tr[player] / 10; // Gradeİ’è #1.60c7j7
@@ -8567,7 +8568,7 @@ void LevelUp(int player) {
 							wait2[player] = wait2_devil_tbl32[tr[player] / 10];
 							wait3[player] = wait3_devil_tbl32[tr[player] / 10];
 							waitt[player] = waitt_devil_tbl32[tr[player] / 10];
-					
+
 							if(grade[player] < 13){
 								grade[player] = tr[player] / 10; // Gradeİ’è #1.60c7j7
 								gflash[player]=120;
@@ -8634,18 +8635,18 @@ void LevelUp(int player) {
 		// VSƒ‚[ƒh‚ÌƒŒƒxƒ‹ƒAƒbƒv”»’è #1.60c7r4
 		if(tc[player] / 10 > tr[player]) {
 			tr[player]++;
-			
+
 			if( (!ending[player]) && (tr[player] % 10 == 0) ) {
 				PlaySE(19);
 			}
-			
+
 		}
-		if(wintype==0){	
+		if(wintype==0){
 			// ƒS[ƒ‹‚É“’B
 			if( (vs_goal != 0) && (tc[player] >= vs_goal) ) {
 				tc[player] = vs_goal;
 				PlaySE(19);
-				
+
 				// ‘Šè‚ğƒQ[ƒ€ƒI[ƒo[‚É‚³‚¹‚é
 				stat[1 - player] = 7;
 				statc[0 + (1 - player) * 10] = 0;
@@ -8656,7 +8657,7 @@ void LevelUp(int player) {
 				statc[5 + (1 - player) * 10] = 0;
 				if(istimestop[1-player]) istimestop[1-player] = 0;
 			}
-		}else if(wintype==1){	
+		}else if(wintype==1){
 			// ƒS[ƒ‹‚É“’B
 			if( (vs_goal != 0) && (li[player] >= vs_goal/10) ) {
 				li[player] = vs_goal/10;
@@ -8677,14 +8678,14 @@ void LevelUp(int player) {
 		if(!fpbas_mode[player]) {
 			if(tc[player] / 10 > tr[player]) {
 				tr[player]++;
-				
+
 				if(tr[player] < 31){
 					if((repversw < 25) || ((stage[player] >= 100) && (lvTabletomoyo24[tr[player]] > sp[player])))
 						sp[player] = lvTabletomoyo24[tr[player]];
 					else if(lvTabletomoyo[tr[player]] > sp[player])
 						sp[player] = lvTabletomoyo[tr[player]];
 				}
-				
+
 				if(tr[player] % 10 == 0) {
 					PlaySE(19);
 					bgfadesw = 1;
@@ -8694,14 +8695,14 @@ void LevelUp(int player) {
 			if(lc[player] > 100) {
 				lc[player] = lc[player] - 100;
 				lv[player]++;
-				
+
 				if(lv[player] < 20){
 					if((repversw < 25) || ((stage[player] >= 100) && (lvTabletomoyo24[lv[player]] > sp[player])))
 						sp[player] = lvTabletomoyohebo[lv[player]];
 					else if(lvTabletomoyo[lv[player]] > sp[player])
 						sp[player] = lvTabletomoyohebo[lv[player]];
 				}
-				
+
 				if(lv[player] % 2 == 0) {
 					PlaySE(19);
 					bgfadesw = 1;
@@ -8717,12 +8718,12 @@ void LevelUp(int player) {
 			else
 				sp[player] = lvTableAce[lv[player]-1];
 			ltime[player] = timeLimitAce[lv[player]-1];
-			
+
 			PlaySE(30);
 			StopSE(32);
 			bgfadesw = 1;
 			timeOn[player] = 0;		// ƒ^ƒCƒ€‚ğˆê“I‚É~‚ß‚é
-			
+
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player]];
@@ -8744,11 +8745,11 @@ void LevelUp(int player) {
 				wait3[player] = wait3_Acea_tbl[lv[player] - 1];
 				waitt[player] = waitt_Acea_tbl[lv[player] - 1];
 			}
-			
+
 			PlaySE(30);
 			StopSE(32);
 			bgfadesw = 1;
-			
+
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 3];
@@ -8762,12 +8763,12 @@ void LevelUp(int player) {
 			else if((lv[player] >= 8) && (lv[player] < 16)) hidden[player] = 5;
 			else hidden[player] = 0;
 			ltime[player] = timeLimitAcea2[lv[player]-1];
-			
+
 			PlaySE(30);
 			StopSE(32);
 			if((lv[player] >= 11) || (lv[player]%2==1))
 			bgfadesw = 1;
-			
+
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 6];
@@ -8788,7 +8789,7 @@ void LevelUp(int player) {
 					waitt[player] = waitt_HeboGB_tbl[lv[player]-1];
 				}
 			}
-				
+
 			PlaySE(30);
 			StopSE(32);
 			bgfadesw = 1;
@@ -8811,25 +8812,25 @@ void LevelUp(int player) {
 			StopSE(32);
 			bgfadesw = 1;
 			timeOn[player] = 0;		// ƒ^ƒCƒ€‚ğˆê“I‚É~‚ß‚é
-			
+
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player]];
 				changeBGM(player);
 			}
 		} else if(( c_norm[player] >= lv[player] * 5) && (!ending[player]) && ( std_opt[player] == 3)) {
-			// 
+			//
 			lv[player]++;
 			c_norm[player] = c_norm[player]-((lv[player]-1) * 5);
 			if(repversw < 56)
 				sp[player] = lvTableAce55[lv[player]-1];
 			else
 				sp[player] = lvTableAce[lv[player]-1];
-			
+
 			PlaySE(30);
 			StopSE(32);
 			bgfadesw = 1;
-			
+
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 3];
@@ -8844,7 +8845,7 @@ void LevelUp(int player) {
 			if(ori_opt[player]==0) {
 				if(!ending[player]) {
 					if(lv[player] < 101) sp[player] = lvTableBeg39[lv[player]];
-					
+
 					if(lv[player] % 10 == 0) {
 						PlaySE(19);
 						bgfadesw = 1;
@@ -8885,7 +8886,7 @@ void LevelUp(int player) {
 						wait2[player] = wait2_oridevil_tbl[lv[player] / 3];
 						wait3[player] = wait3_oridevil_tbl[lv[player] / 3];
 						waitt[player] = waitt_oridevil_tbl[lv[player] / 3];
-						
+
 						if(grade[player] < 13)
 							grade[player] = lv[player] / 3; // Gradeİ’è #1.60c7j7
 					}
@@ -8903,7 +8904,7 @@ void LevelUp(int player) {
 		if(tc[player] / 10 > tr[player]) {
 			tr[player]++;
 			recSectionTime(player);
-				
+
 			if( (!ending[player]) && (tr[player] % 10 == 0) ) {
 				PlaySE(19);
 			}
@@ -8926,10 +8927,10 @@ void recSectionTime(int player) {
 			if(tr[player] / st_record_interval_tgm - 2 < 0) {
 				lap_time[tr[player]/st_record_interval_tgm -1 +player*100] = split_time[tr[player]/st_record_interval_tgm -1 +player*100];
 			} else {
-				lap_time[tr[player]/st_record_interval_tgm -1 +player*200] = 
+				lap_time[tr[player]/st_record_interval_tgm -1 +player*200] =
 				split_time[tr[player]/st_record_interval_tgm -1 +player*100] - split_time[tr[player]/st_record_interval_tgm -2 +player*100];
 			}
-			
+
 			if(st_record_interval_tgm==10){
 				//ƒŒƒxƒ‹ƒXƒgƒbƒv
 				lvstop_time[tr[player]/st_record_interval_tgm -1 +player*20] = time99[player];
@@ -8938,13 +8939,13 @@ void recSectionTime(int player) {
 			}
 			st_bdowncnt[player] = 0;
 			time99[player] = 0;
-			
+
 			// STƒƒ_ƒ‹Šl“¾ #1.60c7p7
 			if( (gameMode[player] == 1) || (gameMode[player] == 2) )
 				max = 10;
 			else
 				max = 13;
-			
+
 			if(tr[player] <= max*10) {
 				tmp = ST_RankingCheck( player, gameMode[player], (tr[player]/st_record_interval_tgm -1), enable_grade[player] );
 				if(tmp == 4){
@@ -8966,7 +8967,7 @@ void recSectionTime(int player) {
 			}
 		}
 	}
-	
+
 	if((medaltype != 2)&&(gameMode[player] != 0) &&(gameMode[player] != 4) && (gameMode[player] <= 5) ) {
 		if(medaltype==0){
 			if(tmp > 0){//ƒZƒNƒVƒ‡ƒ“‚²‚Æ‚É‚Â‚­
@@ -9014,7 +9015,7 @@ void statGameOver(int player) {
 	// ‰º“ü‚ê§ŒÀ‹­§‰ğœ#1.60c7f9
 	down_flag[player] = 0;
 	up_flag[player] = 0;
-	
+
 	// ROTƒŠƒŒ[‚Å€‚ñ‚¾‚Æ‚«
 	if((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])){
 		stat[player] = 15;
@@ -9024,7 +9025,7 @@ void statGameOver(int player) {
 		statc[player * 10 + 3] = 1;	//’‚‘§‰‰o
 		return;
 	}
-	
+
 	// PRACTICE‚Å€‚ñ‚¾‚Æ‚«
 	if(gameMode[player] == 5) {
 		flag = -1;
@@ -9052,11 +9053,11 @@ void statGameOver(int player) {
 		}
 		return;
 	}
-	
+
 	//Œx‰¹‚ª–Â‚Á‚Ä‚¢‚½‚ç~‚ß‚é
 	StopSE(40);
 	StopSE(32);
-	
+
 	if((gameMode[player]==6)&&(tomoyo_opt[player]==0)){
 		recFaultTime(player);//ƒXƒe[ƒWNOTƒ‰ƒ“ƒLƒ“ƒO—pƒ^ƒCƒ€
 	}
@@ -9064,11 +9065,11 @@ void statGameOver(int player) {
 	statc[player * 10 + 1]++;
 
 	hiddeny[player] = 22;
-	
+
 	if( statc[player * 10] > 22 ) {
 		if(statc[player * 10 + 1] == 141) {
 			//PlayWave(8);
-			
+
 			if( (stat[1 - player] == 0) || (stat[1 - player] == 10) ) {
 				if(wavebgm) {
 					StopAllBGM();
@@ -9080,9 +9081,9 @@ void statGameOver(int player) {
 				//statc[player * 10 + 2] = 1;		//2l“¯ƒvƒŒƒCƒtƒ‰ƒOON
 			}
 		}
-		
+
 		tlv[player] = lv[player] - slv[player];
-		
+
 		if(statc[player * 10 + 1] >= 60) {
 			if((gameMode[player] == 8)||(cpu_flag[player])){
 				// MISSION—p
@@ -9116,7 +9117,7 @@ void statGameOver(int player) {
 
 		return;
 	}
-	
+
 	if(statc[player * 10] < 0){
 		statc[player * 10]++;
 		return;
@@ -9168,11 +9169,11 @@ void statEraseBlock(int player) {
 	int		i, j, k, l, x, y, ty, lines, wait, fldtmp, hardblock,hardblock2,tmp_s[2];
 	hardblock = 0;
 	hardblock2 = 0;
-	
+
 	if(repversw >= 17) padRepeat(player);	// #1.60c7s6
 
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	// ³•ûŒ`”»’è
 	if(squaremode[player]) {
 		tmp_s[player] = makeSquare(player);
@@ -9180,7 +9181,7 @@ void statEraseBlock(int player) {
 			missionNormUp(2);
 		}
 	}
-	
+
 	ty = 0;
 	if((gameMode[player] != 10) || (rots[player] == 8)) wait = 1;
 	else wait = (wait2[player] > 12) * 9 + 1;
@@ -9191,7 +9192,7 @@ void statEraseBlock(int player) {
 	// «‚ğ—£‚µ‚Ä‚¢‚éê‡A‰º“ü‚ê§ŒÀ‰ğœ#1.60c7n6
 	if((!getPressState(player, 1-(1* ((isUDreverse[player]) && (repversw>=44)) ))) && (repversw >= 10)) down_flag[player] = 0;
 	if(!getPressState(player, 0+(1*((isUDreverse[player]) && (repversw>=44)) ))) up_flag[player] = 0;
-	
+
 	if(statc[player * 10] < wait) {
 		y = fldsizeh[player];
 		lines = 0;
@@ -9202,19 +9203,19 @@ void statEraseBlock(int player) {
 				y--;
 				if(wait != 1) {//ORIGINALƒ‚[ƒh
 					x = statc[player * 10];
-					
+
 					if(breakeffect) {
 						objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 					}
 					fld[x + i * 10 + player * 220] = 0;
 					fldt[x + i * 10 + player * 220] = 0;	// #1.60c7j5
-					
+
 				} else {
 					if(erase[i + player * 22] == 2)
 						objectCreate(player, 13, (15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, 0, 0, 0, 0);
 					for(x = 0; x < fldsizew[player]; x++) { // #1.60c7b
 						fldtmp = fld[x + i * fldsizew[player] + player * 220];
-						
+
 						if(breakeffect) {
 							if((erase[i + player * 22] == 1) && (fldi[x + i * 10 + player * 220] != fldihardno)){
 								// super_breakeffect‚ª1‚Ìê‡‚Í‘S‚Ä‚ÌƒuƒƒbƒN‚É”j‰óƒGƒtƒFƒNƒg‚ğ“K—p‚·‚é #1.60c7m9
@@ -9237,14 +9238,14 @@ void statEraseBlock(int player) {
 										objectCreate(player, 12, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, 0, 0, 0, 100);
 							}
 						}
-						
+
 						// Á‚¦‚éƒuƒƒbƒN‚ªƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚È‚çŠÔ‰„’· #1.60c7l5
 						if( (fld[x + i * fldsizew[player] + player * 220] >= 11) && (gameMode[player] == 6)) {
 							if(stage[player] < 100) ltime[player] = ltime[player] + 60;
 							else sc[player] = sc[player] + 100;
 							platinaerase_cnt[player] = platinaerase_cnt[player] + 10;
 						}
-						
+
 						// ƒAƒCƒeƒ€‚ªÁ‚¦‚é #1.60c7n1
 						if(fldi[x + i * fldsizew[player] + player * 220] ) {
 							if(fldi[x + i * 10 + player * 220] == fldihardno){// ƒn[ƒhƒuƒƒbƒN‚ğÁ‚·
@@ -9257,10 +9258,10 @@ void statEraseBlock(int player) {
 								li[player] = li[player] +  5/2;
 							}else if(fldi[x + i * 10 + player * 220] < fldihardno){	// ƒn[ƒhƒuƒƒbƒNˆÈ‰º‚ªƒAƒCƒeƒ€
 								item_waiting[player] = fldi[x + i * 10 + player * 220];
-								
+
 							}
 						}
-						
+
 						if(!hardblock){
 							fld[x + i * 10 + player * 220] = 0;
 							fldt[x + i * 10 + player * 220] = 0;	// #1.60c7j5
@@ -9273,16 +9274,16 @@ void statEraseBlock(int player) {
 					if(hardblock2) erase[i + player * 22] = 0;	//—‰ºƒLƒƒƒ“ƒZƒ‹
 					hardblock2 = 0;
 					if(ty == 0) ty = i * (IsBig[player] + 1);
-					
+
 					tomoyoCheckStageClear(player);	//ƒXƒe[ƒWƒNƒŠƒA”»’è #1.60c7l8
 					if((item[player] != 0) && (item[player] != fldihardno) && (repversw >= 55))
 						item_waiting[player] = item[player];
 				}
 			}
 		}/* for(i = 0; i <= fldsizeh[player]; i++) */
-		
+
 //		statc[player * 10]++;
-		
+
 		// Á‚¦‚éƒ‰ƒCƒ“‚ª–³‚©‚Á‚½ê‡
 		if(y == fldsizeh[player]) {
 			stat[player] = 6;
@@ -9301,11 +9302,11 @@ void statEraseBlock(int player) {
 			// BIGƒ‚[ƒh‚Ìê‡AÁ‹ƒ‰ƒCƒ“”‚ğ2‚ÅŠ„‚é #1.60c7m6
 			if( (IsBig[player]) && (BigMove[player] == 1) && (lines >= 2) ) lines = lines / 2;
 			if((tspin_flag[player] == 2) && (lines > 3) && (repversw >= 59)) lines = 3;
-			
+
 			if((lines < 4) && (tspin_flag[player] < 2)){	//Back to BackI—¹
 				b_to_b_flag[player]=0;
 			}
-			
+
 			// ‰Ô‰Î
 			if( ((gameMode[player] == 0)||((gameMode[player] == 10)&&(ori_opt[player]==0)))
 			 && (!no_hanabi) && (!hanabi_flag)&&(!novice_mode[player]) ) {
@@ -9316,29 +9317,29 @@ void statEraseBlock(int player) {
 
 					i = lines + hanabi_combo[player] + combo2[player];
 					hanabi_combo[player] = i;		// ‘O‚É‘Å‚¿ã‚°‚½”‚ğŠo‚¦‚Ä‚¨‚­
-					
+
 					if(ending[player] == 2) i = i * 2;		// ƒ[ƒ‹’†‚Í2”{
 					else if(tc[player] >= 150)   i = i + (i/2);		// LV150ˆÈ~‚Í1.5”{
-					
+
 					hanabi_total[player] = hanabi_total[player] + i;
 					hanabi_waiting[player] = hanabi_waiting[player] + i;
-				
-					
+
+
 				} else {
 					// T-spin‚È‚µ‚Íˆê—ñÁ‚µ‚ÍƒRƒ“ƒ{’†‚Å‚àˆê”­
 					hanabi_total[player]++;
 					hanabi_waiting[player]++;
 				}
-				
+
 				hanabi_frame[player] = 30;
 				hanabi_flag = 1;
 			}
-			
+
 			if( lines >= 5 )
 				PlaySE(10 + 4);		// 5ƒ‰ƒCƒ“ˆÈã‚Ìê‡‚Í4ƒ‰ƒCƒ“‚Ì‰¹‚ğo‚·
 			else
 				PlaySE(10 + lines);
-			
+
 			if(lines >= 4) {
 				if((!ending[player]) &&(medaltype != 2)&&(gameMode[player] != 0) &&(gameMode[player] != 4) && (gameMode[player] <= 5) ) {
 					skill[player]++;
@@ -9366,10 +9367,10 @@ void statEraseBlock(int player) {
 					}
 				}
 			}
-			
+
 			if(comboM[player] <= combo2[player]){//ƒRƒ“ƒ{”‘å‚«‚¢•û‚ğ•Û
 				comboM[player] = combo2[player];
-				
+
 				// ƒƒ_ƒ‹Šl“¾‰¹
 				if( (lines >= 2) && (!ending[player]) &&(medaltype != 2)&&(gameMode[player] != 0) &&(gameMode[player] != 4) && (gameMode[player] <= 5) ) {
 					// #1.60c7m9
@@ -9428,7 +9429,7 @@ void statEraseBlock(int player) {
 			if(lines >= 4){
 				if(b_to_b_flag[player] == 0){
 					if(b2bcheck)
-						b_to_b_flag[player]=1; //Back to Back”»’èŠJn 
+						b_to_b_flag[player]=1; //Back to Back”»’èŠJn
 					PlaySE(17);
 				}
 				else{ //B to B Heboris
@@ -9440,7 +9441,7 @@ void statEraseBlock(int player) {
 				PlaySE(48);
 				if(b_to_b_flag[player] == 0){
 					PlaySE(17);
-					b_to_b_flag[player]=lines+1; //Back to Back”»’èŠJn 
+					b_to_b_flag[player]=lines+1; //Back to Back”»’èŠJn
 				}
 				else{ //B to B T-Spin erase
 					PlaySE(18);
@@ -9452,7 +9453,7 @@ void statEraseBlock(int player) {
 			if((gameMode[player]==8) && (mission_type[c_mission] == 6) && (stat[0] == 25)) return;
 		}
 	}
-	
+
 	if(statc[player * 10] >= wait2[player] + (repversw < 27)) {
 		y = fldsizeh[player];
 		lines = 0;
@@ -9475,8 +9476,8 @@ void statEraseBlock(int player) {
 					fld[l + player * 220] = 0;
 					fldt[l + player * 220] = 0;		// #1.60c7j5
 					fldi[l + player * 220] = 0;		// #1.60c7n1
-					flds[l + player * 220] = 0;		
-					
+					flds[l + player * 220] = 0;
+
 				}
 				erase[player * 22] = 0;
 				lines++;
@@ -9487,9 +9488,9 @@ void statEraseBlock(int player) {
 		if(gameMode[player] == 10) {
 			calcScore(player,lines);
 		}
-		
+
 		PlaySE(2);
-		
+
 		erasecnt[player]++;		//Á‹‰ñ”ƒJƒEƒ“ƒg #C7T9.6EX
 		if(ismiss[player]){
 			ofs_x[player] = 0;
@@ -9497,7 +9498,7 @@ void statEraseBlock(int player) {
 		}
 		// ƒAƒCƒeƒ€”­“®
 		eraseItem(player, item_waiting[player]);
-		
+
 		//ƒGƒ“ƒfƒBƒ“ƒO“Ë“ü‰¹ #1.60c7j9
 		if( (ending[player] == 1) || (ending[player] == 4) ||(ending[player] >= 6)) PlaySE(28);
 		stat[player] = 6;
@@ -9509,9 +9510,9 @@ void statEraseBlock(int player) {
 		pinchCheck2(player);
 	} else {
 		//D.R.S‚ÌAREƒXƒLƒbƒv
-		if( ((rots[player] == 8) && (harddrop[player])) && 
-		((getPushState(player, 0)) || (getPushState(player, 1)) || (getPushState(player, 2)) || 
-		 (getPushState(player, 3)) || (getPushState(player, 4)) || (getPushState(player, 5)) || 
+		if( ((rots[player] == 8) && (harddrop[player])) &&
+		((getPushState(player, 0)) || (getPushState(player, 1)) || (getPushState(player, 2)) ||
+		 (getPushState(player, 3)) || (getPushState(player, 4)) || (getPushState(player, 5)) ||
 		 (getPushState(player, 6)) || (getPushState(player, 7))) ){
 		 	statc[player * 10] = wait2[player];
 		 	are_skipflag[player] = 1;
@@ -9533,10 +9534,10 @@ void statEraseBlock(int player) {
 // ”j•ĞƒuƒƒbƒN”»’è
 void grayoutLackedBlock(int player, int no) {
 	int i, j;
-	
+
 	if((gameMode[player] < 8) && (gameMode[player] != 5)) return;
 	if(no <= 0) return;
-	
+
 	for(j = 0; j < 22; j++) {
 		for(i = 0; i < fldsizew[player]; i++) {
 			if((fld[i + j * 10 + player * 220] >= 1)&&  (flds[i + j * 10 + player * 220] == no)) {
@@ -9549,9 +9550,9 @@ void grayoutLackedBlock(int player, int no) {
 // ƒXƒNƒEƒFƒA‚Å‚Ì3ƒR[ƒi[T-SPIN—p@‘S‚Ä”j•Ğ‰»
 void grayoutAllBlock(int player) {
 	int i, j;
-	
+
 	if((gameMode[player] < 8) && (gameMode[player] != 5)) return;
-	
+
 	for(j = 0; j < 22; j++) {
 		for(i = 0; i < fldsizew[player]; i++) {
 			if(fld[i + j * 10 + player * 220] >= 1) {
@@ -9568,16 +9569,16 @@ void grayoutAllBlock(int player) {
 // playerFƒvƒŒƒCƒ„[”Ô† x:n“_‚ÌXÀ•W y:n“_‚ÌYÀ•W gold:1‚Ìê‡‚Íˆêí—Ş‚ÌƒuƒƒbƒN‚Ì‚İ‚Å³•ûŒ`‚ª‚Å‚«‚é
 int checkSquare(int player, int x, int y, int gold) {
 	int i, j, color;
-	
+
 	// n“_‚ÌF‚ğæ“¾
 	color = getFieldBlock(player, x, y,0);
-	
+
 	// ‹ó”’‚¾‚Á‚½‚ç¸”s
 	if(color <= 0) return 0;
-	
+
 	// ‚¨‚¶‚á‚ÜƒuƒƒbƒN‚â‰Šú”z’u‚¾‚Á‚½‚èA”j•Ğ‚¾‚Á‚½‚èAŠù‚É³•ûŒ`‚¾‚Á‚½‚ç¸”s
 	if(getFieldBlockS(player, x, y) <= 0) return 0;
-	
+
 	// F‚ª2í—ŞˆÈã‚È‚ç¸”sigold != 0‚Ì‚Æ‚«‚Ì‚İj
 	if(gold) {
 		for(i = 0; i < 4; i++) {
@@ -9586,34 +9587,34 @@ int checkSquare(int player, int x, int y, int gold) {
 			}
 		}
 	}
-	
+
 	// ”j•Ğ‚ª‚ ‚ê‚Î¸”s
 	for(i = 0; i < 4; i++) {
 		for(j = 0; j < 4; j++) {
 			if(getFieldBlockS(player, x + i, y + j) <= 0) return 0;
 		}
 	}
-	
+
 	// n“_‚æ‚èã‚ÉƒuƒƒbƒN‚ªŒq‚ª‚Á‚Ä‚½‚ç¸”s
 	for(i = 0; i < 4; i++) {
 		if(getFieldBlockS(player, x + i, y    ) == getFieldBlockS(player, x + i, y - 1)) return 0;
 	}
-	
+
 	// ³•ûŒ`‚Ì’ê‚æ‚è‰º‚ÉƒuƒƒbƒN‚ªŒq‚ª‚Á‚Ä‚½‚ç¸”s
 	for(i = 0; i < 4; i++) {
 		if(getFieldBlockS(player, x + i, y + 3) == getFieldBlockS(player, x + i, y + 4)) return 0;
 	}
-	
+
 	// n“_‚æ‚è¶‚ÉƒuƒƒbƒN‚ªŒq‚ª‚Á‚Ä‚½‚ç¸”s
 	for(j = 0; j < 4; j++) {
 		if(getFieldBlockS(player, x    , y + j) == getFieldBlockS(player, x - 1, y + j)) return 0;
 	}
-	
+
 	// ³•ûŒ`‚Ì’[‚æ‚è‰E‚ÉƒuƒƒbƒN‚ªŒq‚ª‚Á‚Ä‚½‚ç¸”s
 	for(j = 0; j < 4; j++) {
 		if(getFieldBlockS(player, x + 3, y + j) == getFieldBlockS(player, x + 4, y + j)) return 0;
 	}
-	
+
 	// ¬Œ÷
 	return 1;
 }
@@ -9622,7 +9623,7 @@ int checkSquare(int player, int x, int y, int gold) {
 int makeSquare(int player) {
 	int i, j, k, l, result;
 	result = 0;
-	
+
 	for(i = 0; i < 22 - 3; i++) {
 		for(j = 0; j < 10 - 3; j++) {
 			if(checkSquare(player, j, i, 1)) {
@@ -9652,13 +9653,13 @@ int makeSquare(int player) {
 			}
 		} /* for(j = 0; j < 6; j++) */
 	} /* for(i = 0; i < 18; i++) */
-	
+
 	return result;
 }
 // ³•ûŒ`—p
 int getFieldBlockS(int player, int bx1, int by1) {
 	if((bx1 < 0) || (bx1 > 9) || (by1 < 0) || (by1 > 21)) return 0;
-	
+
 	return flds[bx1 + by1 * 10 + player * 220];
 }
 
@@ -9670,7 +9671,7 @@ int isComboMode(int player){
 /* ƒXƒRƒAŒvZ #1.60c7j9 */
 void calcScore(int player, int lines) {
 	int		i, j, k, l, x, y, bo[2], bai, all[2], tcbuf = 0,btmup,top;
-	
+
 		/* ‘SÁ‚µˆ— */
 		all[player] = 1;
 		// ‘SÁ‚µƒ`ƒFƒbƒN Å‰º’i‚¾‚¯‚Å‚È‚­‘S•”Œ©‚é#1.60c7g7
@@ -9695,7 +9696,7 @@ void calcScore(int player, int lines) {
 				missionNormUp(1);
 				return;
 			}
-			
+
 			// heboris.ini‚Å‘SÁ‚µƒGƒtƒFƒNƒg‚ğ–³Œø‚É‚Å‚«‚é‚æ‚¤‚É‚µ‚½#1.60c7f6
 			if(bravo) {
 				for(i = -3; i <= 3; i++)
@@ -9742,7 +9743,7 @@ void calcScore(int player, int lines) {
 				qdrop[player] = qdrop[player] / 2;		//‚‘¬—‰º‘¬“x‚Ì’x‚¢ƒ‹[ƒ‹‚ÍAƒhƒƒbƒvƒ{[ƒiƒX”¼Œ¸
 			if(((rots[player] == 7) || (rots[player] == 8)) && (repversw >= 45))
 				qdrop[player] = qdrop[player] + (qdrop[player] / 2);		//‚‘¬—‰º‘¬“x‚ª‘¬‚¢ƒ‹[ƒ‹‚ÍAƒhƒƒbƒvƒ{[ƒiƒX5Š„‘
-			
+
 			bai = 1 + ( sp[player] >= 20 ) + ( sp[player] >= 60 ) + ( sp[player] >= 240 ) + ( sp[player] >= 600 );
 			if(all[player])	bai = bai * 10;
 			sc[player] = sc[player] + bo[player]*bai + sdrop[player] + qdrop[player];
@@ -9761,7 +9762,7 @@ void calcScore(int player, int lines) {
 			else if(lines==2)bo[player] = 400;
 			else if(lines==3)bo[player] = 900;
 			else if(lines>=4)bo[player] = 2000;
-			
+
 			if(lv[player]<8){
 			bai = (lv[player]+2)/2;
 			}else{
@@ -9772,7 +9773,7 @@ void calcScore(int player, int lines) {
 		}
 		if(gameMode[player]==9){
 			bai=1;//‰Šú”{—¦
-			if(tspin_flag[player]){ 
+			if(tspin_flag[player]){
 				bo[player] = 4 * ( last_tspin[player] + 1 );
 			}else if(!tspin_flag[player]){
 				if(lines==1)bo[player] = 1;
@@ -9831,12 +9832,12 @@ void calcScore(int player, int lines) {
 			if((novice_mode[player])&&(gameMode[player] == 0)){
 				bai = bai * 6;
 			}
-			
+
 			/* ƒ‰ƒCƒ“‰ÁZ */
 			if((!ismiss[player]) || (repversw < 62)){
 				sc[player] = sc[player] + bo[player]*bai;
 				li[player] = li[player] + lines;
-			
+
 				/* ’iˆÊã¸ */
 				if(enable_grade[player] == 1){
 					GradeUp(player);
@@ -9852,10 +9853,10 @@ void calcScore(int player, int lines) {
 	}
 	/* heboƒŒƒxƒ‹—p */
 	lc[player] = lc[player] + lines * 25;
-	
+
 	if((gameMode[player] == 6) && (blind_flag[player]))
 		isblind[player] = !isblind[player];
-	
+
 	if(((gameMode[player] == 5) || (playback)) && (lines != 0)){	//PRACTICE‚Å‚ÍÁ‹ƒ‰ƒCƒ“‚ğƒJƒEƒ“ƒg
 		if((lines <= 3) && (tspin_flag[player] != 2))
 			p_erase_c[lines-1] = p_erase_c[lines-1] +1;	//’Êí‚Ì1A2A3ƒ‰ƒCƒ“Á‚µ
@@ -9868,13 +9869,13 @@ void calcScore(int player, int lines) {
 		else if((tspin_flag[player] == 2) && (b_to_b_flag[player] != 0) && (tspin_type>=2))
 			p_erase_c[7+lines] = p_erase_c[7+lines] +1;	//B to B T-ƒXƒsƒ“erase(DS®‚Ì‚İ)
 	}
-		
+
 	if((enable_grade[player] == 2)&&(lines >= 2)){
 		if((tc[player] < 500)&&(combo2[player] >= 4)){
 			skillg[player]++;	//ƒ|ƒCƒ“ƒg‚ğã‚°‚é‚½‚ß‚Ì”{—¦
 		}else if((tc[player] >= 500)&&(combo2[player] >= 3)){
 			skillg[player]++;
-		}		
+		}
 	}
 	if((tspin_flag[player])&&(enable_grade[player] == 2)){//Tspin‚à’iˆÊ‚¤‚‚Ìˆê•”
 		if(lines != 0){
@@ -9889,7 +9890,7 @@ void calcScore(int player, int lines) {
 		 if(lines > 0)
 			skillg[player]++;
 	}
-	
+
 	// ‘Îíƒ‚[ƒh‚Å‚Ì‚¹‚èã‚ª‚èƒJƒEƒ“ƒgiMOVE ERASEDˆÈŠOj #1.60c7n1
 	if((gameMode[player] == 4) && (upLineT[1 - player] != 3)) {
 		if(vs_style[player] == 1){//ATTACK
@@ -10005,10 +10006,10 @@ void calcScore(int player, int lines) {
 				item_g[player] = item_inter[player];
 		}
 	}
-	
+
 	// HIDDEN‚Å‰B‚³‚ê‚½’i‚ğŒ©‚¦‚é‚æ‚¤‚É‚·‚é
 	hiddenti[player] = hiddenti[player] + lines;
-	
+
 	while(hiddenti[player] > 0) {
 		hiddenti[player]--;
 		hiddeny[player]++;
@@ -10017,22 +10018,22 @@ void calcScore(int player, int lines) {
 			hiddentm[player] = 0;
 		}
 	}
-	
+
 	// 4ƒ‰ƒCƒ“ˆÈãÁ‚¦‚½ê‡
 	if(lines >= 4) {
 		hebocombo[player] = 1;	// 4ƒ‰ƒCƒ“Á‚µƒRƒ“ƒ{ŠJn
 	}
-	
+
 	if((gameMode[player] == 5) && (p_ending!=0))
 		return;		//PRACTICEƒGƒ“ƒfƒBƒ“ƒO’†‚Í‚±‚±‚Ü‚Å
-	
+
 	/* TGMƒŒƒxƒ‹‚ğã‚°‚é */
 	if( gameMode[player] <= 6 ) {
 		tcbuf = tc[player];
 
 		// tgmƒJƒEƒ“ƒ^ ƒ‰ƒCƒ“•ªã¸(3, 4—ñÁ‚µ‚Åƒ{[ƒiƒX‰ÁZ) #1.60c
 		// ƒŒƒxƒ‹ƒAƒbƒvƒ{[ƒiƒX‚ªTI‚Ìê‡‚Ì‚İƒvƒ‰ƒX‚·‚é #1.60c7g3
-		
+
 		if(repversw >= 50){
 			if(lvupbonus==2){//©“®’²®
 				if(novice_mode[player]||( ((gameMode[player]==1)||(gameMode[player]==2)) &&(enable_grade[player]!=4))
@@ -10047,12 +10048,12 @@ void calcScore(int player, int lines) {
 				tc[player] = tc[player] + lines ;
 			else
 				tc[player] = tc[player] + lines+ ((lines > 2) * (lines - 2));	// tgmƒJƒEƒ“ƒ^ ƒ‰ƒCƒ“•ªã¸
-			
+
 		}
 		if((ismiss[player]) && (repversw >= 62)) tc[player] = tcbuf;
-		
+
 		if((!fpbas_mode[player])&&(gameMode[player]<=6)) lv[player] = tc[player];
-		
+
 		// ƒŒƒxƒ‹ƒXƒgƒbƒv‰¹‚ğ–Â‚ç‚· #1.60c7j8
 		if((gameMode[player] == 4) && (repversw >= 61) && (wintype==0) && (vs_goal != 0)){
 			if(tc[player] == vs_goal - 1) PlaySE(9);
@@ -10061,14 +10062,14 @@ void calcScore(int player, int lines) {
 				i = 99;
 			else
 				i = 99 -  (tc[player] > 900);
-			
+
 			if(tc[player] % 100 == i) PlaySE(9);
 		}
 	}
-	
+
 	// ƒGƒ“ƒfƒBƒ“ƒO“Ë“üƒ`ƒFƒbƒN
 	checkEnding(player, tcbuf);
-	
+
 	// ƒŒƒxƒ‹ƒAƒbƒviƒGƒ“ƒfƒBƒ“ƒO’†‚È‚ç‰½‚às‚í‚ê‚È‚¢j
 	LevelUp(player);
 }
@@ -10112,7 +10113,7 @@ void checkEnding(int player, int tcbuf) {
 			gmflag_r[player] = 1;
 			ending[player] = 1;
 		}
-		
+
 		tc[player] = 999;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -10121,12 +10122,12 @@ void checkEnding(int player, int tcbuf) {
 		}else {
 			ending[player] = 1;
 		}
-		
+
 		end_f[player] = 1;
 
 		// ƒXƒ^ƒbƒtƒ[ƒ‹—pwait’lƒZƒbƒg#1.60c7j5
 		sp[player] = speed_master_roll;
-		
+
 		if(((repversw > 24)&&(enable_grade[player] == 1))||((hebo_plus[player]==1)&&(repversw>=34)&&(repversw<42)&&(gameMode[player] ==1))){
 			//“Á•Ê‚Èƒ‚[ƒh‚Ì‚Í‚©‚¦‚È‚¢
 			wait1[player] = wait1_beginner_roll;
@@ -10160,7 +10161,7 @@ void checkEnding(int player, int tcbuf) {
 		timeOn[player] = 0;
 		ending[player] = 1;
 		end_f[player] = 1;
-		
+
 		//ƒ[ƒ‹’†‚Ì‰Ô‰ÎŠÔŠuŒˆ’è@‘Å‚¿ã‚°‚Íã‚Ì‚Ù‚¤
 		if(hanabi_total[player] >=400) hanabi_int[player] = 12;//•bŠÔ5”­
 		else if((hanabi_total[player] >= 200) && (hanabi_total[player] <= 399)) hanabi_int[player] = 15;//•bŠÔ4”­
@@ -10172,7 +10173,7 @@ void checkEnding(int player, int tcbuf) {
 		wait2[player] = wait2_beginner_roll;
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
-		
+
 		//PlayWave(19);
 		if(backno <= 1) {
 			bgfadesw = 1;
@@ -10180,7 +10181,7 @@ void checkEnding(int player, int tcbuf) {
 	// NOVICE‚È‚ç300‚ÅI—¹‚³‚¹‚é
 	} else if((gameMode[player] == 0) && (tc[player] >= 300) && (novice_mode[player])) {
 		//PlayWave(28);
-		
+
 		// ƒ^ƒCƒ€ƒ{[ƒiƒX
 		if((novice_mode[player])&&(time[player] < 18000)) {
 			sc[player] = sc[player] + (1253 * (300 - (time[player] / 60)));
@@ -10190,14 +10191,14 @@ void checkEnding(int player, int tcbuf) {
 		timeOn[player] = 0;
 		ending[player] = 6;
 		end_f[player] = 1;
-		
+
 		// ƒXƒ^ƒbƒtƒ[ƒ‹—pwait’lƒZƒbƒg#1.60c7j5
 		sp[player] = speed_beginner_roll;
 		wait1[player] = wait1_beginner_roll;
 		wait2[player] = wait2_beginner_roll;
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
-		
+
 		//PlayWave(19);
 		if(backno <= 1) {
 			bgfadesw = 1;
@@ -10227,7 +10228,7 @@ void checkEnding(int player, int tcbuf) {
 			objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 			PlayWave(43);
 		}//ƒl\ğŒ‚ğ–‚½‚µ‚Ä‚¢‚½‚ç‚»‚Ì“_‚ÅS13‚É
-	
+
 		if(death_plus[player]){
 			grade[player] = 16;
 			gflash[player]=120;
@@ -10273,7 +10274,7 @@ void checkEnding(int player, int tcbuf) {
 			IsBig[player] = 1;
 		}
 		// DEVIL-‚Ì500‚ÅI—¹‚³‚¹‚é#1.60c7v0
-	} else if(  (devil_minus[player])&&(gameMode[player] == 3)&&(repversw >= 52) && (tc[player] >= 500) && (tcbuf < 500) && 
+	} else if(  (devil_minus[player])&&(gameMode[player] == 3)&&(repversw >= 52) && (tc[player] >= 500) && (tcbuf < 500) &&
 			( ((time[player] > timelimitm[player]) && (timelimitm[player] > 0) && ( !isWRule(player) )) ||	// TGM,Ti
 			  ((time[player] > timelimitmw[player]) && (timelimitmw[player] > 0) && (isWRule(player) )) )  ) {
 
@@ -10289,9 +10290,9 @@ void checkEnding(int player, int tcbuf) {
 			wait3[player] = wait3_devil_m_tbl[8];
 			waitt[player] = waitt_devil_m_tbl[8];
 		}
-	// 500‚Å‘«‚«‚è#1.60c7g7 
+	// 500‚Å‘«‚«‚è#1.60c7g7
 	} else if(((gameMode[player] == 1) || (gameMode[player] == 2)) && //ƒ}ƒXƒ^[20G
-				(tc[player] >= 500) && (tcbuf < 500) && 
+				(tc[player] >= 500) && (tcbuf < 500) &&
 				(time[player] > timelimit[player]) && (timelimit[player] > 0)) {
 		//PlayWave(28);
 		tc[player] = 500;
@@ -10302,7 +10303,7 @@ void checkEnding(int player, int tcbuf) {
 		onRecord[player] = 2;					// ƒGƒ“ƒfƒBƒ“ƒOƒ[ƒ‹I—¹‚Æ“¯‚ÉƒŠƒvƒŒƒC‹L˜^I—¹
 	// devil‚Í“ñ‚Â‘«Ø‚è#1.60c7r2b
 	} else if(  ((gameMode[player] == 3) && (!devil_minus[player]) &&//devil
-				(tc[player] >= 500) && (tcbuf < 500)) && 
+				(tc[player] >= 500) && (tcbuf < 500)) &&
 				 ( ( (time[player] > timelimit[player]) && (timelimit[player] > 0) && (!isWRule(player)) )||	// TGM,Ti
 				 ( (time[player] > timelimitw[player]) && (timelimitw[player] > 0) && (isWRule(player)) ) )	// ƒ[ƒ‹ƒhŒn
 				) {
@@ -10317,7 +10318,7 @@ void checkEnding(int player, int tcbuf) {
 		onRecord[player] = 2;					// ƒGƒ“ƒfƒBƒ“ƒOƒ[ƒ‹I—¹‚Æ“¯‚ÉƒŠƒvƒŒƒC‹L˜^I—¹
 	// LV1000‚Å‘«Ø‚è #1.60c7q8
 	} else if((gameMode[player] == 3) && (!devil_minus[player]) &&
-				(tc[player] >= 1000) && (tcbuf < 1000) && 
+				(tc[player] >= 1000) && (tcbuf < 1000) &&
 				(time[player] > timelimit2[player]) && (timelimit2[player] > 0)) {
 		tc[player] = 1000;
 		bgfadesw = 1;
@@ -10433,9 +10434,9 @@ void statNameEntry(int player) {
 	int		i, rank, add;		// #1.60c7i5
 	int		st_update,cat[2],ex[2];
 	int		temp[2],temp2[2],color[2];
-	
+
 	add = 0;
-	
+
 	// ”»’èŠî€‚ğŒˆ‚ß‚é
 	if(gameMode[player] == 0) {
 		if(!novice_mode[player]){
@@ -10473,10 +10474,10 @@ void statNameEntry(int player) {
 			temp2[player] = lv[player];	//ƒXƒRƒA
 		}
 	}else if(gameMode[player]==10){
-		temp[player] = sc[player];					// 				
+		temp[player] = sc[player];					//
 		temp2[player] = ori_opt[player];
 	}else{
-		temp[player] = 0;					// ƒ‰ƒ“ƒLƒ“ƒO‚È‚µ		temp[player] = tc[player];					
+		temp[player] = 0;					// ƒ‰ƒ“ƒLƒ“ƒO‚È‚µ		temp[player] = tc[player];
 		temp2[player] = 0;
 	}
 	// ‡ˆÊ‚ğæ“¾‚·‚é
@@ -10611,8 +10612,8 @@ void statNameEntry(int player) {
 			}
 		}
 		rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], time[player], end_f[player]);
-	
-		
+
+
 		if((gameMode[player]==10)&&(rank==-1)){//ori‚Å‚Í4ˆÊˆÈ‰º‚à’²‚×‚é
 			cat[player] = 9;
 			ex[player] = 1;
@@ -10634,7 +10635,7 @@ void statNameEntry(int player) {
 
 	}
 
-	
+
 	// ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€XVƒ`ƒFƒbƒN
 	// TOMOYO‚ÌEHˆÈ~‚Íc‚³‚È‚¢i”¤j
 	if( playback || demo || IsBigStart[player] || item_mode[player] || hebo_plus[player] || ((gameMode[player] == 6) && (tomoyo_opt[player] != 0))||(gameMode[player] == 0)||(gameMode[player] >= 7)) {
@@ -10643,7 +10644,7 @@ void statNameEntry(int player) {
 		st_update = ST_RankingCheckAll(player, gameMode[player], enable_grade[player]);
 	}
 
-	
+
 	// ƒ‰ƒ“ƒNŠO‚È‚ç‘¦ƒŠƒUƒ‹ƒg‚Ö
 	if( (rank == -1)&& (!st_update) ) {
 		if(gameMode[player] == 6)
@@ -10652,19 +10653,19 @@ void statNameEntry(int player) {
 			stat[player] = 14;
 		else
 			stat[player] = 21;
-		
+
 		statc[player * 10] = 0;
 		statc[player * 10 + 1] = 0;
 		statc[player * 10 + 2] = 0;
 		statc[player * 10 + 3] = 0;
 		return;
 	}
-	
+
 	// ‰¹Šy‚ğ—¬‚· #1.60c7l2
 	// 2l“¯‚Åd‚È‚ç‚È‚¢‚æ‚¤‚ÉC³ #1.60c7m1
 	if( ((stat[1 - player] == 0) || (stat[1 - player] == 10)) && (!IsPlayWave(63)) && (wavebgm > 0) )
 		PlayWave(63);
-/*	
+/*
 	// ƒŠƒvƒŒƒCƒZ[ƒu#1.60c7i5
 	if((textguide) && (!playback) && (!demo)){
 		if(!player) printFont(13+24 * player - 12 * maxPlay, 26, "0-9 KEY:REPLAY", 0);
@@ -10689,7 +10690,7 @@ void statNameEntry(int player) {
 	// GRADE #1.60c7m9
 		if((enable_grade[player] == 4) && ((gameMode[player] == 1) || (gameMode[player] == 2))) {
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 137 - (add * 3), 228, 119, 26, 7);
-			
+
 				if(grade[player] == 32) {
 					// Gm
 						ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+120,90,48);
@@ -10739,16 +10740,16 @@ void statNameEntry(int player) {
 	if(st_update) {
 		printFont(15 + 24 * player - 12 * maxPlay, 9-add, "NEW ST REC", 3);
 	}
-	
+
 	printFont(15 + 24 * player - 12 * maxPlay, 10-add, "ENTER NAME", 4);
 
 	if((stat[1] == 10) && (player == 0)) {
 		stat[0] = 3;
 		stat[1] = 3;
 	}
-	
+
 	statc[player * 10 + 1]++;
-	
+
 	if(statc[player * 10 + 1] < 45 * 60){
 		padRepeat(player);
 
@@ -10759,14 +10760,14 @@ void statNameEntry(int player) {
 				statc[player * 10 + 2] = statc[player * 10 + 2] + move;
 				PlaySE(5);
 			}
-	
+
 		if(statc[player * 10 + 2] > 54)
 			statc[player * 10 + 2] = (len == 3) * 53;
 		if(statc[player * 10 + 2] < (len == 3) * 53)
 			statc[player * 10 + 2] = 54;
-	
+
 		MidStr(RankString, statc[player * 10 + 2] + 1, 1, string[4]);
-	
+
 	//	statc[player * 10 + 1]++;
 
 		printFont(18 + 24 * player+len - 12 * maxPlay, 14-add, string[4], 2 * (count % 20 > 10));
@@ -10774,7 +10775,7 @@ void statNameEntry(int player) {
 		sprintf(string[0], "%2d", 45 - (statc[player * 10 + 1] / 60));
 		printFont(16 + 24 * player - 12 * maxPlay, 16-add, "TIME", 6);
 		printFont(22 + 24 * player - 12 * maxPlay, 16-add, string[0], 0);
-		
+
 		for(k = 0;k <= 9;k++){
 			if(k > statc[player * 10 + 1] / 2) break;
 			j = statc[player * 10 + 2]-3-len + k;
@@ -10807,11 +10808,11 @@ void statNameEntry(int player) {
 		if(statc[player * 10 + 1] == (46 * 60) + 30){
 			sprintf(string[player + 2], "%s   ", string[player + 2]);
 			LeftStr(string[player + 2], 3, string[player + 2]);
-			
+
 			if(ranking_type==0){
 				RankingRegist(gameMode[player], 0, sc[player], li[player], lv[player], time[player], (ending[player]==3), string[player + 2]);
 				RankingSave();
-			
+
 			}else if(ranking_type==1){
 				RankingRegist2(cat[player], rots[player], temp[player], time[player],  end_f[player], temp2[player], string[player + 2], rank, medal_ac[player], medal_st[player], medal_sk[player], medal_co[player],medal_re[player]);
 				RankingSave2();
@@ -10819,16 +10820,16 @@ void statNameEntry(int player) {
 				RankingRegist3(cat[player], ex[player],rots[player], temp[player], time[player],  end_f[player], temp2[player], string[player + 2], rank, medal_ac[player], medal_st[player], medal_sk[player], medal_co[player],medal_re[player]);
 				RankingSave3();
 			}
-			
+
 			SaveConfig();
-			
+
 			// ƒGƒ“ƒfƒBƒ“ƒO“’Bƒ`ƒFƒbƒN
 			if(ending[player] == 3) {
 				i = 2;
 			}
-			else if ( ((gameMode[player] == 0) &&(novice_mode[player] ==0) &&(tc[player] == 200))  || 
+			else if ( ((gameMode[player] == 0) &&(novice_mode[player] ==0) &&(tc[player] == 200))  ||
 			((gameMode[player] == 0) &&(novice_mode[player] ==1) &&(tc[player] == 300))  ||
-					  ((gameMode[player] == 3) && (tc[player] == 1300)) || 
+					  ((gameMode[player] == 3) && (tc[player] == 1300)) ||
 					  ((gameMode[player] >= 1) && (gameMode[player] <= 2) && (tc[player] == 999))
 					)
 			{
@@ -10840,11 +10841,11 @@ void statNameEntry(int player) {
 			// ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€XV
 			if(st_update) {
 				ST_RankingUpdate(player, gameMode[player], i, enable_grade[player]);
-				
+
 			}
 			ST_RankingSave();
 			PlayerdataSave();
-			
+
 			if(gameMode[player] == 6){
 				if(!playback){
 					stat[player] = 38;
@@ -10866,7 +10867,7 @@ void statNameEntry(int player) {
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void statEnding(int player) {
 	int	i, j, k;
-	
+
 	if ( (ending[player] == 1) || (ending[player] == 4) ){
 		// ‰¹Šy’â~ #1.60c7j9
 		if((gameMode[player] != 8) || ((gameMode[player] == 8) && (mission_end[c_mission ] >= 4)))
@@ -10874,15 +10875,15 @@ void statEnding(int player) {
 		pinch[player] = 0;
 		// ACE‚Å‚Ìc‚èŠÔ‚ª­‚È‚¢‚ÌŒø‰Ê‰¹‚à’â~
 		StopSE(32);
-		
+
 		if((onRecord[player]) && (repversw >= 59)) padRepeat(player);
-		
+
 		//ã‚ÉˆÚ“®
 		if((gameMode[player] == 6) && (stage[player] == 199)){
 			printFont(15 + 24 * player - 12 * maxPlay, 11, "COMPLETE!", (count % 4 / 2) * digitc[rots[player]]);
 			printFont(14 + 24 * player - 12 * maxPlay, 14, "+100000 PTS", (count % 4 / 2) * digitc[rots[player]]);
 		}
-		
+
 		// ƒuƒƒbƒN‚ğÁ‚·
 		// BIG‘Î‰ #1.60c7j5
 		if(statc[player * 10] % 6 == 0) {
@@ -10893,7 +10894,7 @@ void statEnding(int player) {
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
 					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 				}
-				
+
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
 				fldt[i+ j * fldsizew[player] + player * 220] = 0;		// #1.60c7j5
 				fldi[i+ j * fldsizew[player] + player * 220] = 0;		// #1.60c7n1
@@ -10901,7 +10902,7 @@ void statEnding(int player) {
 			}
 			}
 		}
-		
+
 		// ƒAƒjƒI—¹
 		if(statc[player * 10] == 132) {
 			if(repversw >= 33) edrec[player] = 125;
@@ -10973,7 +10974,7 @@ void statEnding(int player) {
 							shadow_timer_flag[player] = p_shadow_timer;
 							semigmflag_r[player] = 1;//Œ©‚¦‚éƒ[ƒ‹
 						}
-					
+
 						// Á‚¦ƒ[ƒ‹ (ˆÚ“] #1.60c7p9ex‰ü‘¢)
 						if((shadow_heboris) && (gmflag_r[player])) hidden[player] = 8;
 					}
@@ -11001,7 +11002,7 @@ void statEnding(int player) {
 		shadow_timer_flag[player] = 0;	// #1.60c7j5
 		if(stopmirror_flag[player]) fldMirrorProc(player);
 		hiddeny[player] = 22;
-		
+
 		// ‰Ô‰Î
 		if((statc[player * 10] % 9 == 0)&&(endingcnt[player] < 30)) {//30”­ã‚ª‚é‚Æ‚â‚ß‚é
 			PlaySE(35);
@@ -11041,7 +11042,7 @@ void statEnding(int player) {
 			}
 		} else {
 			// GM‚É‚È‚Á‚Ä‚¢‚È‚¢ê‡ #1.60c7k3
-			
+
 			// EXCELLENT
 			if(statc[player * 10] <= 5){
 				k = 10 - statc[player * 10];
@@ -11063,18 +11064,18 @@ void statEnding(int player) {
 			ExBltRect(86, 125 + 192 * player - 96 * maxPlay, 110, 72*getModeAdd(player), 99 + (9*gameMode[player]), 72, 9);
 			printFont(18 + 24 * player - 12 * maxPlay, 15, "MODE", 0);
 			printFont(15 + 24 * player - 12 * maxPlay, 16, "ALL CLEAR", 0);
-			
+
 			// TOMOYO‚ÅŠ®‘SƒNƒŠƒA‚µ‚Ä‚È‚¢i27–Ê‚æ‚è‘O~‚Ü‚èj‚È‚çH‚ğ‚Â‚¯‚é
 			if( (gameMode[player] == 6) && (stage[player] < 26) )
 				printFont(24 + 24 * player - 12 * maxPlay, 16, "?", 0);
 			else
 				printFont(24 + 24 * player - 12 * maxPlay, 16, "!", 0);
-				
+
 			if(((gameMode[player] == 1) || (gameMode[player] == 2)) && (enable_grade[player]!=4)  && (examination[player]==0)){
 				ExBltRect(85, 126 + 192 * player - 96 * maxPlay, 157, 0,15*7, 64, 14);//TRY AGAIN‰]X‚Ì•¶š‰æ‘œ
 			}
 		}
-		
+
 		if(statc[player * 10] >= 450) {
 			setGameOver(player);
 			fadelv[player] = 100;
@@ -11153,14 +11154,14 @@ void statEnding(int player) {
 		if(!gameMode[player]){//ƒ{[ƒiƒX‚Ì•¶š•\¦
 			gflash[player] = 120;
 		}
-		
+
 		// ‰¹Šy’â~ #1.60c7j9
 		if((gameMode[player] != 8) || ((gameMode[player] == 8) && (mission_end[c_mission ] >= 4)))
 		StopAllBGM();
 		pinch[player] = 0;
 		// ACE‚Å‚Ìc‚èŠÔ‚ª­‚È‚¢‚ÌŒø‰Ê‰¹‚à’â~
 		StopSE(32);
-		
+
 		// ƒXƒ^ƒbƒtƒ[ƒ‹ŠJn
 		ending[player] = 2;
 		// ƒGƒ“ƒfƒBƒ“ƒOBGMÄ¶
@@ -11176,7 +11177,7 @@ void statEnding(int player) {
 			changeBGM(player);
 		}else
 			PlayWave(56);
-			
+
 		statc[player * 10]++;
 	}else if (ending[player] == 7){//’´’Zk
 		// ‰¹Šy’â~ #1.60c7j9
@@ -11186,7 +11187,7 @@ void statEnding(int player) {
 		pinch[player] = 0;
 		// ACE‚Å‚Ìc‚èŠÔ‚ª­‚È‚¢‚ÌŒø‰Ê‰¹‚à’â~
 		StopSE(32);
-		
+
 		// ƒuƒƒbƒN‚ğÁ‚·
 		// BIG‘Î‰ #1.60c7j5
 		if(statc[player * 10] % 6 == 0) {
@@ -11197,7 +11198,7 @@ void statEnding(int player) {
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
 					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 				}
-				
+
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
 				fldt[i+ j * fldsizew[player] + player * 220] = 0;		// #1.60c7j5
 				fldi[i+ j * fldsizew[player] + player * 220] = 0;		// #1.60c7n1
@@ -11246,19 +11247,19 @@ void statEnding(int player) {
 void statResult(int player) {
 	int i, color, best, worst, bestT, worstT, tmp;
 	statc[player * 10 + 1]++;
-	
+
 	// ‰¹Šy‚ğ—¬‚· #1.60c7l2
 	// 2l“¯‚Åd‚È‚ç‚È‚¢‚æ‚¤‚ÉC³ #1.60c7m1
 	if( ((stat[1 - player] == 0) || (stat[1 - player] == 10)) && (!IsPlayWave(63)) && (wavebgm > 0) )
 		PlayWave(63);
-	
+
 	//Œx‰¹‚ª–Â‚Á‚Ä‚¢‚½‚ç~‚ß‚é
 	StopSE(40);
-	
+
 	if((statc[player*10+1]==1)&&(gameMode[player]==1)&&(enable_grade[player]==4)&&(enable_randexam==2)){
 		grade_pasttime[player]++;//Œ±‚ÌŠÔ‚ÌƒXƒpƒ“
 	}
-	
+
 	if((statc[player*10+1]==1)&&(enable_randexam==2)&&(enable_grade[player]==4)&&(gameMode[player]==1)){
 		grade_his[4+player*5]=grade_his[3+player*5];//‚±‚±‚Åb’è’iˆÊ—š—ğ‚ğ‚¸‚ç‚·
 		grade_his[3+player*5]=grade_his[2+player*5];
@@ -11287,7 +11288,7 @@ void statResult(int player) {
 	}
 */
 	printFont(15 + 24 * player - 12 * maxPlay, 6 - (2 * relaymode[player]), "PLAY DATA", 4);
-	
+
 	if((gameMode[player] == 9) && (relaymode[player])){	// ROTƒŠƒŒ[
 		printFont(15 + 24 * player - 12 * maxPlay, 5, "HEBORIS", fontc[0]);
 		printFont(15 + 24 * player - 12 * maxPlay, 7, "TI-ARS",  fontc[1]);
@@ -11329,7 +11330,7 @@ void statResult(int player) {
 			color = 0;
 			if(best) color = (count % 4 / 2) * 7;
 			if(worst) color = (count % 4 / 2) * 2;
-			
+
 			if(std_opt[player] == 0){
 				getTime(relaydata[player * 9 + i]);
 				printFont(17 + 24 * player - 12 * maxPlay, 6 + (2 * i), string[0], color);
@@ -11346,8 +11347,8 @@ void statResult(int player) {
 			sprintf(string[0],"%3dLINES" , li[player]);
 		}
 		printFont(17 + 24 * player - 12 * maxPlay, 24, string[0], count % 9);
-		
-	
+
+
 	}else if(gameMode[player] == 8) {
 		// MISSIONƒ‚[ƒh #1.60c7s4
 		// MISSION
@@ -11378,12 +11379,12 @@ void statResult(int player) {
 		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 105, 180, 119, 19, 7);
 		getTime(time[player]);
 		printSMALLFont(152 + 192 * player - 96 * maxPlay, 105, string[0], 0);
-		
-		
+
+
 		// GRADE #1.60c7m9
 		if((gameMode[player] != 0)&& (gameMode[player] < 6)) {
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 125, 228, 119, 26, 7);
-			
+
 			if(gameMode[player] != 3) {
 				// ”ñDEVIL
 				if(grade[player] == 32) {
@@ -11435,7 +11436,7 @@ void statResult(int player) {
 				}
 			}
 		}
-		
+
 		if(gameMode[player] == 0){
 			if(!novice_mode[player]){
 				printSMALLFont(152 + 192 * player - 96 * maxPlay, 157, "TAMAYA",(count % 4 / 2) * digitc[rots[player]]);
@@ -11482,7 +11483,7 @@ void statResult(int player) {
 			StopAllBGM();		// ‰¹Šy’â~ #1.60c7l3
 		stat[player] = 21;	// ƒQ[ƒ€ƒI[ƒo[•\¦ #1.60c7p1
 	}
-		
+
 		statc[player * 10] = 0;
 		statc[player * 10 + 1] = 0;
 		statc[player * 10 + 2] = 0;
@@ -11499,17 +11500,17 @@ void statResult(int player) {
 // statc[player * 10 + 2]F•Û‘¶“ü—Í‚ğ‚µ‚½‚©
 void statReplaySave(int player) {
 	int i;
-		
+
 	// ƒŠƒvƒŒƒC‚Ì‘¶İ‚ğ’²‚×‚é
 	if(!statc[player * 10 + 0]) {
 		statc[player * 10 + 1] = loadReplayData2(player,1);
 		statc[player * 10 + 0] = 1;
 	}
-	
+
 	printFont(16 + 24 * player - 12 * maxPlay, 5, "SAVE", 4);
 	printFont(16 + 24 * player - 12 * maxPlay, 6, " REPLAY?", 4);
-	
-	
+
+
 	if((time2[player] > 72000 - 36000 * (gameMode[player] == 4)) || (!replay_save[player])){	//ƒŠƒvƒŒƒC‹L˜^•s‰Â
 		printFont(15 + 24 * player - 12 * maxPlay, 12, "THIS PLAY", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 13, "  CAN'T BE", 2);
@@ -11528,39 +11529,39 @@ void statReplaySave(int player) {
 
 		sprintf(string[0],"    VER:%d",repdata[3 + player * 20]);	//ƒo[ƒWƒ‡ƒ“
 		printFont(15 + 24 * player - 12 * maxPlay, 9, string[0], 0);
-		
+
 		ExBltRect(85, 120 + 192 * player - 96 * maxPlay, 77, 0, 98, 22, 7);	//ƒ‚[ƒh
 		ExBltRect(86, 125 + 192 * player - 96 * maxPlay, 87, 72*repdata[1 + player * 20], 99 + (9*repdata[0 + player * 20]), 72, 9);
-		
+
 		ExBltRect(85, 120 + 192 * player - 96 * maxPlay, 105, 35, 42, 22, 7);	//Rots
 		if(repdata[2 + player * 20] != 9)
 			ExBltRect(55,128 + 8 * (repdata[0 + player * 20] == 4) + 192 * player -96 * maxPlay , 113 - (4 * (getDrawRate() == 1)), 64*repdata[2 + player * 20] ,
 					32*fontc[repdata[2 + player * 20]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 		else
 			printFont(15 + 24 * player - 12 * maxPlay, 15, "   RANDOM", 0);
-		
+
 		if(repdata[0 + player * 20] == 6){	//TOMOYO
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 131, 228, 112, 26, 7);
 			sprintf(string[0], "%6d", repdata[4 + player * 20] + 1);
 			printSMALLFont(158 + 192 * player - 96 * maxPlay, 131, string[0], 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 147, 180, 119, 19, 7);
 			getTime(repdata[5 + player * 20]);
 			printSMALLFont(146 + 192 * player - 96 * maxPlay, 147, string[0], 0);
 		}else if(repdata[0 + player * 20] == 4){	//VS
 			printFont(15 + 24 * player - 12 * maxPlay, 14, "1P", 0);
 			printFont(15 + 24 * player - 12 * maxPlay, 17, "2P", 0);
-			
+
 			if(repdata[4 + player * 20] != 9)
 				ExBltRect(55,128 + 8 + 192 * player -96 * maxPlay , 137 - (4 * (getDrawRate() == 1)), 64*repdata[4 + player * 20] ,
 						32*fontc[repdata[4 + player * 20]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 			else
 				printFont(15 + 24 * player - 12 * maxPlay, 18, "   RANDOM", 0);
-			
+
 			sprintf(string[0], "%2d POINT", repdata[5 + player * 20]);
 			printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], 0);
 			printFont(15 + 24 * player - 12 * maxPlay, 21, "    MATCH", 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 179, 180, 119, 19, 7);
 			getTime(repdata[6 + player * 20]);
 			printSMALLFont(146 + 192 * player - 96 * maxPlay, 179, string[0], 0);
@@ -11568,18 +11569,18 @@ void statReplaySave(int player) {
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 131, 180, 112, 26, 7);
 			sprintf(string[0], "%6d", repdata[4 + player * 20]);
 			printSMALLFont(158 + 192 * player - 96 * maxPlay, 131, string[0], 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 147, 154, 119, 23, 7);
 			sprintf(string[0], "%6d", repdata[5 + player * 20]);
 			printSMALLFont(158 + 192 * player - 96 * maxPlay, 147, string[0], 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 163, 180, 119, 19, 7);
 			getTime(repdata[6 + player * 20]);
 			printSMALLFont(146 + 192 * player - 96 * maxPlay, 163, string[0], 0);
 		}else if(repdata[0 + player * 20] == 8){	//MISSION
 			getRoadName(repdata[4 + player * 20]);
 			printFont(14 + 24 * player - 12 * maxPlay, 17, string[0], 0 );
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 147, 180, 119, 19, 7);
 			getTime(repdata[5 + player * 20]);
 			printSMALLFont(146 + 192 * player - 96 * maxPlay, 147, string[0], 0);
@@ -11604,15 +11605,15 @@ void statReplaySave(int player) {
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 131, 180, 112, 26, 7);
 			sprintf(string[0], "%6d", repdata[4 + player * 20]);
 			printSMALLFont(158 + 192 * player - 96 * maxPlay, 131, string[0], 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 147, 180, 119, 19, 7);
 			getTime(repdata[5 + player * 20]);
 			printSMALLFont(146 + 192 * player - 96 * maxPlay, 147, string[0], 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 163, 154, 112, 26, 7);
 			sprintf(string[0], "%6d", repdata[6 + player * 20]);
 			printSMALLFont(158 + 192 * player - 96 * maxPlay, 163, string[0], 0);
-			
+
 			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 179, 154, 119, 23, 7);
 			sprintf(string[0], "%6d", repdata[7 + player * 20]);
 			printSMALLFont(158 + 192 * player - 96 * maxPlay, 179, string[0], 0);
@@ -11621,7 +11622,7 @@ void statReplaySave(int player) {
 	}
 	if(statc[player * 10 + 2] == 0){
 		printFont(16+24 * player - 12 * maxPlay, 25, "B:NO SAVE", 0);
-	
+
 		// ƒL[“ü—Í
 		padRepeat(player);
 		// ©
@@ -11663,7 +11664,7 @@ void statReplaySave(int player) {
 			printFont(18 + 24 * player - 12 * maxPlay, 25, "SAVED", (count % 4 / 2) * digitc[rots[player]]);
 		}else{
 			if( (stat[1 - player] == 0) || (stat[1 - player] == 10) )
-				StopAllBGM();		// ‰¹Šy’â~ #1.60c7l3	
+				StopAllBGM();		// ‰¹Šy’â~ #1.60c7l3
 			statc[player * 10] = 0;
 			statc[player * 10 + 1] = 0;
 			statc[player * 10 + 2] = 0;
@@ -11677,7 +11678,7 @@ void statReplaySave(int player) {
 				wait3[0] = b_wait3[0];
 				waitt[0] = b_waitt[0];
 				sp[0]    = b_sp[0];
-				
+
 				wait1[1] = b_wait1[1];
 				wait2[1] = b_wait2[1];
 				wait3[1] = b_wait3[1];
@@ -11690,7 +11691,7 @@ void statReplaySave(int player) {
 			}
 		}
 	}
-		
+
 }
 //¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
 //  ƒXƒe[ƒ^ƒXNo.16 - ‘Îíƒ‚[ƒhİ’è‰æ–Ê #1.60c7g1
@@ -11717,12 +11718,12 @@ void statVersusSelect(int player) {
 
 	printFont(3 + 24 * player, 7, "ROT. ", 6);
 	ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
-	
+
 	if(vslevel[player] == 2)
 		printFont(3 + 24 * player, 6, "A:LOAD SP", 7);
 	else
 		printFont(3 + 24 * player, 6, "A:READY", 7);
-	
+
 	// ‰ñ“]–@‘¥
 	if(versus_rot[player] == 0)
 		printFont(6 + 24 * player, 8, "HEBORIS",     count % 9 * (vslevel[player] == 0));
@@ -11742,10 +11743,10 @@ void statVersusSelect(int player) {
 		printFont(8 + 24 * player, 8, "SRS-X",   count % 9 * (vslevel[player] == 0));
 	else if(versus_rot[player] == 8)
 		printFont(8 + 24 * player, 8, "D.R.S",   count % 9 * (vslevel[player] == 0));
-		
+
 	else
 		printFont(7 + 24 * player, 8, "RANDOM",      count % 9 * (vslevel[player] == 0));
-	
+
 	// ‚¹‚èã‚°ƒ^ƒCƒv
 	printFont(3 + 24 * player, 9, "UPLINE", 6);
 	if(upLineT[player] == 0)
@@ -11759,7 +11760,7 @@ void statVersusSelect(int player) {
 
 	// ƒXƒs[ƒhİ’è
 	printFont(3 + 24 * player, 11, "SP PRESET", 6);
-	
+
 	//‘¬“xƒeƒ“ƒvƒŒ[ƒg
 	if(sptmp[player] == -10){
 		printFont(3 + 24 * player, 12, "OOBAKA(!)",   count % 9 * (vslevel[player] == 2));
@@ -11776,13 +11777,13 @@ void statVersusSelect(int player) {
 	// WAITS 26402815
 	sprintf(string[0], "W1:%2d", wait1[player]);//SYUTUGEN
 	printFont(3 + 24 * player, 14, string[0], count % 9 * (vslevel[player] == 4));
-	sprintf(string[0], "W2:%2d", wait2[player]);//SYOUKYO 
+	sprintf(string[0], "W2:%2d", wait2[player]);//SYOUKYO
 	printFont(8 + 24 * player, 14, string[0], count % 9 * (vslevel[player] == 5));
 	sprintf(string[0], "W3:%2d", wait3[player]);//SETTYAKU
 	printFont(3 + 24 * player, 15, string[0], count % 9 * (vslevel[player] == 6));
 	sprintf(string[0], "WT:%2d", waitt[player]);//YOKOTAME
 	printFont(8 + 24 * player, 15, string[0], count % 9 * (vslevel[player] == 7));
-	
+
 	//‚»‚ê‚¼‚ê€–Ú–¼•\¦
 	if(!english){
 	if(vslevel[player] == 3)
@@ -11807,7 +11808,7 @@ void statVersusSelect(int player) {
 	else if(vslevel[player] == 7)
 		printFont(3 + 24 * player, 16, "DAS",   8);
 	}
-	
+
 	if((vsmodesl==0)||(vsmodesl==3)){
 		printFont(3 + 24 * player, 17, "USEITEM", 6);
 		if(use_item[player] == 0){
@@ -11858,7 +11859,7 @@ void statVersusSelect(int player) {
 		printFont(11 + 24 * player, 22, "ON", count % 9 * (vslevel[player] == 10));
 	else
 		printFont(10 + 24 * player, 22, "OFF", count % 9 * (vslevel[player] == 10));
-	
+
 	// ITEM #1.60c7q7 + CEMENT #1.60c7r4
 	printFont(3 + 24 * player, 23, "MODE", 6);
 	if(vsmodesl == 0)
@@ -11869,10 +11870,10 @@ void statVersusSelect(int player) {
 		printFont(7 + 24 * player, 23, "CEMENT", count % 9 * (vslevel[player] == 11));
 	else
 		printFont(7 + 24 * player, 23, "NORISE", count % 9 * (vslevel[player] == 11));
-	
+
 	if(vs_goal == 0){
 		printFont(3 + 24 * player, 24, "SURVIVAL",   6);
-	}else if(wintype==0){	
+	}else if(wintype==0){
 		// WINLV)
 		printFont(3 + 24 * player, 24, "WIN LV",   6);
 		if(vs_goal!=0)sprintf(string[0], "%4d", vs_goal);
@@ -11886,16 +11887,16 @@ void statVersusSelect(int player) {
 	}else{
 		printFont(3 + 24 * player, 24, "SURVIVAL",   6);
 	}
-	
+
 	printFont(18, 5, "HOLD",  0);
 	printFont(18, 6, "  +",  0);
 	printFont(18, 7, "kUDn",  0);
 	printFont(18, 9, "WIN",  0);
 	printFont(18,10, " PTS",  0);
-	
+
 	// ã‰ºˆÚ“®‚ğ‰Ÿ‚µ‚Á‚Ï‚È‚µ‚Å‚à‚Å‚«‚é‚æ‚¤‚É•ÏX #1.60c7l3
 	padRepeat2(player);
-	
+
 	// ª
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, 0)) {
@@ -12072,7 +12073,7 @@ void statVersusSelect(int player) {
 			if(vs_goal > 1000) vs_goal = 50;
 		}
 	}
-	
+
 	//VSMODE
 	if(vsmodesl == 0){//ƒm[ƒ}ƒ‹
 		disrise = 0;
@@ -12146,7 +12147,7 @@ void statVersusSelect(int player) {
 			b_wait3[player] = wait3[player];
 			b_waitt[player] = waitt[player];
 			b_sp[player]    = sp[player];
-		
+
 			stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
 			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
 			statc[player * 10 + 1] = 10;		// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.3
@@ -12158,7 +12159,7 @@ void statVersusSelect(int player) {
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void winner() {
 	int		player, i, j, block, win, obj, c, kosa;
-	
+
 	// BGM’â~
 	if(wavebgm > 0) StopAllBGM();
 	// c‚èŠÔ‚ª­‚È‚¢‚ÌŒø‰Ê‰¹‚à’â~
@@ -12169,7 +12170,7 @@ void winner() {
 	onRecord[0] = 0;
 	onRecord[1] = 0;
 //	time[1] = time[0];
-	
+
 	winc++;
 	wink++;
 	statc[0]++;
@@ -12180,11 +12181,11 @@ void winner() {
 	}
 
 	win = (stat[1] == 7) + ((stat[0] == 7) && (stat[1] == 7));//’‚‘§
-	
+
 	StopSE(40);
 //	pinch[0] = 0;
 //	pinch[1] = 0;
-	
+
 	for(player = 0; player <= 1; player++) {
 		hiddeny[player] = 22;
 		cpu_flag[player] = 0;
@@ -12205,7 +12206,7 @@ void winner() {
 				viewFldFrame(1,player);
 		}
 		ExBltRect(3, 22 + player * 192, winu, 96, obj * 25, 86, 24);
-		
+
 		if( (obj == 0) && (winr > 10) ) {
 			if(wintype == 1){
 				if(li[player] == vs_goal/10) {
@@ -12267,7 +12268,7 @@ void winner() {
 				statc[5] = 0;
 				b_to_b_c[0] = 0;
 				tspin_c[0] = 0;
-				
+
 				stat[1] = 10; // 2P‚Í‘Ò‹@
 				b_to_b_c[1] = 0;
 				tspin_c[1] = 0;
@@ -12281,7 +12282,7 @@ void winner() {
 			endingcnt[player]++;
 		}
 	}
-	
+
 	if(winc > 4) {
 		winc = 0;
 
@@ -12289,7 +12290,7 @@ void winner() {
 
 		// ‰º‚©‚çÁ‹‚Í‰¹‚È‚µ #1.60c7h3
 		if((winr == 0) && (deadtype)) PlaySE(7);
-		
+
 		for(player = 0; player <= 1; player++) {
 			if( winr <= 22	 ) {
 				for(j = 0; j < 10; j++)
@@ -12326,13 +12327,13 @@ void winner() {
 
 void winner2() {
 	int		player, i, j, block, win, obj, c, kosa, sbak[30];
-	
+
 	StopSE(32);
 
 	timeOn[0] = 0;
 	timeOn[1] = 0;
 //	time[1] = time[0];
-	
+
 	winc++;
 	wink++;
 	winu = winu + wink / 4;
@@ -12342,9 +12343,9 @@ void winner2() {
 	}
 
 	win = (stat[1] == 7) + ((stat[0] == 7) && (stat[1] == 7));//’‚‘§
-	
+
 	StopSE(40);
-	
+
 	for(player = 0; player <= 1; player++) {
 		padRepeat(player);
 		hiddeny[player] = 22;
@@ -12366,7 +12367,7 @@ void winner2() {
 				viewFldFrame(1,player);
 		}
 		if(obj == 2) ExBltRect(3, 22 + player * 192, winu, 96, obj * 25, 86, 24);
-		
+
 		if( (obj == 0) && (winr > 10) ) {
 			if(wintype == 1){
 				if(li[player] == vs_goal/10) {
@@ -12396,12 +12397,12 @@ void winner2() {
 		}
 		increment_time(player);
 	}
-	
+
 	// Ÿ‚Ìƒ‰ƒEƒ“ƒh‚Ö
 	if(winr > 30) {
 		flag = 0;
 	}
-	
+
 	if(flag == 0){	// Ÿ‚Ìƒ‰ƒEƒ“ƒh‚Ö‚Ì€”õ
 	for(player = 0; player <= 1; player++) {
 		// ‰Šú‰»‚³‚ê‚Ä‚Í¢‚é‚à‚Ì‚ğƒoƒbƒNƒAƒbƒv‚ÉƒRƒs[
@@ -12426,9 +12427,9 @@ void winner2() {
 		sbak[18] = first_rot[player];
 		sbak[19] = time[player];
 		sbak[20] = vs_points[player];
-		
+
 		playerInitial(player);
-		
+
 		IsBigStart[player] = sbak[0];
 		upLineT[player]    = sbak[1];
 		nextc[player]      = sbak[2];	// NEXTƒJƒEƒ“ƒg
@@ -12450,33 +12451,33 @@ void winner2() {
 		first_rot[player]  = sbak[18];
 		if(!player) time[player]       = sbak[19];
 		vs_points[player]  = sbak[20];
-		
+
 		b_wait1[player] = wait1[player];
 		b_wait2[player] = wait2[player];
 		b_wait3[player] = wait3[player];
 		b_waitt[player] = waitt[player];
 		b_sp[player]    = sp[player];
-		
+
 		if(vs_time != 0) {
 			ltime[player] = vs_time;
 		}
-		
+
 		if(IsBigStart[player])
 			IsBig[player] = 1;
-		
+
 		item_inter[player] = item_interval;
 		//‰ñ“]–@‘¥‚Ìƒ‰ƒ“ƒ_ƒ€ƒZƒŒƒNƒg
 		if(versus_rot[player] == 9){
 			rots[player] = rand(9,player);
 		}
 		setNextBlockColors(player, 1);
-		
+
 		stat[player] = 3;					// Ready
 	}
 	vs_round++;
 	return;
 	}
-		
+
 	if(winc > 4) {
 		winc = 0;
 
@@ -12484,7 +12485,7 @@ void winner2() {
 
 		// ‰º‚©‚çÁ‹‚Í‰¹‚È‚µ #1.60c7h3
 		if((winr == 0) && (deadtype)) PlaySE(7);
-		
+
 		for(player = 0; player <= 1; player++) {
 			if( winr <= 22	 ) {
 				for(j = 0; j < 10; j++)
@@ -12525,7 +12526,7 @@ void winner2() {
 void eraseItem(int player, int type) {
 	int i, enemy, attack;
 	int bx2, by2;
-	
+
 	if((type <= 0) || (type >= fldihardno) || (gameMode[player] > 5)) return;
 	attack = 0;
 	// UŒ‚‘ÎÛ‚ğŒˆ‚ß‚é
@@ -12534,8 +12535,8 @@ void eraseItem(int player, int type) {
 	} else {
 		enemy = player;
 	}
-	if((type != 13) && (type != 17) && (type != 18) && (type != 19) && ((type != 26) || (repversw >= 65)) && (type != 27) && 
-	   (type != 28) && (type != 29) && (type != 30) && (type != 32) && (type != 33) && (type != 35) && 
+	if((type != 13) && (type != 17) && (type != 18) && (type != 19) && ((type != 26) || (repversw >= 65)) && (type != 27) &&
+	   (type != 28) && (type != 29) && (type != 30) && (type != 32) && (type != 33) && (type != 35) &&
 	   ((type != 36) || (repversw < 58))){
 		attack = 1;
 	}
@@ -12562,13 +12563,13 @@ void eraseItem(int player, int type) {
 			objectCreate2(enemy, 10, 1, 0, 0, 2, 13, 0);
 		}
 	}
-	
+
 	if(!isfever[enemy]){		//UŒ‚ƒAƒCƒeƒ€iFEVER’†‚Í–³Œøj
 		if(repversw < 44){
-			item_t[enemy] = 0;	
+			item_t[enemy] = 0;
 			item_timer[enemy] = 0;
 		}
-	
+
 		// MIRROR
 		if( type == 1 ) {
 			isfmirror[enemy] = 1;
@@ -12579,10 +12580,10 @@ void eraseItem(int player, int type) {
 			item_rollroll[enemy] = 1;
 		}
 		// DEATH BLOCK
-		if( type == 3 ) {	
+		if( type == 3 ) {
 			IsBig[enemy] = 1;
 		}
-		// X-RAY	
+		// X-RAY
 		if( type == 4 ) {
 			isxray[enemy] = 1;
 			xray_flag[enemy] = 1;
@@ -12644,7 +12645,7 @@ void eraseItem(int player, int type) {
 			if((gameMode[enemy] == 3) && (tc[player] >= 300))
 				item_timer[enemy] = 180 - (60 * (tc[player] >= 500));
 		}
-	
+
 		//ª« REVERSE
 		if( type == 14 ) {
 			isUDreverse[enemy] = 1;
@@ -12661,12 +12662,12 @@ void eraseItem(int player, int type) {
 			if((gameMode[enemy] == 3) && (tc[player] >= 300))
 				item_timer[enemy] = 300;
 		}
-	
+
 		//TRANCE FORM
 		if( type == 20 ) {
 			istrance[enemy] = 1;
 		}
-		
+
 		//LASER(‘€ì’†ˆÈŠO)
 		if( type == 21 ) {
 			dolaser[enemy] = 1;
@@ -12675,7 +12676,7 @@ void eraseItem(int player, int type) {
 		if( type == 22 ) {
 			donega[enemy] = 1;
 		}
-		
+
 		//SHOT GUN!(‘€ì’†ˆÈŠO)
 		if( type == 23 ) {
 			doshotgun[enemy] = 1;
@@ -12723,11 +12724,11 @@ void eraseItem(int player, int type) {
 		if( type == 39 ) {
 			item_monochrome[enemy] = 1;
 		}
-	
+
 	}	//!isfever[enemy]
 
 	//ƒTƒ|[ƒgƒAƒCƒeƒ€
-	
+
 	//FEVER!!
 	if( type == 13 ) {
 	// ”­“®Ò‚ÌƒAƒCƒeƒ€‚ğ‘S‚Ä‰ğœ
@@ -12777,7 +12778,7 @@ void eraseItem(int player, int type) {
 	}
 	if(type == 30){
 		isRmovfield[player] = 1;
-	}	
+	}
 	//16t
 	if( type == 32 ) {
 		do16t[player] = 1;
@@ -12798,11 +12799,11 @@ void eraseItem(int player, int type) {
 		isallclear[player] = 1;
 	}
 
-	
+
 	// ‘€ì’†‚Ìê‡‚Í‹­§“I‚ÉŸ‚ÌƒuƒƒbƒN‚ğoŒ»
 	if((stat[enemy] == 5) && (type != 6) && (type != 7) && (type != 11) && (type != 12)
-	 && (type != 13) && (type != 14) && (type != 17) && (type != 18) && (type != 19)&& (type != 26) 
-	 && ((type < 27) || (type > 30)) && (!isfever[enemy])&& (type != 32) 
+	 && (type != 13) && (type != 14) && (type != 17) && (type != 18) && (type != 19)&& (type != 26)
+	 && ((type < 27) || (type > 30)) && (!isfever[enemy])&& (type != 32)
 	 && (type != 33) && (type != 34) && (type != 35) && (type != 36)) {
 		// ’e‚¯”ò‚ÔƒAƒjƒ[ƒVƒ‡ƒ“ #1.60c7o6
 		if(!((type==9) && (repversw >= 35))){
@@ -12865,7 +12866,7 @@ void eraseItem(int player, int type) {
 		statc[enemy * 10 + 3] = 0;
 		statc[enemy * 10 + 4] = 0;
 		bdowncnt[enemy]++;
-		
+
 		// ƒAƒCƒeƒ€”ò‚Î‚µ #1.60c7o6
 		if(item[enemy]) {
 			item[enemy] = 0;
@@ -12876,10 +12877,10 @@ void eraseItem(int player, int type) {
 		objectCreate2(player, 10, 0, 0, 0, 1, 33, 0);
 		PlaySE(38);
 	}
-	
+
 	if(!isfever[enemy])
-	if((type <= 5) || (type == 8) || (type == 10) || (type == 15) || (type == 16) || 
-		(type == 20) || (type == 22) || (type == 23) || (type == 25) || (type == 31)|| 
+	if((type <= 5) || (type == 8) || (type == 10) || (type == 15) || (type == 16) ||
+		(type == 20) || (type == 22) || (type == 23) || (type == 25) || (type == 31)||
 		(type == 34)|| (type == 37)|| (type == 38)|| (type == 39)){
 		if((gameMode[player] != 4) || (!isreflect[1-player]))
 			objectCreate2(enemy, 10, 0, 0, 0, 0, type, 0);//WARNIG‚ÌƒGƒtƒFƒNƒg
@@ -12906,7 +12907,7 @@ void statusClear(int player){
 	isxray[player] = 0;
 	xray_flag[player] = 0;
 	iscolor[player] = 0;
-	color_flag[player] = 0;	
+	color_flag[player] = 0;
 	if(isrotatelock[player]){
 		isrotatelock[player] = 0;
 		rt_nblk[0 + 6 * player] = 0;
@@ -12923,7 +12924,7 @@ void statusClear(int player){
 	ismagnetblock[player] = 0;
 	isholdlock[player] = 0;
 	istimestop[player] = 0;
-	isLRreverse[player] = 0;	
+	isLRreverse[player] = 0;
 	isUDreverse[player] = 0;
 	istrance[player] = 0;
 	isdouble[player] = 0;
@@ -12938,12 +12939,12 @@ void statusClear(int player){
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void statGameOver2(int player) {
 	int i;
-	
+
 	// ƒJƒEƒ“ƒ^‘‰Á
 	statc[player * 10]++;
-	
+
 	if( (stat[1 - player] == 0) || (stat[1 - player] == 10) ) StopAllBGM();	// ‰¹Šy’â~
-	
+
 	// ƒŠƒvƒŒƒC•Û‘¶
 	/*
 	if((textguide) && (!playback) && (!demo)){
@@ -12951,7 +12952,7 @@ void statGameOver2(int player) {
 		else printFont(13+24 * player - 12 * maxPlay, 26, "Q-P KEY:REPLAY", 0);
 	}
 	ReplaySaveCheck(player, 3);
-	
+
 	if(statc[player * 10 + 3]) {
 		printFont(15 + 24 * player - 12 * maxPlay, 20, "YOUR PLAY", 7);
 		printFont(16 + 24 * player - 12 * maxPlay, 21, "WAS SAVED", 7);
@@ -12964,12 +12965,12 @@ void statGameOver2(int player) {
 	if(statc[player * 10] >= 2) {
 		ExBltRect(81, 110+192 * player -96 * maxPlay , 95 , 0, 0, 100, 50);
 	}
-	
+
 	// ƒ{ƒ^ƒ“‚ÅƒXƒLƒbƒv
 	if(getPushState(player, 4)) {
 		statc[player * 10] = 480;
 	}
-	
+
 	// I—¹
 	if(statc[player * 10] >= 480) {
 		ndelay[player] = 1;
@@ -12989,9 +12990,9 @@ void statGameOver2(int player) {
 			pinch[player] = 0;
 			stat[player] = 0;		// ‚»‚êˆÈŠO
 		}
-		
+
 		for(i=0; i<10; i++) statc[player * 10 + i] = 0;
-		
+
 		if( (stat[1 - player] == 0) || (stat[1 - player] == 10) ) bgfadesw = 1;
 	}
 }
@@ -13005,12 +13006,12 @@ void statGameOver2(int player) {
 // statc[player * 10 + 4]Fªg—p‚Ì‚¹‚èã‚ª‚èƒ^ƒCƒv
 void statNothing(int player) {
 	int i;
-	
+
 	if(repversw >= 30) padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	statc[player * 10 + 2]++;
-	
+
 	if(statc[player * 10 + 2] >= statc[player * 10 + 0]) {
 		if((statc[player * 10 + 3] != 0) && (gameMode[player] == 8)){
 			statc[player * 10 + 3]--;
@@ -13031,7 +13032,7 @@ void statNothing(int player) {
 			if(fldMirrorProc(player)) return;
 		}else
 			if(fldMirrorProc(player)) return;
-			
+
 		stat[player] = statc[player * 10 + 1];
 		for(i=0; i<10; i++) statc[player * 10 + i] = 0;
 	}
@@ -13045,14 +13046,14 @@ void statNothing(int player) {
 // statc[player * 10 + 2]FI—¹Œã‚ÉƒXƒe[ƒW“Ç‚İ‚İ(0=‚È‚µ 1=‚ ‚èj
 void statDelField(int player) {
 	int i, j, y,k,l,waitA;
-	
+
 	statc[player * 10]++;
-	
+
 	if((repversw < 64) || (statc[player * 10 + 2]))
 		waitA = 1;
 	else
 		waitA = 9 - 4 * ((wait2[player] <= 12) && ((timeOn[player]) || (ending[player] == 2) || (repversw >= 65)) );
-	
+
 	if(repversw >= 30) padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
 
@@ -13075,14 +13076,14 @@ void statDelField(int player) {
 			}
 		}
 	}
-	
+
 	if(statc[player * 10] == wait1[player] + 1) {
 		if(statc[player * 10 + 2]) {
 			loadTargetStage();
 			dhold[player] = disable_hold;
 		}
 	}
-	
+
 	if(statc[player * 10] == 15+(wait1[player] * 2)) {
 		if((isDWdelfield[player]) || (isdeleven[player])){	//Á‹Œã‚ÉƒuƒƒbƒN‚ª—‰º‚·‚éê‡A—‰ºˆ—‚ğs‚¤
 			y = fldsizeh[player];
@@ -13142,7 +13143,7 @@ void statDelField(int player) {
 // statc[player * 10 + 2]F16t‚©H
 void statLaser(int player) {
 	int i,j,move,waitA,waitB;
-	
+
 //	dolaser[player] = 0;
 	if(repversw < 63){
 		waitA = 120;
@@ -13151,10 +13152,10 @@ void statLaser(int player) {
 		waitA = 30 + (wait1[player] * 3);
 		waitB = waitA + 34 + wait1[player];
 	}
-	
+
 	padRepeat(player);
 	if((ace_irs) && (statc[player * 10 + 0] > 120)) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if(statc[player * 10 + 0] == 0){	//Å‰
 		if(statc[player * 10 + 2] == 0){//ƒŒ[ƒU[
 			lasernum[player] = 1;
@@ -13213,7 +13214,7 @@ void statLaser(int player) {
 							fldi[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							grayoutLackedBlock(player, flds[laserpos[i + player * 4] + j * 10 + player * 220]);
 							flds[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
-	
+
 						}
 					}
 				}
@@ -13278,9 +13279,9 @@ void statLaser(int player) {
 				ExBltRect(3, ((laserpos[0 + 4 * player] + 15 + 24 * player - 12 * maxPlay) - 1) * 8, ((j + 3)*8) - 20, 260, 399, 40, 21);
 			}
 		}
-		
+
 		statc[player * 10 + 0]++;
-		
+
 		if(statc[player * 10 + 0] >= waitB){
 			stat[player] = statc[player * 10 + 1];
 			statc[player * 10] = 0;
@@ -13301,16 +13302,16 @@ void statLaser(int player) {
 // statc[player * 10 + 1]FI—¹Œã‚ÉˆÚ“®‚·‚éƒXƒe[ƒ^ƒX
 void statNegafield(int player) {
 	int i,j,y,waitA;
-	
+
 //	donega[player] = 0;
 	if(repversw < 63)
 		waitA = 120;
 	else
 		waitA = 90 + wait1[player];
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if(statc[player * 10 + 0] == 0){	//Å‰
 		for(i = 0;i < 10; i++)
 //			nega_pos[i + 10 * player] = checkFieldTop2(player,i);
@@ -13365,10 +13366,10 @@ void statNegafield(int player) {
 void statShotgun(int player) {
 	int i,j,x,limit,waitA,waitB;
 	j = 0;
-	
+
 //	doshotgun[player] = 0;
 	limit = 0;
-	
+
 	if(repversw < 63){
 		waitA = 60;
 		waitB = 120;
@@ -13376,10 +13377,10 @@ void statShotgun(int player) {
 		waitA = 6 + (wait1[player] * 2);
 		waitB = waitA + 30 + wait1[player];
 	}
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if(statc[player * 10 + 0] == 0){	//Å‰
 		for(i = checkFieldTop(player); i < 22; i++){
 			if(i == 0){
@@ -13393,7 +13394,7 @@ void statShotgun(int player) {
 					if(limit > 100000) break;
 				} while( ((x == shotgunpos[(i - 1) + 22 * player]) && (limit < 50000)) || (fld[x + i * fldsizew[player] + player * 220] == 0) );
 			}
-			
+
 			shotgunpos[i + 22 * player] = x;
 		}
 		statc[player * 10 + 0]++;
@@ -13407,7 +13408,7 @@ void statShotgun(int player) {
 					fld[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 					fldt[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 					fldi[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
-					grayoutLackedBlock(player, flds[j + i * 10 + player * 220]);	
+					grayoutLackedBlock(player, flds[j + i * 10 + player * 220]);
 					flds[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 				}
 			}
@@ -13435,16 +13436,16 @@ void statShotgun(int player) {
 // statc[player * 10 + 3]F©•ª‚ÍŒğŠ·‚µ‚È‚¢iƒtƒB[ƒ‹ƒhƒRƒs[j
 void statExchangefield(int player) {
 	int i,j,enemy;
-	
+
 	doexchg[player] = 0;
 	docopyfld[player] = 0;
 	enemy = 1 - player;		//‘ÎÛ‚ğŒˆ‚ß‚é
 	if(gameMode[player] != 4)
 		enemy = player;
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if(statc[player * 10 + 0] == 0){	//Å‰
 		if( ((stat[enemy] == 29) && (statc[enemy * 10 + 2] == 1)) || (item_mode[player]) ){	//“¯Šúƒ`ƒFƒbƒN
 			// ƒtƒB[ƒ‹ƒh‚ğƒoƒbƒtƒ@‚ÉŠm•Ûi•ÏX‘Oj
@@ -13471,7 +13472,7 @@ void statExchangefield(int player) {
 				fldsbuf[i + player * 220] = flds[i + enemy * 220];
 			}
 		}
-	
+
 		if((statc[player * 10 + 0] >= 60) && (statc[player * 10 + 0] < 70) && (!statc[player * 10 + 3])){
 			for(i = 0; i < 22; i++) {
 				j = statc[player * 10 + 0] - 60;
@@ -13546,7 +13547,7 @@ void statExamination(int player){
 				} else if( exam_grade[player] >= 28 ) {
 					// MK-MM
 					ExBltRect(26,115 + 192 * player -96 * maxPlay , 127, 270 ,((count % 4 / 2)*216)+((exam_grade[player]-28)*24),90,24);
-				} else if( exam_grade[player] >= 27 ) {	
+				} else if( exam_grade[player] >= 27 ) {
 					if((enable_grade[player]==2)||(enable_grade[player]==4)){
 						// M
 						ExBltRect(26,115 + 192 * player -96 * maxPlay , 127,270 ,((count % 4 / 2)*216)+((exam_grade[player]-27)*24),90,24);
@@ -13599,7 +13600,7 @@ void statExamination(int player){
 				} else if( exam_grade[player] >= 28 ) {
 					// M-MM
 					ExBltRect(26,115 + 192 * player -96 * maxPlay , 127, 270 ,((count % 4 / 2)*216)+((exam_grade[player]-28)*24),90,24);
-				} else if( exam_grade[player] >= 27 ) {	
+				} else if( exam_grade[player] >= 27 ) {
 					if((enable_grade[player]==2)||(enable_grade[player]==4)){
 						// M
 						ExBltRect(26,115 + 192 * player -96 * maxPlay , 127,270 ,((count % 4 / 2)*216)+((exam_grade[player]-27)*24),90,24);
@@ -13660,13 +13661,13 @@ void statExamination(int player){
 					printSMALLFont(125 + 192 * player - 96 * maxPlay, 189, "   FAILED   ",(count % 4 / 2) * 2);
 				}
 			}
-			
+
 			if(statc[player * 10 + 0] > 720){
 				if(exam_ranking){stat[player] = 11;//ƒl[ƒ€ƒGƒ“ƒgƒŠ[
 				}else {
 					PlayerdataSave();
 					stat[player]=14;
-					
+
 				}	// Œ‹‰Ê
 				grade_pasttime[player] = 0;		//‘O‚ÌŒ±‚©‚ç‚ÌŒo‰ßŠÔ‚ğƒŠƒZƒbƒg
 				statc[player * 10 + 0] = 0;		// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
@@ -13676,7 +13677,7 @@ void statExamination(int player){
 				return;
 			}
 		}
-	}	
+	}
 	statc[player * 10 + 0]++;
 }
 //¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
@@ -13687,18 +13688,18 @@ void statExamination(int player){
 // statc[player * 10 + 2]F”­“®ƒAƒCƒeƒ€
 void statItemRulet(int player) {
 	int i,j,y,waitA;
-		
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if(repversw < 63){
 		waitA = 180;
 	}else{
 		waitA = 150 + wait1[player];
 	}
-	
+
 	if(statc[player * 10 + 0] == 0){	//Å‰
-		
+
 		statc[player * 10 + 0]++;
 	} else {
 		if(statc[player * 10 + 0] <= 119){//ƒVƒƒƒbƒtƒ‹’†
@@ -13726,7 +13727,7 @@ void statItemRulet(int player) {
 					misstimer[player] = item_interval / 4;
 				}
 			}
-			
+
 			if(stat[player] != 31){
 				statc[player * 10 + 1] = stat[player];
 				stat[player] = 31;
@@ -13941,7 +13942,7 @@ void statItemRulet(int player) {
 // statc[player * 10 + 2]FÄ‚¹‚èã‚ª‚è‚ÌŒŠ‚ÌˆÊ’u
 void statFreefall(int player) {
 	int i,j,x,y = 0,l,k,tmp;
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
 
@@ -13993,11 +13994,11 @@ void statFreefall(int player) {
 				statc[player * 10 + 2] = (statc[player * 10 + 2] / 2) * 2;
 				statc[player * 10 + 3] = statc[player * 10 + 2] + 1;
 			}
-			
+
 			for(i = 0; i <= fldsizeh[player]; i++) {
 				if(erase[i + player * 22]) {
 					Ff_rerise[player]++;
-					y--;			
+					y--;
 					for(x = 0; x < fldsizew[player]; x++) { // #1.60c7b
 						if(breakeffect) {
 							// super_breakeffect‚ª1‚Ìê‡‚Í‘S‚Ä‚ÌƒuƒƒbƒN‚É”j‰óƒGƒtƒFƒNƒg‚ğ“K—p‚·‚é #1.60c7m9
@@ -14016,7 +14017,7 @@ void statFreefall(int player) {
 								}
 							}
 						}
-						
+
 						fld[x + i * fldsizew[player] + player * 220] = 0;
 						fldt[x + i * fldsizew[player] + player * 220] = 0;	// #1.60c7j5
 						fldi[x + i * fldsizew[player] + player * 220] = 0;	// #1.60c7n1
@@ -14069,8 +14070,8 @@ void statFreefall(int player) {
 	if(statc[player * 10 + 0] == (wait1[player] * 3) + 30 + wait2[player]) statc[player * 10 + 0] = -100;
 	//noviceƒ‚[ƒh‚Æsquareƒ‚[ƒh‚¾‚ÆÄ‚¹‚èã‚ª‚è‚È‚µ@‘Îí‚Å‚Í‘Šè‚ğ‚¹‚èã‚°‚é
 	if(((gameMode[player] == 0) && (novice_mode[player]))||(squaremode[player])||(gameMode[player] == 4)) Ff_rerise[player] = 0;
-	
-//	if(statc[player * 10 + 0] >= 0) 
+
+//	if(statc[player * 10 + 0] >= 0)
 	statc[player * 10 + 0]++;
 	if(statc[player * 10 + 0] < 0){
 		if(Ff_rerise[player] != 0){	//Ä‚¹‚èã‚ª‚è
@@ -14085,7 +14086,7 @@ void statFreefall(int player) {
 				}
 				erase[(i - 1) + player * 22] = erase[i + player * 22];
 			}
-	
+
 			for(j = 0; j < fldsizew[player]; j++) {
 				fld[j + fldsizew[player] * fldsizeh[player] + player * 220] = ((j != statc[player * 10 + 2]) && (j != statc[player * 10 + 3])) * (rand(7,player) + 2);
 				fldt[j + fldsizew[player] * fldsizeh[player] + player * 220] = (fld[j + fldsizew[player] * fldsizeh[player] + player * 220] != 0) * -1;
@@ -14117,7 +14118,7 @@ void statFreefall(int player) {
 // statc[player * 10 + 1]FI—¹Œã‚ÉˆÚ“®‚·‚éƒXƒe[ƒ^ƒX
 void statMovfield(int player) {
 	int i,j,x,y,l,k,tmp;
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
 
@@ -14182,7 +14183,7 @@ void statMovfield(int player) {
 					}
 				}
 			}
-			
+
 		}
 	}
 
@@ -14209,10 +14210,10 @@ void statMovfield(int player) {
 // statc[player * 10 + 1]FI—¹Œã‚ÉˆÚ“®‚·‚éƒXƒe[ƒ^ƒX
 void stat180field(int player) {
 	int i,j,x,y,l,k,tmp,waitA;
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if(repversw < 63){
 		waitA = wait1[player] + 40;
 	}else if(repversw < 65){
@@ -14220,7 +14221,7 @@ void stat180field(int player) {
 	}else{
 		waitA = 20 + wait1[player] + (wait1[player] / 2);
 	}
-	
+
 //	do180field[player] = 0;
 
 	if((statc[player * 10 + 0] >= waitA) && (statc[player * 10 + 0] <= waitA + 50 + 15)){
@@ -14250,7 +14251,7 @@ void stat180field(int player) {
 					fldt[j + (i + statc[player * 10 + 2]) * fldsizew[player] + player * 220] = fldtbuf[j + (fldsizeh[player] - i) * fldsizew[player] + player * 220];
 					fldi[j + (i + statc[player * 10 + 2]) * fldsizew[player] + player * 220] = fldibuf[j + (fldsizeh[player] - i) * fldsizew[player] + player * 220];
 					flds[j + (i + statc[player * 10 + 2]) * fldsizew[player] + player * 220] = fldsbuf[j + (fldsizeh[player] - i) * fldsizew[player] + player * 220];
-				
+
 				}
 			}
 		}
@@ -14287,16 +14288,16 @@ void stat180field(int player) {
 // statc[player * 10 + 3]FƒJƒEƒ“ƒ^2
 void statDelfromUpper(int player) {
 	int i, j, k, waitA;
-	
+
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE®IRS C7U1.5
-	
+
 	if((repversw < 63) || (gameMode[player] == 8)){
 		waitA = -160;
 	}else{
 		waitA = -100 - (wait1[player] * 2);
 	}
-	
+
 	if((statc[player * 10] > -100 + wait1[player]) && (statc[player * 10] < 0)){
 		statc[player * 10]++;
 		return;
@@ -14306,16 +14307,16 @@ void statDelfromUpper(int player) {
 		statc[player * 10] = checkFieldTop(player) * 6;
 		return;
 	}
-	
+
 	// ƒuƒƒbƒN‚ğÁ‚·
 	if((statc[player * 10] % 6 == 0) && (statc[player * 10] >= 0)) {
 		j = statc[player * 10] / 6;
-		
+
 		if((j >= 0) && (j < 22)) {
 			for(i = 0; i < 10; i++) {
 				if(fld[i + j * 10 + player * 220]) {
 						objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150), fld[i + j * 10 + player * 220], 100);
-					
+
 					fld[i + j * 10 + player * 220] = 0;
 					fldt[i + j * 10 + player * 220] = 0;
 					fldi[i + j * 10 + player * 220] = 0;
@@ -14327,7 +14328,7 @@ void statDelfromUpper(int player) {
 	}
 	if((statc[player * 10] >= 0) && ((statc[player * 10 + 3] >= statc[player * 10 + 2]) || ((statc[player * 10] / 6) >= 22)))
 		statc[player * 10] = waitA;
-	
+
 	// ƒAƒjƒI—¹
 	if(statc[player * 10] == -100) {
 		pinchCheck(player);
@@ -14337,7 +14338,7 @@ void statDelfromUpper(int player) {
 		for(i = 0; i < 22; i++) erase[i + player * 22] = 0;
 		return;
 	}
-	
+
 	statc[player * 10]++;
 }
 
@@ -14346,7 +14347,7 @@ void statDelfromUpper(int player) {
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void statBanana(int player){
 	int i,j,y,flag[10],tmp,chg[10],chgt[10],chgi[10],chgs[10];
-	
+
 	if(banana_c[player] == 0){	// Å‰
 		for(i = 0; i < 10; i++) flag[i] = 0;
 		for(i = 0; i < 10; i++){
@@ -14425,7 +14426,7 @@ int getFieldBlock(int player, int bx1, int by1, int opt) {
 	//ƒtƒB[ƒ‹ƒhŠOH
 	if(((bx1 < 0) && (by1 > 0)) || ((bx1 > fldsizew[player] - 1) && (by1 > 0)) || (by1 > fldsizeh[player])) return -1;
 	if(by1 < 0) return 0;
-	
+
 	if(opt){
 		if(hidden[player] == 8) return 0;
 		else if((isdark[player]) && (item_timer[player] <= 420)) return 0;
@@ -14462,12 +14463,12 @@ int getModeAdd(int player){
 // ƒtƒB[ƒ‹ƒh‚ÌÅã’i‚ğ•Ô‚·
 int checkFieldTop(int player) {
 	int i, j;
-	
+
 	for(i = 0; i <= fldsizeh[player]; i++)
-		for(j = 0; j < fldsizew[player]; j++) 
+		for(j = 0; j < fldsizew[player]; j++)
 			if(fld[j + i * fldsizew[player] + player * 220])
 				return i;
-	
+
 	// ‹ó‚Á‚Û‚Ìê‡
 	return 22;
 }
@@ -14476,11 +14477,11 @@ int checkFieldTop(int player) {
 // x²‚ğw’èo—ˆ‚éƒo[ƒWƒ‡ƒ“
 int checkFieldTop2(int player,int x) {
 	int i;
-	
+
 	for(i = 0; i <= fldsizeh[player]; i++)
 		if(fld[x + i * fldsizew[player] + player * 220])
 			return i;
-	
+
 	// ‹ó‚Á‚Û‚Ìê‡
 	return 22;
 }
@@ -14489,9 +14490,9 @@ int checkFieldTop2(int player,int x) {
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 void scanItem(int player) {
 	int i, j;
-	
+
 	item_name[player] = 0;
-	
+
 	// ƒtƒB[ƒ‹ƒh‚ğ’²‚×‚é
 	for(i = fldsizeh[player]; i >= 0; i--)
 		for(j = 0; j < fldsizew[player]; j++)
@@ -14552,29 +14553,29 @@ void padRepeat2(int player) { // hoge ã‰º“ü—Íƒo[ƒWƒ‡ƒ“
 }
 
 //¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒL[ó‘Ô‚Ìæ“¾ 
+//  ƒL[ó‘Ô‚Ìæ“¾
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 // ƒWƒ‡ƒCƒXƒeƒBƒbƒNü‚è‚ğ•ÏX #1.60c7
 int getPressState(int player, int key) { // ƒpƒbƒhƒ{ƒ^ƒ“Š„‚è“–‚Ä‘Î‰ #1.60c
 	int jtmp;	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN“ü—Í
 	int ktmp;	// ƒL[ƒ{[ƒh“ü—Í
 	int pl;
-	
+
 	// ƒVƒ“ƒOƒ‹ƒ‚[ƒh‚Å‚Í2P‘¤‚Ì“ü—Í‚ğí‚ÉƒJƒbƒg
 	if(maxPlay < player) return 0;
-	
+
 	if((isremote[player]) && (gameMode[player] == 4)) {
 		pl = 1 - player;	// ƒŠƒ‚ƒRƒ“
 	} else {
 		pl = player;	// ’Êí
 	}
-	
-	
+
+
 	// ƒŠƒvƒŒƒC
 	if(playback) {
 		// “ü—Í‚ğƒŠƒvƒŒƒCƒf[ƒ^‚©‚ç“Ç‚İæ‚é
 		ktmp = (replayData[time2[pl] + pl* 60 * 60 * 20] & (1 << key)) / (1 << key);
-		
+
 		if((!pl) || (gameMode[0] == 4))
 			return ktmp;
 		else
@@ -14583,13 +14584,13 @@ int getPressState(int player, int key) { // ƒpƒbƒhƒ{ƒ^ƒ“Š„‚è“–‚Ä‘Î‰ #1.60c
 	// ’ÊíƒvƒŒƒC’†
 	else {
 		SelectJoyStick(pl);
-		
+
 		// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚Ì“ü—Í‚ğ“Ç‚İæ‚é
 		jtmp = IsPressJoyKey(joykeyAssign[key + 10 * pl]);
-		
+
 		// ƒL[ƒ{[ƒh‚Ì“ü—Í‚ğ“Ç‚İæ‚é
 		ktmp = IsPressKey(keyAssign[key + pl * 10]);
-		
+
 		if(cpu_flag[pl])
 			return cp_input[key + pl * 10];
 		else if(!keyAssign[key + pl * 10])
@@ -14603,7 +14604,7 @@ int getPushState(int player, int key) { // ƒpƒbƒhƒ{ƒ^ƒ“Š„‚è“–‚Ä‘Î‰ #1.60c
 	int jtmp;	// ƒWƒ‡ƒCƒXƒeƒBƒbƒN“ü—Í
 	int ktmp;	// ƒL[ƒ{[ƒh“ü—Í
 	int pl;
-	
+
 	// ƒVƒ“ƒOƒ‹ƒ‚[ƒh‚Å‚Í2P‘¤‚Ì“ü—Í‚ğí‚ÉƒJƒbƒg
 	if(maxPlay < player) return 0;
 
@@ -14616,7 +14617,7 @@ int getPushState(int player, int key) { // ƒpƒbƒhƒ{ƒ^ƒ“Š„‚è“–‚Ä‘Î‰ #1.60c
 	if(playback) {
 		// “ü—Í‚ğƒŠƒvƒŒƒCƒf[ƒ^‚©‚ç“Ç‚İæ‚é
 		ktmp = (replayData[time2[pl] + pl* 60 * 60 * 20] & (1 << (key + 8))) / (1 << (key + 8));
-		
+
 		if((!pl) || (gameMode[0] == 4))
 			return ktmp;
 		else
@@ -14625,13 +14626,13 @@ int getPushState(int player, int key) { // ƒpƒbƒhƒ{ƒ^ƒ“Š„‚è“–‚Ä‘Î‰ #1.60c
 	// ’ÊíƒvƒŒƒC’†
 	else {
 		SelectJoyStick(pl);
-		
+
 		// ƒWƒ‡ƒCƒXƒeƒBƒbƒN‚Ì“ü—Í‚ğ“Ç‚İæ‚é
 		jtmp = IsPushJoyKey(joykeyAssign[key + 10 * pl]);
-		
+
 		// ƒL[ƒ{[ƒh‚Ì“ü—Í‚ğ“Ç‚İæ‚é
 		ktmp = IsPushKey(keyAssign[key + pl * 10]);
-		
+
 		if(cpu_flag[pl])
 			return cp_input[key + pl * 10];
 		else
@@ -14644,12 +14645,12 @@ int getPushState(int player, int key) { // ƒpƒbƒhƒ{ƒ^ƒ“Š„‚è“–‚Ä‘Î‰ #1.60c
 //£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
 int judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2; //, result
-	
+
 	if(IsBig[player]) {
 		// BIG‚Ìê‡‚Íê—p‚Ì”»’èˆ—‚ğs‚¤ #1.60c7m6
 		return judgeBigBlock(player, bx1, by1, kind, rotate);
 	}
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
@@ -14680,15 +14681,15 @@ int judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
 void setBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2;
 	int		puted;
-	
+
 	if(IsBig[player]) {
 		// BIG‚Ìê‡‚Íê—p‚Ìİ’uˆ—‚ğs‚¤ #1.60c7m6
 		setBigBlock(player, bx1, by1, kind, rotate);
 		return;
 	}
-	
+
 	puted = 0;
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
@@ -14702,11 +14703,11 @@ void setBlock(int player, int bx1, int by1, int kind, int rotate) {
 		}
 		if((bx2 >= 0) && (bx2 < fldsizew[player]) && (by2 >= 0+(1*((repversw <= 27) || (!spawn_y_type)))) && (by2 <= fldsizeh[player])) {
 			if((by2 >= 2) || (repversw <= 27))puted++;
-			
+
 			fld[bx2 + by2 * fldsizew[player] + player * 220] = c_cblk_r[player] + 1;
-			if((c_cblk_r[player] + 1 == 9) && (heboGB[player] == 1)) 
+			if((c_cblk_r[player] + 1 == 9) && (heboGB[player] == 1))
 				fld[bx2 + by2 * fldsizew[player] + player * 220] = 10;
-			
+
 			// ƒVƒƒƒhƒEƒ^ƒCƒ}[ƒZƒbƒg #1.60c7j5
 			if((hidden[player] == 8) && (m_roll_blockframe))
 				fldt[bx2 + by2 * fldsizew[player] + player * 220] = -60;
@@ -14716,13 +14717,13 @@ void setBlock(int player, int bx1, int by1, int kind, int rotate) {
 				fldt[bx2 + by2 * fldsizew[player] + player * 220] = p_shadow_timer;
 			else
 				fldt[bx2 + by2 * fldsizew[player] + player * 220] = -1;
-			
+
 			// ƒAƒCƒeƒ€İ’u #1.60c7n1
 			fldi[bx2 + by2 * fldsizew[player] + player * 220] = item[player];
 			flds[bx2 + by2 * fldsizew[player] + player * 220] = bdowncnt[player] + 1;
 		}
 	}
-	
+
 	// Š®‘S‚É‰æ–ÊŠO‚É’u‚¢‚½‚ç€–S #1.60c7s2
 	if(((spawn_y_type) || (repversw >= 57)) && (!puted)) {
 		setGameOver(player);
@@ -14733,7 +14734,7 @@ void setBlock(int player, int bx1, int by1, int kind, int rotate) {
 int judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2; //, result
 	int		k, l, bx3, by3;
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
@@ -14745,7 +14746,7 @@ int judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 			bx2 = (bx1 + blkDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2);
 		}
-		
+
 		/* 4ƒuƒƒbƒN•ª’²‚×‚é */
 		for(k = 0; k < 2; k++)for(l = 0; l < 2; l++) {
 			bx3 = bx2 + k;
@@ -14753,7 +14754,7 @@ int judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 			if((by3 < 2) && (heboGB[player] == 2)) {
 				return -1;
 			}
-			if( ((bx3 < 0) || (bx3 >= fldsizew[player]) || (by3 > fldsizeh[player])) || 
+			if( ((bx3 < 0) || (bx3 >= fldsizew[player]) || (by3 > fldsizeh[player])) ||
 			    ((fld[bx3 + by3 * fldsizew[player] + player * 220] != 0) && (by3 >= 0)) ) {
 				return -1;
 			}
@@ -14768,9 +14769,9 @@ void setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2;
 	int		k, l, bx3, by3;
 	int		puted;
-	
+
 	puted = 0;
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
@@ -14782,19 +14783,19 @@ void setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 			bx2 = (bx1 + blkDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2);
 		}
-		
+
 		/* 4ƒuƒƒbƒN•ªİ’u‚·‚é */
 		for(k = 0; k < 2; k++)for(l = 0; l < 2; l++) {
 			bx3 = bx2 + k;
 			by3 = by2 + l;
-			
+
 		if((bx3 >= 0) && (bx3 < fldsizew[player]) && (by3 >= 0+(1*((repversw <= 27) || (!spawn_y_type)))) && (by3 <= fldsizeh[player])) {
 				if((repversw <= 2) || (by3 >= 2)) puted = 1;
-				
+
 				fld[bx3 + by3 * fldsizew[player] + player * 220] = c_cblk_r[player] + 1;
-				if((c_cblk_r[player] + 1 == 9) && (heboGB[player] == 1)) 
+				if((c_cblk_r[player] + 1 == 9) && (heboGB[player] == 1))
 					fld[bx3 + by3 * fldsizew[player] + player * 220] = 10;
-				
+
 				if((hidden[player] == 8) && (m_roll_blockframe))	//TI•—Á‚¦ƒ[ƒ‹‚É‚àg—p
 					fldt[bx3 + by3 * fldsizew[player] + player * 220] = -60;
 				else if(hidden[player] == 8)
@@ -14803,7 +14804,7 @@ void setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 					fldt[bx3 + by3 * fldsizew[player] + player * 220] = p_shadow_timer;
 				else
 					fldt[bx3 + by3 * fldsizew[player] + player * 220] = -1;
-				
+
 				// ƒAƒCƒeƒ€İ’u #1.60c7n1
 				fldi[bx3 + by3 * fldsizew[player] + player * 220] = item[player];
 				flds[bx3 + by3 * fldsizew[player] + player * 220] = bdowncnt[player] + 1;
@@ -14819,13 +14820,13 @@ void setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 // ƒuƒƒbƒN‚ğÁ‚·@MOVE ERASED ‚¹‚èã‚ª‚è—p
 void removeBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2;
-	
+
 	if(IsBig[player]) {
 		// BIG‚Ìê‡‚Íê—pˆ—‚ğs‚¤ #1.60c7m6
 		removeBigBlock(player, bx1, by1, kind, rotate);
 		return;
 	}
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
@@ -14840,7 +14841,7 @@ void removeBlock(int player, int bx1, int by1, int kind, int rotate) {
 		if( ( bx2 >= 0 ) && ( bx2 <= 9 ) && ( by2 >= 0 + (!spawn_y_type) ) && ( by2 <= fldsizeh[player] ) ) {
 			fld[bx2 + by2 * fldsizew[player] + player * 220] = 0;
 			fldt[bx2 + by2 * fldsizew[player] + player * 220] = 0;
-			
+
 		}
 	}
 }
@@ -14849,7 +14850,7 @@ void removeBlock(int player, int bx1, int by1, int kind, int rotate) {
 void removeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2;
 	int		k, l, bx3, by3;
-	
+
 	for(i = 0 ; i < 4 ; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
@@ -14861,12 +14862,12 @@ void removeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 			bx2 = (bx1 + blkDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2);
 		}
-		
+
 		/* 4ƒuƒƒbƒN•ªÁ‚· */
 		for(k = 0; k < 2; k++)for(l = 0; l < 2; l++) {
 			bx3 = bx2 + k;
 			by3 = by2 + l;
-			
+
 			if( ( bx3 >= 0 ) && ( bx3 <= 9 ) && ( by3 >= 0 + (!spawn_y_type) ) && ( by3 <= fldsizeh[player] ) ) {
 				fld[bx3 + by3 * 10 + player * 220] = 0;
 				fldt[bx3 + by3 * 10 + player * 220] = 0;
@@ -14883,25 +14884,25 @@ void testmenu(void) {
 	cursor = 0;
 	mode = 0;
 	param = 0;
-	
+
 	loop {
 		ClearSecondary();
-		
+
 		// ƒƒCƒ“ƒƒjƒ…[
 		if( mode == 0 ) {
 			param = 0;
-			
+
 			// ƒƒjƒ…[•`‰æ
 			printFont(1, 1, "TEST MENU", 4);
 			printFont(1, 3 + cursor, "b", fontc[rots[0]]);
-			
+
 			printFont(2, 3, "[GRAPHIC TEST]", (cursor == 0) * fontc[rots[0]]);
 			printFont(2, 4, "[RANKING ERASE]",(cursor == 1) * fontc[rots[0]]);
 			printFont(2, 5, "[RESET]",        (cursor == 2) * fontc[rots[0]]);
-			
+
 			// ƒL[“ü—Í
 			KeyInput();
-			
+
 			padRepeat2(0);
 			// ª
 			if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
@@ -14917,13 +14918,13 @@ void testmenu(void) {
 				cursor++;
 				if(cursor > 2) cursor = 0;
 			}
-			
+
 			// A‚ÅŒˆ’è
 			if( getPushState(0, 4) ) {
 				PlaySE(10);
 				mode = cursor + 1;
 			}
-			
+
 			// B‚Å–ß‚é
 			if( getPushState(0, 5) ) {
 				return;
@@ -14932,23 +14933,23 @@ void testmenu(void) {
 		// GRAPHIC TEST
 		else if( mode == 1 ) {
 			ExBltFast(param, 0, 0);
-			
+
 			// ƒL[“ü—Í
 			KeyInput();
-			
+
 			padRepeat(0);
 			// ©
 			if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
 			if( getPressState(0, 2) ) {
 				param--;
-				
+
 				// ˆêƒoƒbƒtƒ@‚ğ•`‰æ‚µ‚È‚¢
 				if( (param == 9) || (param == 23) ) param--;
-				
+
 				// –¢g—pƒvƒŒ[ƒ“‚ğ•`‰æ‚µ‚È‚¢
 				if( (param == 30) ) param = 29;
 				//if( (param == 26) || (param == 27) ) param = 25;
-				
+
 				// ƒ}ƒCƒiƒX‚É‚È‚Á‚Ä‚¢‚½‚ç79‚É‚·‚é
 				if( param < 0 ) param = 89;
 			}
@@ -14956,23 +14957,23 @@ void testmenu(void) {
 			if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
 			if( getPressState(0, 3) ) {
 				param++;
-				
+
 				// –¢g—pƒvƒŒ[ƒ“‚ğ•`‰æ‚µ‚È‚¢
 				//if( (param == 26) || (param == 27) ) param = 28;
 				if( (param == 30) ) param = 31;
-				
+
 				// ˆêƒoƒbƒtƒ@‚ğ•`‰æ‚µ‚È‚¢
 				if( (param == 9) || (param == 23) ) param++;
-				
+
 				// 79ˆÈã‚É‚È‚Á‚Ä‚¢‚½‚ç0‚É‚·‚é
 				if( param > 89 ) param = 0;
 			}
-			
+
 			if( !getPressState(0, 7) ) {
 				sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
 				printFont(0, 29, string[0], 0);
 			}
-			
+
 			// B‚Å–ß‚é
 			if( getPushState(0, 5) ) {
 				mode = 0;
@@ -14983,19 +14984,19 @@ void testmenu(void) {
 			if(param == 0) {
 				// Šm”F
 				printFont(1, 1, "ERASE RANKING?", 4);
-				
+
 				printFont(1, 3, "A+C : YES", 2);
 				printFont(1, 4, "B   : NO",  1);
 			} else {
 				// Á‹Ï‚İ
 				printFont(1, 1, "ERASED", 4);
-				
+
 				printFont(1, 4, "B   : EXIT",1);
 			}
-			
+
 			// ƒL[“ü—Í
 			KeyInput();
-			
+
 			// A+C‚ÅŒˆ’è
 			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
 				PlaySE(10);
@@ -15004,7 +15005,7 @@ void testmenu(void) {
 				RankingInit3();
 				param = 1;
 			}
-			
+
 			// B‚Å–ß‚é
 			if( getPushState(0, 5) ) {
 				mode = 0;
@@ -15013,13 +15014,13 @@ void testmenu(void) {
 		// RESET
 		else if( mode == 3 ) {
 			printFont(1, 1, "RESET GAME?", 4);
-			
+
 			printFont(1, 3, "A+C : YES", 2);
 			printFont(1, 4, "B   : NO",  1);
-			
+
 			// ƒL[“ü—Í
 			KeyInput();
-			
+
 			// A+C‚ÅŒˆ’è
 			if( (getPressState(0, 4)) && (getPressState(0, 6)) ) {
 				PlaySE(10);
@@ -15028,13 +15029,13 @@ void testmenu(void) {
 				restart = 1;
 				return;
 			}
-			
+
 			// B‚Å–ß‚é
 			if( getPushState(0, 5) ) {
 				mode = 0;
 			}
 		}
-		
+
 		spriteTime();
 	}/* loop */
 }
@@ -15047,9 +15048,9 @@ void initialize(void) {
 	SetFillColor(0);
 	ClearSecondary();
 	halt;
-	
+
 	// SetConstParam("Caption", "Now Loading...");
-	
+
 	for ( int ii = 1 ; ii <= 5 ; ii ++ )
 	{
 		TextSize(ii, 12);
@@ -15061,12 +15062,12 @@ void initialize(void) {
 	halt;
 
 
-	// 
+	//
 	TextLayerOn(2, 10, 75);
 		TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
 	halt;
-	
-	
+
+
 	TextLayerOn(3, 10, 10);
 	TextOut(3, "Config Loading");
 	halt;
@@ -15080,14 +15081,14 @@ void initialize(void) {
 	hnext[1] = dispnext;	// #1.60c7o8
 	versus_rot[0] = rots[0];
 	versus_rot[1] = rots[1];
-	
+
 	// ‰æ–Ê”ä—¦‚É‰‚¶‚Ä‰æ‘œ‰ğ‘œ“x‚à•Ï‚¦‚é #1.60c7p9ex
 	if ( screenMode < 2 || screenMode > 6 ) {
 		setDrawRate(1);
 	} else {
 		setDrawRate(2);
 	}
-	
+
 	LoadGraphics("loading.png", 88, 0);		// Loading•\¦
 		i = Rand(5);
 	if ( getDrawRate() != 1 )
@@ -15101,7 +15102,7 @@ void initialize(void) {
 	ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 	halt;
 	loadGraphics(maxPlay);
-	
+
 	// Œø‰Ê‰¹“Ç‚İ‚İ
 	if(se) {
 		TextLayerOn(1, 10, 36);
@@ -15110,16 +15111,16 @@ void initialize(void) {
 		halt;
 		loadWaves();	// #1.60c7o5
 	}
-	
+
 	for(i = 0; i < 50; i++) se_play[i] = 0;
-	
+
 	// BGM“Ç‚İ‚İ
 	if(bgm) {
 		TextLayerOn(5, 10, 49);
 		TextOut(5, "BGM Loading");
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
-		
+
 		if(wavebgm != 0) {
 			loadBGM();	// #1.60c7s6
 		} else {
@@ -15127,7 +15128,7 @@ void initialize(void) {
 			PlayMIDI();
 		}
 	}
-	
+
 	for ( int ii = 1 ; ii <= 5 ; ii ++ )
 	{
 		TextLayerOff(ii);
@@ -15159,10 +15160,10 @@ void initialize(void) {
 	if(caph < 1) caph = 1;
 	if(capx + capw > 320) capw = 320 - capx;
 	if(capy + caph > 240) caph = 240 - capy;
-	
+
 	// ƒXƒ^ƒbƒtƒ[ƒ‹—pƒf[ƒ^‚ğ‰Šú‰»
 //	staffInit();
-	
+
 	// ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€ƒ‰ƒ“ƒLƒ“ƒO“Ç‚İ‚İ
 	if( ST_RankingLoad() ) {
 		ST_RankingInit();
@@ -15210,7 +15211,7 @@ void LoadTitle(){
 
 void LoadBackground(char *nameStr, int p1, int p2) {
 	if(skip_viewbg) return;
-	
+
 	if ( getDrawRate() == 1 )
 		sprintf(string[0], "back/%s", nameStr);
 	else
@@ -15226,9 +15227,9 @@ void loadGraphics(int players) {
 	LoadGraphics("medal.png", 0, 0);
 	/* ƒvƒŒ[ƒ“56‚ÉTIƒƒ_ƒ‹‚ğ“Ç‚İ‚İ #1.60c7m9 */
 	LoadGraphics("medal_ti.png", 56, 0);
-	
+
 	// ƒuƒƒbƒNŠG‚ÍƒvƒŒ[ƒ“40`43‚ÉˆÚ“]‚µ‚Ü‚µ‚½ #1.60c7o8
-	
+
 	/* ƒvƒŒ[ƒ“1‚ÉƒtƒHƒ“ƒg‚ğ“Ç‚İ‚İ */
 	LoadGraphics("hebofont.png", 1, 0);
 	SetColorKeyPos(1, 0, 0);
@@ -15242,13 +15243,13 @@ void loadGraphics(int players) {
 	SetColorKeyRGB(3,0,0,0);
 //	SetColorKeyPos(3, 0, 0);
 //	EnableBlendColorKey(3, 1);
-	
+
 	/* ƒvƒŒ[ƒ“4`6, 24‚ÉƒtƒB[ƒ‹ƒh”wŒi‚ğ“Ç‚İ‚İ */
 	LoadGraphics("heboflb1.png", 4, 0);
 	LoadGraphics("heboflb2.png", 5, 0);
 	LoadGraphics("heboflb3.png", 6, 0);
 	LoadGraphics("heboflb0.png", 24, 0);
-	
+
 	loadBG(players,0); //”wŒi‚¨‚æ‚Ñ”¼“§–¾ˆ—•”‚ğ“Æ—§ C7T2.5EX
 	/* ƒvƒŒ[ƒ“10`‚ÉƒoƒbƒN‚ğ“Ç‚İ‚İ */
 
@@ -15259,31 +15260,31 @@ void loadGraphics(int players) {
 //	/* ƒvƒŒ[ƒ“8‚Éƒ^ƒCƒgƒ‹”wŒi‚ğ“Ç‚İ‚İ */
 	LoadTitle();
 //	LoadGraphics("title.png", 8, 0);
-	
+
 	/* ƒvƒŒ[ƒ“22‚É¬•¶š‘å•¶šƒtƒHƒ“ƒg‚ğ“Ç‚İ‚İ #1.60c7o4 */
 	LoadGraphics("hebofont4.png", 22, 0);
-	
+
 	/* ƒvƒŒ[ƒ“25‚Éƒ‚[ƒh‘I‘ğ‚ÌƒƒbƒZ[ƒW‚ğ“Ç‚İ‚İ  */
 	LoadGraphics("text.png", 25, 0);
 
 	SetColorKeyRGB(25, 0, 0, 0);
-	
+
 	/* ƒvƒŒ[ƒ“26‚É’iˆÊ•\¦‰æ‘œ‚ğ“Ç‚İ‚İ #1.60c7t2.2 */
 	LoadGraphics("grade.png", 26, 0);
 	SetColorKeyRGB(26,255,0,255);
-	
+
 	/* ƒvƒŒ[ƒ“27‚Éƒ~ƒ‰[ƒGƒtƒFƒNƒg‰æ‘œ‚ğ“Ç‚İ‚İ #1.60c7t2.2 */
 	LoadGraphics("mirror_effect_TAP.png", 27, 0);
 	//SetColorKeyRGB(27,255,0,255);
-	
+
 	/* ƒvƒŒ[ƒ“28‚ÉƒAƒCƒeƒ€–¼‚ğ“Ç‚İ‚İ #1.60c7o4 */
 	LoadGraphics("item.png", 28, 0);
 	SetColorKeyRGB(28,255,0,255);
-	
+
 	/* ƒvƒŒ[ƒ“29‚É‘€ì’†ƒuƒƒbƒN‚Ìü‚è˜g‚ğ“Ç‚İ‚İ #1.60c7o5 */
 	LoadGraphics("guide.png", 29, 0);
 	SetColorKeyRGB(29,0,0,0);
-	
+
 	/* ƒvƒŒ[ƒ“31‚ÉƒtƒHƒ“ƒg(‘å)‚ğ“Ç‚İ‚İ */
 	LoadGraphics("hebofont3.png", 31, 0);
 	SetColorKeyRGB(31,0,0,0);
@@ -15324,24 +15325,24 @@ void loadGraphics(int players) {
 	SetColorKeyRGB(38, 255, 0, 255);
 	SetColorKeyRGB(39, 255, 0, 255);
 	}
-	
+
 	/* ƒvƒŒ[ƒ“40`46‚ÉƒuƒƒbƒNŠG‚ğ“Ç‚İ‚İ #1.60c7o8 */
 	LoadGraphics("heboblk0.png", 40, 0);	// TGM
 	LoadGraphics("heboblk1.png", 41, 0);	// TI & ARS & ARS2
 	LoadGraphics("heboblk2.png", 42, 0);	// WORLD & WORLD2
 	LoadGraphics("heboblk3.png", 43, 0);	// WORLD3
-	
+
 	/* ƒvƒŒ[ƒ“44‚Éƒ~ƒbƒVƒ‡ƒ“ƒ‚[ƒh—p‰æ‘œ‚ğ“Ç‚İ‚İ */
 	LoadGraphics("heboris_road.png", 44, 0);
 	SetColorKeyRGB(44, 0, 0, 0);
-	
+
 	/* ƒvƒŒ[ƒ“45‚Éƒ‰ƒCƒ“‹­§Á‹—p‰æ‘œ‚ğ“Ç‚İ‚İ */
 	LoadGraphics("del_field.png", 45, 0);
 	SetColorKeyRGB(45, 0, 0, 0);
-	
+
 	/* ƒvƒŒ[ƒ“46‚Éƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚ÆƒAƒCƒeƒ€ŠG‚ğ“Ç‚İ‚İ */
 	LoadGraphics("heboblk_sp.png", 46, 0);
-	
+
 	/* ƒvƒŒ[ƒ“47`53‚É‰Ô‰Î‚ğ“Ç‚İ‚İ */
 	LoadGraphics("hanabi_red.png",       47, 0);
 	LoadGraphics("hanabi_orange.png",    48, 0);
@@ -15361,11 +15362,11 @@ void loadGraphics(int players) {
 	/* ƒvƒŒ[ƒ“54‚ÉƒAƒCƒeƒ€ƒQ[ƒW‚ğ“Ç‚İ‚İ */
 	LoadGraphics("item_guage.png",       54, 0);
 	SetColorKeyRGB(54, 255, 0, 255);
-	
+
 	/* ƒvƒŒ[ƒ“55‚É‰ñ“]ƒ‹[ƒ‹«”\w•W‚ğ“Ç‚İ‚İ */
 	LoadGraphics("rot.png",              55, 0);
 	SetColorKeyRGB(55, 255, 0, 255);
-	
+
 	/* ƒvƒ‰ƒ`ƒiƒuƒƒbƒNÁ‹ƒGƒtƒFƒNƒg‚ğ“Ç‚İ‚İ */
 	LoadGraphics("perase1.png", 57, 0);
 	LoadGraphics("perase2.png", 58, 0);
@@ -15374,7 +15375,7 @@ void loadGraphics(int players) {
 	LoadGraphics("perase5.png", 61, 0);
 	LoadGraphics("perase6.png", 62, 0);
 	LoadGraphics("perase7.png", 63, 0);
-	
+
 	SetColorKeyRGB(57, 0, 0, 0);
 	SetColorKeyRGB(58, 0, 0, 0);
 	SetColorKeyRGB(59, 0, 0, 0);
@@ -15382,72 +15383,72 @@ void loadGraphics(int players) {
 	SetColorKeyRGB(61, 0, 0, 0);
 	SetColorKeyRGB(62, 0, 0, 0);
 	SetColorKeyRGB(63, 0, 0, 0);
-	
+
 	LoadGraphics("heboblk0B.png", 64, 0);
-	
+
 	LoadGraphics("shootingstar.png", 65, 0);
 	SetColorKeyRGB(65, 0, 0, 0);
-	
+
 	/* TI®ƒ~ƒ‰[‰‰o‰æ‘œ‚ğ“Ç‚İ‚İ */
 	LoadGraphics("fldmirror01.png", 66, 0);
 	LoadGraphics("fldmirror02.png", 67, 0);
 	LoadGraphics("fldmirror03.png", 68, 0);
 	LoadGraphics("fldmirror04.png", 69, 0);
-	
+
 	SetColorKeyRGB(66, 0, 0, 0);
 	SetColorKeyRGB(67, 0, 0, 0);
 	SetColorKeyRGB(68, 0, 0, 0);
 	SetColorKeyRGB(69, 0, 0, 0);
-	
+
 	/* ƒXƒ^ƒbƒtƒ[ƒ‹‚Ì‰æ‘œ‚ğ“Ç‚İ‚İ */
 	LoadGraphics("staffroll.png", 70, 0);
 	SetColorKeyRGB(70, 0, 0, 0);
-	
+
 	LoadGraphics("heboblk4_5.png", 73, 0);
-	
+
 	LoadGraphics("fade.png", 72, 0);
 	SetColorKeyRGB(72, 255, 255, 255);
-	
+
 	LoadGraphics("heboblk_old.png", 74, 0);
-	
+
 	LoadGraphics("tomoyo_eh_fade.png", 75, 0);
 	SetColorKeyRGB(75, 255, 0, 255);
-	
+
 	LoadGraphics("heboblk_big.png", 76, 0);
 	LoadGraphics("line.png", 77, 0);//ƒ‰ƒ“ƒLƒ“ƒO‚Ìƒ‰ƒCƒ“
 	SetColorKeyRGB(77, 0, 0, 0);
-	
+
 	LoadGraphics("laser.png", 78, 0);
 	SetColorKeyRGB(78, 255, 0, 255);
-	
+
 	LoadGraphics("shuffle_field_effect.png", 79, 0);
 	SetColorKeyRGB(79, 255, 0, 255);
-	
+
 	LoadGraphics("heboblk6.png", 80, 0);
 
 	LoadGraphics("text2.png", 81, 0);
 	SetColorKeyRGB(81, 0, 0, 0);
-	
+
 	LoadGraphics("itemerase.png", 82, 0);
 	SetColorKeyRGB(82,0,0,0);
-	
+
 	LoadGraphics("heboblk_sp2.png", 83, 0);
-	
+
 	LoadGraphics("rotstext.png", 84, 0);
 	SetColorKeyRGB(84, 0, 0, 0);
 	LoadGraphics("hebofont5.png", 85, 0);
 	SetColorKeyRGB(85, 172, 136, 199);
-	
+
 	LoadGraphics("gamemodefont.png", 86, 0);
 	SetColorKeyRGB(86, 0, 0, 0);
-	
+
 	LoadGraphics("rollmark.png", 87, 0);
 	SetColorKeyRGB(87, 0, 0, 0);
-	
+
 	//ƒvƒŒ[ƒ“88”Ôg—p’†c
-	
+
 	LoadGraphics("itemGra.png", 89, 0);
-	
+
 //	EnableBlendColorKey(85, 1);
 	/* 050825 ‰æ–Êƒ‚[ƒhŠg’£‰ü‘¢•”•ª-- ‚±‚±‚©‚ç */
 	/* x”{Šg‘å—pƒT[ƒtƒFƒX*/
@@ -15467,16 +15468,16 @@ void loadGraphics(int players) {
 
 	/* ”wŒi”¼“§–¾ˆ—		c‚ÍloadBG‚ÖˆÚ“® C7T2.5EX */
 
-	
+
 	// ƒ^ƒCƒgƒ‹‰æ‘œ‚ğˆÃ‚­‚·‚é #1.60c7o5
 	if(background == 2) {
 		ExCreateSurface(30, 320, 240);
 		SwapToSecondary(30);
 		ExBltFastRect(8, 0, 0,0,0,320,240);
-		
+
 		for(i = 0; i < 3; i++)
 			BlendExBlt(24, (i % 3) * 120, 0, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-		
+
 		SwapToSecondary(30);
 	}
 }
@@ -15530,18 +15531,18 @@ void loadBG(int players,int vsmode){
 				else
 					framemax = back_mov_f[12];
 			}
-			
+
 			SwapToSecondary(i);
-			
+
 			for(movframe = 0; movframe < framemax; movframe++) {
 				tmp1 = ((movframe / 10) * 320);
 				tmp2 = ((movframe % 10) * 240);
-				
+
 				for(j = 0; j < 1 +players; j++) {
 					if(background == 2) {
 						BlendExBltRect(24, (120 + 192 * j - 96 * players) + tmp1, 40 + tmp2, 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 					}
-					
+
 					// ƒOƒ‰ƒf[ƒVƒ‡ƒ“•”•ª‚ğ‚È‚ß‚ç‚©‚É#1.60c7p9ex
 					if(!top_frame){
 						BlendExBltRect(3, (112 + 192 * j - 96 * players) + tmp1, tmp2, 101, 128, 100 - 20, 33, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
@@ -15557,7 +15558,7 @@ void loadBG(int players,int vsmode){
 					}
 				}
 			}
-			
+
 			SwapToSecondary(i);
 		}
 	}
@@ -15610,21 +15611,21 @@ void loadWaves(void) {
 	LoadWave("se/tspin.wav", 34);
 	LoadWave("se/hanabi.wav", 35);
 	LoadWave("se/missionclr.wav", 36);
-	
+
 	LoadWave("se/thunder.wav", 37);
-	
+
 	LoadWave("se/warning.wav", 38);
-	
+
 	LoadWave("se/medal.wav", 39);
 	LoadWave("se/pinch.wav", 40);
-	
+
 	LoadWave("se/platinaerase.wav",41);
 	LoadWave("se/timeextend.wav",42);
 	LoadWave("se/stgstar.wav",43);
 	LoadWave("se/ace_sonic_lock.wav",44);
 	LoadWave("se/regret.wav",45);
 	LoadWave("se/cool.wav",46);
-	
+
 	LoadWave("se/timestop.wav",47);
 	LoadWave("se/tserase.wav",48);
 	SetLoopModeWave(40, 1);	//#1.60c7l6
@@ -15633,7 +15634,7 @@ void loadWaves(void) {
 /* BGM“Ç‚İ‚İ */
 void loadBGM(void) {
 	int i;
-	
+
 	StrCpy(string[0],  "bgm/bgm01");		// bgmlv 0 ƒvƒŒƒC’†iMASTER   0`499jplaywave(50)
 	StrCpy(string[1],  "bgm/bgm02");		// bgmlv 1 ƒvƒŒƒC’†iMASTER 500`899j
 	StrCpy(string[2],  "bgm/bgm03");		// bgmlv 2 ƒvƒŒƒC’†iMASTER 900`998ADEVIL 0`499j
@@ -15654,7 +15655,7 @@ void loadBGM(void) {
 	StrCpy(string[17], "bgm/mission_ex02");	// bgmlv 17 ƒvƒŒƒC’† ƒ~ƒbƒVƒ‡ƒ“‚»‚Ì2
 	StrCpy(string[18], "bgm/mission_ex03");	// bgmlv 18 ƒvƒŒƒC’† ƒ~ƒbƒVƒ‡ƒ“‚»‚Ì3
 	StrCpy(string[19], "bgm/tomoyo_eh_final");	// bgmlv 19 ƒvƒŒƒC E-Heartƒ‰ƒXƒgplaywave(69)
-	
+
 	for(i = 0; i <= 19; i++) {
 		if(bgmload[i] == 1){
 			// Šg’£q‚ğŒˆ‚ß‚é
@@ -15665,15 +15666,15 @@ void loadBGM(void) {
 			else if(wavebgm == 6) StrCat(string[i], ".it");			// MOD (.it)
 			else if(wavebgm >= 7) StrCat(string[i], ".xm");			// MOD (.xm)
 			else StrCat(string[i], ".wav");							// WAV
-			
+
 			// “Ç‚İ‚İ
 			LoadWave(string[i], 50 + i);
-			
+
 			// ƒ‹[ƒvON
 			SetLoopModeWave(50 + i, 1);
 		}
 	}
-	
+
 	// ƒGƒ“ƒfƒBƒ“ƒO‹Èƒ‹[ƒv‚©‚Íroll_bgmloop‚ÅŒˆ‚ß‚é
 	if(!nmlroll_bgmloop)	SetLoopModeWave(56, 0);
 	if(!bgnroll_bgmloop)	SetLoopModeWave(57, 0);
@@ -15793,7 +15794,7 @@ void spriteTime() {
 		SwapToSecondary(23);
 		ExBltFast(23, 160, 0);	// ‹¾‘œ‚ğ‰E”¼•ª‚É”½‰f
 	}
-	
+
 	if(IsPushKey(ssKey)) {			// ƒXƒiƒbƒvƒVƒ‡ƒbƒg #1.60c
 		sprintf(string[0], "ss\\ss_%04d.png", ssc);
 		if( screenMode < 4 ) {
@@ -15825,7 +15826,7 @@ void spriteTime() {
 		SwapToSecondary(9);
 		ExBltFast(9, 0, 0);
 	}
-	
+
 	// ESCƒL[‚ª‰Ÿ‚³‚ê‚½‚ç‘¦I—¹
 	if(IsPushEscKey()) {
 		//RankingSave();
@@ -15841,9 +15842,9 @@ void spriteTime() {
 	}
 
 	halt;
-	
+
 	PlayAllSE();
-	
+
 	ClearSecondary();
 #endif
 

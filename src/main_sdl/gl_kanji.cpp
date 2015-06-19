@@ -174,7 +174,7 @@ bool glKanji::load(const char *filename)
 	char_byte = char_bit/8;
 
 
-	u_char length, temp;
+	unsigned char length, temp;
 	while(fread(&length, 1, 1, in)!=0) {
 		if(length<0x80) {
 			for(int i=0; i<length+1; ++i) {

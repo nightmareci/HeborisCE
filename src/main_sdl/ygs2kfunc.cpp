@@ -1,7 +1,7 @@
 #include "include.h"
 #include "prototypes.h"
 #include "gamedef.h"
-#include "sdl_kanji.h"
+#include "SDL_kanji.h"
 #include "ygs2kfunc.h"
 
 #define		SCREEN_BPP			0

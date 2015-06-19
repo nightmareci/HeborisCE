@@ -1,0 +1,68 @@
+shaki.wav	0
+kon.wav 	1
+gon.wav 	2
+kachi.wav  	3
+rotate.wav  	4
+move.wav  	5
+hold.wav  	6
+tumagari.wav  	7
+gameover.wav  	8
+lvstop.wav  	9
+kettei.wav  	10
+erase1.wav  	11
+erase2.wav  	12
+erase3.wav  	13
+erase4.wav	14
+ready.wav  	15
+go.wav  	16
+applause.wav  	17
+cheer.wav  	18
+levelup.wav  	19
+up.wav  	20
+block1.wav  	21
+block2.wav  	22
+block3.wav  	23
+block4.wav  	24
+block5.wav  	25
+block6.wav  	26
+block7.wav  	27
+ttclear.wav  	28
+gm.wav  	29
+rankup.wav  	30
+stageclear.wav  31
+hurryup.wav  	32
+timeover.wav  	33
+tspin.wav  	34
+hanabi.wav  	35
+missionclr.wav  36
+thunder.wav  	37
+warning.wav	38
+medal.wav  	39
+pinch.wav  	40
+platinaerase.wav41
+timeextend.wav 	42
+stgstar.wav 	43
+ace_sonic_lock.wav44
+regret.wav 	45
+cool.wav 	46
+
+bgm01		// bgmlv0 プレイ中（MASTER   0～499）
+bgm02		// bgmlv1 プレイ中（MASTER 500～899）
+bgm03		// bgmlv2 プレイ中（MASTER 900～998、DEVIL 0～499）
+bgm04		// bgmlv3 プレイ中（DEVIL  500～699）
+bgm05		// bgmlv4 プレイ中（DEVIL  700～999）
+bgm06		// bgmlv5 プレイ中（DEVIL  1000以降）
+ending		// bgmlv6 プレイ中（エンディング）
+ending_b	// bgmlv7 プレイ中（BEGINNERエンディング）
+tomoyo		// bgmlv8 プレイ中 通常（TOMOYO）
+tomoyo_ex	// bgmlv9 プレイ中 EXステージ（TOMOYO）
+vsmode		// bgmlv10 プレイ中（対戦モード）
+title		// bgmlv11 タイトル
+select		// bgmlv12 モードセレクト
+nameentry	// bgmlv13 ネームエントリー
+tomoyo_eh	// bgmlv14 プレイ中 E-Heart（TOMOYO）
+fever		// bgmlv15 FEVER発動中
+mission_ex01	// bgmlv16 プレイ中 ミッションその1
+mission_ex02	// bgmlv17 プレイ中 ミッションその2
+mission_ex03	// bgmlv18 プレイ中 ミッションその3
+tomoyo_eh_final	// bgmlv19 プレイ中 E-Heartラスト

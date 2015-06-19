@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HeborisSDL", "HeborisSDL.vcproj", "{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug_OpenGL = Debug_OpenGL
+		Release = Release
+		Release_OpenGL = Release_OpenGL
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Debug.ActiveCfg = Release|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Debug.Build.0 = Release|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Debug_OpenGL.ActiveCfg = Debug_OpenGL|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Debug_OpenGL.Build.0 = Debug_OpenGL|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Release.ActiveCfg = Release|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Release.Build.0 = Release|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Release_OpenGL.ActiveCfg = Release_OpenGL|Win32
+		{8B0A67DA-B2B1-4685-B254-AF0714C8BBC3}.Release_OpenGL.Build.0 = Release_OpenGL|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

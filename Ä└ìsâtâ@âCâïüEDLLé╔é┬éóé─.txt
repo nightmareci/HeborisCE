@@ -1,0 +1,11 @@
+[実行ファイルについて]
+・ HeborisSDL.exe → SDL版
+・ HeborisDx9.exe → DirectX9版
+
+[DLLファイルについて]
+DLLは Ayame.dll、kbgm32.dll、bassmod.dll がDirectX9版用です。
+あとはみんなSDL版用です。
+
+[config.sav について]
+キーコンフィグのみ、2バージョン間での互換性はありません。
+ご注意下さい。

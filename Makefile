@@ -1,9 +1,17 @@
 CXX          ?= clang++
 INCLUDE_PATH := -I/usr/include/SDL -Isrc/game/ -Isrc/main_sdl -Isrc/
-CXX_FLAGS    += -O2 -march=native -Wno-c++11-compat-deprecated-writable-strings \
-				-DLINUX -DSDL_USE_OPENGL $(shell sdl-config --cflags)
+CXX_FLAGS    += -O2 -march=native -DLINUX -DSDL_USE_OPENGL $(shell sdl-config --cflags)
+CXX_WARNINGS := -Wno-c++11-compat-deprecated-writable-strings -Wno-format-extra-args \
+				-Wno-invalid-source-encoding -Wno-logical-op-parentheses
 LIBS         := -lGL -lSDL -lSDL_mixer -lSDL_image
+PROGRAM_NAME := heboris
 
-all:
-	$(CXX) $(INCLUDE_PATH) $(CXX_FLAGS) src/game/*.cpp src/main_sdl/*.cpp $(LIBS)
+all: $(PROGRAM_NAME)
+	$(CXX) $(INCLUDE_PATH) $(CXX_FLAGS) $(CXX_WARNINGS) \
+	src/game/*.cpp src/main_sdl/*.cpp $(LIBS) -o $(PROGRAM_NAME)
 	@mkdir -p replay
+
+clean:
+	rm -f $(PROGRAM_NAME)
+
+.PHONY: clean

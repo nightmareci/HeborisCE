@@ -1875,6 +1875,7 @@ void title(void) {
 		if(!IsPlayWave(61)) PlayWave(61);
 	}
 
+
 	// ループ開始
 	loop {
 		count++;

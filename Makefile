@@ -5,3 +5,4 @@ LIBS         := -lGL -lSDL -lSDL_mixer -lSDL_image
 
 all:
 	$(CXX) $(INCLUDE_PATH) $(CXX_FLAGS) src/game/*.cpp src/main_sdl/*.cpp $(LIBS)
+	@mkdir -p replay

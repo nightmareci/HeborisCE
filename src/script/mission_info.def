@@ -1,4 +1,4 @@
-str mission_name_editor[42] = 
+str mission_name_editor[42] =
 {
 	"LEVEL STAR",
 	"BIG",
@@ -44,7 +44,7 @@ str mission_name_editor[42] =
 	"GOLD SQUARE",
 };
 
-str mission_name_jp[42] = 
+str mission_name_jp[42] =
 {
 	"レベルスター",
 	"ビッグ",
@@ -90,7 +90,7 @@ str mission_name_jp[42] =
 	"ゴールドｽｸｳｪｱ",
 };
 
-str mission_name_en[42] = 
+str mission_name_en[42] =
 {
 	"Level star",
 	"Big",
@@ -136,7 +136,7 @@ str mission_name_en[42] =
 	"Gold Square",
 };
 
-str mission_info_jp[42] = 
+str mission_info_jp[42] =
 {
 	"%dライン消せ！",//0
 	"%dライン消せ！",//1
@@ -182,7 +182,7 @@ str mission_info_jp[42] =
 	"1種類のブロックだけで\n4x4の正方形を%d個作れ！",
 };
 
-str mission_info_en[42] = 
+str mission_info_en[42] =
 {
 	"Erase %d line(s)!",
 	"Erase %d line(s)!",
@@ -218,7 +218,7 @@ str mission_info_en[42] =
 	"Erase 1 line only\n%d time(s)by\n\n\n         blocks!",
 	"Erase 2 lines at once\n%d time(s)by\n\n\n         blocks!",
 	"Erase 3 lines at once\n%d time(s)\nby other than\n\n\n         blocks!",
-	"Erase 2 lines at once\nwith separated\nby one or two gap rows\n%d time(s)!", 
+	"Erase 2 lines at once\nwith separated\nby one or two gap rows\n%d time(s)!",
 	"Erase 3 lines at once\nwith separated\nby one gap row\n%d time(s)!",
 	"Erase 2 lines at once\nwith separated\nby two gap rows\n%d time(s)!",
 	"Erase 2 lines at once\nby 3-corner T-SPIN\n%d time(s)!",

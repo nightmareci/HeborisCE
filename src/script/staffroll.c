@@ -11,9 +11,9 @@ void staffInitPl(int player) {
 //Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£Å¢Å£
 void staffExecute(int player) {
 	int i;
-	
+
 	if( ending[player] != 2 ) return;
-	
+
 	if(!onRecord[player]) return;
 
 	// ï`âÊÇ∑ÇÈ

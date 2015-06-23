@@ -225,7 +225,7 @@ bool YGS2kInit()
 	{
 		s_pJoyPads[i] = SDL_JoystickOpen(i);
 	}
-	
+
 	/* テキストレイヤーの初期化 */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
@@ -234,9 +234,9 @@ bool YGS2kInit()
 		s_TextLayer[i].size = 16;
 	}
 	YGS2kKanjiFontInitialize();
-	
+
 	s_iActivePad = 0;
-	
+
 	s_uTimeCount = SDL_GetTicks();
 	s_uFPSCount  = SDL_GetTicks();
 	s_uNowFrame  = 0;
@@ -1190,7 +1190,7 @@ void YGS2kKanjiFontInitialize()
 		Kanji_SetCodingSystem(s_pKanjiFont[2], KANJI_SJIS);
 	}
 #elif	USE_PNGKANJI
-	char	*kanjifile[YGS_KANJIFONT_MAX] = 
+	char	*kanjifile[YGS_KANJIFONT_MAX] =
 	{
 		"res/font/kanjifont10w.png",
 		"res/font/kanjifont10b.png",

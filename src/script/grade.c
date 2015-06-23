@@ -198,7 +198,7 @@ void GradeUp2(int player, int lines){
 				}
 			}
 		}
-		
+
 		if( ( (skillg[player] == 15) && (skillbai[player] == 0) )
 			 || ( (skillg[player] == 30) && (skillbai[player] == 1) )
 			 || ( (skillg[player] == 42) && (skillbai[player] == 2) )
@@ -206,17 +206,17 @@ void GradeUp2(int player, int lines){
 		{
 			skillbai[player]++;
 		}
-		
+
 		if(enable_grade[player] == 2){
 			gbai[player] = ((tc[player] / 250) + 1) + (skillbai[player + 1]);//倍率(レベルとSK数で決定)
 		}else if(enable_grade[player] == 3){
 			gbai[player] = ((tc[player] / 250) + 1)*2;//
 		}
-		
+
 		if(gbai[player] < 2)gbai[player]= 2;//1以下にはならない
-		 	
+
 		i[player] = (i[player] * gbai[player]) / 2;
-			
+
 		if(((combo[player]-1)!=0)&&(combo2[player]<3)){//2コンボまで
 			if(lines == 2){
 		 		i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2倍
@@ -236,7 +236,7 @@ void GradeUp2(int player, int lines){
 				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5倍
 			}
 		}
-	
+
 		gpoint[player] = gpoint[player] + i[player];
 		if(enable_grade[player] == 2){
 			if(medal_sk[player] == 4)gbai[player] = 10;//SKメダルが4になると4倍
@@ -268,7 +268,7 @@ void GradeUp2(int player, int lines){
 		}else if(enable_grade[player] == 3){
 			if( (gpoint[player] >= 100) &&(grade2[player] <= 29)) {//MM
 				gup_down[player] = 1;
-				
+
 				gtime[player] = 0;
 				grade2[player]++;
 				gpoint[player] = 0;
@@ -301,7 +301,7 @@ void GradeUp2(int player, int lines){
 				grade[player]=7;//2
 			if((grade2[player]==11)||(grade2[player]==12)||(grade2[player]==13))//S4S5S6
 				grade[player]=8;//1
-				
+
 			if((grade2[player]==14)||(grade2[player]==15)||(grade2[player]==16))//S7S8S9
 				grade[player]=9;//S1
 			if(grade2[player]==17)//m1
@@ -322,7 +322,7 @@ void GradeUp2(int player, int lines){
 				grade[player]=17;//S9
 
 		//grade3つづき
-		
+
 			// gmflag1成立判定#C7T5EX
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade2[player] >= 11) && (time[player] <= 300 * 60)){
@@ -348,20 +348,20 @@ void GradeUp2(int player, int lines){
 void GradeUp3(int player) {//ブロックを置く度に
 	int 	lap_timeT[2], isqcool;
 	int	gup3sec[2],secinlv[2];
-	
+
 	if( (gameMode[player] == 1) || (gameMode[player] == 2) ) {
-	
+
 	gup3sec[player] = tc[player]/100;//レベルからセクションを決定
 	secinlv[player] = tc[player] - ((tc[player]/100)*100);
 	lap_timeT[player] = ( timeN[player] / (1 + (((rots[player] == 6) || (rots[player] == 8)) && (repversw >= 30))) ) + (time99[player] * 2);//レベルストップ中は3倍加算
 		// DS-WORLDで異様にCOOLが出にくいのでC7U1
 	if((secinlv[player] > 80)&&(secinlv[player] < 99)&&(qualityflag[player] != 1)){//quality cool
 		ave_laptime3[player] = lap_timeT[player] / secinlv[player];//セクションレベルで割る
-		
+
 		if(repversw < 49) isqcool = (ave_laptime3[player] < border_time48[border_rank[player]]);
 		else if(repversw < 60) isqcool = (ave_laptime3[player] < border_time59[border_rank[player]]);
 		else isqcool = (ave_laptime3[player] < border_time[border_rank[player]]);
-		
+
 		if(isqcool){//
 			gup_down[player] = 1;//coolの文字を出す
 			PlaySE(46);
@@ -385,7 +385,7 @@ void GradeUp3(int player) {//ブロックを置く度に
 				skillflag[player] = 1;
 			}
 		}
-	}	
+	}
 	// gmflag1成立判定（border_ranklが15以上	// gmflag2成立判定はisregret内（regretが一回もでない
 	if((tc[player] >= 400) &&(!gmflag1_e[player])) {
 		if(tr2[player] >= 80){
@@ -394,7 +394,7 @@ void GradeUp3(int player) {//ブロックを置く度に
 		}
 		gmflag1_e[player] = 1;
 	}
-	
+
 	}
 
 }

@@ -30,7 +30,7 @@ void objectCreate(int p, int s, int x, int y, int v, int w, int j, int c) {
 			objj[i] = j - 1;
 			objc[i] = c;
 			objp[i] = p;	// #1.60c7l1
-			
+
 			break;
 		}
 }
@@ -49,7 +49,7 @@ void objectCreate2(int p, int s, int x, int y, int v, int w, int j, int c) {
 			objj[i] = j - 1;
 			objc[i] = c;
 			objp[i] = p;	// #1.60c7l1
-			
+
 			break;
 		}
 }
@@ -120,13 +120,13 @@ void objectStatBlock(int no) {
 		obj[no] = 0;
 		return;
 	}
-	
+
 	// breakeffectが動作していない問題を修正#1.60c7h9
 	if( (!breakeffect) || (((objj[no] == 8) || (objj[no] == 9)) && (heboGB[objp[no]]==0)) || (objj[no] < 0)) {
 		obj[no] = 0;
 		return;
 	}
-	
+
 	rate = (obj[no] == 3) + 1;
 	if(heboGB[objp[no]]==1){
 		if(obja[no] % 30 < 15)
@@ -153,7 +153,7 @@ void objectStatBlock(int no) {
 
 		if(objj[no] >= 10){
 			zoom = objc[no] * 65536 / 100;
-		
+
 			// 色がバグっていたのを修正 #1.60c7l1
 			ExBltFastRectR(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
 		} else {
@@ -166,7 +166,7 @@ void objectStatBlock(int no) {
 			zoom = objc[no] * 65536 / 200;
 			ExBltFastRectR(76, objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 16 + (l * 160), k * 112, 16, 16, zoom, zoom);
 		}
-		
+
 		if((objy[no] + offset * 100) > 24000) obj[no] = 0;
 
 	} else {
@@ -177,7 +177,7 @@ void objectStatBlock(int no) {
 		// 通常消去時は1/3倍速、高速消去時は1/2倍速としている
 
 		// ExBltRect(3, dposx, dposy, sposx, sposy, width, height);
-		
+
 		if( objj[no] >= 9 ) {
 			// プラチナブロック #1.60c7m9
 			objectplatina_erase(no);
@@ -196,7 +196,7 @@ void objectStatBlock(int no) {
 				if(obja[no] >= 36)
 					obj[no] = 0;
 				else
-				ExBltRect(32 +objj[no], objx[no] / 100 - 44, objy[no] / 100 - 20 - ( (breakti == 0) * 24 ), 
+				ExBltRect(32 +objj[no], objx[no] / 100 - 44, objy[no] / 100 - 20 - ( (breakti == 0) * 24 ),
 					((obja[no]) % (8 - (2 * (breakti))) ) * 96, ((obja[no]) / (8 - (2 * (breakti)))) * 96, 96, 96);
 			}
 		}
@@ -215,7 +215,7 @@ void objectStatBlock2(int no) {
 		ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		obj[no] = 0;
 		return;
-	}	
+	}
 	// breakeffectが動作していない問題を修正#1.60c7h9
 	if( (!breakeffect) || (((objj[no] == 8) || (objj[no] == 9)) && (heboGB[objp[no]]==0)) || (objj[no] < 0)) {
 		obj[no] = 0;
@@ -237,7 +237,7 @@ void objectStatBlock2(int no) {
 		if(!istimestop[objp[no]]){
 			objx[no] = objx[no] + objv[no] / 2;
 			objy[no] = objy[no] + objw[no] / 2;
-	
+
 			objw[no] = objw[no] + 250 / 2;
 			objc[no] = objc[no] + 15 / 2;
 		}
@@ -245,7 +245,7 @@ void objectStatBlock2(int no) {
 
 		if(objj[no] >= 10){
 			zoom = objc[no] * 65536 / 100;
-		
+
 			// 色がバグっていたのを修正 #1.60c7l1
 			ExBltFastRectR(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
 		} else {
@@ -258,7 +258,7 @@ void objectStatBlock2(int no) {
 			zoom = objc[no] * 65536 / 200;
 			ExBltFastRectR(76, objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 16 + (l * 160), k * 112, 16, 16, zoom, zoom);
 		}
-		
+
 		if((objy[no] + offset * 100) > 24000) obj[no] = 0;
 
 	} else {
@@ -277,7 +277,7 @@ void objectStatBlock2(int no) {
 				ExBltRect(3, objx[no] / 100 - 12, objy[no] / 100 - 12, (obja[no] / 4) * 32, 162 + (objj[no] * 32), 32, 32);
 				if(obja[no] >= 20) obj[no] = 0;
 			} else {
-				ExBltRect(32 +objj[no], objx[no] / 100 - 44, objy[no] / 100 - 20 - ( (breakti == 0) * 24 ), 
+				ExBltRect(32 +objj[no], objx[no] / 100 - 44, objy[no] / 100 - 20 - ( (breakti == 0) * 24 ),
 					((obja[no]) % (8 - (2 * (breakti))) ) * 96, ((obja[no]) / (8 - (2 * (breakti)))) * 96, 96, 96);
 			}
 		}
@@ -296,7 +296,7 @@ void objectStatLine(int no) {
 		objw[no] = objw[no] + 50;
 		obja[no]++;
 
-	
+
 
 		if(objw[no] < 0) {
 			objv[no] = objv[no] + 75 * (1 - (objv[no] > 0) * 2);
@@ -308,7 +308,7 @@ void objectStatLine(int no) {
 	}
 	if(objw[no] <= 3600) scale = 65536;
 	else scale = 65536 - ((objw[no] - 3600) * 64);
-	
+
 	if(scale < 0){
 		obj[no] = 0;
 		return;
@@ -321,7 +321,7 @@ void objectStatLine(int no) {
 		if(objy[no] < 9600)
 		objy[no] = objy[no] + 400;
 	}
-*/	
+*/
 
 	ExBltRectR(81, objx[no] / 100 - 3, objy[no] / 100 , 90 * objp[no], 320 + (objj[no] * 32), 90, 32, 65536, scale);
 
@@ -338,7 +338,7 @@ void objectAllCrear(int no) {
 	ExBltRect(81, 110+192 * objp[no] -96 * maxPlay , (objy[no] - 1) * 8 , 100, 150 + 25 * (count % 4 / 2), 100, 25);
 	if( (gameMode[objp[no]] <= 3) || (gameMode[objp[no]] == 5) )
 		printFont(18 +objx[no] * 24 - 12 * maxPlay, objy[no] + 4, "e 4", 5);	//#1.60c7j9
-	
+
 	if(objw[no] > 80)
 		obj[no] = 0;
 }
@@ -362,7 +362,7 @@ void objectPopBlock(int no) {
 
 		if(objj[no] >= 10){
 			zoom = objc[no] * 65536 / 100;
-		
+
 			// 色がバグっていたのを修正 #1.60c7l1
 			ExBltFastRectR(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
 		} else {
@@ -375,23 +375,23 @@ void objectPopBlock(int no) {
 			zoom = objc[no] * 65536 / 200;
 			ExBltFastRectR(76, objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 16 + (l * 160), k * 112, 16, 16, zoom, zoom);
 		}
-		
+
 	if((objy[no] + offset * 100) > 24000) obj[no] = 0;
 }
 
 // 花火
 void objectHanabi(int no) {
-	
+
 	if( (!breakeffect) || (objj[no] < 0) || (objj[no] > 6) ) {
 		obj[no] = 0;
 		return;
 	}
-	
+
 	// 96x96
 	// 48frames
-	
+
 	ExBltRect(47 + objj[no], objx[no], objy[no], (obja[no]%6) * 96, (obja[no]/6) * 96, 96, 96);
-	
+
 	obja[no]++;
 	if(obja[no] >= 48) obj[no] = 0;
 }
@@ -399,9 +399,9 @@ void objectHanabi(int no) {
 void objectplatina_erase(int no) {
 	// 32x32
 	// 60frames
-	
+
 	ExBltRect(57+objj[no]-10, objx[no] / 100 - 12, objy[no] / 100 - 12,(obja[no]%10) * 32, (obja[no]/10) * 32, 32, 32);
-	
+
 	if(obj[no] == 14) obja[no]++;
 	if(obja[no] >= 60) obj[no] = 0;
 }
@@ -418,9 +418,9 @@ void objectNagareboshiP(int no) {
 void objectNagareboshiC(int no) {
 		// 32x32
 		// 35frames
-		
+
 		ExBltRect(65, objx[no], objy[no], (obja[no]%6) * 32, (obja[no]/6) * 32, 32, 32);
-	
+
 		obja[no]++;
 		if(obja[no] >= 35) obj[no] = 0;
 }
@@ -433,7 +433,7 @@ void objectItemWarning(int no){
 		objy[no] = 1;
 	}
 	if((objc[no] == 1) && (abs_YGS2K(GetRealFPS() - GetFPS()) >= 10)) objc[no] = 2;
-	
+
 	if(((objj[no]==2) && (IsBigStart[objp[no]])) || ((objj[no]==36) && (gameMode[objp[no]] != 4)))
 		printFont(15 + 24 * objp[no] - 12 * maxPlay, 15, "NO EFFECT", fontc[rots[objp[no]]]);
 	else{
@@ -458,7 +458,7 @@ void objectItemWarning(int no){
 		}
 	}
 	obja[no]++;
-	
+
 	if(obja[no] > 50) obj[no] = 0;
 
 }
@@ -471,7 +471,7 @@ void objectGetmedal(int no){
 		obj[no] = 0;
 		return;
 	}
-	
+
 	if(medaltype){	//TIメダル（拡大→縮小）
 		if(obja[no] <= 8){
 			k = obja[no] * (8 / 5);
@@ -509,9 +509,9 @@ void objectGetmedal(int no){
 void objectitem_erase(int no) {
 	// 80x80
 	// 30frames
-	
+
 	ExBltRect(82, objx[no] / 100 - 36, objy[no] / 100 - 36,(obja[no]%6) * 80, (obja[no]/6) * 80, 80, 80);
-	
+
 	if(!istimestop[objp[no]]) obja[no]++;
 	if(obja[no] >= 30) obj[no] = 0;
 }
@@ -519,7 +519,7 @@ void objectitem_erase(int no) {
 void objectdelfield(int no) {
 
 	ExBltRect(45, objx[no] / 100, objy[no] / 100,0, obja[no] * 8 + (128 * (objc[no])), 80, 8);
-	
+
 	if(!istimestop[objp[no]]){
 		obja[no]++;
 		if((wait2[objp[no]] <= 12) && ((timeOn[objp[no]]) || (ending[objp[no]] == 2) || ((objc[no]) && (repversw >= 65))))
@@ -530,7 +530,7 @@ void objectdelfield(int no) {
 //エフェクト全消去
 void objectClear(void) {
 	int		i;
-	
+
 	for(i = 0; i < 100; i++) {
 		obj[i] = 0;
 	}
@@ -538,7 +538,7 @@ void objectClear(void) {
 //指定したプレイヤーのエフェクトのみ全消去
 void objectClearPl(int player) {
 	int		i;
-	
+
 	for(i = 0; i < 100; i++) {
 		if(objp[i] == player)
 			obj[i] = 0;
@@ -547,7 +547,7 @@ void objectClearPl(int player) {
 
 void objectComboClearPl(int player) {
 	int		i;
-	
+
 	for(i = 0; i < 100; i++) {
 		if((obj[i] == 2) && (objy[i] / 100 == 100 + 32 * player))
 			obj[i] = 0;

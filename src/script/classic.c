@@ -39,7 +39,7 @@ void statCMove(int player) {
 
 	if(!statc[player * 10 + 2]) {
 		padRepeat(player);
-		
+
 		// Hold
 		if((repversw >= 64) && (!statc[player * 10 + 6])){
 			doHold(player, 0);
@@ -64,7 +64,7 @@ void statCMove(int player) {
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
 			if(stat[player] == 7) return;
 		}
-		
+
 		// ロールロール処理 #1.60c7j5
 		rolling = 0;
 		if(isrollroll[player]) {
@@ -114,10 +114,10 @@ void statCMove(int player) {
 				synchro = 1;
 				if(istrance[player])
 					c_cblk_r[player] = ccol[k];
-				
+
 				// 回転させた回数+1 #1.60c7s6
 				statc[player * 10 + 5]++;
-				
+
 				// T-SPIN権利獲得 #1.60c7n6
 				if( judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0 ) {
 					if((blk[player] == 4)&&(tspin_type >0) ) tspin_flag[player] = 1;
@@ -125,7 +125,7 @@ void statCMove(int player) {
 			} else if( (blk[player] != 0) && (!disable_wallkick) && (heboGB[player]==0) ) {	// ブロックが棒以外のとき
 				// 回転できないときは、左右に動かしてみよう
 				move = 0;
-				
+
 				// BIGの場合は2マス分調べる #1.60c7o9
 				for(i = 0; i <= IsBig[player]; i++) {
 					// 重なっている部分が真中の列だけではなければ
@@ -135,7 +135,7 @@ void statCMove(int player) {
 							move = -1 -i;
 						if(judgeBlock(player, bx[player] + 1 + i, by[player], k, bak) == 0)
 							move = 1 + i;
-						
+
 						if(move) {
 							if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 							bx[player] = bx[player] + move;
@@ -144,10 +144,10 @@ void statCMove(int player) {
 							synchro = 1;
 							if(istrance[player])
 								c_cblk_r[player] = ccol[k];
-							
+
 							// 回転させた回数+1 #1.60c7s6
 							statc[player * 10 + 5]++;
-							
+
 							// T-SPIN権利獲得 #1.60c7n6
 							if( judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0 ) {
 								if((blk[player] == 4)&&(tspin_type >0) ) tspin_flag[player] = 1;
@@ -163,12 +163,12 @@ void statCMove(int player) {
 								synchro = 1;
 								if(istrance[player])
 									c_cblk_r[player] = wcol[k];
-								
+
 								// 回転させた回数+1 #1.60c7s6
 								statc[player * 10 + 5]++;
-								
+
 								kickc[player]++;
-								
+
 								// T-SPIN権利獲得 #1.60c7n6
 								if( judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0 ) {
 									if((blk[player] == 4)&&(tspin_type >0) ) tspin_flag[player] = 1;
@@ -191,7 +191,7 @@ void statCMove(int player) {
 								move = 1 + i;
 							else if(judgeBlock(player, bx[player] + 2 +i, by[player], k, bak) == 0)
 								move = 2 + i;
-							
+
 							if(move) {
 								if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 								bx[player] = bx[player] + move;
@@ -200,10 +200,10 @@ void statCMove(int player) {
 								synchro = 1;
 								if(istrance[player])
 									c_cblk_r[player] = ccol[k];
-								
+
 								// 回転させた回数+1 #1.60c7s6
 								statc[player * 10 + 5]++;
-								
+
 								break;
 							}
 						} else if(kickc[player] == 0) {	// 縦になる時
@@ -211,11 +211,11 @@ void statCMove(int player) {
 								move = -1 -i;
 							else if(judgeBlock(player, bx[player], by[player] -2 -i, k, bak) == 0)
 								move = -2 -i;
-							
+
 							// 接地していない場合は蹴らない #1.60c7k5
 							if( (judgeBlock(player,bx[player],by[player]+1+i,k,rt[player]) == 0) && (repversw >= 8) )
 								move = 0;
-							
+
 							if(move) {
 								if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 								by[player] = by[player] + move;
@@ -226,13 +226,13 @@ void statCMove(int player) {
 									c_cblk_r[player] = ccol[k];
 								// 回転させた回数+1 #1.60c7s6
 								statc[player * 10 + 5]++;
-								
+
 								kickc[player]++;
 								break;
 							}
 						}
 					}
-					
+
 				}
 			}
 		}
@@ -255,7 +255,7 @@ void statCMove(int player) {
 			}
 			// BIG時、2マス単位モードの場合は移動量を2倍する #1.60c7m6
 			if(IsBig[player] && BigMove[player]) move = move * 2;
-			
+
 			if((mpc[player] == 1) || (mpc[player] >= waitt[player]) || ((isremote[player]) && (gameMode[player] != 4)))
 				if(judgeBlock(player, bx[player] + move, by[player], blk[player], rt[player]) == 0) {
 					bx[player] = bx[player] + move;
@@ -271,7 +271,7 @@ void statCMove(int player) {
 		// ↓を離している、またはdowntypeが0の場合、下入れ制限解除#1.60c7f9
 		if((!getPressState(player, 1-(1*(isUDreverse[player])))) || (!downtype)) down_flag[player] = 0;
 		if((!getPressState(player, 0+(1*(isUDreverse[player])))) || (!downtype) || (repversw < 12)) up_flag[player] = 0;
-		
+
 		// 高速落下!! 下入れ制限改造#1.60c7f9
 		if((!move) && getPressState(player, 1-(1*(isUDreverse[player]))) && (sp[player] < 60) && (!down_flag[player]) && ((statc[player * 10 + 4]) || (repversw < 27))) {
 			bs[player] = 61;
@@ -280,7 +280,7 @@ void statCMove(int player) {
 			}else{
 				qdrop[player]++;	//遅い分のドロップボーナス半減は、スコア計算時に
 			}
-		}		
+		}
 		if((ismagnetblock[player]) && (repversw >= 41)) bs[player] = bs[player] + 30;
 
 		for(bottom = by[player]; judgeBlock(player, bx[player], bottom, blk[player], rt[player]) == 0; bottom++);
@@ -304,21 +304,21 @@ void statCMove(int player) {
 
 			// 下入れ制限#1.60c7f9
 			// 下入れ即接着 #1.60c7k8
-			if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) 
+			if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player])
 						&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 				if (repversw < 9)
 					bk[player] = bk[player] + 8;
-				else 
+				else
 					bk[player] = 100;
             }
-			
+
 			// 固定
 			if(bk[player] > lockT) {
 				if(heboGB[player]==0)
 					PlaySE(3);
 				else if(heboGB[player] == 1)
 					PlaySE(1);
-				kickc[player] = 0;	// 永久床蹴り防止用 #1.60c3 
+				kickc[player] = 0;	// 永久床蹴り防止用 #1.60c3
 				statc[player * 10 + 2]++;
 				drawCBlock(player, 0, 0, 0, 10, 0);
 				// 下入れ制限#1.60c7f9
@@ -330,7 +330,7 @@ void statCMove(int player) {
 			// T.L.S. (Temporary Landing System)  (c)1998 AR●KA(^^;
 			// 別関数に独立 #1.60c7k4
 			drawTLSBlock(player, bottom);
-			
+
 
 			// 上キーで一瞬で落下
 			// 上入れ制限追加 #1.60c7p1
@@ -367,15 +367,15 @@ void statCMove(int player) {
 				if((downtype) && (repversw < 54)) up_flag[player] = 1;
 				statc[player * 10 + 5] = 0;	// 回転させた数リセット #1.60c7s6
 			}
-		}		
-		
+		}
+
 		// ブロックが落ちる
 		while(bs[player] > 60) {
 			bk[player] = 0;
 			tspin_flag[player] = 0;	// T-SPIN権利剥奪 #1.60c7o9
-			
+
 			bs[player] = bs[player] - 60;
-			
+
 			// BIG時、2マス単位モードの場合は落ちる量を2倍する #1.60c7m6
 			// 3マス離れていても接地してしまうのを修正 #1.60c7o9
 			if( (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) == 0)
@@ -385,15 +385,15 @@ void statCMove(int player) {
 					drawCBlock (player, blk[player] + 1, 5, 0 , 0, 1);
 				by[player] = by[player] + 1 + (IsBig[player] && BigMove[player] && !ybigtype);
 			}
-			
+
 			// 地面にくっついた
 			if(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player])) {
 				by[player] = bottom - 1;
 				bs[player] = 0;
 				if(!smooth) don = 1;
-				
+
 				// 下キーで即固定 #1.60c7r3
-				if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) && (repversw >= 15) 
+				if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) && (repversw >= 15)
 							&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 					PlaySE(1);
 					if(heboGB[player]==0)
@@ -412,7 +412,7 @@ void statCMove(int player) {
 		}
 
 		statc[player * 10 + 4] = 1; 				 // 最初の1フレームは移動させないゾ
-		
+
 		if((don) && (heboGB[player]!=1)) PlaySE(1);
 
 		// ブロックを描く
@@ -430,28 +430,28 @@ void statCMove(int player) {
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
 			if(stat[player] == 7) return;
 		}
-		
+
 		statc[player * 10 + 6] = 0;
 		if((repversw >= 59) && (statc[player * 10 + 2] != 0)) goto lockflash;	// SUPERなSKIP
 	} else {
 		lockflash:
 		statc[player * 10 + 2]++;
 		if((c_nblk[0 + player * 6] != 8) && (c_nblk[0 + player * 6] >= 0))drawCBlock (player, 0, 0, 0, 10, 0);
-		
+
 		// ↓を離している場合、下入れ制限解除#1.60c7n6
 		if((!getPressState(player, 1-(1*(isUDreverse[player])))) && (repversw >= 10)) down_flag[player] = 0;
 		else if((downtype) && (repversw >= 54)) down_flag[player] = 1;
 		if(!getPressState(player, 0+(1*(isUDreverse[player])))) up_flag[player] = 0;
 		else if((downtype) && (repversw >= 54)) up_flag[player] = 1;
-		
+
 		if(statc[player * 10 + 2] > 2 - (repversw >= 9)) {	// 接着時の灰色化を1フレ短縮 #1.60c7k8
 			setBlock(player, bx[player], by[player], blk[player], rt[player]);
 			if(stat[player] == 7) return;
-			
+
 			ndelay[player] = 1;
-			
+
 			lc[player]++;
-			
+
 			// T-SPIN獲得 #1.60c7s6
 			//すでにtspin_flagは立ってる
 			if((tspin_flag[player]) && (blk[player] == 4) && ((tspin_type>=2) || (gameMode[player] == 8)) && (statc[player * 10 + 5] > 0) && (isTSpin(player) >= 3) ) {
@@ -462,17 +462,17 @@ void statCMove(int player) {
 			} else if((tspin_type==2) || (gameMode[player] == 8)){
 				tspin_flag[player] = 0;
 			}
-			
+
 			// TGMLV上昇はstatBlockに移転しました#1.60c7i8
 			if(ending[player] == 0) {
 				// ブロックを着床させた回数 #1.60c7i2
-				bdowncnt[player]++;	
+				bdowncnt[player]++;
 				st_bdowncnt[player]++;
 				if((gameMode[player] == 3) && (devil_nextrise[player] >= 0) && (devil_randrise)) {
 					devil_nextrise[player]--;
 				}
 			}
-			
+
 			// エンディング中の花火発生 #1.60c7s8
 			if( (ending[player] == 2) && (gameMode[player] == 0) && (repversw <= 37)) {
 				hanabi_total[player]++;
@@ -524,17 +524,17 @@ void statCMove(int player) {
 // 戻り値が-1のときは蹴れる
 int judgeBlockRotate(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, xx, bx2, by2;
-	
+
 	if(IsBig[player]) {
 		// BIGの場合は専用の判定処理を行う #1.60c7m6
 		return judgeBigBlockRotate(player, bx1, by1, kind, rotate);
 	}
-	
+
 	for(i = 0; i < 4; i++) {
 		xx = blkDataX[kind * 16 + rotate * 4 + i];
 		bx2 = (bx1 + blkDataX[kind * 16 + rotate * 4 + i]);
 		by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i]);
-		
+
 		// 中央でない場合は重なっているか判定
 		if(xx != 1) {
 			if( ((bx2 < 0) || (bx2 >= fldsizew[player]) || (by2 > fldsizeh[player]))
@@ -552,20 +552,20 @@ int judgeBlockRotate(int player, int bx1, int by1, int kind, int rotate) {
 int judgeBigBlockRotate(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2, xx;
 	int		k, l, bx3, by3;
-	
+
 	for(i = 0; i < 4; i++) {
 		xx = blkDataX[kind * 16 + rotate * 4 + i];
 		bx2 = (bx1 + xx * 2);
 		by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2);
-		
+
 		// 中央でない場合
 		if( xx != 1 ) {
 			/* 4ブロック分調べる */
 			for(k = 0; k < 2; k++)for(l = 0; l < 2; l++) {
 				bx3 = bx2 + k;
 				by3 = by2 + l;
-				
-				if( ((bx3 < 0) || (bx3 >= fldsizew[player]) || (by3 > fldsizeh[player])) || 
+
+				if( ((bx3 < 0) || (bx3 >= fldsizew[player]) || (by3 > fldsizeh[player])) ||
 				    ((fld[bx3 + by3 * fldsizew[player] + player * 210] != 0) && (by3 >= 0)) ) {
 					return -1;
 				}

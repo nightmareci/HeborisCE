@@ -52,10 +52,10 @@ namespace readdef
 	int readdef()
 	{
 		int i,j, cfgbuf[100];
-		
+
 
 		keyAssign[7] = holdkey[0];
-		keyAssign[17] = holdkey[1];	
+		keyAssign[17] = holdkey[1];
 
 		FillMemory(&cfgbuf, 100 * 4, 0);
 		cfgbuf[0] = 0x4F424550;
@@ -102,7 +102,7 @@ namespace readdef
 		cfgbuf[70] = dispnextkey[0];
 		cfgbuf[71] = dispnextkey[1];
 
-		
+
 		cfgbuf[74] = fontc[0] + fontc[1] * 0x100 + fontc[2] * 0x10000 + fontc[3] * 0x1000000;
 		cfgbuf[75] = digitc[0] + digitc[1] * 0x100 + digitc[2] * 0x10000 + digitc[3] * 0x1000000;
 		cfgbuf[76] = fontc[4] + fontc[5] * 0x100 + fontc[6] * 0x10000 + fontc[7] * 0x1000000 ;

@@ -51,7 +51,7 @@ void statSelectLevel(int player) {
 		} else if(rots[0] == 8) {
 			printFont(20 - 12 * maxPlay, 6, "D.R.S", count % 9 * (vslevel[0] == 1));
 		}
-		
+
 		printFont(15 - 12 * maxPlay, 7, "ROTS.+", color);
 		if(death_plus[0])
 			printFont(23 - 12 * maxPlay, 7, "ON", count % 9 * (vslevel[0] == 2));
@@ -63,13 +63,13 @@ void statSelectLevel(int player) {
 
 		sprintf(string[0], "W1:%2d", wait1[player]);//SYUTUGEN
 		printFont(15 - 12 * maxPlay, 9, string[0], count % 9 * (vslevel[player] == 3));
-		sprintf(string[0], "W2:%2d", wait2[player]);//SYOUKYO 
+		sprintf(string[0], "W2:%2d", wait2[player]);//SYOUKYO
 		printFont(20 - 12 * maxPlay, 9, string[0], count % 9 * (vslevel[player] == 4));
 		sprintf(string[0], "W3:%2d", wait3[player]);//SETTYAKU
 		printFont(15 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[player] == 5));
 		sprintf(string[0], "WT:%2d", waitt[player]);//YOKOTAME
 		printFont(20 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[player] == 6));
-		
+
 			//それぞれ項目名表示
 		if(!english){
 			if(vslevel[player] == 3)
@@ -94,11 +94,11 @@ void statSelectLevel(int player) {
 		printFont(15 - 12 * maxPlay, 13, "SPEED", count % 9 * (vslevel[0] == 7));
 		sprintf(string[0], "%7d", sp[0]);
 		printFont(18 - 12 * maxPlay, 13, string[0], count % 9 * (vslevel[0] == 7));
-		
+
 		printFont(15 - 12 * maxPlay, 14, "OTHERS", color);
-		
+
 		// シングル台での表示ずれ修正#1.60c6.1a
-		
+
 		// HIDDEN
 		sprintf(string[0], "HIDDEN  %2d", hidden[0]);
 		if(hidden[player] <= 7){
@@ -112,7 +112,7 @@ void statSelectLevel(int player) {
 		}else if(hidden[player] == 11){
 			printFont(15 - 12 * maxPlay, 15, "HIDDEN UM1", count % 9 * (vslevel[0] == 8));
 		}
-		
+
 		// エンディングのテスト#1.60cf
 		if(p_ending == 0)
 			printFont(15 - 12 * maxPlay, 16, "ENDING   e", count % 9 * (vslevel[0] == 9));
@@ -126,12 +126,12 @@ void statSelectLevel(int player) {
 			printFont(15 - 12 * maxPlay, 16, "ENDING1300", count % 9 * (vslevel[0] == 9));
 		else if(p_ending == 5)
 			printFont(15 - 12 * maxPlay, 16, "ENDINGFAST", count % 9 * (vslevel[0] == 9));
-		
+
 		// FAVORITES (from hogeパッチ)
 		printFont(15 - 12 * maxPlay, 17, "SP PRESET", color);
 		printFont(15 - 12 * maxPlay, 18, waitname[p_setting], count % 9 * (vslevel[0] == 10));
-		
-		// Finishtype 
+
+		// Finishtype
 		printFont(15 - 12 * maxPlay, 19, "GOAL TYPE", color);
 		if(p_goaltype == 0)
 			printFont(15 - 12 * maxPlay, 20, "ENDLESS", count % 9 * (vslevel[0] == 11));
@@ -143,7 +143,7 @@ void statSelectLevel(int player) {
 			printFont(15 - 12 * maxPlay, 20, "BLOCK", count % 9 * (vslevel[0] == 11));
 		else if(p_goaltype == 4)
 			printFont(15 - 12 * maxPlay, 20, "TIME", count % 9 * (vslevel[0] == 11));
-		
+
 		//それぞれ終了タイプの項目名表示
 		//表示するレベルに変換
 		if(p_goaltype==0){
@@ -161,7 +161,7 @@ void statSelectLevel(int player) {
 		sprintf(string[0], "%3dSEC", p_goaltypenumlist[p_goaltypenum]*2);
 		printFont(15 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 12));
 		}
-		
+
 		// ITMブロック #1.60c7e // playerごと #1.60c7h8
 		printFont(15 - 12 * maxPlay, 22, "ITEM", color);
 		if(p_item_mode)
@@ -184,7 +184,7 @@ void statSelectLevel(int player) {
 			printFont(20 - 12 * maxPlay, 7, "HEBO+", count % 9 * (vslevel[0] == 15));
 		else if(upLineT[0] == 2)
 			printFont(19 - 12 * maxPlay, 7, "RANDOM", count % 9 * (vslevel[0] == 15));
-		
+
 		sprintf(string[0], "LINE(S) %2d", raise_shirase_lines);
 		printFont(15 - 12 * maxPlay, 8, string[0], count % 9 * (vslevel[0] == 16));
 
@@ -195,7 +195,7 @@ void statSelectLevel(int player) {
 		printFont(15 - 12 * maxPlay, 10, "BACKGROUND", color);
 		sprintf(string[0],"NO.%d",p_backno);
 		printFont(15 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[0] == 18));
-		
+
 		// TLSをレベルアップタイプと切り離す #1.60c7i2
 		printFont(15 - 12 * maxPlay, 12, "TLS", color);
 		if(tlsrange == 0) {
@@ -219,7 +219,7 @@ void statSelectLevel(int player) {
 			printFont(23 - 12 * maxPlay, 16, "ON", count % 9 * (vslevel[0] == 21));
 		else
 			printFont(22 - 12 * maxPlay, 16, "OFF", count % 9 * (vslevel[0] == 21));
-		
+
 		// フィールドミラー #1.60c7j5
 		printFont(15 - 12 * maxPlay, 17, "MIRROR", color);
 		if(fmirror) {
@@ -272,7 +272,7 @@ void statSelectLevel(int player) {
 			sprintf(string[0],"%3d",p_stage+1);
 			printFont(22 - 12 * maxPlay, 24, string[0], count % 9 * (vslevel[0] == 28));
 		}
-	
+
 	} else {	// 3ページ目 #1.60c7j5
 			// 初手に黄色、紫、緑があるか #1.60c7f5
 		printFont(15 - 12 * maxPlay, 5, "NEXT", color);
@@ -309,7 +309,7 @@ void statSelectLevel(int player) {
 			sprintf(string[0], "%d", hold[0]);
 			printFont(24 - 12 * maxPlay, 17, string[0], count % 9 * (vslevel[0] == 36));
 		}
-		
+
 		// ツモ読み込み #1.60c7g3
 		printFont(15 - 12 * maxPlay, 18, "NEXT PTN", color);
 		if(p_nextblock==0){
@@ -338,12 +338,12 @@ void statSelectLevel(int player) {
 		} else {
 			printFont(24 - 12 * maxPlay, 20, "e", count % 9 * (vslevel[0] == 38));
 		}
-		
+
 		// NEXTC
 		printFont(15 - 12 * maxPlay, 21, "NEXTC", color);
 		sprintf(string[0], "%4d", nextc[0]);
 		printFont(21 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 39));
-		
+
 		// square
 		printFont(15 - 12 * maxPlay, 22, "SQUARE", color);
 		if(squaremode[0]) {
@@ -351,7 +351,7 @@ void statSelectLevel(int player) {
 		} else {
 			printFont(24 - 12 * maxPlay, 22, "e", count % 9 * (vslevel[0] == 40));
 		}
-		
+
 		// heboGB
 		if(!p_heboGBlv){
 			printFont(15 - 12 * maxPlay, 23, "OLDSTYLE e", count % 9 * (vslevel[0] == 41));
@@ -359,7 +359,7 @@ void statSelectLevel(int player) {
 			sprintf(string[0], "OLDSTYLE%2d", p_heboGBlv);
 			printFont(15 - 12 * maxPlay, 23, string[0], count % 9 * (vslevel[0] == 41));
 		}
-		
+
 		// FPS #1.60c7n7
 		printFont(15 - 12 * maxPlay, 24, "FPS", color);			// Y座標ズレ修正 #1.60c7p9ex改造
 		sprintf(string[0], "%2d", max_fps);
@@ -372,9 +372,9 @@ void statSelectLevel(int player) {
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statc[1])){
 		if(getPressState(player, 0)) {
 			PlaySE(5);
-	
+
 			vslevel[0]--;
-	
+
 			if(vslevel[0] < 0) vslevel[0] = 42;	// #1.60c7p9ex改造
 		}
 	}
@@ -383,7 +383,7 @@ void statSelectLevel(int player) {
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statc[1])){
 		if(getPressState(player, 1)) {
 			PlaySE(5);
-	
+
 			vslevel[0]++;
 			if(vslevel[0] > 42) vslevel[0] = 0;	// #1.60c7p9ex改造
 		}
@@ -423,7 +423,7 @@ void statSelectLevel(int player) {
 		if(vslevel[0] == 2) {
 			death_plus[0] = !death_plus[0];
 		}
-		
+
 		// 出現
 		if(vslevel[0] == 3) {
 			wait1[0]--;
@@ -474,12 +474,12 @@ void statSelectLevel(int player) {
 			p_goaltypenum--;
 			if(p_goaltypenum < 0) p_goaltypenum  = 9;
 		}
-		
+
 		// ITEM
 		if(vslevel[0] == 13){
 			p_item_mode = !p_item_mode;
 		}
-		
+
 		// SERIAGARIKA?
 		if(vslevel[0] == 14) {
 			p_shirase[0] = !p_shirase[0];
@@ -511,7 +511,7 @@ void statSelectLevel(int player) {
 		if(vslevel[0] == 20) {
 			IsBigStart[0] = !IsBigStart[0];
 		}
-		// []ブロック #1.60c7e 
+		// []ブロック #1.60c7e
 		if(vslevel[0] == 21) {
 			p_over1000 = !p_over1000;
 			setNextBlockColors(0, 1);
@@ -539,7 +539,7 @@ void statSelectLevel(int player) {
 		// サンダー
 		if(vslevel[0] == 27) {
 			thunder = !thunder;
-		}		
+		}
 		// 初期状態フィールド #1.60c7f6
 		if(vslevel[0] == 28) {
 			//use_fld = !use_fld;
@@ -623,7 +623,7 @@ void statSelectLevel(int player) {
 		if(vslevel[0] == 38) {
 			p_nextpass = !p_nextpass;
 		}
-		
+
 		// NEXTC
 		if(vslevel[0] == 39) {
 			nextc[0]--;
@@ -632,12 +632,12 @@ void statSelectLevel(int player) {
 			b_nextc[0] = nextc[0];
 			setNextBlockColors(0, 1);
 		}
-		
+
 				// SQUARE #1.60c7j9
 		if(vslevel[0] == 40) {
 			squaremode[0] = !squaremode[0];
 		}
-		
+
 		// GB
 		if(vslevel[0] == 41){
 			p_heboGBlv--;
@@ -648,7 +648,7 @@ void statSelectLevel(int player) {
 			max_fps--;
 			if(max_fps <= 0) max_fps = 99;
 		}
-	
+
 		}
 	}
 
@@ -657,9 +657,9 @@ void statSelectLevel(int player) {
 		if(getPressState(player, 3)) {
 			PlaySE(3);
 			// 数値変更(これも手抜き)
-	
+
 			// BGM#1.60c6.2d
-			// 4番以降を選べる#1.60c7f5	
+			// 4番以降を選べる#1.60c7f5
 			if(vslevel[0] == 0) {
 				p_bgmlv++;
 				if(p_bgmlv > 19) p_bgmlv = 0;
@@ -740,8 +740,8 @@ void statSelectLevel(int player) {
 			if(vslevel[0] == 13){
 				p_item_mode = !p_item_mode;
 			}
-			
-			
+
+
 			// SHIRASE flags
 			if(vslevel[0] == 14) {
 				p_shirase[0] = !p_shirase[0];
@@ -758,7 +758,7 @@ void statSelectLevel(int player) {
 				raise_shirase_interval++;
 				if(raise_shirase_interval > 100) raise_shirase_interval = 2;
 			}
-			
+
 			// 背景
 			if(vslevel[0] == 18) {
 				p_backno++;
@@ -774,7 +774,7 @@ void statSelectLevel(int player) {
 			if(vslevel[0] == 20) {
 				IsBigStart[0] = !IsBigStart[0];
 			}
-			// []ブロック #1.60c7e 
+			// []ブロック #1.60c7e
 			if(vslevel[0] == 21) {
 			p_over1000 = !p_over1000;
 			setNextBlockColors(0, 1);
@@ -872,7 +872,7 @@ void statSelectLevel(int player) {
 					c_hblk[0] = ccol[ hold[0] ];
 				}
 			}
-	
+
 			// ツモ読み込み #1.60c7g3
 			if(vslevel[0] == 37) {
 				p_nextblock++;
@@ -880,12 +880,12 @@ void statSelectLevel(int player) {
 				b_nextc[0] = 0;
 				versusInit(0);					// ネクストを初期化
 			}
-	
+
 			// ツモ送り #1.60c7j9
 			if(vslevel[0] == 38) {
 				p_nextpass = !p_nextpass;
 			}
-			
+
 			// NEXTC
 			if(vslevel[0] == 39) {
 				nextc[0]++;
@@ -927,7 +927,7 @@ void statSelectLevel(int player) {
 		} else if(vslevel[0] == 28) {
 			// INIT FLD
 			PlaySE(10);
-			
+
 			if(p_stage != -1) {
 				stage[0] = p_stage;			// ステージ設定
 				stat[0] = 18;					// ステージエディタ
@@ -960,7 +960,7 @@ void PracticeStart(void){
 	shirase[0] = raise_shirase_interval;	// 最初のせり上がりカウントを設定 #1.60c7i2
 
 	hiddenProc(0);
-	
+
 	if(p_goaltype==4){
 		ltime[0] = p_goaltypenumlist[p_goaltypenum] * 2 * 60;
 	}
@@ -985,25 +985,25 @@ void PracticeStart(void){
 	}else if ( p_ending == 5 ) {
 		ending[0] = 6;
 	}
-	
+
 	if(IsBigStart[0]) {
 		IsBig[0] = 1;
 	}
-	
+
 	// #1.60c7l7
 	isfmirror[0] = fmirror;
 	rollroll_flag[0] = rollroll;
 	// #1.60c7p9ex
 	xray_flag[0] = xray;
 	color_flag[0] = fcolor;
-	
+
 	if(p_blind){
 		isblind[0] = 1;
 		blind_flag[0] = 1;
 	}
 	// ITEM
 	item_mode[0] = p_item_mode;
-	
+
 	// wait値をバックアップ #1.60c7l2
 	b_wait1[0] = wait1[0];
 	b_wait2[0] = wait2[0];
@@ -1011,7 +1011,7 @@ void PracticeStart(void){
 	b_waitt[0] = waitt[0];
 	b_sp[0]    = sp[0];
 	b_nextc[0] = nextc[0];
-	
+
 	// heboGB
 	if(p_heboGBlv){
 		heboGB[0] = 1;
@@ -1024,20 +1024,20 @@ void PracticeStart(void){
 		wait3[0] = wait3_HeboGB_tbl[p_heboGBlv-1];
 		waitt[0] = waitt_HeboGB_tbl[p_heboGBlv-1];
 	}
-	
+
 	// ブロックの色を設定 #1.60c7m9
 	setNextBlockColors(0, 1);
-	
+
 	// FPSを設定 #1.60c7n7
 	if(max_fps != max_fps_2) SetFPS(max_fps);
-	
+
 	// ステージ読み込み #1.60c7p1
 	if(p_stage != -1) loadTomoyoStage(0,p_stage);
-	
-	
+
+
 	if(!playback){
 		GiziSRand(0);				// 擬似乱数のシードを生成（リプレイ時除く）
-		
+
 	}
 	hole[0] = rand(10,0);
 	stat[0] = 3;					// Ready
@@ -1067,10 +1067,10 @@ void loadWait(int player, int no) { // hoge heboris.iniで設定されたwaitを実際のw
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void PracticeDeath() {
 	int i;
-	
+
 	// FPSを戻す #1.60c7n7
 	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
-	
+
 	timeOn[0] = 0;
 	onRecord[0] = 0;
 
@@ -1085,7 +1085,7 @@ void PracticeDeath() {
 
 	if(hiddeny[0] < 22)
 		hiddeny[0]++;
-	
+
 	if(tspin_c[0])
 		tspin_c[0] = 0;
 	if(b_to_b_c[0])
@@ -1093,7 +1093,7 @@ void PracticeDeath() {
 
 	printFont(28 + (3 * (!maxPlay)), 5, "-RESULT-", 3);
 	viewLineInfo();
-	
+
 	// SECRET GRADE #1.60c7o1
 	if( sgrade[0] >= min_sgrade ) {
 		printFont(15 - 12 * maxPlay, 26, "S-GRADE", fontc[rots[0]]);
@@ -1110,10 +1110,10 @@ void PracticeDeath() {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void PracticeOver(void) {
 	int i,tmp;
-	
+
 	// FPSを戻す #1.60c7n7
 	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
-	
+
 	// BGM停止#1.60c6.2d
 	if(wavebgm >= 1)
 		StopAllBGM();
@@ -1136,12 +1136,12 @@ void PracticeOver(void) {
 		medal_sk[1] = medal_sk[0];		// Skill
 		medal_ac[1] = medal_ac[0];	// AC #1.60c7k4
 		medal_co[1] = medal_co[0];	// CO
-		
+
 		time[1] = time[0];			// Time
-		wait1[1] = wait1[0];		// 
-		wait2[1] = wait2[0];		// 
-		wait3[1] = wait3[0];		// 
-		waitt[1] = waitt[0];		// 
+		wait1[1] = wait1[0];		//
+		wait2[1] = wait2[0];		//
+		wait3[1] = wait3[0];		//
+		waitt[1] = waitt[0];		//
 
 		sp[1] = sp[0];					// スピードもコピー
 		rots[1] = rots[0];				// 回転法則もコピー
@@ -1149,7 +1149,7 @@ void PracticeOver(void) {
 	}
 	IsBigStart[1] = IsBigStart[0];
 	hidden[1] = hidden[0];		// Hidden
-	
+
 	versusInit(0);					// ネクストを初期化 #1.60c7
 	playerInitial(0);				// 1Pのみ初期化
 	gameMode[0] = 5;				// VSモード
@@ -1161,18 +1161,18 @@ void PracticeOver(void) {
 	// waitなどを2Pから書き戻す(↑のplayerInitialで初期化されるため)
 	hidden[0] = hidden[1];
 	IsBigStart[0] = IsBigStart[1];
-	
+
 	// バックアップからwaitを書き戻す #1.60c7l2
 	wait1[0] = b_wait1[0];
 	wait2[0] = b_wait2[0];
 	wait3[0] = b_wait3[0];
 	waitt[0] = b_waitt[0];
 	sp[0] = b_sp[0];
-	
+
 	// シャドウタイマー解除 #1.60c7k1
 	shadow_timer_flag[0] = 0;
 	shadow_timer_flag[1] = 0;
-	
+
 	// エンディング #1.60c7k7
 	if ( (p_ending == 2) || (p_ending == 3) ) {
 		hidden[0] = 0;
@@ -1180,7 +1180,7 @@ void PracticeOver(void) {
 		p_over1000 = 0;
 		IsBigStart[0] = 0;
 	}
-	
+
 	// ブロックの色を設定 #1.60c7m9
 	setNextBlockColors(0, 1);
 	setNextBlockColors(1, 1);

@@ -38,7 +38,7 @@ void StopSE(int no) {
 // 予約された効果音を全て再生
 void PlayAllSE() {
 	int i;
-	
+
 	for(i = 0; i < 50; i++) {
 		if(se_play[i] == 1) {
 			PlayWave(i);
@@ -56,9 +56,9 @@ void PlayAllSE() {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int setstartBGM(int mode, int pl) {
 	int	i,bgmmode;
-	
+
 	i = 0;
-	
+
 	if(mode == 6) {
 		// TOMOYOモードでは開始ステージで決まる
 		if(((start_stage[pl] <= 26) || (start_stage[pl] > 44)) && (start_stage[pl] < 100))
@@ -108,16 +108,16 @@ int setstartBGM(int mode, int pl) {
 			}
 		}
 	}
-	
+
 	return i;
 }
 
 // レベルセレクト用 #1.60c7s6
 int setstartBGM_debug(int mode, int pl) {
 	int i,bgmmode;
-	
+
 	i = 0;
-	
+
 	if(mode != 10) {
 		bgmmode = BgmModeDecide(pl,mode);
 		// TGM
@@ -138,7 +138,7 @@ int setstartBGM_debug(int mode, int pl) {
 			}
 		}
 	}
-	
+
 	return i;
 }
 int BgmModeDecide(int pl,int mode){
@@ -169,9 +169,9 @@ int BgmModeDecide(int pl,int mode){
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int ReplaysetstartBGM(int mode, int pl) {
 	int	i,bgmmode;
-	
+
 	i = 0;
-	
+
 	if(mode == 6) {
 		// TOMOYOモードでは開始ステージで決まる
 		if(((start_stage[pl] <= 26) || (start_stage[pl] > 44)) && (start_stage[pl] < 100))
@@ -217,7 +217,7 @@ int ReplaysetstartBGM(int mode, int pl) {
 			}
 		}
 	}
-	
+
 	return i;
 }
 
@@ -226,19 +226,19 @@ int ReplaysetstartBGM(int mode, int pl) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void bgmFadeout(void) {
 	int player;
-	
+
 	if(wavebgm == 0) return;
-	
+
 	for( player = 0; player <= maxPlay; player++ ) {
 		if((gameMode[player] <= 3) || (gameMode[player] == 7) || (gameMode[player] == 10)) {
 			// BGMフェード開始のチェック
 			if(timeOn[player]) checkFadeout(player);
 		}
-	
+
 		// BGMフェードアウト処理
 		if(fadelv[player] != 0) {
 			fadelv[player] = fadelv[player] + (fadelv[player] < 10000) * fade_seed;
-			
+
 			if(-fadelv[player] <= bgmvolume)
 				SetVolumeWave(50 +bgmlv, -fadelv[player]);
 		}
@@ -260,7 +260,7 @@ void checkFadeout(int pl) {
 				if(tc[pl] >= bgmfadestart[bgmmode[pl] * 6 + bgmlv ]) {
 					fadelv[pl] = 50;
 				}
-			} 
+			}
 		}
 		if((gameMode[pl] == 7) && (fadelv[pl] == 0)) {	//ACE & ANOTHER
 			if(li[pl] >= ace_bgmfadestart[ace_bgmchange[pl] + (3 * anothermode[pl])]) {
@@ -278,23 +278,23 @@ void checkFadeout(int pl) {
 void checkMasterFadeout(int player) {
 	int secinlv[2];
 	secinlv[player] = tc[player] - ((tc[player] / 100) * 100);		// レベルの下2桁
-	
+
 	// 下2桁が85以上の場合
 	if((secinlv[player] >= 85) && (fadelv[player] == 0)) {
 		// 1曲目→2曲目の判定
 		if( (((gup3sp_adjust[player] == 2 ) && (tr2[player] + 2 >=40)) || (tr2[player] + 2 >= 50)) && (bgmlv == 0+(gameMode[player] == 2))) {
 			fadelv[player] = 50;
 //			bgmlv++;
-			
+
 			// 20Gになるときのtr[player]の数値を覚えておく
 			if(tr2[player] + 1 == 50) tr_20g[player] = tr[player] + 1;
 			else if(tr2[player] + 2 == 50) tr_20g[player] = tr[player] + 2;
 			else if(tr2[player] + 11 == 50) tr_20g[player] = tr[player] + 11;	//速度スキップ時
 			else tr_20g[player] = tr[player] + 12;
-			
+
 			regretcancel[player] = 1; //2曲目になったのにREGRET発生で20Gにならないのを防ぐ
 		}
-		
+
 		// 2曲目→3曲目の判定
 		if((((gup3sp_adjust[player] == 2 ) && (tr[player] + 2 >= tr_20g[player] + 20)) || (tr[player] + 2 >= tr_20g[player] + 10)) && (bgmlv == 1+(gameMode[player] == 2))) {
 			fadelv[player] = 50;
@@ -329,11 +329,11 @@ void SoundTestProc(void) {
 
 	StopAllWaves();
 	StopAllBGM();
-	
+
 	loop {
 		count++;
 		KeyInput();
-		
+
 		// 背景描画 #1.60c7o5
 		if(background == 0) {
 			for(i = 0; i <= 4; i++) {

@@ -24,7 +24,7 @@ int		modecolor[15] = {4,1,1,1,1,5,5,2,2,3,3,0,0,2,9};		// モード名表示色
 // ランキング初期化
 void RankingInit2() {
 	int i;
-	
+
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		StrCpy(rkname[i], "NOP");
 		rkdata[i] = 0;
@@ -43,17 +43,17 @@ void RankingInit2() {
 // 何位に入るかチェック（ランク外なら-1）
 int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
 	int i, j, rank;
-	
+
 	if(playback || demo) return -1;
 //	if(rmode >= 8) return -1;
-	
+
 	rank = -1;
-	
+
 	ARSSRSch(rrots);//ARSかSRSかを決める関数
-	
+
 	for(i = 0; i < 5; i++) {
 		j = RankingGet(rmode, rankingrule);
-		
+
 		if(
 			(rdata > rkdata[j + i]) ||  //段位花火到達ステージライン
 			((rdata == rkdata[j + i]) && ((rclear > rkclear[j + i])//ロールクリア＞失敗＞ロール以前
@@ -64,22 +64,22 @@ int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
 			break;
 		}
 	}
-	
+
 	return rank;
 }
 
 // ランキングに登録
-void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear, 
+void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 	int rother, char *rname, int rank, int rac, int rst, int rsk, int rco ,int rre) {
-	
+
 	int i, j, rcolor;
-	
+
 	if(playback || demo) return;
 	if((rank < 0) || (rank > 4)) return;
-	
+
 	ARSSRSch(rrots);
 	j = RankingGet(rmode, rankingrule);
-	
+
 	// ランキングをずらす
 	for(i = 4; i > rank ; i--) {
 		StrCpy(rkname[j + i], rkname[j + i - 1]);
@@ -89,7 +89,7 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 		rkother[j + i] = rkother[j + i - 1];
 		rkrots[j + i] = rkrots[j + i - 1];
 	}
-	
+
 	// 新しいデータを登録
 	StrCpy(rkname[j + rank], rname);
 	rkdata[j + rank] = rdata;
@@ -97,7 +97,7 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 	rkclear[j + rank] = rclear;
 	rkother[j + rank] = rother;
 	rkrots[j + rank] = rrots;
-	
+
 	// メダルを登録 #LITE30.2
 	rkac[j + rank] = rac;
 	rkst[j + rank] = rst;
@@ -151,18 +151,18 @@ void RankingProc_2(int cat) {
 			}
 		}
 
-	
+
 	while(!flag) {
 		count++;
-		
-		KeyInput();			
+
+		KeyInput();
 		RankingView2();
-		
+
 		// AかBで戻る
 		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
 			flag = 1;
 		}
-		
+
 		spriteTime();
 	}
 }
@@ -172,7 +172,7 @@ void RankingProc2_2() {
 
 	while(1) {
 		KeyInput();
-		
+
 		RankingView2();
 		// ←
 		if( getPushState(0,2) ) {
@@ -180,38 +180,38 @@ void RankingProc2_2() {
 			category--;//ゲームモード
 			if(category < 0) category = 14;
 		}
-		
+
 		// →
 		if( getPushState(0,3) ) {
 			PlayWave( 5 );
 			category++;
 			if(category > 14) category = 0;
 		}
-		
+
 		// ↑
 		if( getPushState(0,0) ) {
 			PlayWave( 5 );
 			rankingrule = !(rankingrule);//回転ルール
 		}
-		
+
 		// ↓
 		if( getPushState(0,1) ) {
 			PlayWave( 5 );
 			rankingrule  = !(rankingrule);
 		}
-		
+
 		// AかBで戻る
 		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
 			return;
 		}
-		
+
 		spriteTime();
 	}
 }
 
 void RankingView2() {//5位まで
 	int i, j, k, color;
-	
+
 	// 背景描画
 	count++;
 	if(background == 0) {
@@ -232,18 +232,18 @@ void RankingView2() {//5位まで
 	// ルール名表示
 	getRuleNameEx(rankingrule, 0);
 	StrCat(string[0], " TYPE RULE - ");
-	
+
 	// モード名表示
 	getModeNameEx(category, 1);
 	StrCat(string[1], " MODE");
-	
+
 	StrCat(string[0], string[1]);
 	printFont(1, 1, string[0], modecolor[category]);
-	
+
 	// ランキング表示
-	if(category == 0) {//beginner 
-		printFont(1, 3, "HANABI RANKING", 1); 
-	} else if(category == 9) {//ともよTI 
+	if(category == 0) {//beginner
+		printFont(1, 3, "HANABI RANKING", 1);
+	} else if(category == 9) {//ともよTI
 		printFont(1, 3, "TI COURSE RANKING", 1);
 	} else if(category == 10) {//ともよEH
 		printFont(1, 3, "E-HEART COURSE RANKING", 1);
@@ -254,7 +254,7 @@ void RankingView2() {//5位まで
 	} else {
 		printFont(1,  3, "TIME TRIAL RANKING", 1);
 	}
-	
+
 	if(category == 0)//ビギ
 		printFont(1, 5  , "RANK  NAME  HANABI LEVEL  TIME", 2);
 	else if(category == 9)//ともよTI
@@ -273,7 +273,7 @@ void RankingView2() {//5位まで
 	}else{
 		printFont(16, 27  , "TI-WORLD ACE-SRS", 0);//SRS
 		printFont(16, 28  , "DS-WORLD SRS-X", 0);
-	}	
+	}
 		for(i = 0; i < 5; i++) {
 			j = RankingGet(category, rankingrule);
 			// 順位
@@ -289,33 +289,33 @@ void RankingView2() {//5位まで
 			if(i == 3) sprintf(string[0], "4TH");
 			if(i == 4) sprintf(string[0], "5TH");
 			printFont(1, 6 + (i * 4)  , string[0], 0);
-			
+
 			// 名前
 			printFont(7, 6 + (i * 4)  , rkname[j + i], digitc[rkrots[j + i]]);
-			
+
 			if(category == 0) {
 				// スコア
 				sprintf(string[0], "%d", rkdata[j + i]);
 				printFont(13, 6 + (i * 4)  , string[0],digitc[rkrots[j + i]]);
-				
+
 				// レベル
 				sprintf(string[0], "%d", rkother[j + i]);
-        			printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]); 
-	         } else if( (category >= 1) && (category <= 8) ) { 
-				// 段位 
-               			sprintf(string[0], "%d", rkother[j + i]); 
-				if((category == 7)||(category == 8)){//devil 
-					printFont(13, 6 + (i * 4) , dgname[rkother[j + i]], digitc[rkrots[j + i]]); 
-					sprintf(string[0], "%d", rkdata[j + i]); 
-				} else if( ((category == 1)||(category == 3))&&(rkdata[j + i] == 18)) 
-					printFont(13, 6 + (i * 4)  , "GM", digitc[rkrots[j + i]]); 
-				else 
-					printFont(13, 6 + (i * 4)  , gname2[rkdata[j + i]], digitc[rkrots[j + i]]); 
+        			printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
+	         } else if( (category >= 1) && (category <= 8) ) {
+				// 段位
+               			sprintf(string[0], "%d", rkother[j + i]);
+				if((category == 7)||(category == 8)){//devil
+					printFont(13, 6 + (i * 4) , dgname[rkother[j + i]], digitc[rkrots[j + i]]);
+					sprintf(string[0], "%d", rkdata[j + i]);
+				} else if( ((category == 1)||(category == 3))&&(rkdata[j + i] == 18))
+					printFont(13, 6 + (i * 4)  , "GM", digitc[rkrots[j + i]]);
+				else
+					printFont(13, 6 + (i * 4)  , gname2[rkdata[j + i]], digitc[rkrots[j + i]]);
 
-            // レベル 
-            printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]); 
-         } else if((category == 9) || (category == 10)) { 
-            // ステージ 
+            // レベル
+            printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
+         } else if((category == 9) || (category == 10)) {
+            // ステージ
 
 				if(rkclear[j + i] == 2)
 					sprintf(string[0], "ALL");
@@ -328,7 +328,7 @@ void RankingView2() {//5位まで
 					sprintf(string[0], "%d", rkdata[j + i] - 26);
 				}
 				printFont(13, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
-				
+
 				// クリア率
 				if(category == 9){
 				sprintf(string[0], "%d%%", rkother[j + i]);
@@ -338,7 +338,7 @@ void RankingView2() {//5位まで
 				// ライン
 				sprintf(string[0], "%d", rkdata[j + i]);
 				printFont(13, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
-				
+
 				// レベル
 				sprintf(string[0], "%d", rkother[j + i] + 1);
 				printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
@@ -346,18 +346,18 @@ void RankingView2() {//5位まで
 			// レベル
 				sprintf(string[0], "%d", rkdata[j + i]);
 				printFont(13, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
-				
+
 				if(rkother[j + i]==0)sprintf(string[0], "BEGINN");
 				if(rkother[j + i]==1)sprintf(string[0], "MASTER");
 				if(rkother[j + i]==2)sprintf(string[0], "20G");
 				if(rkother[j + i]==3)sprintf(string[0], "DEVIL");
 				printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 			}
-			
+
 			// タイム
 			getTime(rktime2[j + i]);
 			printFont(27, 6 + (i * 4), string[0], digitc[rkrots[j + i]]);
-			
+
 			// ライン
 			if(rkclear[j + i] == 1) {
 			//printFont(20, 8+(i*4)  , "GREENLINE", 4);
@@ -366,7 +366,7 @@ void RankingView2() {//5位まで
 			//printFont(20, 8+(i*4)  , "YELLOWLINE", 7);
 			ExBltRect(77, 110, (7 + (i * 4)  ) *8,  0, 0, 170, 2);
 			}
-			
+
 			// 回転
 				if(rkrots[j + i]==0)sprintf(string[0], "HEBORIS");
 				if(rkrots[j + i]==1)sprintf(string[0], "TI-ARS");
@@ -378,7 +378,7 @@ void RankingView2() {//5位まで
 				if(rkrots[j + i]==7)sprintf(string[0], "SRS-X");
 				if(rkrots[j + i]==8)sprintf(string[0], "D.R.S");
 				printFont(27, 8 + (i * 4)  , string[0], fontc[rkrots[j + i]]);
-			
+
 			// メダル
 			if((category <= 8)||(category == 14)) {
 				if(rkac[j + i]) ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52 - rkac[j + i] * 13, 15, 12);
@@ -395,38 +395,38 @@ void RankingView2() {//5位まで
 		}
 		printFont(1, 27  , "k n ROT TYPE", 0);
 		printFont(1, 28  , "< > GAME MODE", 0);
-	
+
 }
 // ランキングを保存
 void RankingSave2() {
 	int i, temp2[3];
-	
+
 	FillMemory(&saveBuf, 5000 * 4, 0);
-	
+
 	// ヘッダ
 	saveBuf[0] = 0x4F424549;
 	saveBuf[1] = 0x20534953;
 	saveBuf[2] = 0x48474949;
 	saveBuf[3] = 0x34764354;
-	
+
 	// ランキングデータ
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前
 		StrCpy(&temp2, rkname[i]);
 		saveBuf[4 + i] = temp2[0];//1
-		
+
 		// 段位
 		saveBuf[4 + i + (5 * 15 * 2) * 1] = rkdata[i];//2
-		
+
 		// タイム
 		saveBuf[4 + i + (5 * 15 * 2) * 2] = rktime2[i];//3
-		
+
 		// ロールクリア
 		saveBuf[4 + i + (5 * 15 * 2) * 3] = rkclear[i];//4
-		
+
 		// その他
 		saveBuf[4 + i + (5 * 15 * 2) * 4] = rkother[i];//5
-		
+
 		// メダル #LITE30.2
 		saveBuf[4 + i + (5 * 15 * 2) * 5] = rkac[i];//6
 		saveBuf[4 + i + (5 * 15 * 2) * 6] = rkst[i];//7
@@ -435,44 +435,44 @@ void RankingSave2() {
 		saveBuf[4 + i + (5 * 15 * 2) * 9] = rkre[i];//10
 		saveBuf[4 + i + (5 * 15 * 2) * 10] = rkrots[i];//11
 	}
-	
+
 	SaveFile("RANKING2.SAV", &saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
 }
 
 // ランキングを読み込み
 int RankingLoad2() {
 	int i, temp2[3];
-	
+
 	// ヘッダだけ読み込み
 	FillMemory(&saveBuf, 5000 * 4, 0);
 	LoadFile("RANKING2.SAV", &saveBuf, 16);
-	
+
 	// バージョン違いなら初期化
 	if(saveBuf[0] != 0x4F424549) return 1;
 	if(saveBuf[1] != 0x20534953) return 1;
 	if(saveBuf[2] != 0x48474949) return 1;
 	if(saveBuf[3] != 0x34764354) return 1;
-	
+
 	// 全部読み込み
 	LoadFile("RANKING2.SAV", &saveBuf, 1654 * 4);
-	
+
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前
 		temp2[0] = saveBuf[4 + i];
 		StrCpy(rkname[i], &temp2);
-		
+
 		// 段位
 		rkdata[i]  = saveBuf[4 + i + (5 * 15 * 2) * 1];
-		
+
 		// タイム
 		rktime2[i]  = saveBuf[4 + i + (5 * 15 * 2) * 2];
-		
+
 		// ロールクリア
 		rkclear[i] = saveBuf[4 + i + (5 * 15 * 2) * 3];
-		
+
 		// その他
 		rkother[i] = saveBuf[4 + i + (5 * 15 * 2) * 4];
-		
+
 		// メダル #LITE30.2
 		rkac[i] = saveBuf[4 + i + (5 * 15 * 2) * 5];
 		rkst[i] = saveBuf[4 + i + (5 * 15 * 2) * 6];
@@ -481,7 +481,7 @@ int RankingLoad2() {
 		rkre[i] = saveBuf[4 + i + (5 * 15 * 2) * 9];
 		rkrots[i] = saveBuf[4 + i + (5 * 15 * 2) * 10];
 	}
-	
+
 	return 0;
 }
 
@@ -498,7 +498,7 @@ int RankingGet2(int rmode,int rtype, int rrots,int player) {
 	}else{
 		rankingrule = 1;//SRS
 	}
-	
+
 	if((rmode<=3)&&(rtype)){
 		cat[player] = 14;
 		}else if(rmode==0){
@@ -591,18 +591,18 @@ void getRuleNameEx( int rule, int number ) {
 			sprintf(string[number], "ARS");
 		else if(rule == 1)
 			sprintf(string[number], "SRS");
-}	
+}
 //besttime(ACEのみ)
 void viewbesttime(int player){
 	int	tmp,color;
-	
+
 	if(Isbesttime==0)return;
-	
+
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
 	/* ベストタイム */
 	if( (gameMode[player] == 7) && ((!maxPlay) || (stat[1 - player] == 0)) ) {
 		printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 10, "BEST TIME", fontc[rots[player]]);
-		
+
 		tmp = RankingGet2(gameMode[player], anothermode[player], rots[player],player);
 		if( ((rkdata[tmp] >= 150)&&(anothermode[player] <= 1)) || ((rkdata[tmp] >= 200)&&(anothermode[player] == 2)) )
 		getTime(rktime2[tmp]);
@@ -612,7 +612,7 @@ void viewbesttime(int player){
 }
 void viewbesttimes(int player){
 	int	tmp,color;
-	
+
 	if(Isbesttime==0)return;
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
 	/* ベストタイム */

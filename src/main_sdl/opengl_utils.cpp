@@ -107,14 +107,14 @@ GLuint SDL_GL_LoadTexture(SDL_Surface *surface, GL_Texture *ptexture)
 			w, h,
 			32,
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF, 
-			0x0000FF00, 
-			0x00FF0000, 
+			0x000000FF,
+			0x0000FF00,
+			0x00FF0000,
 			0xFF000000
 #else
 			0xFF000000,
-			0x00FF0000, 
-			0x0000FF00, 
+			0x00FF0000,
+			0x0000FF00,
 			0x000000FF
 #endif
 		       );

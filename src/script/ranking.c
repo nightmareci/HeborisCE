@@ -46,9 +46,9 @@ void RankingConvert(void) {
 // •Ï”end’Ç‰Á #1.60c7k3
 int RankingCheck(int rmode, int rtt, int rsc, int rtime, int rlv, int end) {
 	int		i, j, rank;
-	
+
 	if(rmode >= 4) return -1;	// ’Êí‚Å‚È‚¢ƒ‚[ƒh‚Å‚Íƒ‰ƒ“ƒLƒ“ƒO‚È‚µ#1.60c7l5
-	
+
 	j = rmode * 10 +rtt * 5;
 	rank = -1;
 
@@ -101,14 +101,14 @@ void RankingRegist(int rmode, int rtt, int rsc, int rli, int rlv, int rtime, int
 
 void RankingProc_1(int cat) {
 	int i;
-	
+
 	count = 0;
 	flag = 0;
 	category = cat;
 	rankingmode = 0;
 
 	RankingCreate(category, rankingmode);
-	
+
 	while(!flag) {
 		count++;
 		flag = RankingView();
@@ -128,7 +128,7 @@ void RankingProc_1(int cat) {
 
 void RankingProc2_1(void) {
 	int i;
-	
+
 	count = 0;
 	flag = 0;
 	category = 0;
@@ -177,7 +177,7 @@ void RankingCreate(int cat, int mode) {
 
 		j = cat* 10 +mode* 5 + i;
 		getTime(rktime[j]);
-		sprintf(string[10 + i], "%2d%s %7d %3d %4d  %s  %s", 
+		sprintf(string[10 + i], "%2d%s %7d %3d %4d  %s  %s",
 			i + 1, string[3], rksc[j], rklv[j], rkbl[j], string[0], string[30 + j]);
 	}
 }
@@ -188,7 +188,7 @@ int RankingView(void) {
 	KeyInput();
 
 	domirror = 0;	// ‹¾‘œ‚ğ–³Œø‰»
-	
+
 	// ”wŒi•`‰æ
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
@@ -201,7 +201,7 @@ int RankingView(void) {
 	} else {
 		ExBltFast(30, 0, 0);
 	}
-	
+
 	if(category == 0)
 		printFont(11, 3, "- BEGINNER MODE -", 4);
 	else if(category == 1)

@@ -9,7 +9,7 @@ PROGRAM_NAME := heboris
 all: $(PROGRAM_NAME)
 	$(CXX) $(INCLUDE_PATH) $(CXX_FLAGS) $(CXX_WARNINGS) \
 	src/game/*.cpp src/main_sdl/*.cpp $(LIBS) -o $(PROGRAM_NAME)
-	@mkdir -p REPLAY
+	@mkdir -p replay demo
 
 clean:
 	rm -f $(PROGRAM_NAME)

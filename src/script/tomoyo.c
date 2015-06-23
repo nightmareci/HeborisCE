@@ -1349,7 +1349,7 @@ void loadTomoyoStage(int player, int number) {
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
-	sprintf(string[0], "stage/stage%02d.sav", number);
+	sprintf(string[0], "config/stage/stage%02d.sav", number);
 	LoadFile(string[0], &saveBuf, 450 * 4);
 
 	// フィールド読み込み
@@ -1446,6 +1446,6 @@ void saveTomoyoStage(int player, int number) {
 	saveBuf[220] = tomoyo_waits[player];
 
 	// 保存する
-	sprintf(string[0], "stage/stage%02d.sav", number);
+	sprintf(string[0], "config/stage/stage%02d.sav", number);
 	SaveFile(string[0], &saveBuf, 450 * 4);
 }

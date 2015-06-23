@@ -174,9 +174,9 @@ void saveReplayData(int pl, int number) {
 	saveBuf[4] = (max + 300) * 4;
 
 	if(number <= 40)
-		sprintf(string[0], "REPLAY/REPLAY%02d.SAV", number);
+		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 40);
+		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
 	SaveFile(string[0], &saveBuf, saveBuf[4]);
 }
@@ -308,9 +308,9 @@ void saveReplay_VS(int number) {
 	saveBuf[4] = (300 + 22000 + (time2[1] / 2)) * 4;
 
 	if(number <= 40)
-		sprintf(string[0], "REPLAY/REPLAY%02d.SAV", number);
+		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 40);
+		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
 	SaveFile(string[0], &saveBuf, saveBuf[4]);
 }
@@ -324,9 +324,9 @@ int loadReplayData(int pl, int number) {
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
 	if(number <= 40)
-		sprintf(string[0], "REPLAY/REPLAY%02d.SAV", number);
+		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 40);
+		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
 	LoadFile(string[0], &saveBuf, 820);
 
@@ -545,9 +545,9 @@ int loadReplay_VS(int number) {
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
 	if(number <= 40)
-		sprintf(string[0], "REPLAY/REPLAY%02d.SAV", number);
+		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 40);
+		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
 	LoadFile(string[0], &saveBuf, 820);
 
@@ -1414,9 +1414,9 @@ int loadReplayData2(int pl, int number) {
 	FillMemory(&tmpBuf, 300 * 4, 0);
 
 	if(number <= 40)
-		sprintf(string[0], "REPLAY/REPLAY%02d.SAV", number);
+		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 20);
+		sprintf(string[0], "demo/DEMO%02d.SAV", number - 20);
 
 	LoadFile(string[0], &tmpBuf, 1200);
 

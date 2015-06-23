@@ -1535,7 +1535,7 @@ void loadMissionData(int number) {
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
-	sprintf(string[0], "stage/mission%02d.sav", number);
+	sprintf(string[0], "config/mission/mission%02d.sav", number);
 
 	LoadFile(string[0], &saveBuf, 930 * 4);
 
@@ -1577,6 +1577,6 @@ void saveMissionData(int number) {
 		saveBuf[(i + 1) * 20 + 9] = mission_bgm[i];		// BGM
 	}
 
-	sprintf(string[0], "stage/mission%02d.sav", number);
+	sprintf(string[0], "config/mission/mission%02d.sav", number);
 	SaveFile(string[0], &saveBuf, 930 * 4);
 }

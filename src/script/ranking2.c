@@ -436,7 +436,7 @@ void RankingSave2() {
 		saveBuf[4 + i + (5 * 15 * 2) * 10] = rkrots[i];//11
 	}
 
-	SaveFile("RANKING2.SAV", &saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
+	SaveFile("config/setting/RANKING2.SAV", &saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
 }
 
 // ランキングを読み込み
@@ -445,7 +445,7 @@ int RankingLoad2() {
 
 	// ヘッダだけ読み込み
 	FillMemory(&saveBuf, 5000 * 4, 0);
-	LoadFile("RANKING2.SAV", &saveBuf, 16);
+	LoadFile("config/setting/RANKING2.SAV", &saveBuf, 16);
 
 	// バージョン違いなら初期化
 	if(saveBuf[0] != 0x4F424549) return 1;
@@ -454,7 +454,7 @@ int RankingLoad2() {
 	if(saveBuf[3] != 0x34764354) return 1;
 
 	// 全部読み込み
-	LoadFile("RANKING2.SAV", &saveBuf, 1654 * 4);
+	LoadFile("config/setting/RANKING2.SAV", &saveBuf, 1654 * 4);
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前

@@ -19,7 +19,7 @@ void RankingInit(void) {
 void RankingConvert(void) {
 	int	i, j, temp, temp2[3];
 
-	LoadFile("RANKING.SAV", &saveBuf, 1312);
+	LoadFile("config/setting/RANKING.SAV", &saveBuf, 1312);
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;
 		rksc[i] = saveBuf[temp + 0];
@@ -307,7 +307,7 @@ int RankingSave(void) {
 		saveBuf[temp + 5] = rkfl[i];
 	}
 
-	SaveFile("RANKING.SAV", &saveBuf, 1312);
+	SaveFile("config/setting/RANKING.SAV", &saveBuf, 1312);
 
 	return (0);
 }
@@ -317,7 +317,7 @@ int RankingLoad(void) {
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
-	LoadFile("RANKING.SAV", &saveBuf, 16);
+	LoadFile("config/setting/RANKING.SAV", &saveBuf, 16);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -326,7 +326,7 @@ int RankingLoad(void) {
 	if(saveBuf[3] == 0x31764353) return (2);
 	else if(saveBuf[3] != 0x32764353) return (1);
 
-	LoadFile("RANKING.SAV", &saveBuf, 1312);
+	LoadFile("config/setting/RANKING.SAV", &saveBuf, 1312);
 
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;

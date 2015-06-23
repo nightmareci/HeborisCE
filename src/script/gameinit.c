@@ -58,7 +58,7 @@ int LoadConfig(void) {
 	int i, cfgbuf[24];
 
 	FillMemory(&cfgbuf, 24, 0);
-	LoadFile("CONFIG.SAV", &cfgbuf, 24);
+	LoadFile("config/setting/CONFIG.SAV", &cfgbuf, 24);
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
 	if(cfgbuf[2] != 0x464E4F44) return (1);

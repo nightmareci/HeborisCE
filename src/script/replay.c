@@ -6,7 +6,7 @@ void ReplaySaveCheck(int player, int statnumber) {
 
 	//速度制限（テスト）
 	if(abs_YGS2K(GetRealFPS() - max_fps_2) >= 10) return;
-	
+
 	if((time2[player] <= 72000) && !playback && replay_save[player]) {
 		for(i = 0; i < 10; i++) {
 			if(IsPushKey(2 + i + player * 14)) {
@@ -22,7 +22,7 @@ void ReplaySaveCheck(int player, int statnumber) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void saveReplayData(int pl, int number) {
 	int i, j, temp1, temp2, max;
-	
+
 	if(gameMode[pl] == 4){	// VSはフォーマットが一部異なる
 		saveReplay_VS(number);
 		return;
@@ -140,7 +140,7 @@ void saveReplayData(int pl, int number) {
 	saveBuf[266] = p_bgmlv;
 	saveBuf[267] = relaymode[pl];
 
-	
+
 	saveBuf[290] = smooth;
 	saveBuf[291] = nanameallow;
 	saveBuf[292] = sonicdrop;
@@ -156,16 +156,16 @@ void saveReplayData(int pl, int number) {
 	saveBuf[299] = w_reverse;			// ワールド時回転方向逆転#1.60c7f8
 
 
-	
+
 	// TOMOYOモードではスコアに到達ステージを入れる（手抜き＆暫定的）#1.60c7n8
 	if((gameMode[pl] == 6) && (stage[pl] < 100)) {
 		saveBuf[202] = stage[pl] + 1;
 	}
-	
+
 	temp1 = pl * 60 * 60 * 20;
-	
+
 	max = time2[pl] / 2;
-	
+
 	if(max > 60 * 60 * 20 / 2) max = 60 * 60 * 20 / 2;
 	for(i = 0; i < max; i++) {
 		saveBuf[i + 300] = replayData[(i << 1) + temp1] | (replayData[(i << 1) + 1 + temp1] << 16);
@@ -209,7 +209,7 @@ void saveReplay_VS(int number) {
 	saveBuf[200] = time[0];
 	saveBuf[201] = gameMode[0];
 	saveBuf[204] = time2[0];	// リプレイ時間　プレイヤー毎
-	saveBuf[205] = time2[1];	// 
+	saveBuf[205] = time2[1];	//
 	saveBuf[206] = downtype;	// 下入れ#1.60c7f9
 	saveBuf[207] = lvupbonus;	// レベルアップボーナス #1.60c7g3
 //	saveBuf[208]
@@ -296,9 +296,9 @@ void saveReplay_VS(int number) {
 
 	for(pl = 0; pl <= 1; pl++){
 		temp1 = pl * 60 * 60 * 20;
-		
+
 		max = time2[pl] / 2;
-		
+
 		if(max > 60 * 60 * 10 / 2) max = 60 * 60 * 10 / 2;
 		for(i = 0; i < max; i++) {
 			saveBuf[i + 300 + (22000 * pl)] = replayData[(i << 1) + temp1] | (replayData[(i << 1) + 1 + temp1] << 16);
@@ -319,7 +319,7 @@ void saveReplay_VS(int number) {
 //  リプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int loadReplayData(int pl, int number) {
-	int i, j, temp1, temp2, max,k,sptemp[3];
+	int i, j, temp1, temp2, max,k,sptemp[4];
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -329,13 +329,13 @@ int loadReplayData(int pl, int number) {
 		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 40);
 
 	LoadFile(string[0], &saveBuf, 820);
-	
+
 	if(saveBuf[201] == 4)	// VSはフォーマットが一部異なる
 		return(loadReplay_VS(number));
 
 	if(saveBuf[4] > 200000) saveBuf[4] = 200000;
 	if(saveBuf[4] < 800) return (1);
-	
+
 
 	LoadFile(string[0], &saveBuf, saveBuf[4]);
 
@@ -397,14 +397,14 @@ int loadReplayData(int pl, int number) {
 	ori_opt[pl] = saveBuf[296];		// ロード #1.60c6
 	IsBigStart[pl] = saveBuf[297];
 	w_reverse = saveBuf[299];			// ワールド時回転方向逆転#1.60c7f8
-	
+
 	// スタート時のnextc
 	if(gameMode[pl] == 6) {
 		nextc[pl] = saveBuf[217];	// TOMOYO用 #1.60c7n8
 	} else {
 		nextc[pl] = saveBuf[298];	// 通常
 	}
-	
+
 	// 256-257番目はSHIRASE関係(容量の節約のため、2つの値を1つの変数に詰め込んでいる) #1.60c7f4
 	if(saveBuf[256] == 0) {
 		p_shirase[pl] = (saveBuf[201] ==3);
@@ -418,7 +418,7 @@ int loadReplayData(int pl, int number) {
 		raise_shirase_interval = saveBuf[258] & 0xffff;
 	}
 	repversw = saveBuf[256];		// 旧バージョンのリプレイデータを再生するためのスイッチ #1.60c7h2
-	
+
 	if(repversw >= 19){	//このバージョンから新たに追加
 		enable_grade[pl] = saveBuf[232];		// 段位システムが2種類になったため追加 C7T6.4
 		if(repversw<52){
@@ -479,29 +479,29 @@ int loadReplayData(int pl, int number) {
 	if(repversw >= 38)
 		item_interval = saveBuf[253];
 	else item_interval = 20;
-	
+
 	if(repversw >= 42)
 		devil_minus[pl] = saveBuf[254];
 	else devil_minus[pl] = 0;
-	
+
 	if(repversw >= 44)
 		devil_randrise = saveBuf[255];
 	else devil_randrise = 0;
-	
+
 	if(repversw >= 45)
 		novice_mode[pl] = saveBuf[259];
 	else novice_mode[pl] = 0;
-	
+
 	std_opt[pl] = saveBuf[260];
-	
+
 	if(repversw >= 54)
 		b2bcheck = saveBuf[265];
 	else
 		b2bcheck = (tspin_type == 2);
 
 	setStartLevel(pl);		// start[pl]から各種速度設定
-	
-	if(saveBuf[201] ==9){	
+
+	if(saveBuf[201] ==9){
 		if(std_opt[pl] <= 1){
 			sp[pl] = saveBuf[261];
 			for(k = 0; k <= 3; k++) {
@@ -519,7 +519,7 @@ int loadReplayData(int pl, int number) {
 	if(IsBigStart[pl]) {
 		IsBig[pl] = 1;
 	}
-	
+
 	temp1 = pl * 60 * 60 * 20;
 
 	if(max > 60 * 60 * 20 / 2) max = 60 * 60 * 20 / 2;
@@ -527,19 +527,19 @@ int loadReplayData(int pl, int number) {
 		replayData[(i << 1) + temp1    ] =  saveBuf[i + 300] & 0xFFFF;
 		replayData[(i << 1) + temp1 + 1] = (saveBuf[i + 300] & 0xFFFF0000) >> 16;
 	}
-	
+
 	next[pl] = nextb[nextc[pl] + pl * 1400];	// #1.60c7n7
 	setNextBlockColors(pl, 1);	// #1.60c7n2
-	
+
 	stage[pl] = start_stage[pl];	// 開始ステージ #1.60c7n8
-	
+
 	return (0);
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  VSのリプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int loadReplay_VS(int number) {
-	int i, j, temp1, temp2, max[2],k,sptemp[3],pl;
+	int i, j, temp1, temp2, max[2],k,sptemp[4],pl;
 	pl = 0;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
@@ -550,10 +550,10 @@ int loadReplay_VS(int number) {
 		sprintf(string[0], "DEMO/DEMO%02d.SAV", number - 40);
 
 	LoadFile(string[0], &saveBuf, 820);
-	
+
 	if(saveBuf[4] > 200000) saveBuf[4] = 200000;
 	if(saveBuf[4] < 800) return (1);
-	
+
 
 	LoadFile(string[0], &saveBuf, saveBuf[4]);
 
@@ -614,11 +614,11 @@ int loadReplay_VS(int number) {
 	IsBigStart[0] = saveBuf[297];
 	IsBigStart[1] = saveBuf[298];
 	w_reverse = saveBuf[299];			// ワールド時回転方向逆転#1.60c7f8
-	
+
 
 	nextc[0] = 0;
 	nextc[1] = 0;
-	
+
 	// 256-257番目はSHIRASE関係(容量の節約のため、2つの値を1つの変数に詰め込んでいる) #1.60c7f4
 	p_shirase[pl] = saveBuf[257] >> 16;
 	level_shirase_start = saveBuf[257] & 0xffff;
@@ -626,18 +626,18 @@ int loadReplay_VS(int number) {
 	raise_shirase_interval = saveBuf[258] & 0xffff;
 
 	repversw = saveBuf[256];		// 旧バージョンのリプレイデータを再生するためのスイッチ #1.60c7h2
-	
+
 	tspin_type = saveBuf[233];
 
 	max_hnext[0] = saveBuf[237];		// NEXT最大表示数
 	max_hnext[1] = saveBuf[238];
-	
+
 	 first_seed[0] = saveBuf[235];		// 乱数シード　超重要
 	 randseed[0] = first_seed[0];
-	 
+
 	 first_seed[1] = saveBuf[236];
 	 randseed[1] = first_seed[1];
-	 
+
 	nanamedown = saveBuf[241];	//斜め入力での固定を有効にするか #C7T9.6EX
 	item_num = saveBuf[244];
 
@@ -648,7 +648,7 @@ int loadReplay_VS(int number) {
 	r_end[0] = saveBuf[250];
 	g_start[0] = saveBuf[251];
 	g_end[0] = saveBuf[252];
-	
+
 	r_start[1] = saveBuf[249];
 	r_end[1] = saveBuf[250];
 	g_start[1] = saveBuf[251];
@@ -666,11 +666,11 @@ int loadReplay_VS(int number) {
 	winpoint = saveBuf[228];
 
 	item_interval = saveBuf[253];
-	
+
 	b2bcheck = saveBuf[265];
 
 //	setStartLevel(pl);		// start[pl]から各種速度設定
-	
+
 	sp[0] = saveBuf[260];
 	for(k = 0; k <= 3; k++) {
 		sptemp[k] = (saveBuf[262] >> (k * 8)) & 0xff;
@@ -679,7 +679,7 @@ int loadReplay_VS(int number) {
 	wait2[0] = sptemp[1];
 	wait3[0] = sptemp[2];
 	waitt[0] = sptemp[3];
-	
+
 	sp[1] = saveBuf[261];
 	for(k = 0; k <= 3; k++) {
 		sptemp[k] = (saveBuf[263] >> (k * 8)) & 0xff;
@@ -692,13 +692,13 @@ int loadReplay_VS(int number) {
 	if(IsBigStart[0]) {
 		IsBig[0] = 1;
 	}
-	
+
 	if(IsBigStart[1]) {
 		IsBig[1] = 1;
 	}
 	for(pl = 0; pl <= 1; pl++){
 		temp1 = pl * 60 * 60 * 20;
-		
+
 		max[pl] = 60 * 60 * 10 / 2;
 
 		if(max[pl] > 60 * 60 * 10 / 2) max[pl] = 60 * 60 * 10 / 2;
@@ -706,12 +706,12 @@ int loadReplay_VS(int number) {
 			replayData[(i << 1) + temp1    ] =  saveBuf[i + 300 + (22000 * pl)] & 0xFFFF;
 			replayData[(i << 1) + temp1 + 1] = (saveBuf[i + 300 + (22000 * pl)] & 0xFFFF0000) >> 16;
 		}
-		
+
 		next[pl] = nextb[nextc[pl] + pl * 1400];	// #1.60c7n7
 		setNextBlockColors(pl, 1);	// #1.60c7n2
 	}
-	
-	
+
+
 	return (0);
 }
 
@@ -720,10 +720,10 @@ int loadReplay_VS(int number) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int ReplaySelectProc(void) {
 	int i,bgmmode;
-	
+
 	ReplaySelectInitial();
 	flag = 0;
-	
+
 	while(!flag) {
 		count++;
 		ReplaySelect();
@@ -892,7 +892,7 @@ void ReplaySelect(void) {
 	int		i,start,end;
 
 	KeyInput();
-	
+
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
@@ -908,7 +908,7 @@ void ReplaySelect(void) {
 	} else {
 		ExBltFast(30, 0, 0);
 	}
-	
+
 	// Bで戻る
 	if(getPushState(0, 5)) {
 		restoreSetups();
@@ -919,24 +919,24 @@ void ReplaySelect(void) {
 		}
 		flag = -1;
 	}
-	
+
 	if(!cnt) {
 		printFont(13, 14, "NO REPLAY DATA", 2);
 		return;
 	}
-	
+
 	ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
 	ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);
-	
+
 	ExBltRect(77, count % 320, 0,  0, 28, 320 - (count % 320), 8);
 	ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
-	
+
 	printFont(9, 2, "- SELECT REPLAY DATA -", 4);
 	printFont(6, 3, "PRESS C BUTTON TO VIEW DETAIL", 5);
-	
+
 	// ↑↓カーソルリピード #1.60c7o6
 	padRepeat2(0);
-	
+
 	// ↑
 	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 	if(getPressState(0, 0)) {
@@ -946,7 +946,7 @@ void ReplaySelect(void) {
 			if(csr < 0) csr = 39;
 		} while(enable[csr] == -1);
 	}
-	
+
 	// ↓
 	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 	if(getPressState(0, 1)) {
@@ -971,7 +971,7 @@ void ReplaySelect(void) {
 	ExBltRect(3, 232, 40, 206, 119, 22, 7);//Mode
 
 	for(i = 0; i < 40; i++) ExBltRect(3, 8 * i, (csr - (20 * (csr >= 20))) * 9 + 53, 20, 34, 8, 4);
-	
+
 	if(csr >= 20) {
 		printFont(7, 29, "PAGE 2/2 (NO.21 - NO.40)", 7);
 		start = 20;
@@ -987,7 +987,7 @@ void ReplaySelect(void) {
 			ExBltRect(86, 232, 48 + 9 * (i - 20 * (i >= 20)), 72 * enable[i + 40], enable[i] * 9, 72, 9);
 		}
 	}
-	
+
 	// Cで詳細
 	if(getPushState(0, 6)) {
 		PlaySE(10);
@@ -997,11 +997,11 @@ void ReplaySelect(void) {
 
 // リプレイ詳細 #1.60c7p5
 void ReplayDetail(int number) {
-	int i,k,sptemp[3];
-	
+	int i,k,sptemp[4];
+
 	// リプレイデータ読み込み
 	loadReplayData(0, number);
-	
+
 	while(1) {
 		// 背景描画
 		count++;
@@ -1021,17 +1021,17 @@ void ReplayDetail(int number) {
 		}
 		ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
 		ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);
-	
+
 		ExBltRect(77, count % 320, 0,  0, 28, 320 - (count % 320), 8);
 		ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 		// 詳細を表示
 		printFont(1, 1,  "REPLAY DETAIL", 5);
-		
+
 		/* 基本情報 */
 		printFont(1, 3,  "NUMBER      :", 0);
 		sprintf(string[0],"%d",number);
 		printFont(15, 3, string[0], 0);
-		
+
 		printFont(1, 4,  "GAME MODE   :", 0);
 		if(gameMode[0] == 0) printFont(15, 4, "BEGINNER", 4);
 		else if(gameMode[0] == 1) printFont(15, 4, "MASTER", 1);
@@ -1044,7 +1044,7 @@ void ReplayDetail(int number) {
 		else if(gameMode[0] == 9) printFont(15, 4, "SIMPLE", 9);
 		else if(gameMode[0] == 10) printFont(15, 4, "ORIGINAL", 0);
 		else printFont(15, 4, "INVALID MODE", 0);
-		
+
 		if(death_plus[0]) printFont(21, 4, "DEATH+", 2);
 		if(devil_minus[0]) printFont(28-(7*(!death_plus[0])), 4, "MINUS", 2);
 		if(item_mode[0]) printFont(22, 4, "ITEM MODE", 5);
@@ -1070,7 +1070,7 @@ void ReplayDetail(int number) {
 				else printFont(24, 4, "MARATHON", 4);
 			}
 		}
-		
+
 		if(gameMode[0] != 4){
 			printFont(1, 5,  "ROTATE RULE :", 0);
 			if(rots[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
@@ -1083,7 +1083,7 @@ void ReplayDetail(int number) {
 			else if(rots[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
 			else if(rots[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
 		}
-		
+
 		/* 設定 */
 		if((gameMode[0] != 4) && (gameMode[0] != 8) && (gameMode[0] != 9)){
 			printFont(1, 6,  "LVUP RULE   :", 0);
@@ -1092,57 +1092,57 @@ void ReplayDetail(int number) {
 			else
 				printFont(15, 6, "ERASE LINES", 0);
 		}
-		
-		
+
+
 		printFont(1, 8,  "8WAY INPUT  :", 0);
 		if(nanameallow) printFont(15, 8, "e", 0);
 		else printFont(15, 8, "c", 0);
-		
+
 		printFont(1, 9,  "SONIC DROP  :", 0);
 		if(sonicdrop) printFont(15, 9, "e", 0);
 		else printFont(15, 9, "c", 0);
-		
+
 		printFont(1, 10, "INIT LR MOVE:", 0);
 		if(fastlrmove) printFont(15, 10, "e", 0);
 		else printFont(15, 10, "c", 0);
-		
+
 		printFont(1, 11, "WORLDREVERSE:", 0);
 		if(w_reverse) printFont(15, 11, "c", 0);
 		else printFont(15, 11, "e", 0);
-		
+
 		printFont(1, 12, "DOWN RESET  :", 0);
 		if(downtype) printFont(15, 12, "c", 0);
 		else printFont(15, 12, "e", 0);
-		
+
 		printFont(1, 13, "LVUP BONUS  :", 0);
 		if(lvupbonus==2) printFont(15, 13, "AUTO", 0);
 		else if(lvupbonus==1) printFont(15, 13, "e", 0);
 		else printFont(15, 13, "c", 0);
-		
+
 		/* スコア類 */
 		if(gameMode[0] == 6) {
 			// TOMOYO
 			printFont(1, 15, "STAGE       :", 0);
 			sprintf(string[0],"%d",saveBuf[202]);
 			printFont(15, 15, string[0], 0);
-			
+
 			printFont(1, 16, "START STAGE :", 0);
 			sprintf(string[0],"%d",start_stage[0] + 1);
 			printFont(15, 16, string[0], 0);
-			
+
 			printFont(1, 17, "START NEXTC :", 0);
 			sprintf(string[0],"%d",start_nextc[0]);
 			printFont(15, 17, string[0], 0);
-			
+
 			printFont(1, 18, "BORDER      :", 0);
 			if(t_noborder[0]) printFont(15, 18, "e", 0);
 			else printFont(15, 18, "c", 0);
-			
+
 			printFont(1, 19, "TRAINING    :", 0);
 			if(t_training[0] == 2) printFont(15, 19, "B", 0);
 			else if(t_training[0] == 1) printFont(15, 19, "A", 0);
 			else printFont(15, 19, "e", 0);
-			
+
 			printFont(1, 20, "CLEAR STAGE :", 0);
 			sprintf(string[0],"%d",saveBuf[219]);
 			printFont(15, 20, string[0], 0);
@@ -1151,7 +1151,7 @@ void ReplayDetail(int number) {
 				sprintf(string[0],"%d%%",saveBuf[220]);
 				printFont(15, 21, string[0], 0);
 			}
-			
+
 			printFont(1, 22, "RANDOM      :", 0);
 			if(saveBuf[226]) printFont(15, 22, "c", 0);
 			else printFont(15, 22, "e", 0);
@@ -1185,23 +1185,23 @@ void ReplayDetail(int number) {
 			else if(versus_rot[1] == 7) printFont(8, 17, "SRS-X", fontc[7]);
 			else if(versus_rot[1] == 8) printFont(8, 17, "D.R.S", fontc[8]);
 			else printFont(8, 17, "RANDOM", 0);
-			
+
 			printFont(1, 18, "MODE        :", 0);
 			if((disrise) && (noitem)) printFont(15, 18, "CEMENT", 0);
 			else if((!disrise) && (noitem)) printFont(15, 18, "NO ITEM", 0);
 			else if((disrise) && (!noitem)) printFont(15, 18, "ITEM ONLY", 0);
 			else printFont(15, 18, "NORMAL", 0);
-			
+
 			printFont(1, 19, "GOAL TYPE   :", 0);
 			if(vs_goal == 0) sprintf(string[0], "SURVIVAL", 0);
 			else if(wintype == 0) sprintf(string[0], "LV %d", vs_goal);
 			else if(wintype == 1) sprintf(string[0], "%d LINES", vs_goal / 10);
 			else sprintf(string[0], "SURVIVAL", 0);
 			printFont(15, 19, string[0], 0);
-			
+
 			if(!noitem){
 				printFont(1, 21, "ITEMS", 0);
-				
+
 				printFont(3, 22, "1P :", 0);
 				if(use_item[0] == 0) sprintf(string[0], "ALL", 0);
 				else if(use_item[0] == item_num + 1) sprintf(string[0], "FEW", 0);
@@ -1209,7 +1209,7 @@ void ReplayDetail(int number) {
 				else if(use_item[0] == item_num + 3) sprintf(string[0], "TGM", 0);
 				else sprintf(string[0], "%d", use_item[0]);
 				printFont(8, 22, string[0], 0);
-				
+
 				printFont(3, 23, "2P :", 0);
 				if(use_item[1] == 0) sprintf(string[0], "ALL", 0);
 				else if(use_item[1] == item_num + 1) sprintf(string[0], "FEW", 0);
@@ -1218,7 +1218,7 @@ void ReplayDetail(int number) {
 				else sprintf(string[0], "%d", use_item[1]);
 				printFont(8, 23, string[0], 0);
 			}
-		
+
 		} else if((gameMode[0] != 8)&&(gameMode[0] != 9)) {
 			// NORMAL
 			if(gameMode[0] != 7) {
@@ -1226,39 +1226,39 @@ void ReplayDetail(int number) {
 				sprintf(string[0],"%d",saveBuf[202]);
 				printFont(15, 15, string[0], 0);
 			}
-			
+
 			printFont(1, 16, "LEVEL       :", 0);
 			sprintf(string[0],"%d",saveBuf[203]);
 			printFont(15, 16, string[0], 0);
-			
+
 			printFont(1, 17, "LINES       :", 0);
 			sprintf(string[0],"%d",saveBuf[204]);
 			printFont(15, 17, string[0], 0);
-			
+
 			printFont(1, 18, "BIG         :", 0);
 			if(IsBigStart[0]) printFont(15, 18, "c", 0);
 			else printFont(15, 18, "e", 0);
-			
+
 			printFont(1, 19, "START LEVEL :", 0);
 			sprintf(string[0],"%d",start[0]);
 			printFont(15, 19, string[0], 0);
-			
+
 			printFont(1, 20, "RISE ON/OFF :", 0);
-			if((p_shirase[0]) || ((devil_randrise) && (gameMode[0] == 3) && (!devil_minus))) printFont(15, 20, "c", 0);
+			if((p_shirase[0]) || ((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))) printFont(15, 20, "c", 0);
 			else printFont(15, 20, "e", 0);
-			
+
 			printFont(1, 21, "RISE START  :", 0);
-			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus))
+			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
 				sprintf(string[0],"500",1);
 			else sprintf(string[0],"%d",level_shirase_start);
 			printFont(15, 21, string[0], 0);
-			
+
 			printFont(1, 22, "RISE LINES  :", 0);
 			sprintf(string[0],"%d",raise_shirase_lines);
 			printFont(15, 22, string[0], 0);
-			
+
 			printFont(1, 23, "RISE INTER  :", 0);
-			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus))
+			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
 				sprintf(string[0],"RANDOM BY SECTION",1);
 			else
 				sprintf(string[0],"%d",raise_shirase_interval);
@@ -1300,23 +1300,23 @@ void ReplayDetail(int number) {
 			else
 				sprintf(string[0], "NO.%02d", mission_file);
 			printFont(15, 15, string[0], 0);
-			
+
 			printFont(1, 16, "START MISSION:", 0);
 			sprintf(string[0],"%d",start_mission);
 			printFont(15, 16, string[0], 0);
 		}else if((gameMode[0] == 9) && (saveBuf[260] < 2)){	// STANDARD
 
-			
+
 			printFont(1, 16, "SPEED     :", 0);
 			sprintf(string[0],"%d",saveBuf[261]);
 			printFont(15, 16, string[0], 0);
-			
+
 			printFont(1, 17, "ARE       :", 0);
-			
+
 			printFont(1, 18, "LINE CLEAR:", 0);
-			
+
 			printFont(1, 19, "LOCK DELAY:", 0);
-			
+
 			printFont(1, 20, "DAS       :", 0);
 			for(k = 0; k <= 3; k++) {
 				sprintf(string[0],"%4d",(saveBuf[262] >> (k * 8)) & 0xff);
@@ -1329,16 +1329,16 @@ void ReplayDetail(int number) {
 		printFont(1, 25, "TIME        :", 0);
 		getTime(saveBuf[200]);
 		printFont(15, 25, string[0], 0);
-		
+
 		printFont(1, 26, "LENGTH      :", 0);
 		sprintf(string[0],"%d",saveBuf[4] /2 + 1);
 		printFont(15, 26, string[0], 0);
-		
+
 		/* バージョン */
 		printFont(1, 28, "VERSION     :", 0);
 		sprintf(string[0],"%d",repversw);
 		printFont(15, 28, string[0], 0);
-		
+
 //		段位
 	if((gameMode[0] <= 2) && (gameMode[0] != 0)){
 		printFont(20, 8, "GRADE TYPE :", 0);
@@ -1356,21 +1356,21 @@ void ReplayDetail(int number) {
 		else if(tspin_type == 1) printFont(33, 9, "SLIDE", 0);
 		else if(tspin_type == 2) printFont(32, 9, "3-CORNER", 0);
 		else if(tspin_type == 3) printFont(33, 9, "BOTH", 0);
-		
+
 		if(gameMode[0] != 4){
 			printFont(20, 10, "NEXT NUM   :", 0);
 			if(repversw < 22) printFont(33, 10, "N/A", 0);
 			else if(((death_plus[0]) || (hebo_plus[0])) && (max_hnext[0] >= 1))
 				printFont(33, 10, "1", 0);
-			else{ 
+			else{
 				sprintf(string[0],"%d",max_hnext[0]);
 				printFont(33, 10, string[0], 0);
 			}
 		}
-		
+
 		printFont(20, 11, "FRAME RATE :", 0);
 		if(repversw < 25) printFont(33, 11, "N/A", 0);
-		else{ 
+		else{
 			sprintf(string[0],"%2dFPS",saveBuf[239]);
 			printFont(33, 11, string[0], 0);
 		}
@@ -1383,20 +1383,20 @@ void ReplayDetail(int number) {
 			else if(ace_irs == 1) printFont(33, 12, "ACE", 0);
 			else if(ace_irs == 2) printFont(33, 12, "ACE+", 0);
 		}
-		
+
 //		Back to Back
 		printFont(20, 13, "BACK TO BACK:", 0);
 		if(b2bcheck) printFont(33, 13, "c", 0);
 		else printFont(33, 13, "e", 0);
-		
+
 //		SPAWN Y TYPE
 		printFont(20, 14, "SPAWN Y POS:", 0);
 		if(spawn_y_type) printFont(33, 14, "21/22", 0);
 		else printFont(33, 14, "19/20", 0);
-		
+
 		// AorBで戻る
 		KeyInput();
-		
+
 		if(getPushState(0, 4) || getPushState(0, 5)) {
 			PlaySE(5);
 			return;
@@ -1409,7 +1409,7 @@ void ReplayDetail(int number) {
 //  リプレイデータをロード（保存メニュー用）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int loadReplayData2(int pl, int number) {
-	int i, j, temp1, temp2, max,k,sptemp[3], tmpBuf[300];
+	int i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
 
 	FillMemory(&tmpBuf, 300 * 4, 0);
 
@@ -1430,7 +1430,7 @@ int loadReplayData2(int pl, int number) {
 	repdata[2 + pl * 20] = tmpBuf[294];	// rots
 	repdata[3 + pl * 20] = tmpBuf[256];	// repversw
 	repdata[9 + pl * 20] = tmpBuf[297];	// BIG
-	
+
 //TOMOYO
 	if(repdata[0 + pl * 20] == 6){
 		repdata[4 + pl * 20] = tmpBuf[202];// stage

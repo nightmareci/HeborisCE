@@ -124,7 +124,7 @@ void hiddenProc(int player) {
 void disableShadowTimer(int player) {
 	int i,j;
 	shadow_timer_flag[player] = 0;
-	
+
 	// 全てのブロックが見えるようにする
 	for(i = 0; i < 10; i++)
 		for(j = 0; j < 22; j++) {
@@ -153,7 +153,7 @@ void pinchCheck(int player) {
 
 	pinch[player] = 0;
 	if(ending[player]) return;
-	
+
 	for(i = 0; i <= 7; i++)
 		for(j = 2; j <= 7; j++)
 			if(fld[j + i * 7 + player * 220]) {
@@ -169,7 +169,7 @@ void pinchCheck2(int player) {
 	int		i, j;
 
 	pinch2[player] = 1;
-	
+
 	for(i = 0; i <= 18/*7*/; i++)
 		for(j = 2; j <= 7; j++)
 			if(fld[j + i * 7 + player * 220]) {
@@ -182,57 +182,57 @@ void pinchCheck2(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewBack(void) {
 	int i, j, tmp;
-	
+
 	if(backno == 61) tmp = 12;
 	else tmp = backno;
-	
+
 	// 通常描画
 	if( (bgfadesw == 0) || (demo) ) {
 		//ExBltFast(10 + backno, 0, 0);
-		
+
 		if(back_mov_f[tmp] == 0) {
 			// 静止画
 			ExBltFastRect(10 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
 			// 動画
 			ExBltFastRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
-			
+
 			if(count % back_mov_inter[tmp] == 0)
 				back_acnt++;
-			
+
 			if(back_acnt > back_mov_f[tmp] - 1)
 				back_acnt = 0;
 		}
-		
+
 		return;
 	}
-	
+
 	// フェード無効時の背景切り替え
 	// if(!enable_bgfade && bgfadesw) {
-	
+
 	if(bgfadesw) {
-		if((backno >= bg_max) && ((gameMode[0] == 8) && 
+		if((backno >= bg_max) && ((gameMode[0] == 8) &&
 		((mission_type[c_mission] == 20) || (mission_type[c_mission] == 22) || (mission_type[c_mission] == 29)) &&
 		((mission_type[c_mission-1] == 20) || (mission_type[c_mission-1] == 22) || (mission_type[c_mission-1] == 29)))) {
 			backno = bg_max;
 			bgfadesw = 0;
 		}
 		//ExBltFast(10 + backno, 0, 0);
-		
+
 		if(back_mov_f[tmp] == 0) {
 			// 静止画
 			ExBltFastRect(10 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
 			// 動画
 			ExBltFastRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
-			
+
 			if(count % back_mov_inter[tmp] == 0)
 				back_acnt++;
-			
+
 			if(back_acnt > back_mov_f[tmp] - 1)
 				back_acnt = 0;
 		}
-		
+
 		if((backno < bg_max) || (gameMode[0] == 8) || (overcount != 0)){
 		if(bgfade_cnt < 14){
 			bgfade_cnt++;
@@ -274,7 +274,7 @@ void viewBack(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewScoreSmall(void) {
 	int		i, color,tmp, j,k[2],zoomx[2],zoomy[2],gradecolor[2],bps[2],bps1[2],bps2[2],add;
-	
+
 	for(i = 0; i < 1 + maxPlay; i++) {
 	if( ((stat[i] != 2) || ((stat[i] == 2) && (statc[i * 10 + 2] != 0))) && (stat[i] != 0) && ((stat[i] !=1) || ((stat[i] ==1) && (statc[i * 10 + 1] != 2))) ){
 		if((i) && ((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4)) )) return;
@@ -283,7 +283,7 @@ void viewScoreSmall(void) {
 		if(sc[i] > 9999999) sc[i] = 9999999;
 		if(li[i] > 9999) li[i] = 9999;
 		if((gameMode[i]!=10) && (gameMode[i] > 6) && (lv[i] > 999)) lv[i] = 999;
-		
+
 		if(!hide_score) {
 			add = 20*((hnext[i] >= 4) && (!i));
 //GRADE
@@ -299,7 +299,7 @@ void viewScoreSmall(void) {
 					k[i] = 65536 * k[i] / 12;
 					if(((gameMode[i]==1)||(gameMode[i]==2))&&(enable_grade[i]!=4)){
 					// 非DEVIL
-						if((grade[i]==32)) {
+						if(grade[i]==32) {
 							if(enable_grade[i]==1){//GM
 							ExBltRectR(26,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+180,90,32,k[i],k[i]);
 							}else{
@@ -360,7 +360,7 @@ void viewScoreSmall(void) {
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
 							//M
-							ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);	
+							ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);
 							}else{
 							//m
 							ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
@@ -386,7 +386,7 @@ void viewScoreSmall(void) {
 							else if(grade[i] >= 10)  //S10～S13
 								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)));
 							else if(grade[i] > 0) //S9以下
-								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24);				
+								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24);
 							else if(stat[i] != 2)  //1（DOOMのみ）
 								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+192,90,24);
 						}
@@ -412,7 +412,7 @@ void viewScoreSmall(void) {
 				} else if( exam_grade[i] == 27 ) {
 					if((enable_grade[i] == 2)||(enable_grade[i] == 4)){
 					//M
-					ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);	
+					ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);
 					}else{
 					//m
 					ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
@@ -448,7 +448,7 @@ void viewScoreSmall(void) {
 				else sprintf(string[0], "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 			}
-			
+
 // MASTER & 20G
 			if((gameMode[i] >= 1) && (gameMode[i] <= 2)) {
 				//GRADE INFO
@@ -489,7 +489,7 @@ void viewScoreSmall(void) {
 				else sprintf(string[0], "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 112, string[0], color);
 			}
-			
+
 // DEVIL
 			if(gameMode[i]==3){
 				//SCORE
@@ -503,7 +503,7 @@ void viewScoreSmall(void) {
 				else sprintf(string[0], "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 94, string[0], color);
 			}
-			
+
 // VERSUS or ITEM MODE
 			if(item_name[i])	//アイテム名
 				ExBltRect(28, 80 + i * 192+(96*(!maxPlay)), 0, 0, (item_name[i] - 1) * 16, 48, 16);
@@ -526,7 +526,7 @@ void viewScoreSmall(void) {
 						printSMALLFont(208+add + 84 * i - 96, 65, string[0], color);
 						ExBltRect(54,210 + 79 * i - 96,80,0,0,12,75);//中身
 						ExBltRect(54,210 + 79 * i - 96,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//目隠し
-						
+
 						if(ismiss[i]){//×のしるし
 							ExBltRect(3,208 + 83 * i - 96, 50, 274, 370, 27, 27);
 							if(repversw >= 62){
@@ -568,7 +568,7 @@ void viewScoreSmall(void) {
 			if( gameMode[i] == 6) {
 				// STAGE
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 32, 228, 112, 26, 7);
-				
+
 				if((stage[i] >= 26) && (ending[i] == 3)){
 					// ALL（表示条件を変更 C7T3.2）
 					printSMALLFont(208+add + 78 * i - 96 * maxPlay, 40, "ALL", count % 9);
@@ -641,7 +641,7 @@ void viewScoreSmall(void) {
 					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Thunder", fontc[rots[i]]);
 				else if( tomoyo_rise[i] )
 					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Rise", fontc[rots[i]]);
-					
+
 				if(!hide_tomoyoinf && (stat[i] >= 3) && (stat[i] < 18) || (stat[i] == 19) || (stat[i] == 20)) {
 					// NEXTC
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 14, "NEXTC", fontc[rots[i]]);
@@ -697,7 +697,7 @@ void viewScoreSmall(void) {
 				getTime(time[i]);
 				printSMALLFont((26 + 6 * i - 12 * maxPlay)*8+add, 58, string[0], color);
 			}
-// SIMPLE (STANDARD)		
+// SIMPLE (STANDARD)
 			if(gameMode[i] == 9){
 				if(std_opt[i]<=1){
 					if((relaymode[i]) && (!playback)){
@@ -722,7 +722,7 @@ void viewScoreSmall(void) {
 					// LINES/min
 					if(i) {
 						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 50, 0, 7*33,35, 14);
-					}else{ 	
+					}else{
 						ExBltRect(85, 208+add + 64 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
 						ExBltRect(85, 238+add + 45* i - 96 * maxPlay, 50, 70, 0,7, 7);
 						ExBltRect(85, 244+add + 45 * i - 96 * maxPlay, 50, 70, 7*9,35, 7);
@@ -740,28 +740,28 @@ void viewScoreSmall(void) {
 							if(i) {sprintf(string[0], "%2d", bps2[i]);
 							}else {sprintf(string[0], "%d", bps2[i]);
 							}
-						}else{				
+						}else{
 							if(i) {sprintf(string[0], "0%d", bps2[i]);
 							}else {sprintf(string[0], "0%d", bps2[i]);
 							}
 						}
-						printSMALLFont(218+((bps1[i]>=10)*8)+add + 52 * i - 96 * maxPlay, 58+10*i, string[0], color);	
+						printSMALLFont(218+((bps1[i]>=10)*8)+add + 52 * i - 96 * maxPlay, 58+10*i, string[0], color);
 					}else{
 						if(i) sprintf(string[0], "%2d", 0);
 						else sprintf(string[0], "%d", 0);
 						printSMALLFont(208+add + 52 * i - 96 * maxPlay, 58+10*i, string[0], color);
-						
+
 					}
-					
+
 					//BLOCK/sec
 					if(i) {
 						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 70, 0, 7*35,35, 14);
-					}else{ 	
+					}else{
 						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 70, 0, 7*2,35, 7);
 						ExBltRect(85, 234+add + 50 * i - 96 * maxPlay, 70, 70, 0,7, 7);
 						ExBltRect(85, 240+add + 50 * i - 96 * maxPlay, 70, 0, 7*12,35, 7);
 					}
-					
+
 					if(time[i]>120){
 						bps[i] = (bdowncnt[i] * 10000*60) / (time[i]);
 						bps1[i] = bps[i] / 10000;//整数
@@ -785,7 +785,7 @@ void viewScoreSmall(void) {
 							if(i) {sprintf(string[0], "00%2d", bps2[i]);
 							}else {sprintf(string[0], "00%d", bps2[i]);
 							}
-						}else{				
+						}else{
 							if(i) {sprintf(string[0], "000%d", bps2[i]);
 							}else {sprintf(string[0], "000%d", bps2[i]);
 							}
@@ -809,16 +809,16 @@ void viewScoreSmall(void) {
 					if(i) sprintf(string[0], "%2d", squarecnt[i]);
 					else sprintf(string[0], "%d", squarecnt[i]);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 58, string[0], color);
-				} else if(std_opt[i]==3){	
+				} else if(std_opt[i]==3){
 					if(i) {
 						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 50, 0, 7*37,35, 14);
-					}else{ 	
+					}else{
 						ExBltRect(85, 208+add + 58 * i - 96 * maxPlay, 50, 35, 7*7,35, 7);
 						ExBltRect(85, 234+add + 34 * i - 96 * maxPlay, 50, 70, 0,7, 7);
 						ExBltRect(85, 240+add + 34 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
 					}
 					//SCORE/ライン
-					
+
 					if((time[i]>120)&&(li[i]>0)){
 						bps1[i] = sc[i] / li[i];//整数
 						bps2[i] = sc[i] % li[i];//下三桁
@@ -826,12 +826,12 @@ void viewScoreSmall(void) {
 						}else {sprintf(string[0], "%d?", bps1[i]);
 						}
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 58+8*i, string[0], color);
-						
+
 							if(bps2[i]>=10){
 								if(i) {sprintf(string[0], "%2d", bps2[i]);
 								}else {sprintf(string[0], "%d", bps2[i]);
 								}
-							}else{				
+							}else{
 								if(i) {sprintf(string[0], "0%d", bps2[i]);
 								}else {sprintf(string[0], "0%d", bps2[i]);
 								}
@@ -863,8 +863,8 @@ void viewScoreSmall(void) {
 				else sprintf(string[0], "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 			}
-				
-			
+
+
 			// レベル部分
 			if(dtc && (gameMode[i] <= 9)) {
 					// TGMシリーズ風カウンタ	#1.60c
@@ -880,14 +880,15 @@ void viewScoreSmall(void) {
 							/* 分し */
 							if(gameMode[i] == 7) sprintf(string[0], "%3d", li[i]);
 							else if(gameMode[i] == 8)sprintf(string[0], "%3d", c_norm[i]);
-							else if(gameMode[i] == 9)
-							if(std_opt[i]<2){
-								sprintf(string[0], "%3d", li[i]);
-							}else{
-								sprintf(string[0], "%3d", c_norm[i]);
-							}
+							else if(gameMode[i] == 9) {
+                                if(std_opt[i]<2){
+                                    sprintf(string[0], "%3d", li[i]);
+                                }else{
+                                    sprintf(string[0], "%3d", c_norm[i]);
+                                }
+                            }
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 169, string[0], color);
-						
+
 							/* 横線 */
 							ExBltRect(3,218 + 61 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 							if((sp[i] <= 600) && (!isboost[i])) {
@@ -912,7 +913,7 @@ void viewScoreSmall(void) {
 						/* 分子 */
 						sprintf(string[0], "%3d", li[i]);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
-						
+
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
@@ -923,17 +924,17 @@ void viewScoreSmall(void) {
 						sprintf(string[0], "%3d", vs_goal/10);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 					}else{//LINE
-						
+
 						ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 63 + (210 * ((gameMode[i] == 3) && (!devil_minus[i]))), 26, 7);//LEVELの文字画像
 						/* 分子 */
 						sprintf(string[0], "%3d", tc[i]);
-						
+
 						// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 						if(tc[i] == -1) {
 							sprintf(string[0], "%3d", 0);
 						}
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
-					
+
 						/* 横線 */
 						// 横線の枠 #1.60c7o3
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
@@ -943,7 +944,7 @@ void viewScoreSmall(void) {
 						} else {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
-						
+
 						/* 分母 */
 						if(ending[i]) {
 							// BEGINNERとDEVILに対応したつもり#1.60c7g4
@@ -968,7 +969,7 @@ void viewScoreSmall(void) {
 							ExBltRect(85, 208 + 68 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
 							/* 分子 */
 							sprintf(string[0], "%3d", li[i]);
-							
+
 							// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 							if(li[i] == -1) {
 								sprintf(string[0], "%3d", 0);
@@ -977,7 +978,7 @@ void viewScoreSmall(void) {
 							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*2, 30, 7);//BLOCKの文字画像
 							/* 分子 */
 							sprintf(string[0], "%3d", bdowncnt[i]);
-							
+
 								// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 							if(tc[i] == -1) {
 								sprintf(string[0], "%3d", 0);
@@ -986,15 +987,15 @@ void viewScoreSmall(void) {
 							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
 							/* 分子 */
 							sprintf(string[0], "%3d", tc[i]);
-							
+
 							// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 							if(tc[i] == -1) {
 								sprintf(string[0], "%3d", 0);
 							}
 						}
-						
+
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
-						
+
 						/* 横線 */
 						// 横線の枠 #1.60c7o3
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
@@ -1004,7 +1005,7 @@ void viewScoreSmall(void) {
 						} else {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
-						
+
 						/* 分母 */
 						if(p_goaltype==1) {
 							sprintf(string[0], "%3d", p_goaltypenumlist[p_goaltypenum]*10);
@@ -1033,28 +1034,28 @@ void viewScoreSmall(void) {
 					} else if(medal_info) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 122, 0, 52, 15, 12);
 					}
-					
+
 					// SK
 					if(medal_sk[i]) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 135, 32, 13 * (4-medal_sk[i]), 15, 12);
 					} else if(medal_info) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 135, 32, 52, 15, 12);
 					}
-					
+
 					// CO(==なのは状態で見てるから)
 					if(medal_co[i]) {
 						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 148, 80, 13 * (4-medal_co[i]), 15, 12);
 					} else if(medal_info) {
 						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 148, 80, 52, 15, 12);
 					}
-					
+
 					// RE
 					if(medal_re[i]) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 148, 48, 13 * (4-medal_re[i]), 15, 12);
 					} else if(medal_info) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 148, 48, 52, 15, 12);
 					}
-					
+
 					// ST(==なのは状態で見てるから)
 					if(medal_st[i]) {
 						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 122, 16, 13 * (4-medal_st[i]), 15, 12);
@@ -1068,28 +1069,28 @@ void viewScoreSmall(void) {
 					} else if(medal_info) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 122, 0, 48, 16, 12);
 					}
-				
+
 					// SK
 					if(medal_sk[i]) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 135, 32, 12 * (4-medal_sk[i]), 16, 12);
 					} else if(medal_info) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 135, 32, 48, 16, 12);
 					}
-					
+
 					// CO(==なのは状態で見てるから)
 					if(medal_co[i]) {
 						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 148, 80, 12 * (4-medal_co[i]), 16, 12);
 					} else if(medal_info) {
 						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 148, 80, 48, 16, 12);
 					}
-				
+
 				// RE
 					if(medal_re[i]){
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 148, 48, 12 * (4-medal_re[i]), 16, 12);
 					} else if(medal_info) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 148, 48, 48, 16, 12);
 					}
-					
+
 					// ST(==なのは状態で見てるから)
 					if(medal_st[i]) {
 						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 122, 16, 12 * (4-medal_st[i]), 16, 12);
@@ -1130,22 +1131,22 @@ void viewScoreSmall(void) {
 					printTinyFont(251 + 18 * i - 96 * maxPlay, 134, string[0]);
 				}
 			}
-		
+
 			// WAIT値表示
 			// SMALL対応 #1.60c7m9
 			if((!hide_wait) || ((gameMode[i] == 9) && (std_opt[i] <= 1))) {
 				sprintf(string[0], "%3d", wait1[i]);				// wait1
 				printSMALLFont(202 + 68 * i - 96 * maxPlay, 208, string[0], color);
-				
+
 				sprintf(string[0], "%3d", wait2[i]);				// wait2
 				printSMALLFont(218 + 68 * i - 96 * maxPlay, 208, string[0], color);
-			
+
 				sprintf(string[0], "%3d", wait3[i]);				// wait3
 				printSMALLFont(202 + 68 * i - 96 * maxPlay, 217, string[0], color);
-			
+
 				sprintf(string[0], "%3d", waitt[i]);				// waitt
 				printSMALLFont(218 + 68 * i - 96 * maxPlay, 217, string[0], color);
-			
+
 				// speed
 				sprintf(string[0], "%4d", sp[i]);
 				printSMALLFont(212 + 68 * i - 96 * maxPlay, 226, string[0], color);
@@ -1162,7 +1163,7 @@ void viewTime(void) {
 	int		color2,mp;
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
-	
+
 	for(i = 0; i < 1 + mp; i++) {
 		color = (count % 4 / 2) * (sp[i] >= 1200) * digitc[rots[i]];
 		/* セクションタイム表示 */
@@ -1191,7 +1192,7 @@ void viewTime(void) {
 							getTime(j);
 							printFont(26 + 4 * i - 12 * maxPlay, i * 2, string[0], color);
 						}
-						
+
 						j = lap_time[tc[i] / (st_record_interval_tgm * 10) - 1 + i * 130];
 						if(j != 0) {
 							getTime(j);
@@ -1217,7 +1218,7 @@ void viewTime(void) {
 							getTime(j);
 							printFont(26 + 4 * i - 12 * maxPlay, i * 2, string[0], st_new[1000 / (st_record_interval_tgm * 10) - 1 + i * 13]);
 						}
-						
+
 						j = lap_time[1000 / (st_record_interval_tgm * 10) - 1 + i * 130];
 						if(j != 0){
 							getTime(j);
@@ -1246,7 +1247,7 @@ void viewTime(void) {
 							getTime(j);
 							printFont(26 + 4 * i - 12 * maxPlay, i * 2, string[0], color);
 						}
-						
+
 						j = lap_time[lv[i] / st_record_interval_heb - 1 + i * 130];
 						if(j != 0) {
 							getTime(j);
@@ -1256,10 +1257,10 @@ void viewTime(void) {
 				}
 			}
 		}
-		
+
 		/* タイム表示 */
 		if(time[i] > 359999) time[i] = 359999;
-		
+
 		// 持久モード
 		if( gameMode[i] != 6 ) {
 			if( (ending[i] == 2) && ((gameMode[i] == 5) || (debug)) ) {
@@ -1269,7 +1270,7 @@ void viewTime(void) {
 			} else {
 				getTime(time[i]);			// 経過時間
 			}
-			
+
 			if( (gameMode[i] == 4) && (i == 0) ) {
 				// 対戦用
 				if(vs_time == 0) {
@@ -1295,7 +1296,7 @@ void viewTime(void) {
 					else
 						color2 = color;
 					getTime(3740 - edrec[i] + 1);
-				}else if(((gameMode[i] == 7) || (gameMode[i] == 8)) && (ltime[i] <= 10 * 60) && (timeOn[i])) 
+				}else if(((gameMode[i] == 7) || (gameMode[i] == 8)) && (ltime[i] <= 10 * 60) && (timeOn[i]))
 					color2 = (count % 4 / 2) * (2 + (4 * ((gameMode[i] == 8) && (mission_type[c_mission] == 23))));
 				else
 					color2 = color;
@@ -1313,13 +1314,13 @@ void viewTime(void) {
 				// ステージタイム
 				getTime(stime[i]);
 				printFont(16 + 24 * i - 12 * maxPlay, 27, string[0], 1);
-				
+
 				// リミットタイム
 				color2 = (count % 4 / 2) * (ltime[i] <= 10 * 60) * 2;
 				getTime(ltime[i]);
 				printFont(16 + 24 * i - 12 * maxPlay, 28, string[0], color2);
-			} 
-			
+			}
+
 			// EXステージ #1.60c7m1fpbas_mode
 			else if(!fpbas_mode[i]){
 				if(ltime[i] <= 10 * 60){
@@ -1334,7 +1335,7 @@ void viewTime(void) {
 				printBIGFont(112 + 192 * i - 96 * maxPlay, 216, string[0], color);
 			}
 		}
-		
+
 		if( tspin_c[i] > 0+(60*(isScore(i)*((tspin_type!=0) && (last_tspin[i]!=0)) )) ) {
 			// T-SPIN #1.60c7n6
 			if(last_tspin[i]==0)
@@ -1360,14 +1361,14 @@ void viewTime(void) {
 				printFont(17 + i * 24 - 12 * maxPlay, 26, "REGRET", (count % 4 / 2) * digitc[rots[i]]);
 			}
 		}
-		
+
 		if( b_to_b_c[i] > 0+(60*isScore(i)) )
 			printFont(14 + 24 * i - 12 * maxPlay, 25, "BACK TO BACK", (count % 4 / 2) * digitc[rots[i]]);
 		else if(b_to_b_c[i])
 			printFont(17 + 24 * i - 12 * maxPlay, 25, "e 1.5", (count % 4 / 2) * digitc[rots[i]]);
-		
-			
-		
+
+
+
 		if(upLines[i]) {//lineup
 			if((!hebo_plus[i]) && (gameMode[i] != 5) && (gameMode[i] >= 4) && ((timeOn[i]) || (gameMode[i] == 8))){
 				sprintf(string[0], "%2dLINE UP", upLines[i] );	// せりあがるライン数
@@ -1387,7 +1388,7 @@ void viewTime(void) {
 		}else if(gameMode[i] == 4){
 			ExBltRect(55,128 + 192 * i -96 * maxPlay , 218 - (4 * (getDrawRate() == 1)), 64*rots[i] ,
 				32*fontc[rots[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
-	
+
 			if((!disrise) && ((timeOn[i]) || (flag == -2) || (flag == -3))){
 				if(vs_style[i] == 0){
 					printSMALLFont(143 + 192 * i - 96 * maxPlay, 231, "NORMAL", 0);
@@ -1476,12 +1477,12 @@ void viewLineInfo(void){
 
 	sprintf(string[0], "HEBORIS%3d", p_erase_c[3]);
 	printFont(27 + (3 * (!maxPlay)), 9, string[0], 2);
-	
+
 	if(tspin_type > 1){
 		printFont(27 + (3 * (!maxPlay)), 10, "T-SPIN", 6);
 		sprintf(string[0], " SINGLE%3d", p_erase_c[5]);
 		printFont(27 + (3 * (!maxPlay)), 11, string[0], 6);
-	
+
 		printFont(27 + (3 * (!maxPlay)), 12, "T-SPIN", 9);
 		sprintf(string[0], " DOUBLE%3d", p_erase_c[6]);
 		printFont(27 + (3 * (!maxPlay)), 13, string[0], 9);
@@ -1498,11 +1499,11 @@ void viewLineInfo(void){
 			printFont(27 + (3 * (!maxPlay)), 19, "T-SPIN", 6);
 			sprintf(string[0], " SINGLE%3d", p_erase_c[8]);
 			printFont(27 + (3 * (!maxPlay)), 20, string[0], 6);
-	
+
 			printFont(27 + (3 * (!maxPlay)), 21, "T-SPIN", 9);
 			sprintf(string[0], " DOUBLE%3d", p_erase_c[9]);
 			printFont(27 + (3 * (!maxPlay)), 22, string[0], 9);
-	
+
 			printFont(27 + (3 * (!maxPlay)), 23, "T-SPIN", 7);
 			sprintf(string[0], " TRIPLE%3d", p_erase_c[10]);
 			printFont(27 + (3 * (!maxPlay)), 24, string[0], 7);
@@ -1534,22 +1535,22 @@ void viewField(void) {
 	int		fldt3, fldt4, fldt5;	//シャドウタイマーでうっすらと消えていく演出に使用 #1.60c7j9
 	int		mp;
 	int		tmp_x1, tmp_x2, tmp_y;	// 枠表示用
-	
+
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
 
 	// フィールド枠
 	viewFldFrame(0,0);
 	if(maxPlay) viewFldFrame(0,1);
-	
+
 	for(i = 0; i <= mp; i++) {
 		if(skip_viewbg) ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
-		
+
 		// イレイサーの線 #1.60c7s2
 		if( (gameMode[0] == 8) && (i == 0)  && ((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39))){
 			viewEraserLines();
 		}
-		
+
 		// フィールドを描画
 		// オマケ
 		if((gameMode[i] == 4) && (upLineT[i] == 3) && (timeOn[i])){
@@ -1591,7 +1592,7 @@ void viewField(void) {
 						fldt3 = fldt[k + j * 10 + i * 220];
 						fldt4 = fldt[k + j * 10 + i * 220] * 32;
 						fldt5 = 256 - (fldt[k + j * 10 + i * 220] * 32);
-						
+
 						// アイテムの場合は見た目を変える #1.60c7n1
 						if( fldi[k + j * 10 + i * 220] ) {
 							fi = 17 + fldi[k + j * 10 + i * 220] - 1;
@@ -1739,10 +1740,10 @@ void viewPreview(void){
 	int n2[2], n3[2], n4[2], n5[2], n6[2]; // 3Next表示用 #1.60c
 	int nf1[2];//偽者用
 	int i, j, c_tmp[6], mp;
-	
+
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
-	
+
 	for(i = 0; i <= mp; i++) {
 		// hold・3Nextに合わせて画面上部変更 #1.60c
 		if( (hnext[i] >= 1) && (stat[i] != 0) && ((stat[i] != 2) || ((stat[i] == 2) && (statc[i * 10 + 2] != 0))) ) {
@@ -1769,7 +1770,7 @@ void viewPreview(void){
 					n5[i] = nextb[(nextc[i] + 250+ 4-(!ndelay[i])) % 1400];
 					n6[i] = nextb[(nextc[i] + 300+ 5-(!ndelay[i])) % 1400];
 			}
-			
+
 			// 表示する色を決める
 			for(j=0; j<6; j++) {
 				if(item_nblk[j + i * 6]){
@@ -1778,7 +1779,7 @@ void viewPreview(void){
 					c_tmp[j] = c_nblk[j + i * 6];
 				}
 			}
-			
+
 			//FEVER中
 			if((isfever[i]) && (item_timer[i] > 0) && ((item_timer[i] >= 90) || (item_timer[i] % 2 == 1))){
 				n2[i] = 0;
@@ -1825,7 +1826,7 @@ void viewPreview(void){
 					drawhBlock(210 + 192 * i - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4-8, n6[i], c_tmp[5-(!ndelay[i])], 4, i,rt_nblk[(5-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
 			}
 		}
-		
+
 		if(!top_frame)
 			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 33);
 		else
@@ -1834,7 +1835,7 @@ void viewPreview(void){
 			ExBltRect(3, 150 + 192 * i - 96 * maxPlay, 4*(!top_frame), 128, 112, 26, 7);
 		if(!disable_hold)
 			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 4, 128, 119, 26, 7);//HOLDという文字
-		
+
 		// HOLDブロック
 		if((!disable_hold) && !((ishidenext[i] == 1) && (hnext_flag[i]))) {
 			if( (i == 0) || ((!playback)&&(gameMode[i] != 5)) || (gameMode[i] == 4)) {
@@ -1878,7 +1879,7 @@ void viewPreview(void){
 void viewFldBackground(void) {
 	int i, k;
 
-	for(i = 0; i <= maxPlay; i++) {	
+	for(i = 0; i <= maxPlay; i++) {
 		// ------------------------
 		// ここから C++版上部枠表示
 
@@ -2023,10 +2024,10 @@ void viewFldFrame(int uponly,int i) {
 
 		if(heboGB[i]==1)	//mission オールドスタイル
 			gm[i] = 7;
-			
+
 		if(heboGB[i]==2)	//mission オールドスタイル(天井アリ)
 			gm[i] = 8;
-			
+
 		ismission[i] = ((((gameMode[i] >= 8)&&(gameMode[i] < 10)) || ((gameMode[i] == 7) && (anothermode[i] < 3))) && (!uponly) && (!waiting[i]) && (heboGB[i]==0));
 
 		if((ismission[i]) && (disable_giji3D < 4))
@@ -2086,7 +2087,7 @@ void printSMALLFont(int fontX, int fontY, char *fontStr, int fontColor) {
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
 		stringChar = CharAt(fontStr, i);
-		
+
 		// スペースでない場合
 		if(stringChar != 32) {
 			// 数字
@@ -2117,7 +2118,7 @@ void printSMALLFontEX(int fontX, int fontY, char *fontStr, int fontColor) {
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
 		stringChar = CharAt(fontStr, i);
-		
+
 		// スペースでない場合
 		if(stringChar != 32) {
 			// 数字
@@ -2175,33 +2176,33 @@ int getBlockPlaneNo(int player, int color) {
 	// プラチナブロックやアイテムなど
 	if(color >= 10)
 		return 46;
-		
+
 	if(heboGB[player] == 1)
 		return 74;
-	
+
 	if(heboGB[player] == 2)
 		return 64;
-		
+
 	// TGM
 	if((rots[player] == 0)||(heboGB[player]==2))
 		return 40;
-	
+
 	// ARS
 	if((rots[player] == 4) || (rots[player] == 5))
 		return 73;
-	
+
 	// TI
 	if(rots[player] == 1)
 		return 41;
-	
+
 	// WORLD & WORLD2
 	if( (rots[player] == 2) || (rots[player] == 3) )
 		return 42;
-	
+
 	// WORLD3
 	if(rots[player] == 6)
 		return 43;
-	
+
 	//SRS-X
 	if(rots[player] == 7)
 		return 64;
@@ -2253,9 +2254,9 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 	}
 	if(item_monochrome[player])	//アイテムによる[ ]
 		color = 8;
-	
+
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
-	
+
 	for(j = ((!use3D) || (tmp) || (heboGB[player]>0)); j < 2; j++)
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8){
@@ -2268,7 +2269,7 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 			bx2 = (bx1 + blkDataX[kind * 16 + rotate * 4 + i]) * 8;
 			by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i]) * 8;
 		}
-		if(!j){ 
+		if(!j){
 			if(color < 8) tmp = getBigBlock_add(player);
 			else tmp = 8;
 			if((flash == 999) || (flash == 0)){
@@ -2321,7 +2322,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 	if(item_monochrome[player])	//アイテムによる[ ]
 		color = 8;
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
-	
+
 	for(j = ((!use3D) || (tmp) || (heboGB[player]>0)); j < 2; j++)
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8){
@@ -2336,7 +2337,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 		}
 		k = getBigBlock_add(player);
 
-		if(!j){ 
+		if(!j){
 			if(color < 8) tmp = getBigBlock_add(player);
 			else tmp = 8;
 				if(rots[player] == 8){
@@ -2401,7 +2402,7 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 		color = color + 9;
 	}
 
-	
+
 	if((isfever[player]) && (color < 8))
 		color = count % 7 + 1;
 	if((istrance[player]) && (color < 8)){
@@ -2410,9 +2411,9 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 	}
 	if(item_monochrome[player])	//アイテムによる[ ]
 		color = 8;
-	
+
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
-	
+
 	for(j = ((!use3D) || (tmp) || (flash == 999) || (heboGB[player]>0)); j < 3; j++){
 		for(i = 0; i < 4; i++) {
 			if(rots[player] == 8){
@@ -2523,12 +2524,12 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 		if(count%2==0) color=0;
 		else color = ((count % 14) /2) +1;
 	}
-	
+
 	if(item_monochrome[player])	//アイテムによる[ ]
 		color = 8;
-	
+
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
-	
+
 	for(j = ((!use3D) || (tmp) || (flash == 999) || (heboGB[player])); j < 3; j++){
 		for(i = 0; i < 4; i++) {
 			if(rots[player] == 8){
@@ -2637,22 +2638,22 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 // 現在のツモを表示 Big対応 #1.60c7
 void drawCBlock(int player, int color, int bright, int offset, int flash, int not3D) {
 	/* BIG時の描画は別関数に独立しました #1.60c7j8 */
-	
+
 	// アイテム #1.60c7n1
 	if( item[player] ) {
 		c_cblk[player] = 16 + item[player];
 	}
-	
+
 	if(heboGB[player] != 0) bright = 0;
-	
+
 	// 描画
 	if(IsBig[player]) {
 		// BIG時
-		drawBigBlockNew(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3, 
+		drawBigBlockNew(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3,
 			blk[player], rt[player], c_cblk[player], bright, offset, flash, player,((disable_giji3D < 3) && (!not3D)));
 	} else {
 		// 通常時
-		drawBlock(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3, 
+		drawBlock(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3,
 			blk[player], rt[player], c_cblk[player], bright, offset, flash, player, ((disable_giji3D < 3) && (!not3D)));
 	}
 }
@@ -2661,7 +2662,7 @@ void drawCBlock(int player, int color, int bright, int offset, int flash, int no
 // classic.cとworld.cから独立 #1.60c7k4
 void drawTLSBlock(int player, int bottom) {
 	if( !isTLS(player) ) return;
-	
+
 	// 描画
 	if(IsBig[player]) {
 		// BIG時
@@ -2690,47 +2691,47 @@ void drawhBlock(int bx1, int by1, int kind, int color, int r, int player, int ro
 	if(item_monochrome[player])	//アイテムによる[ ]
 		color = 8;
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
-	
+
 	if(color < 10){
 		k = getBigBlock_add(player);
 	}else{
 		k = 8;
 		color = color - 17;
 	}
-	
+
 	for(j = ((tmp) || (!use3D)); j < 2; j++)
 	for(i = 0; i < 4; i++)
 		if(!j){
 			if(rots[player] == 8)
-				ExBltFastRect(83, 
-				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)), 
-				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r, 
+				ExBltFastRect(83,
+				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
+				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 			else if( isWRule(player) )		// WorldType用 #1.60c5
-				ExBltFastRect(83, 
-				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)), 
-				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r, 
+				ExBltFastRect(83,
+				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
+				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 			else
-				ExBltFastRect(83, 
-				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)), 
-				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r, 
+				ExBltFastRect(83,
+				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
+				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 		}else{
 			if(rots[player] == 8)
-				ExBltFastRect(76, 
-				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r, 
-				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r, 
+				ExBltFastRect(76,
+				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r,
+				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
 			else if( isWRule(player) )		// WorldType用 #1.60c5
-				ExBltFastRect(76, 
-				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r, 
-				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r, 
+				ExBltFastRect(76,
+				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r,
+				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
 			else
-				ExBltFastRect(76, 
-				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r, 
-				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r, 
+				ExBltFastRect(76,
+				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r,
+				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
-		}	
+		}
 }

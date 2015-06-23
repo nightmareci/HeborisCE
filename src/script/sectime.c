@@ -118,7 +118,7 @@ void ST_RankingUpdate(int player, int rmode, int end,int enable_grade) {
 
 // ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg (4byte’PˆÊ)	
 //   0      ƒo[ƒWƒ‡ƒ“			
-//   1`  9 –¢g—pi©—R‚Ég—p‰Â”\	
+//   1`  9 –¢g—pi©—R‚Ég—p‰Â”
 //  10` 61 ƒ^ƒCƒ€			10-90
 //  62`113 ƒGƒ“ƒfƒBƒ“ƒO“’B		91-171
 // 114`165 –¼‘O			172-252

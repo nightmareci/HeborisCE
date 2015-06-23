@@ -8,7 +8,7 @@ int		cp_erase[22 * 2];
 /* ブロックのあたり判定 */
 int cpu_judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2;
-	
+
 	if(IsBig[player]) {
 		// BIGの場合は専用の判定処理を行う
 		return cpu_judgeBigBlock(player, bx1, by1, kind, rotate);
@@ -36,7 +36,7 @@ int cpu_judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
 int cpu_setBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2,puted;
 	puted = 0;
-	
+
 	if(IsBig[player]) {
 		// BIGの場合は専用の設置処理を行う
 		return cpu_setBigBlock(player, bx1, by1, kind, rotate);
@@ -64,7 +64,7 @@ int cpu_setBlock(int player, int bx1, int by1, int kind, int rotate) {
 int cpu_judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2;
 	int		k, l, bx3, by3;
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
@@ -76,13 +76,13 @@ int cpu_judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 			bx2 = (bx1 + blkDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2);
 		}
-		
+
 		/* 4ブロック分調べる */
 		for(k = 0; k < 2; k++)for(l = 0; l < 2; l++) {
 			bx3 = bx2 + k;
 			by3 = by2 + l;
-			
-			if( ((bx3 < 0) || (bx3 >= fldsizew[player]) || (by3 > fldsizeh[player])) || 
+
+			if( ((bx3 < 0) || (bx3 >= fldsizew[player]) || (by3 > fldsizeh[player])) ||
 			    ((cp_fld[bx3 + by3 * fldsizew[player] + player * 220] != 0) && (by3 >= 0)) ) {
 				return -1;
 			}
@@ -96,7 +96,7 @@ int cpu_setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 	int		i, bx2, by2,puted;
 	int		k, l, bx3, by3;
 	puted = 0;
-	
+
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
@@ -112,7 +112,7 @@ int cpu_setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 		for(k = 0; k < 2; k++)for(l = 0; l < 2; l++) {
 			bx3 = bx2 + k;
 			by3 = by2 + l;
-			
+
 			if( (bx3 >= 0) && (bx3 < fldsizew[player]) && (by3 >= 0) && (by3 <= fldsizeh[player]) ) {
 				cp_fld[bx3 + by3 * fldsizew[player]+ player * 220] = c_cblk_r[player] + 1;
 				puted++;
@@ -125,19 +125,19 @@ int cpu_setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 /* 目的の場所へブロックを移動させる */
 void cpuMove(int player) {
 	int i, slow;
-	
+
 	// キー入力初期化
 	for(i=0;i<10;i++) {
 		cp_input[i + player * 10] = 0;
 	}
-	
+
 	slow = (((rots[player] == 6) || (rots[player] == 8)) && (sp[player] < 40)) * (gameMode[player] == 4);
 	slow = slow + 2 * ((isfmirror[player]) || (isxray[player]) || (iscolor[player]) || (item_monochrome[player]) ||
 					   (ishidenext[player]) || (isdark[player]) || (isfakenext[player]) || (ismiss[player]));
-		   
-	
+
+
 	if(cp_rot_c[player] > 0) cp_rot_c[player]--;
-	
+
 	// 移動
 	if( (stat[player] == 4) || (stat[player] == 5) ) {
 		if(cp_hold[player]) {
@@ -153,7 +153,7 @@ void cpuMove(int player) {
 			if(bx[player] < cp_x[player]) {
 				if(count%(2+(4*slow)) == 0)
 					cp_input[3-(1*((isLRreverse[player]) && (item_timer[player] < 360))) + player * 10] = 1;
-				
+
 				// 右に壁がある
 				if(judgeBlock(player, bx[player]+1, by[player], blk[player], rt[player]) != 0) {
 					if((isWRule(player)) && (blk[player] != 2)){
@@ -181,7 +181,7 @@ void cpuMove(int player) {
 			else if(bx[player] > cp_x[player]) {
 				if(count%(2+(4*slow)) == 0)
 					cp_input[2+(1*((isLRreverse[player]) && (item_timer[player] < 360))) + player * 10] = 1;
-				
+
 				// 左に壁がある
 				if(judgeBlock(player, bx[player]-1, by[player], blk[player], rt[player]) != 0) {
 					if((isWRule(player)) && (blk[player] != 2)){
@@ -220,7 +220,7 @@ void cpuMove(int player) {
 void cpuDrop(int player){
 
 	if(isUDreverse[player]){	//上下逆転時
-		if((sonicdrop) || (heboGB[player] == 0) && 
+		if((sonicdrop) || (heboGB[player] == 0) &&
 			((rots[player] <= 1) || (rots[player] == 5) || (rots[player] == 7))){
 			if(!up_flag[player]){
 				cp_input[0 + player * 10] = 0;
@@ -233,12 +233,12 @@ void cpuDrop(int player){
 			}
 		}
 	}else{	// 通常時
-		if((!up_flag[player]) && (!sonicdrop) && (heboGB[player] == 0) && 
+		if((!up_flag[player]) && (!sonicdrop) && (heboGB[player] == 0) &&
 			((rots[player] == 2) || (rots[player] == 3) || (rots[player] == 4) || (rots[player] == 6) || (rots[player] == 8))){
 			cp_input[0 + player * 10] = 1;
 			cp_input[1 + player * 10] = 0;
 		}else{
-			if((sonicdrop) || (heboGB[player] != 0) ||  
+			if((sonicdrop) || (heboGB[player] != 0) ||
 				(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0)){	// 地面にくっついた
 				if(!down_flag[player]){
 					cp_input[0 + player * 10] = 0;
@@ -258,7 +258,7 @@ void cpuDrop(int player){
 int cpuBlockHowManyFilled(int player, int y) {
 	int		j, ret;
 	ret = 0;
-	
+
 	for(j = 0; j < fldsizew[player]; j++)
 		if(cp_fld[j + y * fldsizew[player] + player * 220]) {
 			ret++;
@@ -270,59 +270,59 @@ int cpuBlockHowManyFilled(int player, int y) {
 int blockHowManyFilledFromLeft(int player, int y) {
 	int		j, ret;
 	ret = 0;
-	
+
 	for(j = 0; j < fldsizew[player]; j++)
 		if(!cp_fld[j + y * fldsizew[player] + player * 220]) {
 			break;
 		} else {
 			ret++;
 		}
-	
+
 	return ret;
 }
 
 /* 下に隙間があるか調べる */
 int cpuCheckFloating(int player, int x, int y) {
 	int y2, y3;
-	
+
 	y2 = y + 1;
 	if(y2 > fldsizeh[player]) y2 = fldsizeh[player];
 	y3 = y + 2;
 	if(y3 > fldsizeh[player]) y3 = fldsizeh[player];
-	
+
 	if( (!cp_fld[x + y2 * fldsizew[player] + player * 220]) || (!cp_fld[x + y3 * fldsizew[player] + player * 220]) ) {
 		return -1;
 	}
-	
+
 	return 0;
 }
 int cpuCheckFloatingE(int player, int x, int y) {
 	int y2;
-	
+
 	//そのブロックが消えるならスルー
 //	if(cp_erase[y+22*player]) return 0;
-	
+
 	y2 = y + 1;
 	if(y2 > fldsizeh[player]) y2 = fldsizeh[player];
-	
+
 	if(!cp_fld[x + y2 * fldsizew[player] + player * 220]) {
 		return -1;
 	}
-	
+
 	return 0;
 }
 
 /* 横にブロックが隣接しているか調べる */
 int cpuCheckLeftRight(int player, int x, int y) {
 	int ret, x2, x3;
-	
+
 	ret = 0;
 	x2 = x + 1;
 	x3 = x - 1;
-	
+
 	if( (x2 >= fldsizew[player]) || (cp_fld[x2 + y * fldsizew[player] + player * 220]) ) ret++;
 	if( (x3 >= fldsizew[player]) || (cp_fld[x3 + y * fldsizew[player] + player * 220]) ) ret++;
-	
+
 	return ret;
 }
 
@@ -341,7 +341,7 @@ int cpu_blockEraseJudge(int player) {
 		ret = ret + sr;
 		if(sr) cp_erase[i+22*player] = 1;
 	}
-	
+
 	return ret;
 }
 
@@ -351,11 +351,11 @@ int cpu_blockEraseJudge(int player) {
 //■　■
 int cpu_HowManyNeedIblock(int player) {
 	int i,j, count_left, count_right,total,by,by2;
-	
+
 	count_left = 0;
 	count_right = 0;
 	total = 0;
-	
+
 	for(j = 0;j < fldsizew[player];j++) {
 		by = cpu_checkHoleStart(player,j);
 		by2 = cpu_checkFieldTop(player,j);
@@ -363,7 +363,7 @@ int cpu_HowManyNeedIblock(int player) {
 			// 左側にブロックがある（または端）
 			if((j == 0) || (fld[(j - 1) + i * 10 + player * 220] != 0))
 				count_left++;
-			
+
 			// 右側にブロックがある
 			if((j == fldsizew[player] - 1 ) || (fld[(j + 1) + i * 10 + player * 220] != 0))
 				count_right++;
@@ -372,15 +372,15 @@ int cpu_HowManyNeedIblock(int player) {
 		count_left=0;
 		count_right=0;
 	}
-	
-	
+
+
 	return total;
 }
 
 /* 現在のフィールドを仮想フィールドにコピー */
 void cpuCopyField(int player) {
 	int i;
-	
+
 	for(i=0; i<220; i++) {
 		cp_fld[i + player * 220] = fld[i + player * 220];
 	}
@@ -388,11 +388,11 @@ void cpuCopyField(int player) {
 
 int cpu_checkFieldTop(int player,int x) {
 	int i;
-	
+
 	for(i = 0; i <= fldsizeh[player]; i++)
 		if(fld[x + i * fldsizew[player] + player * 220])
 			return i;
-	
+
 	// 空っぽの場合
 	return 22;
 }
@@ -401,11 +401,11 @@ int cpu_checkFieldTop(int player,int x) {
 int cpu_checkHoleStart(int player,int x) {
 	int i,top;
 	top = cpu_checkFieldTop(player,x);
-	
+
 	for(i = 0; i < top; i++)
 		if( ((x == 0) || (fld[(x - 1) + i * 10 + player * 220] != 0)) && ((x == fldsizew[player] - 1 ) || (fld[(x + 1) + i * 10 + player * 220] != 0)) )
 			return i;
-	
+
 	return top;
 }
 
@@ -418,21 +418,21 @@ void cpuCheckBestSpot(int player) {
 	int tmp;
 	int mfilled;	// 最も埋まってる数
 	int mrot,mrot_s;		// 調べる回転方向数
-	
+
 	for(i=0;i<=21;i++) cp_erase[i+22*player] = 0;
-	
+
 	mfilled = 0;
 	cp_hold[player] = 0;
-	
+
 	// 調べる回転方向数を決める
 	mrot = 4;
 	mrot_s = 0;
-	
+
 	// 赤、緑、紫は2パターンのみ
 	if(!isWRule(player)) {
 		if( (blk[player] == 0) || (blk[player] == 3) || (blk[player] == 6) ) mrot = 2;
 	}
-	
+
 	// 黄色は回らない
 	if( (blk[player] == 2) && (!istrance[player]) ) mrot = 1;
 	// 回せない
@@ -440,25 +440,25 @@ void cpuCheckBestSpot(int player) {
 		mrot = rt[player] + 1;
 		mrot_s = rt[player];
 	}
-	
+
 	for(j=mrot_s; j<mrot; j++) { /* 回転方向 */
 		for(i=-3; i<fldsizew[player]; i++) { /* X座標 */
 			// 底を調べる
 			for(bottom = 0; judgeBlock(player, i, bottom, blk[player], j) == 0; bottom++);
 			bottom = bottom - 1;
-			
+
 			if( judgeBlock(player, i, bottom, blk[player], j) == 0 ) {
 				// 現在のフィールドを仮想フィールドにコピー
 				cpuCopyField(player);
-				
+
 				// 仮想フィールドにブロックを設置する
 				if(cpu_setBlock(player, i, bottom, blk[player], j)==0){
 					pts = 0;
 					break;	// 画面外死亡を避ける
 				}
-				
+
 				pts = 0;
-				
+
 				for(k=0; k<4; k++) {
 					// 座標を決める
 					if(rots[player] == 8) {
@@ -471,24 +471,24 @@ void cpuCheckBestSpot(int player) {
 						bx2 = (i + blkDataX[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 						by2 = (bottom + blkDataY[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 					}
-					
+
 					// 2ライン以上消えればボーナス
 					tmp = cpu_blockEraseJudge(player);
-					
+
 					// 下1マスに隙間があったら終了
 					if( cpuCheckFloatingE(player, bx2, by2) == -1 ) {
 						pts = 0;
 						break;
 					}
-					
+
 					// 総数を調べる
 					//pts = pts + cpuBlockHowManyFilled(player, by2);
 					pts = pts + blockHowManyFilledFromLeft(player, by2);
-					
+
 					// 壁と隣接させる
 					pts = pts + cpuCheckLeftRight(player, bx2, by2);
-					
-					
+
+
 					//操作ブロックが↑DEL FIELD、MOV FIELD、FREE FALLなら消える形が最優先
 					if((item[player] == 17) || (item[player] == 29) || (item[player] == 30) || (item[player] == 35) || (item[player] == 28))
 						tmp = tmp * 1000;
@@ -512,7 +512,7 @@ void cpuCheckBestSpot(int player) {
 			}
 		}/* for(i=-3; i<fldsizew[player]; i++) */
 	}/* for(j=0; j<mrot; j++) */
-	
+
 	// 棒をHOLDする
 	if( (blk[player] == 0) && (hold[player] != 0) && (!dhold[player]) && (mfilled <= 40) && (!pinch[player]) && (!item[player])) {
 		// 次のブロックがO、Z、Sでない場合はHOLDする
@@ -520,11 +520,11 @@ void cpuCheckBestSpot(int player) {
 			cp_hold[player] = 1;
 		}
 	}
-	
+
 	// 棒をHOLD枠から呼び出す
 	if( (hold[player] == 0) && (!dhold[player]) && (cpu_HowManyNeedIblock(player) >= 2 - (1 * (pinch[player]))) )
 		cp_hold[player] = 1;
-	
+
 	// 有効な手が無い場合
 	if(mfilled == 0) {
 		// 棒をHOLD枠から呼び出す
@@ -541,16 +541,16 @@ void cpuCheckBestSpot(int player) {
 					// 底を調べる
 					for(bottom = 0; judgeBlock(player, i, bottom, blk[player], j) == 0; bottom++);
 					bottom = bottom - 1;
-					
+
 					if( judgeBlock(player, i, bottom, blk[player], j) == 0 ) {
 						// 現在のフィールドを仮想フィールドにコピー
 						cpuCopyField(player);
-						
+
 						// 仮想フィールドにブロックを設置する
 						cpu_setBlock(player, i, bottom, blk[player], j);
-						
+
 						pts = 0;
-						
+
 						for(k=0; k<4; k++) {
 							// 座標を決める
 							if(rots[player] == 8) {
@@ -563,19 +563,19 @@ void cpuCheckBestSpot(int player) {
 								bx2 = (i + blkDataX[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 								by2 = (bottom + blkDataY[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 							}
-							
+
 							// ラインが消えればボーナス
 							tmp = cpu_blockEraseJudge(player) * 10;
-							
+
 							// 下1マスに隙間
 							if( cpuCheckFloatingE(player, bx2, by2) == -1 )
 								pts = pts - 10;
 							// 総数を調べる
 							pts = pts + cpuBlockHowManyFilled(player, by2);
-							
+
 							// 壁と隣接させる
 							pts = pts + cpuCheckLeftRight(player, bx2, by2);
-							
+
 							if((tmp >= 2) || (pinch[player])) {
 								pts = pts + (tmp * 10) + 10;	// ボーナス
 							}
@@ -586,7 +586,7 @@ void cpuCheckBestSpot(int player) {
 							if((pinch[player]) && ((item[player] == 18) || (item[player] == 19) || (item[player] == 28)))
 								tmp = tmp * 1000;
 						}
-						
+
 						// 最善手の場合
 						if(pts >= mfilled) {
 							mfilled = pts;
@@ -599,7 +599,7 @@ void cpuCheckBestSpot(int player) {
 		}
 	}/* if(mfilled == 0) */
 	// BEGINNERナビゲーション用に、最善手の場所へ、仮想フィールドにブロックを設置
-	for(bottom = 0; judgeBlock(player, cp_x[player], bottom, blk[player], cp_rt[player]) == 0; bottom++);
+	for(bottom = 0; judgeBlock(player, cp_x[player], bottom, blk[player], cp_rt[player]) == 0; bottom++) {}
 		bottom = bottom - 1;
 	cpuCopyField(player);
 	cpu_setBlock(player, cp_x[player], bottom, blk[player], cp_rt[player]);

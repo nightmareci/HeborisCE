@@ -434,11 +434,12 @@ void statWMove(int player, int kickm, int kickr) {
 
 			// ‰º“ü‚ê‰ü‘¢#1.60c7f9
 			if((getPressState(player , 1-(1*(isUDreverse[player])))) && (!down_flag[player]) 
-						&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown))
+						&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 				if((rots[player] == 7) || (heboGB[player]!=0))	// SRS-X‘¦Ú’…
 					bk[player] = 100;
 				else
 					bk[player] = bk[player] + 1 + ((rots[player] == 2) && (repversw >= 30) && (!nanamedown));
+            }
 			
 			// ã“ü‚ê‘¦Ú’…
 			if( ( (getPressState(player , 0+(1*(isUDreverse[player]))) && (repversw >= 43)) ||

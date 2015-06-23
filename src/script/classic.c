@@ -305,11 +305,12 @@ void statCMove(int player) {
 			// ‰º“ü‚ê§ŒÀ#1.60c7f9
 			// ‰º“ü‚ê‘¦Ú’… #1.60c7k8
 			if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) 
-						&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown))
+						&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 				if (repversw < 9)
 					bk[player] = bk[player] + 8;
 				else 
 					bk[player] = 100;
+            }
 			
 			// ŒÅ’è
 			if(bk[player] > lockT) {

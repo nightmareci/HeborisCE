@@ -15182,9 +15182,9 @@ void initialize(void) {
 // players : プレイする人数(maxPlayの代わり)
 void LoadGraphics(char *nameStr, int p1, int p2) {
 	if ( getDrawRate() == 1 )
-		sprintf(string[0], "graphics/%s", nameStr);
+		sprintf(string[0], "res/graphics/lowDetail%s", nameStr);
 	else
-		sprintf(string[0], "graphicsHi/%s", nameStr);
+		sprintf(string[0], "res/graphics/highDetail/%s", nameStr);
 
 	LoadBitmap(string[0], p1, p2);
 }
@@ -15193,18 +15193,18 @@ void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
 		LoadGraphics("title.png", 8, 0);
 		if ( getDrawRate() == 1 ){
-			LoadBitmap("title/logo_low.png", 7,0);
+			LoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
-			LoadBitmap("title/logo_hi.png", 7,0);
+			LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
 		}
 		SetColorKeyRGB(7,0,0,0);
 	}else{					//動画
 		if ( getDrawRate() == 1 ){
-			LoadBitmap("title/tmov_low.png", 8,0);
-			LoadBitmap("title/logo_low.png", 7,0);
+			LoadBitmap("res/graphics/title/tmov_low.png", 8,0);
+			LoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
-			LoadBitmap("title/tmov_hi.png" , 8,0);
-			LoadBitmap("title/logo_hi.png", 7,0);
+			LoadBitmap("res/graphics/title/tmov_hi.png" , 8,0);
+			LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
 		}
 		SetColorKeyRGB(7,0,0,0);
 	}
@@ -15214,9 +15214,9 @@ void LoadBackground(char *nameStr, int p1, int p2) {
 	if(skip_viewbg) return;
 
 	if ( getDrawRate() == 1 )
-		sprintf(string[0], "back/%s", nameStr);
+		sprintf(string[0], "res/bg/lowDetail/%s", nameStr);
 	else
-		sprintf(string[0], "backHi/%s", nameStr);
+		sprintf(string[0], "res/bg/highDetail/%s", nameStr);
 
 	LoadBitmap(string[0], p1, p2);
 }
@@ -15570,65 +15570,65 @@ void loadBG(int players,int vsmode){
 // initializeから独立 #1.60c7o5
 void loadWaves(void) {
 	/* 効果音を読み込み */
-	LoadWave("se/shaki.wav", 0);
-	LoadWave("se/kon.wav", 1);
-	LoadWave("se/gon.wav", 2);
-	LoadWave("se/kachi.wav", 3);
-	LoadWave("se/rotate.wav", 4);
-	LoadWave("se/move.wav", 5);
-	LoadWave("se/hold.wav", 6);
-	LoadWave("se/tumagari.wav", 7);
-	LoadWave("se/gameover.wav", 8);
-	LoadWave("se/lvstop.wav", 9);
-	LoadWave("se/kettei.wav", 10);
+	LoadWave("res/se/shaki.wav", 0);
+	LoadWave("res/se/kon.wav", 1);
+	LoadWave("res/se/gon.wav", 2);
+	LoadWave("res/se/kachi.wav", 3);
+	LoadWave("res/se/rotate.wav", 4);
+	LoadWave("res/se/move.wav", 5);
+	LoadWave("res/se/hold.wav", 6);
+	LoadWave("res/se/tumagari.wav", 7);
+	LoadWave("res/se/gameover.wav", 8);
+	LoadWave("res/se/lvstop.wav", 9);
+	LoadWave("res/se/kettei.wav", 10);
 
-	LoadWave("se/erase1.wav", 11);
-	LoadWave("se/erase2.wav", 12);
-	LoadWave("se/erase3.wav", 13);
-	LoadWave("se/erase4.wav", 14);
+	LoadWave("res/se/erase1.wav", 11);
+	LoadWave("res/se/erase2.wav", 12);
+	LoadWave("res/se/erase3.wav", 13);
+	LoadWave("res/se/erase4.wav", 14);
 
-	LoadWave("voice/ready.wav", 15);
-	LoadWave("voice/go.wav", 16);
+	LoadWave("res/se/ready.wav", 15);
+	LoadWave("res/se/go.wav", 16);
 
-	LoadWave("se/applause.wav", 17);
-	LoadWave("se/cheer.wav", 18);
-	LoadWave("se/levelup.wav", 19);
+	LoadWave("res/se/applause.wav", 17);
+	LoadWave("res/se/cheer.wav", 18);
+	LoadWave("res/se/levelup.wav", 19);
 
-	LoadWave("se/up.wav", 20);
-	LoadWave("blockse/block1.wav", 21);
-	LoadWave("blockse/block2.wav", 22);
-	LoadWave("blockse/block3.wav", 23);
-	LoadWave("blockse/block4.wav", 24);
-	LoadWave("blockse/block5.wav", 25);
-	LoadWave("blockse/block6.wav", 26);
-	LoadWave("blockse/block7.wav", 27);
+	LoadWave("res/se/up.wav", 20);
+	LoadWave("res/se/block1.wav", 21);
+	LoadWave("res/se/block2.wav", 22);
+	LoadWave("res/se/block3.wav", 23);
+	LoadWave("res/se/block4.wav", 24);
+	LoadWave("res/se/block5.wav", 25);
+	LoadWave("res/se/block6.wav", 26);
+	LoadWave("res/se/block7.wav", 27);
 
-	LoadWave("se/ttclear.wav", 28);
-	LoadWave("se/gm.wav", 29);
-	LoadWave("se/rankup.wav", 30);
-	LoadWave("se/stageclear.wav", 31);
-	LoadWave("se/hurryup.wav", 32);
-	LoadWave("se/timeover.wav", 33);
-	LoadWave("se/tspin.wav", 34);
-	LoadWave("se/hanabi.wav", 35);
-	LoadWave("se/missionclr.wav", 36);
+	LoadWave("res/se/ttclear.wav", 28);
+	LoadWave("res/se/gm.wav", 29);
+	LoadWave("res/se/rankup.wav", 30);
+	LoadWave("res/se/stageclear.wav", 31);
+	LoadWave("res/se/hurryup.wav", 32);
+	LoadWave("res/se/timeover.wav", 33);
+	LoadWave("res/se/tspin.wav", 34);
+	LoadWave("res/se/hanabi.wav", 35);
+	LoadWave("res/se/missionclr.wav", 36);
 
-	LoadWave("se/thunder.wav", 37);
+	LoadWave("res/se/thunder.wav", 37);
 
-	LoadWave("se/warning.wav", 38);
+	LoadWave("res/se/warning.wav", 38);
 
-	LoadWave("se/medal.wav", 39);
-	LoadWave("se/pinch.wav", 40);
+	LoadWave("res/se/medal.wav", 39);
+	LoadWave("res/se/pinch.wav", 40);
 
-	LoadWave("se/platinaerase.wav",41);
-	LoadWave("se/timeextend.wav",42);
-	LoadWave("se/stgstar.wav",43);
-	LoadWave("se/ace_sonic_lock.wav",44);
-	LoadWave("se/regret.wav",45);
-	LoadWave("se/cool.wav",46);
+	LoadWave("res/se/platinaerase.wav",41);
+	LoadWave("res/se/timeextend.wav",42);
+	LoadWave("res/se/stgstar.wav",43);
+	LoadWave("res/se/ace_sonic_lock.wav",44);
+	LoadWave("res/se/regret.wav",45);
+	LoadWave("res/se/cool.wav",46);
 
-	LoadWave("se/timestop.wav",47);
-	LoadWave("se/tserase.wav",48);
+	LoadWave("res/se/timestop.wav",47);
+	LoadWave("res/se/tserase.wav",48);
 	SetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
@@ -15636,26 +15636,26 @@ void loadWaves(void) {
 void loadBGM(void) {
 	int i;
 
-	StrCpy(string[0],  "bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0～499）playwave(50)
-	StrCpy(string[1],  "bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500～899）
-	StrCpy(string[2],  "bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900～998、DEVIL 0～499）
-	StrCpy(string[3],  "bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500～699）
-	StrCpy(string[4],  "bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700～999）
-	StrCpy(string[5],  "bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
-	StrCpy(string[6],  "bgm/ending");		// bgmlv 6 プレイ中（エンディング）
-	StrCpy(string[7],  "bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
-	StrCpy(string[8],  "bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
-	StrCpy(string[9],  "bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
-	StrCpy(string[10], "bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
-	StrCpy(string[11], "bgm/title");		// bgmlv 11 タイトル
-	StrCpy(string[12], "bgm/select");		// bgmlv 12 モードセレクト62
-	StrCpy(string[13], "bgm/nameentry");	// bgmlv 13 ネームエントリー
-	StrCpy(string[14], "bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
-	StrCpy(string[15], "bgm/fever");		// bgmlv 15 FEVER発動中
-	StrCpy(string[16], "bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
-	StrCpy(string[17], "bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
-	StrCpy(string[18], "bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
-	StrCpy(string[19], "bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
+	StrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0～499）playwave(50)
+	StrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500～899）
+	StrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900～998、DEVIL 0～499）
+	StrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500～699）
+	StrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700～999）
+	StrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
+	StrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
+	StrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
+	StrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
+	StrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
+	StrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
+	StrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
+	StrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
+	StrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
+	StrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
+	StrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
+	StrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
+	StrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
+	StrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
+	StrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 
 	for(i = 0; i <= 19; i++) {
 		if(bgmload[i] == 1){

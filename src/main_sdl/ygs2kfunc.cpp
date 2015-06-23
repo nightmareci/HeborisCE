@@ -1152,21 +1152,21 @@ void FillMemory(void* buf, int size, int val)
 void YGS2kKanjiFontInitialize()
 {
 #if		USE_GL_KANJI
-	s_pKanjiFont[0].load("kanjifont/knj10.f1b");
-	s_pKanjiFont[1].load("kanjifont/knj12.f1b");
-	s_pKanjiFont[2].load("kanjifont/knj16.f1b");
+	s_pKanjiFont[0].load("res/font/knj10.f1b");
+	s_pKanjiFont[1].load("res/font/knj12.f1b");
+	s_pKanjiFont[2].load("res/font/knj16.f1b");
 #elif	USE_SDLKANJI
 	/* 10pxフォント読み込み */
-	s_pKanjiFont[0] = Kanji_OpenFont("kanjifont/knj10.bdf", 10);
+	s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj10.bdf", 10);
 	if ( s_pKanjiFont[0] )
 	{
-		Kanji_AddFont(s_pKanjiFont[0], "kanjifont/5x10a.bdf");
+		Kanji_AddFont(s_pKanjiFont[0], "res/font/5x10a.bdf");
 	}
 	else
 	{
 		/* フォントがない場合代替を使う */
-		s_pKanjiFont[0] = Kanji_OpenFont("kanjifont/knj12.bdf", 10);
-		Kanji_AddFont(s_pKanjiFont[0], "kanjifont/6x12a.bdf");
+		s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj12.bdf", 10);
+		Kanji_AddFont(s_pKanjiFont[0], "res/font/6x12a.bdf");
 	}
 
 	if ( s_pKanjiFont[0] )
@@ -1175,29 +1175,29 @@ void YGS2kKanjiFontInitialize()
 	}
 
 	/* 12pxフォント読み込み */
-	s_pKanjiFont[1] = Kanji_OpenFont("kanjifont/knj12.bdf", 12);
+	s_pKanjiFont[1] = Kanji_OpenFont("res/font/knj12.bdf", 12);
 	if ( s_pKanjiFont[1] )
 	{
-		Kanji_AddFont(s_pKanjiFont[1], "kanjifont/6x12a.bdf");
+		Kanji_AddFont(s_pKanjiFont[1], "res/font/6x12a.bdf");
 		Kanji_SetCodingSystem(s_pKanjiFont[1], KANJI_SJIS);
 	}
 
 	/* 16pxフォント読み込み */
-	s_pKanjiFont[2] = Kanji_OpenFont("kanjifont/knj16.bdf", 16);
+	s_pKanjiFont[2] = Kanji_OpenFont("res/font/knj16.bdf", 16);
 	if ( s_pKanjiFont[2] )
 	{
-		Kanji_AddFont(s_pKanjiFont[2], "kanjifont/8x16a.bdf");
+		Kanji_AddFont(s_pKanjiFont[2], "res/font/8x16a.bdf");
 		Kanji_SetCodingSystem(s_pKanjiFont[2], KANJI_SJIS);
 	}
 #elif	USE_PNGKANJI
 	char	*kanjifile[YGS_KANJIFONT_MAX] = 
 	{
-		"kanjifont/kanjifont10w.png",
-		"kanjifont/kanjifont10b.png",
-		"kanjifont/kanjifont12w.png",
-		"kanjifont/kanjifont12b.png",
-		"kanjifont/kanjifont16w.png",
-		"kanjifont/kanjifont16b.png",
+		"res/font/kanjifont10w.png",
+		"res/font/kanjifont10b.png",
+		"res/font/kanjifont12w.png",
+		"res/font/kanjifont12b.png",
+		"res/font/kanjifont16w.png",
+		"res/font/kanjifont16b.png",
 	};
 
 	for ( int i = 0 ; i < YGS_KANJIFONT_MAX ; i ++ )

@@ -2325,12 +2325,12 @@ void playerInitial(int player) {
 		split_time[i + player * 100] = 0;	// #1.60c7j7追加
 	}
 	for(i = 0;i<30;i++){
-		stage_time[i + player * 30];
-		st_other[i + player * 30];		//落としたブロック数
+		stage_time[i + player * 30] = 0;
+		st_other[i + player * 30] = 0;		//落としたブロック数
 	}
 
 	for(i = 0;i<20;i++){
-		lvstop_time[i + player * 20];
+		lvstop_time[i + player * 20] = 0;
 	}
 
 	if(gameMode[player]!= 5){
@@ -4323,7 +4323,7 @@ void statSelectMode(int player) {
 		// テキストガイド
 		if(textguide){
 			printFont(15+24 * player - 12 * maxPlay, 26, "<L R>:TYPE", count % 9);
-			if((gameMode[player] == 6)){
+			if(gameMode[player] == 6){
 				printFont(26 + 10 * player - 12 * maxPlay, 15, "C:", 0);
 				printFont(26 + 6 * player - 12 * maxPlay, 16, "RANDOM", 7);
 			}else{
@@ -4359,7 +4359,7 @@ void statSelectMode(int player) {
 					printFont(26 + 6 * player - 12 * maxPlay, 19, "RELAY", 7);
 				}
 			}
-			if((dispnextkey[player] == 0x3D)){
+			if(dispnextkey[player] == 0x3D){
 				printFont(24 + 9 * player - 12 * maxPlay, 0, "F3:", 0);
 				printFont(27 + 8 * player - 12 * maxPlay, 0, "NEXT", 0);
 			}
@@ -5294,11 +5294,13 @@ void setStartLevel(int pl) {				// 各種速度設定ロード (loadReplayからも利用) #1.
 //	wait3[pl] = 28;
 //	waitt[pl] = 15;
 
-	if(repversw < 6)	// このバージョンからせり上がり間隔をレベルではなく、落下させた回数に変更 #1.60c7i2
+	if(repversw < 6) {// このバージョンからせり上がり間隔をレベルではなく、落下させた回数に変更 #1.60c7i2
 		// せり上がり開始レベルになってもすぐにせり上がらないようにした #1.60c7g3
 		if(gameMode[pl]!=10) shirase[pl] = (tc[pl] / p_shirase_interval + 1) * p_shirase_interval;
-	else
+    }
+	else {
 		if(gameMode[pl]!=10) shirase[pl] = raise_shirase_interval;
+    }
 
 	// jump(gameMode[pl], lbeg, lmas, l20g, ldvl, lver, lpra, ltom, lace, lmis,lstd,lori);
 
@@ -6457,7 +6459,8 @@ void setGameOver(int player) {
 	if((tc[player] - ((tc[player]/100)*100) > 50)&&(enable_grade[player] == 4)){//各セクションの後半(X50～X99)で死んだら
 		grade[player] = grade[player] + gup3rank[player];
 
-		if(grade[player]>32)grade[player];
+        // TODO: What should this be set to??
+		//if(grade[player]>32)grade[player];
 	}
 
 	stat[player] = 7;				// ゲームオーバー画面へ
@@ -12295,7 +12298,7 @@ void winner() {
 		for(player = 0; player <= 1; player++) {
 			if( winr <= 22	 ) {
 				for(j = 0; j < 10; j++)
-					if(stat[player] == 7)
+					if(stat[player] == 7) {
 						// 死亡アニメを選べるようにした#1.60c7h3
 						if(deadtype) {
 							if(block <= fldsizeh[player]){
@@ -12320,6 +12323,7 @@ void winner() {
 								fldt[j + (210 - (block - 1) * 10) + player * 220] = c - 4;
 							}
 						}
+                    }
 			} /* if( winr <= (20 + IsBig[player]) ) */
 		}/* for(player = 0; player <= 1; player++) */
 		winr++;
@@ -12490,7 +12494,7 @@ void winner2() {
 		for(player = 0; player <= 1; player++) {
 			if( winr <= 22	 ) {
 				for(j = 0; j < 10; j++)
-					if(stat[player] == 7)
+					if(stat[player] == 7) {
 						// 死亡アニメを選べるようにした#1.60c7h3
 						if(deadtype) {
 							if(block <= fldsizeh[player]){
@@ -12515,6 +12519,7 @@ void winner2() {
 								fldt[j + (210 - (block - 1) * 10) + player * 220] = c - 4;
 							}
 						}
+                    }
 			} /* if( winr <= (20 + IsBig[player]) ) */
 		}/* for(player = 0; player <= 1; player++) */
 		winr++;
@@ -14948,7 +14953,7 @@ void testmenu(void) {
 				if( (param == 9) || (param == 23) ) param--;
 
 				// 未使用プレーンを描画しない
-				if( (param == 30) ) param = 29;
+				if( param == 30 ) param = 29;
 				//if( (param == 26) || (param == 27) ) param = 25;
 
 				// マイナスになっていたら79にする
@@ -14961,7 +14966,7 @@ void testmenu(void) {
 
 				// 未使用プレーンを描画しない
 				//if( (param == 26) || (param == 27) ) param = 28;
-				if( (param == 30) ) param = 31;
+				if( param == 30 ) param = 31;
 
 				// 一時バッファを描画しない
 				if( (param == 9) || (param == 23) ) param++;

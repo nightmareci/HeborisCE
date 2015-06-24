@@ -15069,9 +15069,9 @@ void initialize(void) {
 
 
 	//
-	TextLayerOn(2, 10, 75);
-		TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
-	halt;
+	//TextLayerOn(2, 10, 75);
+    //TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
+	//halt;
 
 
 	TextLayerOn(3, 10, 10);

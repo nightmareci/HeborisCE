@@ -1,9 +1,9 @@
 CXX          ?= clang++
 INCLUDE_PATH := -I/usr/include/SDL -Isrc/game/ -Isrc/main_sdl -Isrc/
-CXXFLAGS    += -DLINUX -DSDL_USE_OPENGL $(shell sdl-config --cflags)
-CXXWARNINGS := -Wno-c++11-compat-deprecated-writable-strings -Wno-format-extra-args \
+CXXFLAGS     += -O2 -DLINUX -DSDL_USE_OPENGL $(shell sdl-config --cflags)
+CXXWARNINGS  := -Wno-c++11-compat-deprecated-writable-strings -Wno-format-extra-args \
 				-Wno-invalid-source-encoding -Wno-logical-op-parentheses
-LDLIBS         := -lGL -lSDL -lSDL_mixer -lSDL_image
+LDLIBS       := -lGL -lSDL -lSDL_mixer -lSDL_image
 PROGRAM_NAME := heboris
 
 all: make_directories $(PROGRAM_NAME)

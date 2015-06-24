@@ -22,7 +22,11 @@ may be added, and will be listed in this section if so.
  - Allow traditional tgm style scoring. Heboris inflates the scoring to compensate for
    B2B bonuses.
  - Allow different key configurations for the menu vs. the gameplay.
+ - Setup a cmake build system.
  - Any other minor bugs/errors I can find.
+
+If the game screen gets stuck on an image and doesn't change, try deleting your
+CONFIG.SAV file from config/data and restarting.
 
 ##Heboris Overview
 

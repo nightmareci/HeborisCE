@@ -38,7 +38,7 @@ namespace readdef
 	int rots[2] = {2, 1};
 	int lvup[2] = {1, 1};
 
-	int		screenMode = 1;
+	int		screenMode = 4; // default is 1 - but need to fix error in LITE mode screens
 	int		systemmem =0;
 	int		nextblock =8;
 	int		smooth =0;
@@ -52,7 +52,6 @@ namespace readdef
 	int readdef()
 	{
 		int i,j, cfgbuf[100];
-
 
 		keyAssign[7] = holdkey[0];
 		keyAssign[17] = holdkey[1];
@@ -116,7 +115,7 @@ namespace readdef
 			cfgbuf[i + 80 + (j * 6)] = joykeyAssign[i + 4 + (4 * j) + (j * 6)];
 		}
 
-		SaveFile("CONFIG.SAV", &cfgbuf, 400);
+		SaveFile("config/data/CONFIG.SAV", &cfgbuf, 400);
 
 		return (0);
 	}

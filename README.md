@@ -30,6 +30,7 @@ CONFIG.SAV file from config/data and restarting.
 
 ##Heboris Overview
 
+```text
 Original changelog and description of heboris is included in the files
 changelog.txt and heboris.txt.
 
@@ -140,3 +141,4 @@ to be changed in the in-game menu. Here is where some
 ---------------------------------------------------
 
 (c) 1998-2002 Kenji Hosimoto
+```

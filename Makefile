@@ -6,12 +6,16 @@ CXX_WARNINGS := -Wno-c++11-compat-deprecated-writable-strings -Wno-format-extra-
 LIBS         := -lGL -lSDL -lSDL_mixer -lSDL_image
 PROGRAM_NAME := heboris
 
-all: $(PROGRAM_NAME)
+all: make_directories $(PROGRAM_NAME)
+
+$(PROGRAM_NAME):
 	$(CXX) $(INCLUDE_PATH) $(CXX_FLAGS) $(CXX_WARNINGS) \
 	src/game/*.cpp src/main_sdl/*.cpp $(LIBS) -o $(PROGRAM_NAME)
-	@mkdir -p replay demo
+
+make_directories:
+	@mkdir -p replay
 
 clean:
 	rm -f $(PROGRAM_NAME)
 
-.PHONY: clean
+.PHONY: clean make_directories

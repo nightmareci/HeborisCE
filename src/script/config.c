@@ -117,7 +117,7 @@ int SaveConfig(void) {
 		cfgbuf[i + 80 + (j * 6)] = joykeyAssign[i + 4 + (4 * j) + (j * 6)];
 	}
 
-	SaveFile("config/setting/CONFIG.SAV", &cfgbuf, 400);
+	SaveFile("config/data/CONFIG.SAV", &cfgbuf, 400);
 
 	return (0);
 }
@@ -128,13 +128,13 @@ int LoadConfig(void) {
 
 
 	FillMemory(&cfgbuf, 100 * 4, 0);
-	LoadFile("config/setting/CONFIG.SAV", &cfgbuf, 16);
+	LoadFile("config/data/CONFIG.SAV", &cfgbuf, 16);
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
 	if(cfgbuf[2] != 0x464E4F44) return (1);
 	if(cfgbuf[3] != 0x31764750) return (1);
 
-	LoadFile("config/setting/CONFIG.SAV", &cfgbuf, 400);
+	LoadFile("config/data/CONFIG.SAV", &cfgbuf, 400);
 
 	screenMode = cfgbuf[4] & 0xff;
 	colorMode = cfgbuf[4] >> 8;

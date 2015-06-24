@@ -139,7 +139,7 @@ void ST_RankingSave(void) {//12345 6789
 		saveBuf[i + 277] = st_others[i];
 	}
 
-	SaveFile("config/setting/STRANKING.SAV", &saveBuf, 400 * 4);
+	SaveFile("config/data/STRANKING.SAV", &saveBuf, 400 * 4);
 }
 
 // ロード
@@ -149,14 +149,14 @@ int ST_RankingLoad(void) {
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
 	// バージョンを見る
-	LoadFile("config/setting/STRANKING.SAV", &saveBuf, 4);
+	LoadFile("config/data/STRANKING.SAV", &saveBuf, 4);
 
 	if(saveBuf[0] != st_version) {
 		return 1;
 	}
 
 	// 全体を読み込む
-	LoadFile("config/setting/STRANKING.SAV", &saveBuf, 400 * 4);
+	LoadFile("config/data/STRANKING.SAV", &saveBuf, 400 * 4);
 
 	for(i=0;i<90;i++) {
 		st_time[i] = saveBuf[i + 10];
@@ -443,7 +443,7 @@ void PlayerdataSave(void) {//12345 6789
 		saveBuf[1 + 12 + j]=grade_pasttime[j];
 	}
 
-	SaveFile("config/setting/PLAYERDATA.SAV", &saveBuf, 100 * 4);
+	SaveFile("config/data/PLAYERDATA.SAV", &saveBuf, 100 * 4);
 }
 
 // プレイヤーデータロード
@@ -453,14 +453,14 @@ int PlayerdataLoad(void) {
 	FillMemory(&saveBuf, 500 * 4, 0);
 
 	// バージョンを見る
-	LoadFile("config/setting/PLAYERDATA.SAV", &saveBuf, 4);
+	LoadFile("config/data/PLAYERDATA.SAV", &saveBuf, 4);
 
 	if(saveBuf[0] != 0x4F424503) {
 		return 1;
 	}
 
 	// 全体を読み込む
-	LoadFile("config/setting/PLAYERDATA.SAV", &saveBuf, 100 * 4);
+	LoadFile("config/data/PLAYERDATA.SAV", &saveBuf, 100 * 4);
 
 	for( j = 0 ; j < 2 ; j++){
 		for(i=0;i<5;i++) {

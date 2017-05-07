@@ -1,23 +1,22 @@
-変更点
-
-・JoystickのHATキーに対応しました。
-・音楽がボリューム０にフェードアウトしたままスタッフロールに入りエンディング曲が聞こえないのを
-　修正しました。
-（各種音声ファイルは、ご自身でご用意下さい）
-
-
-###Heboris C7EX - unofficial version (YGS2K EX)
+### Heboris C7EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7EX. It requires SDL-1.2,
 SDLmixer and SDLimage libraries to play. Additionally, it may be compiled
 with openGL support if that is present.
 
-Example dependencies on Ubuntu 17.04 Vivid
+Example dependencies on Ubuntu 17.04
 
     apt-get install libsdl1.2-dev libsdl-mixer1.2-dev libsdl-image1.2-dev mesa-common-dev
 
 Note, if you don't wish to compile heboris, then the runtime packages only
 are required. See the releases section for pre-compiled packages.
+
+#### 変更点 (Changes)
+
+ - JoystickのHATキーに対応しました。
+    - 音楽がボリューム０にフェードアウトしたままスタッフロールに入りエンディング曲が聞こえないのを
+        修正しました。（各種音声ファイルは、ご自身でご用意下さい）
+
 
 #### Todo
 
@@ -36,7 +35,7 @@ may be added, and will be listed in this section if so.
 If the game screen gets stuck on an image and doesn't change, try deleting your
 CONFIG.SAV file from config/data and restarting.
 
-##Heboris Overview
+## Heboris Overview
 
 ```text
 Original changelog and description of heboris is included in the files

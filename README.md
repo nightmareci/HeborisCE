@@ -12,9 +12,9 @@ This version contains the source code for Heboris C7EX. It requires SDL-1.2,
 SDLmixer and SDLimage libraries to play. Additionally, it may be compiled
 with openGL support if that is present.
 
-Example dependencies on Ubuntu 15.04 Vivid
+Example dependencies on Ubuntu 17.04 Vivid
 
-    apt-get install libsdl1.2-dev libsdl-mixer1.2 libsdl-image1.2-dev mesa-common-dev
+    apt-get install libsdl1.2-dev libsdl-mixer1.2-dev libsdl-image1.2-dev mesa-common-dev
 
 Note, if you don't wish to compile heboris, then the runtime packages only
 are required. See the releases section for pre-compiled packages.

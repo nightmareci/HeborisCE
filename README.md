@@ -1,3 +1,11 @@
+変更点
+
+・JoystickのHATキーに対応しました。
+・音楽がボリューム０にフェードアウトしたままスタッフロールに入りエンディング曲が聞こえないのを
+　修正しました。
+（各種音声ファイルは、ご自身でご用意下さい）
+
+
 ###Heboris C7EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7EX. It requires SDL-1.2,

@@ -4,6 +4,9 @@
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
 
+#include <iostream>
+using namespace std;
+
 #define		SCREEN_BPP			0
 #define		USE_SOFTSTRETCH		1
 
@@ -412,22 +415,27 @@ int IsPressJoyKey ( int key )
 {
 	if ( s_pJoyPads[s_iActivePad] )
 	{
+		Uint8 hat = SDL_JoystickGetHat(s_pJoyPads[s_iActivePad], 0);
 		switch ( key )
 		{
 		case 0:		// è„
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 1) < -32767 / 4 ) return 1;
+			if ( hat & SDL_HAT_UP) return 1;
 			break;
 
 		case 1:		// â∫
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 1) > +32767 / 4 ) return 1;
+			if ( hat & SDL_HAT_DOWN) return 1;
 			break;
 
 		case 2:		// ç∂
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 0) < -32767 / 4 ) return 1;
+			if ( hat & SDL_HAT_LEFT) return 1;
 			break;
 
 		case 3:		// âE
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 0) > +32767 / 4 ) return 1;
+			if ( hat & SDL_HAT_RIGHT) return 1;
 			break;
 
 		default:
@@ -548,8 +556,16 @@ void PlayWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
+cout << "Music";
+cout << no;
+cout << "/";
+cout << s_iYGSSoundVolume[no];
+cout << "\n";
+if ((no == 56) || (no == 57)) {
+		Mix_PlayMusic(s_pYGSExMusic[no], 0);
+}else{
 		Mix_PlayMusic(s_pYGSExMusic[no], -1);
-
+}
 		Mix_VolumeMusic(s_iYGSSoundVolume[no]);
 		break;
 	}
@@ -564,6 +580,9 @@ void ReplayWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
+cout << "ReplayMusic";
+cout << no;
+cout << "\n";
 		Mix_RewindMusic();
 		break;
 	}
@@ -578,6 +597,9 @@ void StopWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
+cout << "StopMusic";
+cout << no;
+cout << "\n";
 		Mix_HaltMusic();
 		break;
 	}
@@ -592,6 +614,9 @@ void PauseWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
+cout << "PauseMusic";
+cout << no;
+cout << "\n";
 		Mix_PauseMusic();
 		break;
 	}
@@ -611,6 +636,9 @@ void SetVolumeWave( int no, int vol )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
+cout << "Volume";
+cout << volume;
+cout << "\n";
 		Mix_VolumeMusic(volume);
 		break;
 	}

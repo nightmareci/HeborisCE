@@ -379,6 +379,7 @@ C7U8EX YGS2K
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
+int		bgmteisiflg = 0;			//bgm teisi
 int		count;					// グローバルカウンタ (フレーム単位、65535まで)
 int		backno;					//1～12 通常	61 対戦用
 
@@ -1283,7 +1284,7 @@ int		ace_bgmlist[3 * 4] = {
 int		ace_bgmchange[2];
 
 // READY→GO演出の種類　（0=HEBO 1=TI）
-int		ready_go_style = 0;
+int		ready_go_style = 1;
 
 int		ti_ready_start = 20;		// 通常 ready開始
 int		ti_ready_end = 75;		// 通常 ready終了
@@ -3407,7 +3408,8 @@ void playerExecute(void) {
 			goto next;
 		}
 		// jump(stat[i],l00,l01,l02,l03,l04,l05,l06,l07,l08,l09,l10,l11,l12,l13,l14,l15,l16,l17,l18,l19,l20,l21,l22,l23,l24,l25,l26,l27,l28,l29,l30,l31,l32,l33,l34,l35,l36,l37,l38);
-
+//sprintf(string[0],"%2d STAT",stat[i]);
+//printFont(0, 3, string[0], (count % 4 / 2) * digitc[rots[i]]);
 		switch ( stat[i] ) {
 			case 0: goto l00;
 			case 1: goto l01;
@@ -10871,15 +10873,20 @@ void statNameEntry(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void statEnding(int player) {
 	int	i, j, k;
-
+//sprintf(string[0],"END %2d %2d",ending[player],gameMode[player]);
+//printFont(0, 0, string[0], (count % 4 / 2) * digitc[rots[i]]);
 	if ( (ending[player] == 1) || (ending[player] == 4) ){
 		// 音楽停止 #1.60c7j9
+if (bgmteisiflg == 0) {
+bgmteisiflg = 1;
 		if((gameMode[player] != 8) || ((gameMode[player] == 8) && (mission_end[c_mission ] >= 4)))
 		StopAllBGM();
 		pinch[player] = 0;
 		// ACEでの残り時間が少ない時の効果音も停止
 		StopSE(32);
-
+}
+//sprintf(string[0],"-STOP- %2d %2d",ending[player],gameMode[player]);
+//printFont(0, 1, string[0], (count % 4 / 2) * digitc[rots[i]]);
 		if((onRecord[player]) && (repversw >= 59)) padRepeat(player);
 
 		//上に移動
@@ -10929,6 +10936,7 @@ void statEnding(int player) {
 						ending[player] = 2;
 						// エンディングBGM再生
 						PlayWave(56);
+fadelv[player] = 0;
 					}
 					else if((gameMode[player] == 8) && (mission_end[c_mission ] < 4))
 						PlaySE(36);
@@ -10958,18 +10966,17 @@ void statEnding(int player) {
 						}
 						// エンディングBGM再生
 						PlayWave(56);
+fadelv[player] = 0;
 					}
 				} else {
+
 					// スタッフロール開始fastroll[player]
 					ending[player] = 2;
 					// エンディングBGM再生
-					if((gameMode[player] == 0) && (beginner_rollbgm == 0))
-						PlayWave(57);
-					else if((gameMode[player] == 0) && (beginner_rollbgm == 1))
-						PlayWave(51);
-					else
 						PlayWave(56);
-
+fadelv[player] = 0;
+//sprintf(string[0],"-3- %2d %2d PLAY56",ending[player],gameMode[player]);
+//printFont(0, 4, string[0], (count % 4 / 2) * digitc[rots[i]]);
 					if((repversw<=23)||(enable_grade[player]!=1)){
 						if((gameMode[player] >= 1) && (gameMode[player] <= 2) && (hidden[player] != 8)) {
 							if((enable_grade[player]==4)&&(grade[player]>=23)){
@@ -10996,6 +11003,8 @@ void statEnding(int player) {
 	}
 	else if ( ending[player] == 2 )//ending==1ですでに消えロールなどの色々な設定をしてある
 	{
+fadelv[player] = 0;
+		bgmteisiflg = 0;
 		stat[player] = 4;
 		if(repversw >= 54) statBlock(player);
 	}
@@ -11243,6 +11252,7 @@ void statEnding(int player) {
 
 		statc[player * 10]++;
 	}
+//bgmteisiflg = 0;
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -15634,7 +15644,7 @@ void loadWaves(void) {
 
 	LoadWave("res/se/timestop.wav",47);
 	LoadWave("res/se/tserase.wav",48);
-	SetLoopModeWave(40, 1);	//#1.60c7l6
+	//SetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
 /* BGM読み込み */
@@ -15681,9 +15691,9 @@ void loadBGM(void) {
 		}
 	}
 
-	// エンディング曲ループかはroll_bgmloopで決める
-	if(!nmlroll_bgmloop)	SetLoopModeWave(56, 0);
-	if(!bgnroll_bgmloop)	SetLoopModeWave(57, 0);
+	// エンディング曲ループか
+	//SetLoopModeWave(56, 0);
+	//SetLoopModeWave(57, 0);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

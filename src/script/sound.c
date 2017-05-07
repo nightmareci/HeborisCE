@@ -239,7 +239,7 @@ void bgmFadeout(void) {
 		if(fadelv[player] != 0) {
 			fadelv[player] = fadelv[player] + (fadelv[player] < 10000) * fade_seed;
 
-			if(-fadelv[player] <= bgmvolume)
+			if(-fadelv[player] < bgmvolume)
 				SetVolumeWave(50 +bgmlv, -fadelv[player]);
 		}
 	}

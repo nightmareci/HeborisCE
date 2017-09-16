@@ -8,8 +8,15 @@ Example dependencies on Ubuntu 17.04
 
     apt-get install libsdl1.2-dev libsdl-mixer1.2-dev libsdl-image1.2-dev mesa-common-dev
 
-Note, if you don't wish to compile heboris, then the runtime packages only
-are required. See the releases section for pre-compiled packages.
+#### Installation
+
+```
+git pull https://github.com/tiehuis/HeborisC7EX
+make
+./heboris
+```
+
+Requires a C++ compiler and sdl1.2 development libraries (and opengl).
 
 #### 変更点 (Changes)
 

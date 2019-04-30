@@ -5,7 +5,6 @@
 #include "ygs2kfunc.h"
 
 #include <iostream>
-using namespace std;
 
 #define		SCREEN_BPP			0
 #define		USE_SOFTSTRETCH		1
@@ -556,11 +555,6 @@ void PlayWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-cout << "Music";
-cout << no;
-cout << "/";
-cout << s_iYGSSoundVolume[no];
-cout << "\n";
 if ((no == 56) || (no == 57)) {
 		Mix_PlayMusic(s_pYGSExMusic[no], 0);
 }else{
@@ -580,9 +574,6 @@ void ReplayWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-cout << "ReplayMusic";
-cout << no;
-cout << "\n";
 		Mix_RewindMusic();
 		break;
 	}
@@ -597,9 +588,6 @@ void StopWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-cout << "StopMusic";
-cout << no;
-cout << "\n";
 		Mix_HaltMusic();
 		break;
 	}
@@ -614,9 +602,6 @@ void PauseWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-cout << "PauseMusic";
-cout << no;
-cout << "\n";
 		Mix_PauseMusic();
 		break;
 	}
@@ -636,9 +621,6 @@ void SetVolumeWave( int no, int vol )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-cout << "Volume";
-cout << volume;
-cout << "\n";
 		Mix_VolumeMusic(volume);
 		break;
 	}

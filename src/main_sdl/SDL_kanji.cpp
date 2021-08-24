@@ -355,7 +355,7 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 	if (*text == 0 ) return NULL;
 	len = strlen(text);
 
-	textbuf = SDL_AllocSurface(SDL_SWSURFACE, font->a_size*len, font->k_size,
+	textbuf = SDL_CreateRGBSurface(0, font->a_size*len, font->k_size,
 							   bpp, 0, 0, 0, 0);
 	if (textbuf == NULL) {
 		fprintf(stderr,"ERROR: at Kanji_RenderText\n");
@@ -363,7 +363,7 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 	}
 	bgcol = SDL_MapRGB(textbuf->format, 255-fg.r, 255-fg.g, 255-fg.b);
 	SDL_FillRect(textbuf, NULL, bgcol);
-	SDL_SetColorKey(textbuf, SDL_SRCCOLORKEY, bgcol);
+	SDL_SetColorKey(textbuf, SDL_TRUE, bgcol);
 
 	Kanji_PutText(font, 0, 0, textbuf, text, fg);
 
@@ -381,7 +381,7 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text,
 	if (*text == 0 ) return NULL;
 	len = strlen(text);
 
-	textbuf = SDL_AllocSurface(SDL_SWSURFACE, font->k_size, font->a_size*len,
+	textbuf = SDL_CreateRGBSurface(0, font->k_size, font->a_size*len,
 							   bpp, 0, 0, 0, 0);
 	if (textbuf == NULL) {
 		fprintf(stderr,"ERROR: at Kanji_RenderText\n");
@@ -390,7 +390,7 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text,
 
 	bgcol = SDL_MapRGB(textbuf->format, 255-fg.r, 255-fg.g, 255-fg.b);
 	SDL_FillRect(textbuf, NULL, bgcol);
-	SDL_SetColorKey(textbuf, SDL_SRCCOLORKEY, bgcol);
+	SDL_SetColorKey(textbuf, SDL_TRUE, bgcol);
 
 	Kanji_PutTextTate(font, 0, 0, textbuf, text, fg);
 

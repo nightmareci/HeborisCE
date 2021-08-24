@@ -1,7 +1,7 @@
 #ifndef SDLbdf_h_
 #define SDLbdf_h_
 
-#include <SDL.h>
+#include "SDL.h"
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus

@@ -1,22 +1,26 @@
 ### Heboris C7EX - unofficial version (YGS2K EX)
 
-This version contains the source code for Heboris C7EX. It requires SDL-1.2,
-SDLmixer and SDLimage libraries to play. Additionally, it may be compiled
-with openGL support if that is present.
+This version contains the source code for Heboris C7EX. It requires SDL 2.0,
+SDL 2.0 mixer and SDL 2.0 image libraries to play. Currently, it can't be
+compiled with OpenGL support with the new SDL 2.0 code; that support might be
+replaced with cross-platform hardware accelerated rendering though.
 
-Example dependencies on Ubuntu 17.04
+The plan is to eventually have it working on at least Windows, Linux, and
+macOS, with other platforms possibly added later.
 
-    apt-get install libsdl1.2-dev libsdl-mixer1.2-dev libsdl-image1.2-dev mesa-common-dev
+Example dependencies on Ubuntu
+
+    apt-get install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
 
 #### Installation
 
 ```
-git pull https://github.com/tiehuis/HeborisC7EX
+git pull https://github.com/nightmareci/HeborisC7EX
 make
 ./heboris
 ```
 
-Requires a C++ compiler and sdl1.2 development libraries (and opengl).
+Requires a C++ compiler and SDL 2.0 development libraries.
 
 #### 変更点 (Changes)
 
@@ -31,6 +35,9 @@ This repository would likely be maintained to some degree, but no major changes 
 made to the actual games functionality for the most part. Some simple fixes and changes
 may be added, and will be listed in this section if so.
 
+ - Fix it all up to be fully working/playable with the new SDL 2.0 code. It
+   compiles, runs, shows graphics, and input somewhat works, but doesn't yet
+   work correctly.
  - Save 40l player data state, or allow a custom setting to be saved and used by default.
  - Fix some problems that occur when changing window focus and reverting back to heboris.
  - Allow traditional tgm style scoring. Heboris inflates the scoring to compensate for

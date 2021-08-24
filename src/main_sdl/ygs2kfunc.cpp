@@ -9,7 +9,7 @@
 #define		SCREEN_BPP			0
 #define		USE_SOFTSTRETCH		1
 
-#define		USE_GL_KANJI		(0 && SDL_USE_OPENGL)
+#define		USE_GL_KANJI		0
 #define		USE_SDLKANJI		1
 #define		USE_PNGKANJI		0
 #define		YGS_KANJIFONT_MAX	6
@@ -17,7 +17,7 @@
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
 #define		YGS_MUSIC_MAX		100
-#define		YGS_KEYREPEAT_MAX	512
+#define		YGS_KEYREPEAT_MAX	SDL_NUM_SCANCODES
 #define		YGS_JOYREPEAT_MAX	20
 #define		YGS_JOYPAD_MAX		2
 #define		YGS_TEXTLAYER_MAX	16
@@ -55,6 +55,7 @@ enum
 	YGS_SOUNDTYPE_MUS,
 };
 
+static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Surface		*s_pScreenSurface = NULL;
 
 #if		SDL_USE_OPENGL
@@ -134,7 +135,7 @@ bool YGS2kInit()
 		LoadConfig();
 	}
 
-	int		fullscreen = 0;
+	Uint32		windowFlags = SDL_WINDOW_SHOWN;
 
 #if		SDL_USE_OPENGL
 	/* 画面モードの変更 */
@@ -143,7 +144,7 @@ bool YGS2kInit()
 		SScreenInfo		*s = &s_ScreenInfo[screenMode];
 		winWidth  = s->win_w;
 		winHeight = s->win_h;
-		fullscreen = s->full_screen ? SDL_FULLSCREEN : 0;
+		windowFlags |= SDL_WINDOW_OPENGL | (s->full_screen ? SDL_WINDOW_FULLSCREEN : 0);
 		s_fDrawScale = (float)s->win_w / (float)s->real_w;
 		SDL_GL_SetDrawRate(s_fDrawScale);
 	}
@@ -166,23 +167,19 @@ bool YGS2kInit()
 	}
 
 	/* ウィンドウの初期化 */
-	fullscreen = (screenMode == 0 || screenMode == 3) ? SDL_FULLSCREEN : 0;
+	windowFlags |= (screenMode == 0 || screenMode == 3) ? SDL_WINDOW_FULLSCREEN : 0;
 #endif
 
 	s_iWinWidth  = winWidth;
 	s_iWinHeight = winHeight;
 
-	/* キャプションの設定 */
-	SDL_WM_SetCaption(GAME_CAPTION, NULL);
 
-#if		SDL_USE_OPENGL
-	s_pScreenSurface = SDL_SetVideoMode(winWidth, winHeight, SCREEN_BPP, SDL_OPENGL | fullscreen);
-#else
-	s_pScreenSurface = SDL_SetVideoMode(winWidth, winHeight, SCREEN_BPP, SDL_SWSURFACE | fullscreen);
-#endif
+	/* キャプションの設定 */
+	s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winWidth, winHeight, windowFlags);
+	s_pScreenSurface = SDL_GetWindowSurface(s_pScreenWindow);
 
 	/* マウスカーソルを消す場合は */
-	if ( fullscreen == SDL_FULLSCREEN )
+	if ( windowFlags & SDL_WINDOW_FULLSCREEN )
 	{
 		SDL_ShowCursor(SDL_DISABLE);
 	}
@@ -305,7 +302,7 @@ void YGS2kExit()
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
-	SDLKey		*key;
+	SDL_Keycode	*key;
 
 	/* テキストレイヤーの描画 */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
@@ -325,7 +322,7 @@ bool YGS2kHalt()
 	SDL_Rect	dest;
 
 	/* バックサーフェスをフロントに転送 */
-	SDL_Flip( s_pScreenSurface );
+	SDL_UpdateWindowSurface( s_pScreenWindow );
 
 	/* 画面塗りつぶし */
 	dest.x = 0;
@@ -397,12 +394,14 @@ void SelectJoyStick( int pl )
 
 int IsPushKey ( int key )
 {
-	return s_iKeyRepeat[key] == 1 ? 1 : 0;
+	SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
+	return s_iKeyRepeat[scancode] == 1 ? 1 : 0;
 }
 
 int IsPressKey ( int key )
 {
-	return s_iKeyRepeat[key] != 0 ? 1 : 0;
+	SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
+	return s_iKeyRepeat[scancode] != 0 ? 1 : 0;
 }
 
 int IsPushJoyKey ( int key )
@@ -491,7 +490,7 @@ void KeyInput()
 {
 	int		padbak = s_iActivePad;
 	int		keynum = 0;
-	Uint8	*KeyInp = SDL_GetKeyState(&keynum);
+	const Uint8	*KeyInp = SDL_GetKeyboardState(&keynum);
 
 	for ( int i = 0 ; i < YGS_KEYREPEAT_MAX ; i ++ )
 	{
@@ -715,10 +714,12 @@ void LoadBitmap( char* filename, int plane, int val )
 		s_pYGSTexture[plane] = NULL;
 	}
 
-	s_pYGSTexture[plane] = IMG_Load(filename);
-	if ( s_pYGSTexture[plane] != NULL )
+	SDL_Surface	*imageSurface = IMG_Load(filename);
+	if ( imageSurface != NULL )
 	{
-		s_pYGSTexture[plane] = SDL_DisplayFormat(s_pYGSTexture[plane]);
+		s_pYGSTexture[plane] = SDL_ConvertSurface(imageSurface, s_pScreenSurface->format, 0);
+		SDL_FreeSurface(imageSurface);
+		imageSurface = NULL;
 	}
 #endif
 }
@@ -905,9 +906,9 @@ void BlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, i
 #else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetAlpha(s_pYGSTexture[pno], SDL_SRCALPHA | SDL_RLEACCEL, 128);
+	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 128);
 	Blt(pno, dx, dy);
-	SDL_SetAlpha(s_pYGSTexture[pno], SDL_SRCALPHA | SDL_RLEACCEL, 255);
+	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 255);
 #endif
 }
 
@@ -920,9 +921,9 @@ void BlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int a
 #else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetAlpha(s_pYGSTexture[pno], SDL_SRCALPHA | SDL_RLEACCEL, 128);
+	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 128);
 	BltRect(pno, dx, dy, sx, sy, hx, hy);
-	SDL_SetAlpha(s_pYGSTexture[pno], SDL_SRCALPHA | SDL_RLEACCEL, 255);
+	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 255);
 #endif
 }
 
@@ -1067,7 +1068,7 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 	SDL_SoftStretch( s_pYGSTexture[pno], &src, s_pScreenSurface, &dst );
 #endif
 
-	SDL_SetAlpha(s_pYGSTexture[pno], SDL_SRCALPHA | SDL_RLEACCEL, 255);
+	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 255);
 #endif
 }
 

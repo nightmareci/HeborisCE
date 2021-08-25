@@ -12,7 +12,8 @@ apt-get install cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
 #### Installation
 
 ```
-git pull https://github.com/nightmareci/HeborisC7EX
+git clone https://github.com/nightmareci/HeborisC7EX-SDL2
+cd HeborisC7EX-SDL2
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/heboris

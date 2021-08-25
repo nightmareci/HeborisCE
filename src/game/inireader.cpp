@@ -58,7 +58,7 @@ inline bool IsSpaceChar(char chr)
 	return chr == ' ' || chr == '\t' || chr == '\r' || chr == '\n';
 }
 
-static void IniReadProcess(char* buf, int size)
+static void IniReadProcess(const char* buf, int size)
 {
 	for ( int i = 0 ; i < size ; i ++ )
 	{
@@ -221,7 +221,7 @@ static void IniReadProcess(char* buf, int size)
 	}
 }
 
-void LoadIniFile(char *filename)
+void LoadIniFile(const char *filename)
 {
 	s_szIniReadName [0] = '\0';
 	s_szIniReadValue[0] = '\0';

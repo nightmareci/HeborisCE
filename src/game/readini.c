@@ -1,6 +1,6 @@
 #include "include.h"
 
-int atoi_special(char *chr)
+int atoi_special(const char *chr)
 {
 	if ( strlen(chr) > 2 && chr[0] == '0' && chr[1] == 'x' )
 	{
@@ -15,7 +15,7 @@ int atoi_special(char *chr)
 #define		INI_SECTION_DEF(sec)		if ( strcasecmp(section, #sec) == 0 ) { sec = atoi_special(value); return; }
 #define		INI_SECTION_DEF_STRING(sec)	{}
 
-void ReadIniSection(char *section, char *value)
+void ReadIniSection(const char *section, const char *value)
 {
 #include "inireader_heboris_ini.inc"
 }
@@ -25,7 +25,7 @@ void ReadIniSection(char *section, char *value)
 #define		INI_SECTION_DEF(sec)		{}
 #define		INI_SECTION_DEF_STRING(sec)	if ( strcasecmp(section, #sec) == 0 ) { strcpy(sec, value); return; }
 
-void ReadIniSectionString(char *section, char *value)
+void ReadIniSectionString(const char *section, const char *value)
 {
 #include "inireader_heboris_ini.inc"
 }

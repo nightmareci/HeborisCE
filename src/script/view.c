@@ -2049,7 +2049,7 @@ void viewFldFrame(int uponly,int i) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  フォントを表示する
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void printFont(int fontX, int fontY, char *fontStr, int fontColor) {
+void printFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
@@ -2062,7 +2062,7 @@ void printFont(int fontX, int fontY, char *fontStr, int fontColor) {
 }
 
 // 1ドットずつY座標を指定できるバージョン #1.60c7k3
-void printFontEx(int fontX, int fontY, char *fontStr, int fontColor) {
+void printFontEx(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
@@ -2081,7 +2081,7 @@ void printFontEx(int fontX, int fontY, char *fontStr, int fontColor) {
 // =→m
 // >→%
 // ?→.
-void printSMALLFont(int fontX, int fontY, char *fontStr, int fontColor) {
+void printSMALLFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
@@ -2112,7 +2112,7 @@ void printSMALLFont(int fontX, int fontY, char *fontStr, int fontColor) {
 	}
 }
 // 6 x 9のグリッド単位で座標を指定できるバージョン
-void printSMALLFontEX(int fontX, int fontY, char *fontStr, int fontColor) {
+void printSMALLFontEX(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
@@ -2144,7 +2144,7 @@ void printSMALLFontEX(int fontX, int fontY, char *fontStr, int fontColor) {
 }
 
 // 大きいバージョン（数字のみ）
-void printBIGFont(int fontX, int fontY, char *fontStr, int fontColor) {
+void printBIGFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
@@ -2157,7 +2157,7 @@ void printBIGFont(int fontX, int fontY, char *fontStr, int fontColor) {
 }
 // とっても小さいバージョン　6x7
 // 数字、/ : < > 、アルファベット大文字が使用可能　ただし字詰め無し
-void printTinyFont(int fontX, int fontY, char *fontStr) {
+void printTinyFont(int fontX, int fontY, const char *fontStr) {
 	int		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);

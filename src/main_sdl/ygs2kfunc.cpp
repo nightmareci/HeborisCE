@@ -262,6 +262,10 @@ void YGS2kExit()
 		}
 #endif
 	}
+	if ( s_pScreenWindow ) {
+		SDL_DestroyWindow( s_pScreenWindow );
+		s_pScreenWindow = NULL;
+	}
 
 	/* パッドのクローズ */
 	for ( int i = 0 ; i < YGS_JOYPAD_MAX ; i ++ )
@@ -377,7 +381,7 @@ bool YGS2kHalt()
 	return true;
 }
 
-void YGS2kTextOut(int x, int y, char* text, int r, int g, int b, int size)
+void YGS2kTextOut(int x, int y, const char* text, int r, int g, int b, int size)
 {
 	YGS2kKanjiDraw(x, y, r, g, b, size, text);
 }
@@ -481,7 +485,7 @@ void SetJoyButtonMax ( int max )
 
 }
 
-void SetConstParam ( char *param, int value )
+void SetConstParam ( const char *param, int value )
 {
 
 }
@@ -641,7 +645,7 @@ int IsPlayWave( int no )
 	return 0;
 }
 
-void LoadWave( char* filename, int no )
+void LoadWave( const char* filename, int no )
 {
 	int		len = strlen(filename);
 	if ( len < 4 ) { return; }
@@ -680,7 +684,7 @@ void SetLoopModeWave( int no, int mode )
 
 }
 
-void LoadMIDI( char* filename )
+void LoadMIDI( const char* filename )
 {
 	if ( s_pYGSMusic != NULL )
 	{
@@ -691,7 +695,7 @@ void LoadMIDI( char* filename )
 	s_pYGSMusic = Mix_LoadMUS(filename);
 }
 
-void LoadBitmap( char* filename, int plane, int val )
+void LoadBitmap( const char* filename, int plane, int val )
 {
 #if		SDL_USE_OPENGL
 	if ( s_pYGSTexture[plane].active )
@@ -759,7 +763,7 @@ void SetFillColor(int col)
 
 }
 
-void LoadFile( char* filename, void* buf, int size )
+void LoadFile( const char* filename, void* buf, int size )
 {
 	FILE	*file;
 	file = fopen(filename, "rb");
@@ -779,7 +783,7 @@ void LoadFile( char* filename, void* buf, int size )
 	}
 }
 
-void SaveFile( char* filename, void* buf, int size )
+void SaveFile( const char* filename, void* buf, int size )
 {
 	FILE	*file;
 	int		i, *buf2;
@@ -840,7 +844,7 @@ void TextHeight ( int layer, int height )
 
 }
 
-void TextOut ( int layer, char* text )
+void TextOut ( int layer, const char* text )
 {
 	strcpy(s_TextLayer[layer].string, text);
 }
@@ -1103,32 +1107,32 @@ int GetRealFPS()
 	return s_uFPS;
 }
 
-void StrCpy(char *dest, char *src)
+void StrCpy(char *dest, const char *src)
 {
 	strcpy(dest, src);
 }
 
-void StrCpy(void *dest, char *src)
+void StrCpy(void *dest, const char *src)
 {
 	strcpy((char*)dest, src);
 }
 
-void StrCpy(char *dest, void *src)
+void StrCpy(char *dest, const void *src)
 {
-	strcpy(dest, (char*)src);
+	strcpy(dest, (const char*)src);
 }
 
-void StrCat(char *str1, char *str2)
+void StrCat(char *str1, const char *str2)
 {
 	strcat(str1, str2);
 }
 
-int StrLen(char *stri)
+int StrLen(const char *stri)
 {
 	return strlen(stri);
 }
 
-void MidStr(char *src, int start, int len, char *dest)
+void MidStr(const char *src, int start, int len, char *dest)
 {
 	int		i;
 	for ( i = 0 ; i < len ; i ++ )
@@ -1138,17 +1142,17 @@ void MidStr(char *src, int start, int len, char *dest)
 	dest[len] = '\0';
 }
 
-void LeftStr(char *src, int len, char *dest)
+void LeftStr(const char *src, int len, char *dest)
 {
 	MidStr(src, 1, len, dest);
 }
 
-char CharAt(char *stri, int pos)
+char CharAt(const char *stri, int pos)
 {
 	return stri[pos];
 }
 
-int ValLong(char *stri)
+int ValLong(const char *stri)
 {
 	return atoi(stri);
 }
@@ -1269,7 +1273,7 @@ void YGS2kKanjiDrawSub(int font, int x, int y, int kx, int ky)
 #endif
 }
 
-void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, char *str)
+void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)
 {
 #if		USE_GL_KANJI
 	int		font = 0;

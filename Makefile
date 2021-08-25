@@ -1,8 +1,6 @@
 INCLUDE_PATH := -Isrc/game/ -Isrc/main_sdl -Isrc/
-CXXFLAGS     += -O2 $(shell sdl2-config --cflags)
-CXXWARNINGS  := -Wno-c++11-compat-deprecated-writable-strings -Wno-format-extra-args \
-				-Wno-invalid-source-encoding -Wno-logical-op-parentheses \
-				-Wno-write-strings
+CXXFLAGS     += -O3 $(shell sdl2-config --cflags)
+CXXWARNINGS  := -Wno-invalid-source-encoding -Wno-logical-op-parentheses 
 LDLIBS       := $(shell sdl2-config --libs) -lSDL2_mixer -lSDL2_image
 PROGRAM_NAME := heboris
 

@@ -857,7 +857,7 @@ void ReplaySelectInitial(void) {
 				if(saveBuf[216] <= 26)
 					sprintf(string[1], "%3d>", saveBuf[220]);	// ÉNÉäÉAó¶
 				else
-					sprintf(string[1], "    ", saveBuf[220]);
+					sprintf(string[1], "    ");
 				sprintf(string[10 + i], "%2d %7d  %s        %s", i + 1, saveBuf[202], string[1], string[0]);
 			} else if(saveBuf[201] == 7) {
 				// ACE
@@ -1193,28 +1193,28 @@ void ReplayDetail(int number) {
 			else printFont(15, 18, "NORMAL", 0);
 
 			printFont(1, 19, "GOAL TYPE   :", 0);
-			if(vs_goal == 0) sprintf(string[0], "SURVIVAL", 0);
+			if(vs_goal == 0) sprintf(string[0], "SURVIVAL");
 			else if(wintype == 0) sprintf(string[0], "LV %d", vs_goal);
 			else if(wintype == 1) sprintf(string[0], "%d LINES", vs_goal / 10);
-			else sprintf(string[0], "SURVIVAL", 0);
+			else sprintf(string[0], "SURVIVAL");
 			printFont(15, 19, string[0], 0);
 
 			if(!noitem){
 				printFont(1, 21, "ITEMS", 0);
 
 				printFont(3, 22, "1P :", 0);
-				if(use_item[0] == 0) sprintf(string[0], "ALL", 0);
-				else if(use_item[0] == item_num + 1) sprintf(string[0], "FEW", 0);
-				else if(use_item[0] == item_num + 2) sprintf(string[0], "DS", 0);
-				else if(use_item[0] == item_num + 3) sprintf(string[0], "TGM", 0);
+				if(use_item[0] == 0) sprintf(string[0], "ALL");
+				else if(use_item[0] == item_num + 1) sprintf(string[0], "FEW");
+				else if(use_item[0] == item_num + 2) sprintf(string[0], "DS");
+				else if(use_item[0] == item_num + 3) sprintf(string[0], "TGM");
 				else sprintf(string[0], "%d", use_item[0]);
 				printFont(8, 22, string[0], 0);
 
 				printFont(3, 23, "2P :", 0);
-				if(use_item[1] == 0) sprintf(string[0], "ALL", 0);
-				else if(use_item[1] == item_num + 1) sprintf(string[0], "FEW", 0);
-				else if(use_item[1] == item_num + 2) sprintf(string[0], "DS", 0);
-				else if(use_item[1] == item_num + 3) sprintf(string[0], "TGM", 0);
+				if(use_item[1] == 0) sprintf(string[0], "ALL");
+				else if(use_item[1] == item_num + 1) sprintf(string[0], "FEW");
+				else if(use_item[1] == item_num + 2) sprintf(string[0], "DS");
+				else if(use_item[1] == item_num + 3) sprintf(string[0], "TGM");
 				else sprintf(string[0], "%d", use_item[1]);
 				printFont(8, 23, string[0], 0);
 			}
@@ -1249,7 +1249,7 @@ void ReplayDetail(int number) {
 
 			printFont(1, 21, "RISE START  :", 0);
 			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
-				sprintf(string[0],"500",1);
+				sprintf(string[0],"500");
 			else sprintf(string[0],"%d",level_shirase_start);
 			printFont(15, 21, string[0], 0);
 
@@ -1259,44 +1259,44 @@ void ReplayDetail(int number) {
 
 			printFont(1, 23, "RISE INTER  :", 0);
 			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
-				sprintf(string[0],"RANDOM BY SECTION",1);
+				sprintf(string[0],"RANDOM BY SECTION");
 			else
 				sprintf(string[0],"%d",raise_shirase_interval);
 			printFont(15, 23, string[0], 0);
 		} else if(gameMode[0] == 8){	// MISSION
 			printFont(1, 15, "FILE NAME.  :", 0);
 			if(mission_file == 0)
-				sprintf(string[0], "BIG ROAD", 0);
+				sprintf(string[0], "BIG ROAD");
 			else if(mission_file == 1)
-				sprintf(string[0], "TRICKY ROAD", 0);
+				sprintf(string[0], "TRICKY ROAD");
 			else if(mission_file == 2)
-				sprintf(string[0], "GRAND ROAD", 0);
+				sprintf(string[0], "GRAND ROAD");
 			else if(mission_file == 3)
-				sprintf(string[0], "STAR ROAD", 0);
+				sprintf(string[0], "STAR ROAD");
 			else if(mission_file == 4)
-				sprintf(string[0], "ANOTHER ROAD", 0);
+				sprintf(string[0], "ANOTHER ROAD");
 			else if(mission_file == 5)
-				sprintf(string[0], "DS ROAD", 0);
+				sprintf(string[0], "DS ROAD");
 			else if(mission_file == 6)
-				sprintf(string[0], "DEVIL ROAD", 0);
+				sprintf(string[0], "DEVIL ROAD");
 			else if(mission_file <= 16)
 				sprintf(string[0], "TRIAL S%d", mission_file - 6);
 			else if(mission_file == 17)
-				sprintf(string[0], "TRIAL HM", 0);
+				sprintf(string[0], "TRIAL HM");
 			else if(mission_file == 18)
-				sprintf(string[0], "TRIAL GOD", 0);
+				sprintf(string[0], "TRIAL GOD");
 			else if(mission_file == 19)
-				sprintf(string[0], "HEBO AMATEUR", 0);
+				sprintf(string[0], "HEBO AMATEUR");
 			else if(mission_file == 20)
-				sprintf(string[0], "HEBO PRO", 0);
+				sprintf(string[0], "HEBO PRO");
 			else if(mission_file == 21)
-				sprintf(string[0], "HEBO BRONZE", 0);
+				sprintf(string[0], "HEBO BRONZE");
 			else if(mission_file == 22)
-				sprintf(string[0], "HEBO SILVER ", 0);
+				sprintf(string[0], "HEBO SILVER ");
 			else if(mission_file == 23)
-				sprintf(string[0], "HEBO GOLD", 0);
+				sprintf(string[0], "HEBO GOLD");
 			else if(mission_file == 24)
-				sprintf(string[0], "HEBO PLATINUM", 0);
+				sprintf(string[0], "HEBO PLATINUM");
 			else
 				sprintf(string[0], "NO.%02d", mission_file);
 			printFont(15, 15, string[0], 0);

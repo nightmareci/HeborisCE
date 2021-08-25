@@ -365,7 +365,7 @@ C7U8EX YGS2K
 #include "inireader.h"
 
 #define		STRING_MAX		200
-#define		str				char*
+#define		str			const char*
 #define		loop			while ( loopFlag )
 #define		halt			spriteTime()
 #define		time			gametime
@@ -11857,7 +11857,7 @@ void statVersusSelect(int player) {
 	// HIDDEN #1.60c7g2
 	printFont(3 + 24 * player, 20, "WIN TYPE",6);
 	if(wintype == 0){
-		sprintf(string[0], "GOAL LV", 0);
+		sprintf(string[0], "GOAL LV");
 		printFont(3 + 24 * player, 21, string[0], count % 9 * (vslevel[player] == 9));
 	}else if(wintype == 1){
 		sprintf(string[0], "GOAL LINE");
@@ -15195,7 +15195,7 @@ void initialize(void) {
 /* グラフィック読み込み */
 // initializeから独立 #1.60c7o5
 // players : プレイする人数(maxPlayの代わり)
-void LoadGraphics(char *nameStr, int p1, int p2) {
+void LoadGraphics(const char *nameStr, int p1, int p2) {
 	if ( getDrawRate() == 1 )
 		sprintf(string[0], "res/graphics/lowDetail%s", nameStr);
 	else
@@ -15225,7 +15225,7 @@ void LoadTitle(){
 	}
 }
 
-void LoadBackground(char *nameStr, int p1, int p2) {
+void LoadBackground(const char *nameStr, int p1, int p2) {
 	if(skip_viewbg) return;
 
 	if ( getDrawRate() == 1 )

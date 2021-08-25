@@ -259,9 +259,9 @@ void statMissionEditor(int player) {
 			printFont(15 + 24 * player - 12 * maxPlay, 23, string[0], 3);
 		}else{
 			if(!mission_opt_3[c_mission]){
-				sprintf(string[0], "RANDTGT:OFF", 0);
+				sprintf(string[0], "RANDTGT:OFF");
 			}else if(mission_opt_3[c_mission] == 99){
-				sprintf(string[0], "RANDTGT:FULL", 0);
+				sprintf(string[0], "RANDTGT:FULL");
 			}else{
 				sprintf(string[0], "RANDTGT:%d", mission_opt_3[c_mission]);
 			}
@@ -364,7 +364,7 @@ void statMissionEditor(int player) {
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 24, "BGM", fontc[rots[player]]);
 	if(mission_bgm[c_mission] == -1)
-		sprintf(string[0], "FADE", mission_bgm[c_mission]);
+		sprintf(string[0], "FADE");
 	else
 		sprintf(string[0], "%d", mission_bgm[c_mission]);
 	printFont(19 + 24 * player - 12 * maxPlay, 24, string[0], (statc[0 + player * 10] == 9) * count % 9);
@@ -768,37 +768,37 @@ void getMissionName(int mtype,int number) {
 // ÉçÅ[ÉhñºÇéÊìæ
 void getRoadName(int no){
 	if(no == 0)
-		sprintf(string[0], " BIG ROAD", 0);
+		sprintf(string[0], " BIG ROAD");
 	else if(no == 1)
-		sprintf(string[0], " TRICKY ROAD", 0);
+		sprintf(string[0], " TRICKY ROAD");
 	else if(no == 2)
-		sprintf(string[0], " GRAND ROAD", 0);
+		sprintf(string[0], " GRAND ROAD");
 	else if(no == 3)
-		sprintf(string[0], " STAR ROAD", 0);
+		sprintf(string[0], " STAR ROAD");
 	else if(no == 4)
-		sprintf(string[0], "ANOTHER ROAD", 0);
+		sprintf(string[0], "ANOTHER ROAD");
 	else if(no == 5)
-		sprintf(string[0], " DS ROAD", 0);
+		sprintf(string[0], " DS ROAD");
 	else if(no == 6)
-		sprintf(string[0], " DEVIL ROAD", 0);
+		sprintf(string[0], " DEVIL ROAD");
 	else if(no <= 16)
 		sprintf(string[0], " TRIAL S%d", no - 6);
 	else if(no == 17)
-		sprintf(string[0], " TRIAL HM", 0);
+		sprintf(string[0], " TRIAL HM");
 	else if(no == 18)
-		sprintf(string[0], " TRIAL GOD", 0);
+		sprintf(string[0], " TRIAL GOD");
 	else if(no == 19)
-		sprintf(string[0], "HEBO AMATEUR", 0);
+		sprintf(string[0], "HEBO AMATEUR");
 	else if(no == 20)
-		sprintf(string[0], " HEBO PRO", 0);
+		sprintf(string[0], " HEBO PRO");
 	else if(no == 21)
-		sprintf(string[0], " HEBO BRONZE", 0);
+		sprintf(string[0], " HEBO BRONZE");
 	else if(no == 22)
-		sprintf(string[0], " HEBO SILVER ", 0);
+		sprintf(string[0], " HEBO SILVER ");
 	else if(no == 23)
-		sprintf(string[0], " HEBO GOLD", 0);
+		sprintf(string[0], " HEBO GOLD");
 	else if(no == 24)
-		sprintf(string[0], "HEBO PLATINUM", 0);
+		sprintf(string[0], "HEBO PLATINUM");
 	else
 		sprintf(string[0], " NO.%02d", no);
 }

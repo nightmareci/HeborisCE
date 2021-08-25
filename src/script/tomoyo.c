@@ -1182,11 +1182,11 @@ void statTomoyoSelect_FP(int player) {
 			if(statc[player * 10 + 3] < 90){
 				if(statc[player * 10 + 3] + FP_next[i] <= 90)
 				sprintf(string[0], "%2d", statc[player * 10 + 3] + FP_next[i]);
-				else sprintf(string[0], "90", 0);
+				else sprintf(string[0], "90");
 			}else{
 				if(statc[player * 10 + 3] + FP_next[i] <= 100)
 					sprintf(string[0], "%2d", statc[player * 10 + 3] + FP_next[i]);
-				else sprintf(string[0], "100", 0);
+				else sprintf(string[0], "100");
 			}
 			printFont(18 + 24 * player - 12 * maxPlay, 10 + (i * 2), string[0], 0);
 		}

@@ -375,19 +375,19 @@ void ConfigMenu() {
 				if((ncfg[2] > 1)&&(ncfg[2] < 8))
 				sprintf(string[0], "HEBO%d", ncfg[2]);
 				else if(ncfg[2] == 0)
-				sprintf(string[0], "RANDOM", ncfg[2]);
+				sprintf(string[0], "RANDOM");
 				else if(ncfg[2] == 1)
-				sprintf(string[0], "MEMORY1", ncfg[2]);
+				sprintf(string[0], "MEMORY1");
 				else if(ncfg[2] == 8)
-				sprintf(string[0], "MEMORY4", ncfg[2]);
+				sprintf(string[0], "MEMORY4");
 				else if(ncfg[2] == 9)
-				sprintf(string[0], "GUIDELINE", ncfg[2]);
+				sprintf(string[0], "GUIDELINE");
 				else if(ncfg[2] == 10)
-				sprintf(string[0], "DENGEN", ncfg[2]);
+				sprintf(string[0], "DENGEN");
 				else if(ncfg[2] == 11)
-				sprintf(string[0], "TOMOYO", ncfg[2]);
+				sprintf(string[0], "TOMOYO");
 				else if(ncfg[2] == 12)
-				sprintf(string[0], "FP", ncfg[2]);
+				sprintf(string[0], "FP");
 				printFont(15, 10, string[0], (statc[0] == 4) * (count % 2) * digitc[rots[0]]);
 
 				sprintf(string[0], "%d", ncfg[45]);

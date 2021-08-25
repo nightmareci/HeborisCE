@@ -12,7 +12,7 @@ bool YGS2kInit();
 void YGS2kExit();
 bool YGS2kHalt();
 
-void YGS2kTextOut(int x, int y, char* text, int r = 255, int g = 255, int b = 255, int size = 12);
+void YGS2kTextOut(int x, int y, const char* text, int r = 255, int g = 255, int b = 255, int size = 12);
 
 int IsPlayMIDI();
 void SelectJoyStick( int pl );
@@ -28,7 +28,7 @@ int IsPushEndKey();
 int getMaxKey();
 
 void SetJoyButtonMax ( int max );
-void SetConstParam ( char *param, int value );
+void SetConstParam ( const char *param, int value );
 void KeyInput();
 int Rand ( int max );
 void PauseMIDI();
@@ -39,11 +39,11 @@ void StopWave ( int no );
 void PauseWave ( int no );
 void SetVolumeWave( int no, int vol );
 int IsPlayWave( int no );
-void LoadWave( char* filename, int no );
+void LoadWave( const char* filename, int no );
 void SetLoopModeWave( int no, int mode );
 
-void LoadMIDI( char* filename );
-void LoadBitmap( char* filename, int plane, int value );
+void LoadMIDI( const char* filename );
+void LoadBitmap( const char* filename, int plane, int value );
 void PlayMIDI();
 void StopMIDI();
 void SetColorKeyPos(int plane, int x, int y);
@@ -51,15 +51,15 @@ void EnableBlendColorKey(int plane, int key);
 void CreateSurface(int surf, int w, int h);
 void ClearSecondary();
 void SetFillColor(int col);
-void LoadFile( char* filename, void* buf, int size );
-void SaveFile( char* filename, void* buf, int size );
+void LoadFile( const char* filename, void* buf, int size );
+void SaveFile( const char* filename, void* buf, int size );
 void TextLayerOn ( int layer, int x, int y );
 void TextMove ( int layer, int x, int y );
 void TextColor ( int layer, int r, int g, int b );
 void TextBackColorDisable ( int layer );
 void TextSize ( int layer, int size );
 void TextHeight ( int layer, int height );
-void TextOut ( int layer, char* text );
+void TextOut ( int layer, const char* text );
 void TextBlt ( int layer );
 void TextLayerOff ( int layer );
 void Blt(int pno, int dx, int dy);
@@ -84,20 +84,20 @@ void SetFPS(int fps);
 int GetFPS();
 int GetRealFPS();
 
-void StrCpy(char *dest, char *src);
-void StrCpy(void *dest, char *src);
-void StrCpy(char *dest, void *src);
-void StrCat(char *str1, char *str2);
-int StrLen(char *stri);
-void MidStr(char *src, int start, int len, char *dest);
-void LeftStr(char *src, int len, char *dest);
-char CharAt(char *stri, int pos);
-int ValLong(char *stri);
+void StrCpy(char *dest, const char *src);
+void StrCpy(void *dest, const char *src);
+void StrCpy(char *dest, const void *src);
+void StrCat(char *str1, const char *str2);
+int StrLen(const char *stri);
+void MidStr(const char *src, int start, int len, char *dest);
+void LeftStr(const char *src, int len, char *dest);
+char CharAt(const char *stri, int pos);
+int ValLong(const char *stri);
 void FillMemory(void* buf, int size, int val);
 
 void YGS2kKanjiFontInitialize();
 void YGS2kKanjiFontFinalize();
 void YGS2kKanjiDrawSub(int x, int y, int kx, int ky);
-void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, char *str);
+void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);
 
 #endif

@@ -569,7 +569,7 @@ int		noredraw, fast;
 int		csr, cnt, enable[80], category, rankingmode;
 
 int		replayData[60 * 60 * 20 * 2];	// リプレイ保存用データ (最大20分まで)
-int		saveBuf[50000];			// セーブ用バッファ
+int32_t		saveBuf[50000];			// セーブ用バッファ
 int		playback = 0;			// リプレイ中か?
 int		demo = 0;				// デモモードか?
 int		demotime = -1;			// デモ表示回数(-1設定なのは最初のデモでビギナーモードを表示するため)

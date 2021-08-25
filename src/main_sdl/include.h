@@ -5,7 +5,8 @@
 #include "SDL_image.h"
 #include "SDL_mixer.h"
 #include "SDL_endian.h"
-#include <time.h>
+#include <ctime>
+#include <cstdint>
 
 #if		SDL_USE_OPENGL
 #include "SDL_opengl.h"
@@ -18,7 +19,7 @@
 #if		SDL_USE_OPENGL
 #define		FRAMEWORK_NAME		"GL"
 #else
-#define		FRAMEWORK_NAME		"SDL"
+#define		FRAMEWORK_NAME		"SDL2"
 #endif
 
 #if		defined(WIN32)

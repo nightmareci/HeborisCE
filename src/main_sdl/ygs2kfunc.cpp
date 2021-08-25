@@ -56,12 +56,12 @@ enum
 };
 
 static SDL_Window		*s_pScreenWindow = NULL;
-static SDL_Surface		*s_pScreenSurface = NULL;
+static SDL_Renderer		*s_pScreenRenderer = NULL;
 
 #if		SDL_USE_OPENGL
 static GL_Texture		s_pYGSTexture[YGS_TEXTURE_MAX];
 #else
-static SDL_Surface		*s_pYGSTexture[YGS_TEXTURE_MAX];
+static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 #endif
 
 static int				s_iKeyRepeat[YGS_KEYREPEAT_MAX];
@@ -135,7 +135,7 @@ bool YGS2kInit()
 		LoadConfig();
 	}
 
-	Uint32		windowFlags = SDL_WINDOW_SHOWN;
+	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
 #if		SDL_USE_OPENGL
 	/* 画面モードの変更 */
@@ -176,7 +176,8 @@ bool YGS2kInit()
 
 	/* キャプションの設定 */
 	s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winWidth, winHeight, windowFlags);
-	s_pScreenSurface = SDL_GetWindowSurface(s_pScreenWindow);
+	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0);
+	SDL_RenderSetLogicalSize(s_pScreenRenderer, winWidth, winHeight);
 
 	/* マウスカーソルを消す場合は */
 	if ( windowFlags & SDL_WINDOW_FULLSCREEN )
@@ -257,10 +258,14 @@ void YGS2kExit()
 #else
 		if ( s_pYGSTexture[i] )
 		{
-			SDL_FreeSurface(s_pYGSTexture[i]);
+			SDL_DestroyTexture(s_pYGSTexture[i]);
 			s_pYGSTexture[i] = NULL;
 		}
 #endif
+	}
+	if (s_pScreenRenderer ) {
+		SDL_DestroyRenderer( s_pScreenRenderer );
+		s_pScreenRenderer = NULL;
 	}
 	if ( s_pScreenWindow ) {
 		SDL_DestroyWindow( s_pScreenWindow );
@@ -323,17 +328,11 @@ bool YGS2kHalt()
 
 	SDL_GL_Enter2DMode();
 #else
-	SDL_Rect	dest;
-
 	/* バックサーフェスをフロントに転送 */
-	SDL_UpdateWindowSurface( s_pScreenWindow );
+	SDL_RenderPresent( s_pScreenRenderer );
 
 	/* 画面塗りつぶし */
-	dest.x = 0;
-	dest.y = 0;
-	dest.w = s_iWinWidth;
-	dest.h = s_iWinHeight;
-	SDL_FillRect(s_pScreenSurface, &dest, 0x00000000);
+	SDL_RenderClear( s_pScreenRenderer );
 #endif
 
 	/* イベント処理 */
@@ -358,7 +357,7 @@ bool YGS2kHalt()
 	/* フレームレート待ち */
 	while (s_uTimeCount + (1000 / s_uNowFPS) >= SDL_GetTicks())
 	{
-		SDL_Delay(0);
+		SDL_Delay(1);
 	};
 
 	/* フレームレート計算 */
@@ -714,14 +713,14 @@ void LoadBitmap( const char* filename, int plane, int val )
 #else
 	if ( s_pYGSTexture[plane] )
 	{
-		SDL_FreeSurface(s_pYGSTexture[plane]);
+		SDL_DestroyTexture(s_pYGSTexture[plane]);
 		s_pYGSTexture[plane] = NULL;
 	}
 
 	SDL_Surface	*imageSurface = IMG_Load(filename);
 	if ( imageSurface != NULL )
 	{
-		s_pYGSTexture[plane] = SDL_ConvertSurface(imageSurface, s_pScreenSurface->format, 0);
+		s_pYGSTexture[plane] = SDL_CreateTextureFromSurface(s_pScreenRenderer, imageSurface);
 		SDL_FreeSurface(imageSurface);
 		imageSurface = NULL;
 	}
@@ -869,7 +868,9 @@ void Blt(int pno, int dx, int dy)
 	BltRect(pno, dx, dy, 0, 0, s_pYGSTexture[pno].real_width, s_pYGSTexture[pno].real_height);
 #else
 	if ( s_pYGSTexture[pno] == NULL ) { return; }
-	BltRect(pno, dx, dy, 0, 0, s_pYGSTexture[pno]->w, s_pYGSTexture[pno]->h);
+	int w, h;
+	SDL_QueryTexture(s_pYGSTexture[pno], NULL, NULL, &w, &h);
+	BltRect(pno, dx, dy, 0, 0, w, h);
 #endif
 }
 
@@ -886,8 +887,9 @@ void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 	src.x = sx;					src.y = sy;
 	src.w = hx;					src.h = hy;
 	dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+	dst.w = hx;					dst.h = hy;
 
-	SDL_BlitSurface( s_pYGSTexture[pno], &src, s_pScreenSurface, &dst );
+	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
 #endif
 }
 
@@ -910,9 +912,9 @@ void BlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, i
 #else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 128);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 128);
 	Blt(pno, dx, dy);
-	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 255);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 255);
 #endif
 }
 
@@ -925,9 +927,9 @@ void BlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int a
 #else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 128);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 128);
 	BltRect(pno, dx, dy, sx, sy, hx, hy);
-	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 255);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 255);
 #endif
 }
 
@@ -938,45 +940,8 @@ void BltR(int pno, int dx, int dy, int scx, int scy)
 
 void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
 {
-#if		SDL_USE_OPENGL
-	SDL_GL_PutTexture(&s_pYGSTexture[pno], dx, dy, (float)hx * ((float)scx / 65536.0f), (float)hy * ((float)scy / 65536.0f), sx, sy, hx, hy);
-#else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-#if		!USE_SOFTSTRETCH
-	// 拡大しないで適当に誤魔化す描画
-	SDL_Rect	src;
-	SDL_Rect	dst;
-	int			wx = hx * ((float)scx / 65536.0f), wy = hy * ((float)scy / 65536.0f);
-
-	if ( scx < 65536 )
-	{
-		src.x = sx + (hx - wx) / 2;
-		src.w = hx - (hx - wx);
-		dst.x = dx + s_iOffsetX;
-	}
-	else
-	{
-		src.x = sx;
-		src.w = hx;
-		dst.x = dx + (wx - hx) / 2 + s_iOffsetX;
-	}
-
-	if ( scy < 65536 )
-	{
-		src.y = sy + (hy - wy) / 2;
-		src.h = hy - (hy - wy);
-		dst.y = dy + s_iOffsetY;
-	}
-	else
-	{
-		src.y = sy;
-		src.h = hy;
-		dst.y = dy + (wy - hy) / 2 + s_iOffsetY;
-	}
-
-	SDL_BlitSurface( s_pYGSTexture[pno], &src, s_pScreenSurface, &dst );
-#else
 	// ちゃんと拡大して描画する
 	SDL_Rect	src;
 	SDL_Rect	dst;
@@ -989,9 +954,7 @@ void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, 
 
 	if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-	SDL_SoftStretch( s_pYGSTexture[pno], &src, s_pScreenSurface, &dst );
-#endif
-#endif
+	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
 }
 
 void BltFastR(int pno, int dx, int dy, int scx, int scy)
@@ -1016,47 +979,10 @@ void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, 
 
 void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
 {
-#if		SDL_USE_OPENGL
-	glColor4ub(255, 255, 255, ar);
-	SDL_GL_PutTexture(&s_pYGSTexture[pno], dx, dy, (float)hx * ((float)scx / 65536.0f), (float)hy * ((float)scy / 65536.0f), sx, sy, hx, hy);
-	glColor4ub(255, 255, 255, 255);
-#else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-#if		1 // !USE_SOFTSTRETCH
-	// 拡大しないで適当に誤魔化す描画
-	SDL_Rect	src;
-	SDL_Rect	dst;
-	int			wx = hx * ((float)scx / 65536.0f), wy = hy * ((float)scy / 65536.0f);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 
-	if ( scx < 65536 )
-	{
-		src.x = sx + (hx - wx) / 2;
-		src.w = hx - (hx - wx);
-		dst.x = dx + s_iOffsetX;
-	}
-	else
-	{
-		src.x = sx;
-		src.w = hx;
-		dst.x = dx + (wx - hx) / 2 + s_iOffsetX;
-	}
-
-	if ( scy < 65536 )
-	{
-		src.y = sy + (hy - wy) / 2;
-		src.h = hy - (hy - wy);
-		dst.y = dy + s_iOffsetY;
-	}
-	else
-	{
-		src.y = sy;
-		src.h = hy;
-		dst.y = dy + (wy - hy) / 2 + s_iOffsetY;
-	}
-
-	SDL_BlitSurface( s_pYGSTexture[pno], &src, s_pScreenSurface, &dst );
-#else
 	// ちゃんと拡大して描画する
 	SDL_Rect	src;
 	SDL_Rect	dst;
@@ -1069,11 +995,9 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 
 	if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-	SDL_SoftStretch( s_pYGSTexture[pno], &src, s_pScreenSurface, &dst );
-#endif
+	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
 
-	SDL_SetSurfaceAlphaMod(s_pYGSTexture[pno], 255);
-#endif
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 255);
 }
 
 void SetSecondaryOffset(int x, int y)
@@ -1316,7 +1240,7 @@ void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str
 		Kanji_PutTextGL(s_pKanjiFont[font], x, y + 2, str, r, g, b, s_fDrawScale);
 		glColor4ub(255, 255, 255, 255);
 #else
-		Kanji_PutText(s_pKanjiFont[font], x, y, s_pScreenSurface, str, col);
+		//Kanji_PutText(s_pKanjiFont[font], x, y, s_pScreenSurface, str, col);
 #endif
 	}
 #elif	USE_PNGKANJI

@@ -31,8 +31,8 @@ int Kanji_FontWidth(Kanji_Font* font, const char* text);
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 								 SDL_Color fg, int bpp);
 int Kanji_PutText(Kanji_Font* font, int dx, int dy,
-				  SDL_Surface* dst, const char* text, SDL_Color fg);
-SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text,
+				  SDL_Renderer* dst, const char* text, SDL_Color fg);
+SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 								     SDL_Color fg, int bpp);
 int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy,
 				      SDL_Surface* dst, const char* text, SDL_Color fg);

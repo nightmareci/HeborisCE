@@ -1,9 +1,9 @@
 #include "SDL_kanji.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
 
 #define BUF 256
 

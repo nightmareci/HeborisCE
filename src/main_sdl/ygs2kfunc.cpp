@@ -22,12 +22,7 @@
 #define		YGS_JOYPAD_MAX		2
 #define		YGS_TEXTLAYER_MAX	16
 
-#if		SDL_USE_OPENGL
-#include "gl_kanji.h"
-#define		GAME_CAPTION		"HEBORIS C7-EX OpenGL"
-#else
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
-#endif
 
 struct SScreenInfo
 {
@@ -58,11 +53,7 @@ enum
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 
-#if		SDL_USE_OPENGL
-static GL_Texture		s_pYGSTexture[YGS_TEXTURE_MAX];
-#else
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
-#endif
 
 static int				s_iKeyRepeat[YGS_KEYREPEAT_MAX];
 static int				s_iJoyRepeat[YGS_JOYPAD_MAX][YGS_JOYREPEAT_MAX];
@@ -128,7 +119,7 @@ bool YGS2kInit()
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
 
-	/* CONFIG.SAV‚æ‚èİ’è‚ğƒ[ƒh */
+	/* CONFIG.SAVã‚ˆã‚Šè¨­å®šã‚’ãƒ­ãƒ¼ãƒ‰ */
 	if ( LoadConfig() )
 	{
 		readdef::readdef();
@@ -138,7 +129,7 @@ bool YGS2kInit()
 	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
 #if		SDL_USE_OPENGL
-	/* ‰æ–Êƒ‚[ƒh‚Ì•ÏX */
+	/* ç”»é¢ãƒ¢ãƒ¼ãƒ‰ã®å¤‰æ›´ */
 	if ( screenMode >= 0 && screenMode <= 12 )
 	{
 		SScreenInfo		*s = &s_ScreenInfo[screenMode];
@@ -149,7 +140,7 @@ bool YGS2kInit()
 		SDL_GL_SetDrawRate(s_fDrawScale);
 	}
 #else
-	/* ‰æ–Ê‚Ìİ’è */
+	/* ç”»é¢ã®è¨­å®š */
 	if ( screenMode > 3 ) { screenMode = 1; }
 
 	switch ( screenMode )
@@ -166,7 +157,7 @@ bool YGS2kInit()
 		break;
 	}
 
-	/* ƒEƒBƒ“ƒhƒE‚Ì‰Šú‰» */
+	/* ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸåŒ– */
 	windowFlags |= (screenMode == 0 || screenMode == 3) ? SDL_WINDOW_FULLSCREEN : 0;
 #endif
 
@@ -174,18 +165,18 @@ bool YGS2kInit()
 	s_iWinHeight = winHeight;
 
 
-	/* ƒLƒƒƒvƒVƒ‡ƒ“‚Ìİ’è */
+	/* ã‚­ãƒ£ãƒ—ã‚·ãƒ§ãƒ³ã®è¨­å®š */
 	s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winWidth, winHeight, windowFlags);
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, winWidth, winHeight);
 
-	/* ƒ}ƒEƒXƒJ[ƒ\ƒ‹‚ğÁ‚·ê‡‚Í */
+	/* ãƒã‚¦ã‚¹ã‚«ãƒ¼ã‚½ãƒ«ã‚’æ¶ˆã™å ´åˆã¯ */
 	if ( windowFlags & SDL_WINDOW_FULLSCREEN )
 	{
 		SDL_ShowCursor(SDL_DISABLE);
 	}
 
-	/* ƒL[ƒŠƒs[ƒgƒoƒbƒtƒ@‰Šú‰» */
+	/* ã‚­ãƒ¼ãƒªãƒ”ãƒ¼ãƒˆãƒãƒƒãƒ•ã‚¡åˆæœŸåŒ– */
 	for ( int i = 0 ; i < YGS_KEYREPEAT_MAX ; i ++ )
 	{
 		s_iKeyRepeat[i] = 0;
@@ -199,17 +190,10 @@ bool YGS2kInit()
 		}
 	}
 
-	/* ƒeƒNƒXƒ`ƒƒ—Ìˆæ‚Ì‰Šú‰» */
-	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
-	{
-#if		SDL_USE_OPENGL
-		memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
-#else
-		s_pYGSTexture[i] = NULL;
-#endif
-	}
+	/* ãƒ†ã‚¯ã‚¹ãƒãƒ£é ˜åŸŸã®åˆæœŸåŒ– */
+	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
 
-	/* ƒTƒEƒ“ƒh‚Ì‰Šú‰» */
+	/* ã‚µã‚¦ãƒ³ãƒ‰ã®åˆæœŸåŒ– */
 	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
 	{
 		s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
@@ -220,13 +204,13 @@ bool YGS2kInit()
 
 	s_pYGSMusic = NULL;
 
-	/* ƒpƒbƒh‚Ì‰Šú‰» */
+	/* ãƒ‘ãƒƒãƒ‰ã®åˆæœŸåŒ– */
 	for ( int i = 0 ; i < YGS_JOYPAD_MAX ; i ++ )
 	{
 		s_pJoyPads[i] = SDL_JoystickOpen(i);
 	}
 
-	/* ƒeƒLƒXƒgƒŒƒCƒ„[‚Ì‰Šú‰» */
+	/* ãƒ†ã‚­ã‚¹ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸåŒ– */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
 		memset(&s_TextLayer[i], 0, sizeof(STextLayer));
@@ -250,18 +234,14 @@ bool YGS2kInit()
 
 void YGS2kExit()
 {
-	/* ƒeƒNƒXƒ`ƒƒ—Ìˆæ‚Ì‰ğ•ú */
+	/* ãƒ†ã‚¯ã‚¹ãƒãƒ£é ˜åŸŸã®è§£æ”¾ */
 	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
 	{
-#if		SDL_USE_OPENGL
-		SDL_GL_FreeTexture(&s_pYGSTexture[i]);
-#else
 		if ( s_pYGSTexture[i] )
 		{
 			SDL_DestroyTexture(s_pYGSTexture[i]);
 			s_pYGSTexture[i] = NULL;
 		}
-#endif
 	}
 	if (s_pScreenRenderer ) {
 		SDL_DestroyRenderer( s_pScreenRenderer );
@@ -272,7 +252,7 @@ void YGS2kExit()
 		s_pScreenWindow = NULL;
 	}
 
-	/* ƒpƒbƒh‚ÌƒNƒ[ƒY */
+	/* ãƒ‘ãƒƒãƒ‰ã®ã‚¯ãƒ­ãƒ¼ã‚º */
 	for ( int i = 0 ; i < YGS_JOYPAD_MAX ; i ++ )
 	{
 		if ( s_pJoyPads[i] )
@@ -282,7 +262,7 @@ void YGS2kExit()
 		}
 	}
 
-	/* ƒTƒEƒ“ƒh‚Ì‰ğ•ú */
+	/* ã‚µã‚¦ãƒ³ãƒ‰ã®è§£æ”¾ */
 	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
 	{
 		s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
@@ -313,39 +293,29 @@ bool YGS2kHalt()
 	SDL_Event	ev;
 	SDL_Keycode	*key;
 
-	/* ƒeƒLƒXƒgƒŒƒCƒ„[‚Ì•`‰æ */
+	/* ãƒ†ã‚­ã‚¹ãƒˆãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æç”» */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
 		TextBlt(i);
 	}
 
-#if		SDL_USE_OPENGL
-	SDL_GL_Leave2DMode();
-	SDL_GL_SwapBuffers();
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	SDL_GL_Enter2DMode();
-#else
-	/* ƒoƒbƒNƒT[ƒtƒFƒX‚ğƒtƒƒ“ƒg‚É“]‘— */
+	/* ãƒãƒƒã‚¯ã‚µãƒ¼ãƒ•ã‚§ã‚¹ã‚’ãƒ•ãƒ­ãƒ³ãƒˆã«è»¢é€ */
 	SDL_RenderPresent( s_pScreenRenderer );
 
-	/* ‰æ–Ê“h‚è‚Â‚Ô‚µ */
+	/* ç”»é¢å¡—ã‚Šã¤ã¶ã— */
 	SDL_RenderClear( s_pScreenRenderer );
-#endif
 
-	/* ƒCƒxƒ“ƒgˆ— */
+	/* ã‚¤ãƒ™ãƒ³ãƒˆå‡¦ç† */
 	while(SDL_PollEvent(&ev) )
 	{
 		switch(ev.type){
-			case SDL_QUIT:						// ƒEƒBƒ“ƒhƒE‚Ì~ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚½‚È‚Ç
+			case SDL_QUIT:						// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®Ã—ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚ŒãŸæ™‚ãªã©
 				return false;
 				break;
-			case SDL_KEYDOWN:					// ƒL[ƒ{[ƒh‚©‚ç‚Ì“ü—Í‚ª‚ ‚Á‚½
+			case SDL_KEYDOWN:					// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‹ã‚‰ã®å…¥åŠ›ãŒã‚ã£ãŸæ™‚
 				{
-					key = &(ev.key.keysym.sym); // ‚Ç‚ÌƒL[‚ª‰Ÿ‚³‚ê‚½‚©‚ğæ“¾
-					if ( *key == 27 )			// ESCƒL[
+					key = &(ev.key.keysym.sym); // ã©ã®ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‹ã‚’å–å¾—
+					if ( *key == 27 )			// ESCã‚­ãƒ¼
 					{
 						return false;
 					}
@@ -354,13 +324,13 @@ bool YGS2kHalt()
 		}
 	}
 
-	/* ƒtƒŒ[ƒ€ƒŒ[ƒg‘Ò‚¿ */
+	/* ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆå¾…ã¡ */
 	while (s_uTimeCount + (1000 / s_uNowFPS) >= SDL_GetTicks())
 	{
 		SDL_Delay(1);
 	};
 
-	/* ƒtƒŒ[ƒ€ƒŒ[ƒgŒvZ */
+	/* ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆè¨ˆç®— */
 	s_uFPSCnting ++;
 	s_uNowFrame ++;
 
@@ -373,7 +343,7 @@ bool YGS2kHalt()
 		s_uFPSCount = SDL_GetTicks();
 	}
 
-	/* ‰æ–Ê‚¸‚ç‚µ—Ê‚Ì”½‰f */
+	/* ç”»é¢ãšã‚‰ã—é‡ã®åæ˜  */
 	s_iOffsetX = s_iNewOffsetX;
 	s_iOffsetY = s_iNewOffsetY;
 
@@ -419,22 +389,22 @@ int IsPressJoyKey ( int key )
 		Uint8 hat = SDL_JoystickGetHat(s_pJoyPads[s_iActivePad], 0);
 		switch ( key )
 		{
-		case 0:		// ã
+		case 0:		// ä¸Š
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 1) < -32767 / 4 ) return 1;
 			if ( hat & SDL_HAT_UP) return 1;
 			break;
 
-		case 1:		// ‰º
+		case 1:		// ä¸‹
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 1) > +32767 / 4 ) return 1;
 			if ( hat & SDL_HAT_DOWN) return 1;
 			break;
 
-		case 2:		// ¶
+		case 2:		// å·¦
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 0) < -32767 / 4 ) return 1;
 			if ( hat & SDL_HAT_LEFT) return 1;
 			break;
 
-		case 3:		// ‰E
+		case 3:		// å³
 			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 0) > +32767 / 4 ) return 1;
 			if ( hat & SDL_HAT_RIGHT) return 1;
 			break;
@@ -633,7 +603,7 @@ int IsPlayWave( int no )
 	switch ( s_iYGSSoundType[no] )
 	{
 	case YGS_SOUNDTYPE_WAV:
-		/* ‚È‚º‚©‚±‚±‚ğÀs‚·‚é‚Æ—‚¿‚éc */
+		/* ãªãœã‹ã“ã“ã‚’å®Ÿè¡Œã™ã‚‹ã¨è½ã¡ã‚‹â€¦ */
 		return Mix_Playing(no);
 		break;
 
@@ -663,7 +633,7 @@ void LoadWave( const char* filename, int no )
 
 	s_iYGSSoundType[no] = YGS_SOUNDTYPE_NONE;
 
-	// Šg’£qA‚Ü‚½‚Í”Ô†(50”ÔˆÈ~‚ªBGM)‚É‚æ‚Á‚Ä“Ç‚İ‚İ•û–@‚ğ•Ï‚¦‚é
+	// æ‹¡å¼µå­ã€ã¾ãŸã¯ç•ªå·(50ç•ªä»¥é™ãŒBGM)ã«ã‚ˆã£ã¦èª­ã¿è¾¼ã¿æ–¹æ³•ã‚’å¤‰ãˆã‚‹
 	if ( strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
 	{
 		s_pYGSExMusic[no] = Mix_LoadMUS(filename);
@@ -696,35 +666,19 @@ void LoadMIDI( const char* filename )
 
 void LoadBitmap( const char* filename, int plane, int val )
 {
-#if		SDL_USE_OPENGL
-	if ( s_pYGSTexture[plane].active )
-	{
-		SDL_GL_FreeTexture(&s_pYGSTexture[plane]);
-	}
-
-	SDL_Surface		*surface	= IMG_Load(filename);
-	if ( surface != NULL )
-	{
-		surface = SDL_DisplayFormat(surface);
-		SDL_GL_LoadTexture(surface, &s_pYGSTexture[plane]);
-		SDL_FreeSurface(surface);
-	}
-
-#else
 	if ( s_pYGSTexture[plane] )
 	{
 		SDL_DestroyTexture(s_pYGSTexture[plane]);
 		s_pYGSTexture[plane] = NULL;
 	}
 
-	SDL_Surface	*imageSurface = IMG_Load(filename);
-	if ( imageSurface != NULL )
+	SDL_Surface		*surface	= IMG_Load(filename);
+	if ( surface != NULL )
 	{
-		s_pYGSTexture[plane] = SDL_CreateTextureFromSurface(s_pScreenRenderer, imageSurface);
-		SDL_FreeSurface(imageSurface);
-		imageSurface = NULL;
+		s_pYGSTexture[plane] = SDL_CreateTextureFromSurface(s_pScreenRenderer, surface);
+		SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
+		SDL_FreeSurface(surface);
 	}
-#endif
 }
 
 void PlayMIDI()
@@ -773,7 +727,7 @@ void LoadFile( const char* filename, void* buf, int size )
 
 		int		i, *buf2;
 
-		/* ƒGƒ“ƒfƒBƒAƒ“•ÏŠ· */
+		/* ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ› */
 		buf2 = (int*)buf;
 		for ( i = 0 ; i < size / 4 ; i ++ )
 		{
@@ -787,7 +741,7 @@ void SaveFile( const char* filename, void* buf, int size )
 	FILE	*file;
 	int		i, *buf2;
 
-	/* ƒGƒ“ƒfƒBƒAƒ“•ÏŠ· */
+	/* ã‚¨ãƒ³ãƒ‡ã‚£ã‚¢ãƒ³å¤‰æ› */
 	buf2 = (int*)buf;
 	for ( i = 0 ; i < size / 4 ; i ++ )
 	{
@@ -801,7 +755,7 @@ void SaveFile( const char* filename, void* buf, int size )
 		fclose(file);
 	}
 
-	/* ‚à‚Ç‚· */
+	/* ã‚‚ã©ã™ */
 	for ( i = 0 ; i < size / 4 ; i ++ )
 	{
 		buf2[i] = SWAP32(buf2[i]);
@@ -863,22 +817,14 @@ void TextLayerOff ( int layer )
 
 void Blt(int pno, int dx, int dy)
 {
-#if		SDL_USE_OPENGL
-	if ( !s_pYGSTexture[pno].active ) { return; }
-	BltRect(pno, dx, dy, 0, 0, s_pYGSTexture[pno].real_width, s_pYGSTexture[pno].real_height);
-#else
 	if ( s_pYGSTexture[pno] == NULL ) { return; }
 	int w, h;
 	SDL_QueryTexture(s_pYGSTexture[pno], NULL, NULL, &w, &h);
 	BltRect(pno, dx, dy, 0, 0, w, h);
-#endif
 }
 
 void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
-#if		SDL_USE_OPENGL
-	SDL_GL_PutTexture(&s_pYGSTexture[pno], dx, dy, hx, hy, sx, sy, hx, hy);
-#else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	SDL_Rect	src;
@@ -889,8 +835,7 @@ void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 	dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
 	dst.w = hx;					dst.h = hy;
 
-	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
-#endif
+	SDL_RenderCopy(s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst);
 }
 
 void BltFast(int pno, int dx, int dy)
@@ -905,32 +850,20 @@ void BltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 
 void BlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-#if		SDL_USE_OPENGL
-	glColor4ub(255, 255, 255, ar);
-	Blt(pno, dx, dy);
-	glColor4ub(255, 255, 255, 255);
-#else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 128);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	Blt(pno, dx, dy);
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 255);
-#endif
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
 void BlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-#if		SDL_USE_OPENGL
-	glColor4ub(255, 255, 255, ar);
-	BltRect(pno, dx, dy, sx, sy, hx, hy);
-	glColor4ub(255, 255, 255, 255);
-#else
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 128);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	BltRect(pno, dx, dy, sx, sy, hx, hy);
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 255);
-#endif
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
 void BltR(int pno, int dx, int dy, int scx, int scy)
@@ -942,7 +875,7 @@ void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, 
 {
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	// ‚¿‚á‚ñ‚ÆŠg‘å‚µ‚Ä•`‰æ‚·‚é
+	// ã¡ã‚ƒã‚“ã¨æ‹¡å¤§ã—ã¦æç”»ã™ã‚‹
 	SDL_Rect	src;
 	SDL_Rect	dst;
 
@@ -983,7 +916,7 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 
-	// ‚¿‚á‚ñ‚ÆŠg‘å‚µ‚Ä•`‰æ‚·‚é
+	// ã¡ã‚ƒã‚“ã¨æ‹¡å¤§ã—ã¦æç”»ã™ã‚‹
 	SDL_Rect	src;
 	SDL_Rect	dst;
 
@@ -997,7 +930,7 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 
 	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], 255);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
 void SetSecondaryOffset(int x, int y)
@@ -1095,7 +1028,7 @@ void YGS2kKanjiFontInitialize()
 	s_pKanjiFont[1].load("res/font/knj12.f1b");
 	s_pKanjiFont[2].load("res/font/knj16.f1b");
 #elif	USE_SDLKANJI
-	/* 10pxƒtƒHƒ“ƒg“Ç‚İ‚İ */
+	/* 10pxãƒ•ã‚©ãƒ³ãƒˆèª­ã¿è¾¼ã¿ */
 	s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj10.bdf", 10);
 	if ( s_pKanjiFont[0] )
 	{
@@ -1103,7 +1036,7 @@ void YGS2kKanjiFontInitialize()
 	}
 	else
 	{
-		/* ƒtƒHƒ“ƒg‚ª‚È‚¢ê‡‘ã‘Ö‚ğg‚¤ */
+		/* ãƒ•ã‚©ãƒ³ãƒˆãŒãªã„å ´åˆä»£æ›¿ã‚’ä½¿ã† */
 		s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj12.bdf", 10);
 		Kanji_AddFont(s_pKanjiFont[0], "res/font/6x12a.bdf");
 	}
@@ -1113,7 +1046,7 @@ void YGS2kKanjiFontInitialize()
 		Kanji_SetCodingSystem(s_pKanjiFont[0], KANJI_SJIS);
 	}
 
-	/* 12pxƒtƒHƒ“ƒg“Ç‚İ‚İ */
+	/* 12pxãƒ•ã‚©ãƒ³ãƒˆèª­ã¿è¾¼ã¿ */
 	s_pKanjiFont[1] = Kanji_OpenFont("res/font/knj12.bdf", 12);
 	if ( s_pKanjiFont[1] )
 	{
@@ -1121,7 +1054,7 @@ void YGS2kKanjiFontInitialize()
 		Kanji_SetCodingSystem(s_pKanjiFont[1], KANJI_SJIS);
 	}
 
-	/* 16pxƒtƒHƒ“ƒg“Ç‚İ‚İ */
+	/* 16pxãƒ•ã‚©ãƒ³ãƒˆèª­ã¿è¾¼ã¿ */
 	s_pKanjiFont[2] = Kanji_OpenFont("res/font/knj16.bdf", 16);
 	if ( s_pKanjiFont[2] )
 	{
@@ -1145,7 +1078,7 @@ void YGS2kKanjiFontInitialize()
 
 		// if ( s_pKanjiSurface[i] )
 		// {
-			// ‚ ‚Ü‚è•K—v«‚ª‚È‚¢‚Ì‚Å‚µ‚È‚¢‚Å‚¨‚­
+			// ã‚ã¾ã‚Šå¿…è¦æ€§ãŒãªã„ã®ã§ã—ãªã„ã§ãŠã
 			// s_pKanjiSurface[i] = SDL_DisplayFormat(s_pKanjiSurface[i]);
 		// }
 	}
@@ -1271,7 +1204,7 @@ void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str
 	{
 		unsigned char	chr = str[i];
 
-		if ( chr == '\n' )
+		if ( chr == 'Â¥n' )
 		{
 			xx = 0;
 			yy += width;
@@ -1295,11 +1228,11 @@ void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str
 		}
 		else
 		{
-			if ( chr >= ' ' && chr <= '~' )
+			if ( chr >= ' ' && chr <= 'â€¾' )
 			{
 				YGS2kKanjiDrawSub(font, x + xx, y + yy, chr - ' ', 0);
 			}
-			else if ( chr >= 161 /* ¡ */ && chr <= 223 /* ß */ )
+			else if ( chr >= 161 /* ï½¡ */ && chr <= 223 /* ï¾Ÿ */ )
 			{
 				YGS2kKanjiDrawSub(font, x + xx, y + yy, chr - 161 + 1, 1);
 			}

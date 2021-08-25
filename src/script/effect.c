@@ -1,22 +1,22 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  READYŒã‚ÌSTART!‰‰o
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  READYå¾Œã®START!æ¼”å‡º
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void effect(int player) {
 	if(ready_go_style) return;
 	statc[player * 10]++;
 
 	if(statc[player * 10 + 1] == 1) {
 		if(statc[player * 10] < 30)
-			//                           «‚ª+‚É‚È‚Á‚Ä‚¢‚½‚Ì‚ÅC³#1.60c7f6
+			//                           â†“ãŒ+ã«ãªã£ã¦ã„ãŸã®ã§ä¿®æ­£#1.60c7f6
 			ExBltRect(3, 117 + player * 192 - 96 * maxPlay, 119, 0, 17, 86, 17);
 		else
 			statc[player * 10 + 1] = 0;
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒIƒuƒWƒFƒNƒgŠÖ˜A
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé–¢é€£
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void objectCreate(int p, int s, int x, int y, int v, int w, int j, int c) {
 	int		i;
 	for(i = 0; i < 100; i++)
@@ -25,7 +25,7 @@ void objectCreate(int p, int s, int x, int y, int v, int w, int j, int c) {
 			objx[i] = x * 100;
 			objy[i] = y * 100;
 			objv[i] = v;
-			obja[i] = 0;	// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‰Šú‰»#1.60c7h8
+			obja[i] = 0;	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–#1.60c7h8
 			objw[i] = w;
 			objj[i] = j - 1;
 			objc[i] = c;
@@ -35,7 +35,7 @@ void objectCreate(int p, int s, int x, int y, int v, int w, int j, int c) {
 		}
 }
 
-// ‘SÁ‚µ‚¾‚¯‚Åg‚í‚ê‚Ä‚¢‚é
+// å…¨æ¶ˆã—ã ã‘ã§ä½¿ã‚ã‚Œã¦ã„ã‚‹
 void objectCreate2(int p, int s, int x, int y, int v, int w, int j, int c) {
 	int		i;
 	for(i = 0; i < 100; i++)
@@ -44,7 +44,7 @@ void objectCreate2(int p, int s, int x, int y, int v, int w, int j, int c) {
 			objx[i] = x;
 			objy[i] = y;
 			objv[i] = v;
-			obja[i] = 0;	// ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‰Šú‰»#1.60c7h8
+			obja[i] = 0;	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–#1.60c7h8
 			objw[i] = w;
 			objj[i] = j - 1;
 			objc[i] = c;
@@ -77,33 +77,33 @@ void objectExecute(void) {
 				case 13: goto o13;
 			}
 
-			o00: objectStatBlock(i);			// 01 -> ”ò‚ÑU‚éƒuƒƒbƒN
+			o00: objectStatBlock(i);			// 01 -> é£›ã³æ•£ã‚‹ãƒ–ãƒ­ãƒƒã‚¯
 					goto next;
-			o01: objectStatLine(i);				// 02 -> ‰½—ñÁ‚µ‚½‚©•\¦
+			o01: objectStatLine(i);				// 02 -> ä½•åˆ—æ¶ˆã—ãŸã‹è¡¨ç¤º
 					goto next;
-			o02: objectStatBlock(i);			// 03 -> ”ò‚ÑU‚éƒuƒƒbƒN (‘¬‚¢ƒo[ƒWƒ‡ƒ“)
+			o02: objectStatBlock(i);			// 03 -> é£›ã³æ•£ã‚‹ãƒ–ãƒ­ãƒƒã‚¯ (é€Ÿã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³)
 					goto next;
-			o03: objectAllCrear(i);				// 04 -> ‘S‚¯‚µ
+			o03: objectAllCrear(i);				// 04 -> å…¨ã‘ã—
 					goto next;
-			o04: objectStatBlock2(i);			// 05 -> ”ò‚ÑU‚éƒuƒƒbƒN (’x‚¢ƒo[ƒWƒ‡ƒ“)
+			o04: objectStatBlock2(i);			// 05 -> é£›ã³æ•£ã‚‹ãƒ–ãƒ­ãƒƒã‚¯ (é…ã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³)
 					goto next;
-			o05: objectPopBlock(i);				// 06 -> ’e‚¯”ò‚ÔƒuƒƒbƒN
+			o05: objectPopBlock(i);				// 06 -> å¼¾ã‘é£›ã¶ãƒ–ãƒ­ãƒƒã‚¯
 					goto next;
-			o06: objectHanabi(i);				// 07 -> ‰Ô‰Î
+			o06: objectHanabi(i);				// 07 -> èŠ±ç«
 					goto next;
-			o07: objectNagareboshiP(i);			// 08 -> —¬‚ê¯iej
+			o07: objectNagareboshiP(i);			// 08 -> æµã‚Œæ˜Ÿï¼ˆè¦ªï¼‰
 					goto next;
-			o08: objectNagareboshiC(i);			// 09 -> —¬‚ê¯iqj
+			o08: objectNagareboshiC(i);			// 09 -> æµã‚Œæ˜Ÿï¼ˆå­ï¼‰
 					goto next;
-			o09: objectItemWarning(i);			// 10 -> ƒAƒCƒeƒ€”­“®Œx
+			o09: objectItemWarning(i);			// 10 -> ã‚¢ã‚¤ãƒ†ãƒ ç™ºå‹•è­¦å‘Š
 					goto next;
-			o10: objectGetmedal(i);				// 11 -> ƒƒ_ƒ‹Šl“¾‰‰o
+			o10: objectGetmedal(i);				// 11 -> ãƒ¡ãƒ€ãƒ«ç²å¾—æ¼”å‡º
 					goto next;
-			o11: objectitem_erase(i);			// 12 -> ƒAƒCƒeƒ€ƒuƒƒbƒNÁ‹
+			o11: objectitem_erase(i);			// 12 -> ã‚¢ã‚¤ãƒ†ãƒ ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»
 					goto next;
-			o12: objectdelfield(i);				// 13 -> ƒ‰ƒCƒ“‹­§Á‹ƒGƒtƒFƒNƒg
+			o12: objectdelfield(i);				// 13 -> ãƒ©ã‚¤ãƒ³å¼·åˆ¶æ¶ˆå»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
 					goto next;
-			o13: objectplatina_erase(i);		// 14 -> ƒvƒ‰ƒ`ƒiƒuƒƒbƒNÁ‹ƒGƒtƒFƒNƒg
+			o13: objectplatina_erase(i);		// 14 -> ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
 					goto next;
 			next:	;
 		}
@@ -111,7 +111,7 @@ void objectExecute(void) {
 }
 
 // objectStatBlock / objectStatBlock2
-// ”j‰óƒGƒtƒFƒNƒg‚Ì•ÏX‚É”º‚¢‘S–Ê•ÏX #1.60c7h8
+// ç ´å£Šã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®å¤‰æ›´ã«ä¼´ã„å…¨é¢å¤‰æ›´ #1.60c7h8
 void objectStatBlock(int no) {
 	int		zoom, offset, rate ,k, l;
 
@@ -121,7 +121,7 @@ void objectStatBlock(int no) {
 		return;
 	}
 
-	// breakeffect‚ª“®ì‚µ‚Ä‚¢‚È‚¢–â‘è‚ğC³#1.60c7h9
+	// breakeffectãŒå‹•ä½œã—ã¦ã„ãªã„å•é¡Œã‚’ä¿®æ­£#1.60c7h9
 	if( (!breakeffect) || (((objj[no] == 8) || (objj[no] == 9)) && (heboGB[objp[no]]==0)) || (objj[no] < 0)) {
 		obj[no] = 0;
 		return;
@@ -139,7 +139,7 @@ void objectStatBlock(int no) {
 		ExBltFastRect(64,objx[no] / 100, objy[no] / 100,0,56 + (8*(obja[no] / 2)),8,8);
 		if(obja[no] >= 20) obj[no] = 0;
 		obja[no] = obja[no] + 1;
-	//breaktype‚ğ3‚É‚·‚é‚ÆBEGINNER‚Ì‚İ‹ŒƒGƒtƒFƒNƒgA‚»‚êˆÈŠOVƒGƒtƒFƒNƒg #1.60c7l1
+	//breaktypeã‚’3ã«ã™ã‚‹ã¨BEGINNERã®ã¿æ—§ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã€ãã‚Œä»¥å¤–æ–°ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ #1.60c7l1
 	}else if( (gameMode[objp[no]] == 10) || (breaktype == 0) || ((breaktype == 3) && (gameMode[objp[no]] == 0) && (!novice_mode[objp[no]])) ) {
 		if(!istimestop[objp[no]]){
 			objx[no] = objx[no] + objv[no] * rate;
@@ -154,7 +154,7 @@ void objectStatBlock(int no) {
 		if(objj[no] >= 10){
 			zoom = objc[no] * 65536 / 100;
 
-			// F‚ªƒoƒO‚Á‚Ä‚¢‚½‚Ì‚ğC³ #1.60c7l1
+			// è‰²ãŒãƒã‚°ã£ã¦ã„ãŸã®ã‚’ä¿®æ­£ #1.60c7l1
 			ExBltFastRectR(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
 		} else {
 			k = getBigBlock_add(objp[no]);
@@ -171,22 +171,22 @@ void objectStatBlock(int no) {
 
 	} else {
 
-		// TAP/TI‚Ì‚æ‚¤‚ÉƒuƒƒbƒN‚ªÓ‚¯‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ğ•\¦‚·‚é #1.60c8
-		// hebospr.bmp‚Å—pˆÓ‚µ‚½ƒAƒjƒ[ƒVƒ‡ƒ“‚Í6ƒRƒ}‚ ‚é‚ªA
-		// 1ƒtƒŒ[ƒ€‚²‚Æ‚É1ƒRƒ}‚¾‚Æ‘¬‚·‚¬‚ÄŒ©‚¦‚È‚¢‚Ì‚Å
-		// ’ÊíÁ‹‚Í1/3”{‘¬A‚‘¬Á‹‚Í1/2”{‘¬‚Æ‚µ‚Ä‚¢‚é
+		// TAP/TIã®ã‚ˆã†ã«ãƒ–ãƒ­ãƒƒã‚¯ãŒç •ã‘ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¡¨ç¤ºã™ã‚‹ #1.60c8
+		// hebospr.bmpã§ç”¨æ„ã—ãŸã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¯6ã‚³ãƒã‚ã‚‹ãŒã€
+		// 1ãƒ•ãƒ¬ãƒ¼ãƒ ã”ã¨ã«1ã‚³ãƒã ã¨é€Ÿã™ãã¦è¦‹ãˆãªã„ã®ã§
+		// é€šå¸¸æ¶ˆå»æ™‚ã¯1/3å€é€Ÿã€é«˜é€Ÿæ¶ˆå»æ™‚ã¯1/2å€é€Ÿã¨ã—ã¦ã„ã‚‹
 
 		// ExBltRect(3, dposx, dposy, sposx, sposy, width, height);
 
 		if( objj[no] >= 9 ) {
-			// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN #1.60c7m9
+			// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ #1.60c7m9
 			objectplatina_erase(no);
 			if((obja[no] < 32) && (gameMode[objp[no]] == 6) && (stage[objp[no]] < 100))
 				ExBltRect(3, objx[no] / 100, (objy[no]-(obja[no]*30)) / 100, 212+(12*(objj[no]-10)), 64, 12, 7);
 			//objy[no] = objy[no] - 20;
 			if(obja[no] >= 59) obj[no] = 0;
 		} else {
-			// ini‚Ìİ’è‚Å‹Œ®‚ÌÓ‚¯ƒGƒtƒFƒNƒg‚ğg—p‚Å‚«‚é‚æ‚¤‚É‚µ‚½#1.60c7i4
+			// iniã®è¨­å®šã§æ—§å¼ã®ç •ã‘ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ä½¿ç”¨ã§ãã‚‹ã‚ˆã†ã«ã—ãŸ#1.60c7i4
 			if(breaktype == 2) {
 				if(obja[no] >= 15)
 					obj[no] = 0;
@@ -216,7 +216,7 @@ void objectStatBlock2(int no) {
 		obj[no] = 0;
 		return;
 	}
-	// breakeffect‚ª“®ì‚µ‚Ä‚¢‚È‚¢–â‘è‚ğC³#1.60c7h9
+	// breakeffectãŒå‹•ä½œã—ã¦ã„ãªã„å•é¡Œã‚’ä¿®æ­£#1.60c7h9
 	if( (!breakeffect) || (((objj[no] == 8) || (objj[no] == 9)) && (heboGB[objp[no]]==0)) || (objj[no] < 0)) {
 		obj[no] = 0;
 		return;
@@ -232,7 +232,7 @@ void objectStatBlock2(int no) {
 		ExBltFastRect(64,objx[no] / 100, objy[no] / 100,0,56 + (8*(obja[no] / 2)),8,8);
 		if(obja[no] >= 20) obj[no] = 0;
 		obja[no] = obja[no] + 1;
-	//breaktype‚ğ3‚É‚·‚é‚ÆBEGINNER‚Ì‚İ‹ŒƒGƒtƒFƒNƒgA‚»‚êˆÈŠOVƒGƒtƒFƒNƒg #1.60c7l1
+	//breaktypeã‚’3ã«ã™ã‚‹ã¨BEGINNERã®ã¿æ—§ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã€ãã‚Œä»¥å¤–æ–°ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ #1.60c7l1
 	} else if((gameMode[objp[no]] == 10) || (breaktype == 0) || ((breaktype == 3) && (gameMode[objp[no]] == 0) && (!novice_mode[objp[no]])) ) {
 		if(!istimestop[objp[no]]){
 			objx[no] = objx[no] + objv[no] / 2;
@@ -246,7 +246,7 @@ void objectStatBlock2(int no) {
 		if(objj[no] >= 10){
 			zoom = objc[no] * 65536 / 100;
 
-			// F‚ªƒoƒO‚Á‚Ä‚¢‚½‚Ì‚ğC³ #1.60c7l1
+			// è‰²ãŒãƒã‚°ã£ã¦ã„ãŸã®ã‚’ä¿®æ­£ #1.60c7l1
 			ExBltFastRectR(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
 		} else {
 			k = getBigBlock_add(objp[no]);
@@ -265,14 +265,14 @@ void objectStatBlock2(int no) {
 		// ExBltRect(3, dposx, dposy, sposx, sposy, width, height);
 
 		if( objj[no] >= 9 ) {
-			// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN #1.60c7m9
+			// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ #1.60c7m9
 			objectplatina_erase(no);
 			if((obja[no] < 32) && (gameMode[objp[no]] == 6) && (stage[objp[no]] < 100))
 				ExBltRect(3, objx[no] / 100, (objy[no]-(obja[no]*30)) / 100, 212+(12*(objj[no]-10)), 64, 12, 7);
 			objy[no] = objy[no] - 20;
 			if(obja[no] >= 59) obj[no] = 0;
 		} else {
-			// ini‚Ìİ’è‚Å‹Œ®‚ÌÓ‚¯ƒGƒtƒFƒNƒg‚ğg—p‚Å‚«‚é‚æ‚¤‚É‚µ‚½#1.60c7i4
+			// iniã®è¨­å®šã§æ—§å¼ã®ç •ã‘ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ä½¿ç”¨ã§ãã‚‹ã‚ˆã†ã«ã—ãŸ#1.60c7i4
 			if(breaktype == 2) {
 				ExBltRect(3, objx[no] / 100 - 12, objy[no] / 100 - 12, (obja[no] / 4) * 32, 162 + (objj[no] * 32), 32, 32);
 				if(obja[no] >= 20) obj[no] = 0;
@@ -289,7 +289,7 @@ void objectStatBlock2(int no) {
 		if(obja[no] >= 36) obj[no] = 0;
 	}
 }
-// objp[no]:BtoB ‚â T-Spin ‚Ì”»’è‚Ég—p
+// objp[no]:BtoB ã‚„ T-Spin ã®åˆ¤å®šã«ä½¿ç”¨
 void objectStatLine(int no) {
 	int scale;
 	if(!istimestop[(objy[no] / 100 == 132)]){
@@ -343,7 +343,7 @@ void objectAllCrear(int no) {
 		obj[no] = 0;
 }
 
-// ’e‚¯”ò‚ÔƒuƒƒbƒN #1.60c7o6
+// å¼¾ã‘é£›ã¶ãƒ–ãƒ­ãƒƒã‚¯ #1.60c7o6
 void objectPopBlock(int no) {
 	int		zoom, offset, rate, k, l;
 
@@ -363,7 +363,7 @@ void objectPopBlock(int no) {
 		if(objj[no] >= 10){
 			zoom = objc[no] * 65536 / 100;
 
-			// F‚ªƒoƒO‚Á‚Ä‚¢‚½‚Ì‚ğC³ #1.60c7l1
+			// è‰²ãŒãƒã‚°ã£ã¦ã„ãŸã®ã‚’ä¿®æ­£ #1.60c7l1
 			ExBltFastRectR(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
 		} else {
 			k = getBigBlock_add(objp[no]);
@@ -379,7 +379,7 @@ void objectPopBlock(int no) {
 	if((objy[no] + offset * 100) > 24000) obj[no] = 0;
 }
 
-// ‰Ô‰Î
+// èŠ±ç«
 void objectHanabi(int no) {
 
 	if( (!breakeffect) || (objj[no] < 0) || (objj[no] > 6) ) {
@@ -395,7 +395,7 @@ void objectHanabi(int no) {
 	obja[no]++;
 	if(obja[no] >= 48) obj[no] = 0;
 }
-//ƒvƒ‰ƒ`ƒiƒuƒƒbƒNÁ‹ƒGƒtƒFƒNƒgC7T2.8
+//ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆC7T2.8
 void objectplatina_erase(int no) {
 	// 32x32
 	// 60frames
@@ -405,7 +405,7 @@ void objectplatina_erase(int no) {
 	if(obj[no] == 14) obja[no]++;
 	if(obja[no] >= 60) obj[no] = 0;
 }
-//—¬‚ê¯iÀ•WŒvZj
+//æµã‚Œæ˜Ÿï¼ˆåº§æ¨™è¨ˆç®—ï¼‰
 void objectNagareboshiP(int no) {
 	objx[no]=objx[no]-4;
 	objy[no]=objy[no]+6;
@@ -414,7 +414,7 @@ void objectNagareboshiP(int no) {
 		obja[no]++;
 		if(obja[no] >= 30) obj[no] = 0;
 }
-//—¬‚ê¯i•`‰æj
+//æµã‚Œæ˜Ÿï¼ˆæç”»ï¼‰
 void objectNagareboshiC(int no) {
 		// 32x32
 		// 35frames
@@ -424,8 +424,8 @@ void objectNagareboshiC(int no) {
 		obja[no]++;
 		if(obja[no] >= 35) obj[no] = 0;
 }
-//ƒAƒCƒeƒ€”­“®Œx
-//objw[no]FREFLECT‚Å’µ‚Ë•Ô‚³‚ê‚½
+//ã‚¢ã‚¤ãƒ†ãƒ ç™ºå‹•è­¦å‘Š
+//objw[no]ï¼šREFLECTã§è·³ã­è¿”ã•ã‚ŒãŸ
 void objectItemWarning(int no){
 
 	if((objc[no] == 0) && ((stat[objp[no]] == 5) || (fmirror_cnt[objp[no]] >= 0))){
@@ -462,9 +462,9 @@ void objectItemWarning(int no){
 	if(obja[no] > 50) obj[no] = 0;
 
 }
-//ƒƒ_ƒ‹Šl“¾
-//objv ƒƒ_ƒ‹‚Ìí—Ş  0:AC 1:ST 2:SK 3:RE 4:RO 5:CO
-//objc ƒƒ_ƒ‹‚Ì’iŠK@0:“º 1:‹â 2:‹à 3:ƒvƒ‰
+//ãƒ¡ãƒ€ãƒ«ç²å¾—
+//objv ãƒ¡ãƒ€ãƒ«ã®ç¨®é¡  0:AC 1:ST 2:SK 3:RE 4:RO 5:CO
+//objc ãƒ¡ãƒ€ãƒ«ã®æ®µéšã€€0:éŠ… 1:éŠ€ 2:é‡‘ 3:ãƒ—ãƒ©
 void objectGetmedal(int no){
 	int i,j,k;
 	if(medaltype >= 2){
@@ -472,7 +472,7 @@ void objectGetmedal(int no){
 		return;
 	}
 
-	if(medaltype){	//TIƒƒ_ƒ‹iŠg‘å¨k¬j
+	if(medaltype){	//TIãƒ¡ãƒ€ãƒ«ï¼ˆæ‹¡å¤§â†’ç¸®å°ï¼‰
 		if(obja[no] <= 8){
 			k = obja[no] * (8 / 5);
 			i = (16 * k / 2 - 16) / 2;
@@ -490,7 +490,7 @@ void objectGetmedal(int no){
 			}
 		}
 		ExBltRectR(56, objx[no] - i, objy[no] - j, objv[no] * 16, (3 - objc[no]) * 12, 16, 12, k, k);
-	} else{	//TAPƒƒ_ƒ‹iŠg‘å‚µ‚½ó‘Ô‚©‚çk¬j
+	} else{	//TAPãƒ¡ãƒ€ãƒ«ï¼ˆæ‹¡å¤§ã—ãŸçŠ¶æ…‹ã‹ã‚‰ç¸®å°ï¼‰
 		k = 16 - obja[no];
 		i = (15 * k / 3 - 15) / 2;
 		j = (12 * k / 3 - 12) / 2;
@@ -505,7 +505,7 @@ void objectGetmedal(int no){
 	obja[no]++;
 	if(obja[no] >= 16) obj[no] = 0;
 }
-//ƒAƒCƒeƒ€ƒuƒƒbƒNÁ‹ƒGƒtƒFƒNƒg
+//ã‚¢ã‚¤ãƒ†ãƒ ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
 void objectitem_erase(int no) {
 	// 80x80
 	// 30frames
@@ -515,7 +515,7 @@ void objectitem_erase(int no) {
 	if(!istimestop[objp[no]]) obja[no]++;
 	if(obja[no] >= 30) obj[no] = 0;
 }
-//ƒ‰ƒCƒ“Á‹ƒGƒtƒFƒNƒg
+//ãƒ©ã‚¤ãƒ³æ¶ˆå»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
 void objectdelfield(int no) {
 
 	ExBltRect(45, objx[no] / 100, objy[no] / 100,0, obja[no] * 8 + (128 * (objc[no])), 80, 8);
@@ -527,7 +527,7 @@ void objectdelfield(int no) {
 	}
 	if(obja[no] >= 15) obj[no] = 0;
 }
-//ƒGƒtƒFƒNƒg‘SÁ‹
+//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå…¨æ¶ˆå»
 void objectClear(void) {
 	int		i;
 
@@ -535,7 +535,7 @@ void objectClear(void) {
 		obj[i] = 0;
 	}
 }
-//w’è‚µ‚½ƒvƒŒƒCƒ„[‚ÌƒGƒtƒFƒNƒg‚Ì‚İ‘SÁ‹
+//æŒ‡å®šã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ã¿å…¨æ¶ˆå»
 void objectClearPl(int player) {
 	int		i;
 

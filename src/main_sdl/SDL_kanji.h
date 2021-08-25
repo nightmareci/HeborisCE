@@ -14,7 +14,7 @@ typedef struct {
 	int k_size;
 	int a_size;
 	Kanji_CodingSystem sys;
-	/* ƒƒ‚ƒŠŒø—¦‚í‚é‚¢‚¯‚ÇA‚Ü‚ €‚É‚Í‚µ‚È‚¢‚í‚ÈB */
+	/* ãƒ¡ãƒ¢ãƒªåŠ¹ç‡ã‚ã‚‹ã„ã‘ã©ã€ã¾ã‚æ­»ã«ã¯ã—ãªã„ã‚ãªã€‚ */
 	Uint32* moji[96*96+256];
 } Kanji_Font;
 
@@ -25,7 +25,7 @@ int Kanji_AddFont(Kanji_Font* font, const char* file);
 void Kanji_SetCodingSystem(Kanji_Font* font, Kanji_CodingSystem sys);
 
 int Kanji_FontHeight(Kanji_Font* font);
-/* text == 0 ‚È‚ç ASCII ˆê•¶š•ª‚Ì•‚ğ•Ô‚· */
+/* text == 0 ãªã‚‰ ASCII ä¸€æ–‡å­—åˆ†ã®å¹…ã‚’è¿”ã™ */
 int Kanji_FontWidth(Kanji_Font* font, const char* text);
 
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,

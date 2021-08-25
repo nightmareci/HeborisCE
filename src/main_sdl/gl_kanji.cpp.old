@@ -33,7 +33,7 @@ public:
 		}
 	}
 
-	~MatrixSaver() {
+	â€¾MatrixSaver() {
 		int current_matrix_mode;
 		glGetIntegerv(GL_MATRIX_MODE, &current_matrix_mode);
 
@@ -118,25 +118,25 @@ void glKanji::print(int x, int y, const char *_str)
 
 	const unsigned char *str = reinterpret_cast<const unsigned char*>(_str);
 
-	MatrixSaver mmsaver(GL_MODELVIEW_MATRIX);	// •ÏŠ·s—ñ‚ğ‘Ş”ğ
+	MatrixSaver mmsaver(GL_MODELVIEW_MATRIX);	// å¤‰æ›è¡Œåˆ—ã‚’é€€é¿
 	MatrixSaver pmsaver(GL_PROJECTION_MATRIX);
-	ScreenMatrix smatrix;		// À•WŒn‚ğƒXƒNƒŠ[ƒ“‚É‚ ‚í‚¹‚é
+	ScreenMatrix smatrix;		// åº§æ¨™ç³»ã‚’ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã«ã‚ã‚ã›ã‚‹
 
 	glRasterPos2i(x, y+font_size);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	while(*str!=0) {
-		if(isprint(*str)) {	// ascii•¶š‚Ìê‡
+		if(isprint(*str)) {	// asciiæ–‡å­—ã®å ´åˆ
 			if(*str < max_index)
 				glBitmap(font_size, font_size, font_size/2, 0, font_size/2, 0, getChar(*str) );
 			++str;
 		}
-		else if ( *str == '\n' ) {
+		else if ( *str == 'Â¥n' ) {
 			lines ++;
 			glRasterPos2i(x, y+font_size * lines);
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			++str;
-		} else {	// “ú–{Œê•¶š‚Ìê‡
+		} else {	// æ—¥æœ¬èªæ–‡å­—ã®å ´åˆ
 			unsigned char c1 = str[0];
 			unsigned char c2 = str[1];
 

@@ -1,33 +1,33 @@
-ŸƒXƒNƒŠƒvƒgƒtƒ@ƒCƒ‹
-gameinit.c	‰Šú‰»
-readdef.c	Ý’èƒtƒ@ƒCƒ‹ì¬iCONFIG.SAV‚ª‘¶Ý‚µ‚È‚¢ê‡j
-config.c	Ý’è‰æ–Ê
-gamestart.c	ƒQ[ƒ€‘S”Ê‚Ìˆ—
-world.c		ƒ[ƒ‹ƒhƒ‹[ƒ‹
-classic.c	ƒNƒ‰ƒVƒbƒNƒ‹[ƒ‹
-ars.c		ARSƒ‹[ƒ‹
+â—†ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ•ã‚¡ã‚¤ãƒ«
+gameinit.c	åˆæœŸåŒ–
+readdef.c	è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ä½œæˆï¼ˆCONFIG.SAVãŒå­˜åœ¨ã—ãªã„å ´åˆï¼‰
+config.c	è¨­å®šç”»é¢
+gamestart.c	ã‚²ãƒ¼ãƒ å…¨èˆ¬ã®å‡¦ç†
+world.c		ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ«ãƒ¼ãƒ«
+classic.c	ã‚¯ãƒ©ã‚·ãƒƒã‚¯ãƒ«ãƒ¼ãƒ«
+ars.c		ARSãƒ«ãƒ¼ãƒ«
 classic_D.c	D.R.S
-view.c		•\Ž¦ˆ—
-effect.c	ƒuƒƒbƒNÁ‹ŽƒGƒtƒFƒNƒg“™
-sound.c		BGM‚ÆƒTƒEƒ“ƒhƒeƒXƒg
-practice.c	ƒvƒ‰ƒNƒeƒBƒXƒ‚[ƒh
-tomoyo.c	TOMOYOƒ‚[ƒhi‹ŒÌSAKURAƒ‚[ƒhj
-ranking.c	‹Œƒ‰ƒ“ƒLƒ“ƒO
-ranking2.c	Vƒ‰ƒ“ƒLƒ“ƒO
-replay.c	ƒŠƒvƒŒƒC
-staffroll.c	ƒXƒ^ƒbƒtƒ[ƒ‹
-cpu.c		ƒRƒ“ƒsƒ…[ƒ^‚Ì‘€ì
-sectime.c	ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€ƒ‰ƒ“ƒLƒ“ƒO
-flexdraw.c	•`‰æŠÖ”
-grade.c		’iˆÊƒVƒXƒeƒ€
-mission.c	ƒ~ƒbƒVƒ‡ƒ“ƒ‚[ƒh
+view.c		è¡¨ç¤ºå‡¦ç†
+effect.c	ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆåŽ»ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç­‰
+sound.c		BGMã¨ã‚µã‚¦ãƒ³ãƒ‰ãƒ†ã‚¹ãƒˆ
+practice.c	ãƒ—ãƒ©ã‚¯ãƒ†ã‚£ã‚¹ãƒ¢ãƒ¼ãƒ‰
+tomoyo.c	TOMOYOãƒ¢ãƒ¼ãƒ‰ï¼ˆæ—§ç§°SAKURAãƒ¢ãƒ¼ãƒ‰ï¼‰
+ranking.c	æ—§ãƒ©ãƒ³ã‚­ãƒ³ã‚°
+ranking2.c	æ–°ãƒ©ãƒ³ã‚­ãƒ³ã‚°
+replay.c	ãƒªãƒ—ãƒ¬ã‚¤
+staffroll.c	ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«
+cpu.c		ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã®æ“ä½œ
+sectime.c	ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ ãƒ©ãƒ³ã‚­ãƒ³ã‚°
+flexdraw.c	æç”»é–¢æ•°
+grade.c		æ®µä½ã‚·ã‚¹ãƒ†ãƒ 
+mission.c	ãƒŸãƒƒã‚·ãƒ§ãƒ³ãƒ¢ãƒ¼ãƒ‰
 
-mission_info.def@ƒ~ƒbƒVƒ‡ƒ“‚ÅŽg—p‚·‚é•¶Žš—ñƒf[ƒ^ˆêŽ®
+mission_info.defã€€ãƒŸãƒƒã‚·ãƒ§ãƒ³ã§ä½¿ç”¨ã™ã‚‹æ–‡å­—åˆ—ãƒ‡ãƒ¼ã‚¿ä¸€å¼
 
-ŸƒQ[ƒ€‚Ì“®ì‚É‚ÍŠÖŒW‚È‚¢à–¾ƒtƒ@ƒCƒ‹
-scriptlist.txt	‚±‚Ìƒtƒ@ƒCƒ‹
-planes.txt	ƒvƒŒ[ƒ“‚ÌŽg—pó‹µ
-seplanes.ttxt	ƒTƒEƒ“ƒh‚ÌŽg—pó‹µ
-changelog.txt	1.60c7n6‚Ü‚Å‚ÌXV—š—ð
-changelog2.txt	C7U5.1EX‚Ü‚Å‚ÌXV—š—ð
-cpu_tbl.txt	ƒRƒ“ƒsƒ…[ƒ^‚ÌŽvlƒ‹[ƒ`ƒ“‚ÉŽg‚¤—\’è‚Ì•]‰¿ƒe[ƒuƒ‹
+â—†ã‚²ãƒ¼ãƒ ã®å‹•ä½œã«ã¯é–¢ä¿‚ãªã„èª¬æ˜Žãƒ•ã‚¡ã‚¤ãƒ«
+scriptlist.txt	ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«
+planes.txt	ãƒ—ãƒ¬ãƒ¼ãƒ³ã®ä½¿ç”¨çŠ¶æ³
+seplanes.ttxt	ã‚µã‚¦ãƒ³ãƒ‰ã®ä½¿ç”¨çŠ¶æ³
+changelog.txt	1.60c7n6ã¾ã§ã®æ›´æ–°å±¥æ­´
+changelog2.txt	C7U5.1EXã¾ã§ã®æ›´æ–°å±¥æ­´
+cpu_tbl.txt	ã‚³ãƒ³ãƒ”ãƒ¥ãƒ¼ã‚¿ã®æ€è€ƒãƒ«ãƒ¼ãƒãƒ³ã«ä½¿ã†äºˆå®šã®è©•ä¾¡ãƒ†ãƒ¼ãƒ–ãƒ«

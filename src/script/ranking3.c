@@ -1,28 +1,28 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒ‰ƒ“ƒLƒ“ƒOŠÖ˜A
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ©ãƒ³ã‚­ãƒ³ã‚°é–¢é€£
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 
-// ƒ‰ƒ“ƒLƒ“ƒO—pƒOƒ[ƒoƒ‹•Ï”
-// (3–¼~2) ~ 10ƒ‚[ƒh(“ñ‚Â—\”õ) ~ 2‰ñ“]ƒ‹[ƒ‹ƒ^ƒCƒv
-// ˆêƒy[ƒW‚É2ƒ‚[ƒh3–¼‚¸‚Â
-//ƒrƒMAƒ}ƒX(1A2)Aƒ}ƒX(3A4)A20GAƒfƒrAƒgƒ‚(TiAEH)Aƒgƒ‚ijƒGƒXiNOAANOjAƒGƒX(HE)AƒGƒ“ƒhƒŒƒX
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ç”¨ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+// (3åÃ—2) Ã— 10ãƒ¢ãƒ¼ãƒ‰(äºŒã¤äºˆå‚™) Ã— 2å›è»¢ãƒ«ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—
+// ä¸€ãƒšãƒ¼ã‚¸ã«2ãƒ¢ãƒ¼ãƒ‰3åãšã¤
+//ãƒ“ã‚®ã€ãƒã‚¹(1ã€2)ã€ãƒã‚¹(3ã€4)ã€20Gã€ãƒ‡ãƒ“ã€ãƒˆãƒ¢(Tiã€EH)ã€ãƒˆãƒ¢ï¼ˆï¼‰ã‚¨ã‚¹ï¼ˆNOã€ANOï¼‰ã€ã‚¨ã‚¹(HE)ã€ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹
 bool	allocked3 = false;
-char*	rkname3[ 6*14*2];			// –¼‘O
-int		rkdata3[ 6*14*2];		// ‰Ô‰Î^’iˆÊ^ƒXƒe[ƒW^ƒ‰ƒCƒ“
-int		rktime3[ 6*14*2];		// ƒ^ƒCƒ€
-int		rkclear3[ 6*14*2];		// 0=“r’†‚Å’‚‘§ 1=ƒ[ƒ‹¸”s 2=ƒ[ƒ‹ƒNƒŠƒA
-int		rkother3[ 6*14*2];		// ‚»‚Ì‘¼iƒŒƒxƒ‹‚âƒNƒŠƒA—¦‚È‚Çj
-int		rkrots3[ 6*14*2];		// ‰ñ“]ƒ‹[ƒ‹
+char*	rkname3[ 6*14*2];			// åå‰
+int		rkdata3[ 6*14*2];		// èŠ±ç«ï¼æ®µä½ï¼ã‚¹ãƒ†ãƒ¼ã‚¸ï¼ãƒ©ã‚¤ãƒ³
+int		rktime3[ 6*14*2];		// ã‚¿ã‚¤ãƒ 
+int		rkclear3[ 6*14*2];		// 0=é€”ä¸­ã§çª’æ¯ 1=ãƒ­ãƒ¼ãƒ«å¤±æ•— 2=ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢
+int		rkother3[ 6*14*2];		// ãã®ä»–ï¼ˆãƒ¬ãƒ™ãƒ«ã‚„ã‚¯ãƒªã‚¢ç‡ãªã©ï¼‰
+int		rkrots3[ 6*14*2];		// å›è»¢ãƒ«ãƒ¼ãƒ«
 
-int		rkac3[ 6*14*2];		// ACƒƒ_ƒ‹ #LITE30.2
-int		rkst3[ 6*14*2];		// STƒƒ_ƒ‹ #LITE30.2
-int		rksk3[ 6*14*2];		// SKƒƒ_ƒ‹ #LITE30.2
-int		rkco3[ 6*14*2];		// COƒƒ_ƒ‹ #LITE30.2
-int		rkre3[ 6*14*2];		// REƒƒ_ƒ‹ #LITE30.2
-int		modecolor3[15] = {4,1,1,5,2,3,3,0,0,7,9,0};		// ƒ‚[ƒh–¼•\¦F
+int		rkac3[ 6*14*2];		// ACãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rkst3[ 6*14*2];		// STãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rksk3[ 6*14*2];		// SKãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rkco3[ 6*14*2];		// COãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rkre3[ 6*14*2];		// REãƒ¡ãƒ€ãƒ« #LITE30.2
+int		modecolor3[15] = {4,1,1,5,2,3,3,0,0,7,9,0};		// ãƒ¢ãƒ¼ãƒ‰åè¡¨ç¤ºè‰²
 int		rkpage;
 
-// ƒ‰ƒ“ƒLƒ“ƒO‰Šú‰»
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°åˆæœŸåŒ–
 void RankingInit3() {
 	int i;
 
@@ -41,7 +41,7 @@ void RankingInit3() {
 	}
 }
 
-// ‰½ˆÊ‚É“ü‚é‚©ƒ`ƒFƒbƒNiƒ‰ƒ“ƒNŠO‚È‚ç-1j
+// ä½•ä½ã«å…¥ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆãƒ©ãƒ³ã‚¯å¤–ãªã‚‰-1ï¼‰
 int RankingCheck3(int rmode, int rex,int rrots, int rdata, int rtime, int rclear) {
 	int i, j, rank;
 
@@ -53,8 +53,8 @@ int RankingCheck3(int rmode, int rex,int rrots, int rdata, int rtime, int rclear
 	for(i = 0; i < 3; i++) {
 		j = RankingGet3(rmode,ARSSRSch(rrots), rex);
 
-		if( (rdata > rkdata3[j + i]) ||  //’iˆÊ‰Ô‰Î“’BƒXƒe[ƒWƒ‰ƒCƒ“
-		((rdata == rkdata3[j + i]) && (rclear > rkclear3[j + i]))||//ƒ[ƒ‹ƒNƒŠƒA„¸”s„ƒ[ƒ‹ˆÈ‘O
+		if( (rdata > rkdata3[j + i]) ||  //æ®µä½èŠ±ç«åˆ°é”ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ©ã‚¤ãƒ³
+		((rdata == rkdata3[j + i]) && (rclear > rkclear3[j + i]))||//ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢ï¼å¤±æ•—ï¼ãƒ­ãƒ¼ãƒ«ä»¥å‰
 		((rdata == rkdata3[j + i]) && (rclear == rkclear3[j + i]) && (rtime < rktime3[j + i])) )
 		{
 			rank = i;
@@ -64,7 +64,7 @@ int RankingCheck3(int rmode, int rex,int rrots, int rdata, int rtime, int rclear
 	return rank;
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO‚É“o˜^
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã«ç™»éŒ²
 void RankingRegist3(int rmode, int rex,int rrots, int rdata, int rtime, int rclear,
 	int rother, char *rname, int rank, int rac, int rst, int rsk, int rco ,int rre) {
 
@@ -75,7 +75,7 @@ void RankingRegist3(int rmode, int rex,int rrots, int rdata, int rtime, int rcle
 
 	j = RankingGet3(rmode,ARSSRSch(rrots), rex );
 
-	// ƒ‰ƒ“ƒLƒ“ƒO‚ğ‚¸‚ç‚·
+	// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’ãšã‚‰ã™
 	for(i = 2+((rmode==9)*3); i > rank ; i--) {
 		StrCpy(rkname3[j + i], rkname3[j + i - 1]);
 		rkdata3[j + i] = rkdata3[j + i - 1];
@@ -90,7 +90,7 @@ void RankingRegist3(int rmode, int rex,int rrots, int rdata, int rtime, int rcle
 		rkre3[j + i] = rkre3[j + i - 1];
 	}
 
-	// ‡ˆÊ‚Ìƒf[ƒ^‚ğŒ³‚ÉV‚µ‚¢ƒf[ƒ^‚ğ“o˜^
+	// é †ä½ã®ãƒ‡ãƒ¼ã‚¿ã‚’å…ƒã«æ–°ã—ã„ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²
 	StrCpy(rkname3[j + rank], rname);
 	rkdata3[j + rank] = rdata;
 	rktime3[j + rank] = rtime;
@@ -98,7 +98,7 @@ void RankingRegist3(int rmode, int rex,int rrots, int rdata, int rtime, int rcle
 	rkother3[j + rank] = rother;
 	rkrots3[j + rank] = rrots;
 
-	// ƒƒ_ƒ‹‚ğ“o˜^ #LITE30.2
+	// ãƒ¡ãƒ€ãƒ«ã‚’ç™»éŒ² #LITE30.2
 	rkac3[j + rank] = rac;
 	rkst3[j + rank] = rst;
 	rksk3[j + rank] = rsk;
@@ -106,13 +106,13 @@ void RankingRegist3(int rmode, int rex,int rrots, int rdata, int rtime, int rcle
 	rkre3[j + rank] = rre;
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO•\¦(ƒfƒ‚‰æ–ÊAƒvƒŒƒCŒã‚É•\¦)//2pages‚Íƒ‰ƒ“ƒLƒ“ƒO‰æ–Ê‚ª2ƒy[ƒW–Ú
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤º(ãƒ‡ãƒ¢ç”»é¢ã€ãƒ—ãƒ¬ã‚¤å¾Œã«è¡¨ç¤º)//2pagesã¯ãƒ©ãƒ³ã‚­ãƒ³ã‚°ç”»é¢ãŒ2ãƒšãƒ¼ã‚¸ç›®
 void RankingProc_3(int cat,int pages2) {
 	count = 0;
 	flag = 0;
-	if(cat==0){	//ƒrƒMƒi[
+	if(cat==0){	//ãƒ“ã‚®ãƒŠãƒ¼
 		rkpage = 0;
-	}else if(cat==1){//ƒ}ƒXƒ^[
+	}else if(cat==1){//ãƒã‚¹ã‚¿ãƒ¼
 		if(pages2==0){	//1,2
 			rkpage = 1;
 		}else if(pages2==1){	//3,4
@@ -149,8 +149,8 @@ void RankingProc_3(int cat,int pages2) {
 
 		KeyInput();
 
-			RankingView3();//3ˆÊ‚Ü‚Å•\¦
-		// A‚©B‚Å–ß‚é
+			RankingView3();//3ä½ã¾ã§è¡¨ç¤º
+		// Aã‹Bã§æˆ»ã‚‹
 		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
 			flag = 1;
 		}
@@ -158,7 +158,7 @@ void RankingProc_3(int cat,int pages2) {
 		spriteTime();
 	}
 }
-//ƒ‰ƒ“ƒLƒ“ƒO•\¦i©•ª‚Å€–Ú‘I‘ğ‚µ‚Ä•\¦j
+//ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤ºï¼ˆè‡ªåˆ†ã§é …ç›®é¸æŠã—ã¦è¡¨ç¤ºï¼‰
 void RankingProc2_3() {
 	rkpage = 0;
 
@@ -166,33 +166,33 @@ void RankingProc2_3() {
 		KeyInput();
 
 		RankingView3();
-		// ©
+		// â†
 		if( getPushState(0,2) ) {
 			PlaySE( 5 );
-			rkpage--;//ƒQ[ƒ€ƒ‚[ƒh
+			rkpage--;//ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰
 			if(rkpage < 0) rkpage = 11;
 		}
 
-		// ¨
+		// â†’
 		if( getPushState(0,3) ) {
 			PlaySE( 5 );
 			rkpage++;
 			if(rkpage > 11) rkpage = 0;
 		}
 
-		// ª
+		// â†‘
 		if( getPushState(0,0) ) {
 			PlaySE( 5 );
-			rankingrule = !(rankingrule);//‰ñ“]ƒ‹[ƒ‹
+			rankingrule = !(rankingrule);//å›è»¢ãƒ«ãƒ¼ãƒ«
 		}
 
-		// «
+		// â†“
 		if( getPushState(0,1) ) {
 			PlaySE( 5 );
 			rankingrule  = !(rankingrule);
 		}
 
-		// A‚©B‚Å–ß‚é
+		// Aã‹Bã§æˆ»ã‚‹
 		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
 			return;
 		}
@@ -201,10 +201,10 @@ void RankingProc2_3() {
 	}
 }
 
-void RankingView3() {//3ˆÊ‚Ü‚Å
+void RankingView3() {//3ä½ã¾ã§
 	int i, j, k, l, color;
 
-	// ”wŒi•`‰æ
+	// èƒŒæ™¯æç”»
 	count++;
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
@@ -226,25 +226,25 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 	ExBltRect(77, 0, 128,  count % 320, 20, 320 - (count % 320), 8);
 	ExBltRect(77, 320 - (count % 320), 128,  0, 20, count % 320, 8);
 
-	// ƒ‹[ƒ‹–¼•\¦
+	// ãƒ«ãƒ¼ãƒ«åè¡¨ç¤º
 	getRuleNameEx3(rankingrule, 0);
 	StrCat(string[0], " TYPE RULE - ");
 
-	// ƒ‚[ƒh–¼•\¦
+	// ãƒ¢ãƒ¼ãƒ‰åè¡¨ç¤º
 	getModeNameEx3(rkpage, 1);
 	StrCat(string[1], " MODE");
 
 	StrCat(string[0], string[1]);
 	printFont(1, 1, string[0], modecolor3[rkpage]);
 
-	// ƒ‰ƒ“ƒLƒ“ƒO•\¦
+	// ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤º
 	if(rkpage == 0) {//beginner
 		printFont(1, 3, "HANABI RANKING", 1);
 		printFont(1, 16,"SCORE RANKING", 1);
-	} else if(rkpage == 1) {//ƒ}ƒXƒ^[
+	} else if(rkpage == 1) {//ãƒã‚¹ã‚¿ãƒ¼
 		printFont(1, 3, "GRANDMASTER RANKING GRADE1 ", 1);
 		printFont(1, 16,"GRANDMASTER RANKING GRADE2 ", 1);
-	} else if(rkpage == 2) {//ƒ}ƒXƒ^[
+	} else if(rkpage == 2) {//ãƒã‚¹ã‚¿ãƒ¼
 		printFont(1, 3, "GRANDMASTER RANKING GRADE3 ", 1);
 		printFont(1, 16,"GRANDMASTER RANKING GRADE4 ", 1);
 	} else if(rkpage == 3) {//20G
@@ -253,7 +253,7 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 	}else if(rkpage == 4) {//d
 		printFont(1, 3, "DOOM RANKING", 2);
 		printFont(1, 16,"MINUS RANKING", 2);
-	} else if(rkpage == 5) {//‚Æ‚à‚æTI EH
+	} else if(rkpage == 5) {//ã¨ã‚‚ã‚ˆTI EH
 		printFont(1, 3, "TI COURSE RANKING", 3);
 		printFont(1, 16,"E-HEART COURSE RANKING", 3);
 	} else if(rkpage == 6) {//FP
@@ -281,9 +281,9 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 	}else{
 		printFont(0, 29  , "TI-WORLD ACE-SRS DS-WORLD SRS-X", 0);//SRS
 	}
-		for(l = 0; l < 2 ; l++){//l==0ã‚Ì3’i l==1‰º‚Ì3’i
-			// ‡ˆÊ
-			if(rkpage!=9){//ƒIƒŠˆÈŠO
+		for(l = 0; l < 2 ; l++){//l==0ä¸Šã®3æ®µ l==1ä¸‹ã®3æ®µ
+			// é †ä½
+			if(rkpage!=9){//ã‚ªãƒªä»¥å¤–
 				sprintf(string[0], "1ST");
 				printFont(1, 5 + (l * 13)  , string[0], 2);
 				sprintf(string[0], "2ND");
@@ -304,80 +304,80 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 				sprintf(string[0], "6TH");
 				printFont(1, 26 , string[0], 0);
 			}
-				ExBltRect(85, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANK‚Ì•¶š
-				ExBltRect(85, 40 , 32 + (l * 13) * 8, 35, 0, 21, 7);//name‚Ì•¶š,•¶š‚ğ’u‚­À•W,Ø‚èæ‚éÀ•W,Ø‚èæ‚éƒTƒCƒY
-				ExBltRect(85, 190, 32 + (l * 13) * 8, 35, 7*12, 21, 7);//TIME‚Ì•¶š
-				ExBltRect(85, 260, 32 + ( l * 13) * 8, 35, 7*6, 21, 7);//ROTS‚Ì•¶š
+				ExBltRect(85, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANKã®æ–‡å­—
+				ExBltRect(85, 40 , 32 + (l * 13) * 8, 35, 0, 21, 7);//nameã®æ–‡å­—,æ–‡å­—ã‚’ç½®ãåº§æ¨™,åˆ‡ã‚Šå–ã‚‹åº§æ¨™,åˆ‡ã‚Šå–ã‚‹ã‚µã‚¤ã‚º
+				ExBltRect(85, 190, 32 + (l * 13) * 8, 35, 7*12, 21, 7);//TIMEã®æ–‡å­—
+				ExBltRect(85, 260, 32 + ( l * 13) * 8, 35, 7*6, 21, 7);//ROTSã®æ–‡å­—
 
-			if(rkpage==0){//ƒrƒMƒi[
+			if(rkpage==0){//ãƒ“ã‚®ãƒŠãƒ¼
 				if(l){//SCORE(sita)
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*7, 25, 7);//SCORE‚Ì•¶š
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š
+				ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*7, 25, 7);//SCOREã®æ–‡å­—
+				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—
 				}else{//HANABI(ue)
-				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*11, 29, 7);//HANABI‚Ì•¶š
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š
+				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*11, 29, 7);//HANABIã®æ–‡å­—
+				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—
 				}
 			}else if(rkpage==5){//TI EH
-				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGE‚Ì•¶š
-				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 7*4, 25, 7);//CLEAR‚Ì•¶š
+				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEã®æ–‡å­—
+				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 7*4, 25, 7);//CLEARã®æ–‡å­—
 			}else if(rkpage==6){//FP
-				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGE‚Ì•¶š
-				ExBltRect(85, 126 , 32 + (l * 13) * 8, 35, 7*7, 28, 7);//SCORE‚Ì•¶š
+				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEã®æ–‡å­—
+				ExBltRect(85, 126 , 32 + (l * 13) * 8, 35, 7*7, 28, 7);//SCOREã®æ–‡å­—
 			}else if((rkpage>=7)&&(rkpage<=8)){//ACE
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINES‚Ì•¶š
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š
+				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESã®æ–‡å­—
+				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—
 			}else if(rkpage==9){//ORIJINAL
-				ExBltRect(85, 80, 32 + (l * 13) * 8, 35, 7*7, 28, 7);//LEVEL‚Ì•¶š
-				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 14*7, 21, 7);//MODE‚Ì•¶š
+				ExBltRect(85, 80, 32 + (l * 13) * 8, 35, 7*7, 28, 7);//LEVELã®æ–‡å­—
+				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 14*7, 21, 7);//MODEã®æ–‡å­—
 			}else if(rkpage==10){//STANDARD
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINES‚Ì•¶š
-				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 2*7, 30, 7);//BLOCK‚Ì•¶š
+				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESã®æ–‡å­—
+				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 2*7, 30, 7);//BLOCKã®æ–‡å­—
 			}else if(rkpage==11){
 				if(l){//MARATHON(sita)
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINES‚Ì•¶š
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š
+				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESã®æ–‡å­—
+				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—
 				}else{//SQUARE(ue)
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*9, 35, 7);//SQUARE‚Ì•¶š
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š
+				ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*9, 35, 7);//SQUAREã®æ–‡å­—
+				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—
 				}
 			}else{
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 3*7, 27, 7);//CLASS‚Ì•¶š
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š
+				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 3*7, 27, 7);//CLASSã®æ–‡å­—
+				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—
 			}
 
 			for(i = 0; i < 3; i++) {
 				j = RankingGet3(rkpage,rankingrule,l);
 
-				// –¼‘O
+				// åå‰
 				printFont(5, 5 + (i * 4) + (l * 13), rkname3[j + i], digitc[rkrots3[j + i]]);
 
 				if(rkpage == 0) {
-					// ƒXƒRƒA
+					// ã‚¹ã‚³ã‚¢
 					sprintf(string[0], "%d", rkdata3[j + i]);
 					printFont(10, 5 + (i * 4) + (l * 13), string[0],digitc[rkrots3[j + i]]);
 
-					// ƒŒƒxƒ‹
+					// ãƒ¬ãƒ™ãƒ«
 					sprintf(string[0], "%d", rkother3[j + i]);
         				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 	        	 	} else if( (rkpage >= 1) && (rkpage <= 4) ) {
 					if(rkpage == 4){//devil
-						//devil‚Íæ‚É’iˆÊ‚ğ•\¦
-						// ’iˆÊ
+						//devilã¯å…ˆã«æ®µä½ã‚’è¡¨ç¤º
+						// æ®µä½
                					sprintf(string[0], "%d", rkother3[j + i]);
 						printFont(10, 5 + (i * 4) + l * 13, dgname[rkother3[j + i]], digitc[rkrots3[j + i]]);
-						sprintf(string[0], "%d", rkdata3[j + i]); //devilƒŒƒxƒ‹
+						sprintf(string[0], "%d", rkdata3[j + i]); //devilãƒ¬ãƒ™ãƒ«
 					}else{
-						sprintf(string[0], "%d", rkdata3[j + i]); //mas 20G’iˆÊ
+						sprintf(string[0], "%d", rkdata3[j + i]); //mas 20Gæ®µä½
 						printFont(10, 5 + (i * 4) + (l * 13), gname2[rkdata3[j + i]], digitc[rkrots3[j + i]]);
-						// ’iˆÊ
+						// æ®µä½
                					sprintf(string[0], "%d", rkother3[j + i]);
 					}
-            				// ƒŒƒxƒ‹
+            				// ãƒ¬ãƒ™ãƒ«
             				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
          			}else if((rkpage == 5) || (rkpage == 6)) {
-					// ƒNƒŠƒA—¦
+					// ã‚¯ãƒªã‚¢ç‡
 					if(rkpage == 5){
-						// ƒXƒe[ƒW
+						// ã‚¹ãƒ†ãƒ¼ã‚¸
 						if(rkclear3[j + i] == 2){
 							sprintf(string[0], "ALL");
 						}else{
@@ -402,24 +402,24 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 						sprintf(string[0], "%d", rkother3[j + i]);
 						printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 					}
-				} else if((rkpage == 7)||(rkpage == 8)){//aceŒn
-					// ƒ‰ƒCƒ“
+				} else if((rkpage == 7)||(rkpage == 8)){//aceç³»
+					// ãƒ©ã‚¤ãƒ³
 					sprintf(string[0], "%d", rkdata3[j + i]);
 					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
-					// ƒŒƒxƒ‹
+					// ãƒ¬ãƒ™ãƒ«
 					sprintf(string[0], "%d", rkother3[j + i] + 1);
 					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-				} else if((rkpage == 10)||(rkpage == 11)){//STANDARDŒn
-					// ƒ‰ƒCƒ“
+				} else if((rkpage == 10)||(rkpage == 11)){//STANDARDç³»
+					// ãƒ©ã‚¤ãƒ³
 					sprintf(string[0], "%d", rkdata3[j + i]);
 					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
-					// ƒŒƒxƒ‹
+					// ãƒ¬ãƒ™ãƒ«
 					sprintf(string[0], "%d", rkother3[j + i] + 1);
 					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 				}else {
-				// ƒXƒRƒA
+				// ã‚¹ã‚³ã‚¢
 					sprintf(string[0], "%d", rkdata3[j + i]);
 					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
@@ -430,17 +430,17 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 				}
 
-				// ƒ^ƒCƒ€
+				// ã‚¿ã‚¤ãƒ 
 				getTime(rktime3[j + i]);
 				printFont(22, 5 + (i * 4)+ l * 13, string[0], digitc[rkrots3[j + i]]);
 
-				// ƒ‰ƒCƒ“
+				// ãƒ©ã‚¤ãƒ³
 				if(rkclear3[j + i] == 1) {
 					ExBltFastRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
 				}else if(rkclear3[j + i] == 2) {
 					ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
 				}
-					// ‰ñ“]
+					// å›è»¢
 				if(rkrots3[j + i]==0)sprintf(string[0], "HEBORIS");
 				if(rkrots3[j + i]==1)sprintf(string[0], "TI-ARS");
 				if(rkrots3[j + i]==2)sprintf(string[0], "TI-WORLD");
@@ -452,7 +452,7 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 				if(rkrots3[j + i]==8)sprintf(string[0], "D.R.S");
 				printFont(31, 5 + (i * 4) + (l * 13), string[0], fontc[rkrots3[j + i]]);
 
-				// ƒƒ_ƒ‹
+				// ãƒ¡ãƒ€ãƒ«
 				if((rkpage >= 1)&&(rkpage <= 4)) {
 					ExBltRect(85, 16,  5 + ((6 + (i * 4) + (l * 13)) * 8), 0, 77, 27, 7);
 					if(rkac3[j + i]) ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52 - rkac3[j + i] * 13, 15, 12);
@@ -469,37 +469,37 @@ void RankingView3() {//3ˆÊ‚Ü‚Å
 			}
 		}
 }
-// ƒ‰ƒ“ƒLƒ“ƒO‚ğ•Û‘¶
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’ä¿å­˜
 void RankingSave3() {
 	int i, temp2[3];
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
-	// ƒwƒbƒ_
+	// ãƒ˜ãƒƒãƒ€
 	saveBuf[0] = 0x4F424501;
 	saveBuf[1] = 0x20534901;
 	saveBuf[2] = 0x48474901;
 	saveBuf[3] = 0x34764301;
 
-	// ƒ‰ƒ“ƒLƒ“ƒOƒf[ƒ^
+	// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿
 	for(i = 0; i < ( 6*14*2); i++) {// 6*14*2=6*14*2
-		// –¼‘O
+		// åå‰
 		StrCpy(&temp2, rkname3[i]);
 		saveBuf[4 + i] = temp2[0];//1
 
-		// ’iˆÊ
+		// æ®µä½
 		saveBuf[4 + i + ( 6*14*2) * 1] = rkdata3[i];//2
 
-		// ƒ^ƒCƒ€
+		// ã‚¿ã‚¤ãƒ 
 		saveBuf[4 + i + ( 6*14*2) * 2] = rktime3[i];//3
 
-		// ƒ[ƒ‹ƒNƒŠƒA
+		// ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢
 		saveBuf[4 + i + ( 6*14*2) * 3] = rkclear3[i];//4
 
-		// ‚»‚Ì‘¼
+		// ãã®ä»–
 		saveBuf[4 + i + ( 6*14*2) * 4] = rkother3[i];//5
 
-		// ƒƒ_ƒ‹ #LITE30.2
+		// ãƒ¡ãƒ€ãƒ« #LITE30.2
 		saveBuf[4 + i + ( 6*14*2) * 5] = rkac3[i];//6
 		saveBuf[4 + i + ( 6*14*2) * 6] = rkst3[i];//7
 		saveBuf[4 + i + ( 6*14*2) * 7] = rksk3[i];//8
@@ -511,11 +511,11 @@ void RankingSave3() {
 	SaveFile("config/data/RANKING3.SAV", &saveBuf, ( (6*14*2*11)+4) * 4);//
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO‚ğ“Ç‚İ‚İ
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’èª­ã¿è¾¼ã¿
 int RankingLoad3() {
 	int i, temp2[3];
 
-	// ƒwƒbƒ_‚¾‚¯“Ç‚İ‚İ
+	// ãƒ˜ãƒƒãƒ€ã ã‘èª­ã¿è¾¼ã¿
 	FillMemory(&saveBuf, 5000 * 4, 0);
 	LoadFile("config/data/RANKING3.SAV", &saveBuf, 16);
 	//
@@ -524,27 +524,27 @@ int RankingLoad3() {
 	if(saveBuf[2] != 0x48474901) return 1;
 	if(saveBuf[3] != 0x34764301) return 1;
 
-	// ‘S•”“Ç‚İ‚İ
+	// å…¨éƒ¨èª­ã¿è¾¼ã¿
 	LoadFile("config/data/RANKING3.SAV", &saveBuf, ( 6*14*2*11+4) * 4);
 
 	for(i = 0; i < ( 6*14*2); i++) {
-		// –¼‘O
+		// åå‰
 		temp2[0] = saveBuf[4 + i];
 		StrCpy(rkname3[i], &temp2);
 
-		// ’iˆÊ
+		// æ®µä½
 		rkdata3[i]  = saveBuf[4 + i + ( 6*14*2) * 1];
 
-		// ƒ^ƒCƒ€
+		// ã‚¿ã‚¤ãƒ 
 		rktime3[i]  = saveBuf[4 + i + ( 6*14*2) * 2];
 
-		// ƒ[ƒ‹ƒNƒŠƒA
+		// ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢
 		rkclear3[i] = saveBuf[4 + i + ( 6*14*2) * 3];
 
-		// ‚»‚Ì‘¼
+		// ãã®ä»–
 		rkother3[i] = saveBuf[4 + i + ( 6*14*2) * 4];
 
-		// ƒƒ_ƒ‹ #LITE30.2
+		// ãƒ¡ãƒ€ãƒ« #LITE30.2
 		rkac3[i] = saveBuf[4 + i + ( 6*14*2) * 5];
 		rkst3[i] = saveBuf[4 + i + ( 6*14*2) * 6];
 		rksk3[i] = saveBuf[4 + i + ( 6*14*2) * 7];
@@ -556,18 +556,18 @@ int RankingLoad3() {
 	return 0;
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO‚ğ‘‚«‚·‚é‚Ég—p
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’æ›¸ãã™ã‚‹æ™‚ã«ä½¿ç”¨
 int RankingGet3(int rmode, int rrots,int rex) {//5*15*2*11,3*2*14*2*11
-	// •’Ê‚Ìƒ‚[ƒh
+	// æ™®é€šã®ãƒ¢ãƒ¼ãƒ‰
 	return ((rmode * 14)  + (rrots * 6)+ (rex * 3));
 }
-// 5–¼ ~ 15ƒ‚[ƒh ~ 2‰ñ“]ƒ‹[ƒ‹ƒ^ƒCƒv
-// –¼‘O‚ğŠi”[‚·‚é•Ï”(rkname)‚Ìƒƒ‚ƒŠ‚ğŠm•Û
+// 5å Ã— 15ãƒ¢ãƒ¼ãƒ‰ Ã— 2å›è»¢ãƒ«ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—
+// åå‰ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°(rkname)ã®ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 void RankingAlloc3() {
 	int i;
 	if ( !allocked3 )
 	{
-		for(i = 0; i < ( 6*14*2 ); i++) rkname3[i] = new char[4];		/* C++ TODO: ‚¢‚¢‚Ì‚©‚È? ‰ğ•úˆ—‚¢‚é? */
+		for(i = 0; i < ( 6*14*2 ); i++) rkname3[i] = new char[4];		/* C++ TODO: ã„ã„ã®ã‹ãª? è§£æ”¾å‡¦ç†ã„ã‚‹? */
 		allocked3 = true;
 	}
 }
@@ -651,14 +651,14 @@ void viewbesttimes3(int player,int x,int y,int type){
 		tmp = RankingGet3(cat[player],ARSSRSch(rots[player]), ex[player] );
 		if( (gameMode[player]==7)&&(anothermode[player] <= 1)){
 			if(rkdata3[tmp] < 150){
-			type = 1;//‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚È‚¢‚©‚çƒf[ƒ^‚ğ•\¦
+			type = 1;//ã¾ã ã‚¯ãƒªã‚¢ã—ã¦ãªã„ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
 			}else{
 			type = 0;
 			}
 		}
 		if( (gameMode[player]==7)&&(anothermode[player] == 2)){
 			if(rkdata3[tmp] < 200){
-			type = 1;//‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚È‚¢‚©‚çƒf[ƒ^‚ğ•\¦
+			type = 1;//ã¾ã ã‚¯ãƒªã‚¢ã—ã¦ãªã„ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
 			}else{
 			type = 0;
 			}
@@ -670,16 +670,16 @@ void viewbesttimes3(int player,int x,int y,int type){
 			type = 0;
 			}
 		}
-		if(type==1){//ƒ^ƒCƒ€‚©ƒf[ƒ^‚©H
-			//ƒf[ƒ^
-			ExBltRect(85, x-(player*12),y, 0, 0,35, 7);//best‚Ì•¶š
+		if(type==1){//ã‚¿ã‚¤ãƒ ã‹ãƒ‡ãƒ¼ã‚¿ã‹ï¼Ÿ
+			//ãƒ‡ãƒ¼ã‚¿
+			ExBltRect(85, x-(player*12),y, 0, 0,35, 7);//bestã®æ–‡å­—
 			ExBltRect(85, x+22-(player*16),y, 35,7*4,35, 7);//
 			sprintf(string[0], "%d", rkdata3[tmp]);
 
 			printSMALLFont(x-(player*8), y+8, string[0], color[player]);
 			ExBltRect(85, x+24-(player*12),y+8, 0,7*10,35, 7);//LINES
 		}else{
-			//ƒ^ƒCƒ€
+			//ã‚¿ã‚¤ãƒ 
 			ExBltRect(85, x,y, 0, 0,35, 7);
 			ExBltRect(85, x+22,y, 35,7*12,35, 7);
 			getTime(rktime3[tmp]);
@@ -728,24 +728,24 @@ void viewbesttime3(int player,int x,int y,int type){
 		return ;
 	}
 	color[player] = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
-	/* ƒxƒXƒgƒ^ƒCƒ€/ƒf[ƒ^ */
+	/* ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ /ãƒ‡ãƒ¼ã‚¿ */
 	if( (gameMode[player] >= 7) && ((!maxPlay)) ) {
 			tmp = RankingGet3(cat[player],ARSSRSch(rots[player]), ex[player] );
 			if( (gameMode[player]==7)&&(anothermode[player] <= 1)){
 				if(rkdata3[tmp] < 150){
-				type = 1;//‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚È‚¢‚©‚çƒf[ƒ^‚ğ•\¦
+				type = 1;//ã¾ã ã‚¯ãƒªã‚¢ã—ã¦ãªã„ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
 				}else{
 				type = 0;//rkdata3[RankingGet3(cat[player],ARSSRSch(rots[player]), ex[player] )] < 200
 				}
 			}
 			if( (gameMode[player]==7)&&(anothermode[player] == 2)){
 				if(rkdata3[tmp] < 200){
-				type = 1;//‚Ü‚¾ƒNƒŠƒA‚µ‚Ä‚È‚¢‚©‚çƒf[ƒ^‚ğ•\¦
+				type = 1;//ã¾ã ã‚¯ãƒªã‚¢ã—ã¦ãªã„ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
 				}else{
 				type = 0;
 				}
 			}
-			if(type==1){//ƒ^ƒCƒ€‚©ƒf[ƒ^‚©H
+			if(type==1){//ã‚¿ã‚¤ãƒ ã‹ãƒ‡ãƒ¼ã‚¿ã‹ï¼Ÿ
 				printFont(x, y-1, "BEST SCORE", fontc[rots[player]]);
 				sprintf(string[0], "%d", rkdata3[tmp]);
 				printFont(x+3, y, "LINES", fontc[rots[player]]);
@@ -758,7 +758,7 @@ void viewbesttime3(int player,int x,int y,int type){
 			printFont(x, y, string[0], color[player]);
 	}
 }
-int viewgrade(int player){//masterƒ‚[ƒh‚Ìgrade4‚Ì’iˆÊ‚ğŒ©‚é
+int viewgrade(int player){//masterãƒ¢ãƒ¼ãƒ‰ã®grade4ã®æ®µä½ã‚’è¦‹ã‚‹
 	int	tmp,color[2],cat[2],ex[2];
 	if(ranking_type<2){
 	return 0;

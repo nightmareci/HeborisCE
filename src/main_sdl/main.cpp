@@ -1,18 +1,18 @@
 #include "include.h"
 #include "gamestart.h"
 
-bool PollEvent(); // �C�x���g����
+bool PollEvent(); // イベント処理
 
 int main(int argc, char* argv[])
 {
-	/* SDL�̏����� */
+	/* SDLの初期化 */
 	if ( SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 )
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
 
-	/* �T�E���h�̏����� */
+	/* サウンドの初期化 */
 	Mix_Init(
 		MIX_INIT_FLAC |
 		MIX_INIT_MOD |

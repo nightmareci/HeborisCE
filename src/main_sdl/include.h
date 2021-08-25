@@ -8,19 +8,9 @@
 #include <ctime>
 #include <cstdint>
 
-#if		SDL_USE_OPENGL
-#include "SDL_opengl.h"
-#include "opengl_utils.h"
-#endif
-
-#define		HEBORIS_SDL					1
 #define		EXTRA_EFFECT_ENABLE			0
 
-#if		SDL_USE_OPENGL
-#define		FRAMEWORK_NAME		"GL"
-#else
 #define		FRAMEWORK_NAME		"SDL2"
-#endif
 
 #if		defined(WIN32)
 #define		FRAMEWORK_VER		"WIN-" FRAMEWORK_NAME

@@ -1,6 +1,6 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒ‰ƒ“ƒLƒ“ƒOŠÖ˜A
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ©ãƒ³ã‚­ãƒ³ã‚°é–¢é€£
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void RankingInit(void) {
 	int	i, j;
 
@@ -42,19 +42,19 @@ void RankingConvert(void) {
 	}
 }
 
-// ‰½ˆÊ‚É“ü‚é‚©ƒ`ƒFƒbƒNiƒ‰ƒ“ƒNŠO‚È‚ç-1j
-// •Ï”end’Ç‰Á #1.60c7k3
+// ä½•ä½ã«å…¥ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆãƒ©ãƒ³ã‚¯å¤–ãªã‚‰-1ï¼‰
+// å¤‰æ•°endè¿½åŠ  #1.60c7k3
 int RankingCheck(int rmode, int rtt, int rsc, int rtime, int rlv, int end) {
 	int		i, j, rank;
 
-	if(rmode >= 4) return -1;	// ’Êí‚Å‚È‚¢ƒ‚[ƒh‚Å‚Íƒ‰ƒ“ƒLƒ“ƒO‚È‚µ#1.60c7l5
+	if(rmode >= 4) return -1;	// é€šå¸¸ã§ãªã„ãƒ¢ãƒ¼ãƒ‰ã§ã¯ãƒ©ãƒ³ã‚­ãƒ³ã‚°ãªã—#1.60c7l5
 
 	j = rmode * 10 +rtt * 5;
 	rank = -1;
 
 	if(rtt) {
 		for(i = 0; i < 5; i++) {
-			// Š®‘SƒNƒŠƒAƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚çãˆÊ‚É—ˆ‚é #1.60c7k3
+			// å®Œå…¨ã‚¯ãƒªã‚¢ãƒ•ãƒ©ã‚°ãŒç«‹ã£ã¦ã„ãŸã‚‰ä¸Šä½ã«æ¥ã‚‹ #1.60c7k3
 			if( (end >= rkfl[j+ i]) && ((rlv > rklv[j+ i]) ||
 				 (rlv == rklv[j+ i])&&(rtime < rktime[j+ i])) ) {
 				rank = i;
@@ -187,9 +187,9 @@ int RankingView(void) {
 
 	KeyInput();
 
-	domirror = 0;	// ‹¾‘œ‚ğ–³Œø‰»
+	domirror = 0;	// é¡åƒã‚’ç„¡åŠ¹åŒ–
 
-	// ”wŒi•`‰æ
+	// èƒŒæ™¯æç”»
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			ExBltFastRect(4 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
@@ -211,7 +211,7 @@ int RankingView(void) {
 	else
 		printFont(11, 3, "-  DEVIL MODE   -", 3);
 
-	// ŠÈˆÕƒZƒŒƒNƒg‚Å‚Í•\¦‚µ‚È‚¢#1.60c7i6
+	// ç°¡æ˜“ã‚»ãƒ¬ã‚¯ãƒˆã§ã¯è¡¨ç¤ºã—ãªã„#1.60c7i6
 	if(!mini_select) {
 		if(rankingmode)
 			printFont(11, 4, "TIME TRIAL RANKING", category);
@@ -238,21 +238,21 @@ int RankingView(void) {
 		if(xxx < 2) xxx = 2;
 		if(i % 2 == 1) xxx = 4 - xxx;
 
-		// ƒIƒŒƒ“ƒW‚É•\¦‚³‚ê‚éƒ‰ƒ“ƒLƒ“ƒO‚ğ‚Æ‚è‚ ‚¦‚¸“±“ü#1.60c7f5
+		// ã‚ªãƒ¬ãƒ³ã‚¸ã«è¡¨ç¤ºã•ã‚Œã‚‹ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’ã¨ã‚Šã‚ãˆãšå°å…¥#1.60c7f5
 		if(rkfl[category * 10 + rankingmode * 5 + i]) {
-			// Š®‘SƒNƒŠƒA‚µ‚½ê‡
+			// å®Œå…¨ã‚¯ãƒªã‚¢ã—ãŸå ´åˆ
 			col = 7;
 		} else if(((category == 0) && (rklv[category * 10 + rankingmode * 5 + i] == 200)) ||
 				  ((category == 3) && (rklv[category * 10 + rankingmode * 5 + i] == 1300)) ||
 				  (((category == 1) || (category == 2)) && (rklv[category * 10 + rankingmode * 5 + i] == 999))) {
-			// ƒ[ƒ‹“r’†‚Å’‚‘§‚µ‚½ê‡
+			// ãƒ­ãƒ¼ãƒ«é€”ä¸­ã§çª’æ¯ã—ãŸå ´åˆ
 			if(rankingmode) {
 				col = 4;
 			} else {
 				col = 0;
 			}
 		} else {
-			// –¢ƒJƒ“ƒXƒg
+			// æœªã‚«ãƒ³ã‚¹ãƒˆ
 			col = 0;
 		}
 
@@ -287,9 +287,9 @@ int RankingSave(void) {
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
-	// ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg (4byte’PˆÊ)
-	//   0`    3 ƒwƒbƒ_
-	// 300`44299 ƒŠƒvƒŒƒCƒf[ƒ^
+	// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ (4byteå˜ä½)
+	//   0ã€œ    3 ãƒ˜ãƒƒãƒ€
+	// 300ã€œ44299 ãƒªãƒ—ãƒ¬ã‚¤ãƒ‡ãƒ¼ã‚¿
 
 	saveBuf[0] = 0x4F424548;
 	saveBuf[1] = 0x20534952;

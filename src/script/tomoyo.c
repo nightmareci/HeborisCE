@@ -1,30 +1,30 @@
-/* TOMOYOƒ‚[ƒh‚Å‚Ì•”•ª“I‰Šú‰»ˆ— #1.60c7l8 */
+/* TOMOYOãƒ¢ãƒ¼ãƒ‰ã§ã®éƒ¨åˆ†çš„åˆæœŸåŒ–å‡¦ç† #1.60c7l8 */
 void tomoyoInitial(int player) {
 	int sbak[20];
 
-	// ‰Šú‰»‚³‚ê‚Ä‚Í¢‚é‚à‚Ì‚ğƒoƒbƒNƒAƒbƒv‚ÉƒRƒs[
-	sbak[0]  = stage[player];	// ƒXƒe[ƒW
-	sbak[1]  = ltime[player];	// ƒŠƒ~ƒbƒgƒ^ƒCƒ€
-	sbak[2]  = nextc[player];	// NEXTƒJƒEƒ“ƒg
-	sbak[3]  = next[player];		// NEXTƒuƒƒbƒN
-	sbak[4]  = time[player];		// ƒ^ƒCƒ€
-	sbak[5]  = clearnum[player];	// ƒNƒŠƒAƒXƒe[ƒW”
-	sbak[6]  = clearp[player];	// ƒNƒŠƒA—¦
-	sbak[7]  = replay_save[player];	// ‹L˜^‰Â”\ƒtƒ‰ƒO
-	sbak[8]  = time2[player];		// TOMOYOƒŠƒvƒŒƒC—pƒvƒŒƒCƒ^ƒCƒ€
+	// åˆæœŸåŒ–ã•ã‚Œã¦ã¯å›°ã‚‹ã‚‚ã®ã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã«ã‚³ãƒ”ãƒ¼
+	sbak[0]  = stage[player];	// ã‚¹ãƒ†ãƒ¼ã‚¸
+	sbak[1]  = ltime[player];	// ãƒªãƒŸãƒƒãƒˆã‚¿ã‚¤ãƒ 
+	sbak[2]  = nextc[player];	// NEXTã‚«ã‚¦ãƒ³ãƒˆ
+	sbak[3]  = next[player];		// NEXTãƒ–ãƒ­ãƒƒã‚¯
+	sbak[4]  = time[player];		// ã‚¿ã‚¤ãƒ 
+	sbak[5]  = clearnum[player];	// ã‚¯ãƒªã‚¢ã‚¹ãƒ†ãƒ¼ã‚¸æ•°
+	sbak[6]  = clearp[player];	// ã‚¯ãƒªã‚¢ç‡
+	sbak[7]  = replay_save[player];	// è¨˜éŒ²å¯èƒ½ãƒ•ãƒ©ã‚°
+	sbak[8]  = time2[player];		// TOMOYOãƒªãƒ—ãƒ¬ã‚¤ç”¨ãƒ—ãƒ¬ã‚¤ã‚¿ã‚¤ãƒ 
 	sbak[9]  = bgmlv;			// BGM
-	sbak[10] = t_training[player];	// ƒgƒŒ[ƒjƒ“ƒOƒ‚[ƒh
-	sbak[11] = repversw;	//‚±‚ê‚ğ‰Šú‰»‚³‚ê‚Ä‚Íƒ~ƒ‰[‚ª‚¸‚ê‚é c7t3.1
+	sbak[10] = t_training[player];	// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°ãƒ¢ãƒ¼ãƒ‰
+	sbak[11] = repversw;	//ã“ã‚Œã‚’åˆæœŸåŒ–ã•ã‚Œã¦ã¯ãƒŸãƒ©ãƒ¼ãŒãšã‚Œã‚‹ c7t3.1
 	sbak[12] = tomoyo_opt[player];
-	sbak[13] = laststage[player];	//‚±‚ê‚ğ‰Šú‰»‚³‚ê‚é‚ÆEHAACE-TGT‚ÌÅIƒXƒe[ƒW‚ª³‚µ‚­İ’è‚³‚ê‚È‚¢ c7T3.2
-	sbak[14] = sc[player];		// F-Point‚ÌƒXƒRƒA
-	sbak[15] = fpbas_mode[player];  //FPƒGƒ“ƒhƒŒƒXƒ‚[ƒh
-	sbak[16] = lv[player];		//FP—pƒŒƒxƒ‹(ˆê‰‘S‚ÄƒL[ƒv)
+	sbak[13] = laststage[player];	//ã“ã‚Œã‚’åˆæœŸåŒ–ã•ã‚Œã‚‹ã¨EHã€ACE-TGTã®æœ€çµ‚ã‚¹ãƒ†ãƒ¼ã‚¸ãŒæ­£ã—ãè¨­å®šã•ã‚Œãªã„ c7T3.2
+	sbak[14] = sc[player];		// F-Pointã®ã‚¹ã‚³ã‚¢
+	sbak[15] = fpbas_mode[player];  //FPã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹ãƒ¢ãƒ¼ãƒ‰
+	sbak[16] = lv[player];		//FPç”¨ãƒ¬ãƒ™ãƒ«(ä¸€å¿œå…¨ã¦ã‚­ãƒ¼ãƒ—)
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	playerInitial(player);
 
-	// ‰Šú‰»‚³‚ê‚Ä‚Í¢‚é‚à‚Ì‚ğƒoƒbƒNƒAƒbƒv‚©‚ç–ß‚·
+	// åˆæœŸåŒ–ã•ã‚Œã¦ã¯å›°ã‚‹ã‚‚ã®ã‚’ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‹ã‚‰æˆ»ã™
 	stage[player]       = sbak[0];
 	ltime[player]       = sbak[1];
 	nextc[player]       = sbak[2];
@@ -43,26 +43,26 @@ void tomoyoInitial(int player) {
 	fpbas_mode[player]  = sbak[15];
 
 	if((tomoyo_opt[player]==4)&&(fpbas_mode[player])){
-		lv[player] = sbak[16];	//FPBASIC‚¾‚¯–ß‚·‘¼‚Ìƒ‚[ƒh‚Í‰Šú‰»
+		lv[player] = sbak[16];	//FPBASICã ã‘æˆ»ã™ä»–ã®ãƒ¢ãƒ¼ãƒ‰ã¯åˆæœŸåŒ–
 	}
 
 	backno = 0;
 
-	// ‰ŠúƒXƒs[ƒh’l‚Æ‰Šúwait’l“Ç‚İ‚İ #1.60c7m2
+	// åˆæœŸã‚¹ãƒ”ãƒ¼ãƒ‰å€¤ã¨åˆæœŸwaitå€¤èª­ã¿è¾¼ã¿ #1.60c7m2
 	setStartLevel(player);
 
-	// NEXTƒuƒƒbƒN‚ÌF‚ğİ’è #1.60c7n1
+	// NEXTãƒ–ãƒ­ãƒƒã‚¯ã®è‰²ã‚’è¨­å®š #1.60c7n1
 	setNextBlockColors(player, 1);
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.17 - TOMOYOƒ‚[ƒh ƒXƒe[ƒWƒNƒŠƒA^ƒ^ƒCƒ€ƒI[ƒo[
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.17 - TOMOYOãƒ¢ãƒ¼ãƒ‰ ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¯ãƒªã‚¢ï¼ã‚¿ã‚¤ãƒ ã‚ªãƒ¼ãƒãƒ¼
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void statTomoyoNextStage(int player) {
-	int i, j, ext, timelimit_tomoyo;	//laststage[player]‚Ígamestart‚Ö
+	int i, j, ext, timelimit_tomoyo;	//laststage[player]ã¯gamestartã¸
 	int ltime_s[2],Stage_update;
 	ext = 0;
-	timelimit_tomoyo = 320*60;	//EX7‚Ö‚Ì‘«Ø‚è
+	timelimit_tomoyo = 320*60;	//EX7ã¸ã®è¶³åˆ‡ã‚Š
 
 	statc[player * 10 + 0]++;
 
@@ -72,11 +72,11 @@ void statTomoyoNextStage(int player) {
 	iscolor[player] = 0;		// #1.60c7p9ex
 	Stage_update = 0;
 
-	// EX–Ê“Ë“ü‘O‚ÉBGM‚ğÁ‚· #1.60c7o8
+	// EXé¢çªå…¥å‰ã«BGMã‚’æ¶ˆã™ #1.60c7o8
 	if( (stage[player] == 19) && (!t_training[player]) ) {
 		StopAllBGM();
 		fadelv[player] = 0;
-		bgmlv = 9;		// EX–ÊBGM
+		bgmlv = 9;		// EXé¢BGM
 	}
 	if( (stage[player] == 43) && (!t_training[player]) ) {
 		StopAllBGM();
@@ -91,7 +91,7 @@ void statTomoyoNextStage(int player) {
 	// STAGE XX
 	printFont(16-(1*((stage[player] >= 45) && (stage[player] <= 67) || (stage[player] >= 100)))-(1*((stage[player] >= 36) && (stage[player] <= 44))) + 24 * player - 12 * maxPlay, 6, "STAGE", 4);
 
-	// 21–ÊˆÈ~‚ÍEX›‚Æ•\¦ #1.60c7m4
+	// 21é¢ä»¥é™ã¯EXâ—‹ã¨è¡¨ç¤º #1.60c7m4
 	if( (stage[player] >= 20) && (stage[player] <= 26) ) {
 		sprintf(string[0],"EX%d",stage[player] - 19);
 	} else if( (stage[player] >= 27) && (stage[player] <= 44) ){
@@ -117,9 +117,9 @@ void statTomoyoNextStage(int player) {
 	} else {
 		printFont(17 + 24 * player - 12 * maxPlay, 8, "SKIPED", 0);
 		if((stage[player] >= 0) && (stage[player] <= 26)){
-		recFaultTime(player);//ƒXƒe[ƒWNOTƒ‰ƒ“ƒLƒ“ƒO—pƒ^ƒCƒ€
+		recFaultTime(player);//ã‚¹ãƒ†ãƒ¼ã‚¸NOTãƒ©ãƒ³ã‚­ãƒ³ã‚°ç”¨ã‚¿ã‚¤ãƒ 
 		}
-		// ƒŠƒvƒŒƒC‹L˜^•s‰Â”\‚É‚È‚Á‚½–‚ğ•\¦ #1.60c7n8
+		// ãƒªãƒ—ãƒ¬ã‚¤è¨˜éŒ²ä¸å¯èƒ½ã«ãªã£ãŸäº‹ã‚’è¡¨ç¤º #1.60c7n8
 		printFont(15 + 24 * player - 12 * maxPlay, 13, "THIS PLAY", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 14, "  CAN'T BE", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "     SAVED", 2);
@@ -127,14 +127,14 @@ void statTomoyoNextStage(int player) {
 
 	if(sclear[player]) {
 		if(statc[player * 10 + 0] == 1){
-		for(i = 0; i < 10; i++)	//ƒtƒB[ƒ‹ƒhÁ‹ C7T3.2
+		for(i = 0; i < 10; i++)	//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰æ¶ˆå» C7T3.2
 			for(j = 0; j < 22; j++) {
 				fld[i + j * 10 + player * 220] = 0;
 				fldt[i + j * 10 + player * 220] = 0;
 				fldi[i + j * 10 + player * 220] = 0;
 			}
 		}
-		// ‰Ô‰Î
+		// èŠ±ç«
 		if((statc[player * 10 + 0] % 10 == 0) && (tomoyo_hanabi[player] < 10)) {
 			PlaySE(35);
 			objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + Rand(20), 0, 0, Rand(7)+1, 0);
@@ -144,7 +144,7 @@ void statTomoyoNextStage(int player) {
 			// TIME EXTEND
 			printSMALLFont( (15 + 24 * player - 12 * maxPlay)*8 + 8, 13*8, "Time Extend", 3 );
 
-			// ƒŠƒ~ƒbƒgƒ^ƒCƒ€‘‰Á—Ê‚ğŒˆ‚ß‚é
+			// ãƒªãƒŸãƒƒãƒˆã‚¿ã‚¤ãƒ å¢—åŠ é‡ã‚’æ±ºã‚ã‚‹
 			if(ctime[player] < 10 * 60) {
 				ext = 10;
 			}else if(ctime[player] < 20 * 60) {
@@ -193,18 +193,18 @@ void statTomoyoNextStage(int player) {
 		printSMALLFont( (15 + 24 * player - 12 * maxPlay)*8 + 8, 20*8 + 1, string[0], 0);
 	}
 
-	// ƒNƒŠƒA—¦ŒvZ
+	// ã‚¯ãƒªã‚¢ç‡è¨ˆç®—
 	if(!t_training[player]) clearp[player] = ((clearnum[player]*100) / (stage[player] + 1 - 27 *(start_stage[player] >= 27) ));
 
-	// ƒ{ƒ^ƒ“‚ğ‰Ÿ‚·‚Æ‘‚­Ÿ‚ÌƒXƒe[ƒW‚Ö
+	// ãƒœã‚¿ãƒ³ã‚’æŠ¼ã™ã¨æ—©ãæ¬¡ã®ã‚¹ãƒ†ãƒ¼ã‚¸ã¸
 	if( getPushState(player, 4) ) {
 		statc[player * 10 + 0] = 300;
 	}
 
-	// Ÿ‚ÌƒXƒe[ƒW
+	// æ¬¡ã®ã‚¹ãƒ†ãƒ¼ã‚¸
 	if(statc[player * 10 + 0] >= 300) {
 		if(start_stage[player] >= 27) {
-			// ©ì–Ê #1.60c7r6
+			// è‡ªä½œé¢ #1.60c7r6
 			if((start_stage[player] >= 27) && (start_stage[player] < 45))
 				laststage[player] = 44;	// H-Heart
 			else if((start_stage[player] >= 45) && (start_stage[player] < 72))
@@ -214,47 +214,47 @@ void statTomoyoNextStage(int player) {
 			else
 				laststage[player] = 199;// F-Point
 		} else if(t_noborder[player]) {
-			// ‘«Ø‚è‚È‚µƒ‚[ƒh‚Ìê‡‚Íí‚Éƒ‰ƒXƒgƒXƒe[ƒW‚ğEX7‚É‚·‚é #1.60c7m5
+			// è¶³åˆ‡ã‚Šãªã—ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯å¸¸ã«ãƒ©ã‚¹ãƒˆã‚¹ãƒ†ãƒ¼ã‚¸ã‚’EX7ã«ã™ã‚‹ #1.60c7m5
 			laststage[player] = 26;
 		} else {
-			/* ƒNƒŠƒA—¦‚Åƒ‰ƒXƒgƒXƒe[ƒW‚ğŒˆ’è‚·‚é */
+			/* ã‚¯ãƒªã‚¢ç‡ã§ãƒ©ã‚¹ãƒˆã‚¹ãƒ†ãƒ¼ã‚¸ã‚’æ±ºå®šã™ã‚‹ */
 			if(clearp[player] < 90) {
-				// 90%ˆÈ‰º‚ÍEX‚È‚µiƒ‰ƒXƒgƒXƒe[ƒW‚Í20j
+				// 90%ä»¥ä¸‹ã¯EXãªã—ï¼ˆãƒ©ã‚¹ãƒˆã‚¹ãƒ†ãƒ¼ã‚¸ã¯20ï¼‰
 				laststage[player] = 19;
 			} else if(clearp[player] < 100) {
-				// 90`99%‚ÍEX3‚Ü‚Å
+				// 90ã€œ99%ã¯EX3ã¾ã§
 				laststage[player] = 22;
 			} else if((clearp[player] == 100)&(stage[player]==19)){
-				// 100%‚Ìê‡‚ÍƒXƒe[ƒW20‚Ü‚Å‚Ìƒ^ƒCƒ€‚ÅŒˆ‚ß‚é
+				// 100%ã®å ´åˆã¯ã‚¹ãƒ†ãƒ¼ã‚¸20ã¾ã§ã®ã‚¿ã‚¤ãƒ ã§æ±ºã‚ã‚‹
 				if (time[player] < timelimit_tomoyo) {
-					// 5•ªˆÈ“à‚È‚çÅŒã‚Ü‚Å
+					// 5åˆ†ä»¥å†…ãªã‚‰æœ€å¾Œã¾ã§
 					laststage[player] = 26;
-					//EX7s‚«‚ªŒˆ‚Ü‚ê‚Î—¬‚ê¯
+					//EX7è¡ŒããŒæ±ºã¾ã‚Œã°æµã‚Œæ˜Ÿ
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 					PlaySE(43);
 				}else {
-					// 5•ª’´‚¦‚Ä‚¢‚éê‡‚ÍEX5
+					// 5åˆ†è¶…ãˆã¦ã„ã‚‹å ´åˆã¯EX5
 					laststage[player] = 24;
 				}
 			}
 		}
-		// ƒŠƒ~ƒbƒgƒ^ƒCƒ€‘‰Á
+		// ãƒªãƒŸãƒƒãƒˆã‚¿ã‚¤ãƒ å¢—åŠ 
 		ltime[player] = ltime[player] + (ext * 60);
 
 		if(stage[player] >= 100)
 			sc[player] = sc[player] + FP_bonus[player];
 
-		if( stage[player] == 19 ) ltime[player] = ltime[player] + (60 * 60);	// 20–ÊƒNƒŠƒA‚Å1•ª‘‰Á #1.60c7l9
+		if( stage[player] == 19 ) ltime[player] = ltime[player] + (60 * 60);	// 20é¢ã‚¯ãƒªã‚¢ã§1åˆ†å¢—åŠ  #1.60c7l9
 
 		if( !t_training[player] ) {
-			stage[player]++;	// ƒgƒŒ[ƒjƒ“ƒO‚Å‚È‚¢‚È‚çŸ‚ÌƒXƒe[ƒW‚Ö
+			stage[player]++;	// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°ã§ãªã„ãªã‚‰æ¬¡ã®ã‚¹ãƒ†ãƒ¼ã‚¸ã¸
 		}
-		// ƒgƒŒ[ƒjƒ“ƒOB‚Å‚ÍNEXTC‚ğŠJn‚É–ß‚· #1.60c7o8
+		// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°Bã§ã¯NEXTCã‚’é–‹å§‹æ™‚ã«æˆ»ã™ #1.60c7o8
 		if( t_training[player] == 2 ) {
 			nextc[player] = stage_nextc[player];
 			next[player] = nextb[nextc[player] + player * 1400];
 		}
-		// ‰Šú‰»
+		// åˆæœŸåŒ–
 		tomoyoInitial(player);
 		if((fpbas_mode[player]) || (repversw < 58)){
 			if(lv[player] >= 7)lv[player] = 6;
@@ -262,10 +262,10 @@ void statTomoyoNextStage(int player) {
 			sp[player] = lvTabletomoyohebo[lv[player]];
 		}
 		stat[player] = 3;					// Ready
-		statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+		statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 		statc[player * 10 + 1] = 0;			//
 		if((stage[player] >= 100) && (!t_training[player])){
-			stat[player] = 36;				// F-PointƒZƒŒƒNƒg
+			stat[player] = 36;				// F-Pointã‚»ãƒ¬ã‚¯ãƒˆ
 			statc[player * 10] = 1;
 			statc[player * 10 + 1] = 0;
 			statc[player * 10 + 2] = 0;
@@ -273,8 +273,8 @@ void statTomoyoNextStage(int player) {
 		}
 
 		if( (stage[player] > laststage[player]) && (!t_training[player])) {
-			// ƒ‰ƒXƒgƒXƒe[ƒWƒNƒŠƒA‚ÅƒGƒ“ƒfƒBƒ“ƒO
-			// ‚½‚¾‚µƒgƒŒ[ƒjƒ“ƒO‚Å‚Í–³‚µ #1.60c7o7
+			// ãƒ©ã‚¹ãƒˆã‚¹ãƒ†ãƒ¼ã‚¸ã‚¯ãƒªã‚¢ã§ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°
+			// ãŸã ã—ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°ã§ã¯ç„¡ã— #1.60c7o7
 			PlayWave(28);
 			stage[player] = laststage[player];
 			ending[player] = 1;
@@ -283,25 +283,25 @@ void statTomoyoNextStage(int player) {
 				sc[player] = sc[player] + 100000;
 			end_f[player] = 1 + (stage[player] >= 26);
 		} else {
-			stage_nextc[player] = nextc[player];	// ƒXƒe[ƒWƒXƒ^[ƒg‚ÌNEXTC‚ğ‹L‰¯ #1.60c7l9
+			stage_nextc[player] = nextc[player];	// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¹ã‚¿ãƒ¼ãƒˆæ™‚ã®NEXTCã‚’è¨˜æ†¶ #1.60c7l9
 		}
 	}
 }
 
-// ƒXƒe[ƒWƒNƒŠƒA”»’è #1.60c7l8
+// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¯ãƒªã‚¢åˆ¤å®š #1.60c7l8
 void tomoyoCheckStageClear(int player) {
 	if(gameMode[player] == 6) {
-		// c‚èƒvƒ‰ƒ`ƒiƒuƒƒbƒN”‚ğ”‚¦‚é
+		// æ®‹ã‚Šãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯æ•°ã‚’æ•°ãˆã‚‹
 		rest_pblock[player] = getPlatinumBlock(player);
 
-		// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚ª0ŒÂ‚È‚çƒNƒŠƒAƒtƒ‰ƒOON
+		// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ãŒ0å€‹ãªã‚‰ã‚¯ãƒªã‚¢ãƒ•ãƒ©ã‚°ON
 		if( (!rest_pblock[player]) && (!sclear[player]) ) {
 			sclear[player] = 1;
 		}
 	}
 }
 
-// ƒtƒB[ƒ‹ƒh“à‚Éc‚Á‚Ä‚¢‚éƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚Ì”‚ğ”‚¦‚é
+// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å†…ã«æ®‹ã£ã¦ã„ã‚‹ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ã®æ•°ã‚’æ•°ãˆã‚‹
 int getPlatinumBlock(int player) {
 	int i, j, result;
 	result = 0;
@@ -312,7 +312,7 @@ int getPlatinumBlock(int player) {
 				result++;
 			}
 		}
-	if(tomoyo_rise[player]){	//‚¹‚è‚ ‚ª‚è‚ªON‚È‚çA‚Ü‚¾‚¹‚èã‚ª‚Á‚Ä‚¢‚È‚¢•”•ª‚àƒJƒEƒ“ƒg
+	if(tomoyo_rise[player]){	//ã›ã‚Šã‚ãŒã‚ŠãŒONãªã‚‰ã€ã¾ã ã›ã‚Šä¸ŠãŒã£ã¦ã„ãªã„éƒ¨åˆ†ã‚‚ã‚«ã‚¦ãƒ³ãƒˆ
 		for(i = 0; i < 10; i++)
 			for(j = upLineNo[player]; j <= 20; j++) {
 				if(tomoyo_rise_fld[i + j * 10 + player * 200] >= 11)
@@ -322,20 +322,20 @@ int getPlatinumBlock(int player) {
 	return result;
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.18 - TOMOYOƒ‚[ƒh ƒXƒe[ƒWƒGƒfƒBƒ^
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// statc[player * 10]     : ƒJ[ƒ\ƒ‹ˆÊ’u
-// statc[player * 10 + 1] : ƒƒjƒ…[^ƒtƒB[ƒ‹ƒh
-// statc[player * 10 + 2] : –ß‚èæƒXƒe[ƒ^ƒX
-// statc[player * 10 + 3] : ƒtƒB[ƒ‹ƒh‰æ–Ê‚É“ü‚Á‚½uŠÔƒuƒƒbƒN‚ğ’u‚¢‚Ä‚µ‚Ü‚¤‚Ì‚ğ–h‚®ƒtƒ‰ƒO
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.18 - TOMOYOãƒ¢ãƒ¼ãƒ‰ ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¨ãƒ‡ã‚£ã‚¿
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// statc[player * 10]     : ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®
+// statc[player * 10 + 1] : ãƒ¡ãƒ‹ãƒ¥ãƒ¼ï¼ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
+// statc[player * 10 + 2] : æˆ»ã‚Šå…ˆã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+// statc[player * 10 + 3] : ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç”»é¢ã«å…¥ã£ãŸç¬é–“ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç½®ã„ã¦ã—ã¾ã†ã®ã‚’é˜²ããƒ•ãƒ©ã‚°
 void statTomoyoEditor(int player) {
 	int tmp, bx1, by1;
 
 	padRepeat(player);
 	padRepeat2(player);
 
-	/* ¡ƒƒjƒ…[‰æ–Ê¡ */
+	/* â– ãƒ¡ãƒ‹ãƒ¥ãƒ¼ç”»é¢â–  */
 	if( statc[player * 10 + 1] == 0 ) {
 		printFont(15 + 24 * player - 12 * maxPlay, 8 + statc[player * 10] +(1*(statc[player * 10] >= 13)) , "b", 1);
 
@@ -366,7 +366,7 @@ void statTomoyoEditor(int player) {
 		printFont(16 + 24 * player - 12 * maxPlay,22, " [LOAD]",     (statc[player * 10] == 13) );
 		printFont(16 + 24 * player - 12 * maxPlay,23, " [SAVE]",     (statc[player * 10] == 14) );
 
-		// ª
+		// â†‘
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 0) ) {
 			PlayWave(5);
@@ -374,7 +374,7 @@ void statTomoyoEditor(int player) {
 			if(statc[player * 10] < 0) statc[player * 10] = 14;
 		}
 
-		// «
+		// â†“
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 1) ) {
 			PlayWave(5);
@@ -382,7 +382,7 @@ void statTomoyoEditor(int player) {
 			if(statc[player * 10] > 14) statc[player * 10] = 0;
 		}
 
-		// ©
+		// â†
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 		if(getPressState(player, 2)) {
 			PlayWave(3);
@@ -416,7 +416,7 @@ void statTomoyoEditor(int player) {
 			if(statc[player * 10] == 7) {
 				blind_flag[player] = !blind_flag[player];
 			}
-			// Å’á‘¬“x
+			// æœ€ä½é€Ÿåº¦
 			if(statc[player * 10] == 8) {
 				min_speed[player]--;
 				if(min_speed[player] < 0) min_speed[player] = 1200;
@@ -436,7 +436,7 @@ void statTomoyoEditor(int player) {
 			}
 		}
 
-		// ¨
+		// â†’
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 		if(getPressState(player, 3)) {
 			PlayWave(3);
@@ -488,7 +488,7 @@ void statTomoyoEditor(int player) {
 			}
 		}
 
-		// Aƒ{ƒ^ƒ“
+		// Aãƒœã‚¿ãƒ³
 		if( getPushState(player, 4) ) {
 			PlayWave(10);
 
@@ -498,21 +498,21 @@ void statTomoyoEditor(int player) {
 			}
 			// FIELD
 			if(statc[player * 10] == 1) {
-				bx[player] = 0;					// XÀ•W
-				by[player] = 1;					// YÀ•W
-				blk[player] = 0;				// ”z’u‚·‚éƒuƒƒbƒN
-				statc[player * 10 + 1] = 1;		// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ1‚É‚µ‚ÄƒtƒB[ƒ‹ƒh‰æ–Ê‚Ö
-				statc[player * 10 + 3] = 1;		// ‚»‚Ì‚Ü‚Ü‚¾‚Æ‰æ–Ê‚ªØ‚è‘Ö‚í‚Á‚½uŠÔAƒuƒƒbƒN‚ğ”z’u‚µ‚Ä‚µ‚Ü‚¤‚Ì‚Å
-												// ‚»‚ê‚ğ‰ñ”ğ‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
+				bx[player] = 0;					// Xåº§æ¨™
+				by[player] = 1;					// Yåº§æ¨™
+				blk[player] = 0;				// é…ç½®ã™ã‚‹ãƒ–ãƒ­ãƒƒã‚¯
+				statc[player * 10 + 1] = 1;		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’1ã«ã—ã¦ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç”»é¢ã¸
+				statc[player * 10 + 3] = 1;		// ãã®ã¾ã¾ã ã¨ç”»é¢ãŒåˆ‡ã‚Šæ›¿ã‚ã£ãŸç¬é–“ã€ãƒ–ãƒ­ãƒƒã‚¯ã‚’é…ç½®ã—ã¦ã—ã¾ã†ã®ã§
+												// ãã‚Œã‚’å›é¿ã™ã‚‹ãŸã‚ã®ãƒ•ãƒ©ã‚°
 			}
 			// RISE
 			if(statc[player * 10] == 12) {
-				bx[player] = 0;					// XÀ•W
-				by[player] = 1;					// YÀ•W
-				blk[player] = 0;				// ”z’u‚·‚éƒuƒƒbƒN
-				statc[player * 10 + 1] = 2;		// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ2‚É‚µ‚Ä‚¹‚èã‚ª‚èƒtƒB[ƒ‹ƒh‰æ–Ê‚Ö
-				statc[player * 10 + 3] = 1;		// ‚»‚Ì‚Ü‚Ü‚¾‚Æ‰æ–Ê‚ªØ‚è‘Ö‚í‚Á‚½uŠÔAƒuƒƒbƒN‚ğ”z’u‚µ‚Ä‚µ‚Ü‚¤‚Ì‚Å
-												// ‚»‚ê‚ğ‰ñ”ğ‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
+				bx[player] = 0;					// Xåº§æ¨™
+				by[player] = 1;					// Yåº§æ¨™
+				blk[player] = 0;				// é…ç½®ã™ã‚‹ãƒ–ãƒ­ãƒƒã‚¯
+				statc[player * 10 + 1] = 2;		// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’2ã«ã—ã¦ã›ã‚Šä¸ŠãŒã‚Šãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç”»é¢ã¸
+				statc[player * 10 + 3] = 1;		// ãã®ã¾ã¾ã ã¨ç”»é¢ãŒåˆ‡ã‚Šæ›¿ã‚ã£ãŸç¬é–“ã€ãƒ–ãƒ­ãƒƒã‚¯ã‚’é…ç½®ã—ã¦ã—ã¾ã†ã®ã§
+												// ãã‚Œã‚’å›é¿ã™ã‚‹ãŸã‚ã®ãƒ•ãƒ©ã‚°
 			}
 			// MIRROR
 			if(statc[player * 10] == 2) {
@@ -556,24 +556,24 @@ void statTomoyoEditor(int player) {
 			}
 		}
 
-		// Bƒ{ƒ^ƒ“
+		// Bãƒœã‚¿ãƒ³
 		if( getPushState(player, 5) ) {
-			stat[player] = statc[player * 10 + 2];	// –ß‚èæ‚Ö
-			statc[player * 10] = 0;					// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			stat[player] = statc[player * 10 + 2];	// æˆ»ã‚Šå…ˆã¸
+			statc[player * 10] = 0;					// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 0;				//
 			statc[player * 10 + 2] = 0;
 		}
 
-	/* ¡ƒtƒB[ƒ‹ƒh‰æ–Ê¡ */
+	/* â– ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç”»é¢â–  */
 	} else if( statc[player * 10 + 1] == 1 ){		// FIELD
-		// ƒJ[ƒ\ƒ‹•\¦
+		// ã‚«ãƒ¼ã‚½ãƒ«è¡¨ç¤º
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 3) * 8;
 
 		ExBltFastRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
 		ExBltFastRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
 
-		// ª
+		// â†‘
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 0) ) {
 			PlayWave(5);
@@ -581,7 +581,7 @@ void statTomoyoEditor(int player) {
 			if(by[player] < 1) by[player] = fldsizeh[player];
 		}
 
-		// «
+		// â†“
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 1) ) {
 			PlayWave(5);
@@ -589,41 +589,41 @@ void statTomoyoEditor(int player) {
 			if(by[player] > fldsizeh[player]) by[player] = 1;
 		}
 
-		// ©
+		// â†
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, 2) ) {
 			PlayWave(5);
 
-			// ƒuƒƒbƒN‘I‘ğ
+			// ãƒ–ãƒ­ãƒƒã‚¯é¸æŠ
 			if( getPressState(player, 6) ) {
 				blk[player]--;
 				if(blk[player] < 0) blk[player] = 16;
 			}
-			// ƒJ[ƒ\ƒ‹ˆÚ“®
+			// ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•
 			else {
 				bx[player]--;
 				if(bx[player] < 0) bx[player] = fldsizew[player] - 1;
 			}
 		}
 
-		// ¨
+		// â†’
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, 3) ) {
 			PlayWave(5);
 
-			// ƒuƒƒbƒN‘I‘ğ
+			// ãƒ–ãƒ­ãƒƒã‚¯é¸æŠ
 			if( getPressState(player, 6) ) {
 				blk[player]++;
 				if(blk[player] > 16) blk[player] = 0;
 			}
-			// ƒJ[ƒ\ƒ‹ˆÚ“®
+			// ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•
 			else {
 				bx[player]++;
 				if(bx[player] > fldsizew[player] - 1) bx[player] = 0;
 			}
 		}
 
-		// Aƒ{ƒ^ƒ“‚Å”z’u
+		// Aãƒœã‚¿ãƒ³ã§é…ç½®
 		if( getPressState(player, 4) && !statc[player * 10 + 3] ) {
 			if(fld[bx[player] + by[player] * fldsizew[player] + player * 220] != blk[player] + 1) {
 				PlayWave(3);
@@ -635,7 +635,7 @@ void statTomoyoEditor(int player) {
 			statc[player * 10 + 3] = 0;
 		}
 
-		// HOLDƒ{ƒ^ƒ“‚ÅƒuƒƒbƒNÁ‹
+		// HOLDãƒœã‚¿ãƒ³ã§ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»
 		if( getPressState(player, 7) ) {
 			if(fld[bx[player] + by[player] * fldsizew[player] + player * 220] != 0) {
 				PlayWave(3);
@@ -644,20 +644,20 @@ void statTomoyoEditor(int player) {
 			fldt[bx[player] + by[player] * fldsizew[player] + player * 220] = 0;
 		}
 
-		// Bƒ{ƒ^ƒ“‚Å–ß‚é
+		// Bãƒœã‚¿ãƒ³ã§æˆ»ã‚‹
 		if( getPushState(player, 5) ) {
-			statc[player * 10 + 1] = 0;			// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É‚µ‚Äƒƒjƒ…[‚É–ß‚é
+			statc[player * 10 + 1] = 0;			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«ã—ã¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«æˆ»ã‚‹
 			statc[player * 10 + 3] = 0;
 		}
 	} else if( statc[player * 10 + 1] == 2 ){		// RISE
-		// ƒJ[ƒ\ƒ‹•\¦
+		// ã‚«ãƒ¼ã‚½ãƒ«è¡¨ç¤º
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 4) * 8;
 
 		ExBltFastRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
 		ExBltFastRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
 
-		// ª
+		// â†‘
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 0) ) {
 			PlayWave(5);
@@ -665,7 +665,7 @@ void statTomoyoEditor(int player) {
 			if(by[player] < 1) by[player] = fldsizeh[player];
 		}
 
-		// «
+		// â†“
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 1) ) {
 			PlayWave(5);
@@ -673,41 +673,41 @@ void statTomoyoEditor(int player) {
 			if(by[player] > fldsizeh[player]) by[player] = 1;
 		}
 
-		// ©
+		// â†
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, 2) ) {
 			PlayWave(5);
 
-			// ƒuƒƒbƒN‘I‘ğ
+			// ãƒ–ãƒ­ãƒƒã‚¯é¸æŠ
 			if( getPressState(player, 6) ) {
 				blk[player]--;
 				if(blk[player] < 0) blk[player] = 16;
 			}
-			// ƒJ[ƒ\ƒ‹ˆÚ“®
+			// ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•
 			else {
 				bx[player]--;
 				if(bx[player] < 0) bx[player] = fldsizew[player] - 1;
 			}
 		}
 
-		// ¨
+		// â†’
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, 3) ) {
 			PlayWave(5);
 
-			// ƒuƒƒbƒN‘I‘ğ
+			// ãƒ–ãƒ­ãƒƒã‚¯é¸æŠ
 			if( getPressState(player, 6) ) {
 				blk[player]++;
 				if(blk[player] > 16) blk[player] = 0;
 			}
-			// ƒJ[ƒ\ƒ‹ˆÚ“®
+			// ã‚«ãƒ¼ã‚½ãƒ«ç§»å‹•
 			else {
 				bx[player]++;
 				if(bx[player] > fldsizew[player] - 1) bx[player] = 0;
 			}
 		}
 
-		// Aƒ{ƒ^ƒ“‚Å”z’u
+		// Aãƒœã‚¿ãƒ³ã§é…ç½®
 		if( getPressState(player, 4) && !statc[player * 10 + 3] ) {
 			if(tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] != blk[player] + 1) {
 				PlayWave(3);
@@ -719,7 +719,7 @@ void statTomoyoEditor(int player) {
 			statc[player * 10 + 3] = 0;
 		}
 
-		// HOLDƒ{ƒ^ƒ“‚ÅƒuƒƒbƒNÁ‹
+		// HOLDãƒœã‚¿ãƒ³ã§ãƒ–ãƒ­ãƒƒã‚¯æ¶ˆå»
 		if( getPressState(player, 7) ) {
 			if(tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] != 0) {
 				PlayWave(3);
@@ -728,19 +728,19 @@ void statTomoyoEditor(int player) {
 //			fldt[bx[player] + by[player] * fldsizew[player] + player * 210] = 0;
 		}
 
-		// Bƒ{ƒ^ƒ“‚Å–ß‚é
+		// Bãƒœã‚¿ãƒ³ã§æˆ»ã‚‹
 		if( getPushState(player, 5) ) {
-			statc[player * 10 + 1] = 0;			// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É‚µ‚Äƒƒjƒ…[‚É–ß‚é
+			statc[player * 10 + 1] = 0;			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«ã—ã¦ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã«æˆ»ã‚‹
 			statc[player * 10 + 3] = 0;
 		}
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.19 - TOMOYOƒ‚[ƒh ƒZƒŒƒNƒg‰æ–Ê
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// statc[player * 10]     : ƒJ[ƒ\ƒ‹ˆÊ’u
-// statc[player * 10 + 1] : ƒvƒŒƒC^ƒgƒŒ[ƒjƒ“ƒOA^ƒgƒŒ[ƒjƒ“ƒOB^ƒGƒfƒBƒbƒg
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.19 - TOMOYOãƒ¢ãƒ¼ãƒ‰ ã‚»ãƒ¬ã‚¯ãƒˆç”»é¢
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// statc[player * 10]     : ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®
+// statc[player * 10 + 1] : ãƒ—ãƒ¬ã‚¤ï¼ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°Aï¼ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°Bï¼ã‚¨ãƒ‡ã‚£ãƒƒãƒˆ
 void statTomoyoSelect(int player) {
 	int i;
 
@@ -749,10 +749,10 @@ void statTomoyoSelect(int player) {
 
 	printFont(15 + 24 * player - 12 * maxPlay, 6, "SELECT", 4);
 
-	// ƒXƒe[ƒW”Ô†
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ç•ªå·
 	printFont(15 + 24 * player - 12 * maxPlay, 8, "STAGE", 3);
 
-	// 21–ÊˆÈ~‚ÍEX›‚Æ•\¦ #1.60c7m4
+	// 21é¢ä»¥é™ã¯EXâ—‹ã¨è¡¨ç¤º #1.60c7m4
 	if( (start_stage[player] >= 20) && (start_stage[player] <= 26) ) {
 		sprintf(string[0],"EX%d",start_stage[player] - 19);
 	} else if( (start_stage[player] >= 27) && (start_stage[player] <= 44) ){
@@ -772,7 +772,7 @@ void statTomoyoSelect(int player) {
 	sprintf(string[0],"%d",start_nextc[player]);
 	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0],  (statc[player * 10] == 1) * count % 9 );
 
-	// ƒQ[ƒ€ƒ‚[ƒh
+	// ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰
 	printFont(15 + 24 * player - 12 * maxPlay, 14, "MODE", 3);
 	if(statc[player * 10 + 1] == 0)
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "PLAY", (statc[player * 10] == 2) * count % 9);
@@ -783,22 +783,22 @@ void statTomoyoSelect(int player) {
 	if(statc[player * 10 + 1] == 3)
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "EDIT", (statc[player * 10] == 2) * count % 9);
 
-	// ƒ‰ƒ“ƒ_ƒ€ƒ‚[ƒh #1.60c7l9
-	// DUAL‘Î‰ #1.60c7m1
+	// ãƒ©ãƒ³ãƒ€ãƒ ãƒ¢ãƒ¼ãƒ‰ #1.60c7l9
+	// DUALå¯¾å¿œ #1.60c7m1
 	printFont(15 + 24 * player - 12 * maxPlay, 17, "RANDOM", 3);
 	if(randommode[player])
 		printFont(15 + 24 * player - 12 * maxPlay, 18, "ON", (statc[player * 10] == 3) * count % 9);
 	else
 		printFont(15 + 24 * player - 12 * maxPlay, 18, "OFF", (statc[player * 10] == 3) * count % 9);
 
-	// ‘«Ø‚èON/OFF #1.60c7m5
+	// è¶³åˆ‡ã‚ŠON/OFF #1.60c7m5
 	printFont(15 + 24 * player - 12 * maxPlay, 20, "BORDER", 3);
 	if(t_noborder[player])
 		printFont(15 + 24 * player - 12 * maxPlay, 21, "OFF", (statc[player * 10] == 4) * count % 9);
 	else
 		printFont(15 + 24 * player - 12 * maxPlay, 21, "ON", (statc[player * 10] == 4) * count % 9);
 
-	// ª
+	// â†‘
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 0) ) {
 		PlayWave(5);
@@ -806,7 +806,7 @@ void statTomoyoSelect(int player) {
 		if(statc[player * 10] < 0) statc[player * 10] = 4;
 	}
 
-	// «
+	// â†“
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 1) ) {
 		PlayWave(5);
@@ -814,23 +814,23 @@ void statTomoyoSelect(int player) {
 		if(statc[player * 10] > 4) statc[player * 10] = 0;
 	}
 
-	// ©
+	// â†
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 	if( getPressState(player, 2) ) {
 		PlayWave(3);
 
-		// ‰ñ“]–@‘¥
+		// å›è»¢æ³•å‰‡
 		/*
 		if(statc[player * 10] == 0) {
 			rots[player]--;
 			if(rots[player] < 0) rots[player] = 3;
 		}
 		*/
-		// ƒXƒe[ƒW”Ô†
+		// ã‚¹ãƒ†ãƒ¼ã‚¸ç•ªå·
 		if(statc[player * 10] == 0) {
 			start_stage[player]--;
 			if(start_stage[player] < 0) start_stage[player] = 199;
-			// ƒXƒe[ƒWƒf[ƒ^“Ç‚İ‚İ #1.60c7l9
+			// ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿ #1.60c7l9
 			loadTomoyoStage(player, start_stage[player]);
 		}
 		// NEXTC #1.60c7l7
@@ -838,39 +838,39 @@ void statTomoyoSelect(int player) {
 			start_nextc[player]--;
 			if(start_nextc[player] < 0) start_nextc[player] = 1399;
 		}
-		// ƒ‚[ƒh
+		// ãƒ¢ãƒ¼ãƒ‰
 		if(statc[player * 10] == 2) {
 			statc[player * 10 + 1]--;
 			if(statc[player * 10 + 1] < 0) statc[player * 10 + 1] = 3;
 		}
-		// ƒ‰ƒ“ƒ_ƒ€ƒ‚[ƒh #1.60c7l9
+		// ãƒ©ãƒ³ãƒ€ãƒ ãƒ¢ãƒ¼ãƒ‰ #1.60c7l9
 		if(statc[player * 10] == 3) {
 			randommode[player] = !randommode[player];
 			versusInit(player);
 		}
-		// ‘«Ø‚èON/OFF #1.60c7m5
+		// è¶³åˆ‡ã‚ŠON/OFF #1.60c7m5
 		if(statc[player * 10] == 4) {
 			t_noborder[player] = !t_noborder[player];
 		}
 	}
 
-	// ¨
+	// â†’
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 	if( getPressState(player, 3) ) {
 		PlayWave(3);
 
-		// ‰ñ“]–@‘¥
+		// å›è»¢æ³•å‰‡
 		/*
 		if(statc[player * 10] == 0) {
 			rots[player]++;
 			if(rots[player] > 3) rots[player] = 0;
 		}
 		*/
-		// ƒXƒe[ƒW”Ô†
+		// ã‚¹ãƒ†ãƒ¼ã‚¸ç•ªå·
 		if(statc[player * 10] == 0) {
 			start_stage[player]++;
 			if(start_stage[player] > 199) start_stage[player] = 0;
-			// ƒXƒe[ƒWƒf[ƒ^“Ç‚İ‚İ #1.60c7l9
+			// ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿ #1.60c7l9
 			loadTomoyoStage(player, start_stage[player]);
 		}
 		// NEXTC #1.60c7l7
@@ -878,41 +878,41 @@ void statTomoyoSelect(int player) {
 			start_nextc[player]++;
 			if(start_nextc[player] > 1399) start_nextc[player] = 0;
 		}
-		// ƒ‚[ƒh
+		// ãƒ¢ãƒ¼ãƒ‰
 		if(statc[player * 10] == 2) {
 			statc[player * 10 + 1]++;
 			if(statc[player * 10 + 1] > 3) statc[player * 10 + 1] = 0;
 		}
-		// ƒ‰ƒ“ƒ_ƒ€ƒ‚[ƒh #1.60c7l9
+		// ãƒ©ãƒ³ãƒ€ãƒ ãƒ¢ãƒ¼ãƒ‰ #1.60c7l9
 		if(statc[player * 10] == 3) {
 			randommode[player] = !randommode[player];
 			versusInit(player);
 		}
-		// ‘«Ø‚èON/OFF #1.60c7m5
+		// è¶³åˆ‡ã‚ŠON/OFF #1.60c7m5
 		if(statc[player * 10] == 4) {
 			t_noborder[player] = !t_noborder[player];
 		}
 	}
 
-	// Bƒ{ƒ^ƒ“
+	// Bãƒœã‚¿ãƒ³
 	if( getPushState(player, 5) ) {
 		for(i=0;i<220;i++) {
-			// ƒtƒB[ƒ‹ƒh‘SÁ‹ #1.60c7m2
+			// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰å…¨æ¶ˆå» #1.60c7m2
 			fld[i + 220 * player] = 0;
 			fldt[i + 220 * player] = 0;
 		}
-		stat[player] = 2;					// SOLO MODEƒ‚[ƒhƒZƒŒƒNƒg
-		statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+		stat[player] = 2;					// SOLO MODEãƒ¢ãƒ¼ãƒ‰ã‚»ãƒ¬ã‚¯ãƒˆ
+		statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 		statc[player * 10 + 1] = 0;			//
 	}
 
-	// HOLDƒ{ƒ^ƒ“‚Ånextc‚ğ0‚É–ß‚·
+	// HOLDãƒœã‚¿ãƒ³ã§nextcã‚’0ã«æˆ»ã™
 	if( getPushState(player, 7) ) {
 		PlayWave(3);
 		start_nextc[player] = 0;
 	}
 
-	// Aƒ{ƒ^ƒ“
+	// Aãƒœã‚¿ãƒ³
 	if( getPushState(player, 4) ) {
 		PlayWave(10);
 		stage[player] = start_stage[player];
@@ -922,68 +922,68 @@ void statTomoyoSelect(int player) {
 			ltime[player] = 180 * 60;
 		else
 			ltime[player] = 1080 * 60;
-		stage_nextc[player] = start_nextc[player];	// ƒXƒe[ƒWƒXƒ^[ƒg‚ÌNEXTC #1.60c7l9
+		stage_nextc[player] = start_nextc[player];	// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¹ã‚¿ãƒ¼ãƒˆæ™‚ã®NEXTC #1.60c7l9
 
-		bgmlv = setstartBGM(gameMode[player], player);		// BGMİ’è #1.60c7o8
+		bgmlv = setstartBGM(gameMode[player], player);		// BGMè¨­å®š #1.60c7o8
 
 		if( statc[player * 10 + 1] == 3 ) {
-			// ƒGƒfƒBƒbƒg
-			stat[player] = 18;					// ƒXƒe[ƒWƒGƒfƒBƒ^
-			statc[player * 10] = 1;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
-			statc[player * 10 + 1] = 0;			// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
-			statc[player * 10 + 2] = 19;		// –ß‚èæİ’è
+			// ã‚¨ãƒ‡ã‚£ãƒƒãƒˆ
+			stat[player] = 18;					// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¨ãƒ‡ã‚£ã‚¿
+			statc[player * 10] = 1;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
+			statc[player * 10 + 1] = 0;			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
+			statc[player * 10 + 2] = 19;		// æˆ»ã‚Šå…ˆè¨­å®š
 		} else if( statc[player * 10 + 1] == 2 ) {
-			// ƒgƒŒ[ƒjƒ“ƒOB
-			t_training[player] = 2;				// ƒgƒŒ[ƒjƒ“ƒOON
-			stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[
-			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°B
+			t_training[player] = 2;				// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°ON
+			stat[player] = 1;					// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼
+			statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 3;			// Ready
 		} else if( statc[player * 10 + 1] == 1 ) {
-			// ƒgƒŒ[ƒjƒ“ƒOA
-			t_training[player] = 1;				// ƒgƒŒ[ƒjƒ“ƒOON
-			stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[
-			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°A
+			t_training[player] = 1;				// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°ON
+			stat[player] = 1;					// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼
+			statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 3;			// Ready
 		} else {
-			// ƒvƒŒƒC
-			t_training[player] = 0;				// ƒgƒŒ[ƒjƒ“ƒOOFF
-			stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[
-			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			// ãƒ—ãƒ¬ã‚¤
+			t_training[player] = 0;				// ãƒˆãƒ¬ãƒ¼ãƒ‹ãƒ³ã‚°OFF
+			stat[player] = 1;					// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼
+			statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 3;			// Ready
 		}
 	}
-	// NEXT‚ğ‚Ü‚Æ‚ß‚ÄƒZƒbƒg #1.60c7l9
+	// NEXTã‚’ã¾ã¨ã‚ã¦ã‚»ãƒƒãƒˆ #1.60c7l9
 	nextc[player] = start_nextc[player];
 	next[player] = nextb[nextc[player] + player * 1400];
-	setNextBlockColors(player, 1);		// NEXTƒuƒƒbƒN‚ÌF‚ğİ’è #1.60c7m9
+	setNextBlockColors(player, 1);		// NEXTãƒ–ãƒ­ãƒƒã‚¯ã®è‰²ã‚’è¨­å®š #1.60c7m9
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.20 - TOMOYOƒ‚[ƒh Œ‹‰Ê•\¦
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// statc[player * 10]     : ƒRƒ“ƒeƒBƒjƒ…[‚·‚é‚©
-// statc[player * 10 + 1] : ƒRƒ“ƒeƒBƒjƒ…[c‚èŠÔ
-// statc[player * 10 + 2] : 2l“¯‚ÅƒvƒŒƒC‚µ‚Ä‚¢‚é‚©
-// statc[player * 10 + 3] : ƒŠƒvƒŒƒCƒZ[ƒu•\¦
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.20 - TOMOYOãƒ¢ãƒ¼ãƒ‰ çµæœè¡¨ç¤º
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// statc[player * 10]     : ã‚³ãƒ³ãƒ†ã‚£ãƒ‹ãƒ¥ãƒ¼ã™ã‚‹ã‹
+// statc[player * 10 + 1] : ã‚³ãƒ³ãƒ†ã‚£ãƒ‹ãƒ¥ãƒ¼æ®‹ã‚Šæ™‚é–“
+// statc[player * 10 + 2] : 2äººåŒæ™‚ã§ãƒ—ãƒ¬ã‚¤ã—ã¦ã„ã‚‹ã‹
+// statc[player * 10 + 3] : ãƒªãƒ—ãƒ¬ã‚¤ã‚»ãƒ¼ãƒ–è¡¨ç¤º
 void statTomoyoResult(int player) {
 	int tmp;
 
 	statc[player * 10 + 1]++;
 
-	// ‰¹Šy‚ğ—¬‚·
-	// 2l“¯‚Åd‚È‚ç‚È‚¢‚æ‚¤‚ÉC³ #1.60c7m1
+	// éŸ³æ¥½ã‚’æµã™
+	// 2äººåŒæ™‚ã§é‡ãªã‚‰ãªã„ã‚ˆã†ã«ä¿®æ­£ #1.60c7m1
 	if( (stat[1 - player] == 0) && (!IsPlayWave(63)) && (wavebgm >= 1) ) PlayWave(63);
 
-	// Œx‰¹‚ª–Â‚Á‚Ä‚¢‚½‚ç~‚ß‚é
+	// è­¦å‘ŠéŸ³ãŒé³´ã£ã¦ã„ãŸã‚‰æ­¢ã‚ã‚‹
 	StopSE(40);
 
-	// ƒŠƒvƒŒƒC•Û‘¶
+	// ãƒªãƒ—ãƒ¬ã‚¤ä¿å­˜
 	if((textguide) && (!playback) && (!demo)){
 		if(!player) printFont(13+24 * player - 12 * maxPlay, 26, "0-9 KEY:REPLAY", 0);
 		else printFont(13+24 * player - 12 * maxPlay, 26, "Q-P KEY:REPLAY", 0);
 	}
 
-	// ƒŠƒvƒŒƒCƒZ[ƒu #1.60c7n8
+	// ãƒªãƒ—ãƒ¬ã‚¤ã‚»ãƒ¼ãƒ– #1.60c7n8
 	ReplaySaveCheck(player, 3);
 	if(statc[player * 10 + 3]) {
 		sprintf(string[0], "SAVED : %02d", statc[player * 10 + 3]);
@@ -996,7 +996,7 @@ void statTomoyoResult(int player) {
 	ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 64, 228, 112, 26, 7);
 
 	if((stage[player] >= 26) && (ending[player])) {
-		// ALLƒNƒŠƒA
+		// ALLã‚¯ãƒªã‚¢
 		printSMALLFont(182 + 192 * player - 96 * maxPlay, 64, "ALL", 0);
 	} else if ((stage[player] > 19) && (stage[player] <= 26)) {
 		// EX
@@ -1019,7 +1019,7 @@ void statTomoyoResult(int player) {
 		sprintf(string[0], "%d", stage[player] - 99);
 		printSMALLFont(194-(6*(stage[player] - 99 >= 10))-(6*(stage[player] - 99 >= 100)) + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	} else {
-		// ’Êí
+		// é€šå¸¸
 		sprintf(string[0], "%2d", stage[player] + 1);
 		printSMALLFont(188 + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	}
@@ -1041,7 +1041,7 @@ void statTomoyoResult(int player) {
 		sprintf(string[0], "%7d", sc[player]);
 		printSMALLFont(158 + 192 * player - 96 * maxPlay, 86, string[0], 0);
 	}
-	// ƒRƒ“ƒeƒBƒjƒ…[‘I‘ğ
+	// ã‚³ãƒ³ãƒ†ã‚£ãƒ‹ãƒ¥ãƒ¼é¸æŠ
 	if( (!playback) && (!ending[player]) ) {
 		printSMALLFont(120 + 192 * player - 96 * maxPlay, 144, "CONTINUE", (statc[player * 10] == 0) * fontc[rots[player]]);
 		printSMALLFont(120 + 192 * player - 96 * maxPlay, 154, "END", (statc[player * 10] == 1) * fontc[rots[player]]);
@@ -1051,7 +1051,7 @@ void statTomoyoResult(int player) {
 		printFont(21 + 24 * player - 12 * maxPlay, 22, string[0], 0);
 	}
 
-	// ª«
+	// â†‘â†“
 	if(getPushState(player, 0) || getPushState(player, 1)) {
 		if(!ending[player]) {
 			PlayWave(5);
@@ -1059,13 +1059,13 @@ void statTomoyoResult(int player) {
 		}
 	}
 
-	// Aƒ{ƒ^ƒ“
+	// Aãƒœã‚¿ãƒ³
 	if( (getPushState(player, 4)) || (statc[player * 10 + 1] >= 10 * 60) ) {
 		StopAllBGM();
 
 		if( playback ) {
-			// ƒŠƒvƒŒƒC #1.60c7n8
-			stat[player] = 0;	// Q‰Á‘Ò‚¿iƒ^ƒCƒgƒ‹‚Öj
+			// ãƒªãƒ—ãƒ¬ã‚¤ #1.60c7n8
+			stat[player] = 0;	// å‚åŠ å¾…ã¡ï¼ˆã‚¿ã‚¤ãƒˆãƒ«ã¸ï¼‰
 		} else if( (!statc[player * 10]) && (statc[player * 10 + 1] < 10 * 60) && (!ending[player]) ) {
 			// YES
 			PlayWave(10);
@@ -1081,23 +1081,23 @@ void statTomoyoResult(int player) {
 			clearnum[player] = 0;
 			clearp[player] = 0;
 
-			// ‰Šú‰»
+			// åˆæœŸåŒ–
 			tomoyoInitial(player);
 
-			// ƒXƒ^[ƒg‚ÌƒXƒe[ƒW‚ğİ’è #1.60c7n8
+			// ã‚¹ã‚¿ãƒ¼ãƒˆæ™‚ã®ã‚¹ãƒ†ãƒ¼ã‚¸ã‚’è¨­å®š #1.60c7n8
 			start_stage[player] = stage[player];
 			start_nextc[player] = stage_nextc[player];
 
-			time2[player] = 0;					// TOMOYO—pƒvƒŒƒCƒ^ƒCƒ€‚ğƒŠƒZƒbƒg
-			replay_save[player] = 1;			// ƒŠƒvƒŒƒCƒZ[ƒu‚ğ‰Â”\‚É‚·‚é
+			time2[player] = 0;					// TOMOYOç”¨ãƒ—ãƒ¬ã‚¤ã‚¿ã‚¤ãƒ ã‚’ãƒªã‚»ãƒƒãƒˆ
+			replay_save[player] = 1;			// ãƒªãƒ—ãƒ¬ã‚¤ã‚»ãƒ¼ãƒ–ã‚’å¯èƒ½ã«ã™ã‚‹
 
-			stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[
-			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			stat[player] = 1;					// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼
+			statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 3;			// Ready
 		} else {
 			// NO
-			stat[player] = 11;				// ƒl[ƒ€ƒGƒ“ƒgƒŠ•\¦ #1.60c7p1
-			statc[player * 10] = 0;			// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			stat[player] = 11;				// ãƒãƒ¼ãƒ ã‚¨ãƒ³ãƒˆãƒªè¡¨ç¤º #1.60c7p1
+			statc[player * 10] = 0;			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 0;
 			statc[player * 10 + 2] = 0;
 			statc[player * 10 + 3] = 0;
@@ -1107,13 +1107,13 @@ void statTomoyoResult(int player) {
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.36 - TOMOYOƒ‚[ƒh F-Point—p@ƒXƒe[ƒWƒZƒŒƒNƒg
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// statc[player * 10]     : ƒ‚[ƒhi0=Å‰ 1=“r’†j
-// statc[player * 10 + 1] : ƒ^ƒCƒ}[
-// statc[player * 10 + 2] : ƒJ[ƒ\ƒ‹ˆÊ’u
-// statc[player * 10 + 3] : Œ»İ‚ÌƒXƒe[ƒW
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.36 - TOMOYOãƒ¢ãƒ¼ãƒ‰ F-Pointç”¨ã€€ã‚¹ãƒ†ãƒ¼ã‚¸ã‚»ãƒ¬ã‚¯ãƒˆ
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// statc[player * 10]     : ãƒ¢ãƒ¼ãƒ‰ï¼ˆ0=æœ€åˆ 1=é€”ä¸­ï¼‰
+// statc[player * 10 + 1] : ã‚¿ã‚¤ãƒãƒ¼
+// statc[player * 10 + 2] : ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®
+// statc[player * 10 + 3] : ç¾åœ¨ã®ã‚¹ãƒ†ãƒ¼ã‚¸
 void statTomoyoSelect_FP(int player) {
 	int i;
 
@@ -1122,7 +1122,7 @@ void statTomoyoSelect_FP(int player) {
 		FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 		if(repversw <= 46) FP_bonus[player] = 10800;
 		statc[player * 10 + 3] = stage[player] - 99;
-		if(stage[player] == 190){	//ƒXƒe[ƒW90“Ë”j‚Å—¬‚ê¯
+		if(stage[player] == 190){	//ã‚¹ãƒ†ãƒ¼ã‚¸90çªç ´ã§æµã‚Œæ˜Ÿ
 			StopAllBGM();
 			PlayWave(43);
 			objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
@@ -1136,39 +1136,39 @@ void statTomoyoSelect_FP(int player) {
 
 	printFont(15 + 24 * player - 12 * maxPlay, 6, "SELECT", 4);
 
-	// ƒXƒe[ƒW”Ô†
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ç•ªå·
 	printFont(15 + 24 * player - 12 * maxPlay, 8, "    STAGE", 4);
 
-	if(statc[player * 10] == 0){	//Å‰
+	if(statc[player * 10] == 0){	//æœ€åˆ
 		printFont(15 + 24 * player - 12 * maxPlay, 7, "  FIRST", 4);
 
 		sprintf(string[0],"F-POINT%3d",start_stage[player] - 99);
 		printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], 0);
 		printFont(14 + 24 * player - 12 * maxPlay, 14, "<          >", count % 9);
 
-		// ©
+		// â†
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 		if( getPressState(player, 2) ) {
 			PlayWave(3);
 
-			// ƒXƒe[ƒW”Ô†
+			// ã‚¹ãƒ†ãƒ¼ã‚¸ç•ªå·
 			start_stage[player]--;
 			if(start_stage[player] < 100) start_stage[player] = 189;
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((start_stage[player]-100) / 4) + 1);
-			// ƒXƒe[ƒWƒf[ƒ^“Ç‚İ‚İ #1.60c7l9
+			// ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿ #1.60c7l9
 			loadTomoyoStage(player, start_stage[player]);
 		}
 
-		// ¨
+		// â†’
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 		if( getPressState(player, 3) ) {
 			PlayWave(3);
 
-			// ƒXƒe[ƒW”Ô†
+			// ã‚¹ãƒ†ãƒ¼ã‚¸ç•ªå·
 			start_stage[player]++;
 			if(start_stage[player] > 189) start_stage[player] = 100;
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((start_stage[player]-100) / 4) + 1);
-			// ƒXƒe[ƒWƒf[ƒ^“Ç‚İ‚İ #1.60c7l9
+			// ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿ #1.60c7l9
 			loadTomoyoStage(player, start_stage[player]);
 		}
 	} else {
@@ -1193,7 +1193,7 @@ void statTomoyoSelect_FP(int player) {
 
 		printFont(15 + 24 * player - 12 * maxPlay, 10 + ( statc[player * 10 + 2] * 2), "b", fontc[rots[player]]);
 
-		// ª
+		// â†‘
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 0) ) {
 			PlayWave(5);
@@ -1214,7 +1214,7 @@ void statTomoyoSelect_FP(int player) {
 			}
 		}
 
-		// «
+		// â†“
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 1) ) {
 			PlayWave(5);
@@ -1236,22 +1236,22 @@ void statTomoyoSelect_FP(int player) {
 		}
 	}
 
-	// Aƒ{ƒ^ƒ“
+	// Aãƒœã‚¿ãƒ³
 	if( (getPushState(player, 4)) || ((statc[player * 10] != 0) && (statc[player * 10 + 1] > 600)) ) {
 		PlayWave(10);
 		if( statc[player * 10] == 0 ) {
-			// Å‰
+			// æœ€åˆ
 			stage[player] = start_stage[player];
-			bgmlv = setstartBGM(gameMode[player], player);	//BGMƒZƒbƒg
+			bgmlv = setstartBGM(gameMode[player], player);	//BGMã‚»ãƒƒãƒˆ
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
-			stat[player] = 1;					// ƒuƒƒbƒNƒVƒƒƒbƒ^[
-			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			stat[player] = 1;					// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼
+			statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 3;			// Ready
 			statc[player * 10 + 2] = 0;
 			statc[player * 10 + 3] = 0;
 		}else{
-			//“r’†
-			//BGMØ‚è‘Ö‚¦”»’è
+			//é€”ä¸­
+			//BGMåˆ‡ã‚Šæ›¿ãˆåˆ¤å®š
 			if(stage[player] <= 129) i = 8;
 			else if(stage[player] <= 159) i = 14;
 			else if(stage[player] <= 189) i = 9;
@@ -1263,27 +1263,27 @@ void statTomoyoSelect_FP(int player) {
 			}
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 			stat[player] = 3;					// Ready
-			statc[player * 10] = 0;				// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
+			statc[player * 10] = 0;				// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
 			statc[player * 10 + 1] = 0;			//
 			statc[player * 10 + 2] = 0;
 			statc[player * 10 + 3] = 0;
 		}
 	}
-	if(( statc[player * 10] == 0 ) && (getPushState(player, 5))) {		// Bƒ{ƒ^ƒ“‚Åƒ‚[ƒh‘I‘ğ‰æ–Ê‚É–ß‚é
+	if(( statc[player * 10] == 0 ) && (getPushState(player, 5))) {		// Bãƒœã‚¿ãƒ³ã§ãƒ¢ãƒ¼ãƒ‰é¸æŠç”»é¢ã«æˆ»ã‚‹
 		sp[player] = 1;
 		PlayWave(5);
 		randommode[player] = 1;
-		versusInit(player);				// NEXT‚ğ¶¬‚µ’¼‚·
+		versusInit(player);				// NEXTã‚’ç”Ÿæˆã—ç›´ã™
 		randommode[player] = 0;
-		stat[player] = 1;				// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
-		statc[player * 10] = 0;			// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
-		statc[player * 10 + 1] = 2;		// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.2
+		stat[player] = 1;				// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼å®Ÿè¡Œ
+		statc[player * 10] = 0;			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
+		statc[player * 10 + 1] = 2;		// ã‚·ãƒ£ãƒƒã‚¿ãƒ¼å¾Œã¯ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.2
 		relaymode[player] = 0;
 	}
 }
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒWã‚Ìƒvƒ‰ƒ`ƒiƒuƒƒbƒN”z’u‚ğƒ‰ƒ“ƒ_ƒ€‚É‚·‚é
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¸ä¸Šã®ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯é…ç½®ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ã™ã‚‹
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void randPlatinum(int player, int tgtnum){
 	int empty, i, j, put_flag[22], end_flag, put_num;
 
@@ -1293,7 +1293,7 @@ void randPlatinum(int player, int tgtnum){
 	empty = 0;
 	end_flag = 0;
 
-	// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚ğ•’Ê‚ÌƒuƒƒbƒN‚É‚·‚é
+	// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ã‚’æ™®é€šã®ãƒ–ãƒ­ãƒƒã‚¯ã«ã™ã‚‹
 	for(i = 0; i < 220; i++) {
 		if(fld[i + player * 220] >= 11) {
 			fld[i + player * 220] = fld[i + player * 220] - 9;
@@ -1330,20 +1330,20 @@ void randPlatinum(int player, int tgtnum){
 }
 
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  TOMOYOƒ‚[ƒh ƒXƒe[ƒW“Ç‚İ‚İ^•Û‘¶
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg (4byte’PˆÊ)
-//   0`  209 ƒtƒB[ƒ‹ƒhƒf[ƒ^i‰¡10 * c21ƒ}ƒXj
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  TOMOYOãƒ¢ãƒ¼ãƒ‰ ã‚¹ãƒ†ãƒ¼ã‚¸èª­ã¿è¾¼ã¿ï¼ä¿å­˜
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ (4byteå˜ä½)
+//   0ã€œ  209 ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ãƒ‡ãƒ¼ã‚¿ï¼ˆæ¨ª10 * ç¸¦21ãƒã‚¹ï¼‰
 // 210        MIRROR
 // 211        ROLL ROLL
 // 212        DEATH BLOCK
 // 213        X-RAY
 // 214        COLOR
-// 215`249   –¢g—pi©—R‚Ég—p‰Â”\j
-// 250`449   ‚¹‚èã‚ª‚èƒtƒB[ƒ‹ƒh
+// 215ã€œ249   æœªä½¿ç”¨ï¼ˆè‡ªç”±ã«ä½¿ç”¨å¯èƒ½ï¼‰
+// 250ã€œ449   ã›ã‚Šä¸ŠãŒã‚Šãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰
 
-/* ƒXƒe[ƒWƒf[ƒ^‚ğƒ[ƒh */
+/* ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’ãƒ­ãƒ¼ãƒ‰ */
 void loadTomoyoStage(int player, int number) {
 	int i;
 
@@ -1352,10 +1352,10 @@ void loadTomoyoStage(int player, int number) {
 	sprintf(string[0], "config/stage/stage%02d.sav", number);
 	LoadFile(string[0], &saveBuf, 450 * 4);
 
-	// ƒtƒB[ƒ‹ƒh“Ç‚İ‚İ
+	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰èª­ã¿è¾¼ã¿
 	for(i=0;i<210;i++) {
 		fld[(i+10) + 220 * player] = saveBuf[i];
-		// ‰Šú”z’u‚ğŒ©‚¦‚é‚æ‚¤‚É‚·‚é
+		// åˆæœŸé…ç½®ã‚’è¦‹ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹
 		fldt[(i+10) + 220 * player] = (fld[(i+10) + 220 * player] != 0) * -1;
 	}
 
@@ -1381,29 +1381,29 @@ void loadTomoyoStage(int player, int number) {
 		// BLIND C7T6.5
 		blind_flag[player] = saveBuf[215];
 
-		// Å’á—‰º‘¬“x
+		// æœ€ä½è½ä¸‹é€Ÿåº¦
 		min_speed[player] = saveBuf[216];
 
-		// ƒTƒ“ƒ_[
+		// ã‚µãƒ³ãƒ€ãƒ¼
 		isthunder[player] = saveBuf[217];
 
 
-		// NEXT‰B‚µ
+		// NEXTéš ã—
 		hnext_flag[player] = saveBuf[219];
 
 		tomoyo_waits[player] = saveBuf[220];
 	}
-	// ‚¹‚èã‚ª‚è iƒ~ƒbƒVƒ‡ƒ“‚Å‚àg—pj
+	// ã›ã‚Šä¸ŠãŒã‚Š ï¼ˆãƒŸãƒƒã‚·ãƒ§ãƒ³ã§ã‚‚ä½¿ç”¨ï¼‰
 	tomoyo_rise[player] = saveBuf[218];
 }
 
-/* ƒXƒe[ƒWƒf[ƒ^‚ğƒZ[ƒu */
+/* ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿ã‚’ã‚»ãƒ¼ãƒ– */
 void saveTomoyoStage(int player, int number) {
 	int i;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
-	// ƒtƒB[ƒ‹ƒh‚ğƒZ[ƒuƒoƒbƒtƒ@‚ÉƒRƒs[
+	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’ã‚»ãƒ¼ãƒ–ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼
 	for(i=0;i<210;i++) {
 		saveBuf[i] = fld[(i+10) + 220 * player];
 	}
@@ -1431,21 +1431,21 @@ void saveTomoyoStage(int player, int number) {
 	// BLIND C7T6.5
 	saveBuf[215] = blind_flag[player];
 
-	// Å’á—‰º‘¬“x
+	// æœ€ä½è½ä¸‹é€Ÿåº¦
 	saveBuf[216] = min_speed[player];
 
-	// ƒTƒ“ƒ_[
+	// ã‚µãƒ³ãƒ€ãƒ¼
 	saveBuf[217] = isthunder[player];
 
-	// ‚¹‚èã‚ª‚è
+	// ã›ã‚Šä¸ŠãŒã‚Š
 	saveBuf[218] = tomoyo_rise[player];
 
-	// NEXT‰B‚µ
+	// NEXTéš ã—
 	saveBuf[219] = hnext_flag[player];
 
 	saveBuf[220] = tomoyo_waits[player];
 
-	// •Û‘¶‚·‚é
+	// ä¿å­˜ã™ã‚‹
 	sprintf(string[0], "config/stage/stage%02d.sav", number);
 	SaveFile(string[0], &saveBuf, 450 * 4);
 }

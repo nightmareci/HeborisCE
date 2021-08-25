@@ -3,37 +3,37 @@ namespace readdef
 	//#include "option.def"
 	#include "keyconf.def"
 
-	int	fontc[12]  = {9,1,2,3,8,4,3,6,7};	//‘èš‚ÌF	0:”’ 1:Â 2:Ô 3:“ 4:—Î 5:‰© 6:‹ó 7:ò 8:‡ 9:—•
-	int	digitc[12] = {5,5,7,7,5,5,7,7,5};	//”š‚ÌF	‚»‚ê‚¼‚êATGMRuleETiRuleEWorldRuleEWorld2Rule
-	int	giveupKey = 0x10;		//Ì‚ÄƒQ[ƒL[ (ƒfƒtƒHƒ‹ƒg‚ÍQ)
-	int	ssKey = 0xC7;			//ƒXƒiƒbƒvƒVƒ‡ƒbƒgƒL[ (ƒfƒtƒHƒ‹ƒg‚ÍHome)
-	int pausekey[2] = { 0x3B,0x3C };	//ƒ|[ƒYƒL[(ƒfƒtƒHƒ‹ƒg‚ÍF1,F2)		#1.60c7g7
-	int dispnextkey[2] = { 0x3D,0x3E };	//NEXT•\¦ƒL[(ƒfƒtƒHƒ‹ƒg‚ÍF3,F4)	#1.60c7g7
-	int	dtc = 1;				//tgmlv‚Ì•\¦	0:off  1:on  (lvtype = 1‚Ì‚Íí‚É•\¦)
-	int	fldtr = 96;				//ƒtƒB[ƒ‹ƒh”wŒi”ñ•\¦‚ÌƒtƒB[ƒ‹ƒh“§‰ß“x(0-256)
-	int	dispnext = 3;			//ƒlƒNƒXƒgƒuƒƒbƒN•\¦”‚Ì‘I‘ği‚O`‚Rj
-	int	movesound = 1;			//ƒuƒƒbƒNˆÚ“®‰¹‚Ì‘I‘ğ	0:OFF 1:ON
-	int	wavebgm = 0;			//BGM‚Ì‘I‘ğ
-	int	maxPlay = 0;			//ƒvƒŒƒCƒ„[l”‚Ì‘I‘ğ	0:ƒVƒ“ƒOƒ‹ 1:ƒfƒ…ƒAƒ‹
+	int	fontc[12]  = {9,1,2,3,8,4,3,6,7};	//é¡Œå­—ã®è‰²	0:ç™½ 1:é’ 2:èµ¤ 3:æ¡ƒ 4:ç·‘ 5:é»„ 6:ç©º 7:æ©™ 8:ç´« 9:è—
+	int	digitc[12] = {5,5,7,7,5,5,7,7,5};	//æ•°å­—ã®è‰²	ãã‚Œãã‚Œã€TGMRuleãƒ»TiRuleãƒ»WorldRuleãƒ»World2Rule
+	int	giveupKey = 0x10;		//æ¨ã¦ã‚²ãƒ¼ã‚­ãƒ¼ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯Q)
+	int	ssKey = 0xC7;			//ã‚¹ãƒŠãƒƒãƒ—ã‚·ãƒ§ãƒƒãƒˆã‚­ãƒ¼ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯Home)
+	int pausekey[2] = { 0x3B,0x3C };	//ãƒãƒ¼ã‚ºã‚­ãƒ¼(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯F1,F2)		#1.60c7g7
+	int dispnextkey[2] = { 0x3D,0x3E };	//NEXTè¡¨ç¤ºã‚­ãƒ¼(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯F3,F4)	#1.60c7g7
+	int	dtc = 1;				//tgmlvã®è¡¨ç¤º	0:off  1:on  (lvtype = 1ã®æ™‚ã¯å¸¸ã«è¡¨ç¤º)
+	int	fldtr = 96;				//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰èƒŒæ™¯éè¡¨ç¤ºæ™‚ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰é€éåº¦(0-256)
+	int	dispnext = 3;			//ãƒã‚¯ã‚¹ãƒˆãƒ–ãƒ­ãƒƒã‚¯è¡¨ç¤ºæ•°ã®é¸æŠï¼ˆï¼ã€œï¼“ï¼‰
+	int	movesound = 1;			//ãƒ–ãƒ­ãƒƒã‚¯ç§»å‹•éŸ³ã®é¸æŠ	0:OFF 1:ON
+	int	wavebgm = 0;			//BGMã®é¸æŠ
+	int	maxPlay = 0;			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼äººæ•°ã®é¸æŠ	0:ã‚·ãƒ³ã‚°ãƒ« 1:ãƒ‡ãƒ¥ã‚¢ãƒ«
 
-	int	breakeffect = 1;	//ƒ‰ƒCƒ“‚ğ‚»‚ë‚¦‚½‚Æ‚«AƒuƒƒbƒN‚ğ’e‚¯‚³‚¹‚é‚© 0:off 1:on
-	int	showcombo = 0;		//ƒRƒ“ƒ{‚Ì•\¦(SINGLE‚Æ‚©HEBORIS‚Æ‚©) 0:off 1:on
-	int	top_frame = 0;		//ƒuƒƒbƒN‚Ì‚‘¬Á‹ 0:ƒuƒƒbƒN‚ğ¶‚©‚ç‰E‚ÖÁ‚· 1:“¯‚ÉÁ‚·
+	int	breakeffect = 1;	//ãƒ©ã‚¤ãƒ³ã‚’ãã‚ãˆãŸã¨ãã€ãƒ–ãƒ­ãƒƒã‚¯ã‚’å¼¾ã‘ã•ã›ã‚‹ã‹ 0:off 1:on
+	int	showcombo = 0;		//ã‚³ãƒ³ãƒœã®è¡¨ç¤º(SINGLEã¨ã‹HEBORISã¨ã‹) 0:off 1:on
+	int	top_frame = 0;		//ãƒ–ãƒ­ãƒƒã‚¯ã®é«˜é€Ÿæ¶ˆå» 0:ãƒ–ãƒ­ãƒƒã‚¯ã‚’å·¦ã‹ã‚‰å³ã¸æ¶ˆã™ 1:åŒæ™‚ã«æ¶ˆã™
 
-	int	w_reverse = 1;		//ƒ[ƒ‹ƒhƒ‹[ƒ‹‚Å‰ñ“]•û–@‚ğ‹t“]‚³‚¹‚é 0:off 1:on #1.60c7f8
+	int	w_reverse = 1;		//ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ«ãƒ¼ãƒ«ã§å›è»¢æ–¹æ³•ã‚’é€†è»¢ã•ã›ã‚‹ 0:off 1:on #1.60c7f8
 
-	int	downtype = 1;		//‰º“ü‚êƒ^ƒCƒv 0:HEBORIS 1:Ti #1.60c7f9
+	int	downtype = 1;		//ä¸‹å…¥ã‚Œã‚¿ã‚¤ãƒ— 0:HEBORIS 1:Ti #1.60c7f9
 
-	int	lvupbonus = 0;		//ƒŒƒxƒ‹ƒAƒbƒvƒ{[ƒiƒX 0:TI 1:TGM/TAP #1.60c7g3
+	int	lvupbonus = 0;		//ãƒ¬ãƒ™ãƒ«ã‚¢ãƒƒãƒ—ãƒœãƒ¼ãƒŠã‚¹ 0:TI 1:TGM/TAP #1.60c7g3
 
-	int	fontsize = 1;			//ƒtƒHƒ“ƒgƒTƒCƒY 0:DEFAULT 1:SMALL éŒ¾‚µ–Y‚êC³#1.60c6.1a
+	int	fontsize = 1;			//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º 0:DEFAULT 1:SMALL å®£è¨€ã—å¿˜ã‚Œä¿®æ­£#1.60c6.1a
 
-	int	joykeyAssign[10 * 2] = {		//ƒWƒ‡ƒCƒXƒeƒBƒbƒNƒ{ƒ^ƒ“Š„‚è“–‚Ä
-	0, 1, 2, 3,   4, 5, 6, 7, -1, -1,		//default={0,1,2,3,10,7,4,8,-1,-1} ¨pause‚Ægiveup‚ğ’Ç‰Á 1.60c7g7
+	int	joykeyAssign[10 * 2] = {		//ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ãƒœã‚¿ãƒ³å‰²ã‚Šå½“ã¦
+	0, 1, 2, 3,   4, 5, 6, 7, -1, -1,		//default={0,1,2,3,10,7,4,8,-1,-1} â†’pauseã¨giveupã‚’è¿½åŠ  1.60c7g7
 	0, 1, 2, 3,   4, 5, 6, 7, -1, -1
 	};
-	//Holdƒ{ƒ^ƒ“(ƒL[ƒ{[ƒh)Š„‚è“–‚Ä
-	int	holdkey[2] = { 0x32, 0x52 };	//default 1p‘¤:M(0x32) 2p‘¤:ƒeƒ“ƒL[0(0x52)
+	//Holdãƒœã‚¿ãƒ³(ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰)å‰²ã‚Šå½“ã¦
+	int	holdkey[2] = { 0x32, 0x52 };	//default 1på´:M(0x32) 2på´:ãƒ†ãƒ³ã‚­ãƒ¼0(0x52)
 
 	int rots[2] = {2, 1};
 	int lvup[2] = {1, 1};

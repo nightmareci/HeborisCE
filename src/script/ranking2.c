@@ -1,27 +1,27 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒ‰ƒ“ƒLƒ“ƒOŠÖ˜A
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ©ãƒ³ã‚­ãƒ³ã‚°é–¢é€£
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 
-// ƒ‰ƒ“ƒLƒ“ƒO—pƒOƒ[ƒoƒ‹•Ï”
-// 5–¼ ~ 15ƒ‚[ƒh ~ 2‰ñ“]ƒ‹[ƒ‹ƒ^ƒCƒv(ˆêŒÂ—\”õ)
-//ƒJƒeƒSƒŠ[
-//ƒrƒMAƒ}ƒX*4(’iˆÊ•Ê)A20G*2AƒfƒrAƒfƒr-Aƒgƒ‚TiAƒgƒ‚EHAƒGƒX*3AƒGƒ“ƒhƒŒƒX
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ç”¨ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°
+// 5å Ã— 15ãƒ¢ãƒ¼ãƒ‰ Ã— 2å›è»¢ãƒ«ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—(ä¸€å€‹äºˆå‚™)
+//ã‚«ãƒ†ã‚´ãƒªãƒ¼
+//ãƒ“ã‚®ã€ãƒã‚¹*4(æ®µä½åˆ¥)ã€20G*2ã€ãƒ‡ãƒ“ã€ãƒ‡ãƒ“-ã€ãƒˆãƒ¢Tiã€ãƒˆãƒ¢EHã€ã‚¨ã‚¹*3ã€ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹
 bool	allocked2 = false;
-char*	rkname[5 * 15 * 2];			// –¼‘O
-int		rkdata[5 * 15 * 2];		// ‰Ô‰Î^’iˆÊ^ƒXƒe[ƒW^ƒ‰ƒCƒ“
-int		rktime2[5 * 15 * 2];		// ƒ^ƒCƒ€
-int		rkclear[5 * 15 * 2];		// 0=“r’†‚Å’‚‘§ 1=ƒ[ƒ‹¸”s 2=ƒ[ƒ‹ƒNƒŠƒA
-int		rkother[5 * 15 * 2];		// ‚»‚Ì‘¼iƒŒƒxƒ‹‚âƒNƒŠƒA—¦‚È‚Çj
-int		rkrots[5 * 15 * 2];		// ‰ñ“]ƒ‹[ƒ‹
+char*	rkname[5 * 15 * 2];			// åå‰
+int		rkdata[5 * 15 * 2];		// èŠ±ç«ï¼æ®µä½ï¼ã‚¹ãƒ†ãƒ¼ã‚¸ï¼ãƒ©ã‚¤ãƒ³
+int		rktime2[5 * 15 * 2];		// ã‚¿ã‚¤ãƒ 
+int		rkclear[5 * 15 * 2];		// 0=é€”ä¸­ã§çª’æ¯ 1=ãƒ­ãƒ¼ãƒ«å¤±æ•— 2=ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢
+int		rkother[5 * 15 * 2];		// ãã®ä»–ï¼ˆãƒ¬ãƒ™ãƒ«ã‚„ã‚¯ãƒªã‚¢ç‡ãªã©ï¼‰
+int		rkrots[5 * 15 * 2];		// å›è»¢ãƒ«ãƒ¼ãƒ«
 
-int		rkac[5 * 15 * 2];		// ACƒƒ_ƒ‹ #LITE30.2
-int		rkst[5 * 15 * 2];		// STƒƒ_ƒ‹ #LITE30.2
-int		rksk[5 * 15 * 2];		// SKƒƒ_ƒ‹ #LITE30.2
-int		rkco[5 * 15 * 2];		// COƒƒ_ƒ‹ #LITE30.2
-int		rkre[5 * 15 * 2];		// REƒƒ_ƒ‹ #LITE30.2
-int		modecolor[15] = {4,1,1,1,1,5,5,2,2,3,3,0,0,2,9};		// ƒ‚[ƒh–¼•\¦F
+int		rkac[5 * 15 * 2];		// ACãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rkst[5 * 15 * 2];		// STãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rksk[5 * 15 * 2];		// SKãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rkco[5 * 15 * 2];		// COãƒ¡ãƒ€ãƒ« #LITE30.2
+int		rkre[5 * 15 * 2];		// REãƒ¡ãƒ€ãƒ« #LITE30.2
+int		modecolor[15] = {4,1,1,1,1,5,5,2,2,3,3,0,0,2,9};		// ãƒ¢ãƒ¼ãƒ‰åè¡¨ç¤ºè‰²
 
-// ƒ‰ƒ“ƒLƒ“ƒO‰Šú‰»
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°åˆæœŸåŒ–
 void RankingInit2() {
 	int i;
 
@@ -40,7 +40,7 @@ void RankingInit2() {
 	}
 }
 
-// ‰½ˆÊ‚É“ü‚é‚©ƒ`ƒFƒbƒNiƒ‰ƒ“ƒNŠO‚È‚ç-1j
+// ä½•ä½ã«å…¥ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ï¼ˆãƒ©ãƒ³ã‚¯å¤–ãªã‚‰-1ï¼‰
 int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
 	int i, j, rank;
 
@@ -49,14 +49,14 @@ int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
 
 	rank = -1;
 
-	ARSSRSch(rrots);//ARS‚©SRS‚©‚ğŒˆ‚ß‚éŠÖ”
+	ARSSRSch(rrots);//ARSã‹SRSã‹ã‚’æ±ºã‚ã‚‹é–¢æ•°
 
 	for(i = 0; i < 5; i++) {
 		j = RankingGet(rmode, rankingrule);
 
 		if(
-			(rdata > rkdata[j + i]) ||  //’iˆÊ‰Ô‰Î“’BƒXƒe[ƒWƒ‰ƒCƒ“
-			((rdata == rkdata[j + i]) && ((rclear > rkclear[j + i])//ƒ[ƒ‹ƒNƒŠƒA„¸”s„ƒ[ƒ‹ˆÈ‘O
+			(rdata > rkdata[j + i]) ||  //æ®µä½èŠ±ç«åˆ°é”ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ©ã‚¤ãƒ³
+			((rdata == rkdata[j + i]) && ((rclear > rkclear[j + i])//ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢ï¼å¤±æ•—ï¼ãƒ­ãƒ¼ãƒ«ä»¥å‰
 			|| ((rclear == rkclear[j + i]) && (rtime < rktime2[j + i]))))
 		  )
 		{//if(rmode <= 3) return ((rmode * 60) + (rtype * 30) + (rrots * 3));
@@ -68,7 +68,7 @@ int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
 	return rank;
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO‚É“o˜^
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã«ç™»éŒ²
 void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 	int rother, char *rname, int rank, int rac, int rst, int rsk, int rco ,int rre) {
 
@@ -80,7 +80,7 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 	ARSSRSch(rrots);
 	j = RankingGet(rmode, rankingrule);
 
-	// ƒ‰ƒ“ƒLƒ“ƒO‚ğ‚¸‚ç‚·
+	// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’ãšã‚‰ã™
 	for(i = 4; i > rank ; i--) {
 		StrCpy(rkname[j + i], rkname[j + i - 1]);
 		rkdata[j + i] = rkdata[j + i - 1];
@@ -90,7 +90,7 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 		rkrots[j + i] = rkrots[j + i - 1];
 	}
 
-	// V‚µ‚¢ƒf[ƒ^‚ğ“o˜^
+	// æ–°ã—ã„ãƒ‡ãƒ¼ã‚¿ã‚’ç™»éŒ²
 	StrCpy(rkname[j + rank], rname);
 	rkdata[j + rank] = rdata;
 	rktime2[j + rank] = rtime;
@@ -98,7 +98,7 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 	rkother[j + rank] = rother;
 	rkrots[j + rank] = rrots;
 
-	// ƒƒ_ƒ‹‚ğ“o˜^ #LITE30.2
+	// ãƒ¡ãƒ€ãƒ«ã‚’ç™»éŒ² #LITE30.2
 	rkac[j + rank] = rac;
 	rkst[j + rank] = rst;
 	rksk[j + rank] = rsk;
@@ -106,14 +106,14 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 	rkre[j + rank] = rre;
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO•\¦
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤º
 void RankingProc_2(int cat) {
 	count = 0;
 	flag = 0;
 //	category = cat;
-		if(cat==0){	//ƒrƒMƒi[
+		if(cat==0){	//ãƒ“ã‚®ãƒŠãƒ¼
 		category = 0;
-		}else if(cat==1){	//ƒ}ƒXƒ^[
+		}else if(cat==1){	//ãƒã‚¹ã‚¿ãƒ¼
 			if(enable_grade[0]==1){	//1
 			category = 1;
 			}else if(enable_grade[0]==2){	//2
@@ -135,7 +135,7 @@ void RankingProc_2(int cat) {
 			}else if(devil_minus[0]==1){
 			category = 8;
 			}
-		}else if(cat==6){	//‚Æ‚à‚æ
+		}else if(cat==6){	//ã¨ã‚‚ã‚ˆ
 			if(tomoyo_opt[0]==0){	//Ti
 			category = 9;
 			}else if(tomoyo_opt[0]==1){	//EH
@@ -158,7 +158,7 @@ void RankingProc_2(int cat) {
 		KeyInput();
 		RankingView2();
 
-		// A‚©B‚Å–ß‚é
+		// Aã‹Bã§æˆ»ã‚‹
 		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
 			flag = 1;
 		}
@@ -174,33 +174,33 @@ void RankingProc2_2() {
 		KeyInput();
 
 		RankingView2();
-		// ©
+		// â†
 		if( getPushState(0,2) ) {
 			PlayWave( 5 );
-			category--;//ƒQ[ƒ€ƒ‚[ƒh
+			category--;//ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰
 			if(category < 0) category = 14;
 		}
 
-		// ¨
+		// â†’
 		if( getPushState(0,3) ) {
 			PlayWave( 5 );
 			category++;
 			if(category > 14) category = 0;
 		}
 
-		// ª
+		// â†‘
 		if( getPushState(0,0) ) {
 			PlayWave( 5 );
-			rankingrule = !(rankingrule);//‰ñ“]ƒ‹[ƒ‹
+			rankingrule = !(rankingrule);//å›è»¢ãƒ«ãƒ¼ãƒ«
 		}
 
-		// «
+		// â†“
 		if( getPushState(0,1) ) {
 			PlayWave( 5 );
 			rankingrule  = !(rankingrule);
 		}
 
-		// A‚©B‚Å–ß‚é
+		// Aã‹Bã§æˆ»ã‚‹
 		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
 			return;
 		}
@@ -209,10 +209,10 @@ void RankingProc2_2() {
 	}
 }
 
-void RankingView2() {//5ˆÊ‚Ü‚Å
+void RankingView2() {//5ä½ã¾ã§
 	int i, j, k, color;
 
-	// ”wŒi•`‰æ
+	// èƒŒæ™¯æç”»
 	count++;
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
@@ -229,41 +229,41 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 		ExBltFast(30, 0, 0);
 	}
 
-	// ƒ‹[ƒ‹–¼•\¦
+	// ãƒ«ãƒ¼ãƒ«åè¡¨ç¤º
 	getRuleNameEx(rankingrule, 0);
 	StrCat(string[0], " TYPE RULE - ");
 
-	// ƒ‚[ƒh–¼•\¦
+	// ãƒ¢ãƒ¼ãƒ‰åè¡¨ç¤º
 	getModeNameEx(category, 1);
 	StrCat(string[1], " MODE");
 
 	StrCat(string[0], string[1]);
 	printFont(1, 1, string[0], modecolor[category]);
 
-	// ƒ‰ƒ“ƒLƒ“ƒO•\¦
+	// ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤º
 	if(category == 0) {//beginner
 		printFont(1, 3, "HANABI RANKING", 1);
-	} else if(category == 9) {//‚Æ‚à‚æTI
+	} else if(category == 9) {//ã¨ã‚‚ã‚ˆTI
 		printFont(1, 3, "TI COURSE RANKING", 1);
-	} else if(category == 10) {//‚Æ‚à‚æEH
+	} else if(category == 10) {//ã¨ã‚‚ã‚ˆEH
 		printFont(1, 3, "E-HEART COURSE RANKING", 1);
-	} else if(category == 14) {//ƒGƒ“ƒhƒŒƒX
+	} else if(category == 14) {//ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹
 		printFont(1, 3, "ENDLESS RANKING", 1);
-	} else if((category >= 1) && (category <= 6)) {//ƒ}ƒXƒ^[E20G
+	} else if((category >= 1) && (category <= 6)) {//ãƒã‚¹ã‚¿ãƒ¼ãƒ»20G
 		printFont(1, 3, "GRANDMASTER RANKING", 1);
 	} else {
 		printFont(1,  3, "TIME TRIAL RANKING", 1);
 	}
 
-	if(category == 0)//ƒrƒM
+	if(category == 0)//ãƒ“ã‚®
 		printFont(1, 5  , "RANK  NAME  HANABI LEVEL  TIME", 2);
-	else if(category == 9)//‚Æ‚à‚æTI
+	else if(category == 9)//ã¨ã‚‚ã‚ˆTI
 		printFont(1, 5  , "RANK  NAME  STAGE  CLEAR  TIME", 2);
-	else if(category == 10)//‚Æ‚à‚æEH
+	else if(category == 10)//ã¨ã‚‚ã‚ˆEH
 		printFont(1, 5  , "RANK  NAME  STAGE         TIME", 2);
-	else if((category == 11)||(category == 12)||(category == 13))//aceŒn
+	else if((category == 11)||(category == 12)||(category == 13))//aceç³»
 		printFont(1, 5  , "RANK  NAME  LINES  LEVEL  TIME", 2);
-	else if(category == 14)//ƒGƒ“ƒhƒŒƒX
+	else if(category == 14)//ã‚¨ãƒ³ãƒ‰ãƒ¬ã‚¹
 		printFont(1, 5  , "RANK  NAME  LEVEL  MODE   TIME", 2);
 	else
 		printFont(1, 5  , "RANK  NAME  CLASS  LEVEL  TIME", 2);
@@ -276,7 +276,7 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 	}
 		for(i = 0; i < 5; i++) {
 			j = RankingGet(category, rankingrule);
-			// ‡ˆÊ
+			// é †ä½
 			if(i == 0) {sprintf(string[0], "1ST");
 			printFont(1, 6 + (i * 4)  , string[0], 2);
 			}
@@ -290,19 +290,19 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 			if(i == 4) sprintf(string[0], "5TH");
 			printFont(1, 6 + (i * 4)  , string[0], 0);
 
-			// –¼‘O
+			// åå‰
 			printFont(7, 6 + (i * 4)  , rkname[j + i], digitc[rkrots[j + i]]);
 
 			if(category == 0) {
-				// ƒXƒRƒA
+				// ã‚¹ã‚³ã‚¢
 				sprintf(string[0], "%d", rkdata[j + i]);
 				printFont(13, 6 + (i * 4)  , string[0],digitc[rkrots[j + i]]);
 
-				// ƒŒƒxƒ‹
+				// ãƒ¬ãƒ™ãƒ«
 				sprintf(string[0], "%d", rkother[j + i]);
         			printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 	         } else if( (category >= 1) && (category <= 8) ) {
-				// ’iˆÊ
+				// æ®µä½
                			sprintf(string[0], "%d", rkother[j + i]);
 				if((category == 7)||(category == 8)){//devil
 					printFont(13, 6 + (i * 4) , dgname[rkother[j + i]], digitc[rkrots[j + i]]);
@@ -312,10 +312,10 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 				else
 					printFont(13, 6 + (i * 4)  , gname2[rkdata[j + i]], digitc[rkrots[j + i]]);
 
-            // ƒŒƒxƒ‹
+            // ãƒ¬ãƒ™ãƒ«
             printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
          } else if((category == 9) || (category == 10)) {
-            // ƒXƒe[ƒW
+            // ã‚¹ãƒ†ãƒ¼ã‚¸
 
 				if(rkclear[j + i] == 2)
 					sprintf(string[0], "ALL");
@@ -329,21 +329,21 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 				}
 				printFont(13, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 
-				// ƒNƒŠƒA—¦
+				// ã‚¯ãƒªã‚¢ç‡
 				if(category == 9){
 				sprintf(string[0], "%d%%", rkother[j + i]);
 				printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 				}
-			} else if((category == 11)||(category == 12)||(category == 13)){//aceŒn
-				// ƒ‰ƒCƒ“
+			} else if((category == 11)||(category == 12)||(category == 13)){//aceç³»
+				// ãƒ©ã‚¤ãƒ³
 				sprintf(string[0], "%d", rkdata[j + i]);
 				printFont(13, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 
-				// ƒŒƒxƒ‹
+				// ãƒ¬ãƒ™ãƒ«
 				sprintf(string[0], "%d", rkother[j + i] + 1);
 				printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 			}else {
-			// ƒŒƒxƒ‹
+			// ãƒ¬ãƒ™ãƒ«
 				sprintf(string[0], "%d", rkdata[j + i]);
 				printFont(13, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 
@@ -354,11 +354,11 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 				printFont(20, 6 + (i * 4)  , string[0], digitc[rkrots[j + i]]);
 			}
 
-			// ƒ^ƒCƒ€
+			// ã‚¿ã‚¤ãƒ 
 			getTime(rktime2[j + i]);
 			printFont(27, 6 + (i * 4), string[0], digitc[rkrots[j + i]]);
 
-			// ƒ‰ƒCƒ“
+			// ãƒ©ã‚¤ãƒ³
 			if(rkclear[j + i] == 1) {
 			//printFont(20, 8+(i*4)  , "GREENLINE", 4);
 			ExBltRect(77, 110, (7 + (i * 4)  ) *8,  0, 2, 170, 2);
@@ -367,7 +367,7 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 			ExBltRect(77, 110, (7 + (i * 4)  ) *8,  0, 0, 170, 2);
 			}
 
-			// ‰ñ“]
+			// å›è»¢
 				if(rkrots[j + i]==0)sprintf(string[0], "HEBORIS");
 				if(rkrots[j + i]==1)sprintf(string[0], "TI-ARS");
 				if(rkrots[j + i]==2)sprintf(string[0], "TI-WORLD");
@@ -379,7 +379,7 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 				if(rkrots[j + i]==8)sprintf(string[0], "D.R.S");
 				printFont(27, 8 + (i * 4)  , string[0], fontc[rkrots[j + i]]);
 
-			// ƒƒ_ƒ‹
+			// ãƒ¡ãƒ€ãƒ«
 			if((category <= 8)||(category == 14)) {
 				if(rkac[j + i]) ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52 - rkac[j + i] * 13, 15, 12);
 					else ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52, 15, 12);
@@ -397,37 +397,37 @@ void RankingView2() {//5ˆÊ‚Ü‚Å
 		printFont(1, 28  , "< > GAME MODE", 0);
 
 }
-// ƒ‰ƒ“ƒLƒ“ƒO‚ğ•Û‘¶
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’ä¿å­˜
 void RankingSave2() {
 	int i, temp2[3];
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
-	// ƒwƒbƒ_
+	// ãƒ˜ãƒƒãƒ€
 	saveBuf[0] = 0x4F424549;
 	saveBuf[1] = 0x20534953;
 	saveBuf[2] = 0x48474949;
 	saveBuf[3] = 0x34764354;
 
-	// ƒ‰ƒ“ƒLƒ“ƒOƒf[ƒ^
+	// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ãƒ‡ãƒ¼ã‚¿
 	for(i = 0; i < (5 * 15 * 2); i++) {
-		// –¼‘O
+		// åå‰
 		StrCpy(&temp2, rkname[i]);
 		saveBuf[4 + i] = temp2[0];//1
 
-		// ’iˆÊ
+		// æ®µä½
 		saveBuf[4 + i + (5 * 15 * 2) * 1] = rkdata[i];//2
 
-		// ƒ^ƒCƒ€
+		// ã‚¿ã‚¤ãƒ 
 		saveBuf[4 + i + (5 * 15 * 2) * 2] = rktime2[i];//3
 
-		// ƒ[ƒ‹ƒNƒŠƒA
+		// ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢
 		saveBuf[4 + i + (5 * 15 * 2) * 3] = rkclear[i];//4
 
-		// ‚»‚Ì‘¼
+		// ãã®ä»–
 		saveBuf[4 + i + (5 * 15 * 2) * 4] = rkother[i];//5
 
-		// ƒƒ_ƒ‹ #LITE30.2
+		// ãƒ¡ãƒ€ãƒ« #LITE30.2
 		saveBuf[4 + i + (5 * 15 * 2) * 5] = rkac[i];//6
 		saveBuf[4 + i + (5 * 15 * 2) * 6] = rkst[i];//7
 		saveBuf[4 + i + (5 * 15 * 2) * 7] = rksk[i];//8
@@ -439,41 +439,41 @@ void RankingSave2() {
 	SaveFile("config/data/RANKING2.SAV", &saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO‚ğ“Ç‚İ‚İ
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’èª­ã¿è¾¼ã¿
 int RankingLoad2() {
 	int i, temp2[3];
 
-	// ƒwƒbƒ_‚¾‚¯“Ç‚İ‚İ
+	// ãƒ˜ãƒƒãƒ€ã ã‘èª­ã¿è¾¼ã¿
 	FillMemory(&saveBuf, 5000 * 4, 0);
 	LoadFile("config/data/RANKING2.SAV", &saveBuf, 16);
 
-	// ƒo[ƒWƒ‡ƒ“ˆá‚¢‚È‚ç‰Šú‰»
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³é•ã„ãªã‚‰åˆæœŸåŒ–
 	if(saveBuf[0] != 0x4F424549) return 1;
 	if(saveBuf[1] != 0x20534953) return 1;
 	if(saveBuf[2] != 0x48474949) return 1;
 	if(saveBuf[3] != 0x34764354) return 1;
 
-	// ‘S•”“Ç‚İ‚İ
+	// å…¨éƒ¨èª­ã¿è¾¼ã¿
 	LoadFile("config/data/RANKING2.SAV", &saveBuf, 1654 * 4);
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
-		// –¼‘O
+		// åå‰
 		temp2[0] = saveBuf[4 + i];
 		StrCpy(rkname[i], &temp2);
 
-		// ’iˆÊ
+		// æ®µä½
 		rkdata[i]  = saveBuf[4 + i + (5 * 15 * 2) * 1];
 
-		// ƒ^ƒCƒ€
+		// ã‚¿ã‚¤ãƒ 
 		rktime2[i]  = saveBuf[4 + i + (5 * 15 * 2) * 2];
 
-		// ƒ[ƒ‹ƒNƒŠƒA
+		// ãƒ­ãƒ¼ãƒ«ã‚¯ãƒªã‚¢
 		rkclear[i] = saveBuf[4 + i + (5 * 15 * 2) * 3];
 
-		// ‚»‚Ì‘¼
+		// ãã®ä»–
 		rkother[i] = saveBuf[4 + i + (5 * 15 * 2) * 4];
 
-		// ƒƒ_ƒ‹ #LITE30.2
+		// ãƒ¡ãƒ€ãƒ« #LITE30.2
 		rkac[i] = saveBuf[4 + i + (5 * 15 * 2) * 5];
 		rkst[i] = saveBuf[4 + i + (5 * 15 * 2) * 6];
 		rksk[i] = saveBuf[4 + i + (5 * 15 * 2) * 7];
@@ -485,12 +485,12 @@ int RankingLoad2() {
 	return 0;
 }
 
-// ƒ‰ƒ“ƒLƒ“ƒO‚ğ“Ç‚İ‘‚«‚·‚é‚Ég—p
+// ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã‚’èª­ã¿æ›¸ãã™ã‚‹æ™‚ã«ä½¿ç”¨
 int RankingGet(int rmode, int rrots) {
-	// •’Ê‚Ìƒ‚[ƒh
+	// æ™®é€šã®ãƒ¢ãƒ¼ãƒ‰
 	return ((rmode * 10) + (rrots * 5));
 }
-// ŠO•”‚©‚çƒ‰ƒ“ƒLƒ“ƒO‚Ìƒf[ƒ^‚ğg‚¢‚½‚¢‚Ég—p
+// å¤–éƒ¨ã‹ã‚‰ãƒ©ãƒ³ã‚­ãƒ³ã‚°ã®ãƒ‡ãƒ¼ã‚¿ã‚’ä½¿ã„ãŸã„æ™‚ã«ä½¿ç”¨
 int RankingGet2(int rmode,int rtype, int rrots,int player) {
 	int cat[2];
 	if((rrots==0)||(rrots==1)||(rrots==4)||(rrots==5)){
@@ -542,8 +542,8 @@ int RankingGet2(int rmode,int rtype, int rrots,int player) {
 	}
 	return ((cat[player] * 10) + (rankingrule * 5));
 }
-// 5–¼ ~ 15ƒ‚[ƒh ~ 2‰ñ“]ƒ‹[ƒ‹ƒ^ƒCƒv
-// –¼‘O‚ğŠi”[‚·‚é•Ï”(rkname)‚Ìƒƒ‚ƒŠ‚ğŠm•Û
+// 5å Ã— 15ãƒ¢ãƒ¼ãƒ‰ Ã— 2å›è»¢ãƒ«ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ—
+// åå‰ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°(rkname)ã®ãƒ¡ãƒ¢ãƒªã‚’ç¢ºä¿
 void RankingAlloc() {
 	int i;
 	if ( !allocked2 )
@@ -592,14 +592,14 @@ void getRuleNameEx( int rule, int number ) {
 		else if(rule == 1)
 			sprintf(string[number], "SRS");
 }
-//besttime(ACE‚Ì‚İ)
+//besttime(ACEã®ã¿)
 void viewbesttime(int player){
 	int	tmp,color;
 
 	if(Isbesttime==0)return;
 
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
-	/* ƒxƒXƒgƒ^ƒCƒ€ */
+	/* ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ  */
 	if( (gameMode[player] == 7) && ((!maxPlay) || (stat[1 - player] == 0)) ) {
 		printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 10, "BEST TIME", fontc[rots[player]]);
 
@@ -615,11 +615,11 @@ void viewbesttimes(int player){
 
 	if(Isbesttime==0)return;
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
-	/* ƒxƒXƒgƒ^ƒCƒ€ */
+	/* ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ  */
 	if( (gameMode[player] == 7) && ((!maxPlay) || (stat[1 - player] == 0)) ) {
-			//best‚Ì•¶š
+			//bestã®æ–‡å­—
 			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 251, 91, 21, 7);
-			//time‚Ì•¶š
+			//timeã®æ–‡å­—
 			ExBltRect(3, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 180, 119, 19, 7);
 			tmp = RankingGet2(gameMode[player], anothermode[player], rots[player],player);
 			if( ((rkdata[tmp] >= 150)&&(anothermode[player] <= 1)) || ((rkdata[tmp] >= 200)&&(anothermode[player] == 2)) )

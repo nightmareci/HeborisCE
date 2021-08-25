@@ -1,6 +1,6 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒfƒ‚‰æ–Ê‚Å‚Ì‘€ìó‹µ
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ‡ãƒ¢ç”»é¢ã§ã®æ“ä½œçŠ¶æ³
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void showControl(void) {
 	int		zx, zy, bai;
 	if(!onRecord[0]) return;
@@ -8,19 +8,19 @@ void showControl(void) {
 	zy = - getPressState(0, 0) + getPressState(0, 1);
 	bai = 10 + ((!zx) || (!zy)) * 4;
 
-	ExBltRect(3, 20 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 198, 38, 20, 20);				// ƒŒƒo[‚ÌƒJƒo[•”•ª
+	ExBltRect(3, 20 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 198, 38, 20, 20);				// ãƒ¬ãƒãƒ¼ã®ã‚«ãƒãƒ¼éƒ¨åˆ†
 
-	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 224 + getPressState(0, 4) * 32, 0, 32, 32);	// Aƒ{ƒ^ƒ“
-	ExBltRect(3, 64 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 132, 224 + getPressState(0, 5) * 32, 0, 32, 32);	// Bƒ{ƒ^ƒ“
-	ExBltRect(3, 84 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 138, 224 + getPressState(0, 6) * 32, 0, 32, 32);	// Cƒ{ƒ^ƒ“
-	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 144, 224 + getPressState(0, 7) * 32, 0, 32, 32); 	// Holdƒ{ƒ^ƒ“‚Ì‘€ìó‹µ #1.60c
+	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 224 + getPressState(0, 4) * 32, 0, 32, 32);	// Aãƒœã‚¿ãƒ³
+	ExBltRect(3, 64 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 132, 224 + getPressState(0, 5) * 32, 0, 32, 32);	// Bãƒœã‚¿ãƒ³
+	ExBltRect(3, 84 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 138, 224 + getPressState(0, 6) * 32, 0, 32, 32);	// Cãƒœã‚¿ãƒ³
+	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 144, 224 + getPressState(0, 7) * 32, 0, 32, 32); 	// Holdãƒœã‚¿ãƒ³ã®æ“ä½œçŠ¶æ³ #1.60c
 
-	ExBltRect(3, 14 + zx * bai + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 120 + zy * bai, 192, 0, 32, 32);	// ƒŒƒo[
+	ExBltRect(3, 14 + zx * bai + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 120 + zy * bai, 192, 0, 32, 32);	// ãƒ¬ãƒãƒ¼
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  HIDDENˆ—
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  HIDDENå‡¦ç†
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void hiddenProc(int player) {
 	if(hidden[player] == 0){
 		if(hiddeny[player] < 22)
@@ -110,44 +110,44 @@ void hiddenProc(int player) {
 		}
 	}
 	if(hidden[player] == 8){
-//		hiddeny[player] = 1;// hoge ‘S‚Ä‰B‚·
+//		hiddeny[player] = 1;// hoge å…¨ã¦éš ã™
 		if(pause[player])
 			hiddeny[player] = 21;
 	}
-	if(hidden[player] >= 9) shadow_timer_flag[player] = 1;//‚¶‚í‚¶‚í‰B‚ê‚é
+	if(hidden[player] >= 9) shadow_timer_flag[player] = 1;//ã˜ã‚ã˜ã‚éš ã‚Œã‚‹
 }
 
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒVƒƒƒhƒEƒ^ƒCƒ}[‰ğœ #1.60c7k7
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚·ãƒ£ãƒ‰ã‚¦ã‚¿ã‚¤ãƒãƒ¼è§£é™¤ #1.60c7k7
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void disableShadowTimer(int player) {
 	int i,j;
 	shadow_timer_flag[player] = 0;
 
-	// ‘S‚Ä‚ÌƒuƒƒbƒN‚ªŒ©‚¦‚é‚æ‚¤‚É‚·‚é
+	// å…¨ã¦ã®ãƒ–ãƒ­ãƒƒã‚¯ãŒè¦‹ãˆã‚‹ã‚ˆã†ã«ã™ã‚‹
 	for(i = 0; i < 10; i++)
 		for(j = 0; j < 22; j++) {
 			fldt[i + j * 10 + player * 220] = -1;
 		}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒ^ƒCƒ€‚ğŠÔ•\‹L‚É‚·‚é (string[0]‚ÉŠi”[‚µ‚Ä‚­‚ê‚Ü‚·)
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¿ã‚¤ãƒ ã‚’æ™‚é–“è¡¨è¨˜ã«ã™ã‚‹ (string[0]ã«æ ¼ç´ã—ã¦ãã‚Œã¾ã™)
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void getTime(int time) {
 	sprintf(string[0], "%02d:%02d:%02d", time / 3600, (time / 60) % 60, (time % 60) * 5 / 3);
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒ^ƒCƒ€‚ğ•b‚Ü‚Å‚ÌŠÔ•\‹L‚É‚·‚é (string[0]‚ÉŠi”[‚µ‚Ä‚­‚ê‚Ü‚·)
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¿ã‚¤ãƒ ã‚’ç§’ã¾ã§ã®æ™‚é–“è¡¨è¨˜ã«ã™ã‚‹ (string[0]ã«æ ¼ç´ã—ã¦ãã‚Œã¾ã™)
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void getSTime(int time) {
 	sprintf(string[0], "%02d:%02d", (time / 60) % 60, (time % 60) * 5 / 3);
 }
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒsƒ“ƒ`‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ”ãƒ³ãƒã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void pinchCheck(int player) {
 	int		i, j;
 
@@ -162,9 +162,9 @@ void pinchCheck(int player) {
 				break;
 			}
 }
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒsƒ“ƒ`‰ñ•œ‚Å‚«‚½‚©‚Ç‚¤‚©ƒ`ƒFƒbƒN2
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ”ãƒ³ãƒå›å¾©ã§ããŸã‹ã©ã†ã‹ãƒã‚§ãƒƒã‚¯2
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void pinchCheck2(int player) {
 	int		i, j;
 
@@ -177,24 +177,24 @@ void pinchCheck2(int player) {
 				break;
 			}
 }
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ”wŒi•\¦
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  èƒŒæ™¯è¡¨ç¤º
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void viewBack(void) {
 	int i, j, tmp;
 
 	if(backno == 61) tmp = 12;
 	else tmp = backno;
 
-	// ’Êí•`‰æ
+	// é€šå¸¸æç”»
 	if( (bgfadesw == 0) || (demo) ) {
 		//ExBltFast(10 + backno, 0, 0);
 
 		if(back_mov_f[tmp] == 0) {
-			// Ã~‰æ
+			// é™æ­¢ç”»
 			ExBltFastRect(10 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
-			// “®‰æ
+			// å‹•ç”»
 			ExBltFastRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
 
 			if(count % back_mov_inter[tmp] == 0)
@@ -207,7 +207,7 @@ void viewBack(void) {
 		return;
 	}
 
-	// ƒtƒF[ƒh–³Œø‚Ì”wŒiØ‚è‘Ö‚¦
+	// ãƒ•ã‚§ãƒ¼ãƒ‰ç„¡åŠ¹æ™‚ã®èƒŒæ™¯åˆ‡ã‚Šæ›¿ãˆ
 	// if(!enable_bgfade && bgfadesw) {
 
 	if(bgfadesw) {
@@ -220,10 +220,10 @@ void viewBack(void) {
 		//ExBltFast(10 + backno, 0, 0);
 
 		if(back_mov_f[tmp] == 0) {
-			// Ã~‰æ
+			// é™æ­¢ç”»
 			ExBltFastRect(10 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
-			// “®‰æ
+			// å‹•ç”»
 			ExBltFastRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
 
 			if(count % back_mov_inter[tmp] == 0)
@@ -269,9 +269,9 @@ void viewBack(void) {
 }
 
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒRƒA•\¦iSMALLj
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ã‚³ã‚¢è¡¨ç¤ºï¼ˆSMALLï¼‰
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void viewScoreSmall(void) {
 	int		i, color,tmp, j,k[2],zoomx[2],zoomy[2],gradecolor[2],bps[2],bps1[2],bps2[2],add;
 
@@ -291,14 +291,14 @@ void viewScoreSmall(void) {
 				if( ((gameMode[i] <= 2) && (enable_grade[i] != 0) && (enable_grade[i] != 4) && (!examination[i])) ||
 					((gameMode[i] == 3) && ( (grade[i] > 0) && (!devil_minus[i]) )) )
 					ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 42, 35, 7);
-					//’iˆÊ(ƒGƒtƒFƒNƒg’†)
+					//æ®µä½(ã‚¨ãƒ•ã‚§ã‚¯ãƒˆä¸­)
 				if(gflash[i] > 108) {
 					k[i] =  gflash[i] -96;
 					zoomx[i] = (90 * k[i] /12 - 90) / 2;
 					zoomy[i] = (24 * k[i] /12 - 24) / 2;
 					k[i] = 65536 * k[i] / 12;
 					if(((gameMode[i]==1)||(gameMode[i]==2))&&(enable_grade[i]!=4)){
-					// ”ñDEVIL
+					// éDEVIL
 						if(grade[i]==32) {
 							if(enable_grade[i]==1){//GM
 							ExBltRectR(26,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+180,90,32,k[i],k[i]);
@@ -307,7 +307,7 @@ void viewScoreSmall(void) {
 							ExBltRectR(26,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+150,90,30,k[i],k[i]);
 							}
 						} else if( grade[i] >= 28 ) {
-							// MK`MM
+							// MKã€œMM
 							ExBltRectR(26,188-zoomx[i]+add + 52 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((grade[i]-28)*25),90,24,k[i],k[i]);
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
@@ -318,34 +318,34 @@ void viewScoreSmall(void) {
 							ExBltRectR(26,188-zoomx[i]+add + 64 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((0)*24),90,24,k[i],k[i]);
 							}
 						} else if( grade[i] >= 18 ) {
-							// m1`m9
+							// m1ã€œm9
 							ExBltRectR(26,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 180 ,(gradecolor[i]*216)+((grade[i]-18)*24),90,24,k[i],k[i]);
 						} else if( grade[i] >= 9 ) {
-							// S1`S9
+							// S1ã€œS9
 							ExBltRectR(26,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 90 ,(gradecolor[i]*216)+((grade[i]-9)*24),90,24,k[i],k[i]);
 						} else {
-							// 9`1
+							// 9ã€œ1
 							ExBltRectR(26,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 0 ,(gradecolor[i]*216)+(grade[i]*24),90,24,k[i],k[i]);
 						}
 					}else if(gameMode[i]==3){
 						// DEVIL
 						if( (grade[i] > 0) || (!devil_minus[i]) ) {
-							// S1`S13
+							// S1ã€œS13
 							if(grade[i]== 15)  //Gm
 								ExBltRectR(26,188- zoomx[i] +add + 54 * i - 96 * maxPlay, 40- zoomy[i], 450 ,(gradecolor[i]*216)+150,90,30,k[i],k[i]);
 							else if(grade[i] == 14)  //m
 								ExBltRectR(26,188- zoomx[i] +add + 58 * i - 96 * maxPlay, 40- zoomy[i],450 ,(gradecolor[i]*216)+((0)*24),90,24,k[i],k[i]);
-							else if(grade[i] >= 10)  //S10`S13‚Æ2‚Â”ò‚Î‚µ‚Ägod
+							else if(grade[i] >= 10)  //S10ã€œS13ã¨2ã¤é£›ã°ã—ã¦god
 								ExBltRectR(26,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)),k[i],k[i]);
-							else if(grade[i] > 0)//S9ˆÈ‰º
+							else if(grade[i] > 0)//S9ä»¥ä¸‹
 								ExBltRectR(26,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24,k[i],k[i]);
-							else  //1iDOOM‚Ì‚İj
+							else  //1ï¼ˆDOOMã®ã¿ï¼‰
 								ExBltRectR(26,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 0 ,(gradecolor[i]*216)+192,90,24,k[i],k[i]);
 						}
 					}
-				}else{//(ƒGƒtƒFƒNƒgˆÈŠO)
+				}else{//(ã‚¨ãƒ•ã‚§ã‚¯ãƒˆä»¥å¤–)
 					if(((gameMode[i]==1)||(gameMode[i]==2))&&(enable_grade[i]!=4)){
-					// ”ñDEVIL
+					// éDEVIL
 						if(grade[i]==32) {
 							if(enable_grade[i]==1){
 								//GM
@@ -355,7 +355,7 @@ void viewScoreSmall(void) {
 								ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
 							}
 						} else if( grade[i] >= 28 ) {
-							// MK`MM
+							// MKã€œMM
 							ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((grade[i]-28)*24),90,24);
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
@@ -366,28 +366,28 @@ void viewScoreSmall(void) {
 							ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
 							}
 						} else if( grade[i] >= 18 ) {
-							// m1`m9
+							// m1ã€œm9
 							ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 180 ,(gradecolor[i]*216)+((grade[i]-18)*24),90,24);
 						} else if( grade[i] >= 9 ) {
-							// S1`S9
+							// S1ã€œS9
 							ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-9)*24),90,24);
 						} else {
-							// 9`1
+							// 9ã€œ1
 							ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+(grade[i]*24),90,24);
 						}
 					}else if(gameMode[i]==3){
 						// DEVIL
 						if( (grade[i] > 0) || (!devil_minus[i]) ) {
-							// S1`S13
+							// S1ã€œS13
 							if(grade[i]== 15)  //Gm
 								ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
 							else if(grade[i] == 14)  //m
 								ExBltRect(26,188+add + 58 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((0)*24),90,24);
-							else if(grade[i] >= 10)  //S10`S13
+							else if(grade[i] >= 10)  //S10ã€œS13
 								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)));
-							else if(grade[i] > 0) //S9ˆÈ‰º
+							else if(grade[i] > 0) //S9ä»¥ä¸‹
 								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24);
-							else if(stat[i] != 2)  //1iDOOM‚Ì‚İj
+							else if(stat[i] != 2)  //1ï¼ˆDOOMã®ã¿ï¼‰
 								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+192,90,24);
 						}
 					}
@@ -407,7 +407,7 @@ void viewScoreSmall(void) {
 						ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
 					}
 				} else if( exam_grade[i] >= 28 ) {
-					// MK`MM
+					// MKã€œMM
 					ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((exam_grade[i]-28)*24),90,24);
 				} else if( exam_grade[i] == 27 ) {
 					if((enable_grade[i] == 2)||(enable_grade[i] == 4)){
@@ -418,13 +418,13 @@ void viewScoreSmall(void) {
 					ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
 					}
 				} else if( exam_grade[i] >= 18 ) {
-					// m1`m9
+					// m1ã€œm9
 					ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 180 ,(gradecolor[i]*216)+((exam_grade[i]-18)*24),90,24);
 				} else if( exam_grade[i] >= 9 ) {
-					// S1`S9
+					// S1ã€œS9
 					ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((exam_grade[i]-9)*24),90,24);
 				} else {
-					// 9`1
+					// 9ã€œ1
 					ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+(exam_grade[i]*24),90,24);
 				}
 			}
@@ -454,15 +454,15 @@ void viewScoreSmall(void) {
 				//GRADE INFO
 				if(enable_grade[i]==1){
 					ExBltRect(85, 208+add + 48 * i - 96 * maxPlay, 86, 0, 7*29, 100, 14);
-					if(grade[i] < 17){	// Ÿ‚Ì’iˆÊ
+					if(grade[i] < 17){	// æ¬¡ã®æ®µä½
 						if(i) sprintf(string[0], "%6d", gscore[grade[i]]);
 						else sprintf(string[0], "%d", gscore[grade[i]]);
 						printSMALLFont(220+add + 48 * i - 96 * maxPlay, 94, string[0], color);
-					}else {	// Ÿ‚Ì’iˆÊ
+					}else {	// æ¬¡ã®æ®µä½
 						sprintf(string[0], ";;;;;;");
 						printSMALLFont(220+add + 48 * i - 96 * maxPlay, 94, string[0], color);
 					}
-				}else if(enable_grade[i] == 2){	// Œ»İ‚Ìƒ|ƒCƒ“ƒg
+				}else if(enable_grade[i] == 2){	// ç¾åœ¨ã®ãƒã‚¤ãƒ³ãƒˆ
 					ExBltRect(85, 208+add + 61 * i - 96 * maxPlay, 86, 70, 12*7, 35, 7);
 					if(i) {sprintf(string[0], "%7d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
 					}else{ sprintf(string[0], "%d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
@@ -472,7 +472,7 @@ void viewScoreSmall(void) {
 					}else{
 						printSMALLFont(208+add + 52 * i - 96 * maxPlay, 94, string[0], 2);
 					}
-				}else if(enable_grade[i] == 4){	// Œ»İ‚ÌƒXƒs[ƒh
+				}else if(enable_grade[i] == 4){	// ç¾åœ¨ã®ã‚¹ãƒ”ãƒ¼ãƒ‰
 					ExBltRect(85, 208+add + 62 * i - 96 * maxPlay, 86, 70, 11*7, 35, 7);
 					if(i) sprintf(string[0], "%7d", tr2[i]);
 					else sprintf(string[0], "%d", tr2[i]);
@@ -505,7 +505,7 @@ void viewScoreSmall(void) {
 			}
 
 // VERSUS or ITEM MODE
-			if(item_name[i])	//ƒAƒCƒeƒ€–¼
+			if(item_name[i])	//ã‚¢ã‚¤ãƒ†ãƒ å
 				ExBltRect(28, 80 + i * 192+(96*(!maxPlay)), 0, 0, (item_name[i] - 1) * 16, 48, 16);
 			if( (gameMode[i] == 4) || (item_mode[i])) {
 				if(gameMode[i] == 4){
@@ -517,34 +517,34 @@ void viewScoreSmall(void) {
 					//POINTS
 					for(j = 1; j <= winpoint; j++)
 						ExBltRect(54,228 + add + 44 * i - 96,24 + (12 * j),12 * (j <= vs_points[i]),75,12,12);
-					// ƒAƒCƒeƒ€ƒQ[ƒW
+					// ã‚¢ã‚¤ãƒ†ãƒ ã‚²ãƒ¼ã‚¸
 					if(!noitem) {
 						//ITEM
 						ExBltRect(85, 208+add + 78 * i - 96, 57, 0, 56, 18, 7);
 						if(i) sprintf(string[0], "%2d", item_inter[i] - item_g[i] );
 						else sprintf(string[0], "%d", item_inter[i] - item_g[i] );
 						printSMALLFont(208+add + 84 * i - 96, 65, string[0], color);
-						ExBltRect(54,210 + 79 * i - 96,80,0,0,12,75);//’†g
-						ExBltRect(54,210 + 79 * i - 96,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//–Ú‰B‚µ
+						ExBltRect(54,210 + 79 * i - 96,80,0,0,12,75);//ä¸­èº«
+						ExBltRect(54,210 + 79 * i - 96,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//ç›®éš ã—
 
-						if(ismiss[i]){//~‚Ì‚µ‚é‚µ
+						if(ismiss[i]){//Ã—ã®ã—ã‚‹ã—
 							ExBltRect(3,208 + 83 * i - 96, 50, 274, 370, 27, 27);
 							if(repversw >= 62){
 								ExBltRect(3,228 + 38 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
 							}
-						}if (itemappear_c[i] > 0){  //ƒtƒ‰ƒbƒVƒ…
+						}if (itemappear_c[i] > 0){  //ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
 							if((itemappear_c[i]%2)==0)
 								ExBltRect(54,210 + 79 * i - 96,80,24,0,12,75);
 							itemappear_c[i]--;
 						}
 					}
-				} else if(item_mode[i]){//ƒAƒCƒeƒ€ƒ‚[ƒh‚Ì‚Íƒƒ_ƒ‹‚Æ”í‚é‚Ì‚Å¶‚É”z’u
-					ExBltRect(54,98 + 304 * i - 96 * maxPlay,80,0,0,12,75);//’†g
-					ExBltRect(54,98 + 304 * i - 96 * maxPlay,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//–Ú‰B‚µ
-					if(ismiss[i]){//~‚Ì‚µ‚é‚µ
+				} else if(item_mode[i]){//ã‚¢ã‚¤ãƒ†ãƒ ãƒ¢ãƒ¼ãƒ‰ã®æ™‚ã¯ãƒ¡ãƒ€ãƒ«ã¨è¢«ã‚‹ã®ã§å·¦ã«é…ç½®
+					ExBltRect(54,98 + 304 * i - 96 * maxPlay,80,0,0,12,75);//ä¸­èº«
+					ExBltRect(54,98 + 304 * i - 96 * maxPlay,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//ç›®éš ã—
+					if(ismiss[i]){//Ã—ã®ã—ã‚‹ã—
 						if(repversw < 62) ExBltRect(3,98 + 304 * i - 96 * maxPlay, 50, 274, 370, 27, 27);
 					}
-					if (itemappear_c[i] > 0){  //ƒtƒ‰ƒbƒVƒ…
+					if (itemappear_c[i] > 0){  //ãƒ•ãƒ©ãƒƒã‚·ãƒ¥
 						if((itemappear_c[i]%2)==0)
 							ExBltRect(54,98 + 304 * i - 96 * maxPlay,80,24,0,12,75);
 						itemappear_c[i]--;//100
@@ -570,7 +570,7 @@ void viewScoreSmall(void) {
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 32, 228, 112, 26, 7);
 
 				if((stage[i] >= 26) && (ending[i] == 3)){
-					// ALLi•\¦ğŒ‚ğ•ÏX C7T3.2j
+					// ALLï¼ˆè¡¨ç¤ºæ¡ä»¶ã‚’å¤‰æ›´ C7T3.2ï¼‰
 					printSMALLFont(208+add + 78 * i - 96 * maxPlay, 40, "ALL", count % 9);
 				} else if ((stage[i] > 19) && (stage[i] <= 26)) {
 					// EX
@@ -589,7 +589,7 @@ void viewScoreSmall(void) {
 					sprintf(string[0], "FP%d", stage[i] - 99);
 					printSMALLFont(208+add-(6*(i)) + 78 * i - 96 * maxPlay, 40, string[0], color);
 				} else {
-					// ’Êí
+					// é€šå¸¸
 					if(i) sprintf(string[0], "%2d", stage[i] + 1);
 					else sprintf(string[0], "%d", stage[i] + 1);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
@@ -598,7 +598,7 @@ void viewScoreSmall(void) {
 				sprintf(string[0], "%d", rest_pblock[i] );
 				printSMALLFont(208+add + 90 * i - 96 * maxPlay, 58, string[0], color);
 				if(stage[i] <= 26){
-				// CLEAR—¦
+				// CLEARç‡
 					if((!t_training[i]) && (stage[i] <= 26)) {
 						ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 68, 0, 4*7, 26, 7);
 						if(i) sprintf(string[0], "%3d>", clearp[i] );
@@ -612,17 +612,17 @@ void viewScoreSmall(void) {
 					if(i) sprintf(string[0], "%7d", sc[i]);
 					else sprintf(string[0], "%d", sc[i]);
 					printSMALLFont(208+add + 55 * i - 96 * maxPlay, 76, string[0], color);
-					//˜g‚Ì‰º‚É•\¦‚µ‚Ä‚ ‚éƒ{[ƒiƒX
+					//æ ã®ä¸‹ã«è¡¨ç¤ºã—ã¦ã‚ã‚‹ãƒœãƒ¼ãƒŠã‚¹
 					printFont(14 + 24 * i - 12 * maxPlay, 25, "BONUS", fontc[rots[i]]);
 					sprintf(string[0], "%5d", FP_bonus[i] );
 					printFont(20 + 24 * i - 12 * maxPlay, 25, string[0], color);
 				}
 				if((!maxPlay)&&(!ending[i])) {
-					// BESTƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€
+					// BESTã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ 
 					viewbestSTtimes(i);
 				}
-				// MIRROR‚È‚Ç‚ÌŠeíƒMƒ~ƒbƒN•\¦
-				// DUAL‚¾‚Æ’·‚¢‚Ì‚Å’Zk‚µ‚½ #1.60c7l9 stage‚Ì‰º‚É‚µ‚Ü‚µ‚½
+				// MIRRORãªã©ã®å„ç¨®ã‚®ãƒŸãƒƒã‚¯è¡¨ç¤º
+				// DUALã ã¨é•·ã„ã®ã§çŸ­ç¸®ã—ãŸ #1.60c7l9 stageã®ä¸‹ã«ã—ã¾ã—ãŸ
 				if( tomoyo_waits[i])
 					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "BOOST", fontc[rots[i]]);
 				else if( isfmirror[i] )
@@ -632,7 +632,7 @@ void viewScoreSmall(void) {
 				else if( xray_flag[i] )
 					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "X Ray", fontc[rots[i]]);
 				else if( color_flag[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Color", fontc[rots[i]]);	// #1.60c7p9ex‰ü‘¢
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Color", fontc[rots[i]]);	// #1.60c7p9exæ”¹é€ 
 				else if( IsBig[i] )
 					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Death", fontc[rots[i]]);
 				else if( blind_flag[i] )
@@ -648,12 +648,12 @@ void viewScoreSmall(void) {
 					sprintf(string[0],"%d",nextc[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 15, string[0], color);
 
-					// ŒÅ’è‚µ‚½‰ñ”
+					// å›ºå®šã—ãŸå›æ•°
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 16, "BDOWN", fontc[rots[i]]);
 					sprintf(string[0],"%d",bdowncnt[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 17, string[0], color);
 
-					// Á‹‚µ‚½‰ñ”
+					// æ¶ˆå»ã—ãŸå›æ•°
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 18, "ERASE", fontc[rots[i]]);
 					sprintf(string[0],"%d",erasecnt[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 19, string[0], color);
@@ -674,7 +674,7 @@ void viewScoreSmall(void) {
 					printSMALLFont((26 + 6 * i - 12 * maxPlay)*8+add, 58, string[0], color);
 					// BEST TIME
 					if(ranking_type==1){
-						viewbesttimes(i);//i–{‘Ì‚Íranking2.cj
+						viewbesttimes(i);//ï¼ˆæœ¬ä½“ã¯ranking2.cï¼‰
 					}else if(ranking_type==2){
 						viewbesttimes3(i,(26 + 8 * i - 12 * maxPlay)*8+add,68,0);
 					}
@@ -712,9 +712,9 @@ void viewScoreSmall(void) {
 									32*fontc[rots[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 						}
 					}else{
-						/* BEST TIME STDƒ‚[ƒh‚Í‚±‚Á‚¿*/
+						/* BEST TIME STDãƒ¢ãƒ¼ãƒ‰ã¯ã“ã£ã¡*/
 						if(ranking_type==1){
-						viewbesttimes(i);//i–{‘Ì‚Íranking2.cj
+						viewbesttimes(i);//ï¼ˆæœ¬ä½“ã¯ranking2.cï¼‰
 						}else if(ranking_type==2){
 						viewbesttimes3(i,(26 + 7 * i - 12 * maxPlay)*8+add,32,0);
 						}
@@ -727,15 +727,15 @@ void viewScoreSmall(void) {
 						ExBltRect(85, 238+add + 45* i - 96 * maxPlay, 50, 70, 0,7, 7);
 						ExBltRect(85, 244+add + 45 * i - 96 * maxPlay, 50, 70, 7*9,35, 7);
 					}
-					if(time[i]>120){//ŠJn“ñ•b‚Í•\¦‚³‚¹‚È‚¢
+					if(time[i]>120){//é–‹å§‹äºŒç§’ã¯è¡¨ç¤ºã•ã›ãªã„
 						bps[i] = (li[i] * 100 *60*60) / (time[i]);
-						bps1[i] = bps[i] / 100;//®”
-						bps2[i] = bps[i] % 100;//‰ºOŒ…
+						bps1[i] = bps[i] / 100;//æ•´æ•°
+						bps2[i] = bps[i] % 100;//ä¸‹ä¸‰æ¡
 						if(i) {sprintf(string[0], "%3d?", bps1[i]);
 						}else {sprintf(string[0], "%d?", bps1[i]);
 						}
 						printSMALLFont(208+add + 62 * i - 96 * maxPlay, 58+10*i, string[0], color);
-						//‰º2Œ…
+						//ä¸‹2æ¡
 						if(bps2[i]>=10){
 							if(i) {sprintf(string[0], "%2d", bps2[i]);
 							}else {sprintf(string[0], "%d", bps2[i]);
@@ -764,15 +764,15 @@ void viewScoreSmall(void) {
 
 					if(time[i]>120){
 						bps[i] = (bdowncnt[i] * 10000*60) / (time[i]);
-						bps1[i] = bps[i] / 10000;//®”
-						bps2[i] = bps[i] % 10000;//‰ºOŒ…
+						bps1[i] = bps[i] / 10000;//æ•´æ•°
+						bps2[i] = bps[i] % 10000;//ä¸‹ä¸‰æ¡
 						if(i) {
 							sprintf(string[0], "%2d?", bps1[i]);
 						}else {
 							sprintf(string[0], "%d?", bps1[i]);
 						}
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 78+8*i, string[0], color);
-						//‰º4Œ…
+						//ä¸‹4æ¡
 						if(bps2[i]>=1000){
 							if(i) {sprintf(string[0], "%4d", bps2[i]);
 							}else {sprintf(string[0], "%d", bps2[i]);
@@ -817,11 +817,11 @@ void viewScoreSmall(void) {
 						ExBltRect(85, 234+add + 34 * i - 96 * maxPlay, 50, 70, 0,7, 7);
 						ExBltRect(85, 240+add + 34 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
 					}
-					//SCORE/ƒ‰ƒCƒ“
+					//SCORE/ãƒ©ã‚¤ãƒ³
 
 					if((time[i]>120)&&(li[i]>0)){
-						bps1[i] = sc[i] / li[i];//®”
-						bps2[i] = sc[i] % li[i];//‰ºOŒ…
+						bps1[i] = sc[i] / li[i];//æ•´æ•°
+						bps2[i] = sc[i] % li[i];//ä¸‹ä¸‰æ¡
 						if(i) {sprintf(string[0], "%2d?", bps1[i]);
 						}else {sprintf(string[0], "%d?", bps1[i]);
 						}
@@ -835,7 +835,7 @@ void viewScoreSmall(void) {
 								if(i) {sprintf(string[0], "0%d", bps2[i]);
 								}else {sprintf(string[0], "0%d", bps2[i]);
 								}
-							}//®”‚Ì’l‚É‚æ‚Á‚Ä‰ºOŒ…‚ğ‚¸‚ç
+							}//æ•´æ•°ã®å€¤ã«ã‚ˆã£ã¦ä¸‹ä¸‰æ¡ã‚’ãšã‚‰
 							printSMALLFont(218+(8*(bps1[i]>=10))+(8*(bps1[i]>=100))+(8*(bps1[i]>=1000))+add + 84 * i - 96 * maxPlay, 58+8*i, string[0], color);
 						}else{
 							if(i) sprintf(string[0], "%2d", 0);
@@ -865,19 +865,19 @@ void viewScoreSmall(void) {
 			}
 
 
-			// ƒŒƒxƒ‹•”•ª
+			// ãƒ¬ãƒ™ãƒ«éƒ¨åˆ†
 			if(dtc && (gameMode[i] <= 9)) {
-					// TGMƒVƒŠ[ƒY•—ƒJƒEƒ“ƒ^	#1.60c
+					// TGMã‚·ãƒªãƒ¼ã‚ºé¢¨ã‚«ã‚¦ãƒ³ã‚¿	#1.60c
 				if((!fpbas_mode[i])&&(gameMode[i]!=5)) {
 					if((gameMode[i]>=7)&&(gameMode[i]<=9)){
 						if((gameMode[i] != 8) || (mission_type[c_mission] != 23)){
 							// NORM
 							if(gameMode[i]!=9){
-								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//norm‚Ì•¶š‰æ‘œ
+								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normã®æ–‡å­—ç”»åƒ
 							}else{
-								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 0, 7*5, 25, 7);//GOAL‚Ì•¶š
+								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 0, 7*5, 25, 7);//GOALã®æ–‡å­—
 							}
-							/* •ª‚µ */
+							/* åˆ†ã— */
 							if(gameMode[i] == 7) sprintf(string[0], "%3d", li[i]);
 							else if(gameMode[i] == 8)sprintf(string[0], "%3d", c_norm[i]);
 							else if(gameMode[i] == 9) {
@@ -889,14 +889,14 @@ void viewScoreSmall(void) {
                             }
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 169, string[0], color);
 
-							/* ‰¡ü */
+							/* æ¨ªç·š */
 							ExBltRect(3,218 + 61 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 							if((sp[i] <= 600) && (!isboost[i])) {
 								ExBltFastRect(3,219 + 61 * i - 96 * maxPlay,181, 60- (( sp[i] * 24 ) / 660 ),37 ,22,1);
 							}else{
 								ExBltFastRect(3,219 + 62 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
-							/* •ª‚Ú */
+							/* åˆ†ã¼ */
 							if((gameMode[i] == 7)&&(anothermode[i]!=3)) sprintf(string[0], "%3d", lv[i] * 10);
 							else if((gameMode[i] == 7)&&(anothermode[i]==3)) sprintf(string[0], ";;;");
 							else if(gameMode[i] == 8)sprintf(string[0], "%3d", mission_norm[c_mission]);
@@ -909,13 +909,13 @@ void viewScoreSmall(void) {
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 185, string[0], color);
 						}
 					}else if((gameMode[i]==4)&&(wintype==1)){//line
-						ExBltRect(85, 208 + 75 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//norm‚Ì•¶š‰æ‘œ
-						/* •ªq */
+						ExBltRect(85, 208 + 75 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normã®æ–‡å­—ç”»åƒ
+						/* åˆ†å­ */
 						sprintf(string[0], "%3d", li[i]);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
 
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
-						// ’†g
+						// ä¸­èº«
 						if((sp[i] <= 600) && (!isboost[i])) {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
@@ -925,30 +925,30 @@ void viewScoreSmall(void) {
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 					}else{//LINE
 
-						ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 63 + (210 * ((gameMode[i] == 3) && (!devil_minus[i]))), 26, 7);//LEVEL‚Ì•¶š‰æ‘œ
-						/* •ªq */
+						ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 63 + (210 * ((gameMode[i] == 3) && (!devil_minus[i]))), 26, 7);//LEVELã®æ–‡å­—ç”»åƒ
+						/* åˆ†å­ */
 						sprintf(string[0], "%3d", tc[i]);
 
-						// -1‚È‚ç0‚Æ•\¦‚·‚é(“à•”“I‚É‚ÍÅ‰‚Í-1‚É‚È‚Á‚Ä‚¢‚é)#1.60c7i7
+						// -1ãªã‚‰0ã¨è¡¨ç¤ºã™ã‚‹(å†…éƒ¨çš„ã«ã¯æœ€åˆã¯-1ã«ãªã£ã¦ã„ã‚‹)#1.60c7i7
 						if(tc[i] == -1) {
 							sprintf(string[0], "%3d", 0);
 						}
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
 
-						/* ‰¡ü */
-						// ‰¡ü‚Ì˜g #1.60c7o3
+						/* æ¨ªç·š */
+						// æ¨ªç·šã®æ  #1.60c7o3
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
-						// ’†g
+						// ä¸­èº«
 						if((sp[i] <= 600) && (!isboost[i])) {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
 
-						/* •ª•ê */
+						/* åˆ†æ¯ */
 						if(ending[i]) {
-							// BEGINNER‚ÆDEVIL‚É‘Î‰‚µ‚½‚Â‚à‚è#1.60c7g4
-							// ‚Æ‚èƒJƒ“‚É‚à‘Î‰‚µ‚½‚Â‚à‚è#1.60c7g7
+							// BEGINNERã¨DEVILã«å¯¾å¿œã—ãŸã¤ã‚‚ã‚Š#1.60c7g4
+							// ã¨ã‚Šã‚«ãƒ³ã«ã‚‚å¯¾å¿œã—ãŸã¤ã‚‚ã‚Š#1.60c7g7
 							sprintf(string[0], "%3d", tc[i]);
 						} else if((gameMode[i]==0)&&(novice_mode[i])){
 							sprintf(string[0], "%3d", 300);
@@ -959,36 +959,36 @@ void viewScoreSmall(void) {
 						} else if((gameMode[i]==4)&&(wintype==1)){
 							sprintf(string[0], "%3d", vs_goal/10);
 						}else {
-							// DEVIL‚Å‚Ì•\¦C³#1.60c7h5
+							// DEVILã§ã®è¡¨ç¤ºä¿®æ­£#1.60c7h5
 							sprintf(string[0], "%3d", tc[i] / 100 * 100 + 100 - (tc[i] >= 900) *(gameMode[i] <= 2));
 						}
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 					}
 				}else if(gameMode[i] == 5){
-						if(p_goaltype==2){//ƒ‰ƒCƒ“
-							ExBltRect(85, 208 + 68 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//norm‚Ì•¶š‰æ‘œ
-							/* •ªq */
+						if(p_goaltype==2){//ãƒ©ã‚¤ãƒ³
+							ExBltRect(85, 208 + 68 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normã®æ–‡å­—ç”»åƒ
+							/* åˆ†å­ */
 							sprintf(string[0], "%3d", li[i]);
 
-							// -1‚È‚ç0‚Æ•\¦‚·‚é(“à•”“I‚É‚ÍÅ‰‚Í-1‚É‚È‚Á‚Ä‚¢‚é)#1.60c7i7
+							// -1ãªã‚‰0ã¨è¡¨ç¤ºã™ã‚‹(å†…éƒ¨çš„ã«ã¯æœ€åˆã¯-1ã«ãªã£ã¦ã„ã‚‹)#1.60c7i7
 							if(li[i] == -1) {
 								sprintf(string[0], "%3d", 0);
 							}
-						}else if(p_goaltype==3){//ƒuƒƒbƒN
-							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*2, 30, 7);//BLOCK‚Ì•¶š‰æ‘œ
-							/* •ªq */
+						}else if(p_goaltype==3){//ãƒ–ãƒ­ãƒƒã‚¯
+							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*2, 30, 7);//BLOCKã®æ–‡å­—ç”»åƒ
+							/* åˆ†å­ */
 							sprintf(string[0], "%3d", bdowncnt[i]);
 
-								// -1‚È‚ç0‚Æ•\¦‚·‚é(“à•”“I‚É‚ÍÅ‰‚Í-1‚É‚È‚Á‚Ä‚¢‚é)#1.60c7i7
+								// -1ãªã‚‰0ã¨è¡¨ç¤ºã™ã‚‹(å†…éƒ¨çš„ã«ã¯æœ€åˆã¯-1ã«ãªã£ã¦ã„ã‚‹)#1.60c7i7
 							if(tc[i] == -1) {
 								sprintf(string[0], "%3d", 0);
 							}
 						}else{
-							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š‰æ‘œ
-							/* •ªq */
+							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—ç”»åƒ
+							/* åˆ†å­ */
 							sprintf(string[0], "%3d", tc[i]);
 
-							// -1‚È‚ç0‚Æ•\¦‚·‚é(“à•”“I‚É‚ÍÅ‰‚Í-1‚É‚È‚Á‚Ä‚¢‚é)#1.60c7i7
+							// -1ãªã‚‰0ã¨è¡¨ç¤ºã™ã‚‹(å†…éƒ¨çš„ã«ã¯æœ€åˆã¯-1ã«ãªã£ã¦ã„ã‚‹)#1.60c7i7
 							if(tc[i] == -1) {
 								sprintf(string[0], "%3d", 0);
 							}
@@ -996,38 +996,38 @@ void viewScoreSmall(void) {
 
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
 
-						/* ‰¡ü */
-						// ‰¡ü‚Ì˜g #1.60c7o3
+						/* æ¨ªç·š */
+						// æ¨ªç·šã®æ  #1.60c7o3
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
-						// ’†g
+						// ä¸­èº«
 						if((sp[i] <= 600) && (!isboost[i])) {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
 							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
 
-						/* •ª•ê */
+						/* åˆ†æ¯ */
 						if(p_goaltype==1) {
 							sprintf(string[0], "%3d", p_goaltypenumlist[p_goaltypenum]*10);
 						} else if((p_goaltype==2)||(p_goaltype==3)){
 							sprintf(string[0], "%3d", p_goaltypenumlist[p_goaltypenum]);
 						} else {
-							// DEVIL‚Å‚Ì•\¦C³#1.60c7h5
+							// DEVILã§ã®è¡¨ç¤ºä¿®æ­£#1.60c7h5
 							sprintf(string[0], "%3d", tc[i] / 100 * 100 + 100 - (tc[i] >= 900) *(gameMode[i] <= 2));
 						}
 							printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 				}else{
-					// HEBORISƒŒƒxƒ‹‚Ì•\¦ˆÊ’u‚ğTGMƒŒƒxƒ‹‚Æ“¯‚¶‚É‚µ‚½ #1.60c7i2
-					ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVEL‚Ì•¶š‰æ‘œ
+					// HEBORISãƒ¬ãƒ™ãƒ«ã®è¡¨ç¤ºä½ç½®ã‚’TGMãƒ¬ãƒ™ãƒ«ã¨åŒã˜ã«ã—ãŸ #1.60c7i2
+					ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELã®æ–‡å­—ç”»åƒ
 					if(i) sprintf(string[0], "%4d", lv[i]);
 					else sprintf(string[0], "%d", lv[i]);
 					printSMALLFont(208 + 72 * i - 96 * maxPlay, 169, string[0], color);
 				}
 			}
-			/* ƒƒ_ƒ‹•\¦ */
-			// ğŒ•ªŠò‚ğŠÈ—ª‰»
+			/* ãƒ¡ãƒ€ãƒ«è¡¨ç¤º */
+			// æ¡ä»¶åˆ†å²ã‚’ç°¡ç•¥åŒ–
 			if((gameMode[i] != 0)&&(gameMode[i] != 4) && (gameMode[i] <= 5)&&(stat[i]!=2)) {
-				if( medaltype == 0 ) {//ƒƒ_ƒ‹ŠG‚Ímedal.bmp
+				if( medaltype == 0 ) {//ãƒ¡ãƒ€ãƒ«çµµã¯medal.bmp
 					// AC
 					if(medal_ac[i]) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 122, 0, 13 * (4-medal_ac[i]), 15, 12);
@@ -1042,7 +1042,7 @@ void viewScoreSmall(void) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 135, 32, 52, 15, 12);
 					}
 
-					// CO(==‚È‚Ì‚Íó‘Ô‚ÅŒ©‚Ä‚é‚©‚ç)
+					// CO(==ãªã®ã¯çŠ¶æ…‹ã§è¦‹ã¦ã‚‹ã‹ã‚‰)
 					if(medal_co[i]) {
 						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 148, 80, 13 * (4-medal_co[i]), 15, 12);
 					} else if(medal_info) {
@@ -1056,13 +1056,13 @@ void viewScoreSmall(void) {
 						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 148, 48, 52, 15, 12);
 					}
 
-					// ST(==‚È‚Ì‚Íó‘Ô‚ÅŒ©‚Ä‚é‚©‚ç)
+					// ST(==ãªã®ã¯çŠ¶æ…‹ã§è¦‹ã¦ã‚‹ã‹ã‚‰)
 					if(medal_st[i]) {
 						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 122, 16, 13 * (4-medal_st[i]), 15, 12);
-					} else if(medal_info) {	// –¢“_“”‚Å‚Í•\¦‚µ‚È‚¢ #1.60c7q2ex
+					} else if(medal_info) {	// æœªç‚¹ç¯ã§ã¯è¡¨ç¤ºã—ãªã„ #1.60c7q2ex
 						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 122, 16, 52, 15, 12);
 					}
-				} else if( medaltype == 1 ) {//ƒƒ_ƒ‹ŠG‚Ímedal_ti.bmp
+				} else if( medaltype == 1 ) {//ãƒ¡ãƒ€ãƒ«çµµã¯medal_ti.bmp
 					// AC
 					if(medal_ac[i]) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 122, 0, 12 * (4-medal_ac[i]), 16, 12);
@@ -1077,7 +1077,7 @@ void viewScoreSmall(void) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 135, 32, 48, 16, 12);
 					}
 
-					// CO(==‚È‚Ì‚Íó‘Ô‚ÅŒ©‚Ä‚é‚©‚ç)
+					// CO(==ãªã®ã¯çŠ¶æ…‹ã§è¦‹ã¦ã‚‹ã‹ã‚‰)
 					if(medal_co[i]) {
 						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 148, 80, 12 * (4-medal_co[i]), 16, 12);
 					} else if(medal_info) {
@@ -1091,14 +1091,14 @@ void viewScoreSmall(void) {
 						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 148, 48, 48, 16, 12);
 					}
 
-					// ST(==‚È‚Ì‚Íó‘Ô‚ÅŒ©‚Ä‚é‚©‚ç)
+					// ST(==ãªã®ã¯çŠ¶æ…‹ã§è¦‹ã¦ã‚‹ã‹ã‚‰)
 					if(medal_st[i]) {
 						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 122, 16, 12 * (4-medal_st[i]), 16, 12);
-					} else if(medal_info) {	// –¢“_“”‚Å‚Í•\¦‚µ‚È‚¢ #1.60c7q2ex
+					} else if(medal_info) {	// æœªç‚¹ç¯ã§ã¯è¡¨ç¤ºã—ãªã„ #1.60c7q2ex
 						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 122, 16, 48, 16, 12);
 					}
 				}
-			/* ƒƒ_ƒ‹‰ñ”•\¦ */
+			/* ãƒ¡ãƒ€ãƒ«å›æ•°è¡¨ç¤º */
 				// AC
 				if( medal_info ) {
 					if(i) sprintf(string[0],"%2d",allclear[i]);
@@ -1117,23 +1117,23 @@ void viewScoreSmall(void) {
 					else sprintf(string[0],"%d",rescue[i]);
 					printTinyFont(225 + 51 * i - 96 * maxPlay, 153, string[0]);
 				// ST
-					if(i) sprintf(string[0],"%2d",stp[i]);//ƒvƒ‰ƒ`ƒi
+					if(i) sprintf(string[0],"%2d",stp[i]);//ãƒ—ãƒ©ãƒãƒŠ
 					else sprintf(string[0],"%d",stp[i]);
 					printTinyFont(233 + 18 * i - 96 * maxPlay, 134, string[0]);
-					if(i) sprintf(string[0],"%2d",stg[i]);//‹à
+					if(i) sprintf(string[0],"%2d",stg[i]);//é‡‘
 					else sprintf(string[0],"%d",stg[i]);
 					printTinyFont(239 + 18 * i - 96 * maxPlay, 134, string[0]);
-					if(i) sprintf(string[0],"%2d",sts[i]);//‹â
+					if(i) sprintf(string[0],"%2d",sts[i]);//éŠ€
 					else sprintf(string[0],"%d",sts[i]);
 					printTinyFont(245 + 18 * i - 96 * maxPlay, 134, string[0]);
-					if(i) sprintf(string[0],"%2d",stb[i]);//“º
+					if(i) sprintf(string[0],"%2d",stb[i]);//éŠ…
 					else sprintf(string[0],"%d",stb[i]);
 					printTinyFont(251 + 18 * i - 96 * maxPlay, 134, string[0]);
 				}
 			}
 
-			// WAIT’l•\¦
-			// SMALL‘Î‰ #1.60c7m9
+			// WAITå€¤è¡¨ç¤º
+			// SMALLå¯¾å¿œ #1.60c7m9
 			if((!hide_wait) || ((gameMode[i] == 9) && (std_opt[i] <= 1))) {
 				sprintf(string[0], "%3d", wait1[i]);				// wait1
 				printSMALLFont(202 + 68 * i - 96 * maxPlay, 208, string[0], color);
@@ -1155,9 +1155,9 @@ void viewScoreSmall(void) {
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒƒ_ƒ‹•ƒ^ƒCƒ€•\¦
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ¡ãƒ€ãƒ«ï¼†ã‚¿ã‚¤ãƒ è¡¨ç¤º
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void viewTime(void) {
 	int		i, color, j,tmp,tmp1;
 	int		color2,mp;
@@ -1166,14 +1166,14 @@ void viewTime(void) {
 
 	for(i = 0; i < 1 + mp; i++) {
 		color = (count % 4 / 2) * (sp[i] >= 1200) * digitc[rots[i]];
-		/* ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€•\¦ */
+		/* ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ è¡¨ç¤º */
 		if(!hide_st_record) {
 			// split time and lap time
-			// ƒ^ƒCƒ€‚ª00:00:00‚Ì‚Í•\¦‚µ‚È‚¢ #1.60c7l1
+			// ã‚¿ã‚¤ãƒ ãŒ00:00:00ã®æ™‚ã¯è¡¨ç¤ºã—ãªã„ #1.60c7l1
 			if(gameMode[i]!=10) {
 				if(tc[i] >= st_record_interval_tgm * 10) {
-					// SINGLE‘ä‚È‚ç¶‘¤‚Élap_time‚ğ, ‰E‘¤‚Ésplit_time•`‰æ
-					// ‹L˜^ƒ^ƒCƒ€‚ğƒVƒ“ƒOƒ‹‘ä‚Å‚à‰E‘¤‚Éo‚·İ’è’Ç‰Á #1.60c7j8
+					// SINGLEå°ãªã‚‰å·¦å´ã«lap_timeã‚’, å³å´ã«split_timeæç”»
+					// è¨˜éŒ²ã‚¿ã‚¤ãƒ ã‚’ã‚·ãƒ³ã‚°ãƒ«å°ã§ã‚‚å³å´ã«å‡ºã™è¨­å®šè¿½åŠ  #1.60c7j8
 					if((!maxPlay)&&(!st_record_force_viewright)) {
 						for(j = 0; j < (tc[i] / (st_record_interval_tgm * 10)); j++) {
 							if( (lap_time[j] != 0) && (split_time[j] != 0) ) {
@@ -1185,7 +1185,7 @@ void viewTime(void) {
 								printFont(32, j, string[0], color);
 							}
 						}
-					// MASTER‚ÅL999‚Ìê‡‚Í•\¦‚ª”í‚Á‚Ä‚µ‚Ü‚¤‚½‚ß”ñ•\¦ #1.60c7k7
+					// MASTERã§L999ã®å ´åˆã¯è¡¨ç¤ºãŒè¢«ã£ã¦ã—ã¾ã†ãŸã‚éè¡¨ç¤º #1.60c7k7
 					} else if( (gameMode[i] >= 3) || (tc[i] != 999) ) {
 						j = split_time[tc[i] / (st_record_interval_tgm * 10) - 1 + i * 130];
 						if(j != 0) {
@@ -1200,9 +1200,9 @@ void viewTime(void) {
 						}
 					}
 				}
-				// MASTER‚Ì900`999 #1.60c7k7
+				// MASTERã®900ã€œ999 #1.60c7k7
 				if((gameMode[i] >= 1) && (gameMode[i] <= 2) && (tc[i] == 999)) {
-					// ƒVƒ“ƒOƒ‹‘ä
+					// ã‚·ãƒ³ã‚°ãƒ«å°
 					if((!maxPlay)&&(!st_record_force_viewright)) {
 						if( (lap_time[9] != 0) && (split_time[9] != 0) ) {
 							printFont(0, 9, " 999", fontc[rots[i]]);
@@ -1211,7 +1211,7 @@ void viewTime(void) {
 							getTime(split_time[9]);
 							printFont(32, 9, string[0], color);
 						}
-					// ƒ_ƒuƒ‹‘ä
+					// ãƒ€ãƒ–ãƒ«å°
 					} else {
 						j = split_time[1000 / (st_record_interval_tgm * 10) - 1 + i * 130];
 						if(j != 0){
@@ -1228,8 +1228,8 @@ void viewTime(void) {
 				}
 			} else {
 				if(lv[i] >= st_record_interval_heb) {
-					// SINGLE‘ä‚È‚ç¶‘¤‚Élap_time‚ğ, ‰E‘¤‚Ésplit_time‚ğ•`‰æ
-					// ‹L˜^ƒ^ƒCƒ€‚ğƒVƒ“ƒOƒ‹‘ä‚Å‚à‰E‘¤‚Éo‚·İ’è’Ç‰Á #1.60c7j8
+					// SINGLEå°ãªã‚‰å·¦å´ã«lap_timeã‚’, å³å´ã«split_timeã‚’æç”»
+					// è¨˜éŒ²ã‚¿ã‚¤ãƒ ã‚’ã‚·ãƒ³ã‚°ãƒ«å°ã§ã‚‚å³å´ã«å‡ºã™è¨­å®šè¿½åŠ  #1.60c7j8
 					if((!maxPlay)&&(!st_record_force_viewright)) {
 						for(j = 0; j < (lv[i] / st_record_interval_heb); j++) {
 							if( (lap_time[j] != 0) && (split_time[j] != 0) ) {
@@ -1258,25 +1258,25 @@ void viewTime(void) {
 			}
 		}
 
-		/* ƒ^ƒCƒ€•\¦ */
+		/* ã‚¿ã‚¤ãƒ è¡¨ç¤º */
 		if(time[i] > 359999) time[i] = 359999;
 
-		// ‹vƒ‚[ƒh
+		// æŒä¹…ãƒ¢ãƒ¼ãƒ‰
 		if( gameMode[i] != 6 ) {
 			if( (ending[i] == 2) && ((gameMode[i] == 5) || (debug)) ) {
-				getTime(3740 - edrec[i]);	// ƒGƒ“ƒfƒBƒ“ƒOc‚èŠÔ
+				getTime(3740 - edrec[i]);	// ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°æ®‹ã‚Šæ™‚é–“
 			} else if( ((gameMode[i] == 7)&(anothermode[i]!=3)) || (gameMode[i] == 8) ||((gameMode[i]==9)&&(std_opt[i]==1))||((gameMode[i]==5)&&(p_goaltype==4))) {
-				getTime(ltime[i]);			// ACEƒ‚[ƒh§ŒÀŠÔ
+				getTime(ltime[i]);			// ACEãƒ¢ãƒ¼ãƒ‰åˆ¶é™æ™‚é–“
 			} else {
-				getTime(time[i]);			// Œo‰ßŠÔ
+				getTime(time[i]);			// çµŒéæ™‚é–“
 			}
 
 			if( (gameMode[i] == 4) && (i == 0) ) {
-				// ‘Îí—p
+				// å¯¾æˆ¦ç”¨
 				if(vs_time == 0) {
 					ExBltRect(81, 110 - 96, 215,0,228+18*english, 100, 18);
 				} else {
-					// §ŒÀŠÔ #1.60c7r5
+					// åˆ¶é™æ™‚é–“ #1.60c7r5
 					color2 = (count % 4 / 2) * (ltime[i] <= 15 * 60) * 2;
 					getTime(ltime[i]);
 					printBIGFont(112, 216, string[0], color2);
@@ -1288,7 +1288,7 @@ void viewTime(void) {
 					ExBltRect(85, 135, 100, 0, 7*16+vsmodesl*7, 100, 7);
 				}
 			} else if(gameMode[i] != 4) {
-				// ’Êí
+				// é€šå¸¸
 	//			color2 = color;
 				if((gameMode[i] == 8) && (((ending[i] == 2) || (ending[i] == 3)) && (mission_end[c_mission] >= 4)) ){
 					if(3740 - edrec[i] < 600)
@@ -1307,21 +1307,21 @@ void viewTime(void) {
 				}
 			}
 		}
-		// TOMOYOƒ‚[ƒh
+		// TOMOYOãƒ¢ãƒ¼ãƒ‰
 		else {
-			// ’ÊíƒXƒe[ƒW
+			// é€šå¸¸ã‚¹ãƒ†ãƒ¼ã‚¸
 			if( stage[i] <= 19 ) {
-				// ƒXƒe[ƒWƒ^ƒCƒ€
+				// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚¿ã‚¤ãƒ 
 				getTime(stime[i]);
 				printFont(16 + 24 * i - 12 * maxPlay, 27, string[0], 1);
 
-				// ƒŠƒ~ƒbƒgƒ^ƒCƒ€
+				// ãƒªãƒŸãƒƒãƒˆã‚¿ã‚¤ãƒ 
 				color2 = (count % 4 / 2) * (ltime[i] <= 10 * 60) * 2;
 				getTime(ltime[i]);
 				printFont(16 + 24 * i - 12 * maxPlay, 28, string[0], color2);
 			}
 
-			// EXƒXƒe[ƒW #1.60c7m1fpbas_mode
+			// EXã‚¹ãƒ†ãƒ¼ã‚¸ #1.60c7m1fpbas_mode
 			else if(!fpbas_mode[i]){
 				if(ltime[i] <= 10 * 60){
 					color2 = (count % 4 / 2) * 2;
@@ -1331,7 +1331,7 @@ void viewTime(void) {
 				getTime(ltime[i]);
 				printBIGFont(112 + 192 * i - 96 * maxPlay, 216, string[0], color2);
 			}else {
-				getTime(time[i]);			// Œo‰ßŠÔ
+				getTime(time[i]);			// çµŒéæ™‚é–“
 				printBIGFont(112 + 192 * i - 96 * maxPlay, 216, string[0], color);
 			}
 		}
@@ -1349,7 +1349,7 @@ void viewTime(void) {
 		} else if(tspin_c[i]){
 				printFont(19 + 24 * i - 12 * maxPlay, 26, "e 4", (count % 4 / 2) * digitc[rots[i]]);
 		} else if((hidden[i] > 0) && (!hide_hidden)&&(hidden[i]<8)) {
-			// HIDDEN LV•\¦ (‰B‚·İ’è‚ğ’Ç‰Á#1.60c7i9)
+			// HIDDEN LVè¡¨ç¤º (éš ã™è¨­å®šã‚’è¿½åŠ #1.60c7i9)
 			printFont(15 + 24 * i - 12 * maxPlay, 26, "HIDDEN LV", 2);
 			sprintf(string[0], "%1d", hidden[i]);
 			printFont(24 + 24 * i - 12 * maxPlay, 26, string[0], 0);
@@ -1371,7 +1371,7 @@ void viewTime(void) {
 
 		if(upLines[i]) {//lineup
 			if((!hebo_plus[i]) && (gameMode[i] != 5) && (gameMode[i] >= 4) && ((timeOn[i]) || (gameMode[i] == 8))){
-				sprintf(string[0], "%2dLINE UP", upLines[i] );	// ‚¹‚è‚ ‚ª‚éƒ‰ƒCƒ“”
+				sprintf(string[0], "%2dLINE UP", upLines[i] );	// ã›ã‚Šã‚ãŒã‚‹ãƒ©ã‚¤ãƒ³æ•°
 				printFont(15 + 24 * i - 12 * maxPlay, 28-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), string[0], fontc[rots[i]]);
 				tmp1 = 0;
 				if(gameMode[i] != 6)
@@ -1418,7 +1418,7 @@ void viewTime(void) {
 			sprintf(string[0], "%d", item_timer[i] / 60 );
 			printBIGFont(152 + 192 * i - 96 * maxPlay, 96, string[0], 0);
 		}
-		if(debug){		// ”’lƒ`ƒFƒbƒN—pƒXƒy[ƒX	ƒoƒOƒ`ƒFƒbƒN‚É‚Ç‚¤‚¼B
+		if(debug){		// æ•°å€¤ãƒã‚§ãƒƒã‚¯ç”¨ã‚¹ãƒšãƒ¼ã‚¹	ãƒã‚°ãƒã‚§ãƒƒã‚¯ã«ã©ã†ãã€‚
 			sprintf(string[0], "STAT:%2d", stat[i] );
 			printFont(25 + 7 * i - 12 * maxPlay, 0, string[0], 1);
 			sprintf(string[0], "0:%3d", statc[i * 10] );
@@ -1463,7 +1463,7 @@ void viewTime(void) {
 		}
 	}
 }
-//PRACTICEI—¹‚Ìƒ‰ƒCƒ“Á‹î•ñ
+//PRACTICEçµ‚äº†æ™‚ã®ãƒ©ã‚¤ãƒ³æ¶ˆå»æƒ…å ±
 void viewLineInfo(void){
 
 	sprintf(string[0], "SINGLE %3d", p_erase_c[0]);
@@ -1510,7 +1510,7 @@ void viewLineInfo(void){
 		}
 	}
 }
-// B to B ‚Åux1.5v‚ğo‚·‚©‚Ç‚¤‚©‚Ì”»’è
+// B to B ã§ã€Œx1.5ã€ã‚’å‡ºã™ã‹ã©ã†ã‹ã®åˆ¤å®š
 int isScore(int player) {
 	if((gameMode[player] < 4) && (ending[player] < 2)) return 1;
 	else if(gameMode[player] == 5) return 1;
@@ -1519,40 +1519,40 @@ int isScore(int player) {
 	else return 0;
 }
 void viewScore(void) {
-	// •`‰æˆ—‚Í•Ê‚ÌŠÖ”‚É•ª‚¯‚Ü‚µ‚½ #1.60c7m9
+	// æç”»å‡¦ç†ã¯åˆ¥ã®é–¢æ•°ã«åˆ†ã‘ã¾ã—ãŸ #1.60c7m9
 	viewScoreSmall();
 	viewTime();
 	if(gameMode[0] == 8) viewMission();	// mission.c
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒtƒB[ƒ‹ƒh‚Ì•`‰æ
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// Big‘Î‰ #1.60c7
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®æç”»
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// Bigå¯¾å¿œ #1.60c7
 void viewField(void) {
 	int		b, i, j, k, fi, color, add, tmp[4];
 	int		gm;	// gamemode #1.60c7f4
-	int		fldt3, fldt4, fldt5;	//ƒVƒƒƒhƒEƒ^ƒCƒ}[‚Å‚¤‚Á‚·‚ç‚ÆÁ‚¦‚Ä‚¢‚­‰‰o‚Ég—p #1.60c7j9
+	int		fldt3, fldt4, fldt5;	//ã‚·ãƒ£ãƒ‰ã‚¦ã‚¿ã‚¤ãƒãƒ¼ã§ã†ã£ã™ã‚‰ã¨æ¶ˆãˆã¦ã„ãæ¼”å‡ºã«ä½¿ç”¨ #1.60c7j9
 	int		mp;
-	int		tmp_x1, tmp_x2, tmp_y;	// ˜g•\¦—p
+	int		tmp_x1, tmp_x2, tmp_y;	// æ è¡¨ç¤ºç”¨
 
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
 
-	// ƒtƒB[ƒ‹ƒh˜g
+	// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰æ 
 	viewFldFrame(0,0);
 	if(maxPlay) viewFldFrame(0,1);
 
 	for(i = 0; i <= mp; i++) {
 		if(skip_viewbg) ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
 
-		// ƒCƒŒƒCƒT[‚Ìü #1.60c7s2
+		// ã‚¤ãƒ¬ã‚¤ã‚µãƒ¼ã®ç·š #1.60c7s2
 		if( (gameMode[0] == 8) && (i == 0)  && ((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39))){
 			viewEraserLines();
 		}
 
-		// ƒtƒB[ƒ‹ƒh‚ğ•`‰æ
-		// ƒIƒ}ƒP
+		// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚’æç”»
+		// ã‚ªãƒã‚±
 		if((gameMode[i] == 4) && (upLineT[i] == 3) && (timeOn[i])){
 				for(j = 0; j < 5; j++)
 					for(k = 0; k < 10; k++) {
@@ -1568,7 +1568,7 @@ void viewField(void) {
 						}
 					}
 		}
-		// TOMOYO ‚¹‚èã‚ª‚èƒtƒB[ƒ‹ƒhƒGƒfƒBƒ^g—p’†
+		// TOMOYO ã›ã‚Šä¸ŠãŒã‚Šãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚¨ãƒ‡ã‚£ã‚¿ä½¿ç”¨ä¸­
 		if((stat[i] == 18) && (statc[i * 10 + 1] == 2)){
 				for(j = 0; j < 20; j++)
 					for(k = 0; k < 10; k++) {
@@ -1583,7 +1583,7 @@ void viewField(void) {
 							ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+1+ 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
 						}
 					}
-		//’Êí
+		//é€šå¸¸
 		} else if((!pause[i]) || (debug) || ((gameMode[i] == 5) && (pause[i]))) {
 			for(b = 0; b < 2; b++)
 				for(j = 0; j < hiddeny[i]; j++)
@@ -1593,7 +1593,7 @@ void viewField(void) {
 						fldt4 = fldt[k + j * 10 + i * 220] * 32;
 						fldt5 = 256 - (fldt[k + j * 10 + i * 220] * 32);
 
-						// ƒAƒCƒeƒ€‚Ìê‡‚ÍŒ©‚½–Ú‚ğ•Ï‚¦‚é #1.60c7n1
+						// ã‚¢ã‚¤ãƒ†ãƒ ã®å ´åˆã¯è¦‹ãŸç›®ã‚’å¤‰ãˆã‚‹ #1.60c7n1
 						if( fldi[k + j * 10 + i * 220] ) {
 							fi = 17 + fldi[k + j * 10 + i * 220] - 1;
 						}
@@ -1602,14 +1602,14 @@ void viewField(void) {
 							add = 9;
 							fi = fi + 9;
 						}
-						if((item_monochrome[i]) && (fi != -1)){	//ƒAƒCƒeƒ€‚É‚æ‚é[ ]
+						if((item_monochrome[i]) && (fi != -1)){	//ã‚¢ã‚¤ãƒ†ãƒ ã«ã‚ˆã‚‹[ ]
 							fi = 8;
 							add = 0;
 						}
 						if(fi != -1) {
 							if(!b) {
 								if ( iscolor[i] ) {
-									// COLORƒ‚[ƒhŒvZ #1.60c7p9ex
+									// COLORãƒ¢ãƒ¼ãƒ‰è¨ˆç®— #1.60c7p9ex
 									color = k;
 									if ( color >= 5 ) color = 9 - color;
 									color = color_tbl_max - ( (((20 - j) + color) * 4 + color_counter[i]) % color_tbl_max );
@@ -1617,7 +1617,7 @@ void viewField(void) {
 								} else if(thunder_timer){
 									color = Rand(8)+6;
 								} else if((fldi[k + j * 10 + i * 220] == fldisno) || (fldi[k + j * 10 + i * 220] == fldigsno)) {
-								// ³•ûŒ`
+								// æ­£æ–¹å½¢
 									if(flds[k + j * 10 + i * 220] >= -10) {
 										color = 17 + flds[k + j * 10 + i * 220];
 										flds[k + j * 10 + i * 220]--;
@@ -1635,12 +1635,12 @@ void viewField(void) {
 								}
 							//	if(hidden[i] == 8) color = 20;
 								if ( ( color <= 16 ) && ( (!isxray[i]) || (xray_counter[i] % p_xray_frame == k) ) && (!isblind[i])){
-									// ƒtƒB[ƒ‹ƒhƒ^ƒCƒ}[‚ª1`8‚È‚ç‚»‚ÌƒuƒƒbƒN‚Í”¼“§–¾‚É‚È‚é(8’iŠK)
-									// 0‚È‚ç‚»‚ÌƒuƒƒbƒN‚ÍŠ®‘S“§–¾‚Æ‚È‚é
-									// ‚»‚êˆÈŠO‚Ì’l‚È‚ç–³Œø(’Êí‚Ì•`‰æ)
+									// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã‚¿ã‚¤ãƒãƒ¼ãŒ1ã€œ8ãªã‚‰ãã®ãƒ–ãƒ­ãƒƒã‚¯ã¯åŠé€æ˜ã«ãªã‚‹(8æ®µéš)
+									// 0ãªã‚‰ãã®ãƒ–ãƒ­ãƒƒã‚¯ã¯å®Œå…¨é€æ˜ã¨ãªã‚‹
+									// ãã‚Œä»¥å¤–ã®å€¤ãªã‚‰ç„¡åŠ¹(é€šå¸¸ã®æç”»)
 									if((!isdark[i]) || ((isdark[i]) && (item_timer[i] > 420) && (item_timer[i] % 2 == 0))){
 										if((fldt3 >= 1) && (fldt3 <= 8)) {
-											// ƒ^ƒCƒ}[‚ª8ˆÈ‰º1ˆÈã‚È‚ç”¼“§–¾•`‰æ‚ÅÁ‚¦‚Ä‚¢‚­ #1.60c7k2
+											// ã‚¿ã‚¤ãƒãƒ¼ãŒ8ä»¥ä¸‹1ä»¥ä¸Šãªã‚‰åŠé€æ˜æç”»ã§æ¶ˆãˆã¦ã„ã #1.60c7k2
 											if((disable_giji3D < 4) && (!iscolor[i]) && (getFieldBlock(i, k + (1-2*i), j, 0) == 0) && (add == 0) && (fi != 8) && (fi != 9) && (heboGB[i]==0)){
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
@@ -1650,7 +1650,7 @@ void viewField(void) {
 											BlendExBltRect(getBlockPlaneNo(i, fi),(k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j+ 3) * 8 + ofs_y2[i],
 												((fi+add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8 ,fldt4,fldt4,fldt4,fldt5,fldt5,fldt5);
 										} else if((fldt3 != 0) && (fldt3 > -10)) {
-											// ƒ^ƒCƒ}[‚ª0‚È‚ç–³‹‚·‚é #1.60c7k4
+											// ã‚¿ã‚¤ãƒãƒ¼ãŒ0ãªã‚‰ç„¡è¦–ã™ã‚‹ #1.60c7k4
 											if((disable_giji3D < 4) && (!iscolor[i]) && (getFieldBlock(i, k + (1-2*i), j, 0) == 0) && (add == 0) && (fi != 8) && (fi != 9) && (heboGB[i]==0)){
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
@@ -1663,38 +1663,38 @@ void viewField(void) {
 									}
 								}
 							} else {
-								// X-RAY’†‚Íˆê•”•ª‚¾‚¯˜g‚ğ•`‚­ #1.60c7p9ex‰ü‘¢
+								// X-RAYä¸­ã¯ä¸€éƒ¨åˆ†ã ã‘æ ã‚’æã #1.60c7p9exæ”¹é€ 
 								if( (isblind[i]) || (blockflash != 2) && ( (!isxray[i]) || ( (xray_counter[i] % p_xray_frame == k) && (!xray_drawblockframe) ) ) ) {
-									// PRACTICE‚Ì2P‘¤‚Å[]‚Ì˜gü‚ªo‚È‚¢‚æ‚¤‚ÉC³#1.60c7k2
+									// PRACTICEã®2På´ã§[]ã®æ ç·šãŒå‡ºãªã„ã‚ˆã†ã«ä¿®æ­£#1.60c7k2
 									if( ((fi != 8)&&(fi != 9) && (add == 0)) || (isblind[i])) {
-										// ƒVƒƒƒhƒEƒ^ƒCƒ}[‚ªc‚Á‚Ä‚¢‚½‚ç˜g‚ğ•`‰æ #1.60c7k1
-										// ƒ^ƒCƒ}[‚ª-1i‚¹‚èã‚ª‚è‚Ü‚½‚Í‰Šú”z’uj‚Èê‡‚à•\¦‚µ‚Ä‚İ‚é #1.60c7k3
-										// ğŒ‚ğ’Pƒ‰»(‚µ‚·‚¬H) #1.60c7k6
-										// NOTE: if(fldt3 == -1A1`8)‚ÌğŒ‚ğíœ‚·‚é‚ÆDTET•—‚ÉB
+										// ã‚·ãƒ£ãƒ‰ã‚¦ã‚¿ã‚¤ãƒãƒ¼ãŒæ®‹ã£ã¦ã„ãŸã‚‰æ ã‚’æç”» #1.60c7k1
+										// ã‚¿ã‚¤ãƒãƒ¼ãŒ-1ï¼ˆã›ã‚Šä¸ŠãŒã‚Šã¾ãŸã¯åˆæœŸé…ç½®ï¼‰ãªå ´åˆã‚‚è¡¨ç¤ºã—ã¦ã¿ã‚‹ #1.60c7k3
+										// æ¡ä»¶ã‚’å˜ç´”åŒ–(ã—ã™ãï¼Ÿ) #1.60c7k6
+										// NOTE: if(fldt3 == -1ã€1ã€œ8)ã®æ¡ä»¶ã‚’å‰Šé™¤ã™ã‚‹ã¨DTETé¢¨ã«ã€‚
 										if( (fldt3 == -1) || ((fldt3 != 0) && (fldt3 >= 8) && (m_roll_blockframe)) || ((isblind[i]) && (fldt3 != 0)) || (fldt3 < -1) || ((gameMode[i] == 5) && (pause[i]))) {
-											// €‚ñ‚¾‚Æ‚«˜g‚ğÁ‚· #1.60c7k9
-											// COLOR’†‚Í˜g‚ğ•`‚©‚È‚¢#1.60c7p9ex
+											// æ­»ã‚“ã ã¨ãæ ã‚’æ¶ˆã™ #1.60c7k9
+											// COLORä¸­ã¯æ ã‚’æã‹ãªã„#1.60c7p9ex
 											if(( !color_flag[i] && ((!dead_blockframe) || (gameMode[i] == 5) || (stat[i] != 7)) )&& (heboGB[i]==0) || (isblind[i])) {
-												// ƒtƒB[ƒ‹ƒh’[‚Å‚Í˜g‚Ìˆê•”•ª‚ğ•\¦‚µ‚È‚¢ #1.60c7s5
+												// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ç«¯ã§ã¯æ ã®ä¸€éƒ¨åˆ†ã‚’è¡¨ç¤ºã—ãªã„ #1.60c7s5
 												if((!isdark[i]) || ((gameMode[i] == 5) && (pause[i]))){
-													// VE˜güˆ—
-													if(fldt3 <= -10) add = 60 + fldt3 + 20;	//TI•—Á‚¦ƒ[ƒ‹
+													// æ–°ãƒ»æ ç·šå‡¦ç†
+													if(fldt3 <= -10) add = 60 + fldt3 + 20;	//TIé¢¨æ¶ˆãˆãƒ­ãƒ¼ãƒ«æ™‚
 													else if(isblind[i]) add = 10;
 													else add = 0;
-													tmp[0] = getFieldBlock(i, k - 1, j    , 0);	//¶
-													tmp[1] = getFieldBlock(i, k + 1, j    , 0);	//‰E
-													tmp[2] = getFieldBlock(i, k    , j - 1, 0);	//ã
-													tmp[3] = getFieldBlock(i, k    , j + 1, 0);	//‰º
-													// ¶
+													tmp[0] = getFieldBlock(i, k - 1, j    , 0);	//å·¦
+													tmp[1] = getFieldBlock(i, k + 1, j    , 0);	//å³
+													tmp[2] = getFieldBlock(i, k    , j - 1, 0);	//ä¸Š
+													tmp[3] = getFieldBlock(i, k    , j + 1, 0);	//ä¸‹
+													// å·¦
 													if(tmp[0] == 0)
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
-													// ‰E
+													// å³
 													if(tmp[1] == 0)
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
-													// ã
+													// ä¸Š
 													if(tmp[2] == 0)
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
-													// ‰º
+													// ä¸‹
 													if(tmp[3] == 0)
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
 													add = 0;
@@ -1719,7 +1719,7 @@ void viewField(void) {
 				color = 5;
 			}
 
-			// HIDDEN LV8‚È‚çATAP‚ÌƒVƒƒƒh[ƒ[ƒ‹•—‚É #1.60c7d
+			// HIDDEN LV8ãªã‚‰ã€TAPã®ã‚·ãƒ£ãƒ‰ãƒ¼ãƒ­ãƒ¼ãƒ«é¢¨ã« #1.60c7d
 			if(hidden[i] != 8) {
 				for(j = hiddeny[i]; j < 22; j++) {
 					for(k = 0; k < 10; k++) {
@@ -1729,27 +1729,27 @@ void viewField(void) {
 				}
 			}
 		}
-		// ƒtƒB[ƒ‹ƒh˜g
+		// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰æ 
 		viewFldFrame(1,i);
 	}
 }
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  NEXTƒuƒƒbƒN‚ÆHOLDƒuƒƒbƒN‚Ì•\¦
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  NEXTãƒ–ãƒ­ãƒƒã‚¯ã¨HOLDãƒ–ãƒ­ãƒƒã‚¯ã®è¡¨ç¤º
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void viewPreview(void){
-	int n2[2], n3[2], n4[2], n5[2], n6[2]; // 3Next•\¦—p #1.60c
-	int nf1[2];//‹UÒ—p
+	int n2[2], n3[2], n4[2], n5[2], n6[2]; // 3Nextè¡¨ç¤ºç”¨ #1.60c
+	int nf1[2];//å½è€…ç”¨
 	int i, j, c_tmp[6], mp;
 
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
 
 	for(i = 0; i <= mp; i++) {
-		// holdE3Next‚É‡‚í‚¹‚Ä‰æ–Êã•”•ÏX #1.60c
+		// holdãƒ»3Nextã«åˆã‚ã›ã¦ç”»é¢ä¸Šéƒ¨å¤‰æ›´ #1.60c
 		if( (hnext[i] >= 1) && (stat[i] != 0) && ((stat[i] != 2) || ((stat[i] == 2) && (statc[i * 10 + 2] != 0))) ) {
-			// NEXT‚ğplayer‚²‚Æ‚É #1.60c7m1
+			// NEXTã‚’playerã”ã¨ã« #1.60c7m1
 			if(!isfakenext[i]){
-				if(i == 0) {//•’Ê
+				if(i == 0) {//æ™®é€š
 					n2[i] = nextb[(nextc[i] + 1-(!ndelay[i])) % 1400];
 					n3[i] = nextb[(nextc[i] + 2-(!ndelay[i])) % 1400];
 					n4[i] = nextb[(nextc[i] + 3-(!ndelay[i])) % 1400];
@@ -1762,7 +1762,7 @@ void viewPreview(void){
 					n5[i] = nextb[( (nextc[i] + i * 1400) + 4 -(!ndelay[i])) % 2800];
 					n6[i] = nextb[( (nextc[i] + i * 1400) + 5 -(!ndelay[i])) % 2800];
 				}
-			}else{//‹UÒ@nextc‚Í•Û‚³‚ê‚Ä‚¢‚é
+			}else{//å½è€…ã€€nextcã¯ä¿æŒã•ã‚Œã¦ã„ã‚‹
 					nf1[i]= nextb[(nextc[i] + 50) % 1400];
 					n2[i] = nextb[(nextc[i] + 100 + 1-(!ndelay[i])) % 1400];
 					n3[i] = nextb[(nextc[i] + 150+ 2-(!ndelay[i])) % 1400];
@@ -1771,7 +1771,7 @@ void viewPreview(void){
 					n6[i] = nextb[(nextc[i] + 300+ 5-(!ndelay[i])) % 1400];
 			}
 
-			// •\¦‚·‚éF‚ğŒˆ‚ß‚é
+			// è¡¨ç¤ºã™ã‚‹è‰²ã‚’æ±ºã‚ã‚‹
 			for(j=0; j<6; j++) {
 				if(item_nblk[j + i * 6]){
 					c_tmp[j] = 16 + item_nblk[j + i * 6];
@@ -1780,7 +1780,7 @@ void viewPreview(void){
 				}
 			}
 
-			//FEVER’†
+			//FEVERä¸­
 			if((isfever[i]) && (item_timer[i] > 0) && ((item_timer[i] >= 90) || (item_timer[i] % 2 == 1))){
 				n2[i] = 0;
 				n3[i] = 0;
@@ -1799,11 +1799,11 @@ void viewPreview(void){
 					}
 				}
 			}
-			//NEXTˆêŒÂ–Ú
-			// –_‚Ìê‡‚Í1ƒuƒƒbƒN•ª‰º‚É•\¦ #1.60c7p9ex
-			// []‚Ìê‡‚Í–_‚ğ‰Ÿ‚µ‰º‚°‚È‚¢ #1.60c7p9ex‰ü‘¢
+			//NEXTä¸€å€‹ç›®
+			// æ£’ã®å ´åˆã¯1ãƒ–ãƒ­ãƒƒã‚¯åˆ†ä¸‹ã«è¡¨ç¤º #1.60c7p9ex
+			// []ã®å ´åˆã¯æ£’ã‚’æŠ¼ã—ä¸‹ã’ãªã„ #1.60c7p9exæ”¹é€ 
 			if(ishidenext[i] != 1){
-				if((isfakenext[i]) && (ndelay[i])){//‹UÒ
+				if((isfakenext[i]) && (ndelay[i])){//å½è€…
 					drawBlockFast(18+ 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) , nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, - 2, 1, i, (disable_giji3D < 3));
 				}else if(ndelay[i]){
 					drawBlockFast(18+ 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rots[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, - 2, 1, i, (disable_giji3D < 3));
@@ -1811,9 +1811,9 @@ void viewPreview(void){
 					drawhBlock(160 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i,rt_nblk[0 + 6 * i],(disable_giji3D < 3));
 				}
 			}
-			//next2ŒÂ–Ú`6ŒÂ–Ú
+			//next2å€‹ç›®ã€œ6å€‹ç›®
 			if((ishidenext[i] == 0) && (!death_plus[i])&&(!hebo_plus[i])&&(!heboGB[i])){
-				// •\¦ˆÊ’u‚ğ”÷’²® #1.60c7p9ex
+				// è¡¨ç¤ºä½ç½®ã‚’å¾®èª¿æ•´ #1.60c7p9ex
 				if(hnext[i] >= 2)
 					drawhBlock(180 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4-(6*(top_frame)), n2[i], c_tmp[1-(!ndelay[i])], 4, i,rt_nblk[(1-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
 				if(hnext[i] >= 3)
@@ -1834,15 +1834,15 @@ void viewPreview(void){
 		if(hnext[i] >= 1)
 			ExBltRect(3, 150 + 192 * i - 96 * maxPlay, 4*(!top_frame), 128, 112, 26, 7);
 		if(!disable_hold)
-			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 4, 128, 119, 26, 7);//HOLD‚Æ‚¢‚¤•¶š
+			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 4, 128, 119, 26, 7);//HOLDã¨ã„ã†æ–‡å­—
 
-		// HOLDƒuƒƒbƒN
+		// HOLDãƒ–ãƒ­ãƒƒã‚¯
 		if((!disable_hold) && !((ishidenext[i] == 1) && (hnext_flag[i]))) {
 			if( (i == 0) || ((!playback)&&(gameMode[i] != 5)) || (gameMode[i] == 4)) {
 				if(hold[i] != -1) {
-					// •\¦‚·‚éF‚ğŒˆ’è‚·‚é #1.60c7p9ex‰ü‘¢
+					// è¡¨ç¤ºã™ã‚‹è‰²ã‚’æ±ºå®šã™ã‚‹ #1.60c7p9exæ”¹é€ 
 					if((dhold[i]) || ((ishidenext[i]) && (dhold[i])) || (isholdlock[i] == 1)||(heboGB[i])) {
-						// HOLD‚ªg—p‚Å‚«‚È‚¢‚Æ‚«
+						// HOLDãŒä½¿ç”¨ã§ããªã„ã¨ã
 						if(c_hblk[i] == 8)
 							j = 9;
 						else if(c_hblk[i] >= 0)
@@ -1850,90 +1850,77 @@ void viewPreview(void){
 						else
 							j = c_hblk[i];
 					} else {
-						// HOLD‚ªg—p‚Å‚«‚é‚Æ‚«
+						// HOLDãŒä½¿ç”¨ã§ãã‚‹ã¨ã
 						j = c_hblk[i];
 					}
 					if(!isfakenext[i]){
-						// •\¦ˆÊ’u‚ğ”÷’²® #1.60c7p9ex
+						// è¡¨ç¤ºä½ç½®ã‚’å¾®èª¿æ•´ #1.60c7p9ex
 						if((ishidenext[i] != 1) || ((ishidenext[i]) && (j != 0) && (j != 9))){
 							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i]!=0) * 4, hold[i], j, 4, i,0,(disable_giji3D < 3));
-						}else{	//HIDE NEXT‚ÌuHv
+						}else{	//HIDE NEXTæ™‚ã®ã€Œï¼Ÿã€
 							printFont(15 + 24 * i - 12 * maxPlay,2,"?",0);
 						}
-					}else{//‹UÒ
-						// •\¦ˆÊ’u‚ğ”÷’²® #1.60c7p9ex
+					}else{//å½è€…
+						// è¡¨ç¤ºä½ç½®ã‚’å¾®èª¿æ•´ #1.60c7p9ex
 						if((ishidenext[i] != 1) || ((ishidenext[i]) && (j != 0) && (j != 9))){
 							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i]!=0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i,0,(disable_giji3D < 3));
-						}else{	//HIDE NEXT‚Ìu!v
+						}else{	//HIDE NEXTæ™‚ã®ã€Œ!ã€
 							printFont(15 + 24 * i - 12 * maxPlay,2,"!",0);
 						}
 					}
 				}
-				if((disable_hold) || (isholdlock[i]) || (death_plus[i])||(hebo_plus[i])||(heboGB[i]))	//HOLD LOCK‚ÌùŒ®
+				if((disable_hold) || (isholdlock[i]) || (death_plus[i])||(hebo_plus[i])||(heboGB[i]))	//HOLD LOCKã®éŒ éµ
 					ExBltRect(3, 110 + 192 * i - 96 * maxPlay, 5, 275, 430, 27, 27);
 			}
 		}
 	}
 }
-/* ƒtƒB[ƒ‹ƒh”wŒi‚ğ•\¦ #1.60c7n5 */
+/* ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰èƒŒæ™¯ã‚’è¡¨ç¤º #1.60c7n5 */
 void viewFldBackground(void) {
 	int i, k;
 
 	for(i = 0; i <= maxPlay; i++) {
 		// ------------------------
-		// ‚±‚±‚©‚ç C++”Åã•”˜g•\¦
+		// ã“ã“ã‹ã‚‰ C++ç‰ˆä¸Šéƒ¨æ è¡¨ç¤º
 
 		int		tr;
 
-#if		HEBORIS_DIRECTX9 || SDL_USE_OPENGL
 		if(background == 2) {
 			BlendExBltRect(24, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 		}
 
-		// ƒOƒ‰ƒf[ƒVƒ‡ƒ“•”•ª‚ğ‚È‚ß‚ç‚©‚É#1.60c7p9ex
-		if(!top_frame){
-			BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100 - 20, 32, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-			for(k = 0; k < 20; k++) {
-				tr = (256 - fldtr) * (19 - k) / 20;
-				tr = 256 - tr;
-				BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay + (80 + k), 0, 101 + (80 + k), 128, 1, 32, 256 - tr, 256 - tr, 256 - tr, tr, tr, tr);
-			}
-		}
-		else{
-			BlendExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-		}
-#else
-		if(background == 2) {
-			ExBltRect(24, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160);
-		}
-
-		// GBƒ‚[ƒh‚Å‚È‚¯‚ê‚Îã‚ğ•`‰æ
-		// ƒOƒ‰ƒf[ƒVƒ‡ƒ“•”•ª‚ğ‚È‚ß‚ç‚©‚É‚µ‚È‚¢
+		// GBãƒ¢ãƒ¼ãƒ‰ã§ãªã‘ã‚Œã°ä¸Šã‚’æç”»
+		// ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³éƒ¨åˆ†ã‚’ãªã‚ã‚‰ã‹ã«ã—ãªã„
 		if (!((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))))
 		{
+			// ã‚°ãƒ©ãƒ‡ãƒ¼ã‚·ãƒ§ãƒ³éƒ¨åˆ†ã‚’ãªã‚ã‚‰ã‹ã«#1.60c7p9ex
 			if(!top_frame){
-				ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100, 32);
+				BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100 - 20, 32, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				for(k = 0; k < 20; k++) {
+					tr = (256 - fldtr) * (19 - k) / 20;
+					tr = 256 - tr;
+					BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay + (80 + k), 0, 101 + (80 + k), 128, 1, 32, 256 - tr, 256 - tr, 256 - tr, tr, tr, tr);
+				}
 			}
 			else{
-				ExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35);
+				BlendExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 			}
 		}
-#endif
 
 		if(!top_frame)
 			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
 		else
 			ExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
 
-		// ‚±‚±‚Ü‚Å C++”Åã•”˜g•\¦
+		// ã“ã“ã¾ã§ C++ç‰ˆä¸Šéƒ¨æ è¡¨ç¤º
 		// ------------------------
 
 		if((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))){
-		//ƒtƒB[ƒ‹ƒh”wŒi‚ğ”’‚­
+		//ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰èƒŒæ™¯ã‚’ç™½ã
 			ExBltFastRect(2, 112 + ofs_x[i] + 192 * i - 96 * maxPlay, 32, 96 * 7, 0, 96, 176);
 			ExBltRect(3, 110 + 192 * i - 96 * maxPlay, 8, 184, 275 + (24 * top_frame), 107, 24);
 		}
-		// XRAYECOLOR‚Ì‚Æ‚«‚É•”wŒi‚ğ•`‚­
+		// XRAYãƒ»COLORã®ã¨ãã«é»’èƒŒæ™¯ã‚’æã
 		else if ( ( xray_flag[i] && !xray_bgblack ) || ( color_flag[i] && !color_bgblack ) || (heboGB[i] == 2))
 		{
 			ExBltFastRect(24, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160);
@@ -1942,11 +1929,7 @@ void viewFldBackground(void) {
 		{
 			if(getDrawRate() == 1)
 			{
-#if		HEBORIS_DIRECTX9 || SDL_USE_OPENGL
 				BlendBltRect(4+pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count%128 / 4, count%256 /8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-#else
-				BltFastRect(4+pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count%128 / 4, count%256 /8, 80, 160);
-#endif
 			}
 			else
 			{
@@ -1968,11 +1951,11 @@ void viewFldBackground(void) {
 	}
 }
 
-/* ƒtƒB[ƒ‹ƒh˜g‚ğ•\¦(uponly‚ğ1‚É‚·‚é‚Æã•”•ª‚¾‚¯•\¦) */
+/* ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰æ ã‚’è¡¨ç¤º(uponlyã‚’1ã«ã™ã‚‹ã¨ä¸Šéƒ¨åˆ†ã ã‘è¡¨ç¤º) */
 void viewFldFrame(int uponly,int i) {
 	int j, gm[2],waiting[2],ismission[2];
 
-		// GAMEMODE‚É‰‚¶‚Ä˜g‚ÌF‚ğ•ÏX #1.60c7f4
+		// GAMEMODEã«å¿œã˜ã¦æ ã®è‰²ã‚’å¤‰æ›´ #1.60c7f4
 		gm[i] = gameMode[i];
 		waiting[i] = 0;
 		if(gameMode[i] == 10)//ORI
@@ -1985,28 +1968,28 @@ void viewFldFrame(int uponly,int i) {
 			gm [i]= 6;
 		else if((gm[i] > 1) && (gm[i] < 4) && (!item_mode[i])) {
 			if(((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))
-				gm[i] = 7;//ƒI[ƒ‹ƒhƒXƒ^ƒCƒ‹‚ÌÎ‚Ì‚â‚Â
+				gm[i] = 7;//ã‚ªãƒ¼ãƒ«ãƒ‰ã‚¹ã‚¿ã‚¤ãƒ«ã®çŸ³ã®ã‚„ã¤
 			else
 				gm[i]--;
 		} else if((gm[i] == 4) || (item_mode[i]) || ((gameMode[i] == 0) && (novice_mode[i]))) {
-			// VERSUSƒ‚[ƒh
-			// BEGINNER‚Å‚à˜g‚ªÂ‚È‚Ì‚ğC³#1.60c7g4
-			// ƒAƒCƒeƒ€‚ğH‚ç‚Á‚Ä‚¢‚é‚ÍF‚ğ•Ï‚¦‚é #1.60c7n4
+			// VERSUSãƒ¢ãƒ¼ãƒ‰
+			// BEGINNERã§ã‚‚æ ãŒé’ãªã®ã‚’ä¿®æ­£#1.60c7g4
+			// ã‚¢ã‚¤ãƒ†ãƒ ã‚’é£Ÿã‚‰ã£ã¦ã„ã‚‹æ™‚ã¯è‰²ã‚’å¤‰ãˆã‚‹ #1.60c7n4
 			if((stat[i] == 31) && (statc[i * 10] < 120)){
 				gm[i] = 1 + (5 * (count%4 <= 1));
 			} else if((stat[i] == 25) || (stat[i] == 33) || (isallclear[i]) || ((isreflect[i]) && (gameMode[i] != 4) && (!isfever[i]))){
-				gm[i] = 6;		//ƒTƒ|[ƒgƒAƒCƒeƒ€i–¾‚é‚¢Âj
+				gm[i] = 6;		//ã‚µãƒãƒ¼ãƒˆã‚¢ã‚¤ãƒ†ãƒ ï¼ˆæ˜ã‚‹ã„é’ï¼‰
 			} else if( (doexchg[i]) || ((stat[i] == 29) && (!statc[(1-i) * 10 + 3])) || (isFreefall[i]) || ((stat[i] == 26) && (statc[i * 10 + 2])) ){
-				gm[i] = 0;		//‚»‚Ì‘¼i—Îj
+				gm[i] = 0;		//ãã®ä»–ï¼ˆç·‘ï¼‰
 			} else if( ((IsBig[i])&&(!IsBigStart[i])) || (isfmirror[i]) || (isrollroll[i]) || (isxray[i]) || (iscolor[i]) ||
 			(isrotatelock[i]) || (isholdlock[i]) || (istimestop[i]) || (ishidenext[i]) || (ismagnetblock[i]) ||
 			 (isLRreverse[i]) || (isUDreverse[i]) || (isboost[i]) || (isremote[i]) || (isdark[i]) || (istrance[i]) ||
 			 (dolaser[i]) || (stat[i] == 27) || (donega[i])  || (stat[i] == 26) || (stat[i] == 28) || (doshotgun[i]) ||
 			 (item_nblk[0 + i * 6] == fldihardno) || (item[i] == fldihardno) || (isbanana[i]) || (do180field[i])  || (stat[i] == 34)||
 			 (isdouble[i])||(docopyfld[i])||(isfakenext[i])||(item_monochrome[i])||(ismiss[i])||(stat[i] == 29) && (statc[(1-i) * 10 + 3]) ){
-				gm[i] = 2;		//UŒ‚ƒAƒCƒeƒ€iÔj
+				gm[i] = 2;		//æ”»æ’ƒã‚¢ã‚¤ãƒ†ãƒ ï¼ˆèµ¤ï¼‰
 			} else if(isfever[i]){
-				gm[i] = 3;		//ƒtƒB[ƒo[i‰©j
+				gm[i] = 3;		//ãƒ•ã‚£ãƒ¼ãƒãƒ¼ï¼ˆé»„ï¼‰
 			}else if(gameMode[i] == 3){
 				gm[i] = 2;
 			} else {
@@ -2022,10 +2005,10 @@ void viewFldFrame(int uponly,int i) {
 			waiting[i] = 1;
 		}
 
-		if(heboGB[i]==1)	//mission ƒI[ƒ‹ƒhƒXƒ^ƒCƒ‹
+		if(heboGB[i]==1)	//mission ã‚ªãƒ¼ãƒ«ãƒ‰ã‚¹ã‚¿ã‚¤ãƒ«
 			gm[i] = 7;
 
-		if(heboGB[i]==2)	//mission ƒI[ƒ‹ƒhƒXƒ^ƒCƒ‹(“VˆäƒAƒŠ)
+		if(heboGB[i]==2)	//mission ã‚ªãƒ¼ãƒ«ãƒ‰ã‚¹ã‚¿ã‚¤ãƒ«(å¤©äº•ã‚¢ãƒª)
 			gm[i] = 8;
 
 		ismission[i] = ((((gameMode[i] >= 8)&&(gameMode[i] < 10)) || ((gameMode[i] == 7) && (anothermode[i] < 3))) && (!uponly) && (!waiting[i]) && (heboGB[i]==0));
@@ -2042,13 +2025,13 @@ void viewFldFrame(int uponly,int i) {
 			ExBltRect(2, 112 + (4 * uponly) + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 96 * gm[i]+ (4 * uponly), 0, 96 - (8 * uponly), 184 - uponly * 176);
 		}
 
-		if(ismission[i])//MISSION‚Ì‚Æ‚«‚Ì˜g‚Ìo‚Á’£‚è
+		if(ismission[i])//MISSIONã®ã¨ãã®æ ã®å‡ºã£å¼µã‚Š
 			ExBltRect(2, 104 + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 672, 184, 112, 184);
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒtƒHƒ“ƒg‚ğ•\¦‚·‚é
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ•ã‚©ãƒ³ãƒˆã‚’è¡¨ç¤ºã™ã‚‹
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void printFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
@@ -2061,7 +2044,7 @@ void printFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	}
 }
 
-// 1ƒhƒbƒg‚¸‚ÂYÀ•W‚ğw’è‚Å‚«‚éƒo[ƒWƒ‡ƒ“ #1.60c7k3
+// 1ãƒ‰ãƒƒãƒˆãšã¤Yåº§æ¨™ã‚’æŒ‡å®šã§ãã‚‹ãƒãƒ¼ã‚¸ãƒ§ãƒ³ #1.60c7k3
 void printFontEx(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
@@ -2074,13 +2057,13 @@ void printFontEx(int fontX, int fontY, const char *fontStr, int fontColor) {
 	}
 }
 
-// ¬‚³‚¢ƒo[ƒWƒ‡ƒ“
-//@‘ã‘Ö•¶š
-// ;¨?
-// <¨-
-// =¨m
-// >¨%
-// ?¨.
+// å°ã•ã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+//ã€€ä»£æ›¿æ–‡å­—
+// ;â†’?
+// <â†’-
+// =â†’m
+// >â†’%
+// ?â†’.
 void printSMALLFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
@@ -2088,21 +2071,21 @@ void printSMALLFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	for(i = 0; i < stringLength; i++) {
 		stringChar = CharAt(fontStr, i);
 
-		// ƒXƒy[ƒX‚Å‚È‚¢ê‡
+		// ã‚¹ãƒšãƒ¼ã‚¹ã§ãªã„å ´åˆ
 		if(stringChar != 32) {
-			// ”š
+			// æ•°å­—
 			if(stringChar <= 64) {
 				sx = (stringChar - 48) * 6 + 132;
 				sy = fontColor * 9;
 				ExBltRect(31, fontX + 6 * i, fontY, sx, sy + (90 * fontsize), 6, 9);
 			}
-			// ‘å•¶š
+			// å¤§æ–‡å­—
 			else if(stringChar <= 96) {
 				sx = (stringChar - 65) * 6;
 				sy = fontColor * 18;
 				ExBltRect(22, fontX + 6 * i, fontY, sx, sy, 6, 9);
 			}
-			// ¬•¶š
+			// å°æ–‡å­—
 			else {
 				sx = (stringChar - 97) * 6;
 				sy = (fontColor * 18) + 9;
@@ -2111,7 +2094,7 @@ void printSMALLFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 		}
 	}
 }
-// 6 x 9‚ÌƒOƒŠƒbƒh’PˆÊ‚ÅÀ•W‚ğw’è‚Å‚«‚éƒo[ƒWƒ‡ƒ“
+// 6 x 9ã®ã‚°ãƒªãƒƒãƒ‰å˜ä½ã§åº§æ¨™ã‚’æŒ‡å®šã§ãã‚‹ãƒãƒ¼ã‚¸ãƒ§ãƒ³
 void printSMALLFontEX(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
@@ -2119,21 +2102,21 @@ void printSMALLFontEX(int fontX, int fontY, const char *fontStr, int fontColor) 
 	for(i = 0; i < stringLength; i++) {
 		stringChar = CharAt(fontStr, i);
 
-		// ƒXƒy[ƒX‚Å‚È‚¢ê‡
+		// ã‚¹ãƒšãƒ¼ã‚¹ã§ãªã„å ´åˆ
 		if(stringChar != 32) {
-			// ”š
+			// æ•°å­—
 			if(stringChar <= 64) {
 				sx = (stringChar - 48) * 6 + 132;
 				sy = fontColor * 9;
 				ExBltRect(31, (fontX + i) * 6, fontY * 9, sx, sy + (90 * fontsize), 6, 9);
 			}
-			// ‘å•¶š
+			// å¤§æ–‡å­—
 			else if(stringChar <= 96) {
 				sx = (stringChar - 65) * 6;
 				sy = fontColor * 18;
 				ExBltRect(22, (fontX + i) * 6, fontY * 9, sx, sy, 6, 9);
 			}
-			// ¬•¶š
+			// å°æ–‡å­—
 			else {
 				sx = (stringChar - 97) * 6;
 				sy = (fontColor * 18) + 9;
@@ -2143,7 +2126,7 @@ void printSMALLFontEX(int fontX, int fontY, const char *fontStr, int fontColor) 
 	}
 }
 
-// ‘å‚«‚¢ƒo[ƒWƒ‡ƒ“i”š‚Ì‚İj
+// å¤§ãã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³ï¼ˆæ•°å­—ã®ã¿ï¼‰
 void printBIGFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	int		i, sx, sy, stringLength, stringChar;
 
@@ -2155,8 +2138,8 @@ void printBIGFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 		if(sx >= 0) ExBltRect(31, fontX + 12 * i, fontY, sx, sy + (160 * fontsize), 12, 16);
 	}
 }
-// ‚Æ‚Á‚Ä‚à¬‚³‚¢ƒo[ƒWƒ‡ƒ“@6x7
-// ”šA/ : < > AƒAƒ‹ƒtƒ@ƒxƒbƒg‘å•¶š‚ªg—p‰Â”\@‚½‚¾‚µš‹l‚ß–³‚µ
+// ã¨ã£ã¦ã‚‚å°ã•ã„ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã€€6x7
+// æ•°å­—ã€/ : < > ã€ã‚¢ãƒ«ãƒ•ã‚¡ãƒ™ãƒƒãƒˆå¤§æ–‡å­—ãŒä½¿ç”¨å¯èƒ½ã€€ãŸã ã—å­—è©°ã‚ç„¡ã—
 void printTinyFont(int fontX, int fontY, const char *fontStr) {
 	int		i, sx, sy, stringLength, stringChar;
 
@@ -2169,11 +2152,11 @@ void printTinyFont(int fontX, int fontY, const char *fontStr) {
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  •`‰æ‚·‚×‚«ƒuƒƒbƒN‚Ì‰æ‘œ‚ğŒˆ‚ß‚é #1.60c7r7
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  æç”»ã™ã¹ããƒ–ãƒ­ãƒƒã‚¯ã®ç”»åƒã‚’æ±ºã‚ã‚‹ #1.60c7r7
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 int getBlockPlaneNo(int player, int color) {
-	// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚âƒAƒCƒeƒ€‚È‚Ç
+	// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ã‚„ã‚¢ã‚¤ãƒ†ãƒ ãªã©
 	if(color >= 10)
 		return 46;
 
@@ -2209,7 +2192,7 @@ int getBlockPlaneNo(int player, int color) {
 	//DRS
 	return 80;
 }
-// beboblk_big.pngg—p‚Ì”’l‚ğ‹‚ß‚éiBIGƒuƒƒbƒN‚Æƒ~ƒjƒuƒƒbƒNj
+// beboblk_big.pngä½¿ç”¨æ™‚ã®æ•°å€¤ã‚’æ±‚ã‚ã‚‹ï¼ˆBIGãƒ–ãƒ­ãƒƒã‚¯ã¨ãƒŸãƒ‹ãƒ–ãƒ­ãƒƒã‚¯ï¼‰
 int getBigBlock_add(int player){
 	if(heboGB[player]==1)
 		return 6;
@@ -2232,10 +2215,10 @@ int getBigBlock_add(int player){
 	return 1;
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒuƒƒbƒN‚ğ•`‰æ‚·‚é
-//  (˜g–³‚µ NEXT‚ÆTLS‚Ég—p#1.60c7j1)
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ–ãƒ­ãƒƒã‚¯ã‚’æç”»ã™ã‚‹
+//  (æ ç„¡ã— NEXTã¨TLSã«ä½¿ç”¨#1.60c7j1)
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
 	int	i, j, bx2, by2, add, tmp, bx5, by5;
 	add = 0;
@@ -2252,7 +2235,7 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 		if(count%2==0) color=0;
 		else color = ((count % 14) /2) +1;
 	}
-	if(item_monochrome[player])	//ƒAƒCƒeƒ€‚É‚æ‚é[ ]
+	if(item_monochrome[player])	//ã‚¢ã‚¤ãƒ†ãƒ ã«ã‚ˆã‚‹[ ]
 		color = 8;
 
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
@@ -2262,7 +2245,7 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 		if(rots[player] == 8){
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]) * 8;
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]) * 8;
-		}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+		}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 			bx2 = (bx1 + blkWDataX[kind * 16 + rotate * 4 + i]) * 8;
 			by2 = (by1 + blkWDataY[kind * 16 + rotate * 4 + i]) * 8;
 		} else {
@@ -2276,7 +2259,7 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 				if(rots[player] == 8){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i]);
 					by5 = ((by1 - 3) + blkDDataY[kind * 16 + rotate * 4 + i]);
-				}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+				}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 					bx5 = (bx[player] + blkWDataX[kind * 16 + rotate * 4 + i]);
 					by5 = ((by1 - 3) + blkWDataY[kind * 16 + rotate * 4 + i]);
 				} else {
@@ -2293,16 +2276,16 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 				ExBltFastRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 		}
 
-		// TLS—p#1.60c7j3
+		// TLSç”¨#1.60c7j3
 		if(flash == 999) {
 			if(j) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154);
-		// •’Ê
+		// æ™®é€š
 		} else {
 			ExBltFastRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8);
 		}
 	}
 }
-//BIG”Å@—p“r‚ÍTLS‚Ì‚İ
+//BIGç‰ˆã€€ç”¨é€”ã¯TLSã®ã¿
 void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
 	int	i, j, bx2, by2, add, tmp, bx5, by5, pos[2], k, l;
 	add = 0;
@@ -2319,7 +2302,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 		if(count%2==0) color=0;
 		else color = ((count % 14) /2) +1;
 	}
-	if(item_monochrome[player])	//ƒAƒCƒeƒ€‚É‚æ‚é[ ]
+	if(item_monochrome[player])	//ã‚¢ã‚¤ãƒ†ãƒ ã«ã‚ˆã‚‹[ ]
 		color = 8;
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
 
@@ -2328,7 +2311,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 		if(rots[player] == 8){
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
-		}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+		}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 			bx2 = (bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 			by2 = (by1 + blkWDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 		} else {
@@ -2343,7 +2326,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 				if(rots[player] == 8){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = ((by1 - 3) + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
-				}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+				}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 					bx5 = (bx[player] + blkWDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = ((by1 - 3) + blkWDataY[kind * 16 + rotate * 4 + i] * 2);
 				} else {
@@ -2366,7 +2349,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 					}
 				}
 		}
-		// ”¼“§–¾TLS
+		// åŠé€æ˜TLS
 		if(flash == 999) {
 			if(j){
 				if(color > 10)
@@ -2374,7 +2357,7 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 				else
 					BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112, 112, 112, 154, 154, 154);
 			}
-		// •s“§–¾TLS
+		// ä¸é€æ˜TLS
 		} else {
 			if(j){
 				if(color > 10)
@@ -2385,17 +2368,17 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 		}
 	}
 }
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒuƒƒbƒN‚ğ•`‰æ‚·‚é
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// c7g6 drawBlock‚ÉplayerŠÖ”‚ğ’Ç‰Á‚µ‚Ü‚µ‚½B
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ãƒ–ãƒ­ãƒƒã‚¯ã‚’æç”»ã™ã‚‹
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// c7g6 drawBlockã«playeré–¢æ•°ã‚’è¿½åŠ ã—ã¾ã—ãŸã€‚
 void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
 	int	i, j, bx2, by2, add, tmp, bx5, by5;
 	add = 0;
 	tmp = 1;
 	if( ((isrotatelock[player]) && (color < 8)) || ((ismagnetblock[player]) && (count%2 == 0)) || ((isrollroll[player]) && (color < 8)) )
 		color = 0;
-	if((isdark[player]) && (hidden[player] == 8))	//HIDDEN LV8‚Å‚Ìƒ_[ƒNƒuƒƒbƒN‚Í‘€ìƒuƒƒbƒN‚ªƒXƒeƒ‹ƒX‰»
+	if((isdark[player]) && (hidden[player] == 8))	//HIDDEN LV8ã§ã®ãƒ€ãƒ¼ã‚¯ãƒ–ãƒ­ãƒƒã‚¯ã¯æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ãŒã‚¹ãƒ†ãƒ«ã‚¹åŒ–
 		return;
 	if(color < -1){
 		add = 9;
@@ -2409,7 +2392,7 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 		if(count%2==0) color=0;
 		else color = ((count % 14) /2) +1;
 	}
-	if(item_monochrome[player])	//ƒAƒCƒeƒ€‚É‚æ‚é[ ]
+	if(item_monochrome[player])	//ã‚¢ã‚¤ãƒ†ãƒ ã«ã‚ˆã‚‹[ ]
 		color = 8;
 
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
@@ -2419,7 +2402,7 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 			if(rots[player] == 8){
 				bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]) * 8;
 				by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]) * 8;
-			}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+			}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 				bx2 = (bx1 + blkWDataX[kind * 16 + rotate * 4 + i]) * 8;
 				by2 = (by1 + blkWDataY[kind * 16 + rotate * 4 + i]) * 8;
 			} else {
@@ -2430,7 +2413,7 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 				if(rots[player] == 8){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i]);
 					by5 = (by[player] + blkDDataY[kind * 16 + rotate * 4 + i]);
-				}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+				}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 					bx5 = (bx[player] + blkWDataX[kind * 16 + rotate * 4 + i]);
 					by5 = (by[player] + blkWDataY[kind * 16 + rotate * 4 + i]);
 				} else {
@@ -2451,17 +2434,17 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 					}
 				}
 			} else if(j == 1) {
-				// ƒuƒƒbƒN˜g‚ªON‚Ì‚Ì‚İ˜g‚ğ•\¦ #1.60c7f
+				// ãƒ–ãƒ­ãƒƒã‚¯æ ãŒONã®æ™‚ã®ã¿æ ã‚’è¡¨ç¤º #1.60c7f
 				if(((blockflash != 2) && (heboGB[player]==0)) && !((hidden[player] == 8) && (flash == 10))) {
-					// LV1000ˆÈ‰º‚Ì‚¾‚¯•\¦‚·‚é #1.60c7d
-					// PRACTICE‘Î‰ #1.60c7e
-					// player‚²‚Æ #1.60c7h8
+					// LV1000ä»¥ä¸‹ã®æ™‚ã ã‘è¡¨ç¤ºã™ã‚‹ #1.60c7d
+					// PRACTICEå¯¾å¿œ #1.60c7e
+					// playerã”ã¨ #1.60c7h8
 					if((flash > 0) && (flash < 999) && (color <= 7) && (add == 0))
 						ExBltFastRect(29, bx2 - 1, by2 - 1 + offset, 60, 80, 10, 10);
 				}
-				// HOLD‚ÍŒÂ•Êİ’è#1.60c7i1
+				// HOLDã¯å€‹åˆ¥è¨­å®š#1.60c7i1
 				if((enable_hold_frame) && (hold_used[player] == 2) && (dhold[player] == 1) && (flash != 10)) {
-					// “_–Å‚³‚¹‚é#1.60c7p9ex
+					// ç‚¹æ»…ã•ã›ã‚‹#1.60c7p9ex
 					if (count % 16 < 8)
 						ExBltFastRect(29, bx2 - 1, by2 - 1 + offset, 80, 80, 10, 10);
 					else
@@ -2470,9 +2453,9 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 			} else {
 				if(flash == 999) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154);
 				else if(flash == 10) {
-					// []ƒuƒƒbƒN‚Ì‚ÍŒÅ’è‚Ì“_–Å‚ğ‚µ‚È‚¢ #1.60c7f
-					// player‚²‚Æ #1.60c7h8
-					// ğŒ‚ğŠÈ—ª‰»#1.60c7i3
+					// []ãƒ–ãƒ­ãƒƒã‚¯ã®æ™‚ã¯å›ºå®šæ™‚ã®ç‚¹æ»…ã‚’ã—ãªã„ #1.60c7f
+					// playerã”ã¨ #1.60c7h8
+					// æ¡ä»¶ã‚’ç°¡ç•¥åŒ–#1.60c7i3
 					if((hidden[player] == 8) && (m_roll_blockframe)){
 						ExBltFastRect(24, bx2, by2 + offset, 0, 0, 8, 8);
 					} else if( (color < 8) && ((rots[player] != 6) && (add == 0))) {
@@ -2489,7 +2472,7 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 			}
 		}
 		if((j == 2) && ((flash != 10) || (stat[player] == 5))){
-			// ü‚è˜g #1.60c7o5
+			// å‘¨ã‚Šæ  #1.60c7o5
 			if( (flash != 999) && (block_rframe) ) {
 				if(item[player] != 0)
 					ExBltRect(28, (bx1-1)*8  ,by1*8 - 16 + offset - (8 * ((kind == 2) && (isWRule(player))) ) , 0, (item[player] - 1) * 16, 48, 16);
@@ -2504,7 +2487,7 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 	}
 }
 
-/* BIGƒuƒƒbƒN•`‰æ#1.60c7j8 */
+/* BIGãƒ–ãƒ­ãƒƒã‚¯æç”»#1.60c7j8 */
 void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
 	int	i, j, bx2, by2, tmp, pos[2];
 	int	k, l, bx3, by3, add, bx5, by5;
@@ -2512,7 +2495,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 	tmp = 1;
 	if( ((isrotatelock[player]) && (color < 8)) || ((ismagnetblock[player]) && (count%2 == 0)) || ((isrollroll[player]) && (color < 8)) )
 		color = 0;
-	if((isdark[player]) && (hidden[player] == 8))	//HIDDEN LV8‚Å‚Ìƒ_[ƒNƒuƒƒbƒN‚Í‘€ìƒuƒƒbƒN‚ªƒXƒeƒ‹ƒX‰»
+	if((isdark[player]) && (hidden[player] == 8))	//HIDDEN LV8ã§ã®ãƒ€ãƒ¼ã‚¯ãƒ–ãƒ­ãƒƒã‚¯ã¯æ“ä½œãƒ–ãƒ­ãƒƒã‚¯ãŒã‚¹ãƒ†ãƒ«ã‚¹åŒ–
 		return;
 	if(color < -1){
 		add = 9;
@@ -2525,7 +2508,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 		else color = ((count % 14) /2) +1;
 	}
 
-	if(item_monochrome[player])	//ƒAƒCƒeƒ€‚É‚æ‚é[ ]
+	if(item_monochrome[player])	//ã‚¢ã‚¤ãƒ†ãƒ ã«ã‚ˆã‚‹[ ]
 		color = 8;
 
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
@@ -2535,7 +2518,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 			if(rots[player] == 8){
 				bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 				by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
-			}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+			}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 				bx2 = (bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 				by2 = (by1 + blkWDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 			} else {
@@ -2546,7 +2529,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 				if(rots[player] == 8){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = (by[player] + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
-				}else if( isWRule(player) ) {		// WorldType—p #1.60c5
+				}else if( isWRule(player) ) {		// WorldTypeç”¨ #1.60c5
 					bx5 = (bx[player] + blkWDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = (by[player] + blkWDataY[kind * 16 + rotate * 4 + i] * 2);
 				} else {
@@ -2573,14 +2556,14 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 				}
 			} else if(j == 1) {
 				if( flash != 999 ) {
-					// ˜g
+					// æ 
 					if(((blockflash != 2) && (!heboGB[player])) && !((hidden[player] == 8) && (flash == 10))) {
 						if((flash > 0) && (flash < 999) && (color <= 7) && (add == 0))
 							ExBltRect(29, bx2 - 2, by2 - 2 + offset, 60, 90, 20, 20);
 					}
 					// HOLD
 					if((enable_hold_frame) && (hold_used[player] == 2) && (dhold[player] == 1) && (flash != 10)) {
-						// “_–Å‚³‚¹‚é#1.60c7p9ex
+						// ç‚¹æ»…ã•ã›ã‚‹#1.60c7p9ex
 						if (count % 16 < 8)
 							ExBltRect(29, bx2 - 2, by2 - 2 + offset, 100, 90, 20, 20);
 						else
@@ -2588,13 +2571,13 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 					}
 				}
 			} else {
-				if(color > 10){	//ƒAƒCƒeƒ€ƒuƒƒbƒN
+				if(color > 10){	//ã‚¢ã‚¤ãƒ†ãƒ ãƒ–ãƒ­ãƒƒã‚¯
 					if(flash == 999) BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154, 65536*2,65536*2);
 					else if(flash == 10) {
-						// ŒÅ’è‚Ì“_–Å
+						// å›ºå®šæ™‚ã®ç‚¹æ»…
 						ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8, 65536*2,65536*2);
 					} else if(flash < 2) ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 65536*2,65536*2);
-				} else {	//’Êí‚ÌƒuƒƒbƒN
+				} else {	//é€šå¸¸ã®ãƒ–ãƒ­ãƒƒã‚¯
 					k = getBigBlock_add(player);
 					l = 0;
 					if(k >= 4){
@@ -2603,7 +2586,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 					}
 					if(flash == 999) BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112, 112, 112, 154, 154, 154);
 					else if(flash == 10) {
-						// ŒÅ’è‚Ì“_–Å
+						// å›ºå®šæ™‚ã®ç‚¹æ»…
 						if((hidden[player] == 8) && (m_roll_blockframe)){
 							ExBltFastRect(24, bx2, by2 + offset, 0, 0, 16, 16);
 						} else if( (color < 8) && ((rots[player] != 6) && (add == 0))) {
@@ -2619,7 +2602,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 			}
 		}
 		if((j == 2) && ((flash != 10) || (stat[player] == 5))){
-			// ü‚è˜g #1.60c7o5
+			// å‘¨ã‚Šæ  #1.60c7o5
 			if( (flash != 999) && (block_rframe) ) {
 				if(item[player] != 0)
 					ExBltRect(28, (bx1-1)*8  ,by1*8 - 16 + offset - (16 * ((kind == 2) && (isWRule(player))) ) , 0, (item[player] - 1) * 16, 48, 16);
@@ -2635,37 +2618,37 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 }
 
 // Draw Current Block
-// Œ»İ‚Ìƒcƒ‚‚ğ•\¦ Big‘Î‰ #1.60c7
+// ç¾åœ¨ã®ãƒ„ãƒ¢ã‚’è¡¨ç¤º Bigå¯¾å¿œ #1.60c7
 void drawCBlock(int player, int color, int bright, int offset, int flash, int not3D) {
-	/* BIG‚Ì•`‰æ‚Í•ÊŠÖ”‚É“Æ—§‚µ‚Ü‚µ‚½ #1.60c7j8 */
+	/* BIGæ™‚ã®æç”»ã¯åˆ¥é–¢æ•°ã«ç‹¬ç«‹ã—ã¾ã—ãŸ #1.60c7j8 */
 
-	// ƒAƒCƒeƒ€ #1.60c7n1
+	// ã‚¢ã‚¤ãƒ†ãƒ  #1.60c7n1
 	if( item[player] ) {
 		c_cblk[player] = 16 + item[player];
 	}
 
 	if(heboGB[player] != 0) bright = 0;
 
-	// •`‰æ
+	// æç”»
 	if(IsBig[player]) {
-		// BIG
+		// BIGæ™‚
 		drawBigBlockNew(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3,
 			blk[player], rt[player], c_cblk[player], bright, offset, flash, player,((disable_giji3D < 3) && (!not3D)));
 	} else {
-		// ’Êí
+		// é€šå¸¸æ™‚
 		drawBlock(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3,
 			blk[player], rt[player], c_cblk[player], bright, offset, flash, player, ((disable_giji3D < 3) && (!not3D)));
 	}
 }
 
-// T.L.S. (Temporary Landing System) ‚à‚Ç‚«
-// classic.c‚Æworld.c‚©‚ç“Æ—§ #1.60c7k4
+// T.L.S. (Temporary Landing System) ã‚‚ã©ã
+// classic.cã¨world.cã‹ã‚‰ç‹¬ç«‹ #1.60c7k4
 void drawTLSBlock(int player, int bottom) {
 	if( !isTLS(player) ) return;
 
-	// •`‰æ
+	// æç”»
 	if(IsBig[player]) {
-		// BIG
+		// BIGæ™‚
 		drawBigBlockFast(bx[player] + 15 + 24 * player - 12 * maxPlay, bottom + 2, blk[player],
 					rt[player], c_cblk[player], (7 + 5 * (c_cblk[player] > 10)) * (alpha_tls < 2), 0, 999 * (alpha_tls == 2), player, (disable_giji3D == 0));
 	} else {
@@ -2674,12 +2657,12 @@ void drawTLSBlock(int player, int bottom) {
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  holdE3Next—pk¬drawBlock
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// •Ï”player‚ğ’Ç‰Á‚µ‚Ü‚µ‚½#1.60c7j1
-// ƒuƒƒbƒN‚ÌŒü‚«‚à“n‚·‚æ‚¤‚É•ÏX C7U1
-// ê—p‚Ì‰æ‘œ‚ğg—p C7U1.7
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  holdãƒ»3Nextç”¨ç¸®å°drawBlock
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// å¤‰æ•°playerã‚’è¿½åŠ ã—ã¾ã—ãŸ#1.60c7j1
+// ãƒ–ãƒ­ãƒƒã‚¯ã®å‘ãã‚‚æ¸¡ã™ã‚ˆã†ã«å¤‰æ›´ C7U1
+// å°‚ç”¨ã®ç”»åƒã‚’ä½¿ç”¨ C7U1.7
 void drawhBlock(int bx1, int by1, int kind, int color, int r, int player, int rotate, int use3D) {
 	int		i, j,add,k,tmp;
 	add = 0;
@@ -2688,7 +2671,7 @@ void drawhBlock(int bx1, int by1, int kind, int color, int r, int player, int ro
 		add = 9;
 		color = color + 9;
 	}
-	if(item_monochrome[player])	//ƒAƒCƒeƒ€‚É‚æ‚é[ ]
+	if(item_monochrome[player])	//ã‚¢ã‚¤ãƒ†ãƒ ã«ã‚ˆã‚‹[ ]
 		color = 8;
 	if((add == 0) && (color != 8) && (color != 9)) tmp = 0;
 
@@ -2707,7 +2690,7 @@ void drawhBlock(int bx1, int by1, int kind, int color, int r, int player, int ro
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
-			else if( isWRule(player) )		// WorldType—p #1.60c5
+			else if( isWRule(player) )		// WorldTypeç”¨ #1.60c5
 				ExBltFastRect(83,
 				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
@@ -2723,7 +2706,7 @@ void drawhBlock(int bx1, int by1, int kind, int color, int r, int player, int ro
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
-			else if( isWRule(player) )		// WorldType—p #1.60c5
+			else if( isWRule(player) )		// WorldTypeç”¨ #1.60c5
 				ExBltFastRect(76,
 				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,

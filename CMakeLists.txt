@@ -4,6 +4,14 @@ project(HeborisC7EX-SDL2
 )
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+	add_definitions(-DWIN32)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+	add_definitions(-DMACOSX)
+elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+	add_definitions(-DLINUX)
+endif()
+
 set(EXE heboris)
 add_executable(${EXE})
 

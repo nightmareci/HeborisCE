@@ -1,60 +1,60 @@
 #include <cstdint>
 
-int	screenMode;		// ƒEƒBƒ“ƒhƒEƒ‚[ƒh	0:‘S‰æ–Ê 1:ƒEƒBƒ“ƒhƒE(320x240) 2:ƒEƒBƒ“ƒhƒE(640x480)
-int	colorMode;		// ƒJƒ‰[ƒ‚[ƒh		0:16bit (65536F) 1:32bit (1677–œF)
-int	systemmem;		// ƒT[ƒtƒFƒXŠi”[	0:VRAM(‚‘¬) 1:ƒVƒXƒeƒ€ƒƒ‚ƒŠ(’á‘¬)
-int	nextblock;		// ƒcƒ‚
-//int	blockkind;		// ƒuƒƒbƒNƒOƒ‰ƒtƒBƒbƒN	0:aa 1:ab 2:ba 3:bb
-int	smooth;			// ƒuƒƒbƒN—‰º	0:ƒm[ƒ}ƒ‹ 1:ƒXƒ€[ƒY
-int	nanameallow;	// Î‚ß“ü—Í		0:–³Œø 1:—LŒø
-int	sonicdrop;		// ã“ü‚ê‘¦Ú’n	0:—LŒø 1:–³Œø
-int	fastlrmove;		// ‰¡æs“ü—Í	0:—LŒø 1:–³Œø
-int	blockflash;		// ƒuƒƒbƒN˜g	0:“_–Å 1:“_“” 2:–³‚µ
-int	background;		// ƒtƒB[ƒ‹ƒh”wŒi0:ƒXƒNƒ[ƒ‹ 1:ƒXƒNƒ[ƒ‹–³‚µ 2:ƒxƒ^
+int	screenMode;		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¢ãƒ¼ãƒ‰	0:å…¨ç”»é¢ 1:ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦(320x240) 2:ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦(640x480)
+int	colorMode;		// ã‚«ãƒ©ãƒ¼ãƒ¢ãƒ¼ãƒ‰		0:16bit (65536è‰²) 1:32bit (1677ä¸‡è‰²)
+int	systemmem;		// ã‚µãƒ¼ãƒ•ã‚§ã‚¹æ ¼ç´	0:VRAM(é«˜é€Ÿ) 1:ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ¢ãƒª(ä½é€Ÿ)
+int	nextblock;		// ãƒ„ãƒ¢
+//int	blockkind;		// ãƒ–ãƒ­ãƒƒã‚¯ã‚°ãƒ©ãƒ•ã‚£ãƒƒã‚¯	0:aa 1:ab 2:ba 3:bb
+int	smooth;			// ãƒ–ãƒ­ãƒƒã‚¯è½ä¸‹	0:ãƒãƒ¼ãƒãƒ« 1:ã‚¹ãƒ ãƒ¼ã‚º
+int	nanameallow;	// æ–œã‚å…¥åŠ›		0:ç„¡åŠ¹ 1:æœ‰åŠ¹
+int	sonicdrop;		// ä¸Šå…¥ã‚Œå³æ¥åœ°	0:æœ‰åŠ¹ 1:ç„¡åŠ¹
+int	fastlrmove;		// æ¨ªå…ˆè¡Œå…¥åŠ›	0:æœ‰åŠ¹ 1:ç„¡åŠ¹
+int	blockflash;		// ãƒ–ãƒ­ãƒƒã‚¯æ 	0:ç‚¹æ»… 1:ç‚¹ç¯ 2:ç„¡ã—
+int	background;		// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰èƒŒæ™¯0:ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ« 1:ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ç„¡ã— 2:ãƒ™ã‚¿
 
-int	rots[2];		// ‰ñ“]‹K‘¥
-int	lvup[2];		// ƒŒƒxƒ‹ƒAƒbƒv•û®
-int	fontc[12];		// ‘èš‚ÌF	0:”’ 1:Â 2:Ô 3:“ 4:—Î 5:‰© 6:‹ó 7:ò 8:‡ 9:—•
-int	digitc[12];		// ”š‚ÌF	‚»‚ê‚¼‚êATGMRuleETiRuleEWorldRuleEWorld2RuleEARSRuleEARS2RuleEWorld3Rule
-int	giveupKey = 0x10;	// Ì‚ÄƒQ[ƒL[ (ƒfƒtƒHƒ‹ƒg‚ÍQ)
-int	ssKey = 0xC7;		// ƒXƒiƒbƒvƒVƒ‡ƒbƒgƒL[ (ƒfƒtƒHƒ‹ƒg‚ÍHome)
-int pausekey[2] = { 0x3B, 0x3C };	// ƒ|[ƒYƒL[(ƒfƒtƒHƒ‹ƒg‚ÍF1, F2)		#1.60c7g7
-int dispnextkey[2] = { 0x3D, 0x3E };	// NEXT•\¦ƒL[(ƒfƒtƒHƒ‹ƒg‚ÍF3, F4) 	#1.60c7g7
-int	dtc;			// tgmlv‚Ì•\¦	0:off  1:on  (lvtype = 1‚Ì‚Íí‚É•\¦)
-int	fldtr;			// ƒtƒB[ƒ‹ƒh”wŒi”ñ•\¦‚ÌƒtƒB[ƒ‹ƒh“§‰ß“x(0-256)
-int	wavebgm;		// BGM‚Ì‘I‘ğ	0:•W€midi 1:Wave 2:mp3
+int	rots[2];		// å›è»¢è¦å‰‡
+int	lvup[2];		// ãƒ¬ãƒ™ãƒ«ã‚¢ãƒƒãƒ—æ–¹å¼
+int	fontc[12];		// é¡Œå­—ã®è‰²	0:ç™½ 1:é’ 2:èµ¤ 3:æ¡ƒ 4:ç·‘ 5:é»„ 6:ç©º 7:æ©™ 8:ç´« 9:è—
+int	digitc[12];		// æ•°å­—ã®è‰²	ãã‚Œãã‚Œã€TGMRuleãƒ»TiRuleãƒ»WorldRuleãƒ»World2Ruleãƒ»ARSRuleãƒ»ARS2Ruleãƒ»World3Rule
+int	giveupKey = 0x10;	// æ¨ã¦ã‚²ãƒ¼ã‚­ãƒ¼ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯Q)
+int	ssKey = 0xC7;		// ã‚¹ãƒŠãƒƒãƒ—ã‚·ãƒ§ãƒƒãƒˆã‚­ãƒ¼ (ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯Home)
+int pausekey[2] = { 0x3B, 0x3C };	// ãƒãƒ¼ã‚ºã‚­ãƒ¼(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯F1, F2)		#1.60c7g7
+int dispnextkey[2] = { 0x3D, 0x3E };	// NEXTè¡¨ç¤ºã‚­ãƒ¼(ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¯F3, F4) 	#1.60c7g7
+int	dtc;			// tgmlvã®è¡¨ç¤º	0:off  1:on  (lvtype = 1ã®æ™‚ã¯å¸¸ã«è¡¨ç¤º)
+int	fldtr;			// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰èƒŒæ™¯éè¡¨ç¤ºæ™‚ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰é€éåº¦(0-256)
+int	wavebgm;		// BGMã®é¸æŠ	0:æ¨™æº–midi 1:Wave 2:mp3
 // ver.160c6
-int	dispnext;		// ƒlƒNƒXƒg•\¦ŒÂ”İ’è
-int	movesound;		// ƒuƒƒbƒNˆÚ“®‰¹İ’è	0:OFF@1:ON
-int	fontsize;		// ƒƒCƒ“‰æ–Ê‚Å•`‰æ‚·‚éƒtƒHƒ“ƒg‚Ì‘å‚«‚³	0:•W€@1:¬Œ^
-int	maxPlay;		// ƒvƒŒƒC‚·‚éÅ‘ål”	0:ƒVƒ“ƒOƒ‹‘ä@1:ƒcƒCƒ“‘ä
-int lastmaxPlay;	// İ’è•ÏX‘O‚ÌAƒvƒŒƒC‚·‚éÅ‘ål”	0:ƒVƒ“ƒOƒ‹‘ä@1:ƒcƒCƒ“‘ä
+int	dispnext;		// ãƒã‚¯ã‚¹ãƒˆè¡¨ç¤ºå€‹æ•°è¨­å®š
+int	movesound;		// ãƒ–ãƒ­ãƒƒã‚¯ç§»å‹•éŸ³è¨­å®š	0:OFFã€€1:ON
+int	fontsize;		// ãƒ¡ã‚¤ãƒ³ç”»é¢ã§æç”»ã™ã‚‹ãƒ•ã‚©ãƒ³ãƒˆã®å¤§ãã•	0:æ¨™æº–ã€€1:å°å‹
+int	maxPlay;		// ãƒ—ãƒ¬ã‚¤ã™ã‚‹æœ€å¤§äººæ•°	0:ã‚·ãƒ³ã‚°ãƒ«å°ã€€1:ãƒ„ã‚¤ãƒ³å°
+int lastmaxPlay;	// è¨­å®šå¤‰æ›´å‰ã®ã€ãƒ—ãƒ¬ã‚¤ã™ã‚‹æœ€å¤§äººæ•°	0:ã‚·ãƒ³ã‚°ãƒ«å°ã€€1:ãƒ„ã‚¤ãƒ³å°
 int lasttopframe;
 
-int	breakeffect;	// ƒ‰ƒCƒ“‚ğ‚»‚ë‚¦‚½‚Æ‚«AƒuƒƒbƒN‚ğ’e‚¯‚³‚¹‚é‚© 0:off 1:on
-int	showcombo;		// ƒRƒ“ƒ{‚Ì•\¦(SINGLE‚Æ‚©HEBORIS‚Æ‚©) 0:off 1:on
-//int	quickerase;		// ƒuƒƒbƒN‚Ì‚‘¬Á‹ 0:ƒuƒƒbƒN‚ğ¶‚©‚ç‰E‚ÖÁ‚· 1:“¯‚ÉÁ‚·
+int	breakeffect;	// ãƒ©ã‚¤ãƒ³ã‚’ãã‚ãˆãŸã¨ãã€ãƒ–ãƒ­ãƒƒã‚¯ã‚’å¼¾ã‘ã•ã›ã‚‹ã‹ 0:off 1:on
+int	showcombo;		// ã‚³ãƒ³ãƒœã®è¡¨ç¤º(SINGLEã¨ã‹HEBORISã¨ã‹) 0:off 1:on
+//int	quickerase;		// ãƒ–ãƒ­ãƒƒã‚¯ã®é«˜é€Ÿæ¶ˆå» 0:ãƒ–ãƒ­ãƒƒã‚¯ã‚’å·¦ã‹ã‚‰å³ã¸æ¶ˆã™ 1:åŒæ™‚ã«æ¶ˆã™
 
-int	w_reverse;		// ƒ[ƒ‹ƒhƒ‹[ƒ‹‚Å‰ñ“]•û–@‚ğ‹t“]‚³‚¹‚é 0:off 1:on #1.60c7f8
+int	w_reverse;		// ãƒ¯ãƒ¼ãƒ«ãƒ‰ãƒ«ãƒ¼ãƒ«ã§å›è»¢æ–¹æ³•ã‚’é€†è»¢ã•ã›ã‚‹ 0:off 1:on #1.60c7f8
 
-int	downtype;		// ‰º“ü‚êƒ^ƒCƒv 0:HEBORIS 1:Ti #1.60c7f9
+int	downtype;		// ä¸‹å…¥ã‚Œã‚¿ã‚¤ãƒ— 0:HEBORIS 1:Ti #1.60c7f9
 
-int	lvupbonus;		// ƒŒƒxƒ‹ƒAƒbƒvƒ{[ƒiƒX 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
+int	lvupbonus;		// ãƒ¬ãƒ™ãƒ«ã‚¢ãƒƒãƒ—ãƒœãƒ¼ãƒŠã‚¹ 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-int	keyAssign[10 * 2] =		// ƒL[ƒ{[ƒhİ’è (ª«©¨ABCD)
+int	keyAssign[10 * 2] =		// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰è¨­å®š (â†‘â†“â†â†’ABCD)
 {
 31, 45, 44, 46, 48, 49, 57, 50, 0, 0, 		// sxzc bn[space]m
-200, 208, 203, 205, 79, 80, 81, 82, 0, 0	// ª«©¨ num1num2num3num0
+200, 208, 203, 205, 79, 80, 81, 82, 0, 0	// â†‘â†“â†â†’ num1num2num3num0
 };
 
-int	joykeyAssign[10 * 2] = {		// ƒWƒ‡ƒCƒXƒeƒBƒbƒNƒ{ƒ^ƒ“Š„‚è“–‚Ä
-0, 1, 2, 3,   4, 5, 6, 7, -1, -1,		//default={0,1,2,3,10,7,4,8,-1,-1} ¨pause‚Ægiveup‚ğ’Ç‰Á 1.60c7g7
+int	joykeyAssign[10 * 2] = {		// ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ãƒœã‚¿ãƒ³å‰²ã‚Šå½“ã¦
+0, 1, 2, 3,   4, 5, 6, 7, -1, -1,		//default={0,1,2,3,10,7,4,8,-1,-1} â†’pauseã¨giveupã‚’è¿½åŠ  1.60c7g7
 0, 1, 2, 3,   4, 5, 6, 7, -1, -1
 };
 
-int	restart;				// Ä‹N“®ƒtƒ‰ƒO
+int	restart;				// å†èµ·å‹•ãƒ•ãƒ©ã‚°
 
-// İ’è‚ğƒoƒCƒiƒŠƒf[ƒ^‚É•Û‘¶ 1.60c5
+// è¨­å®šã‚’ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã«ä¿å­˜ 1.60c5
 int SaveConfig(void) {
 	int32_t i, j, cfgbuf[100];
 
@@ -105,7 +105,7 @@ int SaveConfig(void) {
 	cfgbuf[70] = dispnextkey[0];
 	cfgbuf[71] = dispnextkey[1];
 
-	/* 72`74‚ÍƒWƒ‡ƒCƒXƒeƒBƒbƒN—p */
+	/* 72ã€œ74ã¯ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ç”¨ */
 	cfgbuf[74] = fontc[0] + fontc[1] * 0x100 + fontc[2] * 0x10000 + fontc[3] * 0x1000000;
 	cfgbuf[75] = digitc[0] + digitc[1] * 0x100 + digitc[2] * 0x10000 + digitc[3] * 0x1000000;
 	cfgbuf[76] = fontc[4] + fontc[5] * 0x100 + fontc[6] * 0x10000 + fontc[7] * 0x1000000;
@@ -124,7 +124,7 @@ int SaveConfig(void) {
 	return (0);
 }
 
-// İ’è‚ğƒoƒCƒiƒŠƒf[ƒ^‚©‚ç“Ç‚İ‚İ 1.60c5
+// è¨­å®šã‚’ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ã‹ã‚‰èª­ã¿è¾¼ã¿ 1.60c5
 int LoadConfig(void) {
 	int32_t i, j, cfgbuf[100];
 
@@ -182,7 +182,7 @@ int LoadConfig(void) {
 	dispnextkey[0] = cfgbuf[70];
 	dispnextkey[1] = cfgbuf[71];
 
-	/* 72`74‚ÍƒWƒ‡ƒCƒXƒeƒBƒbƒN—p */
+	/* 72ã€œ74ã¯ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ç”¨ */
 
 	for(i = 0; i <= 3; i++) {
 		fontc[i] = (cfgbuf[74] >> (i * 8)) & 0xff;
@@ -210,7 +210,7 @@ int LoadConfig(void) {
 void ConfigMenu() {
 	int i, j, m, pl, count, pages;
 	int ncfg[100];
-	int need_reset;	// İ’è•Û‘¶‚ÉƒŠƒZƒbƒg‚·‚é‚©
+	int need_reset;	// è¨­å®šä¿å­˜æ™‚ã«ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã‹
 	int need_reloadBG;
 	int last_BG;
 
@@ -256,7 +256,7 @@ void ConfigMenu() {
 	ncfg[57] = dispnextkey[0];
 	ncfg[58] = dispnextkey[1];
 
-	/* 59`61‚ÍƒWƒ‡ƒCƒXƒeƒBƒbƒN—p */
+	/* 59ã€œ61ã¯ã‚¸ãƒ§ã‚¤ã‚¹ãƒ†ã‚£ãƒƒã‚¯ç”¨ */
 	ncfg[62] = fontc[0];
 	ncfg[63] = digitc[0];
 	ncfg[64] = fontc[1];
@@ -298,7 +298,7 @@ void ConfigMenu() {
 		count++;
 		KeyInput();
 
-		// ”wŒi•`‰æ
+		// èƒŒæ™¯æç”»
 		if(background == 0) {
 			for(i = 0; i <= 4; i++) {
 				if(getDrawRate() == 1)
@@ -334,7 +334,7 @@ void ConfigMenu() {
 			printFont(2, 14, "SONIC DROP  :", (statc[0] == 7) * fontc[rots[0]]);
 			printFont(2, 15, "INIT LR MOVE:", (statc[0] == 8) * fontc[rots[0]]);
 			printFont(2, 17, "BLOCK FALL  :", (statc[0] == 9) * fontc[rots[0]]);
-			printFont(2, 19, "SHOW LEVEL  :", (statc[0] == 10) * fontc[rots[0]]);	// "TGM LEVEL"‚ğ"SHOW LEVEL"‚É•ÏX #1.60c7i2
+			printFont(2, 19, "SHOW LEVEL  :", (statc[0] == 10) * fontc[rots[0]]);	// "TGM LEVEL"ã‚’"SHOW LEVEL"ã«å¤‰æ›´ #1.60c7i2
 			printFont(2, 21, "MOVE SOUND  :", (statc[0] == 11) * fontc[rots[0]]);
 			printFont(2, 22, "BGM         :", (statc[0] == 12) * fontc[rots[0]]);
 			printFont(2, 23, "WORLDREVERSE:", (statc[0] == 13) * fontc[rots[0]]);
@@ -346,8 +346,8 @@ void ConfigMenu() {
 			if(statc[0] != 0) printFont(1, 5 + i + (i > 3) + (i > 5) + (i > 8) + (i > 9) + (i > 10), "b", fontc[rots[0]]);
 			else printFont(1, 3, "b", fontc[rots[0]]);
 
-//			if(statc[1]) {	// •\¦XV
-				/* 050825 ‰æ–Êƒ‚[ƒhŠg’£‰ü‘¢•”•ª -- ‚±‚±‚©‚ç */
+//			if(statc[1]) {	// è¡¨ç¤ºæ›´æ–°
+				/* 050825 ç”»é¢ãƒ¢ãƒ¼ãƒ‰æ‹¡å¼µæ”¹é€ éƒ¨åˆ† -- ã“ã“ã‹ã‚‰ */
 				if((ncfg[0] & 0xff) == 0) sprintf(string[0], "FULL SCREEN 320X240");
 				else if((ncfg[0] & 0xff) == 1) sprintf(string[0], "WINDOW 320X240");
 				else if((ncfg[0] & 0xff) == 2) sprintf(string[0], "WINDOW 640X480");
@@ -361,7 +361,7 @@ void ConfigMenu() {
 				else if((ncfg[0] & 0xff) == 10) sprintf(string[0], "WINDOW 800X600 (LITE)");
 				else if((ncfg[0] & 0xff) == 11) sprintf(string[0], "WINDOW 1024X768 (LITE)");
 				else if((ncfg[0] & 0xff) == 12) sprintf(string[0], "WINDOW 1280X960 (LITE)");
-				/* ‚±‚±‚Ü‚Å */
+				/* ã“ã“ã¾ã§ */
 				printFont(15, 6, string[0], (statc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
 #if		0
@@ -395,16 +395,16 @@ void ConfigMenu() {
 				sprintf(string[0], "%d", ncfg[45]);
 				printFont(15, 11, string[0], (statc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[5]) sprintf(string[0], "e"); // ~ Î‚ß“ü—Í
-				else sprintf(string[0], "c");		// ›
+				if(ncfg[5]) sprintf(string[0], "e"); // Ã— æ–œã‚å…¥åŠ›
+				else sprintf(string[0], "c");		// â—‹
 				printFont(15, 13, string[0], (statc[0] == 6) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[6]) sprintf(string[0], "e");	// ~ ‚‘¬—‰º
-				else sprintf(string[0], "c");		// ›
+				if(ncfg[6]) sprintf(string[0], "e");	// Ã— é«˜é€Ÿè½ä¸‹
+				else sprintf(string[0], "c");		// â—‹
 				printFont(15, 14, string[0], (statc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[7]) sprintf(string[0], "e");	// ~ ‰¡æs“ü—Í
-				else sprintf(string[0], "c");		// ›
+				if(ncfg[7]) sprintf(string[0], "e");	// Ã— æ¨ªå…ˆè¡Œå…¥åŠ›
+				else sprintf(string[0], "c");		// â—‹
 				printFont(15, 15, string[0], (statc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[4]) sprintf(string[0], "SMOOTH");
@@ -452,14 +452,14 @@ void ConfigMenu() {
 
 			for(pl = 0; pl < 2; pl++) {
 //				m = getPushState(pl, 1) - getPushState(pl, 0);
-				// ª«ƒJ[ƒ\ƒ‹ƒŠƒs[ƒh #1.60c7k8
+				// â†‘â†“ã‚«ãƒ¼ã‚½ãƒ«ãƒªãƒ”ãƒ¼ãƒ‰ #1.60c7k8
 				m=0;
 				padRepeat2(pl);
-				// ª
+				// â†‘
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 					if(getPressState(pl, 0)) m--;
 
-				// «
+				// â†“
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 					if(getPressState(pl, 1)) m++;
 				padRepeat(pl);
@@ -467,7 +467,7 @@ void ConfigMenu() {
 					PlaySE(5);
 					statc[0] = (statc[0] + m + 16) % 16;
 				}
-				// HOLDƒ{ƒ^ƒ“‚Åƒy[ƒWØ‚è‘Ö‚¦ #1.60c7k8
+				// HOLDãƒœã‚¿ãƒ³ã§ãƒšãƒ¼ã‚¸åˆ‡ã‚Šæ›¿ãˆ #1.60c7k8
 				if(getPushState(pl, 7)) {
 					PlaySE(3);
 					stat[0] = (stat[0] + 1 + pages)%pages;
@@ -476,7 +476,7 @@ void ConfigMenu() {
 				} else {
 					m = getPushState(pl, 3) - getPushState(pl, 2);
 
-					// C++”Å‚Å–³Œø‚È€–Ú
+					// C++ç‰ˆã§ç„¡åŠ¹ãªé …ç›®
 					if ( statc[0] == 2 ) { statc[0] = 4; }
 					if ( statc[0] == 3 ) { statc[0] = 1; }
 
@@ -501,7 +501,7 @@ void ConfigMenu() {
 							need_reset = 1;
 						}
 #endif
-						else if(statc[0] == 4) ncfg[2] = (ncfg[2] + 13 + m) % 13;		// nextbloc 8‚ğ’Ç‰Á#1.60c7h4
+						else if(statc[0] == 4) ncfg[2] = (ncfg[2] + 13 + m) % 13;		// nextbloc 8ã‚’è¿½åŠ #1.60c7h4
 						else if(statc[0] == 5) ncfg[45] = (ncfg[45] + 7 + m) % 7;		// dispnext
 						else if(statc[0] == 6) ncfg[5] = !ncfg[5];			// nanameallow
 						else if(statc[0] == 7) ncfg[6] = !ncfg[6];			// sonicdrop
@@ -531,7 +531,7 @@ void ConfigMenu() {
 						statc[1] = 1;
 					}
 				}
-				if(getPushState(pl, 4)) {	// A:•Û‘¶&Ä‹N“®
+				if(getPushState(pl, 4)) {	// A:ä¿å­˜&å†èµ·å‹•
 					PlayWave(10);
 					screenMode = ncfg[0] & 0xff;
 					colorMode = ncfg[0] >> 8;
@@ -545,7 +545,7 @@ void ConfigMenu() {
 					blockflash = ncfg[8];
 					background = ncfg[9];
 
-//					for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];	// keyAssign‚Í•ÏXŒã‚·‚®‚É”½‰f
+//					for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];	// keyAssignã¯å¤‰æ›´å¾Œã™ãã«åæ˜ 
 //					for(i = 0; i < 4; i++) joykeyAssign[i + 4] = ncfg[30 + i];
 //					giveupKey = ncfg[34];
 //					ssKey = ncfg[35];
@@ -589,14 +589,14 @@ void ConfigMenu() {
 					tmp_maxPlay = maxPlay;
 
 					if(need_reset) {
-						restart = 1;	// Ä‹N“®ƒtƒ‰ƒO
-					} else if(need_reloadBG==1){	//ƒvƒŒƒC‚·‚éÅ‘ål”‚Ì•ÏX‚ª‚ ‚Á‚½‚çc
-						loadBG(maxPlay,0);			// ”wŒi‚¾‚¯Ä“Ç‚İ‚İ C7T2.5EX
+						restart = 1;	// å†èµ·å‹•ãƒ•ãƒ©ã‚°
+					} else if(need_reloadBG==1){	//ãƒ—ãƒ¬ã‚¤ã™ã‚‹æœ€å¤§äººæ•°ã®å¤‰æ›´ãŒã‚ã£ãŸã‚‰â€¦
+						loadBG(maxPlay,0);			// èƒŒæ™¯ã ã‘å†èª­ã¿è¾¼ã¿ C7T2.5EX
 					}
 					stat[0] = -1;
 				}
 
-				if(getPushState(pl, 5)) stat[0] = -1;	// B:İ’è”jŠü&ƒ^ƒCƒgƒ‹‰æ–Ê‚É–ß‚é
+				if(getPushState(pl, 5)) stat[0] = -1;	// B:è¨­å®šç ´æ£„&ã‚¿ã‚¤ãƒˆãƒ«ç”»é¢ã«æˆ»ã‚‹
 			}
 		}
 
@@ -701,11 +701,11 @@ void ConfigMenu() {
 				padRepeat(pl);
 				m=0;
 				padRepeat2(pl);
-				// ª
+				// â†‘
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 					if(getPressState(pl, 0)) m--;
 
-				// «
+				// â†“
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 					if(getPressState(pl, 1)) m++;
 				if(m) {
@@ -713,7 +713,7 @@ void ConfigMenu() {
 					statc[0] = (statc[0] + m + 27) % 27;
 				}
 
-				// HOLDƒ{ƒ^ƒ“‚Åƒy[ƒWØ‚è‘Ö‚¦ #1.60c7k8
+				// HOLDãƒœã‚¿ãƒ³ã§ãƒšãƒ¼ã‚¸åˆ‡ã‚Šæ›¿ãˆ #1.60c7k8
 				if(getPushState(pl, 7)) {
 					PlaySE(3);
 					stat[0] = (stat[0] + 1 + pages)%pages;
@@ -768,7 +768,7 @@ void ConfigMenu() {
 					statc[1] = 1;
 				}
 
-				if(getPushState(pl, 4) || getPushState(pl, 5)) {	// A&B:main‚É–ß‚é
+				if(getPushState(pl, 4) || getPushState(pl, 5)) {	// A&B:mainã«æˆ»ã‚‹
 					PlaySE(3);
 					PlaySE(5);
 					stat[0] = 0;
@@ -796,21 +796,21 @@ void ConfigMenu() {
 
 				for(pl = 0; pl < 2; pl++) {
 //					m = getPushState(pl, 1) - getPushState(pl, 0);
-					// ª«ƒJ[ƒ\ƒ‹ƒŠƒs[ƒh #1.60c7k8
+					// â†‘â†“ã‚«ãƒ¼ã‚½ãƒ«ãƒªãƒ”ãƒ¼ãƒ‰ #1.60c7k8
 					m=0;
 					padRepeat2(pl);
-					// ª
+					// â†‘
 					if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 						if(getPressState(pl, 0)) m--;
 
-					// «
+					// â†“
 					if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 						if(getPressState(pl, 1)) m++;
 					if(m) {
 						PlaySE(5);
 						statc[0] = (statc[0] + m + 8) % 8;
 					}
-					// HOLDƒ{ƒ^ƒ“‚Åƒy[ƒWØ‚è‘Ö‚¦ #1.60c7k8
+					// HOLDãƒœã‚¿ãƒ³ã§ãƒšãƒ¼ã‚¸åˆ‡ã‚Šæ›¿ãˆ #1.60c7k8
 					if(getPushState(pl, 7)) {
 						PlaySE(3);
 						stat[0] = (stat[0] + 1 + pages)%pages;
@@ -969,7 +969,7 @@ void ConfigMenu() {
 					}
 				}
 
-				// ƒL[ƒ{[ƒh‚ÌEND‚Å’Eo #1.60c7n4
+				// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ENDã§è„±å‡º #1.60c7n4
 				if( IsPushEndKey()) {
 					PlaySE(5);
 					j = 80 + (pl * 6);
@@ -981,7 +981,7 @@ void ConfigMenu() {
 					statc[2] = 0;
 				}
 			} else if(statc[2] == 5) {
-				// ‚»‚Ì‘¼
+				// ãã®ä»–
 				printFont(2,  3, "FUNCTION KEY SETTING", digitc[rots[0]]);
 				printFont(3,  6, "GIVEUP KEY     :", fontc[rots[0]] * (statc[0] == 0));
 				printFont(3,  8, "SNAPSHOT KEY   :", fontc[rots[0]] * (statc[0] == 1));
@@ -1062,14 +1062,14 @@ void ConfigMenu() {
 						else if(i == 6) printFont(3, 7 + i + pl * 10, "C(L/R/180 ROT):", 0);
 						else if(i == 7) printFont(3, 7 + i + pl * 10, "D(HOLD)       :", 0);
 						SelectJoyStick(pl);
-						j = (IsPressKey(keyAssign[i + 10 * pl]) || IsPressJoyKey(joykeyAssign[i + 10 * pl]));	// ƒL[“ü—Íó‘Ôæ“¾
+						j = (IsPressKey(keyAssign[i + 10 * pl]) || IsPressJoyKey(joykeyAssign[i + 10 * pl]));	// ã‚­ãƒ¼å…¥åŠ›çŠ¶æ…‹å–å¾—
 						if(j) sprintf(string[0],"d");
 						else  sprintf(string[0],"c");
 						printFont(19, 7 + i + pl * 10, string[0], j+1);
 					}
 				}
 
-				// ƒL[ƒ{[ƒh‚ÌENTER‚ÅI—¹
+				// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ENTERã§çµ‚äº†
 				if( IsPushReturnKey() ) {
 					PlaySE(5);
 					statc[0] = 0;
@@ -1099,7 +1099,7 @@ void ConfigMenu() {
 					}
 				}
 
-				// A/B:–ß‚é
+				// A/B:æˆ»ã‚‹
 				if(getPushState(0, 4) || getPushState(0, 5) || getPushState(1, 4) || getPushState(1, 5)) {
 					PlaySE(5);
 					statc[0] = 0;
@@ -1114,13 +1114,13 @@ void ConfigMenu() {
 	}
 }
 
-/* ƒIƒvƒVƒ‡ƒ“ #1.60c7n4 */
+/* ã‚ªãƒ—ã‚·ãƒ§ãƒ³ #1.60c7n4 */
 void GameOption() {
 	int i, j, cursor;
 	cursor = 0;
 
 	loop {
-		// ”wŒi•`‰æ
+		// èƒŒæ™¯æç”»
 		count++;
 		if(background == 0) {
 			for(i = 0; i <= 4; i++) {
@@ -1139,7 +1139,7 @@ void GameOption() {
 		ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
 		ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
 
-		// ƒƒjƒ…[•`‰æ
+		// ãƒ¡ãƒ‹ãƒ¥ãƒ¼æç”»
 		printFont(1, 1, "OPTION", 4);
 
 		printFont(1, 3 + cursor, "b", fontc[rots[0]]);
@@ -1193,8 +1193,8 @@ void GameOption() {
 
 		sprintf(string[0],"MEDAL GRAPHICS    :");
 		printFont(2, 12,string[0], (cursor == 9) * fontc[rots[0]]);
-		if(medaltype == 0) sprintf(string[0], "f");// 
-		else if(medaltype == 1) sprintf(string[0], "c");//›
+		if(medaltype == 0) sprintf(string[0], "f");//â–¡
+		else if(medaltype == 1) sprintf(string[0], "c");//â—‹
 			else sprintf(string[0], "OFF");
 		printFont(22, 12, string[0], (cursor == 9) * fontc[rots[0]]);
 
@@ -1301,18 +1301,18 @@ void GameOption() {
 		if(b2bcheck == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 		printFont(22, 29, string[0], (cursor == 26) * fontc[rots[0]]);
-		// ƒL[“ü—Í
+		// ã‚­ãƒ¼å…¥åŠ›
 		KeyInput();
 
 		padRepeat2(0);
-		// ª
+		// â†‘
 		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 		if( getPressState(0, 0) ) {
 			PlaySE(5);
 			cursor--;
 			if(cursor < 0) cursor = 26;
 		}
-		// «
+		// â†“
 		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 		if( getPressState(0, 1) ) {
 			PlaySE(5);
@@ -1321,16 +1321,16 @@ void GameOption() {
 		}
 
 		padRepeat(0);
-		// ©
+		// â†
 		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
 		if( getPressState(0, 2) ) {
 			PlaySE(3);
 
-			// ƒfƒoƒbƒOƒ‚[ƒh
+			// ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰
 			if(cursor == 0) {
 				debug = !debug;
 			}
-			// ’iˆÊƒ^ƒCƒv
+			// æ®µä½ã‚¿ã‚¤ãƒ—
 			if(cursor == 1) {
 				enable_grade[0]--;
 				if(enable_grade[0] < 0) enable_grade[0] = 4;
@@ -1340,53 +1340,53 @@ void GameOption() {
 				ace_irs--;
 				if(ace_irs < 0) ace_irs = 2;
 			}
-			// ‰pŒê”Å
+			// è‹±èªç‰ˆ
 			if(cursor == 3) {
 				english = !english;
 			}
-			// ŠÈˆÕƒZƒŒƒNƒg
+			// ç°¡æ˜“ã‚»ãƒ¬ã‚¯ãƒˆ
 			if(cursor == 4) {
 				mini_select = !mini_select;
 			}
-			// BIGˆÚ“®’PˆÊ
+			// BIGç§»å‹•å˜ä½
 			if(cursor == 5) {
 				bigtype--;
 				if(bigtype < 0) bigtype = 2;
 			}
-			// ƒAƒCƒeƒ€ŠÔŠu
+			// ã‚¢ã‚¤ãƒ†ãƒ é–“éš”
 			if(cursor == 6) {
 				item_interval--;
 				if(item_interval < 1) item_interval = 50;
 			}
-			// WAIT’l•\¦
+			// WAITå€¤è¡¨ç¤º
 			if(cursor == 7) {
 				hide_wait =!hide_wait;
 			}
-			// VS§ŒÀŠÔ
+			// VSåˆ¶é™æ™‚é–“
 			if(cursor == 8) {
 				vs_time = vs_time - 1800;
 				if(vs_time < 0) vs_time = 36000;
 			}
-			// ƒƒ_ƒ‹ƒ^ƒCƒv
+			// ãƒ¡ãƒ€ãƒ«ã‚¿ã‚¤ãƒ—
 			if(cursor == 9) {
 				medaltype--;
 				if(medaltype < 0) medaltype = 2;
 			}
-			// ‚¹‚èã‚ª‚èŠJnLv
+			// ã›ã‚Šä¸ŠãŒã‚Šé–‹å§‹Lv
 			if(cursor == 10) {
 				p_shirase_start_level = p_shirase_start_level - 50;
 				if(p_shirase_start_level < 0) p_shirase_start_level = 1000;
 			}
-			// ‚¹‚èã‚°ƒ^ƒCƒv
+			// ã›ã‚Šä¸Šã’ã‚¿ã‚¤ãƒ—
 			if(cursor == 11) {
 				uplinetype--;
 				if(uplinetype < 0) uplinetype = 2;
 			}
-			// HOLD••ˆó
+			// HOLDå°å°
 			if(cursor == 12) {
 				disable_hold = !disable_hold;
 			}
-			// IRS••ˆó
+			// IRSå°å°
 			if(cursor == 13) {
 				disable_irs = !disable_irs;
 			}
@@ -1398,45 +1398,45 @@ void GameOption() {
 			if(cursor == 15) {
 				cp_player_2p = !cp_player_2p;
 			}
-			// CPU‚Ì«Ši
+			// CPUã®æ€§æ ¼
 			if(cursor == 16) {
 				cp_type = !cp_type;
 			}
-			// ƒuƒƒbƒN‚Ìü‚è‚ÌlŠp‚¢˜g
+			// ãƒ–ãƒ­ãƒƒã‚¯ã®å‘¨ã‚Šã®å››è§’ã„æ 
 			if(cursor == 17) {
 				block_rframe = !block_rframe;
 			}
-			// •ÇR‚è••ˆó
+			// å£è¹´ã‚Šå°å°
 			if(cursor == 18) {
 				disable_wallkick = !disable_wallkick;
 			}
-			// ‘€ìó‹µ•\¦
+			// æ“ä½œçŠ¶æ³è¡¨ç¤º
 			if(cursor == 19) {
 				showctrl--;
 				if(showctrl < 0) showctrl = 2;
 			}
-			// oŒ»ˆÊ’u
+			// å‡ºç¾ä½ç½®
 			if(cursor == 20) {
 				spawn_y_type = !spawn_y_type;
 			}
-			// TOMOYOÚ×
+			// TOMOYOè©³ç´°
 			if(cursor == 21) {
 				hide_tomoyoinf = !hide_tomoyoinf;
 			}
-			// T-SPIN”»’è•û–@
+			// T-SPINåˆ¤å®šæ–¹æ³•
 			if(cursor == 22) {
 				tspin_type--;
 				if(tspin_type < 0) tspin_type = 3;
 			}
-			// ƒuƒƒbƒN‚Ìc‘œ
+			// ãƒ–ãƒ­ãƒƒã‚¯ã®æ®‹åƒ
 			if(cursor == 23) {
 				block_spectrum = !block_spectrum;
 			}
-			//‘æˆêƒuƒƒbƒN’²®
+			//ç¬¬ä¸€ãƒ–ãƒ­ãƒƒã‚¯èª¿æ•´
 			if(cursor == 24) {
 				next_adjust = !next_adjust;
 			}
-			// ƒxƒXƒgƒ^ƒCƒ€‚ğŒ©‚¹‚é‚©
+			// ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã‚’è¦‹ã›ã‚‹ã‹
 			if(cursor == 25) {
 				Isbesttime = !Isbesttime;
 			}
@@ -1446,16 +1446,16 @@ void GameOption() {
 			}
 		}
 
-		// ¨
+		// â†’
 		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
 		if( getPressState(0, 3) ) {
 			PlaySE(3);
 
-			// ƒfƒoƒbƒO
+			// ãƒ‡ãƒãƒƒã‚°
 			if(cursor == 0) {
 				debug = !debug;
 			}
-			// ’iˆÊ
+			// æ®µä½
 			if(cursor == 1) {
 				enable_grade[0]++;
 				if(enable_grade[0] > 4) enable_grade[0] = 0;
@@ -1465,53 +1465,53 @@ void GameOption() {
 				ace_irs++;
 				if(ace_irs > 2) ace_irs = 0;
 			}
-			// ‰pŒê”Å
+			// è‹±èªç‰ˆ
 			if(cursor == 3) {
 				english = !english;
 			}
-			// ŠÈˆÕƒZƒŒƒNƒg
+			// ç°¡æ˜“ã‚»ãƒ¬ã‚¯ãƒˆ
 			if(cursor == 4) {
 				mini_select = !mini_select;
 			}
-			// BIGˆÚ“®’PˆÊ
+			// BIGç§»å‹•å˜ä½
 			if(cursor == 5) {
 				bigtype++;
 				if(bigtype > 2) bigtype = 0;
 			}
-			// ƒAƒCƒeƒ€ŠÔŠu
+			// ã‚¢ã‚¤ãƒ†ãƒ é–“éš”
 			if(cursor == 6) {
 				item_interval++;
 				if(item_interval > 50) item_interval = 1;
 			}
-			// WAIT’l•\¦
+			// WAITå€¤è¡¨ç¤º
 			if(cursor == 7) {
 				hide_wait =!hide_wait;
 			}
-			// VS§ŒÀŠÔ
+			// VSåˆ¶é™æ™‚é–“
 			if(cursor == 8) {
-				vs_time = vs_time + 1800; //30•b
+				vs_time = vs_time + 1800; //30ç§’
 				if(vs_time > 36000) vs_time = 0;
 			}
-			// ‘€ìó‹µ•\¦
+			// æ“ä½œçŠ¶æ³è¡¨ç¤º
 			if(cursor == 9) {
 				medaltype++;
 				if(medaltype > 2) medaltype = 0;
 			}
-			// ‚¹‚èã‚ª‚èŠJnLv
+			// ã›ã‚Šä¸ŠãŒã‚Šé–‹å§‹Lv
 			if(cursor == 10) {
 				p_shirase_start_level = p_shirase_start_level + 50;
 				if(p_shirase_start_level > 1000) p_shirase_start_level = 0;
 			}
-			// ‚¹‚èã‚°ƒ^ƒCƒv
+			// ã›ã‚Šä¸Šã’ã‚¿ã‚¤ãƒ—
 			if(cursor == 11) {
 				uplinetype++;
 				if(uplinetype > 2) uplinetype = 0;
 			}
-			// HOLD••ˆó
+			// HOLDå°å°
 			if(cursor == 12) {
 				disable_hold = !disable_hold;
 			}
-			// IRS••ˆó
+			// IRSå°å°
 			if(cursor == 13) {
 				disable_irs = !disable_irs;
 			}
@@ -1523,45 +1523,45 @@ void GameOption() {
 			if(cursor == 15) {
 				cp_player_2p = !cp_player_2p;
 			}
-			// CPU‚Ì«Ši
+			// CPUã®æ€§æ ¼
 			if(cursor == 16) {
 				cp_type = !cp_type;
 			}
-			// ƒuƒƒbƒN‚Ìü‚è‚ÌlŠp‚¢˜g
+			// ãƒ–ãƒ­ãƒƒã‚¯ã®å‘¨ã‚Šã®å››è§’ã„æ 
 			if(cursor == 17) {
 				block_rframe = !block_rframe;
 			}
-			// •ÇR‚è••ˆó
+			// å£è¹´ã‚Šå°å°
 			if(cursor == 18) {
 				disable_wallkick = !disable_wallkick;
 			}
-			// ‘€ìó‹µ•\¦
+			// æ“ä½œçŠ¶æ³è¡¨ç¤º
 			if(cursor == 19) {
 				showctrl++;
 				if(showctrl > 2) showctrl = 0;
 			}
-			// oŒ»ˆÊ’u
+			// å‡ºç¾ä½ç½®
 			if(cursor == 20) {
 				spawn_y_type = !spawn_y_type;
 			}
-			// ‚Æ‚à‚æÚ×
+			// ã¨ã‚‚ã‚ˆè©³ç´°
 			if(cursor == 21) {
 				hide_tomoyoinf = !hide_tomoyoinf;
 			}
-			// T-SPIN”»’è•û–@
+			// T-SPINåˆ¤å®šæ–¹æ³•
 			if(cursor == 22) {
 				tspin_type++;
 				if(tspin_type > 3) tspin_type= 0;
 			}
-			// ƒuƒƒbƒN‚Ìc‘œ
+			// ãƒ–ãƒ­ãƒƒã‚¯ã®æ®‹åƒ
 			if(cursor == 23) {
 				block_spectrum = !block_spectrum;
 			}
-			//‘æˆêƒuƒƒbƒN’²®
+			//ç¬¬ä¸€ãƒ–ãƒ­ãƒƒã‚¯èª¿æ•´
 			if(cursor == 24) {
 				next_adjust = !next_adjust;
 			}
-			// ƒxƒXƒgƒ^ƒCƒ€‚ğŒ©‚¹‚é‚©
+			// ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã‚’è¦‹ã›ã‚‹ã‹
 			if(cursor == 25) {
 				Isbesttime = !Isbesttime;
 			}
@@ -1571,7 +1571,7 @@ void GameOption() {
 			}
 		}
 
-		// A‚©B‚Å–ß‚é
+		// Aã‹Bã§æˆ»ã‚‹
 		if( getPushState(0, 4) || getPushState(0, 5) ) {
 			backupSetups();
 			return;

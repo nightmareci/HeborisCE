@@ -1,6 +1,6 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.23 - MISSIONƒ‚[ƒh ƒZƒŒƒNƒg‰æ–Ê
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.23 - MISSIONãƒ¢ãƒ¼ãƒ‰ ã‚»ãƒ¬ã‚¯ãƒˆç”»é¢
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void statMissionSelect(int player) {
 	padRepeat(player);
 	padRepeat2(player);
@@ -35,9 +35,9 @@ void statMissionSelect(int player) {
 		ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
 
 //		ExBltRect(55,128 + 192 * player -96 * maxPlay , 55, 64*rots[player] ,32*fontc[rots[player]],64,32);
-		if(!english)	//—‰º“Á«i“ú–{Œêj
+		if(!english)	//è½ä¸‹ç‰¹æ€§ï¼ˆæ—¥æœ¬èªï¼‰
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rots[player] ,320,64,32);
-		else			//—‰º“Á«iEnglishj
+		else			//è½ä¸‹ç‰¹æ€§ï¼ˆEnglishï¼‰
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rots[player] ,352,64,32);
 	printFont(15 + 24 * player - 12 * maxPlay, 16, "FILE", fontc[rots[player]]);
 
@@ -55,7 +55,7 @@ void statMissionSelect(int player) {
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 176,  160 - ((count % 40) * 3), 20, 80, 8);
 	}
 
-	// ª
+	// â†‘
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 0) ) {
 		PlaySE(5);
@@ -63,7 +63,7 @@ void statMissionSelect(int player) {
 		if(vslevel[0] < 0) vslevel[0] = 4 - (2 * ((mission_file < 25) && (!debug)));
 	}
 
-	// «
+	// â†“
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 1) ) {
 		PlaySE(5);
@@ -71,7 +71,7 @@ void statMissionSelect(int player) {
 		if(vslevel[0] > 4 - (2 * ((mission_file < 25) && (!debug)))) vslevel[0] = 0;
 	}
 
-	// ©
+	// â†
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 	if( getPressState(player, 2) ) {
 		PlaySE(3);
@@ -94,7 +94,7 @@ void statMissionSelect(int player) {
 
 	}
 
-	// ¨
+	// â†’
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 	if( getPressState(player, 3) ) {
 		PlaySE(3);
@@ -116,14 +116,14 @@ void statMissionSelect(int player) {
 		}
 	}
 
-	// Bƒ{ƒ^ƒ“
+	// Bãƒœã‚¿ãƒ³
 	if( getPushState(player, 5) ) {
 		gameMode[0] = 0;
 		vslevel[0] = 0;
-		flag = 1;	// ƒ^ƒCƒgƒ‹‚Ö
+		flag = 1;	// ã‚¿ã‚¤ãƒˆãƒ«ã¸
 	}
 
-	// Aƒ{ƒ^ƒ“
+	// Aãƒœã‚¿ãƒ³
 	if( getPushState(player, 4) ) {
 		PlaySE(10);
 
@@ -132,7 +132,7 @@ void statMissionSelect(int player) {
 			start_mission = c_mission;
 			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(18);
 			StopAllBGM();
-			//”wŒi‚ğİ’è
+			//èƒŒæ™¯ã‚’è¨­å®š
 			if(mission_type[c_mission] == 19)
 				backno = 10;
 			else if((mission_type[c_mission] == 20) || (mission_type[c_mission] == 22) || (mission_type[c_mission] == 29))
@@ -147,9 +147,9 @@ void statMissionSelect(int player) {
 				bgmlv = mission_bgm[c_mission];
 			else fadelv[0] = 10;
 			if(repversw < 54)missionSetStatus();
-			stat[player] = 1;				// ƒuƒƒbƒNƒVƒƒƒbƒ^[Às
-			statc[player * 10] = 0;			// ƒXƒe[ƒ^ƒXƒJƒEƒ“ƒ^‚ğ0‚É
-			statc[player * 10 + 1] = 3;		// ƒVƒƒƒbƒ^[Œã‚ÍƒXƒe[ƒ^ƒXNo.3
+			stat[player] = 1;				// ãƒ–ãƒ­ãƒƒã‚¯ã‚·ãƒ£ãƒƒã‚¿ãƒ¼å®Ÿè¡Œ
+			statc[player * 10] = 0;			// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚«ã‚¦ãƒ³ã‚¿ã‚’0ã«
+			statc[player * 10 + 1] = 3;		// ã‚·ãƒ£ãƒƒã‚¿ãƒ¼å¾Œã¯ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.3
 			statc[player * 10 + 4] = 0;
 			return;
 		}
@@ -170,29 +170,29 @@ void statMissionSelect(int player) {
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒXƒe[ƒ^ƒXNo.24 - MISSIONƒ‚[ƒh ƒGƒfƒBƒbƒg‰æ–Ê
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹No.24 - MISSIONãƒ¢ãƒ¼ãƒ‰ ã‚¨ãƒ‡ã‚£ãƒƒãƒˆç”»é¢
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void statMissionEditor(int player) {
 	padRepeat(player);
 	padRepeat2(player);
 
-	// –â‘è‚Ìí—Ş
+	// å•é¡Œã®ç¨®é¡
 	printFont(15 + 24 * player - 12 * maxPlay, 5, "TYPE", fontc[rots[player]]);
 
 	printFont(15 + 24 * player - 12 * maxPlay, 6, mission_name_editor[mission_type[c_mission]], (statc[0 + player * 10] == 0) * count % 9);
 
-	// ƒmƒ‹ƒ}
+	// ãƒãƒ«ãƒ
 	printFont(15 + 24 * player - 12 * maxPlay, 7, "NORM", fontc[rots[player]]);
 	sprintf(string[0], "%d", mission_norm[c_mission]);
 	printFont(15 + 24 * player - 12 * maxPlay, 8, string[0], (statc[0 + player * 10] == 1) * count % 9);
 
-	// §ŒÀŠÔ
+	// åˆ¶é™æ™‚é–“
 	printFont(15 + 24 * player - 12 * maxPlay, 9, "TIME", fontc[rots[player]]);
 	getTime(mission_time[c_mission]);
 	printFont(15 + 24 * player - 12 * maxPlay, 10, string[0], (statc[0 + player * 10] == 2) * count % 9);
 
-	// ƒŒƒxƒ‹
+	// ãƒ¬ãƒ™ãƒ«
 	printFont(15 + 24 * player - 12 * maxPlay, 11, "LEVEL", fontc[rots[player]]);
 	if(mission_lv[c_mission] >= 15)
 		sprintf(string[0], "PLUS %d", mission_lv[c_mission] + 1 - 15);
@@ -200,7 +200,7 @@ void statMissionEditor(int player) {
 		sprintf(string[0], "%d", mission_lv[c_mission] + 1);
 	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0], (statc[0 + player * 10] == 3) * count % 9);
 
-	// ƒGƒ“ƒfƒBƒ“ƒO
+	// ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°
 	printFont(15 + 24 * player - 12 * maxPlay, 13, "ENDING", fontc[rots[player]]);
 	if(mission_end[c_mission] == 0) {
 		sprintf(string[0], "NO");
@@ -219,7 +219,7 @@ void statMissionEditor(int player) {
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], (statc[0 + player * 10] == 4) * count % 9);
 
-	// Á‹ƒ‰ƒCƒ“”
+	// æ¶ˆå»ãƒ©ã‚¤ãƒ³æ•°
 	if(mission_erase[c_mission] < -20){
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEE LINE", fontc[rots[player]]);
 		sprintf(string[0], "%d", abs_YGS2K(mission_erase[c_mission]+20));
@@ -231,8 +231,8 @@ void statMissionEditor(int player) {
 		sprintf(string[0], "%d", mission_erase[c_mission]);
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 16, string[0], (statc[0 + player * 10] == 5) * count % 9);
-	// ’Ç‰Áî•ñ
-	// 18s–ÚMAX 19s–ÚMIN 20s–ÚOPT(ƒ^[ƒQƒbƒg‚¾‚Æ‰ğà)@21s–Ú‰ğà
+	// è¿½åŠ æƒ…å ±
+	// 18è¡Œç›®MAX 19è¡Œç›®MIN 20è¡Œç›®OPT(ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã ã¨è§£èª¬)ã€€21è¡Œç›®è§£èª¬
 	printFont(15 + 24 * player - 12 * maxPlay, 17, "OPTIONS", fontc[rots[player]]);
 	if((mission_type[c_mission] == 2)||(mission_type[c_mission] == 3)){
 		sprintf(string[0], "GRADE:%d",mission_opt_1[c_mission]);
@@ -243,7 +243,7 @@ void statMissionEditor(int player) {
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
 
 	}
-	else if(mission_type[c_mission] == 6){   //ƒ^[ƒQƒbƒg
+	else if(mission_type[c_mission] == 6){   //ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		sprintf(string[0], "MINSTAGE:%d", mission_opt_1[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "MAXSTAGE:%d", mission_opt_2[c_mission]);
@@ -268,7 +268,7 @@ void statMissionEditor(int player) {
 			printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
 		}
 	}
-	else if((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39)){   //ƒCƒŒƒC‚³[
+	else if((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39)){   //ã‚¤ãƒ¬ã‚¤ã•ãƒ¼
 		sprintf(string[0], "MINLINE:%d", mission_opt_1[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "MAXLINE:%d", mission_opt_2[c_mission]);
@@ -280,7 +280,7 @@ void statMissionEditor(int player) {
 		sprintf(string[0], "MIN:0");
 		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statc[0 + player * 10] == 8) * count % 9);
 	}
-	else if(mission_type[c_mission] == 10){  //ƒAƒiƒU[
+	else if(mission_type[c_mission] == 10){  //ã‚¢ãƒŠã‚¶ãƒ¼
 		sprintf(string[0], "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
@@ -353,7 +353,7 @@ void statMissionEditor(int player) {
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
 		printFont(15 + 24 * player - 12 * maxPlay, 21, "(0-8)", (statc[0 + player * 10] == 8) * count % 9);
 	}
-	// ‚»‚Ì‘¼
+	// ãã®ä»–
 	else {
 		sprintf(string[0], "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
@@ -369,7 +369,7 @@ void statMissionEditor(int player) {
 		sprintf(string[0], "%d", mission_bgm[c_mission]);
 	printFont(19 + 24 * player - 12 * maxPlay, 24, string[0], (statc[0 + player * 10] == 9) * count % 9);
 
-	// ª
+	// â†‘
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 0) ) {
 		PlaySE(5);
@@ -377,7 +377,7 @@ void statMissionEditor(int player) {
 		if(statc[0 + player * 10] < 0) statc[0 + player * 10] = 9;
 	}
 
-	// «
+	// â†“
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 1) ) {
 		PlaySE(5);
@@ -385,7 +385,7 @@ void statMissionEditor(int player) {
 		if(statc[0 + player * 10] > 9) statc[0 + player * 10] = 0;
 	}
 
-	// ©
+	// â†
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 	if( getPressState(player, 2) ) {
 		PlaySE(3);
@@ -439,7 +439,7 @@ void statMissionEditor(int player) {
 		}
 	}
 
-	// ¨
+	// â†’
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
 	if( getPressState(player, 3) ) {
 		PlaySE(3);
@@ -493,24 +493,24 @@ void statMissionEditor(int player) {
 		}
 	}
 
-	// A‚Ü‚½‚ÍBƒ{ƒ^ƒ“
+	// Aã¾ãŸã¯Bãƒœã‚¿ãƒ³
 	if( getPushState(player, 4) || getPushState(player, 5) ) {
-		stat[player] = 23;	// ƒZƒŒƒNƒg‰æ–Ê‚É–ß‚é
+		stat[player] = 23;	// ã‚»ãƒ¬ã‚¯ãƒˆç”»é¢ã«æˆ»ã‚‹
 		statc[0 + player * 10] = 0;
 	}
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  –â‘è‚Ì•\¦
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  å•é¡Œã®è¡¨ç¤º
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void viewMission() {
 	int i,tmp,minus,c_tmp,c_tmp1,c_tmp2;
 	tmp = 0;
 	minus = 0;
 
-	// BltFastRect(ƒvƒŒ[ƒ“ƒiƒ“ƒo[,dx,dy,sx,sy,hx,hy);
+	// BltFastRect(ãƒ—ãƒ¬ãƒ¼ãƒ³ãƒŠãƒ³ãƒãƒ¼,dx,dy,sx,sy,hx,hy);
 
-	// ˜g
+	// æ 
 	if(getDrawRate() == 1) {
 		if(mission_file <= 24) BltFastRect(44, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
 		BltFastRect(44, 208 * maxPlay, 112, 288, 368, 112, 128);
@@ -519,7 +519,7 @@ void viewMission() {
 		BltFastRect(44, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
 	}
 
-	// –â‘è‚Ìí—Ş
+	// å•é¡Œã®ç¨®é¡
 	if((ending[0] <= 1) || (ending[0] >= 4)){
 	if(getDrawRate() == 1) {
 		TextLayerOn(0, 6 + 208 * maxPlay, 8 + 112);
@@ -533,7 +533,7 @@ void viewMission() {
 
 	getMissionName(mission_type[c_mission],c_mission);
 
-	// —‰º‘¬“xƒŒƒxƒ‹
+	// è½ä¸‹é€Ÿåº¦ãƒ¬ãƒ™ãƒ«
 	if((mission_type[c_mission] != 19) && (mission_type[c_mission] != 20) && (mission_type[c_mission] != 29)){
 		sprintf(string[70], " LV%02d", mission_lv[c_mission] + 1 - 15 * (mission_lv[c_mission] >= 15));
 		strcat(string[0], string[70]);
@@ -544,45 +544,45 @@ void viewMission() {
 			strcat(string[0], " REAL");
 	}
 
-	// •`‰æ
+	// æç”»
 	TextOut(0, string[0]);
 	TextBlt(0);
 
-	// §ŒÀŠÔ
+	// åˆ¶é™æ™‚é–“
 	if(getDrawRate() == 1) {
 		TextMove(0, 6 + 208 * maxPlay, 30 + 112);
 	} else {
 		TextMove(0, 10 + 16 + maxPlay * 400, 30 + 228);
 	}
 
-	if(!english) strcpy(string[70], "§ŒÀŠÔ ");
+	if(!english) strcpy(string[70], "åˆ¶é™æ™‚é–“ ");
 	else strcpy(string[70], "Time ");
 
 	getTime(mission_time[c_mission]);
 	if(mission_time[c_mission]>0){
 	strcat(string[70], string[0]);
 	}else{
-		if(!english) strcat(string[70], "–³§ŒÀ");
+		if(!english) strcat(string[70], "ç„¡åˆ¶é™");
 		else strcat(string[70], "NoLimit");
 	}
 
-	// •`‰æ
+	// æç”»
 	TextOut(0, string[70]);
 	TextBlt(0);
 
-	// w—ß•¶
+	// æŒ‡ä»¤æ–‡
 	if(getDrawRate() == 1) {
 		TextMove(0, 6 + 208 * maxPlay, 52 + 112);
 	} else {
 		TextMove(0, 10 + 16 + maxPlay * 400, 52 + 228);
 	}
-	// LITE”Å‚ğQl‚É®—
-	if(!english) {//"\n\n‚ğg‚Á‚Ä\n%dƒ‰ƒCƒ“Á‚¹I",
+	// LITEç‰ˆã‚’å‚è€ƒã«æ•´ç†
+	if(!english) {//"\n\nã‚’ä½¿ã£ã¦\n%dãƒ©ã‚¤ãƒ³æ¶ˆã›ï¼",
 		sprintf(string[0], mission_info_jp[mission_type[c_mission]], mission_norm[c_mission]);
-		if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nÁ‚·‘O‚É‚»‚ÌƒuƒƒbƒN\n‚ğˆê“xƒz[ƒ‹ƒh‚É“ü‚ê‚ë");
-		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\nw’èˆÈã‚Å‚àƒJƒEƒ“ƒg!");
-		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\nw’èˆÈŠO‚Å\nƒmƒ‹ƒ}ƒŠƒZƒbƒg!");
-		if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\nÅŒã‚Ìƒ‰ƒCƒ“‚Í\nƒ_ƒuƒ‹‚ÅÁ‚¹I");
+		if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\næ¶ˆã™å‰ã«ãã®ãƒ–ãƒ­ãƒƒã‚¯\nã‚’ä¸€åº¦ãƒ›ãƒ¼ãƒ«ãƒ‰ã«å…¥ã‚Œã‚");
+		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\næŒ‡å®šä»¥ä¸Šã§ã‚‚ã‚«ã‚¦ãƒ³ãƒˆ!");
+		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\næŒ‡å®šä»¥å¤–ã§\nãƒãƒ«ãƒãƒªã‚»ãƒƒãƒˆ!");
+		if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\næœ€å¾Œã®ãƒ©ã‚¤ãƒ³ã¯\nãƒ€ãƒ–ãƒ«ã§æ¶ˆã›ï¼");
 	} else {
 		sprintf(string[0], mission_info_en[mission_type[c_mission]], mission_norm[c_mission]);
 		if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nBefore Erase \ninto HOLD");
@@ -592,17 +592,17 @@ void viewMission() {
 
 	}
 
-	//ƒuƒƒbƒNƒI[ƒ_[Œn‚ÌƒuƒƒbƒN‚ÌŠG
+	//ãƒ–ãƒ­ãƒƒã‚¯ã‚ªãƒ¼ãƒ€ãƒ¼ç³»ã®ãƒ–ãƒ­ãƒƒã‚¯ã®çµµ
 	if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
 		if(mission_opt_3[c_mission]<=6){
 			if( isWRule(0) ) {
-				// ƒ[ƒ‹ƒh
+				// ãƒ¯ãƒ¼ãƒ«ãƒ‰
 				c_tmp = wcol[mission_opt_3[c_mission]];
 			} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
 				// ARS
 				c_tmp = acol[mission_opt_3[c_mission]];
 			} else {
-				// ƒNƒ‰ƒVƒbƒN
+				// ã‚¯ãƒ©ã‚·ãƒƒã‚¯
 				c_tmp = ccol[mission_opt_3[c_mission]];
 			}
 			//7JL 8SZ
@@ -627,7 +627,7 @@ void viewMission() {
 			}
 		}else if(mission_opt_3[c_mission]==7){//LJ
 			if( isWRule(0) ) {
-				// ƒ[ƒ‹ƒh
+				// ãƒ¯ãƒ¼ãƒ«ãƒ‰
 				c_tmp1 = wcol[1];
 				c_tmp2 = wcol[5];
 			} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
@@ -635,7 +635,7 @@ void viewMission() {
 				c_tmp1 = acol[1];
 				c_tmp2 = acol[5];
 			} else {
-				// ƒNƒ‰ƒVƒbƒN
+				// ã‚¯ãƒ©ã‚·ãƒƒã‚¯
 				c_tmp1 = ccol[1];
 				c_tmp2 = ccol[5];
 			}
@@ -671,7 +671,7 @@ void viewMission() {
 			}
 		}else if(mission_opt_3[c_mission]==8){//SZ
 			if( isWRule(0) ) {
-				// ƒ[ƒ‹ƒh
+				// ãƒ¯ãƒ¼ãƒ«ãƒ‰
 				c_tmp1 = wcol[3];
 				c_tmp2 = wcol[6];
 			} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
@@ -679,7 +679,7 @@ void viewMission() {
 				c_tmp1 = acol[3];
 				c_tmp2 = acol[6];
 			} else {
-				// ƒNƒ‰ƒVƒbƒN
+				// ã‚¯ãƒ©ã‚·ãƒƒã‚¯
 				c_tmp1 = ccol[3];
 				c_tmp2 = ccol[6];
 			}
@@ -716,17 +716,17 @@ void viewMission() {
 		}
 	}
 
-	// •`‰æ
+	// æç”»
 	TextOut(0, string[0]);
 	TextBlt(0);
 
-	// g—pI—¹
+	// ä½¿ç”¨çµ‚äº†
 	TextLayerOff(0);
 	while(c_mission - tmp > 4){
 		tmp = tmp + 5;
 	}
 
-	// ƒ~ƒbƒVƒ‡ƒ“ˆê——
+	// ãƒŸãƒƒã‚·ãƒ§ãƒ³ä¸€è¦§
 	for(i = tmp; i < (tmp+5); i++) {
 		if(getDrawRate() == 1) {
 			BltFastRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
@@ -742,20 +742,20 @@ void viewMission() {
 
 		getMissionName(mission_type[i],i);
 
-		// •`‰æ
+		// æç”»
 		TextOut(0, string[0]);
 		TextBlt(0);
 
-		// g—pI—¹
+		// ä½¿ç”¨çµ‚äº†
 		TextLayerOff(0);
 
-		// I—¹ƒtƒ‰ƒO‚ª‚ ‚éê‡‚Í‚±‚±‚Åƒ‹[ƒv‚ğ”²‚¯‚é
+		// çµ‚äº†ãƒ•ãƒ©ã‚°ãŒã‚ã‚‹å ´åˆã¯ã“ã“ã§ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 		if(mission_end[i]) break;
 	}
 	}	//if(!ending[0])
 }
 
-// ƒ~ƒbƒVƒ‡ƒ“–¼‚ğæ“¾
+// ãƒŸãƒƒã‚·ãƒ§ãƒ³åã‚’å–å¾—
 void getMissionName(int mtype,int number) {
 	if(!english) {
 		strcpy(string[0], mission_name_jp[mtype]);
@@ -765,7 +765,7 @@ void getMissionName(int mtype,int number) {
 	if(mission_lv[number] >= 15)
 		strcat(string[0],"+");
 }
-// ƒ[ƒh–¼‚ğæ“¾
+// ãƒ­ãƒ¼ãƒ‰åã‚’å–å¾—
 void getRoadName(int no){
 	if(no == 0)
 		sprintf(string[0], " BIG ROAD");
@@ -802,12 +802,12 @@ void getRoadName(int no){
 	else
 		sprintf(string[0], " NO.%02d", no);
 }
-/* ƒ~ƒbƒVƒ‡ƒ“ƒ‚[ƒh‚Ìƒmƒ‹ƒ}ã¸ */
+/* ãƒŸãƒƒã‚·ãƒ§ãƒ³ãƒ¢ãƒ¼ãƒ‰ã®ãƒãƒ«ãƒä¸Šæ˜‡ */
 void missionNormUp(int lines) {
 	int i, j,gap;
 	int by2, tmp;
 
-	// ƒŒƒxƒ‹ƒXƒ^[Œn—ñiƒrƒbƒO¥HS1&2¥ƒAƒiƒU[¥X-RAY¥ƒJƒ‰[Eƒ[ƒ‹ƒ[ƒ‹Eƒ~ƒ‰[j
+	// ãƒ¬ãƒ™ãƒ«ã‚¹ã‚¿ãƒ¼ç³»åˆ—ï¼ˆãƒ“ãƒƒã‚°ï½¥HS1&2ï½¥ã‚¢ãƒŠã‚¶ãƒ¼ï½¥X-RAYï½¥ã‚«ãƒ©ãƒ¼ãƒ»ãƒ­ãƒ¼ãƒ«ãƒ­ãƒ¼ãƒ«ãƒ»ãƒŸãƒ©ãƒ¼ï¼‰
 	if( (mission_type[c_mission] == 0) || (mission_type[c_mission] == 1) || (mission_type[c_mission] == 8) ||
 		(mission_type[c_mission] == 9) || (mission_type[c_mission] == 10) ||
 		(mission_type[c_mission] == 12) || (mission_type[c_mission] == 13) || (mission_type[c_mission] == 14) ||
@@ -818,10 +818,10 @@ void missionNormUp(int lines) {
 		c_norm[0] = c_norm[0] + lines;
 	}
 
-	// ƒ_ƒuƒ‹
+	// ãƒ€ãƒ–ãƒ«
 	if( mission_type[c_mission] == 2 ) {
 		if(mission_opt_1[c_mission] == 1){
-			if(lines >= 2) c_norm[0]++;//ƒ_ƒuƒ‹ˆÈã‚à”F‚ß‚é
+			if(lines >= 2) c_norm[0]++;//ãƒ€ãƒ–ãƒ«ä»¥ä¸Šã‚‚èªã‚ã‚‹
 		}else if(mission_opt_1[c_mission] == 2){
 			if(lines == 2)c_norm[0]++;
 			else if(c_norm[0] > 0){
@@ -832,10 +832,10 @@ void missionNormUp(int lines) {
 		else if(lines == 2) c_norm[0]++;
 	}
 
-	// ƒgƒŠƒvƒ‹
+	// ãƒˆãƒªãƒ—ãƒ«
 	if( mission_type[c_mission] == 3 ) {
 		if(mission_opt_1[c_mission] == 1){
-			if(lines >= 3) c_norm[0]++;//ƒgƒŠƒvƒ‹ˆÈã‚à”F‚ß‚é
+			if(lines >= 3) c_norm[0]++;//ãƒˆãƒªãƒ—ãƒ«ä»¥ä¸Šã‚‚èªã‚ã‚‹
 		}else if(mission_opt_1[c_mission] == 2){
 			if(lines == 3)c_norm[0]++;
 			else if(c_norm[0] > 0){
@@ -846,12 +846,12 @@ void missionNormUp(int lines) {
 		else if(lines == 3) c_norm[0]++;
 	}
 
-	// ƒwƒ{ƒŠƒX
+	// ãƒ˜ãƒœãƒªã‚¹
 	if( mission_type[c_mission] == 4 ) {
 		if(lines == 4) c_norm[0]++;
 	}
 
-	// ƒTƒCƒNƒ‹
+	// ã‚µã‚¤ã‚¯ãƒ«
 	if( mission_type[c_mission] == 5 ) {
 		if(!cycle[lines - 1]) {
 			cycle[lines - 1] = 1;
@@ -859,14 +859,14 @@ void missionNormUp(int lines) {
 		}
 	}
 
-	// ƒ^[ƒQƒbƒg
+	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 	if( mission_type[c_mission] == 6 ) {
-		// ƒvƒ‰ƒ`ƒiƒuƒƒbƒN‚ª0
+		// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ãŒ0
 		if(getPlatinumBlock(0) == 0) {
 			PlaySE(31);
 			c_norm[0]++;
 
-			// Ÿ‚ÌƒXƒe[ƒW‚Ö
+			// æ¬¡ã®ã‚¹ãƒ†ãƒ¼ã‚¸ã¸
 			if(c_norm[0] < mission_norm[c_mission]) {
 				upLineNo[0] = 0;
 				upLines[0] = 0;
@@ -874,19 +874,19 @@ void missionNormUp(int lines) {
 
 				for(i = 0; i < 22; i++) erase[i] = 1;
 
-				stat[0] = 25;	// ‘Sƒ‰ƒCƒ“Á‹
-				statc[0 * 10 + 0] = wait1[0];	//‘Ò‚¿ŠÔƒXƒLƒbƒv
+				stat[0] = 25;	// å…¨ãƒ©ã‚¤ãƒ³æ¶ˆå»
+				statc[0 * 10 + 0] = wait1[0];	//å¾…ã¡æ™‚é–“ã‚¹ã‚­ãƒƒãƒ—
 				statc[0 * 10 + 1] = 3;	// Ready
-				statc[0 * 10 + 2] = 1;	// ƒXƒe[ƒW“Ç‚İ‚İ‚ ‚è
+				statc[0 * 10 + 2] = 1;	// ã‚¹ãƒ†ãƒ¼ã‚¸èª­ã¿è¾¼ã¿ã‚ã‚Š
 			}
 		}
 	}
 
-	// ƒCƒŒƒCƒT[
+	// ã‚¤ãƒ¬ã‚¤ã‚µãƒ¼
 	if( (mission_type[c_mission] == 7 )||(mission_type[c_mission] == 39)) {
 		if((lines >= 4)||(mission_type[c_mission] != 39)){
 			for(i = 0; i < 4; i++) {
-				// ’²‚×‚éYÀ•W‚ğŒˆ‚ß‚é
+				// èª¿ã¹ã‚‹Yåº§æ¨™ã‚’æ±ºã‚ã‚‹
 				if(rots[0] == 8){
 					by2 = (by[0] + blkDDataY[blk[0] * 16 + rt[0] * 4 + i]);
 				} else if( isWRule(0) ) {
@@ -895,7 +895,7 @@ void missionNormUp(int lines) {
 					by2 = (by[0] + blkDataY[blk[0] * 16 + rt[0] * 4 + i]);
 				}
 
-				// Á‚·‚×‚«ƒ‰ƒCƒ“‚©’²‚×‚é
+				// æ¶ˆã™ã¹ããƒ©ã‚¤ãƒ³ã‹èª¿ã¹ã‚‹
 				for(j = 0; j < eraser_now_lines; j++) {
 					if(j >= 4) break;
 
@@ -906,7 +906,7 @@ void missionNormUp(int lines) {
 				}
 			}
 
-			// ‘S•”Á‚¦‚Ä‚¢‚é‚Ì‚Éƒmƒ‹ƒ}’B¬‚µ‚Ä‚¢‚È‚¢ê‡‚ÍV‚½‚Èƒpƒ^[ƒ“oŒ»
+			// å…¨éƒ¨æ¶ˆãˆã¦ã„ã‚‹ã®ã«ãƒãƒ«ãƒé”æˆã—ã¦ã„ãªã„å ´åˆã¯æ–°ãŸãªãƒ‘ã‚¿ãƒ¼ãƒ³å‡ºç¾
 			if(c_norm[0] < mission_norm[c_mission]) {
 				tmp = 1;
 
@@ -927,7 +927,7 @@ void missionNormUp(int lines) {
 		}
 	}
 
-	// ƒVƒ“ƒOƒ‹
+	// ã‚·ãƒ³ã‚°ãƒ«
 	if( mission_type[c_mission] == 11 ) {
 		if(lines == 1) c_norm[0]++;
 	}
@@ -937,20 +937,20 @@ void missionNormUp(int lines) {
 		if(tspin_flag[0] != 0) c_norm[0]++;
 	}
 
-	//‘Ï‹v
+	//è€ä¹…
 	if((ltime[0] <= 0) && (mission_type[c_mission] == 23))
 		c_norm[0] = mission_norm[c_mission];
 
-	// ‘SÁ‚µ
+	// å…¨æ¶ˆã—
 	if( mission_type[c_mission] == 26 ) {
 		c_norm[0]++;
 	}
-	//ƒRƒ“ƒ{
+	//ã‚³ãƒ³ãƒœ
 	if( mission_type[c_mission] == 27 ) {
 		if(mission_opt_3[c_mission] == 1) c_norm[0] = combo2[0];
 		else c_norm[0] = combo[0];
 	}
-	// B to Bƒwƒ{ƒŠƒX
+	// B to Bãƒ˜ãƒœãƒªã‚¹
 	if( mission_type[c_mission] == 28 ) {
 		if(lines == 4) c_norm[0]++;
 		else if(c_norm[0] > 0){
@@ -966,11 +966,11 @@ void missionNormUp(int lines) {
 		c_norm[0]++;
 	}
 
-	// ƒuƒƒbƒNƒI[ƒ_[
+	// ãƒ–ãƒ­ãƒƒã‚¯ã‚ªãƒ¼ãƒ€ãƒ¼
 	if( mission_type[c_mission] == 30 ) {
 		if( (mission_opt_2[c_mission] == 0) ||
 		    ((mission_opt_2[c_mission] == 1) && (dhold2[0]) && (hold_used[0] >= 2)) ){
-			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//’P•i
+			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//å˜å“
 				if(blk[0] == mission_opt_3[c_mission]) c_norm[0] = c_norm[0] + lines;
 			}else if(mission_opt_3[c_mission]==7){//LJ
 				if((blk[0] == 1)||(blk[0] == 5)) c_norm[0] = c_norm[0] + lines;
@@ -980,11 +980,11 @@ void missionNormUp(int lines) {
 		}
 	}
 
-	// ƒuƒƒbƒNƒI[ƒ_[ƒVƒ“ƒOƒ‹SP
+	// ãƒ–ãƒ­ãƒƒã‚¯ã‚ªãƒ¼ãƒ€ãƒ¼ã‚·ãƒ³ã‚°ãƒ«SP
 	if( mission_type[c_mission] == 31 ) {//0-6
 		if( (mission_opt_2[c_mission] == 0) ||
 		    ((mission_opt_2[c_mission] == 1) && (dhold2[0]) && (hold_used[0] >= 2)) ){
-			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//’P•i
+			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//å˜å“
 				if((lines == 1) && (blk[0] == mission_opt_3[c_mission])) c_norm[0]++;
 			}else if(mission_opt_3[c_mission]==7){//LJ
 				if((lines == 1) && ((blk[0] == 1)||(blk[0] == 5))) c_norm[0]++;
@@ -993,12 +993,12 @@ void missionNormUp(int lines) {
 			}
 		}
 	}
-	// ƒ_ƒuƒ‹ƒI[ƒ_[
+	// ãƒ€ãƒ–ãƒ«ã‚ªãƒ¼ãƒ€ãƒ¼
 	if( mission_type[c_mission] == 32 ) {//0-6
 		if( (mission_opt_2[c_mission] == 0) ||
 		((mission_opt_2[c_mission] == 1) && (dhold2[0]) && (hold_used[0] >= 2)) ){
 			if(mission_opt_1[c_mission]){
-				if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//’P•i
+				if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//å˜å“
 					if((lines >= 2) && (blk[0] == mission_opt_3[c_mission])) c_norm[0]++;
 				}else if(mission_opt_3[c_mission]==7){//LJ
 					if((lines >= 2) && ((blk[0] == 1)||(blk[0] == 5))) c_norm[0]++;
@@ -1006,7 +1006,7 @@ void missionNormUp(int lines) {
 					if((lines >= 2) && ((blk[0] == 3)||(blk[0] == 6))) c_norm[0]++;
 				}
 			}else{
-				if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//’P•i
+				if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//å˜å“
 					if((lines == 2) && (blk[0] == mission_opt_3[c_mission])) c_norm[0]++;
 				}else if(mission_opt_3[c_mission]==7){//LJ
 					if((lines == 2) && ((blk[0] == 1)||(blk[0] == 5))) c_norm[0]++;
@@ -1016,11 +1016,11 @@ void missionNormUp(int lines) {
 			}
 		}
 	}
-	// — ƒgƒŠƒvƒ‹SP
+	// è£ãƒˆãƒªãƒ—ãƒ«SP
 	if( mission_type[c_mission] == 33 ) {
 		if( (mission_opt_2[c_mission] == 0) ||
 		    ((mission_opt_2[c_mission] == 1) && (dhold2[0]) && (hold_used[0] >= 2)) ){
-			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//’P•i
+			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//å˜å“
 				if((lines == 3) && (blk[0] != mission_opt_3[c_mission])) c_norm[0]++;
 			}else if(mission_opt_3[c_mission]==7){//LJ
 				if((lines == 3) && ((blk[0] != 1)||(blk[0] != 5))) c_norm[0]++;
@@ -1030,11 +1030,11 @@ void missionNormUp(int lines) {
 		}
 	}
 
-	// ’†”²‚«ƒ_ƒuƒ‹
+	// ä¸­æŠœããƒ€ãƒ–ãƒ«
 	if( mission_type[c_mission] == 34 ) {
 		if(lines == 2){
-			gap=0;	// ’†”²‚«”»’è
-			j=0;	// ’†”²‚«”»’èƒtƒ‰ƒO
+			gap=0;	// ä¸­æŠœãåˆ¤å®š
+			j=0;	// ä¸­æŠœãåˆ¤å®šãƒ•ãƒ©ã‚°
 			for(i=0;i<22;i++){
 				if(erase[i])
 					j++;
@@ -1046,11 +1046,11 @@ void missionNormUp(int lines) {
 		}
 	}
 
-	// ’†”²‚«ƒgƒŠƒvƒ‹
+	// ä¸­æŠœããƒˆãƒªãƒ—ãƒ«
 	if( mission_type[c_mission] == 35 ) {
 		if(lines == 3){
-			gap=0;	// ’†”²‚«”»’è
-			j=0;	// ’†”²‚«”»’èƒtƒ‰ƒO
+			gap=0;	// ä¸­æŠœãåˆ¤å®š
+			j=0;	// ä¸­æŠœãåˆ¤å®šãƒ•ãƒ©ã‚°
 			for(i=0;i<22;i++){
 				if(erase[i])
 					j++;
@@ -1062,11 +1062,11 @@ void missionNormUp(int lines) {
 		}
 	}
 
-	// 2’i”²‚«ƒ_ƒuƒ‹
+	// 2æ®µæŠœããƒ€ãƒ–ãƒ«
 	if( mission_type[c_mission] == 36 ) {
 		if(lines == 2){
-			gap=0;	// ’†”²‚«”»’è
-			j=0;	// ’†”²‚«”»’èƒtƒ‰ƒO
+			gap=0;	// ä¸­æŠœãåˆ¤å®š
+			j=0;	// ä¸­æŠœãåˆ¤å®šãƒ•ãƒ©ã‚°
 			for(i=0;i<22;i++){
 				if(erase[i])
 					j++;
@@ -1082,11 +1082,11 @@ void missionNormUp(int lines) {
 	if( mission_type[c_mission] == 37 ) {
 		if((tspin_flag[0] == 2) && (lines >= 2)) c_norm[0]++;
 	}
-	// ƒgƒŠƒvƒ‹SP
+	// ãƒˆãƒªãƒ—ãƒ«SP
 	if( mission_type[c_mission] == 38 ) {
 		if( (mission_opt_2[c_mission] == 0) ||
 		    ((mission_opt_2[c_mission] == 1) && (dhold2[0]) && (hold_used[0] >= 2)) ){
-			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//’P•i
+			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//å˜å“
 				if((lines == 3) && (blk[0] == mission_opt_3[c_mission])) c_norm[0]++;
 			}else if(mission_opt_3[c_mission]==7){//LJ
 				if((lines == 3) && ((blk[0] == 1)||(blk[0] == 5))) c_norm[0]++;
@@ -1095,15 +1095,15 @@ void missionNormUp(int lines) {
 			}
 		}
 	}
-		// ƒXƒNƒEƒFƒA^ƒS[ƒ‹ƒhƒXƒNƒEƒFƒA
+		// ã‚¹ã‚¯ã‚¦ã‚§ã‚¢ï¼ã‚´ãƒ¼ãƒ«ãƒ‰ã‚¹ã‚¯ã‚¦ã‚§ã‚¢
 	if((mission_type[c_mission] == 40) || (mission_type[c_mission] == 41))
 	{
 		 c_norm[0]++;
 	}
 
-	// ƒ~ƒbƒVƒ‡ƒ“ƒNƒŠƒA@EX“Ë“ü
+	// ãƒŸãƒƒã‚·ãƒ§ãƒ³ã‚¯ãƒªã‚¢ã€€EXçªå…¥æ™‚
 	if((c_norm[0] >= mission_norm[c_mission]) && ((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3)) && (lines == 2)) {
-		PlaySE(43);//levelup.wav‚Ì‘ã‚í‚è‚Éstgstar.wav
+		PlaySE(43);//levelup.wavã®ä»£ã‚ã‚Šã«stgstar.wav
 		StopSE(32);
 		if(mission_end[c_mission] == 3)
 			PlaySE(18);
@@ -1120,7 +1120,7 @@ void missionNormUp(int lines) {
 			bgmlv = mission_bgm[c_mission];
 			changeBGM(0);
 		}
-	} else if(c_norm[0] >= mission_norm[c_mission]) { //•’ÊƒNƒŠƒA
+	} else if(c_norm[0] >= mission_norm[c_mission]) { //æ™®é€šã‚¯ãƒªã‚¢
 		PlaySE(19);
 		StopSE(32);
 
@@ -1128,7 +1128,7 @@ void missionNormUp(int lines) {
 		c_mission++;
 		clear_mission++;
 
-		// ƒGƒ“ƒfƒBƒ“ƒO“Ë“üƒ`ƒFƒbƒN
+		// ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°çªå…¥ãƒã‚§ãƒƒã‚¯
 		if((c_mission > 29) || (mission_end[c_mission - 1] == 1) || (mission_end[c_mission - 1] >= 4) || (((mission_end[c_mission - 1] == 2) || (mission_end[c_mission - 1] == 3)) && (lines != 2))) {
 			c_mission = c_mission - 1;
 			c_norm[0] = mission_norm[c_mission];
@@ -1137,7 +1137,7 @@ void missionNormUp(int lines) {
 			else
 				ending[0] = 1;
 			pinch[0] = 0;
-			if(mission_end[c_mission] < 4)	//ƒXƒ^ƒbƒtƒ[ƒ‹ŠJn‚Ì‚½‚ßAonRecord‚ğ‚»‚Ì‚Ü‚Ü‚É
+			if(mission_end[c_mission] < 4)	//ã‚¹ã‚¿ãƒƒãƒ•ãƒ­ãƒ¼ãƒ«é–‹å§‹ã®ãŸã‚ã€onRecordã‚’ãã®ã¾ã¾ã«
 				onRecord[0] = 2;
 			pinch[0] = 0;
 		} else {
@@ -1154,25 +1154,25 @@ void missionNormUp(int lines) {
 	}
 }
 
-/* –â‘è‚Ìİ’èi—‰º‘¬“xetcj‚ğƒQ[ƒ€‚É”½‰f‚³‚¹‚é */
+/* å•é¡Œã®è¨­å®šï¼ˆè½ä¸‹é€Ÿåº¦etcï¼‰ã‚’ã‚²ãƒ¼ãƒ ã«åæ˜ ã•ã›ã‚‹ */
 void missionSetStatus() {
 	int i;
 	int tmp;
-	// ƒmƒ‹ƒ}
+	// ãƒãƒ«ãƒ
 	c_norm[0] = 0;
 
 	upLineNo[0] = 0;
 
-	// ƒ^ƒCƒ€
+	// ã‚¿ã‚¤ãƒ 
 	ltime[0] = mission_time[c_mission];
 
-	// ƒŒƒxƒ‹
+	// ãƒ¬ãƒ™ãƒ«
 	lv[0] = mission_lv[c_mission] + 1;
 
-	// ‘¬“x
+	// é€Ÿåº¦
 	if(mission_lv[c_mission] < 15){
 	if(mission_type[c_mission] <= 7){
-		// ’Êí
+		// é€šå¸¸
 		if((repversw < 56) || (mission_file == 6))
 			sp[0] = lvTableAce55[mission_lv[c_mission]];
 		else
@@ -1182,28 +1182,28 @@ void missionSetStatus() {
 		wait3[0] = wait3_Ace;
 		waitt[0] = waitt_Ace;
 	} else if(mission_type[c_mission] == 8) {
-		// ƒnƒCƒXƒs[ƒh‚P
+		// ãƒã‚¤ã‚¹ãƒ”ãƒ¼ãƒ‰ï¼‘
 		sp[0] = lvTableHiSpeed1[mission_lv[c_mission]];
 		wait1[0] = wait1_HiSpeed1;
 		wait2[0] = wait2_HiSpeed1;
 		wait3[0] = wait3_HiSpeed1;
 		waitt[0] = waitt_HiSpeed1;
 	} else if(mission_type[c_mission] == 9) {
-		// ƒnƒCƒXƒs[ƒh‚Q
+		// ãƒã‚¤ã‚¹ãƒ”ãƒ¼ãƒ‰ï¼’
 		sp[0] = 1200;
 		wait1[0] = wait1_HiSpeed2;
 		wait2[0] = wait2_HiSpeed2;
 		wait3[0] = wait3_HiSpeed2;
 		waitt[0] = waitt_HiSpeed2;
 	} else if((mission_type[c_mission] == 10) || (mission_type[c_mission] == 23)) {
-		// ƒAƒiƒU[&‘Ï‹v
+		// ã‚¢ãƒŠã‚¶ãƒ¼&è€ä¹…
 		sp[0] = 1200;
 		wait1[0] = wait1_Acea_tbl[mission_lv[c_mission]];
 		wait2[0] = wait2_Acea_tbl[mission_lv[c_mission]];
 		wait3[0] = wait3_Acea_tbl[mission_lv[c_mission]];
 		waitt[0] = waitt_Acea_tbl[mission_lv[c_mission]];
 	} else if((mission_type[c_mission] >= 11) && (mission_type[c_mission] <= 18) || (mission_type[c_mission] == 21)) {
-		// X-RAYˆÈ~BƒeƒLƒg[
+		// X-RAYä»¥é™ã€‚ãƒ†ã‚­ãƒˆãƒ¼
 		if((repversw < 56) || (mission_file == 6))
 			sp[0] = lvTableAce55[mission_lv[c_mission]];
 		else
@@ -1241,14 +1241,14 @@ void missionSetStatus() {
 			}
 		}
 	} else if(mission_type[c_mission] == 22) {
-		// ƒI[ƒ‹ƒhƒXƒ^ƒCƒ‹
+		// ã‚ªãƒ¼ãƒ«ãƒ‰ã‚¹ã‚¿ã‚¤ãƒ«
 		sp[0] = lvTableHeboGB[mission_lv[c_mission]];
 		wait1[0] = wait1_HeboGB;
 		wait2[0] = wait2_HeboGB;
 		wait3[0] = wait3_HeboGB_tbl[mission_lv[c_mission]];
 		waitt[0] = waitt_HeboGB_tbl[mission_lv[c_mission]];
 	} else if(mission_type[c_mission] >= 24) {
-		// ‚Æ‚è‚ ‚¦‚¸‘Ï‹vˆÈ~
+		// ã¨ã‚Šã‚ãˆãšè€ä¹…ä»¥é™
 		if((repversw < 56) || (mission_file == 6))
 			sp[0] = lvTableAce55[mission_lv[c_mission]];
 		else
@@ -1289,22 +1289,22 @@ void missionSetStatus() {
 		waitt[0] = 5;
 	}
 
-	// ƒTƒCƒNƒ‹—pƒtƒ‰ƒO
+	// ã‚µã‚¤ã‚¯ãƒ«ç”¨ãƒ•ãƒ©ã‚°
 	if(mission_type[c_mission] == 5) {
 		for(i = 0; i < 4; i++) cycle[i] = 0;
 	}
-	// ƒ^[ƒQƒbƒg—p
+	// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆç”¨
 	if(mission_type[c_mission] == 6) {
-	//ƒXƒe[ƒW26‚Ü‚Å‚µ‚©‰Šú‰»‚µ‚Ä‚¢‚È‚©‚Á‚½–â‘è‚ğC³
+	//ã‚¹ãƒ†ãƒ¼ã‚¸26ã¾ã§ã—ã‹åˆæœŸåŒ–ã—ã¦ã„ãªã‹ã£ãŸå•é¡Œã‚’ä¿®æ­£
 		for(i = 0; i < 200; i++) target_cleared[i] = 0;
 	}
-	// ƒCƒŒƒCƒT[—p
+	// ã‚¤ãƒ¬ã‚¤ã‚µãƒ¼ç”¨
 	if((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39)) {
 		eraser_now_pattern = 0;
 		setEraserLines();
 	}
 
-	//ƒAƒiƒU[‚Åopt‚ğ1ˆÈã‚É‚µ‚½@‚Ü‚½‚Íƒuƒ‰ƒCƒ“ƒh
+	//ã‚¢ãƒŠã‚¶ãƒ¼ã§optã‚’1ä»¥ä¸Šã«ã—ãŸæ™‚ã€€ã¾ãŸã¯ãƒ–ãƒ©ã‚¤ãƒ³ãƒ‰
 	if(((mission_type[c_mission] == 10) && (mission_opt_3[c_mission])) || (mission_type[c_mission] == 25)){
 		isblind[0] = 1;
 		blind_flag[0] = 1;
@@ -1312,7 +1312,7 @@ void missionSetStatus() {
 		isblind[0] = 0;
 		blind_flag[0] = 0;
 	}
-	// X-RAY—p
+	// X-RAYç”¨
 	if(mission_type[c_mission] == 12) {
 		isxray[0] = 1;
 		xray_flag[0] = 1;;
@@ -1322,7 +1322,7 @@ void missionSetStatus() {
 		xray_flag[0] = 0;
 	}
 
-	// ƒJƒ‰[—p
+	// ã‚«ãƒ©ãƒ¼ç”¨
 	if(mission_type[c_mission] == 13) {
 		iscolor[0] = 1;
 		color_flag[0] = 1;
@@ -1331,7 +1331,7 @@ void missionSetStatus() {
 		color_flag[0] = 0;
 	}
 
-	// ƒ[ƒ‹ƒ[ƒ‹—p
+	// ãƒ­ãƒ¼ãƒ«ãƒ­ãƒ¼ãƒ«ç”¨
 	if(mission_type[c_mission] == 14) {
 		rollroll_flag[0] = 1;
 		isrollroll[0] = 1;
@@ -1340,14 +1340,14 @@ void missionSetStatus() {
 		isrollroll[0] = 0;
 	}
 
-	// ƒ~ƒ‰[—p
+	// ãƒŸãƒ©ãƒ¼ç”¨
 	if(mission_type[c_mission] == 15) {
 		isfmirror[0] = 1;
 	} else {
 		isfmirror[0] = 0;
 	}
 
-	//‰ñ“]•s‰Â
+	//å›è»¢ä¸å¯
 	if(mission_type[c_mission] == 17) {
 		isrotatelock[0] = 1;
 		rt_nblk[0 + 6 * 0] = rand(4,0);
@@ -1366,7 +1366,7 @@ void missionSetStatus() {
 		rt_nblk[5 + 6 * 0] = 0;
 	}
 
-	//NEXT•s‰Â‹
+	//NEXTä¸å¯è¦–
 	if(mission_type[c_mission] == 18) {
 		ishidenext[0] = 1;
 	} else {
@@ -1405,7 +1405,7 @@ void missionSetStatus() {
 		upLineT[0] = uplinetype;
 		if(repversw >= 40) upLines[0] = 0;
 	}
-	//ƒI[ƒ‹ƒhƒXƒ^ƒCƒ‹
+	//ã‚ªãƒ¼ãƒ«ãƒ‰ã‚¹ã‚¿ã‚¤ãƒ«
 	if(mission_type[c_mission] == 22) {
 		heboGB[0] = 1;
 		ishidenext[0] = 2;
@@ -1414,7 +1414,7 @@ void missionSetStatus() {
 		heboGB[0] = 0;
 		isholdlock[0] = 0;
 	}
-	//ã‰º¶‰E‹t“]
+	//ä¸Šä¸‹å·¦å³é€†è»¢
 	if(mission_type[c_mission] == 24) {
 		isLRreverse[0] = 1;
 		isUDreverse[0] = 1;
@@ -1423,7 +1423,7 @@ void missionSetStatus() {
 		isUDreverse[0] = 0;
 	}
 
-	//ƒrƒbƒO•‘SÁ‚µ
+	//ãƒ“ãƒƒã‚°ï¼†å…¨æ¶ˆã—
 	if((mission_type[c_mission] == 1) || ((mission_type[c_mission] == 26) && (mission_opt_3[c_mission] == 0))) {
 		IsBig[0] = 1;
 	} else {
@@ -1436,19 +1436,19 @@ void missionSetStatus() {
 		squaremode[0] = 0;
 	}
 }
-// ƒtƒB[ƒ‹ƒh‚ÌÅã’i‚ğ•Ô‚·
-//gamestart.c‚ÉˆÚ“® C7U0.8
+// ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã®æœ€ä¸Šæ®µã‚’è¿”ã™
+//gamestart.cã«ç§»å‹• C7U0.8
 
 
-// ƒCƒŒƒCƒT[—p‰Šú‰»
+// ã‚¤ãƒ¬ã‚¤ã‚µãƒ¼ç”¨åˆæœŸåŒ–
 void setEraserLines() {
 	int i, tmp,max,min;
-	int line[22];	// ƒ‰ƒCƒ“‚Ìd•¡–h~—p
+	int line[22];	// ãƒ©ã‚¤ãƒ³ã®é‡è¤‡é˜²æ­¢ç”¨
 
 	for(i = 0; i < 22; i++) line[i] = 0;
 
 	eraser_now_lines = 0;
-	// ˜g“àoŒ»‚ÍÅ‚18’i‚Ü‚Å
+	// æ å†…å‡ºç¾æ™‚ã¯æœ€é«˜18æ®µã¾ã§
 	max = mission_opt_2[c_mission];
 	min = mission_opt_1[c_mission];
 
@@ -1464,17 +1464,17 @@ void setEraserLines() {
 	}
 
 	for(i = 0; i <= mission_opt_3[c_mission]; i++) {
-		if(i >= 4) break;	// Å‘å‚Å4–{‚Ü‚Å
+		if(i >= 4) break;	// æœ€å¤§ã§4æœ¬ã¾ã§
 		if(i >= mission_norm[c_mission] - c_norm[0]) break;
 		if((eraser_now_pattern >= 2) && (i >= 1)) break;
 
 		eraser_now_lines++;
 
 		if(min == max) {
-			// ˆÊ’uŒÅ’è
+			// ä½ç½®å›ºå®š
 			tmp = min+1;
 		}else if((i >= mission_norm[c_mission] - c_norm[0] - 1) && (mission_norm[c_mission] > 1) && (line[min + 1] != 1) && (repversw >= 54)){
-			// ÅŒã‚Ì1–{
+			// æœ€å¾Œã®1æœ¬
 			tmp = min+1;
 		}else{
 			do {
@@ -1487,12 +1487,12 @@ void setEraserLines() {
 	}
 }
 
-// ƒCƒŒƒCƒT[‚Ìü‚ğ•\¦
+// ã‚¤ãƒ¬ã‚¤ã‚µãƒ¼ã®ç·šã‚’è¡¨ç¤º
 void viewEraserLines() {
 	int i;
 
 	for(i = 0; i < eraser_now_lines; i++) {
-		if(i >= 4) break;	// Å‘å‚Å4–{‚Ü‚Å
+		if(i >= 4) break;	// æœ€å¤§ã§4æœ¬ã¾ã§
 
 		if(getDrawRate() == 1)
 			BltRect(44, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
@@ -1501,35 +1501,35 @@ void viewEraserLines() {
 	}
 }
 
-// ƒ^[ƒQƒbƒg‚Å‚ÌƒXƒe[ƒW“Ç‚İ‚İ
+// ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã§ã®ã‚¹ãƒ†ãƒ¼ã‚¸èª­ã¿è¾¼ã¿
 void loadTargetStage() {
 	int tmp;
 statc[0 * 10 + 6] = mission_opt_3[c_mission];
-	if(mission_opt_1[c_mission] == mission_opt_2[c_mission]){	//ƒXƒe[ƒW‚ª1‚Â‚¾‚¯
+	if(mission_opt_1[c_mission] == mission_opt_2[c_mission]){	//ã‚¹ãƒ†ãƒ¼ã‚¸ãŒ1ã¤ã ã‘
 		tmp = mission_opt_1[c_mission];
 	}else{
-		// ’Ç‰Áî•ñ‚ÅoŒ»ƒXƒe[ƒW‚Ì”ÍˆÍ‚ğw’è‰Â”\ #1.60c7s2
+		// è¿½åŠ æƒ…å ±ã§å‡ºç¾ã‚¹ãƒ†ãƒ¼ã‚¸ã®ç¯„å›²ã‚’æŒ‡å®šå¯èƒ½ #1.60c7s2
 		do {
 			if(repversw < 46) tmp = rand(100,0);
 			else tmp = rand(mission_opt_2[c_mission] + 1,0);
 		} while( (tmp < mission_opt_1[c_mission]) || (tmp > mission_opt_2[c_mission]) || (target_cleared[tmp] == 1) );
-	target_cleared[tmp] = 1;	// oŒ»Ï‚İƒtƒ‰ƒOON
+	target_cleared[tmp] = 1;	// å‡ºç¾æ¸ˆã¿ãƒ•ãƒ©ã‚°ON
 	}
 	loadTomoyoStage(0, tmp);
-	// ƒvƒ‰ƒ`ƒiƒuƒƒbƒNƒ‰ƒ“ƒ_ƒ€‰»i‚¹‚èã‚ª‚éƒXƒe[ƒW‚Íƒ‰ƒ“ƒ_ƒ€‚É‚µ‚È‚¢j
+	// ãƒ—ãƒ©ãƒãƒŠãƒ–ãƒ­ãƒƒã‚¯ãƒ©ãƒ³ãƒ€ãƒ åŒ–ï¼ˆã›ã‚Šä¸ŠãŒã‚‹ã‚¹ãƒ†ãƒ¼ã‚¸ã¯ãƒ©ãƒ³ãƒ€ãƒ ã«ã—ãªã„ï¼‰
 	if((repversw >= 58) && (tomoyo_rise[0] == 0) && (mission_opt_3[c_mission] != 0)) randPlatinum(0, mission_opt_3[c_mission]);
 }
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  –â‘èƒf[ƒ^‚Ì“Ç‚İ‚İ^•Û‘¶
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-// ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg (4byte’PˆÊ)
-//   0       ƒo[ƒWƒ‡ƒ“ (0=–³Œø 1=c7r8)
-//   1`  19 –¢g—p
-//  20`  39 –â‘è‚P
-//  40`  59 –â‘è‚Q
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  å•é¡Œãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿ï¼ä¿å­˜
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ (4byteå˜ä½)
+//   0       ãƒãƒ¼ã‚¸ãƒ§ãƒ³ (0=ç„¡åŠ¹ 1=c7r8)
+//   1ã€œ  19 æœªä½¿ç”¨
+//  20ã€œ  39 å•é¡Œï¼‘
+//  40ã€œ  59 å•é¡Œï¼’
 
-/* ƒ[ƒh */
+/* ãƒ­ãƒ¼ãƒ‰ */
 void loadMissionData(int number) {
 	int i;
 
@@ -1539,41 +1539,41 @@ void loadMissionData(int number) {
 
 	LoadFile(string[0], &saveBuf, 930 * 4);
 
-	// –â‘èƒf[ƒ^‚ğ“Ç‚İ‚İ
+	// å•é¡Œãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã¿
 	for(i = 0; i < 30; i++) {
-		mission_type[i]  = saveBuf[(i + 1) * 20 + 0];	// í—Ş
-		mission_norm[i]  = saveBuf[(i + 1) * 20 + 1];	// ƒmƒ‹ƒ}
-		mission_time[i]  = saveBuf[(i + 1) * 20 + 2];	// §ŒÀŠÔ
-		mission_end[i]   = saveBuf[(i + 1) * 20 + 3];	// I—¹ƒtƒ‰ƒO
-		mission_lv[i]    = saveBuf[(i + 1) * 20 + 4];	// ƒŒƒxƒ‹
-		mission_erase[i] = saveBuf[(i + 1) * 20 + 5];	// ƒNƒŠƒA‚Éã‚©‚çÁ‹‚·‚éƒ‰ƒCƒ“”
-		mission_opt_1[i] = saveBuf[(i + 1) * 20 + 6];	// ’Ç‰Áî•ñ‚Pi‰ºŒÀj
-		mission_opt_2[i] = saveBuf[(i + 1) * 20 + 7];	// ’Ç‰Áî•ñ‚QiãŒÀj
-		mission_opt_3[i] = saveBuf[(i + 1) * 20 + 8];	// ’Ç‰Áî•ñ‚RiƒCƒŒƒCƒT[‚¾‚Æ–{”ASHIRASE800‚Í‚¹‚èã‚ª‚èŠÔŠuA‘¼‚Í–¢g—pj
+		mission_type[i]  = saveBuf[(i + 1) * 20 + 0];	// ç¨®é¡
+		mission_norm[i]  = saveBuf[(i + 1) * 20 + 1];	// ãƒãƒ«ãƒ
+		mission_time[i]  = saveBuf[(i + 1) * 20 + 2];	// åˆ¶é™æ™‚é–“
+		mission_end[i]   = saveBuf[(i + 1) * 20 + 3];	// çµ‚äº†ãƒ•ãƒ©ã‚°
+		mission_lv[i]    = saveBuf[(i + 1) * 20 + 4];	// ãƒ¬ãƒ™ãƒ«
+		mission_erase[i] = saveBuf[(i + 1) * 20 + 5];	// ã‚¯ãƒªã‚¢æ™‚ã«ä¸Šã‹ã‚‰æ¶ˆå»ã™ã‚‹ãƒ©ã‚¤ãƒ³æ•°
+		mission_opt_1[i] = saveBuf[(i + 1) * 20 + 6];	// è¿½åŠ æƒ…å ±ï¼‘ï¼ˆä¸‹é™ï¼‰
+		mission_opt_2[i] = saveBuf[(i + 1) * 20 + 7];	// è¿½åŠ æƒ…å ±ï¼’ï¼ˆä¸Šé™ï¼‰
+		mission_opt_3[i] = saveBuf[(i + 1) * 20 + 8];	// è¿½åŠ æƒ…å ±ï¼“ï¼ˆã‚¤ãƒ¬ã‚¤ã‚µãƒ¼ã ã¨æœ¬æ•°ã€SHIRASE800ã¯ã›ã‚Šä¸ŠãŒã‚Šé–“éš”ã€ä»–ã¯æœªä½¿ç”¨ï¼‰
 		mission_bgm[i]   = saveBuf[(i + 1) * 20 + 9];	// BGM
 	}
 }
 
-/* ƒZ[ƒu */
+/* ã‚»ãƒ¼ãƒ– */
 void saveMissionData(int number) {
 	int i;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
-	// ƒwƒbƒ_
+	// ãƒ˜ãƒƒãƒ€
 	saveBuf[0] = 1;
 
-	// –â‘èƒf[ƒ^
+	// å•é¡Œãƒ‡ãƒ¼ã‚¿
 	for(i = 0; i < 30; i++) {
-		saveBuf[(i + 1) * 20 + 0] = mission_type[i];	// í—Ş
-		saveBuf[(i + 1) * 20 + 1] = mission_norm[i];	// ƒmƒ‹ƒ}
-		saveBuf[(i + 1) * 20 + 2] = mission_time[i];	// §ŒÀŠÔ
-		saveBuf[(i + 1) * 20 + 3] = mission_end[i];		// I—¹ƒtƒ‰ƒO
-		saveBuf[(i + 1) * 20 + 4] = mission_lv[i];		// ƒŒƒxƒ‹
-		saveBuf[(i + 1) * 20 + 5] = mission_erase[i];	// ƒNƒŠƒA‚Éã‚©‚çÁ‹‚·‚éƒ‰ƒCƒ“”
-		saveBuf[(i + 1) * 20 + 6] = mission_opt_1[i];	// ’Ç‰Áî•ñ‚P
-		saveBuf[(i + 1) * 20 + 7] = mission_opt_2[i];	// ’Ç‰Áî•ñ‚Q
-		saveBuf[(i + 1) * 20 + 8] = mission_opt_3[i];	// ’Ç‰Áî•ñ‚R
+		saveBuf[(i + 1) * 20 + 0] = mission_type[i];	// ç¨®é¡
+		saveBuf[(i + 1) * 20 + 1] = mission_norm[i];	// ãƒãƒ«ãƒ
+		saveBuf[(i + 1) * 20 + 2] = mission_time[i];	// åˆ¶é™æ™‚é–“
+		saveBuf[(i + 1) * 20 + 3] = mission_end[i];		// çµ‚äº†ãƒ•ãƒ©ã‚°
+		saveBuf[(i + 1) * 20 + 4] = mission_lv[i];		// ãƒ¬ãƒ™ãƒ«
+		saveBuf[(i + 1) * 20 + 5] = mission_erase[i];	// ã‚¯ãƒªã‚¢æ™‚ã«ä¸Šã‹ã‚‰æ¶ˆå»ã™ã‚‹ãƒ©ã‚¤ãƒ³æ•°
+		saveBuf[(i + 1) * 20 + 6] = mission_opt_1[i];	// è¿½åŠ æƒ…å ±ï¼‘
+		saveBuf[(i + 1) * 20 + 7] = mission_opt_2[i];	// è¿½åŠ æƒ…å ±ï¼’
+		saveBuf[(i + 1) * 20 + 8] = mission_opt_3[i];	// è¿½åŠ æƒ…å ±ï¼“
 		saveBuf[(i + 1) * 20 + 9] = mission_bgm[i];		// BGM
 	}
 

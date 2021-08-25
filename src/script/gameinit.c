@@ -1,25 +1,25 @@
-// ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ 
+//â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡
 //
-//    HEBORIS [ƒwƒ{ƒŠƒX] 2001 Ver0.00 / 2000.11.05 (Sun) ` ????.??.?? (????)
+//    HEBORIS [ãƒ˜ãƒœãƒªã‚¹] 2001 Ver0.00 / 2000.11.05 (Sun) ã€œ ????.??.?? (????)
 //
 //                         (c) 1998-2000 Kenji Hoshimoto
 //
-//¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡ ¡
+//â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– â–¡â– 
 
 import "string.dll"
 int screenMode, colorMode, systemmem;
 
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//   ‰ŠúÝ’è
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//   åˆæœŸè¨­å®š
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
 void main() {
-	if(LoadConfig()) {	//CONFIG.SAV‚æ‚èÝ’è‚ðƒ[ƒh
-		CallScript("script/readdef.c");	//“Ç‚Ýž‚ÝŽ¸”s‚µ‚½‚çoption.defEkeyconf.def‚©‚çCONFIG.SAVì¬
+	if(LoadConfig()) {	//CONFIG.SAVã‚ˆã‚Šè¨­å®šã‚’ãƒ­ãƒ¼ãƒ‰
+		CallScript("script/readdef.c");	//èª­ã¿è¾¼ã¿å¤±æ•—ã—ãŸã‚‰option.defãƒ»keyconf.defã‹ã‚‰CONFIG.SAVä½œæˆ
 		halt;
 		LoadConfig();
 	}
 
-	/* 050825 ‰æ–Êƒ‚[ƒhŠg’£‰ü‘¢•”•ª -- ‚±‚±‚©‚ç */
+	/* 050825 ç”»é¢ãƒ¢ãƒ¼ãƒ‰æ‹¡å¼µæ”¹é€ éƒ¨åˆ† -- ã“ã“ã‹ã‚‰ */
 	if(screenMode == 0)
 		SetWindow (0, 320, 240, colorMode);
 	else if(screenMode == 1)
@@ -36,20 +36,20 @@ void main() {
 		SetWindow (1, 1280, 960, colorMode);
 	else
 		SetWindow (1, 640, 480, colorMode);
-	/* ‚±‚±‚Ü‚Å */
+	/* ã“ã“ã¾ã§ */
 
 	// 60fps
 	SetFPS (60);
 
-	// YGS2000ŒÅ—L‚ÌÝ’è
+	// YGS2000å›ºæœ‰ã®è¨­å®š
 	SetConstParam("Caption", "Please Wait...");
-	SetConstParam("EnablePause", 0);		//‰Šú‰»‚ªI‚í‚é‚Ü‚Åƒ|[ƒY‚µ‚È‚¢#1.60c7p9ex
+	SetConstParam("EnablePause", 0);		//åˆæœŸåŒ–ãŒçµ‚ã‚ã‚‹ã¾ã§ãƒãƒ¼ã‚ºã—ãªã„#1.60c7p9ex
 	SetConstParam("USE_XZ_FOR_BUTTON", 1);
 	SetConstParam("StringMax", 123);
 
 	SetDebugMode(0);
 
-	// ƒVƒXƒeƒ€ƒƒ‚ƒŠ‚ðŽg‚¤‚©?
+	// ã‚·ã‚¹ãƒ†ãƒ ãƒ¡ãƒ¢ãƒªã‚’ä½¿ã†ã‹?
 	SetSystemMemoryUse(systemmem);
 }
 

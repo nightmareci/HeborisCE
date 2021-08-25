@@ -46,23 +46,23 @@ ace_sonic_lock.wav44
 regret.wav 	45
 cool.wav 	46
 
-bgm01		// bgmlv0 ƒvƒŒƒC’†iMASTER   0`499j
-bgm02		// bgmlv1 ƒvƒŒƒC’†iMASTER 500`899j
-bgm03		// bgmlv2 ƒvƒŒƒC’†iMASTER 900`998ADEVIL 0`499j
-bgm04		// bgmlv3 ƒvƒŒƒC’†iDEVIL  500`699j
-bgm05		// bgmlv4 ƒvƒŒƒC’†iDEVIL  700`999j
-bgm06		// bgmlv5 ƒvƒŒƒC’†iDEVIL  1000ˆÈ~j
-ending		// bgmlv6 ƒvƒŒƒC’†iƒGƒ“ƒfƒBƒ“ƒOj
-ending_b	// bgmlv7 ƒvƒŒƒC’†iBEGINNERƒGƒ“ƒfƒBƒ“ƒOj
-tomoyo		// bgmlv8 ƒvƒŒƒC’† ’ÊíiTOMOYOj
-tomoyo_ex	// bgmlv9 ƒvƒŒƒC’† EXƒXƒe[ƒWiTOMOYOj
-vsmode		// bgmlv10 ƒvƒŒƒC’†i‘Îíƒ‚[ƒhj
-title		// bgmlv11 ƒ^ƒCƒgƒ‹
-select		// bgmlv12 ƒ‚[ƒhƒZƒŒƒNƒg
-nameentry	// bgmlv13 ƒl[ƒ€ƒGƒ“ƒgƒŠ[
-tomoyo_eh	// bgmlv14 ƒvƒŒƒC’† E-HeartiTOMOYOj
-fever		// bgmlv15 FEVER”­“®’†
-mission_ex01	// bgmlv16 ƒvƒŒƒC’† ƒ~ƒbƒVƒ‡ƒ“‚»‚Ì1
-mission_ex02	// bgmlv17 ƒvƒŒƒC’† ƒ~ƒbƒVƒ‡ƒ“‚»‚Ì2
-mission_ex03	// bgmlv18 ƒvƒŒƒC’† ƒ~ƒbƒVƒ‡ƒ“‚»‚Ì3
-tomoyo_eh_final	// bgmlv19 ƒvƒŒƒC’† E-Heartƒ‰ƒXƒg
+bgm01		// bgmlv0 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆMASTER   0ã€œ499ï¼‰
+bgm02		// bgmlv1 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆMASTER 500ã€œ899ï¼‰
+bgm03		// bgmlv2 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆMASTER 900ã€œ998ã€DEVIL 0ã€œ499ï¼‰
+bgm04		// bgmlv3 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆDEVIL  500ã€œ699ï¼‰
+bgm05		// bgmlv4 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆDEVIL  700ã€œ999ï¼‰
+bgm06		// bgmlv5 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆDEVIL  1000ä»¥é™ï¼‰
+ending		// bgmlv6 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ï¼‰
+ending_b	// bgmlv7 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆBEGINNERã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°ï¼‰
+tomoyo		// bgmlv8 ãƒ—ãƒ¬ã‚¤ä¸­ é€šå¸¸ï¼ˆTOMOYOï¼‰
+tomoyo_ex	// bgmlv9 ãƒ—ãƒ¬ã‚¤ä¸­ EXã‚¹ãƒ†ãƒ¼ã‚¸ï¼ˆTOMOYOï¼‰
+vsmode		// bgmlv10 ãƒ—ãƒ¬ã‚¤ä¸­ï¼ˆå¯¾æˆ¦ãƒ¢ãƒ¼ãƒ‰ï¼‰
+title		// bgmlv11 ã‚¿ã‚¤ãƒˆãƒ«
+select		// bgmlv12 ãƒ¢ãƒ¼ãƒ‰ã‚»ãƒ¬ã‚¯ãƒˆ
+nameentry	// bgmlv13 ãƒãƒ¼ãƒ ã‚¨ãƒ³ãƒˆãƒªãƒ¼
+tomoyo_eh	// bgmlv14 ãƒ—ãƒ¬ã‚¤ä¸­ E-Heartï¼ˆTOMOYOï¼‰
+fever		// bgmlv15 FEVERç™ºå‹•ä¸­
+mission_ex01	// bgmlv16 ãƒ—ãƒ¬ã‚¤ä¸­ ãƒŸãƒƒã‚·ãƒ§ãƒ³ãã®1
+mission_ex02	// bgmlv17 ãƒ—ãƒ¬ã‚¤ä¸­ ãƒŸãƒƒã‚·ãƒ§ãƒ³ãã®2
+mission_ex03	// bgmlv18 ãƒ—ãƒ¬ã‚¤ä¸­ ãƒŸãƒƒã‚·ãƒ§ãƒ³ãã®3
+tomoyo_eh_final	// bgmlv19 ãƒ—ãƒ¬ã‚¤ä¸­ E-Heartãƒ©ã‚¹ãƒˆ

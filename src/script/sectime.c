@@ -1,16 +1,16 @@
-//¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤¥¤
-//  ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€ƒ‰ƒ“ƒLƒ“ƒOŠÖ˜A
-//£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£¢£
-int		st_version = 2;	// ƒo[ƒWƒ‡ƒ“
-						// 0:–³Œø 1:c7p6/
-//30*3@(ƒrƒM+ƒ}ƒX123+20G), ƒfƒr+ƒ}ƒX4,ƒgƒ‚ ‚ª30‚Ã‚Â(‚½‚¾‚µ•\¦”‚Íˆá‚¤)
-int		st_time[90];	// ƒ^ƒCƒ€
-int		st_end[90];		// 0:–¢ƒJƒ“ƒXƒg 1:ƒ[ƒ‹“r’†’‚‘§ 2:Š®‘SƒNƒŠƒA
-int		st_lvstop[90];		//ƒŒƒxƒ‹ƒXƒgƒbƒv‚µ‚½ŠÔ
-int		st_others[90];		//—‚Æ‚µ‚½ƒuƒƒbƒN”
+//â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½â–¼â–½
+//  ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ ãƒ©ãƒ³ã‚­ãƒ³ã‚°é–¢é€£
+//â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²â–³â–²
+int		st_version = 2;	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+						// 0:ç„¡åŠ¹ 1:c7p6/
+//30*3ã€€(ãƒ“ã‚®+ãƒã‚¹123+20G), ãƒ‡ãƒ“+ãƒã‚¹4,ãƒˆãƒ¢ ãŒ30ã¥ã¤(ãŸã ã—è¡¨ç¤ºæ•°ã¯é•ã†)
+int		st_time[90];	// ã‚¿ã‚¤ãƒ 
+int		st_end[90];		// 0:æœªã‚«ãƒ³ã‚¹ãƒˆ 1:ãƒ­ãƒ¼ãƒ«é€”ä¸­çª’æ¯ 2:å®Œå…¨ã‚¯ãƒªã‚¢
+int		st_lvstop[90];		//ãƒ¬ãƒ™ãƒ«ã‚¹ãƒˆãƒƒãƒ—ã—ãŸæ™‚é–“
+int		st_others[90];		//è½ã¨ã—ãŸãƒ–ãƒ­ãƒƒã‚¯æ•°
 
-//str*		st_rkname[135];			// –¼‘O
-// ‰Šú‰»
+//str*		st_rkname[135];			// åå‰
+// åˆæœŸåŒ–
 void ST_RankingInit(void) {
 	int	i, j;
 
@@ -23,7 +23,7 @@ void ST_RankingInit(void) {
 
 }
 
-// STƒƒ_ƒ‹‚ÌF‚ğ”»’è
+// STãƒ¡ãƒ€ãƒ«ã®è‰²ã‚’åˆ¤å®š
 int ST_RankingCheck(int player, int rmode, int section,int enable_grade) {
 	int	tmp;
 
@@ -31,19 +31,19 @@ int ST_RankingCheck(int player, int rmode, int section,int enable_grade) {
 
 	tmp = ST_rankingGet(player,rmode,enable_grade);
 
-	//-5•bXV
+	//-5ç§’æ›´æ–°
 	if(lap_time[section + player * 100] <= st_time[section + tmp] - 300) {
 		return 4;
 	}
-	// ‹L˜^XV
+	// è¨˜éŒ²æ›´æ–°
 	if(lap_time[section + player * 100] <= st_time[section + tmp]) {
 		return 3;
 	}
-	// 5•bˆÈ“à
+	// 5ç§’ä»¥å†…
 	if(lap_time[section + player * 100] <= st_time[section + tmp] + 300) {
 		return 2;
 	}
-	// 10•bˆÈ“à
+	// 10ç§’ä»¥å†…
 	if(lap_time[section + player * 100] <= st_time[section + tmp] + 600) {
 		return 1;
 	}
@@ -51,7 +51,7 @@ int ST_RankingCheck(int player, int rmode, int section,int enable_grade) {
 	return 0;
 }
 
-// ‹L˜^XV‚µ‚½‚©ƒ`ƒFƒbƒN
+// è¨˜éŒ²æ›´æ–°ã—ãŸã‹ãƒã‚§ãƒƒã‚¯
 int ST_RankingCheckAll(int player, int rmode, int enable_grade) {
 	int i,tmp2;
 
@@ -73,7 +73,7 @@ int ST_RankingCheckAll(int player, int rmode, int enable_grade) {
 	}
 	return 0;
 }
-// ƒXƒe[ƒW‚²‚Æ‚Ì‹L˜^XV‚µ‚½‚©ƒ`ƒFƒbƒN
+// ã‚¹ãƒ†ãƒ¼ã‚¸ã”ã¨ã®è¨˜éŒ²æ›´æ–°ã—ãŸã‹ãƒã‚§ãƒƒã‚¯
 int Stage_RankingCheck(int player, int rmode) {
 	int i,tmp3;
 	if(stage[player] >= 27) return 0;
@@ -85,7 +85,7 @@ int Stage_RankingCheck(int player, int rmode) {
 	}
 	return 0;
 }
-// ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€ƒ‰ƒ“ƒLƒ“ƒOXV
+// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ ãƒ©ãƒ³ã‚­ãƒ³ã‚°æ›´æ–°
 void ST_RankingUpdate(int player, int rmode, int end,int enable_grade) {
 	int i, temp,tmp4;
 
@@ -94,7 +94,7 @@ void ST_RankingUpdate(int player, int rmode, int end,int enable_grade) {
 	if(rmode == 6){//TOMOYO
 		for(i=0; i<stage[player] + (stage[player] == laststage[player]); i++) {
 			if((stage_time[i + player * 30] <= st_time[i + tmp4]) && (stage_time[i + player * 30] != 0)) {
-				st_time[i + tmp4] = stage_time[i + player * 30];	// ƒ^ƒCƒ€
+				st_time[i + tmp4] = stage_time[i + player * 30];	// ã‚¿ã‚¤ãƒ 
 				st_end[i + tmp4] = end;
 				st_others[i + tmp4] = st_other[i + player * 30];
 			}
@@ -108,23 +108,23 @@ void ST_RankingUpdate(int player, int rmode, int end,int enable_grade) {
 
 	for(i=0; i<(tc[player] / (st_record_interval_tgm * 10)) + ((rmode >= 1)&&(rmode <= 2)&&(tc[player] == 999)); i++) {
 		if((lap_time[i + player * 100] <= st_time[i + tmp4]) && (lap_time[i + player * 100] != 0)) {
-			st_time[i + tmp4] = lap_time[i + player * 100];	// ƒ^ƒCƒ€
-			st_end[i + tmp4] = end;		// ƒGƒ“ƒfƒBƒ“ƒO“’B
+			st_time[i + tmp4] = lap_time[i + player * 100];	// ã‚¿ã‚¤ãƒ 
+			st_end[i + tmp4] = end;		// ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°åˆ°é”
 			st_lvstop[i + tmp4] = lvstop_time[i + player * 20];
 			st_others[i + tmp4] = st_other[i + player * 30];
 		}
 	}
 }
 
-// ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg (4byte’PˆÊ)
-//   0      ƒo[ƒWƒ‡ƒ“
-//   1`  9 –¢g—pi©—R‚Ég—p‰Â”
-//  10` 61 ƒ^ƒCƒ€			10-90
-//  62`113 ƒGƒ“ƒfƒBƒ“ƒO“’B		91-171
-// 114`165 –¼‘O			172-252
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ (4byteå˜ä½)
+//   0      ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+//   1ã€œ  9 æœªä½¿ç”¨ï¼ˆè‡ªç”±ã«ä½¿ç”¨å¯
+//  10ã€œ 61 ã‚¿ã‚¤ãƒ 			10-90
+//  62ã€œ113 ã‚¨ãƒ³ãƒ‡ã‚£ãƒ³ã‚°åˆ°é”		91-171
+// 114ã€œ165 åå‰			172-252
 //					253-333
 
-// ƒZ[ƒu
+// ã‚»ãƒ¼ãƒ–
 void ST_RankingSave(void) {//12345 6789
 	int i,j, temp2[3];
 
@@ -142,20 +142,20 @@ void ST_RankingSave(void) {//12345 6789
 	SaveFile("config/data/STRANKING.SAV", &saveBuf, 400 * 4);
 }
 
-// ƒ[ƒh
+// ãƒ­ãƒ¼ãƒ‰
 int ST_RankingLoad(void) {
 	int i,j, temp2[3];
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
-	// ƒo[ƒWƒ‡ƒ“‚ğŒ©‚é
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’è¦‹ã‚‹
 	LoadFile("config/data/STRANKING.SAV", &saveBuf, 4);
 
 	if(saveBuf[0] != st_version) {
 		return 1;
 	}
 
-	// ‘S‘Ì‚ğ“Ç‚İ‚Ş
+	// å…¨ä½“ã‚’èª­ã¿è¾¼ã‚€
 	LoadFile("config/data/STRANKING.SAV", &saveBuf, 400 * 4);
 
 	for(i=0;i<90;i++) {
@@ -166,15 +166,15 @@ int ST_RankingLoad(void) {
 	}
 	return 0;
 }
-//ƒxƒXƒgƒ^ƒCƒ€(ACE‚Ì‚Íranking2.c)
+//ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ (ACEã®ã¯ranking2.c)
 void viewbestSTtime(int player){
 	int	tempbest,color;
 
 	if(Isbesttime==0)return;
 
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
-	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€
-	}else if((gameMode[player]==6) && (stage[player] < 27)){//ƒxƒXƒgƒ^ƒCƒ€
+	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ 
+	}else if((gameMode[player]==6) && (stage[player] < 27)){//ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ 
 	//	if( (gameMode[player] == 6) && (!maxPlay) ) {
 			printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 11, "BEST TIME", fontc[rots[player]]);
 
@@ -183,20 +183,20 @@ void viewbestSTtime(int player){
 			printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 12, string[0], color);
 	}
 }
-//ƒxƒXƒgƒ^ƒCƒ€ƒXƒ‚[ƒ‹ƒtƒHƒ“ƒg
+//ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ ã‚¹ãƒ¢ãƒ¼ãƒ«ãƒ•ã‚©ãƒ³ãƒˆ
 void viewbestSTtimes(int player){
 	int	tempbest,color;
 
 	if(Isbesttime==0)return;
 
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
-	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€
+	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ 
 
-	}else if((gameMode[player]==6) && (stage[player] < 27)){//ƒxƒXƒgƒ^ƒCƒ€
+	}else if((gameMode[player]==6) && (stage[player] < 27)){//ãƒ™ã‚¹ãƒˆã‚¿ã‚¤ãƒ 
 		if( (gameMode[player] == 6) && ((!maxPlay) || (stat[1 - player] == 0)) ) {
-			//best‚Ì•¶š
+			//bestã®æ–‡å­—
 			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 251, 91, 21, 7);
-			//time‚Ì•¶š
+			//timeã®æ–‡å­—
 			ExBltRect(3, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 180, 119, 19, 7);
 
 			tempbest = ST_rankingGet(player,6,0);
@@ -205,12 +205,12 @@ void viewbestSTtimes(int player){
 		}
 	}
 }
-//STƒ‰ƒ“ƒLƒ“ƒO‚ÌƒAƒhƒŒƒXw’è
+//STãƒ©ãƒ³ã‚­ãƒ³ã‚°ã®ã‚¢ãƒ‰ãƒ¬ã‚¹æŒ‡å®š
 int ST_rankingGet(int player,int rmode,int enable_grade){
 	int	temp;
-	if(rmode == 0){//ƒrƒMƒi[
+	if(rmode == 0){//ãƒ“ã‚®ãƒŠãƒ¼
 		temp = 0;
-	}else if(rmode == 1){//ƒ}ƒXƒ^[
+	}else if(rmode == 1){//ãƒã‚¹ã‚¿ãƒ¼
 		if(enable_grade !=4){
 		temp = 4;
 		}else if(enable_grade==4){
@@ -218,7 +218,7 @@ int ST_rankingGet(int player,int rmode,int enable_grade){
 		}
 	}else if(rmode == 2){//20G
 		temp = 30;
-	}else if(rmode == 3){//ƒfƒrƒ‹
+	}else if(rmode == 3){//ãƒ‡ãƒ“ãƒ«
 		temp = 40;
 	}else if(rmode == 6){//TOMOYO
 		temp =  60;
@@ -226,14 +226,14 @@ int ST_rankingGet(int player,int rmode,int enable_grade){
 	return temp;
 }
 
-// ƒZƒNƒVƒ‡ƒ“ƒ^ƒCƒ€ƒ‰ƒ“ƒLƒ“ƒO•\¦
+// ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚¿ã‚¤ãƒ ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤º
 void ST_RankingView() {
 	int i, max, mode, tmp, tmp5, bps, bps1,bps2,s;
 
 	mode = 1;
 
 	while(1) {
-		// ”wŒi•`‰æ
+		// èƒŒæ™¯æç”»
 		count++;
 		if(background == 0) {
 			for(i = 0; i <= 6; i++) {
@@ -252,7 +252,7 @@ void ST_RankingView() {
 		ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
 		ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
 
-		//ƒAƒhƒŒƒXw’è
+		//ã‚¢ãƒ‰ãƒ¬ã‚¹æŒ‡å®š
 		if(mode == 0){
 			tmp5 = 0;
 		}else if(mode == 1){
@@ -267,7 +267,7 @@ void ST_RankingView() {
 			tmp5 = 60;
 		}
 
-		// ƒ‚[ƒh–¼•\¦
+		// ãƒ¢ãƒ¼ãƒ‰åè¡¨ç¤º
 		if(mode == 0)
 			printFont(11, 1, "- BEGINNER MODE -", 4);
 		else if(mode == 1)
@@ -296,7 +296,7 @@ void ST_RankingView() {
 			printFont(32, 3, "BLOCK/S ", 1);
 		}
 
-		// •\¦”‚ğŒˆ‚ß‚é
+		// è¡¨ç¤ºæ•°ã‚’æ±ºã‚ã‚‹
 		if(mode == 0)
 			max = 2;
 		else if( (mode == 1) || (mode == 2)|| (mode == 3) )
@@ -306,7 +306,7 @@ void ST_RankingView() {
 		else if(mode == 5)
 			max =27;
 
-		// ƒ‰ƒ“ƒLƒ“ƒO•\¦
+		// ãƒ©ãƒ³ã‚­ãƒ³ã‚°è¡¨ç¤º
 		for(i=0; i<max; i++) {
 			if(st_end[i + tmp5] == 1)
 				tmp = 4;
@@ -315,7 +315,7 @@ void ST_RankingView() {
 			else
 				tmp = 0;
 
-			if(mode != 5){//‚»‚Ì‘¼
+			if(mode != 5){//ãã®ä»–
 				if( ((mode == 1) || (mode == 2)|| (mode == 3)) && (i == 9) ){
 					sprintf(string[0], " 900-999");
 				} else if(mode <= 4){
@@ -324,22 +324,22 @@ void ST_RankingView() {
 
 				printFont(1, 4+i, string[0], tmp);
 
-				//ƒ^ƒCƒ€
+				//ã‚¿ã‚¤ãƒ 
 				getTime(st_time[i + tmp5]);
 				printFont(11, 4+i, string[0], tmp);
 
-				//ƒŒƒxƒ‹ƒXƒgƒbƒv
+				//ãƒ¬ãƒ™ãƒ«ã‚¹ãƒˆãƒƒãƒ—
 				getSTime(st_lvstop[i + tmp5]);
 				printFont(21, 4+i, string[0], tmp);
 
-				//USEƒuƒƒbƒN”
+				//USEãƒ–ãƒ­ãƒƒã‚¯æ•°
 				sprintf(string[0],"%d",st_others[i + tmp5]);
 				printFont(29, 4+i, string[0], tmp);
 
 				//BPS
 				bps = (st_others[i + tmp5] * 1000) / (st_time[i + tmp5] / 60);
-				bps1 = bps / 1000;//®”
-				bps2 = bps % 1000;//‰ºOŒ…
+				bps1 = bps / 1000;//æ•´æ•°
+				bps2 = bps % 1000;//ä¸‹ä¸‰æ¡
 				sprintf(string[0],"%d.",bps1);
 				printFont(32, 4+i, string[0], tmp);
 				if(bps2>=100){
@@ -364,11 +364,11 @@ void ST_RankingView() {
 					sprintf(string[0], "%d",i+1);
 					printFont(2, 4+i, string[0], tmp);
 
-					//ƒ^ƒCƒ€
+					//ã‚¿ã‚¤ãƒ 
 					getTime(st_time[i + tmp5]);
 					printFont(6, 4+i, string[0], tmp);
 
-					//g—pƒuƒƒbƒN”
+					//ä½¿ç”¨ãƒ–ãƒ­ãƒƒã‚¯æ•°
 					sprintf(string[0],"%d",st_others[i + tmp5]);
 					printFont(16, 4+i, string[0], tmp);
 
@@ -376,18 +376,18 @@ void ST_RankingView() {
 					sprintf(string[0], "EX%d",i - 19);
 					printFont(20, i - 16, string[0], tmp);
 
-					//ƒ^ƒCƒ€
+					//ã‚¿ã‚¤ãƒ 
 					getTime(st_time[i + tmp5]);
 					printFont(26, i - 16, string[0], tmp);
 
-					//g—pƒuƒƒbƒN”
+					//ä½¿ç”¨ãƒ–ãƒ­ãƒƒã‚¯æ•°
 					sprintf(string[0],"%d",st_others[i + tmp5]);
 					printFont(36, i-16, string[0], tmp);
 				}
 			}
 		}
 
-		// ‡Œv”•\¦
+		// åˆè¨ˆæ•°è¡¨ç¤º
 		tmp = 0;
 		for(i=0; i<max; i++) {
 			tmp = tmp + st_time[i + tmp5];
@@ -399,18 +399,18 @@ void ST_RankingView() {
 		KeyInput();
 
 		if(getPushState(0, 4) || getPushState(0, 5)) {
-			// A‚©B‚Å–ß‚é
+			// Aã‹Bã§æˆ»ã‚‹
 			return;
 		}
 
 		if(getPushState(0, 2)) {
-			// ©
+			// â†
 			PlaySE(5);
 			mode--;
 			if(mode < 1) mode = 5;
 		}
 		if(getPushState(0, 3)) {
-			// ¨
+			// â†’
 			PlaySE(5);
 			mode++;
 			if(mode > 5) mode = 1;
@@ -421,13 +421,13 @@ void ST_RankingView() {
 }
 
 
-// ƒtƒ@ƒCƒ‹ƒtƒH[ƒ}ƒbƒg (4byte’PˆÊ)
-//   0      ƒo[ƒWƒ‡ƒ“
-//   1` 10 ’iˆÊƒqƒXƒgƒŠ
-//  10` 11 ”F’è’iˆÊ
-//  12` 13
+// ãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ (4byteå˜ä½)
+//   0      ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+//   1ã€œ 10 æ®µä½ãƒ’ã‚¹ãƒˆãƒª
+//  10ã€œ 11 èªå®šæ®µä½
+//  12ã€œ 13
 
-// ƒvƒŒƒCƒ„[ƒf[ƒ^ƒZ[ƒu
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿ã‚»ãƒ¼ãƒ–
 void PlayerdataSave(void) {//12345 6789
 	int i,j, temp2[3];
 
@@ -446,20 +446,20 @@ void PlayerdataSave(void) {//12345 6789
 	SaveFile("config/data/PLAYERDATA.SAV", &saveBuf, 100 * 4);
 }
 
-// ƒvƒŒƒCƒ„[ƒf[ƒ^ƒ[ƒh
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ‰
 int PlayerdataLoad(void) {
 	int i,j, temp2[3];
 
 	FillMemory(&saveBuf, 500 * 4, 0);
 
-	// ƒo[ƒWƒ‡ƒ“‚ğŒ©‚é
+	// ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’è¦‹ã‚‹
 	LoadFile("config/data/PLAYERDATA.SAV", &saveBuf, 4);
 
 	if(saveBuf[0] != 0x4F424503) {
 		return 1;
 	}
 
-	// ‘S‘Ì‚ğ“Ç‚İ‚Ş
+	// å…¨ä½“ã‚’èª­ã¿è¾¼ã‚€
 	LoadFile("config/data/PLAYERDATA.SAV", &saveBuf, 100 * 4);
 
 	for( j = 0 ; j < 2 ; j++){

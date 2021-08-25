@@ -1,8 +1,8 @@
-/* TGM®’iˆÊã¸ */
+/* TGMå¼æ®µä½ä¸Šæ˜‡ */
 void GradeUp(int player){
 	if(gameMode[player] >= 4) return;
-	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVILˆÈŠO
-		// (S8‚Ü‚Å‚È‚ç)’iˆÊã¸”»’è #1.60c7g5
+	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVILä»¥å¤–
+		// (S8ã¾ã§ãªã‚‰)æ®µä½ä¸Šæ˜‡åˆ¤å®š #1.60c7g5
 		if((grade[player] < 17) && (sc[player] >= gscore[grade[player]])) {
 			PlayWave(30);	// rankup.wav #1.60c7i2
 			grade[player]++;
@@ -10,7 +10,7 @@ void GradeUp(int player){
 			gup_down[player] = 1;
 		}
 
-		// gmflag1¬—§”»’è#1.60c7g5
+		// gmflag1æˆç«‹åˆ¤å®š#1.60c7g5
 		if((tc[player] >= 300) && (!gmflag1_e[player])) {
 			if((grade[player] >= 6) && (time[player] <= 255 * 60)){
 					gmflag1[player] = 1;
@@ -19,7 +19,7 @@ void GradeUp(int player){
 			gmflag1_e[player] = 1;
 		}
 
-		// gmflag2¬—§”»’è#1.60c7g5
+		// gmflag2æˆç«‹åˆ¤å®š#1.60c7g5
 		if((tc[player] >= 500) && (!gmflag2_e[player])) {
 			if((grade[player] >= 9) && (time[player] <= 450 * 60)){
 					gmflag2[player] = 1;
@@ -29,7 +29,7 @@ void GradeUp(int player){
 		}
 	}
 }
-/* TAP®’iˆÊ #C7T5EX*/
+/* TAPå¼æ®µä½ #C7T5EX*/
 void GradeUp2(int player, int lines){
 	int i[2],gbai[2];
 	if( (gameMode[player] == 1) || (gameMode[player] == 2) ) {
@@ -104,7 +104,7 @@ void GradeUp2(int player, int lines){
 				} else {
 					i[player] = 30;
 				}
-			}else if(grade[player]>=27){//MˆÈã
+			}else if(grade[player]>=27){//Mä»¥ä¸Š
 				if ( lines == 1 ) {
 					i[player] = 2;
 				} else if ( lines == 2 ) {
@@ -186,7 +186,7 @@ void GradeUp2(int player, int lines){
 				} else {
 					i[player] = 20;
 				}
-			}else if(grade2[player]>=27){//MˆÈã
+			}else if(grade2[player]>=27){//Mä»¥ä¸Š
 				if ( lines == 1 ) {
 					i[player] = 1;
 				} else if ( lines == 2 ) {
@@ -208,47 +208,47 @@ void GradeUp2(int player, int lines){
 		}
 
 		if(enable_grade[player] == 2){
-			gbai[player] = ((tc[player] / 250) + 1) + (skillbai[player + 1]);//”{—¦(ƒŒƒxƒ‹‚ÆSK”‚ÅŒˆ’è)
+			gbai[player] = ((tc[player] / 250) + 1) + (skillbai[player + 1]);//å€ç‡(ãƒ¬ãƒ™ãƒ«ã¨SKæ•°ã§æ±ºå®š)
 		}else if(enable_grade[player] == 3){
 			gbai[player] = ((tc[player] / 250) + 1)*2;//
 		}
 
-		if(gbai[player] < 2)gbai[player]= 2;//1ˆÈ‰º‚É‚Í‚È‚ç‚È‚¢
+		if(gbai[player] < 2)gbai[player]= 2;//1ä»¥ä¸‹ã«ã¯ãªã‚‰ãªã„
 
 		i[player] = (i[player] * gbai[player]) / 2;
 
-		if(((combo[player]-1)!=0)&&(combo2[player]<3)){//2ƒRƒ“ƒ{‚Ü‚Å
+		if(((combo[player]-1)!=0)&&(combo2[player]<3)){//2ã‚³ãƒ³ãƒœã¾ã§
 			if(lines == 2){
-		 		i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2”{
+		 		i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2å€
 			}else if(lines == 3){
-				i[player] = (i[player] * 13 * (combo2[player] - 1)) / 10;//1.3”{
+				i[player] = (i[player] * 13 * (combo2[player] - 1)) / 10;//1.3å€
 			}else if(lines == 4){
-				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5”{
+				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5å€
 			}
-		}else if(((combo[player]-1)!=0)&&(combo2[player]>=3)&&(combo2[player]<5)){//3ƒRƒ“ƒ{ˆÈã
-			if(lines == 1){		//ƒRƒ“ƒ{å‘Ì‚Å‚Í’iˆÊƒ|ƒCƒ“ƒg‚ªã‚ª‚è‚É‚­‚­ C7T7.1
-				i[player] = (i[player] * 21*(combo[player] - 1)) /20;//1.05”{
+		}else if(((combo[player]-1)!=0)&&(combo2[player]>=3)&&(combo2[player]<5)){//3ã‚³ãƒ³ãƒœä»¥ä¸Š
+			if(lines == 1){		//ã‚³ãƒ³ãƒœä¸»ä½“ã§ã¯æ®µä½ãƒã‚¤ãƒ³ãƒˆãŒä¸ŠãŒã‚Šã«ãã C7T7.1
+				i[player] = (i[player] * 21*(combo[player] - 1)) /20;//1.05å€
 		 	}else if(lines == 2){
-		 		i[player] = (i[player] * 11 * (combo2[player] - 1)) / 10;//1.1”{
+		 		i[player] = (i[player] * 11 * (combo2[player] - 1)) / 10;//1.1å€
 			}else if(lines == 3){
-				i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2”{
+				i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2å€
 			}else if(lines == 4){
-				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5”{
+				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5å€
 			}
 		}
 
 		gpoint[player] = gpoint[player] + i[player];
 		if(enable_grade[player] == 2){
-			if(medal_sk[player] == 4)gbai[player] = 10;//SKƒƒ_ƒ‹‚ª4‚É‚È‚é‚Æ4”{
+			if(medal_sk[player] == 4)gbai[player] = 10;//SKãƒ¡ãƒ€ãƒ«ãŒ4ã«ãªã‚‹ã¨4å€
 			if( (gpoint[player] >= 100) &&(grade[player] <= 28)) {//MV
 				gup_down[player] = 1;
 				gflash[player] = 120;
 				PlaySE(30);//rankup.wav
 				gtime[player] = 0;
 				grade[player]++;
-				gpoint[player] = ((gpoint[player] - 100)/ ((tc[player] / 350) + 1 + (combo2[player] / 2)));//‚¿‰z‚µ
+				gpoint[player] = ((gpoint[player] - 100)/ ((tc[player] / 350) + 1 + (combo2[player] / 2)));//æŒã¡è¶Šã—
 			}
-					// gmflag1¬—§”»’è#C7T5EX
+					// gmflag1æˆç«‹åˆ¤å®š#C7T5EX
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade[player] >= 11) && (time[player] <= 300 * 60)){
 					gmflag1[player] = 1;
@@ -257,7 +257,7 @@ void GradeUp2(int player, int lines){
 				gmflag1_e[player] = 1;
 			}
 
-			// gmflag2¬—§”»’è#C7T5EX
+			// gmflag2æˆç«‹åˆ¤å®š#C7T5EX
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
 				if((grade[player] >= 19) && (time[player] <= 390*60)){
 					gmflag2[player] = 1;
@@ -277,12 +277,12 @@ void GradeUp2(int player, int lines){
 				(grade2[player]==11)||(grade2[player]==14)||(grade2[player]==17)||(grade2[player]==18)||
 				(grade2[player]==19)||(grade2[player]==22)||(grade2[player]==24)||(grade2[player]==26)||
 				(grade2[player]==28)||(grade2[player]==30)){
-					PlaySE(30);//rankup‰¹
+					PlaySE(30);//rankupéŸ³
 					gflash[player] = 120;
 				}else {
-					PlaySE(46);//cool‰¹
+					PlaySE(46);//cooléŸ³
 				}
-			}//19’iˆÊ•ÏŠ·
+			}//19æ®µä½å¤‰æ›
 			if(grade2[player]==0)
 				grade[player]=0;//9
 			if(grade2[player]==1)
@@ -321,9 +321,9 @@ void GradeUp2(int player, int lines){
 			if(grade2[player]>=30)//MM
 				grade[player]=17;//S9
 
-		//grade3‚Â‚Ã‚«
+		//grade3ã¤ã¥ã
 
-			// gmflag1¬—§”»’è#C7T5EX
+			// gmflag1æˆç«‹åˆ¤å®š#C7T5EX
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade2[player] >= 11) && (time[player] <= 300 * 60)){
 					gmflag1[player] = 1;
@@ -332,7 +332,7 @@ void GradeUp2(int player, int lines){
 			gmflag1_e[player] = 1;
 			}
 
-			// gmflag2¬—§”»’è#C7T5EX
+			// gmflag2æˆç«‹åˆ¤å®š#C7T5EX
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
 				if((grade2[player] >= 19) && (time[player] <= 390*60)){
 					gmflag2[player] = 1;
@@ -344,37 +344,37 @@ void GradeUp2(int player, int lines){
 	}
 }
 
-/* ??®’iˆÊ@*/
-void GradeUp3(int player) {//ƒuƒƒbƒN‚ğ’u‚­“x‚É
+/* ??å¼æ®µä½ã€€*/
+void GradeUp3(int player) {//ãƒ–ãƒ­ãƒƒã‚¯ã‚’ç½®ãåº¦ã«
 	int 	lap_timeT[2], isqcool;
 	int	gup3sec[2],secinlv[2];
 
 	if( (gameMode[player] == 1) || (gameMode[player] == 2) ) {
 
-	gup3sec[player] = tc[player]/100;//ƒŒƒxƒ‹‚©‚çƒZƒNƒVƒ‡ƒ“‚ğŒˆ’è
+	gup3sec[player] = tc[player]/100;//ãƒ¬ãƒ™ãƒ«ã‹ã‚‰ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’æ±ºå®š
 	secinlv[player] = tc[player] - ((tc[player]/100)*100);
-	lap_timeT[player] = ( timeN[player] / (1 + (((rots[player] == 6) || (rots[player] == 8)) && (repversw >= 30))) ) + (time99[player] * 2);//ƒŒƒxƒ‹ƒXƒgƒbƒv’†‚Í3”{‰ÁZ
-		// DS-WORLD‚ÅˆÙ—l‚ÉCOOL‚ªo‚É‚­‚¢‚Ì‚ÅC7U1
+	lap_timeT[player] = ( timeN[player] / (1 + (((rots[player] == 6) || (rots[player] == 8)) && (repversw >= 30))) ) + (time99[player] * 2);//ãƒ¬ãƒ™ãƒ«ã‚¹ãƒˆãƒƒãƒ—ä¸­ã¯3å€åŠ ç®—
+		// DS-WORLDã§ç•°æ§˜ã«COOLãŒå‡ºã«ãã„ã®ã§C7U1
 	if((secinlv[player] > 80)&&(secinlv[player] < 99)&&(qualityflag[player] != 1)){//quality cool
-		ave_laptime3[player] = lap_timeT[player] / secinlv[player];//ƒZƒNƒVƒ‡ƒ“ƒŒƒxƒ‹‚ÅŠ„‚é
+		ave_laptime3[player] = lap_timeT[player] / secinlv[player];//ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãƒ¬ãƒ™ãƒ«ã§å‰²ã‚‹
 
 		if(repversw < 49) isqcool = (ave_laptime3[player] < border_time48[border_rank[player]]);
 		else if(repversw < 60) isqcool = (ave_laptime3[player] < border_time59[border_rank[player]]);
 		else isqcool = (ave_laptime3[player] < border_time[border_rank[player]]);
 
 		if(isqcool){//
-			gup_down[player] = 1;//cool‚Ì•¶š‚ğo‚·
+			gup_down[player] = 1;//coolã®æ–‡å­—ã‚’å‡ºã™
 			PlaySE(46);
-			grade[player]++;	//’iˆÊ‚ğã‚°‚é
+			grade[player]++;	//æ®µä½ã‚’ä¸Šã’ã‚‹
 			qualityflag[player] = 1;
 			gflash[player] = 240;
-			gup3sp_adjust[player] = 2;	//‘¬“xƒXƒLƒbƒv
-			if(gup3rank[player] <= 1){//0‚©1‚È‚ç
-				gup3rank[player]++;//ƒ‰ƒ“ƒN‚ğã‚°‚é
+			gup3sp_adjust[player] = 2;	//é€Ÿåº¦ã‚¹ã‚­ãƒƒãƒ—
+			if(gup3rank[player] <= 1){//0ã‹1ãªã‚‰
+				gup3rank[player]++;//ãƒ©ãƒ³ã‚¯ã‚’ä¸Šã’ã‚‹
 			}
 		}
 	}
-	if(secinlv[player]<94){//ƒZƒNƒVƒ‡ƒ“‚Ü‚½‚¬‚Í–³Œø
+	if(secinlv[player]<94){//ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¾ãŸãã¯ç„¡åŠ¹
 		if((skillflag[player] != 1)){
 			if(((skillg[player] >= 3)&&(tr2[player]<=10))||((skillg[player] >= 4)&&(tr2[player]>10))){//skill cool
 				PlaySE(46);
@@ -386,7 +386,7 @@ void GradeUp3(int player) {//ƒuƒƒbƒN‚ğ’u‚­“x‚É
 			}
 		}
 	}
-	// gmflag1¬—§”»’èiborder_rankl‚ª15ˆÈã	// gmflag2¬—§”»’è‚Íisregret“àiregret‚ªˆê‰ñ‚à‚Å‚È‚¢
+	// gmflag1æˆç«‹åˆ¤å®šï¼ˆborder_ranklãŒ15ä»¥ä¸Š	// gmflag2æˆç«‹åˆ¤å®šã¯isregretå†…ï¼ˆregretãŒä¸€å›ã‚‚ã§ãªã„
 	if((tc[player] >= 400) &&(!gmflag1_e[player])) {
 		if(tr2[player] >= 80){
 			gmflag1[player] = 1;
@@ -398,7 +398,7 @@ void GradeUp3(int player) {//ƒuƒƒbƒN‚ğ’u‚­“x‚É
 	}
 
 }
-void isregret(int player){	//100’´‚¦‚é‚²‚ÆŒÄ‚Ño‚µ
+void isregret(int player){	//100è¶…ãˆã‚‹ã”ã¨å‘¼ã³å‡ºã—
 	int	border_time2[2],regretgosa[2];
 	regretgosa[player] = tr2[player]/40;
 	if(repversw >= 49){
@@ -406,36 +406,36 @@ void isregret(int player){	//100’´‚¦‚é‚²‚ÆŒÄ‚Ño‚µ
 	}else{
 	border_time2[player]= border_time48[border_rank[player]]+ 6 + regretgosa[player];
 	}
-	if(ave_laptime3[player]>border_time2[player]){//regret”»’è
-		gup_down[player] = 0;//regret‚Ì•¶š‚ğo‚·
+	if(ave_laptime3[player]>border_time2[player]){//regretåˆ¤å®š
+		gup_down[player] = 0;//regretã®æ–‡å­—ã‚’å‡ºã™
 		gflash[player] = 120;
-		gmflag2[player] = 1;	// gmflag2¬—§”’D
+		gmflag2[player] = 1;	// gmflag2æˆç«‹å‰¥å¥ª
 		if(grade[player]>0){
-			grade[player]--;	//’iˆÊ‚ğã‚°‚é
+			grade[player]--;	//æ®µä½ã‚’ä¸Šã’ã‚‹
 		}
 		if((gup3rank[player]==0)&&(gup3sp_adjust[player] == 0)){
-			gup3sp_adjust[player] = 1;//‘¬“x
-		}else{//1‚©2
-			gup3rank[player]=0;//ƒ‰ƒ“ƒNƒ_ƒEƒ“
-			gup3sp_adjust[player] = 0;//‘¬“x‚â‚è’¼‚µ
+			gup3sp_adjust[player] = 1;//é€Ÿåº¦
+		}else{//1ã‹2
+			gup3rank[player]=0;//ãƒ©ãƒ³ã‚¯ãƒ€ã‚¦ãƒ³
+			gup3sp_adjust[player] = 0;//é€Ÿåº¦ã‚„ã‚Šç›´ã—
 		}
 	}else if(qualityflag[player] != 1){
-		gup3sp_adjust[player] = 1;//‘¬“x‚»‚Ì‚Ü‚Ü
+		gup3sp_adjust[player] = 1;//é€Ÿåº¦ãã®ã¾ã¾
 		if(gup3rank[player] == 2){	//2
-			gup3rank[player]--;//ƒ‰ƒ“ƒNƒ_ƒEƒ“
+			gup3rank[player]--;//ãƒ©ãƒ³ã‚¯ãƒ€ã‚¦ãƒ³
 		}
 	}
 	ave_laptime3[player] = 0;
-	border_rank[player] = border_rank[player] + gup3rank[player];//Ÿ‚ÌŠî€ƒ^ƒCƒ€‚ğŒˆ‚ß‚é
+	border_rank[player] = border_rank[player] + gup3rank[player];//æ¬¡ã®åŸºæº–ã‚¿ã‚¤ãƒ ã‚’æ±ºã‚ã‚‹
 	grade[player]++;
 }
 
-void reset_gradeup3(int player){//ƒZƒNƒVƒ‡ƒ“‚ª•Ï‚í‚é‚²‚Æ‚ÉƒŠƒZƒbƒg
+void reset_gradeup3(int player){//ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒå¤‰ã‚ã‚‹ã”ã¨ã«ãƒªã‚»ãƒƒãƒˆ
 	skillg[player] = 0;
 	time99[player] = 0;
 	timeN[player] = 0;
 	qualityflag[player] = 0;
 	skillflag[player] = 0;
-	gup3sp_adjust[player] = 0;	//BGMƒtƒF[ƒh‚Ì‚½‚ß‚É‚±‚ê‚àB
+	gup3sp_adjust[player] = 0;	//BGMãƒ•ã‚§ãƒ¼ãƒ‰ã®ãŸã‚ã«ã“ã‚Œã‚‚ã€‚
 	regretcancel[player] = 0;
 }

@@ -36,7 +36,7 @@ static void ParseChar(Kanji_Font* font, int index, FILE* fp, int shift) {
 	char buf[BUF];
 	int y;
 
-	/* Šù‚Éƒ[ƒh‚³‚ê‚Ä‚¢‚é•¶Žš‚Í“Ç‚Ýž‚Ü‚È‚¢ */
+	/* æ—¢ã«ãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ã‚‹æ–‡å­—ã¯èª­ã¿è¾¼ã¾ãªã„ */
 	if (font->moji[index] != 0) return;
 
 	font->moji[index] = (Uint32*)malloc(sizeof(Uint32)*font->k_size);
@@ -90,7 +90,7 @@ int Kanji_AddFont(Kanji_Font* font, const char* file) {
 
 	fp = fopen(file, "r");
 	if(fp==NULL){
-		fprintf(stderr, "cant open [%s]\n", file);
+		fprintf(stderr, "cant open [%s]Â¥n", file);
 		return -1;
 	}
 
@@ -201,7 +201,7 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy,
 
 	fgcol = SDL_MapRGB(dst->format, fg.r, fg.g, fg.b);
 	while (*text != 0) {
-		if (*text == '\n') {
+		if (*text == 'Â¥n') {
 			text ++;
 			cy += font->k_size;
 			cx = dx;
@@ -296,7 +296,7 @@ int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy,
 		}
 		if (font->sys != KANJI_JIS) nowKanji = !isprint(*text);
 
-		/* ASCII ‚Í–³Ž‹ */
+		/* ASCII ã¯ç„¡è¦– */
 		if (!nowKanji) {
 			text++;
 		}
@@ -355,7 +355,7 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 	textbuf = SDL_CreateRGBSurface(0, font->a_size*len, font->k_size,
 							   bpp, 0, 0, 0, 0);
 	if (textbuf == NULL) {
-		fprintf(stderr,"ERROR: at Kanji_RenderText\n");
+		fprintf(stderr,"ERROR: at Kanji_RenderTextÂ¥n");
 		return NULL;
 	}
 	bgcol = SDL_MapRGB(textbuf->format, 255-fg.r, 255-fg.g, 255-fg.b);
@@ -381,7 +381,7 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text,
 	textbuf = SDL_CreateRGBSurface(0, font->k_size, font->a_size*len,
 							   bpp, 0, 0, 0, 0);
 	if (textbuf == NULL) {
-		fprintf(stderr,"ERROR: at Kanji_RenderText\n");
+		fprintf(stderr,"ERROR: at Kanji_RenderTextÂ¥n");
 		return NULL;
 	}
 

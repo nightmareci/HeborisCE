@@ -1,5 +1,7 @@
+#include <cstdint>
+
 int	screenMode;		// ウィンドウモード	0:全画面 1:ウィンドウ(320x240) 2:ウィンドウ(640x480)
-int colorMode;		// カラーモード		0:16bit (65536色) 1:32bit (1677万色)
+int	colorMode;		// カラーモード		0:16bit (65536色) 1:32bit (1677万色)
 int	systemmem;		// サーフェス格納	0:VRAM(高速) 1:システムメモリ(低速)
 int	nextblock;		// ツモ
 //int	blockkind;		// ブロックグラフィック	0:aa 1:ab 2:ba 3:bb
@@ -54,7 +56,7 @@ int	restart;				// 再起動フラグ
 
 // 設定をバイナリデータに保存 1.60c5
 int SaveConfig(void) {
-	int i, j, cfgbuf[100];
+	int32_t i, j, cfgbuf[100];
 
 	FillMemory(&cfgbuf, 400, 0);
 	cfgbuf[0] = 0x4F424550;
@@ -124,7 +126,7 @@ int SaveConfig(void) {
 
 // 設定をバイナリデータから読み込み 1.60c5
 int LoadConfig(void) {
-	int i, j, cfgbuf[100];
+	int32_t i, j, cfgbuf[100];
 
 
 	FillMemory(&cfgbuf, 100 * 4, 0);

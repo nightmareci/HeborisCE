@@ -1,23 +1,21 @@
 ### Heboris C7EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7EX. It requires SDL 2.0,
-SDL 2.0 mixer and SDL 2.0 image libraries to play. Currently, it can't be
-compiled with OpenGL support with the new SDL 2.0 code; that support might be
-replaced with cross-platform hardware accelerated rendering though.
+SDL 2.0 mixer, and SDL 2.0 image libraries to play.
 
-The plan is to eventually have it working on at least Windows, Linux, and
-macOS, with other platforms possibly added later.
+Example dependencies on Ubuntu:
 
-Example dependencies on Ubuntu
-
-    apt-get install libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
+```
+apt-get install cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
+```
 
 #### Installation
 
 ```
 git pull https://github.com/nightmareci/HeborisC7EX
-make
-./heboris
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+./build/heboris
 ```
 
 Requires a C++ compiler and SDL 2.0 development libraries.
@@ -31,19 +29,16 @@ Requires a C++ compiler and SDL 2.0 development libraries.
 
 #### Todo
 
-This repository would likely be maintained to some degree, but no major changes would be
-made to the actual games functionality for the most part. Some simple fixes and changes
-may be added, and will be listed in this section if so.
+This repository will likely be maintained to some degree, but no major changes
+will be made to the actual game's functionality for the most part. Some simple
+fixes and changes may be added, and will be listed in this section if so.
 
- - Fix it all up to be fully working/playable with the new SDL 2.0 code. It
-   compiles, runs, shows graphics, and input somewhat works, but doesn't yet
-   work correctly.
- - Save 40l player data state, or allow a custom setting to be saved and used by default.
+ - Save 40L player data state, or allow a custom setting to be saved and used by default.
  - Fix some problems that occur when changing window focus and reverting back to heboris.
- - Allow traditional tgm style scoring. Heboris inflates the scoring to compensate for
+ - Allow traditional TGM style scoring. Heboris inflates the scoring to compensate for
    B2B bonuses.
  - Allow different key configurations for the menu vs. the gameplay.
- - Setup a cmake build system.
+ - Fix the 320x240 screen mode.
  - Any other minor bugs/errors I can find.
 
 If the game screen gets stuck on an image and doesn't change, try deleting your

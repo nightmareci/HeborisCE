@@ -26,7 +26,7 @@
 #include "gl_kanji.h"
 #define		GAME_CAPTION		"HEBORIS C7-EX OpenGL"
 #else
-#define		GAME_CAPTION		"HEBORIS C7-EX SDL"
+#define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
 #endif
 
 struct SScreenInfo

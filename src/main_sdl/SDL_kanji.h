@@ -31,15 +31,13 @@ int Kanji_FontWidth(Kanji_Font* font, const char* text);
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 								 SDL_Color fg, int bpp);
 int Kanji_PutText(Kanji_Font* font, int dx, int dy,
+				  SDL_Surface* dst, const char* text, SDL_Color fg);
+int Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy,
 				  SDL_Renderer* dst, const char* text, SDL_Color fg);
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 								     SDL_Color fg, int bpp);
 int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy,
 				      SDL_Surface* dst, const char* text, SDL_Color fg);
-
-#if		SDL_USE_OPENGL
-int Kanji_PutTextGL(Kanji_Font* font, int dx, int dy, const char* txt, int r, int g, int b, float rate = 1.0f);
-#endif
 
 void Kanji_CloseFont(Kanji_Font* font);
 

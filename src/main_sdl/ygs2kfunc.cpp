@@ -5,14 +5,10 @@
 #include "ygs2kfunc.h"
 
 #include <iostream>
+#include <cstdint>
 
 #define		SCREEN_BPP			0
 #define		USE_SOFTSTRETCH		1
-
-#define		USE_GL_KANJI		0
-#define		USE_SDLKANJI		1
-#define		USE_PNGKANJI		0
-#define		YGS_KANJIFONT_MAX	6
 
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
@@ -64,17 +60,8 @@ static int				s_iYGSSoundVolume[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSExMusic[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSMusic;
 
-static int				s_iKanjiWidth[YGS_KANJIFONT_MAX] = { 10, 10, 12, 12, 16, 16 };
-
-#if		USE_GL_KANJI
-#define		YGS_KANJIFONTFILE_MAX	3
-static ist::glKanji		s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
-#elif	USE_SDLKANJI
 #define		YGS_KANJIFONTFILE_MAX	3
 static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
-#elif	USE_PNGKANJI
-static SDL_Surface		*s_pKanjiSurface[YGS_KANJIFONT_MAX];
-#endif
 
 static int				s_iActivePad;
 
@@ -128,7 +115,7 @@ bool YGS2kInit()
 
 	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-#if		SDL_USE_OPENGL
+#if		0
 	/* 画面モードの変更 */
 	if ( screenMode >= 0 && screenMode <= 12 )
 	{
@@ -725,11 +712,11 @@ void LoadFile( const char* filename, void* buf, int size )
 		fread(buf, 1, size, file);
 		fclose(file);
 
-		int		i, *buf2;
+		int32_t		i, *buf2;
 
 		/* エンディアン変換 */
-		buf2 = (int*)buf;
-		for ( i = 0 ; i < size / 4 ; i ++ )
+		buf2 = (int32_t*)buf;
+		for ( i = 0 ; i < size / sizeof(int32_t) ; i ++ )
 		{
 			buf2[i] = SWAP32(buf2[i]);
 		}
@@ -739,11 +726,11 @@ void LoadFile( const char* filename, void* buf, int size )
 void SaveFile( const char* filename, void* buf, int size )
 {
 	FILE	*file;
-	int		i, *buf2;
+	int32_t		i, *buf2;
 
 	/* エンディアン変換 */
-	buf2 = (int*)buf;
-	for ( i = 0 ; i < size / 4 ; i ++ )
+	buf2 = (int32_t*)buf;
+	for ( i = 0 ; i < size / sizeof(int32_t) ; i ++ )
 	{
 		buf2[i] = SWAP32(buf2[i]);
 	}
@@ -756,7 +743,7 @@ void SaveFile( const char* filename, void* buf, int size )
 	}
 
 	/* もどす */
-	for ( i = 0 ; i < size / 4 ; i ++ )
+	for ( i = 0 ; i < size / sizeof(int32_t) ; i ++ )
 	{
 		buf2[i] = SWAP32(buf2[i]);
 	}
@@ -1023,11 +1010,6 @@ void FillMemory(void* buf, int size, int val)
 
 void YGS2kKanjiFontInitialize()
 {
-#if		USE_GL_KANJI
-	s_pKanjiFont[0].load("res/font/knj10.f1b");
-	s_pKanjiFont[1].load("res/font/knj12.f1b");
-	s_pKanjiFont[2].load("res/font/knj16.f1b");
-#elif	USE_SDLKANJI
 	/* 10pxフォント読み込み */
 	s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj10.bdf", 10);
 	if ( s_pKanjiFont[0] )
@@ -1061,94 +1043,17 @@ void YGS2kKanjiFontInitialize()
 		Kanji_AddFont(s_pKanjiFont[2], "res/font/8x16a.bdf");
 		Kanji_SetCodingSystem(s_pKanjiFont[2], KANJI_SJIS);
 	}
-#elif	USE_PNGKANJI
-	char	*kanjifile[YGS_KANJIFONT_MAX] =
-	{
-		"res/font/kanjifont10w.png",
-		"res/font/kanjifont10b.png",
-		"res/font/kanjifont12w.png",
-		"res/font/kanjifont12b.png",
-		"res/font/kanjifont16w.png",
-		"res/font/kanjifont16b.png",
-	};
-
-	for ( int i = 0 ; i < YGS_KANJIFONT_MAX ; i ++ )
-	{
-		s_pKanjiSurface[i] = IMG_Load(kanjifile[i]);
-
-		// if ( s_pKanjiSurface[i] )
-		// {
-			// あまり必要性がないのでしないでおく
-			// s_pKanjiSurface[i] = SDL_DisplayFormat(s_pKanjiSurface[i]);
-		// }
-	}
-#endif
 }
 
 void YGS2kKanjiFontFinalize()
 {
-#if		USE_GL_KANJI
-
-#elif	USE_SDLKANJI
 	if ( s_pKanjiFont[0] ) { Kanji_CloseFont(s_pKanjiFont[0]); }
 	if ( s_pKanjiFont[1] ) { Kanji_CloseFont(s_pKanjiFont[1]); }
 	if ( s_pKanjiFont[2] ) { Kanji_CloseFont(s_pKanjiFont[2]); }
-#elif	USE_PNGKANJI
-	for ( int i = 0 ; i < YGS_KANJIFONT_MAX ; i ++ )
-	{
-		if ( s_pKanjiSurface[i] )
-		{
-			SDL_FreeSurface(s_pKanjiSurface[i]);
-		}
-	}
-#endif
-}
-
-void YGS2kKanjiDrawSub(int font, int x, int y, int kx, int ky)
-{
-#if		USE_GL_KANJI
-
-#elif	USE_SDLKANJI
-
-#elif	USE_PNGKANJI
-	SDL_Rect	src;
-	SDL_Rect	dst;
-	int			width = s_iKanjiWidth[font];
-
-	if ( !s_pKanjiSurface[font] )
-	{
-		return;
-	}
-
-	src.x = kx * width / 2;	src.y = ky * width;
-	src.w = width / 2;		src.h = width;
-	dst.x = x;				dst.y = y;
-
-	if ( ky > 1 ) { src.w *= 2; }
-
-	SDL_BlitSurface( s_pKanjiSurface[font], &src, s_pScreenSurface, &dst );
-#endif
 }
 
 void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)
 {
-#if		USE_GL_KANJI
-	int		font = 0;
-
-	if ( size >= 12 )
-	{
-		font ++;
-	}
-	if ( size >= 16 )
-	{
-		font ++;
-	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glColor4ub(r, g, b, 255);
-	s_pKanjiFont[font].print(x, y, str);
-	glColor4ub(255, 255, 255, 255);
-#elif	USE_SDLKANJI
 	SDL_Color col;
 	int		font = 0;
 
@@ -1167,77 +1072,6 @@ void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str
 
 	if ( s_pKanjiFont[font] )
 	{
-#if		SDL_USE_OPENGL
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glColor4ub(r, g, b, 255);
-		Kanji_PutTextGL(s_pKanjiFont[font], x, y + 2, str, r, g, b, s_fDrawScale);
-		glColor4ub(255, 255, 255, 255);
-#else
-		//Kanji_PutText(s_pKanjiFont[font], x, y, s_pScreenSurface, str, col);
-#endif
+		Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, s_pScreenRenderer, str, col);
 	}
-#elif	USE_PNGKANJI
-	int		font = 0;
-
-	if ( size >= 12 )
-	{
-		font += 2;
-	}
-	if ( size >= 16 )
-	{
-		font += 2;
-	}
-
-	if ( r + g + b == 0 )
-	{
-		font ++;
-	}
-
-	if ( font < 0 || font >= YGS_KANJIFONT_MAX ) { return; }
-
-	int		firstbyte = 0;
-	int		xx = 0, yy = 0;
-	int		len = strlen(str);
-	int		width = s_iKanjiWidth[font];
-
-	for ( int i = 0 ; i < len ; i ++ )
-	{
-		unsigned char	chr = str[i];
-
-		if ( chr == '¥n' )
-		{
-			xx = 0;
-			yy += width;
-		}
-		else if ( firstbyte > 0 )
-		{
-			if ( firstbyte >= 0x81 && firstbyte <= 0x9f )
-			{
-				YGS2kKanjiDrawSub(font, x + xx, y + yy, (int)(chr - 0x40) * 2, firstbyte - 0x81 + 3);
-			}
-			else if ( firstbyte >= 0xe0 && firstbyte <= 0xea )
-			{
-				YGS2kKanjiDrawSub(font, x + xx, y + yy, (int)(chr - 0x40) * 2, firstbyte - 0xe0 + 34);
-			}
-			xx += width;
-			firstbyte = 0;
-		}
-		else if ( (chr >= 0x81 && chr <= 0x9f) || chr >= 0xe0 )
-		{
-			firstbyte = chr;
-		}
-		else
-		{
-			if ( chr >= ' ' && chr <= '‾' )
-			{
-				YGS2kKanjiDrawSub(font, x + xx, y + yy, chr - ' ', 0);
-			}
-			else if ( chr >= 161 /* ｡ */ && chr <= 223 /* ﾟ */ )
-			{
-				YGS2kKanjiDrawSub(font, x + xx, y + yy, chr - 161 + 1, 1);
-			}
-			xx += width / 2;
-		}
-	}
-#endif
 }

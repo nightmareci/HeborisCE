@@ -136,6 +136,14 @@ static void KanjiPutpixel(SDL_Surface *s,int x,int y,Uint32 pixel){
 	}
 }
 
+static void KanjiPutpixelRenderer(SDL_Renderer *s,int x,int y,SDL_Color pixel){
+	Uint8 r, g, b, a;
+	SDL_GetRenderDrawColor(s, &r, &g, &b, &a);
+	SDL_SetRenderDrawColor(s, pixel.r, pixel.g, pixel.b, pixel.a);
+	SDL_RenderDrawPoint(s, x, y);
+	SDL_SetRenderDrawColor(s, r, g, b, a);
+}
+
 static void euc2jis(unsigned char *c1, unsigned char *c2)
 {
 	*c1 &= 0x7f;
@@ -273,6 +281,90 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy,
 	return 0;
 }
 
+int Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy,
+				  SDL_Renderer* dst, const char* txt, SDL_Color fg)
+{
+	Uint32 fgcol;
+	int index;
+	int x, y, cx = dx, cy = dy;
+	int dw, dh;
+	unsigned char high, low;
+	int minx, miny, maxx, maxy;
+	int nowKanji = 0;
+	const unsigned char* text = (const unsigned char*)txt;
+
+	SDL_RenderGetLogicalSize(dst, &dw, &dh);
+	while (*text != 0) {
+		if (*text == '\n') {
+			text ++;
+			cy += font->k_size;
+			cx = dx;
+			continue;
+		}
+
+		if (font->sys == KANJI_JIS && *text == 0x1b) {
+			if (*(text+1) == 0x24 && *(text+2) == 0x42) {
+				nowKanji = 1;
+			}
+			else if (*(text+1) == 0x28 && *(text+2) == 0x42) {
+				nowKanji = 0;
+			}
+			text += 3;
+			continue;
+		}
+		if (font->sys != KANJI_JIS) nowKanji = !isprint(*text);
+
+		if (!nowKanji) {
+			index = *text;
+			text++;
+			if (font->moji[index] == 0) {
+				cx += font->a_size;
+				continue;
+			}
+
+			minx = (cx >= 0) ? 0 : -cx;
+			miny = (cy >= 0) ? 0 : -cy;
+			maxx = (cx+font->a_size <= dw) ? font->a_size : dw-cx;
+			maxy = (cy+font->k_size <= dh) ? font->k_size : dh-cy;
+
+			for (y = miny; y < maxy; y++) {
+				for (x = minx; x < maxx; x++) {
+					if (font->moji[index][y] & (1 << (font->a_size-x-1))) {
+						KanjiPutpixelRenderer(dst, cx+x, cy+y, fg);
+					}
+				}
+			}
+			cx += font->a_size;
+		}
+		else {
+			high = *text;
+			low = *(text+1);
+			ConvertCodingSystem(font, &high, &low);
+			index = (high - 0x20) * 96 + low - 0x20 + 0xff;
+			text += 2;
+			if (font->moji[index] == 0) {
+				cx += font->k_size;
+				continue;
+			}
+
+			minx = (cx >= 0) ? 0 : -cx;
+			miny = (cy >= 0) ? 0 : -cy;
+			maxx = (cx+font->k_size <= dw) ? font->k_size : dw-cx;
+			maxy = (cy+font->k_size <= dh) ? font->k_size : dh-cy;
+
+			for (y = miny; y < maxy; y++) {
+				for (x = minx; x < maxx; x++) {
+					if (font->moji[index][y] & (1 << (font->k_size-x-1))) {
+						KanjiPutpixelRenderer(dst, cx+x, cy+y, fg);
+					}
+				}
+			}
+			cx += font->k_size;
+		}
+	}
+	return 0;
+}
+
 int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy,
 					  SDL_Surface* dst, const char* txt, SDL_Color fg)
 {
@@ -395,134 +487,6 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text,
 
 	return textbuf;
 }
-
-#if		SDL_USE_OPENGL
-int Kanji_PutTextGL(Kanji_Font* font, int dx, int dy, const char* txt, int r, int g, int b, float rate)
-{
-	Uint32 fgcol;
-	int index;
-	int x, y, cx = dx, cy = dy;
-	unsigned char high, low;
-	int minx, miny, maxx, maxy;
-	int nowKanji = 0;
-	const unsigned char* text = (const unsigned char*)txt;
-
-	if ( rate == 1.0f )
-	{
-		glPointSize (1.0);    // 点の大きさ
-		glBegin (GL_POINTS);
-	}
-
-	// fgcol = SDL_MapRGB(dst->format, fg.r, fg.g, fg.b);
-	while (*text != 0) {
-		if (*text == '¥n') {
-			text ++;
-			cy += font->k_size;
-			cx = dx;
-			continue;
-		}
-
-		if (font->sys == KANJI_JIS && *text == 0x1b) {
-			if (*(text+1) == 0x24 && *(text+2) == 0x42) {
-				nowKanji = 1;
-			}
-			else if (*(text+1) == 0x28 && *(text+2) == 0x42) {
-				nowKanji = 0;
-			}
-			text += 3;
-			continue;
-		}
-		if (font->sys != KANJI_JIS) nowKanji = !isprint(*text);
-
-		if (!nowKanji) {
-			index = *text;
-			text++;
-			if (font->moji[index] == 0) {
-				cx += font->a_size;
-				continue;
-			}
-
-			minx = (cx >= 0) ? 0 : -cx;
-			miny = (cy >= 0) ? 0 : -cy;
-			maxx = font->a_size;
-			maxy = font->k_size;
-
-			for (y = miny; y < maxy; y++) {
-				for (x = minx; x < maxx; x++) {
-					if (font->moji[index][y] & (1 << (font->a_size-x-1))) {
-						if ( rate == 1.0f )
-						{
-							glVertex2f (cx+x, cy+y);
-						}
-						else
-						{
-							int		xx = (int)((float)(cx+x) * rate);
-							int		yy = (int)((float)(cy+y) * rate);
-							int		w = (int)((float)((cx+x) + 1) * rate) - xx;
-							int		h = (int)((float)((cy+y) + 1) * rate) - yy;
-
-							glBegin(GL_TRIANGLE_STRIP);
-							glVertex2i(xx,   yy  );
-							glVertex2i(xx+w, yy  );
-							glVertex2i(xx,   yy+h);
-							glVertex2i(xx+w, yy+h);
-							glEnd();
-						}
-					}
-				}
-			}
-			cx += font->a_size;
-		}
-		else {
-			high = *text;
-			low = *(text+1);
-			ConvertCodingSystem(font, &high, &low);
-			index = (high - 0x20) * 96 + low - 0x20 + 0xff;
-			text += 2;
-			if (font->moji[index] == 0) {
-				cx += font->k_size;
-				continue;
-			}
-
-			minx = (cx >= 0) ? 0 : -cx;
-			miny = (cy >= 0) ? 0 : -cy;
-			maxx = font->k_size;
-			maxy = font->k_size;
-
-			for (y = miny; y < maxy; y++) {
-				for (x = minx; x < maxx; x++) {
-					if (font->moji[index][y] & (1 << (font->k_size-x-1))) {
-						if ( rate == 1.0f )
-						{
-							glVertex2f (cx+x, cy+y);
-						}
-						else
-						{
-							int		xx = (int)((float)(cx+x) * rate);
-							int		yy = (int)((float)(cy+y) * rate);
-							int		w = (int)((float)((cx+x) + 1) * rate) - xx;
-							int		h = (int)((float)((cy+y) + 1) * rate) - yy;
-
-							glBegin(GL_TRIANGLE_STRIP);
-							glVertex2i(xx,   yy  );
-							glVertex2i(xx+w, yy  );
-							glVertex2i(xx,   yy+h);
-							glVertex2i(xx+w, yy+h);
-							glEnd();
-						}
-					}
-				}
-			}
-			cx += font->k_size;
-		}
-	}
-	if ( rate == 1.0f )
-	{
-		glEnd ();
-	}
-	return 0;
-}
-#endif
 
 void Kanji_CloseFont(Kanji_Font* font) {
 	int i;

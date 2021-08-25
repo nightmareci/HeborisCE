@@ -363,6 +363,7 @@ C7U8EX YGS2K
 #include "ygs2kfunc.h"
 #include "prototypes.h"
 #include "inireader.h"
+#include <cstdint>
 
 #define		STRING_MAX		200
 #define		str			const char*
@@ -379,88 +380,88 @@ C7U8EX YGS2K
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int		bgmteisiflg = 0;			//bgm teisi
-int		count;					// グローバルカウンタ (フレーム単位、65535まで)
-int		backno;					//1〜12 通常	61 対戦用
+int32_t		bgmteisiflg = 0;			//bgm teisi
+int32_t		count;					// グローバルカウンタ (フレーム単位、65535まで)
+int32_t		backno;					//1〜12 通常	61 対戦用
 
-int		stat[2], statc[10 * 2];	// 現在のステータスとパラメータ no + pl * 5
-int		sc[2], lv[2], li[2];	// スコア、レベル、ライン数
-int		time[2], timeOn[2];		// ゲーム開始からの経過時間 (1/60秒単位)、有効?
-int		next[2 * 3];			// nextの部分に入っているブロック #1.60i
-int		fld[10 * 22 * 2];		// フィールドの状態  x + y * 10 + pl * 210
-int		blk[2];					// 今落ちてくるブロック
-int		bx[2], by[2], rt[2];	// ブロックの座標
-int		bs[2], bk[2];			// ブロックの自然落下とくっつきのタイム
-int		mp[2], mpc[2];			// 前回のパッドの入力内容と時間
-int		mps[2 * 2];				// スタート時のmpとmpc（リプレイ記録用）
-int		erase[22 * 2];			// 消されるブロック
-int		obj[100], objx[100], objy[100], objv[100], objw[100], objj[100], objc[100], obja[100];
-int		lc[2], sp[2];			// レベルアップまでのカウンタと落下スピード
-int		upLines[2];				// 上昇してしまうライン数
-int		wait1[2], wait2[2];		// 固定→次・消滅時の待ち時間
-int		wait3[2], waitt[2];		// 設置から固定までのタイム・横溜め時間
-int		nextb[1400 * 2];		// 次のブロック(対戦用) playerごと#1.60c7m1
-int		nextc[2];				// 次に降るブロックカウンタ
-int		hole[2];					// 対戦のときの穴の位置
-int		nextwork[7 * 2];		// 次に降ってくるブロックのダブリ防止用
+int32_t		stat[2], statc[10 * 2];	// 現在のステータスとパラメータ no + pl * 5
+int32_t		sc[2], lv[2], li[2];	// スコア、レベル、ライン数
+int32_t		time[2], timeOn[2];		// ゲーム開始からの経過時間 (1/60秒単位)、有効?
+int32_t		next[2 * 3];			// nextの部分に入っているブロック #1.60i
+int32_t		fld[10 * 22 * 2];		// フィールドの状態  x + y * 10 + pl * 210
+int32_t		blk[2];					// 今落ちてくるブロック
+int32_t		bx[2], by[2], rt[2];	// ブロックの座標
+int32_t		bs[2], bk[2];			// ブロックの自然落下とくっつきのタイム
+int32_t		mp[2], mpc[2];			// 前回のパッドの入力内容と時間
+int32_t		mps[2 * 2];				// スタート時のmpとmpc（リプレイ記録用）
+int32_t		erase[22 * 2];			// 消されるブロック
+int32_t		obj[100], objx[100], objy[100], objv[100], objw[100], objj[100], objc[100], obja[100];
+int32_t		lc[2], sp[2];			// レベルアップまでのカウンタと落下スピード
+int32_t		upLines[2];				// 上昇してしまうライン数
+int32_t		wait1[2], wait2[2];		// 固定→次・消滅時の待ち時間
+int32_t		wait3[2], waitt[2];		// 設置から固定までのタイム・横溜め時間
+int32_t		nextb[1400 * 2];		// 次のブロック(対戦用) playerごと#1.60c7m1
+int32_t		nextc[2];				// 次に降るブロックカウンタ
+int32_t		hole[2];					// 対戦のときの穴の位置
+int32_t		nextwork[7 * 2];		// 次に降ってくるブロックのダブリ防止用
 // #1.60cグローバル変数
-int		hold[2];				// hold中のミノ
-int		dhold[2];				// hold可不可
-int		dhold2[2];
-int		sw, sh;					// snapshot用 スクリーン幅・高さ
-int		ssc = 0;				// ssカウンタ
-int		tc[2];					// tgmシリーズ風カウンタ
-int		tr[2];					// tgmRank
-int		start[2];				// ゲーム開始レベル
-int		kickc[2];				// 床蹴り等のカウンタ
-//int		kickm = 8;			// World時の再接地可能な回数・接地状態で回転できる回数
-int		kickc2[2];				// ARS用床蹴りカウンタ（接地状態の回転回数は数えない）#1.60c7q2ex
+int32_t		hold[2];				// hold中のミノ
+int32_t		dhold[2];				// hold可不可
+int32_t		dhold2[2];
+int32_t		sw, sh;					// snapshot用 スクリーン幅・高さ
+int32_t		ssc = 0;				// ssカウンタ
+int32_t		tc[2];					// tgmシリーズ風カウンタ
+int32_t		tr[2];					// tgmRank
+int32_t		start[2];				// ゲーム開始レベル
+int32_t		kickc[2];				// 床蹴り等のカウンタ
+//int32_t		kickm = 8;			// World時の再接地可能な回数・接地状態で回転できる回数
+int32_t		kickc2[2];				// ARS用床蹴りカウンタ（接地状態の回転回数は数えない）#1.60c7q2ex
 
 // #1.60c6追加変数
-int		ending[2] = {0, 0};
-int		onRecord[2] = {0, 0};
-int		edrec[2] = {0, 0};
+int32_t		ending[2] = {0, 0};
+int32_t		onRecord[2] = {0, 0};
+int32_t		edrec[2] = {0, 0};
 
 // 連続スナップ
-int		capc = 0;		// カウンタ
-int		oncap = 0;		// 取得中フラグ
-int		capKey = 0x46;	// 開始/終了キー
-int		capi = 2;		// 取得間隔(フレーム単位)
-int		capx = 0;		// 取得領域の左上X座標
-int		capy = 0;		// 左上Y座標
-int		capw = 320;		// 幅
-int		caph = 160;		// 高さ
+int32_t		capc = 0;		// カウンタ
+int32_t		oncap = 0;		// 取得中フラグ
+int32_t		capKey = 0x46;	// 開始/終了キー
+int32_t		capi = 2;		// 取得間隔(フレーム単位)
+int32_t		capx = 0;		// 取得領域の左上X座標
+int32_t		capy = 0;		// 左上Y座標
+int32_t		capw = 320;		// 幅
+int32_t		caph = 160;		// 高さ
 
 // #1.60c6.1b追加変数
-int		shirase[2];
+int32_t		shirase[2];
 
 // #1.60c6.2c追加変数
-int		p_shirase[2];	// 1だとPRACTICEモードでも20レベルごとにSHIRASEのせり上がりをする
+int32_t		p_shirase[2];	// 1だとPRACTICEモードでも20レベルごとにSHIRASEのせり上がりをする
 // #1.60c6.2d追加変数
-int		p_bgmlv = 0;	// PRACTICEで流すBGM番号
+int32_t		p_bgmlv = 0;	// PRACTICEで流すBGM番号
 
 // TAスコア変数
-int		sdrop[2];
-int		qdrop[2];
-// int		qput[2];	// 未使用？
-int		cmbpts[2];
+int32_t		sdrop[2];
+int32_t		qdrop[2];
+// int32_t		qput[2];	// 未使用？
+int32_t		cmbpts[2];
 
 // 開始レベル選択肢
 // lvup == 1の場合、全モードレベル100毎(0〜1000)
-int		startlvTbl[56] = {
+int32_t		startlvTbl[56] = {
 	0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130,	// Beginner
 	0,  6, 12, 18, 24, 30, 36, 42, 48, 54,  60,  66,  72,  78,	// Master
 	0,  6, 12, 18, 24, 30, 36, 42, 48, 54,  60,  66,  72,  78,	// 20G
 	0,  3,  6,  9, 12, 15, 18, 21, 24, 27,  30,  33,  36,  39	// Devil
 };
-int		slv[2],tlv[2];
+int32_t		slv[2],tlv[2];
 // ここまで
 // BGMフェードアウト開始レベル *K*
-int		bgmlv;					// 現在のBGM段階(0:playwave(50)
-int		fadelv[2];					// フェードスイッチ兼フェードレベル
+int32_t		bgmlv;					// 現在のBGM段階(0:playwave(50)
+int32_t		fadelv[2];					// フェードスイッチ兼フェードレベル
 
 // いくつかiniに移転 #1.60c7i5 biginner〜devil
-int		bgmfadestart[50] = {
+int32_t		bgmfadestart[50] = {
 	 185, 10000, 10000, 10000, 10000, 10000,	// BEGINNERHANABI
 	 285, 10000, 10000, 10000, 10000, 10000,	// BEGINNERSCORE
 	 485, 10000, 10000, 10000, 10000, 10000,	// MASTER,20G G1
@@ -470,7 +471,7 @@ int		bgmfadestart[50] = {
 	  -1,    285,  485, 10000, 10000, 10000		// DEVIL-
 };
 // いくつかiniに移転 #1.60c7i5
-int		Replaybgmfadestart[48] = {
+int32_t		Replaybgmfadestart[48] = {
 	  99,   129,   149, 10000, 10000, 10000,
 	  29,    47,    59, 10000, 10000, 10000,
 	  -1,    47,    59, 10000, 10000, 10000,
@@ -482,15 +483,15 @@ int		Replaybgmfadestart[48] = {
 	  -1,    -1,   485,   685,   985, 10000		// DEVIL
 };
 //oriフェードアウト
-int		ori_bgmfadestart[16] = {
+int32_t		ori_bgmfadestart[16] = {
 	  99,   129,   149, 10000,
 	  29,    47,    59, 10000,
 	  -1,    47,    59, 10000,
 	  -1,     8,    14, 10000
 };
 
-int		color_tbl_max = 40;
-int		color_tbl[40] = {
+int32_t		color_tbl_max = 40;
+int32_t		color_tbl[40] = {
 	10, 10, 9, 9, 8, 8, 8, 7, 7, 7,
 	6, 6, 6, 5, 5, 5, 4, 4, 4, 4,
 	3, 3, 3, 3, 2, 2, 2, 2, 1, 1,
@@ -499,14 +500,14 @@ int		color_tbl[40] = {
 // ここまで
 
 // hogeパッチ変数 ここから
-int		tame1 = 25,	// hoge 左右の入れっぱなしで高速移動するまでの時間
+int32_t		tame1 = 25,	// hoge 左右の入れっぱなしで高速移動するまでの時間
 		tame2 = 3,	// hoge 高速移動の速さ(少ないほど速い)。
 		tame3 = 25,	// hoge ↑の上下版
 		tame4 = 3;	// hoge ↑の上下版
-int		mp2[2], mpc2[2];	// hoge 前回のパッドの入力内容と時間(上下キーバージョン)
+int32_t		mp2[2], mpc2[2];	// hoge 前回のパッドの入力内容と時間(上下キーバージョン)
 		// ↓の変数は、旧vsモード時のwait設定に使います。(heboris.iniで設定される)
 char	waitname[25][128] = {"DEFAULT", "DEVIL+", "INFINITY", "..!!?", "DEVIL", "!?", "20G"};	// 設定名
-int		syutugen[25] = { 3,  5, -1,  3,  5,  6, 26},	// ブロックが固定されてから、次のブロックが出現するまでの時間
+int32_t		syutugen[25] = { 3,  5, -1,  3,  5,  6, 26},	// ブロックが固定されてから、次のブロックが出現するまでの時間
 		syoukyo[25]  = { 0,  0, -1,  5,  5,  5, 40},	// ブロックが一列揃ったときの消滅の待ち時間
 		settyaku[25] = {13, 13, 99, 14, 13, 14, 28},	// ブロックが地面に到達してから、接着されるまでの時間。99にすると無限
 		yokotame[25] = { 7,  7, -1,  7,  7,  7, 12},	// 横溜めに必要な時間
@@ -517,88 +518,88 @@ int		syutugen[25] = { 3,  5, -1,  3,  5,  6, 26},	// ブロックが固定され
 		p_bgmload[25]    = {-1, -1, -1, -1, -1, -1, -1};//BGM
 // ここまで
 // #1.60c6.2c追加変数
-int		speed[25] = {1200, 1200, -1, 1200, 1200, 1200, 1200};	// ブロックの落下スピード
+int32_t		speed[25] = {1200, 1200, -1, 1200, 1200, 1200, 1200};	// ブロックの落下スピード
 
 // #1.60c6.2f追加変数
-int		p_shirase_line = 2;			// SHIRASEで何ラインせり上がるか
-int		p_shirase_interval = 20;	// SHIRASEで何レベル毎にせり上がるか
+int32_t		p_shirase_line = 2;			// SHIRASEで何ラインせり上がるか
+int32_t		p_shirase_interval = 20;	// SHIRASEで何レベル毎にせり上がるか
 // #1.60c6.2g追加変数
-int		p_shirase_start_level = 500;	// SHIRASEでのせり上がり開始レベル
-int		uplinetype = 0;		// せり上がりタイプ(0:SHIRASE(デフォルト), 1:TGM+)
-int		upLineNo[2];		// せり上がりラインNo
-int		upLineNoMax = 32;	// せり上がりフィールドのライン総数
-int		upFld[256];			// せり上がりフィールド配列(上限は今のところ128ライン)
+int32_t		p_shirase_start_level = 500;	// SHIRASEでのせり上がり開始レベル
+int32_t		uplinetype = 0;		// せり上がりタイプ(0:SHIRASE(デフォルト), 1:TGM+)
+int32_t		upLineNo[2];		// せり上がりラインNo
+int32_t		upLineNoMax = 32;	// せり上がりフィールドのライン総数
+int32_t		upFld[256];			// せり上がりフィールド配列(上限は今のところ128ライン)
 // #1.60c7 追加廃止変数
-// int		padMode;
+// int32_t		padMode;
 // 選択パッド変数廃止。選択パッドは外部ライブラリから変更されうると
 // 考えたコーディングが望ましい。
 
 // #1.60c7c追加変数
-int		p_backno = 9;		// PRACTICEの背景
-int		debug = 0;			// デバッグフラグ
+int32_t		p_backno = 9;		// PRACTICEの背景
+int32_t		debug = 0;			// デバッグフラグ
 
-int		p_over1000 = 0;		// PRACTICEでの[ ]ブロック
+int32_t		p_over1000 = 0;		// PRACTICEでの[ ]ブロック
 
 // #1.60c7e追加変数
-int		hide_fps = 0;			// 1でFPSを出さない
-int		hide_wait = 0;			// 1でWAITを出さない
+int32_t		hide_fps = 0;			// 1でFPSを出さない
+int32_t		hide_wait = 0;			// 1でWAITを出さない
 
 // #1.60c7f3追加変数
-int		hide_score = 1;			// 1でスコアとライン数表示を出さない
-int		show_result = 1;		// 1で結果表示を出す
+int32_t		hide_score = 1;			// 1でスコアとライン数表示を出さない
+int32_t		show_result = 1;		// 1で結果表示を出す
 
-int		fldsizew[2], fldsizeh[2];	// フィールドサイズ横縦 デフォルト 10 * 20
+int32_t		fldsizew[2], fldsizeh[2];	// フィールドサイズ横縦 デフォルト 10 * 20
 
-int		IsBig[2];					// Bigモードフラグ
+int32_t		IsBig[2];					// Bigモードフラグ
 
-int		startLvback[2] = {0, 0};	// 選択開始レベルの退避用。一時記憶
-//int		IsBigback[2] = {0, 0};	// 同上
+int32_t		startLvback[2] = {0, 0};	// 選択開始レベルの退避用。一時記憶
+//int32_t		IsBigback[2] = {0, 0};	// 同上
 
-//int		startnextc[2];		// 開始時のネクストカウントを保存, リプレイにもセーブする。
+//int32_t		startnextc[2];		// 開始時のネクストカウントを保存, リプレイにもセーブする。
 
-int		flag;				// 1にするとタイトルに戻る
-int		overcount;
-int		combo[2], hebocombo[2], pinch[2];
-int		winr, winc, winu, wink;
-int		vslevel[2], hidden[2], hiddentm[2];
-int		hiddeny[2], hiddenti[2], hiddenc[2];
+int32_t		flag;				// 1にするとタイトルに戻る
+int32_t		overcount;
+int32_t		combo[2], hebocombo[2], pinch[2];
+int32_t		winr, winc, winu, wink;
+int32_t		vslevel[2], hidden[2], hiddentm[2];
+int32_t		hiddeny[2], hiddenti[2], hiddenc[2];
 
-int		rksc[40], rkbl[40], rktime[40], rklv[40], rkfl[40];	// ランキング用
+int32_t		rksc[40], rkbl[40], rktime[40], rklv[40], rkfl[40];	// ランキング用
 
-int		noredraw, fast;
-int		csr, cnt, enable[80], category, rankingmode;
+int32_t		noredraw, fast;
+int32_t		csr, cnt, enable[80], category, rankingmode;
 
-int		replayData[60 * 60 * 20 * 2];	// リプレイ保存用データ (最大20分まで)
+int32_t		replayData[60 * 60 * 20 * 2];	// リプレイ保存用データ (最大20分まで)
 int32_t		saveBuf[50000];			// セーブ用バッファ
-int		playback = 0;			// リプレイ中か?
-int		demo = 0;				// デモモードか?
-int		demotime = -1;			// デモ表示回数(-1設定なのは最初のデモでビギナーモードを表示するため)
-int		setupBak[27];			// セッティング内容のバックアップ用
+int32_t		playback = 0;			// リプレイ中か?
+int32_t		demo = 0;				// デモモードか?
+int32_t		demotime = -1;			// デモ表示回数(-1設定なのは最初のデモでビギナーモードを表示するため)
+int32_t		setupBak[27];			// セッティング内容のバックアップ用
 
-int		pause[2], hnext[2];		// ポーズしてるかーい!?　hnextはnextで今見えてる数
+int32_t		pause[2], hnext[2];		// ポーズしてるかーい!?　hnextはnextで今見えてる数
 
-int		gameMode[2];			// 現在のゲームモード 0:BEGINNER 1:MASTER 2:20G 3:DEVIL 4:VERSUS 5:PRACTICE 6:TOMOYO 7:ACE 8:MISSION
+int32_t		gameMode[2];			// 現在のゲームモード 0:BEGINNER 1:MASTER 2:20G 3:DEVIL 4:VERSUS 5:PRACTICE 6:TOMOYO 7:ACE 8:MISSION
 
-int		limit[8] = {0, 20, 30, 30, 40, 40, 50, 1400};	// ツモ生成用
+int32_t		limit[8] = {0, 20, 30, 30, 40, 40, 50, 1400};	// ツモ生成用
 
 // #1.60c7f4追加変数
-int		level_shirase_start;	// せりあがりの開始レベル
-int		raise_shirase_lines;	// せり上がり段数
-int		raise_shirase_interval;	// せり上がり間隔
+int32_t		level_shirase_start;	// せりあがりの開始レベル
+int32_t		raise_shirase_lines;	// せり上がり段数
+int32_t		raise_shirase_interval;	// せり上がり間隔
 
 // #1.60c7f5追加変数
-int		next_adjust = 1;		// 0にすると初手に黄色、紫、緑が来る
-int		p_next_adjust = 1;
+int32_t		next_adjust = 1;		// 0にすると初手に黄色、紫、緑が来る
+int32_t		p_next_adjust = 1;
 
 // #1.60c7f6追加変数
-int		bravo = 0;				// 1だと全消しエフェクトあり
-int		showctrl = 0;			// 1ならリプレイ以外でも操作状況表示
+int32_t		bravo = 0;				// 1だと全消しエフェクトあり
+int32_t		showctrl = 0;			// 1ならリプレイ以外でも操作状況表示
 
 // #1.60c7f7追加変数
-int		rotate_snd = 0;			// 1で回転音あり
+int32_t		rotate_snd = 0;			// 1で回転音あり
 
 // #1.60c7f9追加変数
-int		down_flag[2];			// 0:前回↓を使ってないor↓を離した 1:前回↓を使った
+int32_t		down_flag[2];			// 0:前回↓を使ってないor↓を離した 1:前回↓を使った
 
 // #1.60c7g3追加変数
 char	nextb_list[4096];		// ツモリスト(heboris.ini)
@@ -609,7 +610,7 @@ char	nextfp_list[4096];		//FP電源パターン
 // GM条件：(999になった時) スコア126000＆13分30秒(48600)以内＆gmflag1成立済＆gmflag2成立済
 
 // 昇段条件スコア
-int		gscore[18] = {         1400,  4200,   8400,  14000,  21000,  29400,  39200,  50400,
+int32_t		gscore[18] = {         1400,  4200,   8400,  14000,  21000,  29400,  39200,  50400,
 					   63000, 70000, 82400, 100000, 117400, 137000, 158000, 180400, 204200,
 					  220000};
 // 段位の表示名(geade1,3で使う)
@@ -628,468 +629,468 @@ str		gname2[35] = //バグ対策に二つ多く
 	 "M", "MK", "MV", "MO", "MM", "GM","GM","GM"		// 27〜32
 };
 // 内部的に使う変数
-int		grade[2];			// 現在の段位(0:9 27:M 32:GM)
-int		gmflag1[2];			// レベル300突入時に「段位1」 以上 「4分15秒(15300)」以内で1になる
-int		gmflag2[2];			// レベル500突入時に「段位S4」以上 「7分30秒(27000)」以内で1になる
-int		gmflag1_e[2];		// gmflag1の判定をしたかどうかのフラグ
-int		gmflag2_e[2];		// gmflag2の判定をしたかどうかのフラグ
-int		gmflag3[2];			//
-int		gmflag3_e[2];			//
+int32_t		grade[2];			// 現在の段位(0:9 27:M 32:GM)
+int32_t		gmflag1[2];			// レベル300突入時に「段位1」 以上 「4分15秒(15300)」以内で1になる
+int32_t		gmflag2[2];			// レベル500突入時に「段位S4」以上 「7分30秒(27000)」以内で1になる
+int32_t		gmflag1_e[2];		// gmflag1の判定をしたかどうかのフラグ
+int32_t		gmflag2_e[2];		// gmflag2の判定をしたかどうかのフラグ
+int32_t		gmflag3[2];			//
+int32_t		gmflag3_e[2];			//
 
 // #1.60c7g7追加変数
-int		timelimit_devil;	// 足きりタイム(devil)
-int		timelimit_master;	// 足きりタイム(master)
-int		timelimit_20G;		// 足きりタイム(20G)
-int		timelimit[2] = {0,0};			// 現在の足きりタイム
-int		mpc3[2];			// 前回のパッドの入力時間
-int		mpc4[2];			// 前回のパッドの入力時間
+int32_t		timelimit_devil;	// 足きりタイム(devil)
+int32_t		timelimit_master;	// 足きりタイム(master)
+int32_t		timelimit_20G;		// 足きりタイム(20G)
+int32_t		timelimit[2] = {0,0};			// 現在の足きりタイム
+int32_t		mpc3[2];			// 前回のパッドの入力時間
+int32_t		mpc4[2];			// 前回のパッドの入力時間
 
 // #1.60c7h2追加変数
-int		repversw;			// 旧バージョンのリプレイデータを再生するためのスイッチ
+int32_t		repversw;			// 旧バージョンのリプレイデータを再生するためのスイッチ
 
 // #1.60c7h3追加変数
-int		deadtype = 0;		// 死亡アニメ (0=下からブロック消去 1=灰色化)
+int32_t		deadtype = 0;		// 死亡アニメ (0=下からブロック消去 1=灰色化)
 
-int		limit15 = 1;		// 15分以上プレイすると超高速 (0=無効 1=有効)
+int32_t		limit15 = 1;		// 15分以上プレイすると超高速 (0=無効 1=有効)
 							// (リプレイに保存されます)
 
 // #1.60c7h8追加変数
-//int		flag_over1000[3 * 2];	// NEXTの出現LV
-int		breaktype = 0;			// 飛び散るエフェクトの種類 0:TGM 1:TAP/TI
-// int		wblock;
-int		shadow_heboris = 0;		// シャドウロール
+//int32_t		flag_over1000[3 * 2];	// NEXTの出現LV
+int32_t		breaktype = 0;			// 飛び散るエフェクトの種類 0:TGM 1:TAP/TI
+// int32_t		wblock;
+int32_t		shadow_heboris = 0;		// シャドウロール
 
 // #1.60c7i1追加変数
-int		enable_hold_frame = 1;	// HOLDした時に黄色の枠を0=表示しない 1=表示する
-int		enable_grade[2];		// 段位認定 0=なし 1=あり
-int		hold_used[2];			// HOLDを使ったかフラグ 0:まだ使ってない 1:初回 2:２回目以降
+int32_t		enable_hold_frame = 1;	// HOLDした時に黄色の枠を0=表示しない 1=表示する
+int32_t		enable_grade[2];		// 段位認定 0=なし 1=あり
+int32_t		hold_used[2];			// HOLDを使ったかフラグ 0:まだ使ってない 1:初回 2:２回目以降
 
 // #1.60c7i2追加変数
-int		bdowncnt[2];			// ミノを着床させた回数
-int		st_bdowncnt[2];			// STランキング用（bdowncntと違って定期的にリセットがかかる）
-int		tlsrange = 0;			// PRACTICEでのTLSの範囲 0:OFF 1:100まで 2:ALWAYS
-int		gmflag_r[2];			// ロールクリアでGMになる権利のようなもの
-int		semigmflag_r[2];		// 見えるロールクリア用
+int32_t		bdowncnt[2];			// ミノを着床させた回数
+int32_t		st_bdowncnt[2];			// STランキング用（bdowncntと違って定期的にリセットがかかる）
+int32_t		tlsrange = 0;			// PRACTICEでのTLSの範囲 0:OFF 1:100まで 2:ALWAYS
+int32_t		gmflag_r[2];			// ロールクリアでGMになる権利のようなもの
+int32_t		semigmflag_r[2];		// 見えるロールクリア用
 
 // #1.60c7i6追加変数
-int		giveup_func = 0;		// 捨てゲーした時の動作(0=参加待ち 1=モードセレクト 2=タイトル)
-int		giveup_safety = 0;		// 0=どんな状況でも捨てゲー可能 1=ポーズ中だけ捨てゲー可能.
-int		mini_select = 0;		// SOLO MODEをTIME TRIAL専用にする設定(0=無効 1=有効)
+int32_t		giveup_func = 0;		// 捨てゲーした時の動作(0=参加待ち 1=モードセレクト 2=タイトル)
+int32_t		giveup_safety = 0;		// 0=どんな状況でも捨てゲー可能 1=ポーズ中だけ捨てゲー可能.
+int32_t		mini_select = 0;		// SOLO MODEをTIME TRIAL専用にする設定(0=無効 1=有効)
 
 // #1.60c7i8追加変数
-int		IsBigStart[2] = {0, 0};	// BIGで始めたかどうかのフラグ(DEVILのバグ回避用)
+int32_t		IsBigStart[2] = {0, 0};	// BIGで始めたかどうかのフラグ(DEVILのバグ回避用)
 
 // #1.60c7i9追加変数
-int		skip_viewscore = 0;		// スコア・タイム表示などの処理を実行しない
-int		skip_viewbg = 0;		// 背景を表示しない
-int		skip_obj = 0;			// 全ての演出をしない
-int		hide_hidden = 0;		// HIDDEN LV表示を隠す
+int32_t		skip_viewscore = 0;		// スコア・タイム表示などの処理を実行しない
+int32_t		skip_viewbg = 0;		// 背景を表示しない
+int32_t		skip_obj = 0;			// 全ての演出をしない
+int32_t		hide_hidden = 0;		// HIDDEN LV表示を隠す
 
 // #1.60c7j1追加変数
-//int		time_gmflag1 = 15300;		// レベル300突入時のGM条件タイム
-//int		time_gmflag2 = 27000;		// レベル500突入時のGM条件タイム
-//int		time_grandmaster = 48600;	// レベル999達成時のGM条件タイム(810*60)
-//int		grade_gmflag1 = 8;			// レベル300突入時のGM条件段位
-//int		grade_gmflag2 = 12;			// レベル500突入時のGM条件段位
+//int32_t		time_gmflag1 = 15300;		// レベル300突入時のGM条件タイム
+//int32_t		time_gmflag2 = 27000;		// レベル500突入時のGM条件タイム
+//int32_t		time_grandmaster = 48600;	// レベル999達成時のGM条件タイム(810*60)
+//int32_t		grade_gmflag1 = 8;			// レベル300突入時のGM条件段位
+//int32_t		grade_gmflag2 = 12;			// レベル500突入時のGM条件段位
 
 // #1.60g7j2追加変数
-int		mirror = 0;					// 鏡像を表示する設定(0=無効 1=有効)
-int		domirror = 0;				// mirrorが有効の時、鏡像を表示するフラグ
+int32_t		mirror = 0;					// 鏡像を表示する設定(0=無効 1=有効)
+int32_t		domirror = 0;				// mirrorが有効の時、鏡像を表示するフラグ
 
 // #1.60c7j5追加変数
-int		p_hold = -1;				// 初期HOLDブロック(-1=なし 0=赤, 1=橙, 2=黄, 3=緑, 4=水, 5=青, 6=紫)
-int		bakhold = -1;				// 設定されているHOLDブロック
-int		p_nextpass = 0;				// ツモ送り有無
-int		pass_flg[2] = {0, 0};		// ツモ送りフラグ(連続入力防止用)
-int		fmirror = 0;				// フィールドミラーを使うか
-int		p_fmirror_interval = 3;		// フィールドミラー間隔
-int		p_fmirror_timer = 20;		// フィールドミラータイマー(ミラー化にかかる時間)
-int		rollroll = 0;				// ロールロールを使うか
-int		p_rollroll_interval = 4;	// ロールロール間隔
-int		p_rollroll_timer = 30;		// ロールロールタイマー(回転するまでの時間)
-int		p_xray_interval = 2;		// X-RAY間隔
-int		p_xray_frame = 36;			// X-RAY周期フレーム数
-int		isrollroll[2] = {0, 0};		// 現在のツモがロールロールか
-int		xray = 0;					// X-RAYを使うか
-int		isxray[2] = {0, 0};			// 現在X-RAY状態か
-int		xray_counter[2] = {0, 0};	// X-RAY用カウンタ
-int		color_counter[2] = {0, 0};	// COLOR用カウンタ
-int		fcolor = 0;					// COLORを使うか
-int		iscolor[2] = {0, 0};		// 現在COLOR状態か
-int		shadow_timer = 0;			// シャドウタイマーを使うか
-int		p_shadow_timer = 300;		// シャドウタイマー(ブロックが消えるまでの時間)
-int		fldt[10 * 22 * 2];			// フィールドタイマー
-int		fldbuf[10 * 22 * 2];		// フィールドバッファ(ミラーの演出に使用)
-int		fldtbuf[10 * 22 * 2];		// フィールドタイマーバッファ(ミラーの演出に使用)
-int		ready_start = 0;			// ready開始
-int		ready_end = 15;				// ready終了
-int		go_start = 45;				// go開始
-int		go_end = 60;				// go終了
+int32_t		p_hold = -1;				// 初期HOLDブロック(-1=なし 0=赤, 1=橙, 2=黄, 3=緑, 4=水, 5=青, 6=紫)
+int32_t		bakhold = -1;				// 設定されているHOLDブロック
+int32_t		p_nextpass = 0;				// ツモ送り有無
+int32_t		pass_flg[2] = {0, 0};		// ツモ送りフラグ(連続入力防止用)
+int32_t		fmirror = 0;				// フィールドミラーを使うか
+int32_t		p_fmirror_interval = 3;		// フィールドミラー間隔
+int32_t		p_fmirror_timer = 20;		// フィールドミラータイマー(ミラー化にかかる時間)
+int32_t		rollroll = 0;				// ロールロールを使うか
+int32_t		p_rollroll_interval = 4;	// ロールロール間隔
+int32_t		p_rollroll_timer = 30;		// ロールロールタイマー(回転するまでの時間)
+int32_t		p_xray_interval = 2;		// X-RAY間隔
+int32_t		p_xray_frame = 36;			// X-RAY周期フレーム数
+int32_t		isrollroll[2] = {0, 0};		// 現在のツモがロールロールか
+int32_t		xray = 0;					// X-RAYを使うか
+int32_t		isxray[2] = {0, 0};			// 現在X-RAY状態か
+int32_t		xray_counter[2] = {0, 0};	// X-RAY用カウンタ
+int32_t		color_counter[2] = {0, 0};	// COLOR用カウンタ
+int32_t		fcolor = 0;					// COLORを使うか
+int32_t		iscolor[2] = {0, 0};		// 現在COLOR状態か
+int32_t		shadow_timer = 0;			// シャドウタイマーを使うか
+int32_t		p_shadow_timer = 300;		// シャドウタイマー(ブロックが消えるまでの時間)
+int32_t		fldt[10 * 22 * 2];			// フィールドタイマー
+int32_t		fldbuf[10 * 22 * 2];		// フィールドバッファ(ミラーの演出に使用)
+int32_t		fldtbuf[10 * 22 * 2];		// フィールドタイマーバッファ(ミラーの演出に使用)
+int32_t		ready_start = 0;			// ready開始
+int32_t		ready_end = 15;				// ready終了
+int32_t		go_start = 45;				// go開始
+int32_t		go_end = 60;				// go終了
 
 // 961追加変数
-int		skill[2];		// 4段消し回数(15回毎にCu, Ag, Au, Rg(?) medal)
-int		start_flag[2];	// 開始時レベルが上がらないようにする為のFlag
+int32_t		skill[2];		// 4段消し回数(15回毎にCu, Ag, Au, Rg(?) medal)
+int32_t		start_flag[2];	// 開始時レベルが上がらないようにする為のFlag
 
 // #1.60c7j7追加変数
-int		lap_time[100 * 2];			// HeboLv 3-78, TGMLv 50-1300
-int		split_time[100 * 2];		// HeboLv 3-78, TGMLv 50-1300
-int		st_record_interval_tgm = 5;	// 50TGMLv毎にタイム更新→これの10倍毎にタイム更新
-int		st_record_interval_heb = 3;	//  3HebLv毎にタイム更新
-int		hide_st_record = 1;			// 1で記録タイムを見せない
+int32_t		lap_time[100 * 2];			// HeboLv 3-78, TGMLv 50-1300
+int32_t		split_time[100 * 2];		// HeboLv 3-78, TGMLv 50-1300
+int32_t		st_record_interval_tgm = 5;	// 50TGMLv毎にタイム更新→これの10倍毎にタイム更新
+int32_t		st_record_interval_heb = 3;	//  3HebLv毎にタイム更新
+int32_t		hide_st_record = 1;			// 1で記録タイムを見せない
 
 // #1.60c7j8追加変数
-int		big_block_type = 1;				// BIGの操作中ブロック描画方法(0=通常ブロック×4 1=2倍拡大)
-int		st_record_force_viewright = 0;	// 1で記録タイムをシングル台でも右側に出す
+int32_t		big_block_type = 1;				// BIGの操作中ブロック描画方法(0=通常ブロック×4 1=2倍拡大)
+int32_t		st_record_force_viewright = 0;	// 1で記録タイムをシングル台でも右側に出す
 
 // #1.60c7j9追加変数
-int		shadow_timer_type = 0;			// シャドウタイマーの種類 (0=パッと消える 1=徐々に消える)
-int		shadow_timer_flag[2];			// シャドウタイマー中かどうか
+int32_t		shadow_timer_type = 0;			// シャドウタイマーの種類 (0=パッと消える 1=徐々に消える)
+int32_t		shadow_timer_flag[2];			// シャドウタイマー中かどうか
 
 // #1.60c7k4追加変数
-int		allclear[2];					// 全消しした回数
+int32_t		allclear[2];					// 全消しした回数
 
 // #1.60c7k7追加変数
-int		p_ending = 0;					// PRACTICEでのエンディング
+int32_t		p_ending = 0;					// PRACTICEでのエンディング
 						// (0=通常プレイ 1=BEGINNERロール 2=見えロール 3=消えロール 4=DEVILロール)
-int		p_goaltype=0;			//終了方法;なし、レベル、ライン、ブロック、タイム
-int		p_goaltypenum;		//上で決めた終了方法がどのの値になったら終わりか
-int		p_goaltypenumlist[10]={5,10,20,30,50,75,100,130,160,200};
+int32_t		p_goaltype=0;			//終了方法;なし、レベル、ライン、ブロック、タイム
+int32_t		p_goaltypenum;		//上で決めた終了方法がどのの値になったら終わりか
+int32_t		p_goaltypenumlist[10]={5,10,20,30,50,75,100,130,160,200};
 
 // #1.60c7k9追加変数
-//int		limit15_tt = 1;					// タイムトライアルでの遅延防止の有無(0=なし 1=あり)
+//int32_t		limit15_tt = 1;					// タイムトライアルでの遅延防止の有無(0=なし 1=あり)
 
-int		dead_blockframe = 1;			// 死んだとき枠を消すか(0=消さない 1=消す)
+int32_t		dead_blockframe = 1;			// 死んだとき枠を消すか(0=消さない 1=消す)
 
 // #1.60c7l1追加変数
-int		objp[100];						// 破壊エフェクト用プレイヤー番号
+int32_t		objp[100];						// 破壊エフェクト用プレイヤー番号
 
 // #1.60c7l2追加変数 [バックアップ]
-int		b_wait1[2]={26,26};		// 固定→次
-int		b_wait2[2]={40,40};		//消滅時の待ち時間
-int		b_wait3[2]={28,28};		//設置から固定までのタイム
-int		b_waitt[2]={15,15};		//横溜め時間
-int		b_sp[2]	= {1,1};
-int		b_nextc[2];		// [バックアップ] 落下スピード,NEXT
+int32_t		b_wait1[2]={26,26};		// 固定→次
+int32_t		b_wait2[2]={40,40};		//消滅時の待ち時間
+int32_t		b_wait3[2]={28,28};		//設置から固定までのタイム
+int32_t		b_waitt[2]={15,15};		//横溜め時間
+int32_t		b_sp[2]	= {1,1};
+int32_t		b_nextc[2];		// [バックアップ] 落下スピード,NEXT
 
 // #1.60c7l5追加変数
-int		stage[2];	// ステージ番号
-int		sclear[2];	// ステージクリアしたか
+int32_t		stage[2];	// ステージ番号
+int32_t		sclear[2];	// ステージクリアしたか
 
-int		stime[2];	// ステージタイム
-int		ltime[2];	// リミットタイム
-int		ctime[2];	// クリアタイム
+int32_t		stime[2];	// ステージタイム
+int32_t		ltime[2];	// リミットタイム
+int32_t		ctime[2];	// クリアタイム
 
 // #1.60c7l7追加変数
-int		isfmirror[2];		// 現在の面がミラーか
-int		rollroll_flag[2];	// 現在の面がロールロールか
-int		xray_flag[2];		// 現在の面がX-RAYか#1.60c7p9ex2
-int		color_flag[2];		// 現在の面がCOLORか#1.60c7p9ex2
-int		rest_pblock[2];		// 残りプラチナブロック数
+int32_t		isfmirror[2];		// 現在の面がミラーか
+int32_t		rollroll_flag[2];	// 現在の面がロールロールか
+int32_t		xray_flag[2];		// 現在の面がX-RAYか#1.60c7p9ex2
+int32_t		color_flag[2];		// 現在の面がCOLORか#1.60c7p9ex2
+int32_t		rest_pblock[2];		// 残りプラチナブロック数
 
-int		s_ready_start = 15;			// tomoyo ready開始
-int		s_ready_end = 30;			// tomoyo ready終了
-int		s_go_start = 135;			// tomoyo go開始
-int		s_go_end = 150;				// tomoyo go終了
+int32_t		s_ready_start = 15;			// tomoyo ready開始
+int32_t		s_ready_end = 30;			// tomoyo ready終了
+int32_t		s_go_start = 135;			// tomoyo go開始
+int32_t		s_go_end = 150;				// tomoyo go終了
 
-int		dummy;	// 設定ファイルが空だと23行目で発生する謎のエラーを回避するためのダミー変数
+int32_t		dummy;	// 設定ファイルが空だと23行目で発生する謎のエラーを回避するためのダミー変数
 
 // #1.60c7l8追加変数
-int		start_stage[2] = {0,0};		// スタート時のステージ番号
-int		skipKey = 0x3F;				// ステージスキップキー
+int32_t		start_stage[2] = {0,0};		// スタート時のステージ番号
+int32_t		skipKey = 0x3F;				// ステージスキップキー
 
 // #1.60c7l9追加変数
-int		start_nextc[2] = {0,0};		// スタート時のNEXTC
-int		stage_nextc[2] = {0,0};		// ステージスタート時のNEXTC
-int		randommode[2] = {0,0};		// ランダムモード
+int32_t		start_nextc[2] = {0,0};		// スタート時のNEXTC
+int32_t		stage_nextc[2] = {0,0};		// ステージスタート時のNEXTC
+int32_t		randommode[2] = {0,0};		// ランダムモード
 
 // #1.607m3追加変数
-int		clearnum[2];	//スキップせずにクリアした数
-int		clearp[2];		//クリア率
+int32_t		clearnum[2];	//スキップせずにクリアした数
+int32_t		clearp[2];		//クリア率
 
 // #1.60c7m5追加変数
-int		t_noborder[2] = {0,0};		// TOMOYOモードの足切りなしモード 0=無効 1=有効
+int32_t		t_noborder[2] = {0,0};		// TOMOYOモードの足切りなしモード 0=無効 1=有効
 
 // #1.60c7m6追加変数
-int		BigMove[2];					// BIG時の移動単位 0=2マス単位移動 1=1マス単位移動
-int		bigtype = 1;				// ↑のini設定用
+int32_t		BigMove[2];					// BIG時の移動単位 0=2マス単位移動 1=1マス単位移動
+int32_t		bigtype = 1;				// ↑のini設定用
 
 // #1.60c7m7追加変数
-int		comboM[2];
+int32_t		comboM[2];
 
 // #1.60c7m8追加変数
-int		combo2[2];					// 1列消しを含まないコンボ
+int32_t		combo2[2];					// 1列消しを含まないコンボ
 
 // #1.60c7m9追加変数
-int		medaltype = 0;				// メダルの絵の種類
-int		world_drop_snd = 0;			// ワールドルールでの接地音の有無(0=なし 1=あり 2=即落下以外あり)
-int		super_breakeffect = 0;		// TOMOYO以外でも全ブロックに破壊エフェクトを表示する
+int32_t		medaltype = 0;				// メダルの絵の種類
+int32_t		world_drop_snd = 0;			// ワールドルールでの接地音の有無(0=なし 1=あり 2=即落下以外あり)
+int32_t		super_breakeffect = 0;		// TOMOYO以外でも全ブロックに破壊エフェクトを表示する
 
-int		c_cblk[2];					// 操作中テトラミノの色（操作中）
-int		c_cblk_r[2];				// 操作中テトラミノの色（置いた後）
-int		c_nblk[6 * 2];				// NEXTミノの色
-int		c_hblk[2];					// HOLDミノの色
+int32_t		c_cblk[2];					// 操作中テトラミノの色（操作中）
+int32_t		c_cblk_r[2];				// 操作中テトラミノの色（置いた後）
+int32_t		c_nblk[6 * 2];				// NEXTミノの色
+int32_t		c_hblk[2];					// HOLDミノの色
 
 // #1.60c7n1追加変数
-int		vs_match = 0;				// 対戦回数
-int		vs_win[2] = {0,0};			// 勝った回数
-int		fldi[10 * 22 * 2];			// フィールドアイテム
+int32_t		vs_match = 0;				// 対戦回数
+int32_t		vs_win[2] = {0,0};			// 勝った回数
+int32_t		fldi[10 * 22 * 2];			// フィールドアイテム
 									// 1つでもアイテムを消すと、他のアイテムは全て消えます。
 									// 0=なし 1=MIRROR 2=ROLL ROLL 3=DEATH BLOCK
-int		item[2];					// 現在のアイテム
-int		item_name[2];				// フィールド右上に表示するアイテム名
-int		item_g[2];					// アイテムゲージ
-int		fldibuf[10 * 22 * 2];		// フィールドアイテムバッファ(ミラーの演出に使用)
-int		item_t[2];					// アイテムの効果時間
-int		item_interval = 20;			// アイテムが出現する間隔
-int		item_rollroll[2];			// アイテムでロールロール発生中か
-int		item_monochrome[2];			// アイテムで[]発生中か
+int32_t		item[2];					// 現在のアイテム
+int32_t		item_name[2];				// フィールド右上に表示するアイテム名
+int32_t		item_g[2];					// アイテムゲージ
+int32_t		fldibuf[10 * 22 * 2];		// フィールドアイテムバッファ(ミラーの演出に使用)
+int32_t		item_t[2];					// アイテムの効果時間
+int32_t		item_interval = 20;			// アイテムが出現する間隔
+int32_t		item_rollroll[2];			// アイテムでロールロール発生中か
+int32_t		item_monochrome[2];			// アイテムで[]発生中か
 
 // #1.60c7n2追加変数
-int		monochrome_mode[2] = {0,0};		// モノクロモード0
-int		p_monochrome_mode;		// 0:普通 1:モノクロ 2:[]
-int		hide_tomoyo_totaltime = 0;	// TOMOYOでTOTAL TIMEを隠す
+int32_t		monochrome_mode[2] = {0,0};		// モノクロモード0
+int32_t		p_monochrome_mode;		// 0:普通 1:モノクロ 2:[]
+int32_t		hide_tomoyo_totaltime = 0;	// TOMOYOでTOTAL TIMEを隠す
 // #1.60c7n3追加変数
-int		laststage[2];		//ラストステージ初期値
-int		rescue[2];			//REカウンター
-int		REflag[2];			//ピンチになると1カウントすると0に
+int32_t		laststage[2];		//ラストステージ初期値
+int32_t		rescue[2];			//REカウンター
+int32_t		REflag[2];			//ピンチになると1カウントすると0に
 
-int		pinch2[2];
+int32_t		pinch2[2];
 
 
 // #1.60c7n6追加変数
-int		tspin_c[2];			// T-SPIN!残り表示フレーム数
-int		tspin_flag[2];		// T-SPINの権利みたいなもの
+int32_t		tspin_c[2];			// T-SPIN!残り表示フレーム数
+int32_t		tspin_flag[2];		// T-SPINの権利みたいなもの
 							// Ｔ字ブロックが接地した状態で回転すると1になり、移動すると0になる
 							// 1の状態でライン消しすると「T-SPIN!」と表示
 
 // #1.60c7n7追加変数
-int		disable_hold = 0;	// HOLD禁止設定
-int		disable_irs  = 0;	// 先行回転禁止設定
-int		max_fps = 60;		// PRACTICEモードのFPS
+int32_t		disable_hold = 0;	// HOLD禁止設定
+int32_t		disable_irs  = 0;	// 先行回転禁止設定
+int32_t		max_fps = 60;		// PRACTICEモードのFPS
 
 // #1.60c7n8追加変数
-int		replay_save[2];		// リプレイにセーブ可能かどうか
-int		time2[2];			// TOMOYOリプレイ用プレイタイム
+int32_t		replay_save[2];		// リプレイにセーブ可能かどうか
+int32_t		time2[2];			// TOMOYOリプレイ用プレイタイム
 
 // #1.60c7o1追加変数
-int		sgrade[2];			// 裏段位 窒息時に判定
-int		min_sgrade = 4;		// この段位から裏段位を表示
+int32_t		sgrade[2];			// 裏段位 窒息時に判定
+int32_t		min_sgrade = 4;		// この段位から裏段位を表示
 
 // #1.60c7o2追加変数
-int		cp_x[2];				// 最善手のX座標
-int		cp_rt[2];				// 最善手のブロックの向き
-int		cp_input[10 * 2];		// コンピュータの入力状況
-int		cpu_flag[2];			// 操作しているのがコンピュータかどうか
+int32_t		cp_x[2];				// 最善手のX座標
+int32_t		cp_rt[2];				// 最善手のブロックの向き
+int32_t		cp_input[10 * 2];		// コンピュータの入力状況
+int32_t		cpu_flag[2];			// 操作しているのがコンピュータかどうか
 
 // #1.60c7o3追加変数
-int		cp_hold[2];					// コンピュータがHOLDするときは1
-int		cp_player_1p = 0;			// コンピュータが操作するか(1P)
-int		cp_player_2p = 1;			// コンピュータが操作するか(2P)
+int32_t		cp_hold[2];					// コンピュータがHOLDするときは1
+int32_t		cp_player_1p = 0;			// コンピュータが操作するか(1P)
+int32_t		cp_player_2p = 1;			// コンピュータが操作するか(2P)
 
 // #1.60c7o4追加変数
-int		cp_type = 0;				// コンピュータの性格 0=とにかくラインを消す 1=2ライン以上消えるときだけ
-int		cp_rot_c[2];
+int32_t		cp_type = 0;				// コンピュータの性格 0=とにかくラインを消す 1=2ライン以上消えるときだけ
+int32_t		cp_rot_c[2];
 
 // #1.60c7o5追加変数
-int		tmp_maxPlay;	// プレイ人数のバックアップ シングル台で対戦するときに使用
-int		block_rframe = 0;	// ブロックの周りに白い四角形を表示
+int32_t		tmp_maxPlay;	// プレイ人数のバックアップ シングル台で対戦するときに使用
+int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示
 
 // 以下hogeパッチより
-int		sevolume = -1500;	//効果音のボリューム。0が標準、-10000で無音。
-int		se = 1;			//効果音を流すかどうか。(0なら流さない)
-int		bgm = 1;		//BGMを流すかどうか。(0なら流さない)
+int32_t		sevolume = -1500;	//効果音のボリューム。0が標準、-10000で無音。
+int32_t		se = 1;			//効果音を流すかどうか。(0なら流さない)
+int32_t		bgm = 1;		//BGMを流すかどうか。(0なら流さない)
 
 // #1.60c7o6追加変数
-int		endtime[2];		// スタッフロール経過時間
+int32_t		endtime[2];		// スタッフロール経過時間
 
 // #1.60c7o7追加変数
-int		t_training[2];	// TOMOYOモードを1面限定で遊ぶかどうか
+int32_t		t_training[2];	// TOMOYOモードを1面限定で遊ぶかどうか
 
 // #1.60c7p1追加変数
-int		up_flag[2];			// 0:前回↑を使ってないor↑を離した 1:前回↑を使った
-int		p_stage = -1;		// PRACTICEで使うステージ(0:なし 1-27:TOMOYOステージ 28-99:PRACTICEステージ)
+int32_t		up_flag[2];			// 0:前回↑を使ってないor↑を離した 1:前回↑を使った
+int32_t		p_stage = -1;		// PRACTICEで使うステージ(0:なし 1-27:TOMOYOステージ 28-99:PRACTICEステージ)
 
 // #1.60c7p2追加変数
-int		bgfadesw = 0;		// 背景フェードスイッチ 0:通常 1:フェードアウト 2:フェードイン
-int		bgfadelv = 0;		// 背景フェードレベル 0-256まで
-int		enable_bgfade = 0;	// 背景フェードを 0=使わない 1=使う
-int		bgfade_cnt = 0;	// 背景フェードの速さ 数字が大きいほど高速
+int32_t		bgfadesw = 0;		// 背景フェードスイッチ 0:通常 1:フェードアウト 2:フェードイン
+int32_t		bgfadelv = 0;		// 背景フェードレベル 0-256まで
+int32_t		enable_bgfade = 0;	// 背景フェードを 0=使わない 1=使う
+int32_t		bgfade_cnt = 0;	// 背景フェードの速さ 数字が大きいほど高速
 
 // #1.60c7p3追加変数
-//int		bgfade_type = 38;	// 背景フェードの種類
+//int32_t		bgfade_type = 38;	// 背景フェードの種類
 
 // #1.60c7p4追加変数
-int		english = 0;		// For English Users
+int32_t		english = 0;		// For English Users
 
 // #1.60c7p8追加変数
-int		bgmvolume = -1500;		// BGMのボリューム 0が標準、-10000で無音
-int		bg_max = 9;				// 背景の最大数
+int32_t		bgmvolume = -1500;		// BGMのボリューム 0が標準、-10000で無音
+int32_t		bg_max = 9;				// 背景の最大数
 
 // #1.60c7p9ex追加変数
-int		xray_bgblack = 1;		// X-RAY時に背景を真っ黒にする
-int		xray_drawblockframe = 1;// X-RAY時にブロックの枠線を描く
-int		color_bgblack = 0;		// COLOR時に背景を真っ黒にする
+int32_t		xray_bgblack = 1;		// X-RAY時に背景を真っ黒にする
+int32_t		xray_drawblockframe = 1;// X-RAY時にブロックの枠線を描く
+int32_t		color_bgblack = 0;		// COLOR時に背景を真っ黒にする
 
 // #1.60c7q1ex追加変数
-int		stp[2];		//STプラチナメダル個数
-int		stg[2];		//ST金メダル個数
-int		sts[2];		//ST銀メダル個数
-int		stb[2];		//ST銅メダル個数
+int32_t		stp[2];		//STプラチナメダル個数
+int32_t		stg[2];		//ST金メダル個数
+int32_t		sts[2];		//ST銀メダル個数
+int32_t		stb[2];		//ST銅メダル個数
 
 // #1.60c7q2ex追加変数
-int		disable_wallkick = 0;	// 1にすると壁蹴り無効
+int32_t		disable_wallkick = 0;	// 1にすると壁蹴り無効
 
 // #1.60c7q5追加変数
-int		item_nblk[6 * 2];
-int		item_coming[2];
-int		item_waiting[2];
+int32_t		item_nblk[6 * 2];
+int32_t		item_coming[2];
+int32_t		item_waiting[2];
 
-int		hanabi_waiting[2];	// 発生待ち花火数
-int		hanabi_frame[2];	// 発生するまでのフレーム数
+int32_t		hanabi_waiting[2];	// 発生待ち花火数
+int32_t		hanabi_frame[2];	// 発生するまでのフレーム数
 
-int		noitem = 0;			// 1にするとアイテムが無しになります＠VERSUS MODE
-int		no_hanabi = 0;		// 1にするとラインを消しても花火が表示されなくなります＠BEGINNER MODE
+int32_t		noitem = 0;			// 1にするとアイテムが無しになります＠VERSUS MODE
+int32_t		no_hanabi = 0;		// 1にするとラインを消しても花火が表示されなくなります＠BEGINNER MODE
 
 // #1.60c7q6追加変数
-int		r_irs = 1;			// 1にすると赤のIRSをTGM基準化（床蹴りなし）
+int32_t		r_irs = 1;			// 1にすると赤のIRSをTGM基準化（床蹴りなし）
 
 // #1.60c7q7追加変数
-int		st_new[20 * 2];		// 左上のセクションタイム表示の色を変えるときに使う
-int		max_fps_2 = 60;		// 最大FPS
+int32_t		st_new[20 * 2];		// 左上のセクションタイム表示の色を変えるときに使う
+int32_t		max_fps_2 = 60;		// 最大FPS
 
 // #1.60c7q8追加変数
-int		timelimit2_devil = 0;	// LV1000足きりタイム(devil)
-int		timelimit2[2] = {0,0};			// 現在のLV1000足きりタイム
+int32_t		timelimit2_devil = 0;	// LV1000足きりタイム(devil)
+int32_t		timelimit2[2] = {0,0};			// 現在のLV1000足きりタイム
 
 // #1.60c7r2追加変数
-int		big_rise = 1;			// BIG時にせり上がり2倍
+int32_t		big_rise = 1;			// BIG時にせり上がり2倍
 
 // #1.60c7r2+追加変数
-int		anothermode[2] = {0,0};		// アナザーモード
-int		timelimitw_devil = 0;	// ワールド足きりタイム(devil)
-int		timelimitw[2] = {0,0};			// 現在のワールド足きりタイム
+int32_t		anothermode[2] = {0,0};		// アナザーモード
+int32_t		timelimitw_devil = 0;	// ワールド足きりタイム(devil)
+int32_t		timelimitw[2] = {0,0};			// 現在のワールド足きりタイム
 
 // #1.60c7r4追加変数
-int		vsmodesl = 0;		//vsモードセレクト
-int		disrise = 0;		//競り上がりなし
-int		sptmp[2] = {0, 0};		//VSモード速度テンプレート
+int32_t		vsmodesl = 0;		//vsモードセレクト
+int32_t		disrise = 0;		//競り上がりなし
+int32_t		sptmp[2] = {0, 0};		//VSモード速度テンプレート
 
 // #1.60c7r5追加変数
-int		vs_goal = 200;		// VSモード ゴールレベル（0=なし）
-int		vs_time = 5400;		// VSモード 制限時間（0=無制限）
-int		breakti = 0;		// breaktype = 1のときの破壊エフェクトの種類
-int		wintype = 0;
+int32_t		vs_goal = 200;		// VSモード ゴールレベル（0=なし）
+int32_t		vs_time = 5400;		// VSモード 制限時間（0=無制限）
+int32_t		breakti = 0;		// breaktype = 1のときの破壊エフェクトの種類
+int32_t		wintype = 0;
 
 // #1.60c7r7追加変数
-int		world_i_rot = 0;	// ワールドルールのI型ミノの回転補正タイプ 0=左右対称タイプ 1=非左右対称タイプ
+int32_t		world_i_rot = 0;	// ワールドルールのI型ミノの回転補正タイプ 0=左右対称タイプ 1=非左右対称タイプ
 
 // #1.60c7r8追加変数
-int		c_mission = 0;		// 現在のミッション番号
-int		c_norm[2];			// 現在達成しているノルマ
-int		mission_file = 0;	// ファイル番号
+int32_t		c_mission = 0;		// 現在のミッション番号
+int32_t		c_norm[2];			// 現在達成しているノルマ
+int32_t		mission_file = 0;	// ファイル番号
 
-int		mission_type[40];	// 問題の種類
-int		mission_norm[40];	// 問題のノルマ
-int		mission_time[40];	// 問題の制限時間
-int		mission_end[40];	// 0=クリアすると次の問題へ 1=クリアするとエンディング 2=最後をダブル消し以外でエンディング
-int		mission_lv[40];		// 落下速度レベル
-int		mission_bgm[40];	// BGM
+int32_t		mission_type[40];	// 問題の種類
+int32_t		mission_norm[40];	// 問題のノルマ
+int32_t		mission_time[40];	// 問題の制限時間
+int32_t		mission_end[40];	// 0=クリアすると次の問題へ 1=クリアするとエンディング 2=最後をダブル消し以外でエンディング
+int32_t		mission_lv[40];		// 落下速度レベル
+int32_t		mission_bgm[40];	// BGM
 
 // #1.60c7r9追加変数
-int		cycle[4];			// サイクル用
-int		mission_erase[40];	// 上から消去するライン数
+int32_t		cycle[4];			// サイクル用
+int32_t		mission_erase[40];	// 上から消去するライン数
 
 // #1.60c7s2追加変数
-int		mission_opt_1[40];	// ミッションによって異なる追加情報
-int		mission_opt_2[40];
-int		mission_opt_3[40];
-//int		mission_opt_4[30];
+int32_t		mission_opt_1[40];	// ミッションによって異なる追加情報
+int32_t		mission_opt_2[40];
+int32_t		mission_opt_3[40];
+//int32_t		mission_opt_4[30];
 
-int		target_cleared[200];	// ターゲットのステージ出現済みフラグ（同じ面がまた出るのを防ぐ）
+int32_t		target_cleared[200];	// ターゲットのステージ出現済みフラグ（同じ面がまた出るのを防ぐ）
 
-int		eraser_lines[4];	// イレイサーのライン位置
-int		eraser_cleared[4];	// 既に消したかどうかのフラグ
-int		eraser_now_pattern = 0;	// イレイサーの現在のパターン
+int32_t		eraser_lines[4];	// イレイサーのライン位置
+int32_t		eraser_cleared[4];	// 既に消したかどうかのフラグ
+int32_t		eraser_now_pattern = 0;	// イレイサーの現在のパターン
 
-int		spawn_y_type = 1;	// 出現位置タイプ（死亡判定も変わります）
+int32_t		spawn_y_type = 1;	// 出現位置タイプ（死亡判定も変わります）
 
 // #1.60c7s3追加変数
-int		tls_view = 0;		// TLS 0=自動 1=常に有効 2=常に無効
+int32_t		tls_view = 0;		// TLS 0=自動 1=常に有効 2=常に無効
 
 // #1.60c7s4追加変数
-int		clear_mission;		// クリアしたミッション数
-int		eraser_now_lines;	// 現在画面内に存在しているイレイサーのラインの数
+int32_t		clear_mission;		// クリアしたミッション数
+int32_t		eraser_now_lines;	// 現在画面内に存在しているイレイサーのラインの数
 
-int		ybigtype = 1;		// BIG時の縦移動単位 0=2マス単位移動 1=1マス単位移動
+int32_t		ybigtype = 1;		// BIG時の縦移動単位 0=2マス単位移動 1=1マス単位移動
 
 // #1.60c7s5追加変数
-int		over1000_block[2];
-int		over1000_start;		// []の開始レベル
+int32_t		over1000_block[2];
+int32_t		over1000_start;		// []の開始レベル
 
 // #1.60c7s6追加変数
-int		upLineT[2];				// せり上がりタイプ
-int		tspin_type;			// T-SPINの判定方法
+int32_t		upLineT[2];				// せり上がりタイプ
+int32_t		tspin_type;			// T-SPINの判定方法
 
 // #1.60c7s6追加変数
-int		hanabi_combo[2];		//HANABIコンボ補正用記憶域
-int		hanabi_flag;			//HANABIを一回の列消去につき一回の発生のみ
-int		hanabi_total[2];		//HANABI合計値
-int		endingcnt[2];			//エンディング中の花火なりすぎるのを止める
+int32_t		hanabi_combo[2];		//HANABIコンボ補正用記憶域
+int32_t		hanabi_flag;			//HANABIを一回の列消去につき一回の発生のみ
+int32_t		hanabi_total[2];		//HANABI合計値
+int32_t		endingcnt[2];			//エンディング中の花火なりすぎるのを止める
 
-//int		player;
-int		tomoyo_hanabi[2];		//TOMOYOモード用HANABIカウンタ
+//int32_t		player;
+int32_t		tomoyo_hanabi[2];		//TOMOYOモード用HANABIカウンタ
 
-int		last_tspin[2];			//T-Spinによるライン消し数
-int		b_to_b_flag[2];			//Back to Backフラグ
-int		b_to_b_c[2];
-int		b2bcheck;			//backtobackをチェックするか(ini)？
+int32_t		last_tspin[2];			//T-Spinによるライン消し数
+int32_t		b_to_b_flag[2];			//Back to Backフラグ
+int32_t		b_to_b_c[2];
+int32_t		b2bcheck;			//backtobackをチェックするか(ini)？
 
-int		itemappear_c[2];			//アイテム出現時のゲージフラッシュ時間
+int32_t		itemappear_c[2];			//アイテム出現時のゲージフラッシュ時間
 
-int		platinaerase_cnt[2];	//プラチナブロック消去サウンドを鳴らす回数
-int		ext_s[2];				//時間増加の演出（表示）用
-int		timeextend_snd_cnt[2];	//時間増加の演出（SE）用
+int32_t		platinaerase_cnt[2];	//プラチナブロック消去サウンドを鳴らす回数
+int32_t		ext_s[2];				//時間増加の演出（表示）用
+int32_t		timeextend_snd_cnt[2];	//時間増加の演出（SE）用
 
-int		fmirror_cnt[2] = {-20,-20};			//フィールドミラー用カウンター
+int32_t		fmirror_cnt[2] = {-20,-20};			//フィールドミラー用カウンター
 
-int		staffroll_y_ex[2];		//高解像度用スタッフロールy座標
-int		tomoyo_opt[2];			//TOMOYOモード開始ステージなど
+int32_t		staffroll_y_ex[2];		//高解像度用スタッフロールy座標
+int32_t		tomoyo_opt[2];			//TOMOYOモード開始ステージなど
 
-int		nmlroll_bgmloop = 0;	//普通ロールのBGMをループさせる
-int		bgnroll_bgmloop = 0;	//BEGINNERロールのBGMをループさせる
+int32_t		nmlroll_bgmloop = 0;	//普通ロールのBGMをループさせる
+int32_t		bgnroll_bgmloop = 0;	//BEGINNERロールのBGMをループさせる
 
-int		top_frame = 0;			//上部フレーム（0=TI 1=ACE）
+int32_t		top_frame = 0;			//上部フレーム（0=TI 1=ACE）
 
-int		heboGB[2];				//missionのオールドスタイルで使用
+int32_t		heboGB[2];				//missionのオールドスタイルで使用
 
-int		isrotatelock[2];		//回転封じ
-int		isholdlock[2];			//HOLD封じ
-int		istimestop[2];			//時間停止
-int		ishidenext[2];			//NEXT隠し
-int		ismagnetblock[2];		//マグネット
-int		isLRreverse[2];			//左右逆転
-int		isUDreverse[2];			//上下逆転
-int		isboost[2];				//ブーストファイア
-int		isfever[2];				//フィーバー
-int		isremote[2];			//リモートコントロール
-int		isdark[2];				//ダーク
-int		istrance[2];			//トランスフォーム
-int		isdouble[2];			//ダブル
-int		ismiss[2];			//miss
-int		isfakenext[2];			//fakenext
+int32_t		isrotatelock[2];		//回転封じ
+int32_t		isholdlock[2];			//HOLD封じ
+int32_t		istimestop[2];			//時間停止
+int32_t		ishidenext[2];			//NEXT隠し
+int32_t		ismagnetblock[2];		//マグネット
+int32_t		isLRreverse[2];			//左右逆転
+int32_t		isUDreverse[2];			//上下逆転
+int32_t		isboost[2];				//ブーストファイア
+int32_t		isfever[2];				//フィーバー
+int32_t		isremote[2];			//リモートコントロール
+int32_t		isdark[2];				//ダーク
+int32_t		istrance[2];			//トランスフォーム
+int32_t		isdouble[2];			//ダブル
+int32_t		ismiss[2];			//miss
+int32_t		isfakenext[2];			//fakenext
 
-int		stopmirror_flag[2];		//対戦用ミラーを終了するフラグ
+int32_t		stopmirror_flag[2];		//対戦用ミラーを終了するフラグ
 
-int		item_timer[2];			//時限性アイテムのタイマー
+int32_t		item_timer[2];			//時限性アイテムのタイマー
 
-int		isUPdelfield[2];		//↑DEL FIELD
-int		isDWdelfield[2];		//↓DEL FIELD
-int		isdeleven[2];			//  DEL EVEN
-int		isreflect[2];			//REFLECT
-int		isallclear[2];			//ALLCLEAR
+int32_t		isUPdelfield[2];		//↑DEL FIELD
+int32_t		isDWdelfield[2];		//↓DEL FIELD
+int32_t		isdeleven[2];			//  DEL EVEN
+int32_t		isreflect[2];			//REFLECT
+int32_t		isallclear[2];			//ALLCLEAR
 
 // 段位ポイントが1つ減るまでの時間
-int		glimit[33] =
+int32_t		glimit[33] =
 {//
 	100, 80, 80, 60, 50, 50, 40, 40, 40,		//  0〜 8
 	30, 30, 25, 25, 20, 20, 20, 15, 15,		//  9〜17
@@ -1097,327 +1098,327 @@ int		glimit[33] =
 	5 , 5, 4,3,2,1			// 27
 };
 
-int		gpoint[2];			// 現在の段位ポイント
-int		gtime[2];			// 段位ポイント減少タイマー
-int		gflash[2];			// 段位が上がった時に表示を光らせる時に使用
+int32_t		gpoint[2];			// 現在の段位ポイント
+int32_t		gtime[2];			// 段位ポイント減少タイマー
+int32_t		gflash[2];			// 段位が上がった時に表示を光らせる時に使用
 
-int		vsbg = 0;	//対戦に専用の背景を使用（0=…せずに、1番目を使用 1=専用の物を使用）
+int32_t		vsbg = 0;	//対戦に専用の背景を使用（0=…せずに、1番目を使用 1=専用の物を使用）
 
-int		use_item[2];	//使用するアイテム 0でランダム
+int32_t		use_item[2];	//使用するアイテム 0でランダム
 
-int		p_erase_c[11];	//PRACTICE用 消去ライン数カウント
-int		p_heboGBlv = 0;		//PRACTICE用 HeboGB
+int32_t		p_erase_c[11];	//PRACTICE用 消去ライン数カウント
+int32_t		p_heboGBlv = 0;		//PRACTICE用 HeboGB
 
-int		isblind[2];		//ブラインドON/OFF制御
-int		blind_flag[2];	//ブラインドの有無
+int32_t		isblind[2];		//ブラインドON/OFF制御
+int32_t		blind_flag[2];	//ブラインドの有無
 
-int		p_blind = 0;
+int32_t		p_blind = 0;
 
-int		block_spectrum = 0;	//ブロックの残像（0=OFF 1=ON）
+int32_t		block_spectrum = 0;	//ブロックの残像（0=OFF 1=ON）
 // #1.60c7t7追加変数
-int		p_setting;			//practice用のFAVORITESの種類p_setting
-int		def_p_sp;			//デフォルトのpractice用のFAVORITESの種類
-int		skip_fwait;			//practice用のFAVORITESの表示制限
+int32_t		p_setting;			//practice用のFAVORITESの種類p_setting
+int32_t		def_p_sp;			//デフォルトのpractice用のFAVORITESの種類
+int32_t		skip_fwait;			//practice用のFAVORITESの表示制限
 
-int		skillg[2];		//gradeup2に使うskill
-int		skillbai[2];		//skillgup2で決定される倍率
-int		endlines[2];		//ロール中に消した列数
-int		gup_down[2];		//cool:1とregret:0
+int32_t		skillg[2];		//gradeup2に使うskill
+int32_t		skillbai[2];		//skillgup2で決定される倍率
+int32_t		endlines[2];		//ロール中に消した列数
+int32_t		gup_down[2];		//cool:1とregret:0
 
-int		start_mission;		//開始時のミッション番号
+int32_t		start_mission;		//開始時のミッション番号
 
-int		randseed[2];		//乱数シード プレイヤーごと
-int		first_seed[2];		//最初のシード
+int32_t		randseed[2];		//乱数シード プレイヤーごと
+int32_t		first_seed[2];		//最初のシード
 
-int		title_acnt = 0;
-int		title_mov_f = 0;
-int		mov_inter = 0;
+int32_t		title_acnt = 0;
+int32_t		title_mov_f = 0;
+int32_t		mov_inter = 0;
 
-int		max_hnext[2];
-int		death_plus[2];
+int32_t		max_hnext[2];
+int32_t		death_plus[2];
 
 // 背景ムービー
-int		back_acnt = 0;			// 現在のフレーム
-int		back_mov_f[13];			// 最大コマ数（0にすると静止画）
-int		back_mov_inter[13];		// 1コマを表示するフレーム数
+int32_t		back_acnt = 0;			// 現在のフレーム
+int32_t		back_mov_f[13];			// 最大コマ数（0にすると静止画）
+int32_t		back_mov_inter[13];		// 1コマを表示するフレーム数
 
 // #1.60c7t9追加変数
-int		time99[2];			// レベルストップ時間
-int		timeN[2];			// ブロックを操作している時間(0-98)
-int		ave_laptime3[2];	//セクションの平均移動時間
-int		gup3rank[2];			//ランク0-2
-int		gup3sp_adjust[2];		//ランクにあわせてスピード調整
-int		qualityflag[2];			//2回以上出ないように
-int		skillflag[2];
-int		tr2[2];					//可変速レベル
-int		border_rank[2];			//
-int		border_time[20] =		//ランクごとの基準タイム
+int32_t		time99[2];			// レベルストップ時間
+int32_t		timeN[2];			// ブロックを操作している時間(0-98)
+int32_t		ave_laptime3[2];	//セクションの平均移動時間
+int32_t		gup3rank[2];			//ランク0-2
+int32_t		gup3sp_adjust[2];		//ランクにあわせてスピード調整
+int32_t		qualityflag[2];			//2回以上出ないように
+int32_t		skillflag[2];
+int32_t		tr2[2];					//可変速レベル
+int32_t		border_rank[2];			//
+int32_t		border_time[20] =		//ランクごとの基準タイム
 {
 	17, 15, 14, 13, 10, 10, 12, 13, 13,		//  0〜 8
 	13, 13, 13, 13, 13, 13, 12, 12, 11,		//  9〜17
 	11, 10		// 18〜20
 };
-int		border_time59[20] =		//ランクごとの基準タイム
+int32_t		border_time59[20] =		//ランクごとの基準タイム
 {
 	17, 15, 14, 13, 10, 10, 11, 12, 12,		//  0〜 8
 	12, 12, 12, 12, 12, 11, 11, 10, 10,		//  9〜17
 	9, 9		// 18〜20
 };
-int		border_time48[20] =		//ランクごとの基準タイム
+int32_t		border_time48[20] =		//ランクごとの基準タイム
 {
 	17, 15, 14, 13, 10, 10, 10, 9, 9,		//  0〜 8
 	9, 9, 9, 9, 9, 9, 9, 9, 9,		//  9〜17
 	9, 9		// 18〜20
 };
-int		grade2[2];			//19段変換
-int		textguide;			//テキストガイド
+int32_t		grade2[2];			//19段変換
+int32_t		textguide;			//テキストガイド
 
-int		min_speed[2] = {0,0};
-int		isthunder[2];
-int		thunder = 0;
-int		thunder_timer;
+int32_t		min_speed[2] = {0,0};
+int32_t		isthunder[2];
+int32_t		thunder = 0;
+int32_t		thunder_timer;
 
-int		enable_minspeed = 1;		//TOMOYO最低速度を有効にする
+int32_t		enable_minspeed = 1;		//TOMOYO最低速度を有効にする
 
-int		tomoyo_rise_fld[10 * 20 * 2];	//TOMOYO用せり上がりフィールド 最大20段
-int		tomoyo_rise[2];					//せり上がりON/OFF兼せり上がり間隔
-int		tomoyo_rise_t[2];
-int		hnext_flag[2];
-int		hnext_timer[2];
-int		tomoyo_waits[2];
-int		tomoyo_domirror[2];
-int		tomoyo_ehfinal_c[2];
+int32_t		tomoyo_rise_fld[10 * 20 * 2];	//TOMOYO用せり上がりフィールド 最大20段
+int32_t		tomoyo_rise[2];					//せり上がりON/OFF兼せり上がり間隔
+int32_t		tomoyo_rise_t[2];
+int32_t		hnext_flag[2];
+int32_t		hnext_timer[2];
+int32_t		tomoyo_waits[2];
+int32_t		tomoyo_domirror[2];
+int32_t		tomoyo_ehfinal_c[2];
 
-int		ndelay[2];
-int		navigation = 1;
-int		navigation_time[2];
-int		navigation_limittime = 60;
-int		navigation_limitLv = 100;
-int		hold_snd = 2;
+int32_t		ndelay[2];
+int32_t		navigation = 1;
+int32_t		navigation_time[2];
+int32_t		navigation_limittime = 60;
+int32_t		navigation_limitLv = 100;
+int32_t		hold_snd = 2;
 
-int		nanamedown = 1;
-int		hide_tomoyoinf = 1;
-int		erasecnt[2];
+int32_t		nanamedown = 1;
+int32_t		hide_tomoyoinf = 1;
+int32_t		erasecnt[2];
 
-int		item_mode[2];	// アイテムモード
-int		hebo_plus[2];	// TGM+
+int32_t		item_mode[2];	// アイテムモード
+int32_t		hebo_plus[2];	// TGM+
 
-int		fastmirror = 0;	// ミラーのフィールド回転を高速化　合計時間は同じ
+int32_t		fastmirror = 0;	// ミラーのフィールド回転を高速化　合計時間は同じ
 
-int		beginner_rollbgm = 0;	//ビギナーのロールBGM変更 (0=専用 1=bgm02 2=通常ロール)
+int32_t		beginner_rollbgm = 0;	//ビギナーのロールBGM変更 (0=専用 1=bgm02 2=通常ロール)
 // #C7U0.5EX追加変数
-int		rankingrule;
-int		ranking_type;				//ランキング表示タイプ
+int32_t		rankingrule;
+int32_t		ranking_type;				//ランキング表示タイプ
 
-int		medal_ac[2];				// acメダルの色
-int		medal_sk[2];				// skメダルの色
-int		medal_co[2];				// coメダルの色
-int		medal_re[2];				// reメダルの色
-int		medal_st[2];				// stメダルの色(上から全てまとめて)
-int		end_f[2];				// 完全クリアフラグ
+int32_t		medal_ac[2];				// acメダルの色
+int32_t		medal_sk[2];				// skメダルの色
+int32_t		medal_co[2];				// coメダルの色
+int32_t		medal_re[2];				// reメダルの色
+int32_t		medal_st[2];				// stメダルの色(上から全てまとめて)
+int32_t		end_f[2];				// 完全クリアフラグ
 
-int		disable_ehlast_gimmick = 0;
+int32_t		disable_ehlast_gimmick = 0;
 
-int		lasernum[2];			//レーザーの本数
-int		laserpos[4 * 2];		//レーザーの位置
-int		rapid_c[2];				//ボタン連打数（レーザーの増加に使用）
-int		dolaser[2];				//ブロック移動中以外のレーザー発射フラグ
-int		do16t[2];				//ブロック移動中以外の16tフラグ
+int32_t		lasernum[2];			//レーザーの本数
+int32_t		laserpos[4 * 2];		//レーザーの位置
+int32_t		rapid_c[2];				//ボタン連打数（レーザーの増加に使用）
+int32_t		dolaser[2];				//ブロック移動中以外のレーザー発射フラグ
+int32_t		do16t[2];				//ブロック移動中以外の16tフラグ
 
-int		nega_pos[10 * 2];		//ネガフィールド関連
-int		donega[2];
+int32_t		nega_pos[10 * 2];		//ネガフィールド関連
+int32_t		donega[2];
 
-int		shotgunpos[22 * 2];		//ショットガン関連
-int		doshotgun[2];
+int32_t		shotgunpos[22 * 2];		//ショットガン関連
+int32_t		doshotgun[2];
 
-int		doexchg[2];				//フィールド交換
-int		docopyfld[2];				//コピー
+int32_t		doexchg[2];				//フィールド交換
+int32_t		docopyfld[2];				//コピー
 
-int		rt_nblk[6 * 2];			// NEXTブロックの向き（ROTATE LOCKに使用）
+int32_t		rt_nblk[6 * 2];			// NEXTブロックの向き（ROTATE LOCKに使用）
 
-int		isbanana[2];			//SHUFFLE FIELD関連
-int		banana_pos[10 * 2];
-int		banana_c[2];
+int32_t		isbanana[2];			//SHUFFLE FIELD関連
+int32_t		banana_pos[10 * 2];
+int32_t		banana_c[2];
 
-int		enable_randexam = 1;	//1にすると一定の確率で段位試験発生
-int		examination[2];			//試験中？0:なし1:昇格試験　2:降格試験
-int		exam_grade[2];			//試験段位
-int		purupuru[2];			//フィールドのプルプル
-int		exam_range[8] = {		//試験段位の範囲
+int32_t		enable_randexam = 1;	//1にすると一定の確率で段位試験発生
+int32_t		examination[2];			//試験中？0:なし1:昇格試験　2:降格試験
+int32_t		exam_grade[2];			//試験段位
+int32_t		purupuru[2];			//フィールドのプルプル
+int32_t		exam_range[8] = {		//試験段位の範囲
 			9 , 18 ,			//段位1設定時
 			9 , 28 ,			//    2
 			6 , 15 ,			//    3
 			9 , 27 				//    4
 		};
 
-int		ace_irs = 0;			//ACE式IRS 1はACE 2はカスタム
+int32_t		ace_irs = 0;			//ACE式IRS 1はACE 2はカスタム
 
-int		stage_skip_mpc[2];	//長押し
-int		hebop_interval[2];	//HEBO+せり上がり感覚
+int32_t		stage_skip_mpc[2];	//長押し
+int32_t		hebop_interval[2];	//HEBO+せり上がり感覚
 /* STランキングに使う変数 */
-int		stage_time[30 * 2];	//ステージごとのタイム
-int		lvstop_time[20 * 2];	//レベルストップタイム
-int		st_other[30 * 2];		//落としたブロック数
+int32_t		stage_time[30 * 2];	//ステージごとのタイム
+int32_t		lvstop_time[20 * 2];	//レベルストップタイム
+int32_t		st_other[30 * 2];		//落としたブロック数
 
-int		harddrop[2];
-int		versus_rot[2];
+int32_t		harddrop[2];
+int32_t		versus_rot[2];
 
-int		tr_20g[2];
-int		dorulet[2];
+int32_t		tr_20g[2];
+int32_t		dorulet[2];
 
-int		Isbesttime;		//ベストタイムを見せるか
+int32_t		Isbesttime;		//ベストタイムを見せるか
 
 // ACEモードBGMフェードアウトテーブル
-int		ace_bgmfadestart[4 * 4] = {
+int32_t		ace_bgmfadestart[4 * 4] = {
 	   45,    95,   145, 10000,		// NORMAL
 	   35,    95,   145, 10000,		// ANOTHER
 	   45,   145,   195, 10000,		// ANOTHER2
 	   45,   396,   10000, 10000,		// OLD
 };
 // ACEモードBGM切り替え用
-int		ace_bgmlist[3 * 4] = {
+int32_t		ace_bgmlist[3 * 4] = {
 	0, 1, 2,	// NORMAL曲
 	5, 3, 4,	// ANOTHER曲
 	19,18,16,	// ANOTHER2
 	8,9,9,	// OLD
 };
-int		ace_bgmchange[2];
+int32_t		ace_bgmchange[2];
 
 // READY→GO演出の種類　（0=HEBO 1=TI）
-int		ready_go_style = 1;
+int32_t		ready_go_style = 1;
 
-int		ti_ready_start = 20;		// 通常 ready開始
-int		ti_ready_end = 75;		// 通常 ready終了
-int		ti_go_start = 80;		// 通常 go開始
-int		ti_go_end = 140;		// 通常 go終了
+int32_t		ti_ready_start = 20;		// 通常 ready開始
+int32_t		ti_ready_end = 75;		// 通常 ready終了
+int32_t		ti_go_start = 80;		// 通常 go開始
+int32_t		ti_go_end = 140;		// 通常 go終了
 
-int		ti_s_ready_start = 45;		// TOMOYO ready開始
-int		ti_s_ready_end = 155;		// TOMOYO ready終了
-int		ti_s_go_start = 160;		// TOMOYO go開始
-int		ti_s_go_end = 225;			// TOMOYO go終了
+int32_t		ti_s_ready_start = 45;		// TOMOYO ready開始
+int32_t		ti_s_ready_end = 155;		// TOMOYO ready終了
+int32_t		ti_s_go_start = 160;		// TOMOYO go開始
+int32_t		ti_s_go_end = 225;			// TOMOYO go終了
 
-int		r_start[2];
-int		r_end[2];
-int		g_start[2];
-int		g_end[2];
+int32_t		r_start[2];
+int32_t		r_end[2];
+int32_t		g_start[2];
+int32_t		g_end[2];
 
-int		bk_D[2];		// D.R.S用　下入れによる固定時間
-int		p_item_mode = 0;
-int		are_skipflag[2];
+int32_t		bk_D[2];		// D.R.S用　下入れによる固定時間
+int32_t		p_item_mode = 0;
+int32_t		are_skipflag[2];
 
-int		def_vs_goal = 200;
+int32_t		def_vs_goal = 200;
 
-int		hanabi_int[2];		//ロール中の花火打ち上げ間隔
+int32_t		hanabi_int[2];		//ロール中の花火打ち上げ間隔
 
-int		isFreefall[2];	// フリーフォール
-int		Ff_rerise[2];	// ↑の消去後再せり上げライン数
-int		isLmovfield[2];	// ←MOV FIELD
-int		isRmovfield[2];	// →MOV FIELD
-int		do180field[2];	// 180°フィールド
+int32_t		isFreefall[2];	// フリーフォール
+int32_t		Ff_rerise[2];	// ↑の消去後再せり上げライン数
+int32_t		isLmovfield[2];	// ←MOV FIELD
+int32_t		isRmovfield[2];	// →MOV FIELD
+int32_t		do180field[2];	// 180°フィールド
 
-int		ofs_x[2];		// ↑の演出用
-int		ofs_y[2];
-int		ofs_x2[2];
-int		ofs_y2[2];
-int		stp_point[2];		//STプラチナ獲得のためのポイント
+int32_t		ofs_x[2];		// ↑の演出用
+int32_t		ofs_y[2];
+int32_t		ofs_x2[2];
+int32_t		ofs_y2[2];
+int32_t		stp_point[2];		//STプラチナ獲得のためのポイント
 
-int		m_roll_blockframe = 1;	//見え＆消えロールでブロックの枠を表示（消えは一瞬）1でON
-int		kickc3[2];
+int32_t		m_roll_blockframe = 1;	//見え＆消えロールでブロックの枠を表示（消えは一瞬）1でON
+int32_t		kickc3[2];
 
-int		fldu[10 * 22 * 2];	// せり上がりフィールド（せり上がるブロックの形状を記憶）
-int		fldubuf[10 * 22 * 2];
-int		upLines_waiting[2];
-int		regretcancel[2];
-int		def_vs_uplinetype = 3;
+int32_t		fldu[10 * 22 * 2];	// せり上がりフィールド（せり上がるブロックの形状を記憶）
+int32_t		fldubuf[10 * 22 * 2];
+int32_t		upLines_waiting[2];
+int32_t		regretcancel[2];
+int32_t		def_vs_uplinetype = 3;
 
-int		devil_minus[2];
+int32_t		devil_minus[2];
 
-int		devil_randrise = 1;	// DEVIL(DOOM)のせり上がり間隔をセクションごとのランダムにする 1=ON
-int		devil_nextrise[2];
+int32_t		devil_randrise = 1;	// DEVIL(DOOM)のせり上がり間隔をセクションごとのランダムにする 1=ON
+int32_t		devil_nextrise[2];
 
-int		bgmload[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};	//指定したBGMを読み込むか
-int		exam_ranking = 1;	//試験時のランキング登録有無
+int32_t		bgmload[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};	//指定したBGMを読み込むか
+int32_t		exam_ranking = 1;	//試験時のランキング登録有無
 
-int		novice_mode[2];		//noviceモード
-int		novice_flag[2];		//noviceのアイテムフラグ
+int32_t		novice_mode[2];		//noviceモード
+int32_t		novice_flag[2];		//noviceのアイテムフラグ
 
-int		FP_bonus[2];
-int		FP_bonus_c[2];
+int32_t		FP_bonus[2];
+int32_t		FP_bonus_c[2];
 
-int		FP_next[4] = {0,2,4,6};
+int32_t		FP_next[4] = {0,2,4,6};
 
-int		disable_giji3D = 0;	//ブロックの立体表示無効設定（0=全て表示　1=BIGのTLSのみ無効　2=TLSのみ無効　3=フィールド上のブロックのみ有効　4=全て無効）
-int		alpha_tls = 2;		//TLSを半透明にするか（0=暗い不透明　1=BIGのみ暗い不透明、他は半透明　2=半透明）
-int		bo[2];
-int		fastroll[2];		//高速スタッフロール用
-int		fpbas_mode[2];		//FP基本モードfpbas_mode
+int32_t		disable_giji3D = 0;	//ブロックの立体表示無効設定（0=全て表示　1=BIGのTLSのみ無効　2=TLSのみ無効　3=フィールド上のブロックのみ有効　4=全て無効）
+int32_t		alpha_tls = 2;		//TLSを半透明にするか（0=暗い不透明　1=BIGのみ暗い不透明、他は半透明　2=半透明）
+int32_t		bo[2];
+int32_t		fastroll[2];		//高速スタッフロール用
+int32_t		fpbas_mode[2];		//FP基本モードfpbas_mode
 
-int		std_opt[2];		//STDモード
-int		flds[10 * 22 * 2];		// スクウェア用フィールドの状態  x + y * 10 + pl * 210
-int		fldsbuf[10 * 22 * 2];		// スクウェア用フィールドの状態  x + y * 10 + pl * 210
+int32_t		std_opt[2];		//STDモード
+int32_t		flds[10 * 22 * 2];		// スクウェア用フィールドの状態  x + y * 10 + pl * 210
+int32_t		fldsbuf[10 * 22 * 2];		// スクウェア用フィールドの状態  x + y * 10 + pl * 210
 
-int		squaremode[2];			//四角用
-int		itemhistory[2*5];		//アイテム履歴
-int		item_pro[50]={5,8,5,9,6,3,5,4,6,8,
+int32_t		squaremode[2];			//四角用
+int32_t		itemhistory[2*5];		//アイテム履歴
+int32_t		item_pro[50]={5,8,5,9,6,3,5,4,6,8,
 					  4,7,5,6,5,3,6,6,5,4,
 					  9,1,5,1,7,7,8,3,3,5,
 					  7,4,3,3,1,5,3,2,7,   5,
 					     5,5,5,5,5,5,5,5,5,5};		//アイテム出現率（ini出設定）
-int		p_nextblock;		// 練習用ツモ決定
-int		squarecnt[2];		//スクウェアカウント
-int		ori_opt[2];			//オリモードオプション
-int		admit_grade[2]={0,0};			//認定段位
-int		grade_his[2*5]={0,0,0,0,0,0,0,0,0,0};			//段位履歴
-int		grade_pasttime[2]={0,0};		//試験からどれだけ経ったか？
-int		scrate[2];				//oriモード用コンボスコアレート
-int		timelimitm_devil = 0;	// devilm足きりタイム
-int		timelimitm[2] = {0,0};			// 現在のdevilm足きりタイム
+int32_t		p_nextblock;		// 練習用ツモ決定
+int32_t		squarecnt[2];		//スクウェアカウント
+int32_t		ori_opt[2];			//オリモードオプション
+int32_t		admit_grade[2]={0,0};			//認定段位
+int32_t		grade_his[2*5]={0,0,0,0,0,0,0,0,0,0};			//段位履歴
+int32_t		grade_pasttime[2]={0,0};		//試験からどれだけ経ったか？
+int32_t		scrate[2];				//oriモード用コンボスコアレート
+int32_t		timelimitm_devil = 0;	// devilm足きりタイム
+int32_t		timelimitm[2] = {0,0};			// 現在のdevilm足きりタイム
 
-int		timelimitmw_devil = 0;	// devilm足きりタイム//ワールド
-int		timelimitmw[2] = {0,0};			// 現在のdevilm足きりタイム
+int32_t		timelimitmw_devil = 0;	// devilm足きりタイム//ワールド
+int32_t		timelimitmw[2] = {0,0};			// 現在のdevilm足きりタイム
 
-int		item_num = 39;		//アイテムの個数	playerinitialで初期化処理を行うようにすること
+int32_t		item_num = 39;		//アイテムの個数	playerinitialで初期化処理を行うようにすること
 
-int medal_info = 0;		//メダルに関する情報を表示 0=しない 1=する
-int timelimit_doom_E = 240 * 60;	//devil-DOOM新足切りタイム-Easy(ACE-SRS、ACE-ARS、DS-World)
-int timelimit_doom_N = 205 * 60;	//						  -Normal(Heboris、Ti-World、ACE-ARS2)
-int timelimit_doom_H = 183 * 60;	//						  -Hard(Ti-ARS、D.R.S、SRS-X)
+int32_t medal_info = 0;		//メダルに関する情報を表示 0=しない 1=する
+int32_t timelimit_doom_E = 240 * 60;	//devil-DOOM新足切りタイム-Easy(ACE-SRS、ACE-ARS、DS-World)
+int32_t timelimit_doom_N = 205 * 60;	//						  -Normal(Heboris、Ti-World、ACE-ARS2)
+int32_t timelimit_doom_H = 183 * 60;	//						  -Hard(Ti-ARS、D.R.S、SRS-X)
 
-int dispLinfo = 1;		//リプレイ中のライン消去情報の有無
+int32_t dispLinfo = 1;		//リプレイ中のライン消去情報の有無
 
-int relaymode[2];
-int first_rot[2];
-int relaydata[9 * 2];
-int relayround[2];
+int32_t relaymode[2];
+int32_t first_rot[2];
+int32_t relaydata[9 * 2];
+int32_t relayround[2];
 
-int vs_style[2];	// 対戦のスタイル　0=NORMAL　1=ATTACK　2=DEFENCE　3=ITEM
-int item_inter[2];	// プレイヤー毎のアイテム出現間隔（スタイルで間隔が変わるため）
+int32_t vs_style[2];	// 対戦のスタイル　0=NORMAL　1=ATTACK　2=DEFENCE　3=ITEM
+int32_t item_inter[2];	// プレイヤー毎のアイテム出現間隔（スタイルで間隔が変わるため）
 
-int vs_round;	//何ラウンド目か
-int winpoint;	//勝利となるポイント数
-int vs_points[2];	//現在のポイント数
-int misstimer[2];	//アイテム「スカ」用のitem_t
+int32_t vs_round;	//何ラウンド目か
+int32_t winpoint;	//勝利となるポイント数
+int32_t vs_points[2];	//現在のポイント数
+int32_t misstimer[2];	//アイテム「スカ」用のitem_t
 
-int repdata[20 * 2];
+int32_t repdata[20 * 2];
 
-int fade_seed = 20;	// BGMフェードアウト用
+int32_t fade_seed = 20;	// BGMフェードアウト用
 
-int se_play[50];
+int32_t se_play[50];
 
 // C++用設定
-int cpp_texpow2 = 1;		// [OpenGL] テクスチャの大きさを2の累乗に限定する
-int cpp_texdxt = 0;			// [DirectX] テクスチャをDXT圧縮する
-int cpp_texfilter = 0;		// [DirectX][OpenGL] 拡大された画像の表示形式
+int32_t cpp_texpow2 = 1;		// [OpenGL] テクスチャの大きさを2の累乗に限定する
+int32_t cpp_texdxt = 0;			// [DirectX] テクスチャをDXT圧縮する
+int32_t cpp_texfilter = 0;		// [DirectX][OpenGL] 拡大された画像の表示形式
 
 // 文字列定数
 str		version = "C7V4EX " FRAMEWORK_VER " 07/11/23";	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 str		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */
-int		item_pronum;		//item_proの合計　面倒だから手動で計算
-int		fldisno = 44;		//fldiにおいてスクウェア用の画像がある場所(場所のカウントは→矢印が30番目)
-int		fldigsno = 45;		//fldiにおいてGOLDENスクウェア用の画像がある場所
-int		fldihardno = 43;	//fldiにおいてハードブロックの画像がある場所
+int32_t		item_pronum;		//item_proの合計　面倒だから手動で計算
+int32_t		fldisno = 44;		//fldiにおいてスクウェア用の画像がある場所(場所のカウントは→矢印が30番目)
+int32_t		fldigsno = 45;		//fldiにおいてGOLDENスクウェア用の画像がある場所
+int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像がある場所
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 char	*string[STRING_MAX];
@@ -1455,7 +1456,7 @@ char	*string[STRING_MAX];
 //  メイン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void gameMain(void) {
-	int		i, y, temp;
+	int32_t		i, y, temp;
 
 	do
 	{
@@ -1590,13 +1591,17 @@ void gameMain(void) {
 		}
 		YGS2kExit();
 	} while ( restart );
+	for ( i = 0 ; i < STRING_MAX ; i ++ )
+	{
+		delete[] string[i];
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  最後にやる処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void lastProc(void) {
-	int		i,j,tmp,pl,fadec;
+	int32_t		i,j,tmp,pl,fadec;
 
 	if((playback) && (!demo)){
 		if(gameMode[0] != 4){
@@ -1849,7 +1854,7 @@ void lastProc(void) {
 //  タイトル
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void title(void) {
-	int		player, ofs, pl, mode, game, i, democ;
+	int32_t		player, ofs, pl, mode, game, i, democ;
 
 	// 初期設定
 	count = 0;
@@ -2085,7 +2090,7 @@ void title(void) {
 }
 
 /* SOLO MODEに入る */
-void enterSoloMode(int player) {
+void enterSoloMode(int32_t player) {
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
 
@@ -2117,8 +2122,8 @@ void enterSoloMode(int player) {
 }
 
 /* VERSUS MODEに入る */
-void enterVersusMode(int player) {
-	int i;
+void enterVersusMode(int32_t player) {
+	int32_t i;
 
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
@@ -2170,7 +2175,7 @@ void enterVersusMode(int player) {
 }
 
 /* PRACTICEモードに入る */
-void enterPracticeMode(int player) {
+void enterPracticeMode(int32_t player) {
 	hnext[0] = dispnext;
 	hnext[1] = dispnext;
 
@@ -2218,7 +2223,7 @@ void enterPracticeMode(int player) {
 }
 
 /* MISSION MODEに入る */
-void enterMissionMode(int player) {
+void enterMissionMode(int32_t player) {
 	gameMode[0] = 8;
 
 	hnext[0] = dispnext;
@@ -2254,7 +2259,7 @@ void enterMissionMode(int player) {
 //  デモ画面準備
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void doDemoMode(void) {
-	int		player,tmp;
+	int32_t		player,tmp;
 
 	demo = 1;
 	demotime = (demotime + 1) & 3;
@@ -2308,8 +2313,8 @@ void doDemoMode(void) {
 	}
 }
 
-void playerInitial(int player) {
-	int		i, j;
+void playerInitial(int32_t player) {
+	int32_t		i, j;
 
 	sc[player] = 0;
 	lv[player] = 0;
@@ -2824,8 +2829,8 @@ void gameAllInit(void) {
 //  NEXT生成処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // 変数playerを追加しました。#1.60c7m1
-void versusInit(int player) {
-	int		i, j, k, same, temp, mae, shu, len;
+void versusInit(int32_t player) {
+	int32_t		i, j, k, same, temp, mae, shu, len;
 
 	same = limit[nextblock];
 	mae = -1;
@@ -2939,10 +2944,10 @@ void versusInit(int player) {
 //  TGM風なNEXT生成処理#1.60c7h4
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // 変数playerを追加しました。#1.60c7m1
-void tgmNextInit(int player) {
-	int i, j;
-	int history[4];
-	int block;
+void tgmNextInit(int32_t player) {
+	int32_t i, j;
+	int32_t history[4];
+	int32_t block;
 
 //	for(i = 0; i < 4; i++) history[i] = 3; // 履歴を緑で埋める
 
@@ -3000,11 +3005,11 @@ void tgmNextInit(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ガイドライン対応ゲーム風なNEXT生成処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void guidelineNextInit(int player) {
-	int i, j;
-	int tmp;
-	int first;
-	int block[7];	// ブロックが出たかどうかのフラグ
+void guidelineNextInit(int32_t player) {
+	int32_t i, j;
+	int32_t tmp;
+	int32_t first;
+	int32_t block[7];	// ブロックが出たかどうかのフラグ
 
 	first = 1;
 	//初手　ガイドライン風にもnextadjustを適用
@@ -3049,8 +3054,8 @@ void guidelineNextInit(int player) {
 
 // NEXT領域内のブロックの色を設定 #1.60c7m9
 // 回転法則を変更したりNEXT関係の変数を弄ったりする度に呼び出す必要あり
-void setNextBlockColors(int player, int first) {
-	int i,j, tmp;
+void setNextBlockColors(int32_t player, int32_t first) {
+	int32_t i,j, tmp;
 
 	if( first ) {
 		// 初期化//ブロックの種類を決める
@@ -3189,7 +3194,7 @@ void setNextBlockColors(int player, int first) {
 //  プレイヤーのステータスに応じて各処理を実行
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void playerExecute(void) {
-	int		i, newhole, j, k, temp,pages2;
+	int32_t		i, newhole, j, k, temp,pages2;
 //	グローバル変数playerは廃止しました。
 //	代わりに「i」を用いてください。
 
@@ -3601,8 +3606,8 @@ void playerExecute(void) {
 
 /* 捨てゲーする(した場合の戻り値は1、しなかったら0) */
 // playerExecuteから独立#1.60c7j6
-int doGiveup() {
-	int i, tmp1, tmp2;
+int32_t doGiveup() {
+	int32_t i, tmp1, tmp2;
 
 	// giveup_safety修正 #1.60c7p4
 	if(giveup_safety) {
@@ -3708,8 +3713,8 @@ int doGiveup() {
 }
 
 /* 経過タイムを増加 */
-void increment_time(int player) {
-	int		i, j, k, temp;
+void increment_time(int32_t player) {
+	int32_t		i, j, k, temp;
 
 	// ロールクリア
 	if((ending[player] == 2) && (edrec[player] > 3740) && (onRecord[player])) {
@@ -4073,14 +4078,14 @@ void increment_time(int player) {
 }
 
 // 現在のルールがワールド系かどうか判定 #1.60c7r3
-int isWRule(int player) {
+int32_t isWRule(int32_t player) {
 	return ( (rots[player] == 2) || (rots[player] == 3) || (rots[player] == 6) ||(rots[player] == 7) );
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.00 - 参加待ち中状態
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statJoinwait(int player) {
+void statJoinwait(int32_t player) {
 	padRepeat(player);
 
 	if(count % 80 > 10) {
@@ -4115,9 +4120,9 @@ void statJoinwait(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.01 - ブロックシャッター
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statBlockSutter(int player) {
+void statBlockSutter(int32_t player) {
 	// すぐに次のステータスへ行けるように#1.60cd
-	int		i, j, blk;
+	int32_t		i, j, blk;
 
 	StopAllBGM();
 	if(!playback){
@@ -4158,8 +4163,8 @@ void statBlockSutter(int player) {
 // statc[player * 10 + 2]：0=ルールセレクト 1=モードセレクト 2=その他
 // statc[player * 10 + 3]：その他画面でのカーソル位置
 
-void statSelectMode(int player) {
-	int i,ranktmp,j,twg_opt[2];
+void statSelectMode(int32_t player) {
+	int32_t i,ranktmp,j,twg_opt[2];
 
 	//statc[player * 10 + 1]++;
 	if(statc[player * 10 + 4] > 0){
@@ -4913,8 +4918,8 @@ void statSelectMode(int player) {
 //0;なし
 //1:昇段
 //2:降格
-int Admitgradecheck(int player){
-	int i,j,temp1[2],temp2[2],grade_his_buf[5],sort_grade[3];
+int32_t Admitgradecheck(int32_t player){
+	int32_t i,j,temp1[2],temp2[2],grade_his_buf[5],sort_grade[3];
 	if(gameMode[player]!=1)return 0;
 	if(enable_grade[player]!=4)return 0;
 	for(i=0;i<5;i++){
@@ -5000,8 +5005,8 @@ int Admitgradecheck(int player){
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.37 -レベルセレクト
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statSelectStandardSp(int player) {
-	int	i;
+void statSelectStandardSp(int32_t player) {
+	int32_t	i;
 
 	//statc[player * 10 + 1]++;
 
@@ -5189,8 +5194,8 @@ void statSelectStandardSp(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.12 - debug = 1のときのレベルセレクト
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statSelectStartLv(int player) {
-	int	i;
+void statSelectStartLv(int32_t player) {
+	int32_t	i;
 	i = 0;
 
 	statc[player * 10 + 1]++;
@@ -5280,7 +5285,7 @@ void statSelectStartLv(int player) {
 }
 
 
-void setStartLevel(int pl) {				// 各種速度設定ロード (loadReplayからも利用) #1.60c3
+void setStartLevel(int32_t pl) {				// 各種速度設定ロード (loadReplayからも利用) #1.60c3
 	if((!fpbas_mode[pl])&&(gameMode[pl]!=10)) { //TGM
 		tr[pl] = start[pl] / 10;
 		tc[pl] = start[pl];
@@ -5588,9 +5593,9 @@ void setStartLevel(int pl) {				// 各種速度設定ロード (loadReplayから
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.03 - Ready !?
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statReady(int player) {
-//	int r_start, r_end, g_start, g_end;
-	int tmp;
+void statReady(int32_t player) {
+//	int32_t r_start, r_end, g_start, g_end;
+	int32_t tmp;
 
 	/* コンピュータ操作 #1.60c7o3 */
 	if(playback) {
@@ -5975,8 +5980,8 @@ void statReady(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.04 - ブロック落下開始
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statBlock(int player) {
-	int i, j,k, m[2],tmp[2],tmp2[2];
+void statBlock(int32_t player) {
+	int32_t i, j,k, m[2],tmp[2],tmp2[2];
 
 	if(dolaser[player]){	//レーザー発動
 		stat[player] = 26;
@@ -6409,7 +6414,7 @@ void statBlock(int player) {
 
 /* ゲームオーバーになるかチェック ゲームオーバーになった場合は1を返す */
 // statBlockから独立 #1.60c7l2
-int checkGameOver(int player) {
+int32_t checkGameOver(int32_t player) {
 	// ブロックがめり込んでいたら
 	if(judgeBlock(player, bx[player], by[player], blk[player], rt[player]) != 0) {
 		setBlock(player, bx[player], by[player], blk[player], rt[player]);
@@ -6423,8 +6428,8 @@ int checkGameOver(int player) {
 }
 
 /* ゲームオーバー処理 */
-void setGameOver(int player) {
-	int i;
+void setGameOver(int32_t player) {
+	int32_t i;
 
 	disableShadowTimer(player);		// シャドウタイマー解除 #1.60c7k7
 
@@ -6482,9 +6487,9 @@ void setGameOver(int player) {
 }
 
 /* 裏段位認定 #1.60c7o1 */
-void checkSecretGrade(int player) {
-	int i, j;
-	int uhole, hmode;
+void checkSecretGrade(int32_t player) {
+	int32_t i, j;
+	int32_t uhole, hmode;
 
 	uhole = 0;		// 穴の位置 最初は一番左
 	hmode = 0;		// 折り返しフラグ
@@ -6525,8 +6530,8 @@ void checkSecretGrade(int player) {
 
 // (I.R.S.) Initial Rotation System  (c)1998 AR●KA(^^;
 // #1.60c7j3
-void doIRS(int player) {
-	int bak;
+void doIRS(int32_t player) {
+	int32_t bak;
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	if(repversw >= 43){	//新Ver
@@ -6619,7 +6624,7 @@ void doIRS(int player) {
 	}
 }
 // ACE式IRS
-void doIRS2(int player) {
+void doIRS2(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
@@ -6655,7 +6660,7 @@ void doIRS2(int player) {
 	}
 }
 //ACEカスタムIRS ブロック固定の瞬間のみ
-void doIRS2plus(int player) {
+void doIRS2plus(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
@@ -6691,7 +6696,7 @@ void doIRS2plus(int player) {
 	}
 }
 // ブロック出現位置を設定　From LITE Ver
-void setBlockSpawnPosition(int player) {
+void setBlockSpawnPosition(int32_t player) {
 	if((spawn_y_type) && (heboGB[player]==0)) {
 		// 枠外
 		if(IsBig[player]) {
@@ -6742,8 +6747,8 @@ void setBlockSpawnPosition(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.05 - ブロック移動中
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statMove(int player) {
-	int tmp;
+void statMove(int32_t player) {
+	int32_t tmp;
 	// 注意：実際の処理はこのファイルにはありません。
 	// ワールドルールの場合はworld.c、クラシックルールの場合はclassic.cに分岐します。
 
@@ -6810,8 +6815,8 @@ void statMove(int player) {
 }
 
 // HOLDする処理 #1.60c7j3
-void doHold(int player, int ihs) {
-	int tmp,first;
+void doHold(int32_t player, int32_t ihs) {
+	int32_t tmp,first;
 	first = 0;
 	if((disable_hold) || (isholdlock[player] == 1) || (death_plus[player])||(hebo_plus[player])||(heboGB[player])) return;
 
@@ -6934,7 +6939,7 @@ void doHold(int player, int ihs) {
 
 // TLSが有効か判定
 // クラシックとワールドで分かれていたものを一本化 #1.60c7j6
-int isTLS(int player) {
+int32_t isTLS(int32_t player) {
 	// noredrawが1だったらTLSなし
 	if(noredraw) {
 		return 0;
@@ -7028,9 +7033,9 @@ int isTLS(int player) {
 
 // T-SPIN判定 #1.60c7s6
 // BIG対応
-int isTSpin(int player) {
-	int i, count, tx[4], ty[4];
-	int tmp_x, tmp_y;
+int32_t isTSpin(int32_t player) {
+	int32_t i, count, tx[4], ty[4];
+	int32_t tmp_x, tmp_y;
 
 	// 判定用相対座標を設定
 	if(IsBig[player]){
@@ -7080,9 +7085,9 @@ int isTSpin(int player) {
 
 // ブロック消去判定 fldsize対応 #1.60c7
 // 消去される場合、1を返す #1.60c7k8
-int blockEraseJudge(int player) {
-	int		i, j, k, l,sr,ret;
-	int		by2;	// 調べるY座標
+int32_t blockEraseJudge(int32_t player) {
+	int32_t		i, j, k, l,sr,ret;
+	int32_t		by2;	// 調べるY座標
 
 //	if(IsBig[player]) {
 //		// BIGでは専用処理
@@ -7152,8 +7157,8 @@ int blockEraseJudge(int player) {
 }
 
 /* BIG用消去判定 */
-int blockBigEraseJudge(int player) {
-	int		i, j, sr,ret;
+int32_t blockBigEraseJudge(int32_t player) {
+	int32_t		i, j, sr,ret;
 
 	ret = 0;
 	for(i = 0; i <= fldsizeh[player]; i++) {
@@ -7185,8 +7190,8 @@ int blockBigEraseJudge(int player) {
 }
 
 /* FREE FALL用消去判定 */
-int blockEraseJudgeFf(int player,int mode) {
-	int		i, j, k, l, sr, ret, hole;
+int32_t blockEraseJudgeFf(int32_t player,int32_t mode) {
+	int32_t		i, j, k, l, sr, ret, hole;
 	if(mode == 0){
 		ret = 0;
 		for(i = 0; i <= fldsizeh[player]; i++) {
@@ -7229,8 +7234,8 @@ int blockEraseJudgeFf(int player,int mode) {
 // statc[player * 10 + 1] カウンタ2
 // statc[player * 10 + 2] 0なら演出中 1なら回転法則選択中
 // statc[player * 10 + 3] 0ならクリア演出　1なら窒息演出
-void statRelayselect(int player) {
-	int block,i,j,c;
+void statRelayselect(int32_t player) {
+	int32_t block,i,j,c;
 
 	timeOn[player] = 0;
 	ndelay[player] = 1;
@@ -7457,8 +7462,8 @@ void statRelayselect(int player) {
 }
 
 // ブロック上昇する?
-void UpLineBlockJudge(int player) {
-	int	j;
+void UpLineBlockJudge(int32_t player) {
+	int32_t	j;
 	// せり上がりラインが残っているときはせり上げる
 	if(upLines[player] > 0) {
 		// 対戦では本家っぽく着地直後のみせり上げてみる
@@ -7483,11 +7488,11 @@ void UpLineBlockJudge(int player) {
 }
 
 // ブロック上昇
-void UpLineBlock(int player) {
+void UpLineBlock(int32_t player) {
 	// SHIRASE以外のせり上がりタイプもBIGに対応 #1.60c7g3
 	// #1.60c7j5
 	// BIG専用処理を削除（BIGの仕様変更で不要に）#1.60c7o9
-	int		i, j,newhole,h1,h2,riseT;
+	int32_t		i, j,newhole,h1,h2,riseT;
 
 	riseT = upLineT[player];
 	if((gameMode[player] == 8) && (mission_type[c_mission] == 21) && (stat[player] == 6))
@@ -7738,8 +7743,8 @@ void UpLineBlock(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.06 - 時間稼ぎ & レベルアップ判定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statErase(int player) {
-	int		i, j, wkfld,tmp_s[2],y;
+void statErase(int32_t player) {
+	int32_t		i, j, wkfld,tmp_s[2],y;
 
 	padRepeat(player);
 
@@ -8200,8 +8205,8 @@ void statErase(int player) {
 }
 
 /* フィールドミラー */
-int fldMirrorProc(int player) {
-	int		i, j, wkfld;
+int32_t fldMirrorProc(int32_t player) {
+	int32_t		i, j, wkfld;
 	if((stopmirror_flag[player] == 1) && (fmirror_cnt[player] == -20)){
 		isfmirror[player] = 0;
 		stopmirror_flag[player] = 0;
@@ -8266,7 +8271,7 @@ int fldMirrorProc(int player) {
 }
 
 /* せり上がり */
-int UpLineShirase(int player) {
+int32_t UpLineShirase(int32_t player) {
 
 	// 旧式せり上がり（リプレイの互換性のため残されている）
 	if(repversw < 6) {
@@ -8324,7 +8329,7 @@ int UpLineShirase(int player) {
 }
 
 /* レベルアップ */
-void LevelUp(int player) {
+void LevelUp(int32_t player) {
 	// レベルアップ判定にTGMルール追加 #1.60c3
 	if(gameMode[player] == 0) {
 		// ビギナーモードのレベルアップ判定
@@ -8920,8 +8925,8 @@ void LevelUp(int player) {
 
 /* ラップタイムとスプリットタイム記録（#1.60c7j7 〜） */
 //LevelUpから独立 #1.60c7j8
-void recSectionTime(int player) {
-	int tmp, max,temp;
+void recSectionTime(int32_t player) {
+	int32_t tmp, max,temp;
 
 	tmp = 0;
 
@@ -8993,7 +8998,7 @@ void recSectionTime(int player) {
 	}
 }
 /* ステージクリアタイム記録） */
-void recStageTime(int player) {
+void recStageTime(int32_t player) {
 	if(stage[player] > 26) return;
 	//TOMOYOステージタイムctime[
 	stage_time[stage[player] + player * 200] = ctime[player];
@@ -9003,7 +9008,7 @@ void recStageTime(int player) {
 	}
 }
 /* ステージクリアできないタイム記録） */
-void recFaultTime(int player) {
+void recFaultTime(int32_t player) {
 	if(stage[player] > 26) return;
 	//TOMOYOステージタイムctime[
 	stage_time[stage[player] + player * 200] = 5400;
@@ -9015,8 +9020,8 @@ void recFaultTime(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.07 - ゲームオーバー演出
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statGameOver(int player) {
-	int		i, j, block, c;
+void statGameOver(int32_t player) {
+	int32_t		i, j, block, c;
 
 	// 下入れ制限強制解除#1.60c7f9
 	down_flag[player] = 0;
@@ -9171,8 +9176,8 @@ void statGameOver(int player) {
 //  ステータスNo.08 - ブロック消去
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // Big対応 waitの扱いを忠実にした#1.60c7 バグ取り #1.60c7b
-void statEraseBlock(int player) {
-	int		i, j, k, l, x, y, ty, lines, wait, fldtmp, hardblock,hardblock2,tmp_s[2];
+void statEraseBlock(int32_t player) {
+	int32_t		i, j, k, l, x, y, ty, lines, wait, fldtmp, hardblock,hardblock2,tmp_s[2];
 	hardblock = 0;
 	hardblock2 = 0;
 
@@ -9538,8 +9543,8 @@ void statEraseBlock(int player) {
 	}
 }
 // 破片ブロック判定
-void grayoutLackedBlock(int player, int no) {
-	int i, j;
+void grayoutLackedBlock(int32_t player, int32_t no) {
+	int32_t i, j;
 
 	if((gameMode[player] < 8) && (gameMode[player] != 5)) return;
 	if(no <= 0) return;
@@ -9554,8 +9559,8 @@ void grayoutLackedBlock(int player, int no) {
 	}
 }
 // スクウェアでの3コーナーT-SPIN時用　全て破片化
-void grayoutAllBlock(int player) {
-	int i, j;
+void grayoutAllBlock(int32_t player) {
+	int32_t i, j;
 
 	if((gameMode[player] < 8) && (gameMode[player] != 5)) return;
 
@@ -9573,8 +9578,8 @@ void grayoutAllBlock(int player) {
 }
 /// 正方形ができるかチェック
 // player：プレイヤー番号 x:始点のX座標 y:始点のY座標 gold:1の場合は一種類のブロックのみで正方形ができる
-int checkSquare(int player, int x, int y, int gold) {
-	int i, j, color;
+int32_t checkSquare(int32_t player, int32_t x, int32_t y, int32_t gold) {
+	int32_t i, j, color;
 
 	// 始点の色を取得
 	color = getFieldBlock(player, x, y,0);
@@ -9626,8 +9631,8 @@ int checkSquare(int player, int x, int y, int gold) {
 }
 
 // 正方形を作る
-int makeSquare(int player) {
-	int i, j, k, l, result;
+int32_t makeSquare(int32_t player) {
+	int32_t i, j, k, l, result;
 	result = 0;
 
 	for(i = 0; i < 22 - 3; i++) {
@@ -9663,20 +9668,20 @@ int makeSquare(int player) {
 	return result;
 }
 // 正方形用
-int getFieldBlockS(int player, int bx1, int by1) {
+int32_t getFieldBlockS(int32_t player, int32_t bx1, int32_t by1) {
 	if((bx1 < 0) || (bx1 > 9) || (by1 < 0) || (by1 > 21)) return 0;
 
 	return flds[bx1 + by1 * 10 + player * 220];
 }
 
-int isComboMode(int player){
+int32_t isComboMode(int32_t player){
 	if((gameMode[player] <= 5) || (gameMode[player] == 10)) return 1;
 	else if(gameMode[player] == 8) return (mission_type[c_mission] == 27);
 	else return 0;
 }
 /* スコア計算 #1.60c7j9 */
-void calcScore(int player, int lines) {
-	int		i, j, k, l, x, y, bo[2], bai, all[2], tcbuf = 0,btmup,top;
+void calcScore(int32_t player, int32_t lines) {
+	int32_t		i, j, k, l, x, y, bo[2], bai, all[2], tcbuf = 0,btmup,top;
 
 		/* 全消し処理 */
 		all[player] = 1;
@@ -10081,7 +10086,7 @@ void calcScore(int player, int lines) {
 }
 
 /* エンディング突入判定 */
-void checkEnding(int player, int tcbuf) {
+void checkEnding(int32_t player, int32_t tcbuf) {
 
 	// MASTERと20GではTGMレベルが999に達したらフラグON
 	if((gameMode[player] >= 1) && (gameMode[player] <= 2) && (tc[player] >= 999)) {
@@ -10407,7 +10412,7 @@ void checkEnding(int player, int tcbuf) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.10 - 対戦モード相手決定待ち
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statVersusWait(int player) {
+void statVersusWait(int32_t player) {
 	// 何もしないようにした(PRACTICEの2P用) #1.60cd
 
 	// 対戦モード復活につき変更#1.60c7g1
@@ -10435,11 +10440,11 @@ void statVersusWait(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.11 - ネームエントリー
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statNameEntry(int player) {
-	int		move, len, j,k;
-	int		i, rank, add;		// #1.60c7i5
-	int		st_update,cat[2],ex[2];
-	int		temp[2],temp2[2],color[2];
+void statNameEntry(int32_t player) {
+	int32_t		move, len, j,k;
+	int32_t		i, rank, add;		// #1.60c7i5
+	int32_t		st_update,cat[2],ex[2];
+	int32_t		temp[2],temp2[2],color[2];
 
 	add = 0;
 
@@ -10871,8 +10876,8 @@ void statNameEntry(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.13 - エンディング・ロール
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statEnding(int player) {
-	int	i, j, k;
+void statEnding(int32_t player) {
+	int32_t	i, j, k;
 //sprintf(string[0],"END %2d %2d",ending[player],gameMode[player]);
 //printFont(0, 0, string[0], (count % 4 / 2) * digitc[rots[i]]);
 	if ( (ending[player] == 1) || (ending[player] == 4) ){
@@ -11258,8 +11263,8 @@ fadelv[player] = 0;
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.14 - 結果表示 #1.60c7f3
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statResult(int player) {
-	int i, color, best, worst, bestT, worstT, tmp;
+void statResult(int32_t player) {
+	int32_t i, color, best, worst, bestT, worstT, tmp;
 	statc[player * 10 + 1]++;
 
 	// 音楽を流す #1.60c7l2
@@ -11512,8 +11517,8 @@ void statResult(int player) {
 // statc[player * 10 + 0]：番号
 // statc[player * 10 + 1]：リプレイの有無
 // statc[player * 10 + 2]：保存入力をしたか
-void statReplaySave(int player) {
-	int i;
+void statReplaySave(int32_t player) {
+	int32_t i;
 
 	// リプレイの存在を調べる
 	if(!statc[player * 10 + 0]) {
@@ -11710,8 +11715,8 @@ void statReplaySave(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.16 - 対戦モード設定画面 #1.60c7g1
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statVersusSelect(int player) {
-	int	i;
+void statVersusSelect(int32_t player) {
+	int32_t	i;
 	if(demo){	//デモならタイトルへ
 		StopAllBGM();
 		StopSE(40);
@@ -12172,7 +12177,7 @@ void statVersusSelect(int player) {
 //  勝敗決定 #1.60c7g1
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void winner() {
-	int		player, i, j, block, win, obj, c, kosa;
+	int32_t		player, i, j, block, win, obj, c, kosa;
 
 	// BGM停止
 	if(wavebgm > 0) StopAllBGM();
@@ -12341,7 +12346,7 @@ void winner() {
 }
 
 void winner2() {
-	int		player, i, j, block, win, obj, c, kosa, sbak[30];
+	int32_t		player, i, j, block, win, obj, c, kosa, sbak[30];
 
 	StopSE(32);
 
@@ -12539,9 +12544,9 @@ void winner2() {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  アイテム発動処理 #1.60c7n1
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void eraseItem(int player, int type) {
-	int i, enemy, attack;
-	int bx2, by2;
+void eraseItem(int32_t player, int32_t type) {
+	int32_t i, enemy, attack;
+	int32_t bx2, by2;
 
 	if((type <= 0) || (type >= fldihardno) || (gameMode[player] > 5)) return;
 	attack = 0;
@@ -12912,7 +12917,7 @@ void eraseItem(int player, int type) {
 	scanItem(player);
 }
 //ステータス異常をクリア
-void statusClear(int player){
+void statusClear(int32_t player){
 	if(isfmirror[player])
 		stopmirror_flag[player] = 1;
 	isrollroll[player] = 0;
@@ -12953,8 +12958,8 @@ void statusClear(int player){
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.21 - ゲームオーバー表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statGameOver2(int player) {
-	int i;
+void statGameOver2(int32_t player) {
+	int32_t i;
 
 	// カウンタ増加
 	statc[player * 10]++;
@@ -13020,8 +13025,8 @@ void statGameOver2(int player) {
 // statc[player * 10 + 1]：待ち時間終了後に移動するステータス
 // statc[player * 10 + 3]：ミッションのerace値によるせり上がり
 // statc[player * 10 + 4]：↑使用時のせり上がりタイプ
-void statNothing(int player) {
-	int i;
+void statNothing(int32_t player) {
+	int32_t i;
 
 	if(repversw >= 30) padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE式IRS C7U1.5
@@ -13060,8 +13065,8 @@ void statNothing(int player) {
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
 // statc[player * 10 + 2]：終了後にステージ読み込み(0=なし 1=あり）
-void statDelField(int player) {
-	int i, j, y,k,l,waitA;
+void statDelField(int32_t player) {
+	int32_t i, j, y,k,l,waitA;
 
 	statc[player * 10]++;
 
@@ -13157,8 +13162,8 @@ void statDelField(int player) {
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
 // statc[player * 10 + 2]：16tか？
-void statLaser(int player) {
-	int i,j,move,waitA,waitB;
+void statLaser(int32_t player) {
+	int32_t i,j,move,waitA,waitB;
 
 //	dolaser[player] = 0;
 	if(repversw < 63){
@@ -13316,8 +13321,8 @@ void statLaser(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
-void statNegafield(int player) {
-	int i,j,y,waitA;
+void statNegafield(int32_t player) {
+	int32_t i,j,y,waitA;
 
 //	donega[player] = 0;
 	if(repversw < 63)
@@ -13379,8 +13384,8 @@ void statNegafield(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
-void statShotgun(int player) {
-	int i,j,x,limit,waitA,waitB;
+void statShotgun(int32_t player) {
+	int32_t i,j,x,limit,waitA,waitB;
 	j = 0;
 
 //	doshotgun[player] = 0;
@@ -13450,8 +13455,8 @@ void statShotgun(int player) {
 // statc[player * 10 + 1]：終了後に移動するステータス
 // statc[player * 10 + 2]：相手と同期を取るためのフラグ
 // statc[player * 10 + 3]：自分は交換しない（フィールドコピー）
-void statExchangefield(int player) {
-	int i,j,enemy;
+void statExchangefield(int32_t player) {
+	int32_t i,j,enemy;
 
 	doexchg[player] = 0;
 	docopyfld[player] = 0;
@@ -13525,8 +13530,8 @@ void statExchangefield(int player) {
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：0なら開始宣言、他なら結果発表
 
-void statExamination(int player){
-	int i,k;
+void statExamination(int32_t player){
+	int32_t i,k;
 	if(statc[player * 10 + 1] == 0){		//開始宣言
 		if(statc[player * 10 + 0] == 0){//プルプル
 			PlaySE(7);
@@ -13702,8 +13707,8 @@ void statExamination(int player){
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
 // statc[player * 10 + 2]：発動アイテム
-void statItemRulet(int player) {
-	int i,j,y,waitA;
+void statItemRulet(int32_t player) {
+	int32_t i,j,y,waitA;
 
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE式IRS C7U1.5
@@ -13956,8 +13961,8 @@ void statItemRulet(int player) {
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
 // statc[player * 10 + 2]：再せり上がり時の穴の位置
-void statFreefall(int player) {
-	int i,j,x,y = 0,l,k,tmp;
+void statFreefall(int32_t player) {
+	int32_t i,j,x,y = 0,l,k,tmp;
 
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE式IRS C7U1.5
@@ -14132,8 +14137,8 @@ void statFreefall(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
-void statMovfield(int player) {
-	int i,j,x,y,l,k,tmp;
+void statMovfield(int32_t player) {
+	int32_t i,j,x,y,l,k,tmp;
 
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE式IRS C7U1.5
@@ -14224,8 +14229,8 @@ void statMovfield(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // statc[player * 10 + 0]：カウンタ
 // statc[player * 10 + 1]：終了後に移動するステータス
-void stat180field(int player) {
-	int i,j,x,y,l,k,tmp,waitA;
+void stat180field(int32_t player) {
+	int32_t i,j,x,y,l,k,tmp,waitA;
 
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE式IRS C7U1.5
@@ -14302,8 +14307,8 @@ void stat180field(int player) {
 // statc[player * 10 + 1]：終了後に移動するステータス
 // statc[player * 10 + 2]：消すライン数
 // statc[player * 10 + 3]：カウンタ2
-void statDelfromUpper(int player) {
-	int i, j, k, waitA;
+void statDelfromUpper(int32_t player) {
+	int32_t i, j, k, waitA;
 
 	padRepeat(player);
 	if(ace_irs) doIRS2(player);	// ACE式IRS C7U1.5
@@ -14361,8 +14366,8 @@ void statDelfromUpper(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.EX - シャッフルフィールド
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statBanana(int player){
-	int i,j,y,flag[10],tmp,chg[10],chgt[10],chgi[10],chgs[10];
+void statBanana(int32_t player){
+	int32_t i,j,y,flag[10],tmp,chg[10],chgt[10],chgi[10],chgs[10];
 
 	if(banana_c[player] == 0){	// 最初
 		for(i = 0; i < 10; i++) flag[i] = 0;
@@ -14407,8 +14412,8 @@ void statBanana(int player){
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  擬似乱数のシード生成
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void GiziSRand(int player){
-	int seed;
+void GiziSRand(int32_t player){
+	int32_t seed;
 
 	seed = Rand(65536);
 	randseed[player] = seed;
@@ -14418,14 +14423,14 @@ void GiziSRand(int player){
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  擬似乱数生成
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int rand(int max,int player) {
+int32_t rand(int32_t max,int32_t player) {
 
 		randseed[player] = ((randseed[player] * 673 + 994) / 10) % 100000;
 		return abs_YGS2K(randseed[player]) % max;
 }
 
 // 絶対値を求める（YGS2Kにはデフォルトでは入っていないので）
-int abs_YGS2K(int i){
+int32_t abs_YGS2K(int32_t i){
 	if(i < 0)
 		return -i;
 	else
@@ -14438,7 +14443,7 @@ int abs_YGS2K(int i){
 // フィールドより上は -2
 //　opt:1なら現在のステータス異常を考慮　操作中ブロック向け
 //  fld[bx1 + by1 * fldsizew[player] + player * 220];
-int getFieldBlock(int player, int bx1, int by1, int opt) {
+int32_t getFieldBlock(int32_t player, int32_t bx1, int32_t by1, int32_t opt) {
 	//フィールド外？
 	if(((bx1 < 0) && (by1 > 0)) || ((bx1 > fldsizew[player] - 1) && (by1 > 0)) || (by1 > fldsizeh[player])) return -1;
 	if(by1 < 0) return 0;
@@ -14454,17 +14459,17 @@ int getFieldBlock(int player, int bx1, int by1, int opt) {
 	return (fld[bx1 + by1 * fldsizew[player] + player * 220]);
 }
 
-int getFieldBlock2(int player, int bx1, int by1) {
+int32_t getFieldBlock2(int32_t player, int32_t bx1, int32_t by1) {
 	if((bx1 < 0) || (bx1 > 10 - 1) || (by1 > fldsizeh[player])) return -1;
 	else return (tomoyo_rise_fld[bx1 + by1 * 10 + player * 200]);
 }
 
-int getFieldBlock3(int player, int bx1, int by1) {
+int32_t getFieldBlock3(int32_t player, int32_t bx1, int32_t by1) {
 	if((bx1 < 0) || (bx1 > 10 - 1) || (by1 > fldsizeh[player])) return 0 - (1 * (gameMode[player] == 5));
 	else return (fldu[bx1 + by1 * 10 + player * 220]);
 }
 // gamemodefont.png用
-int getModeAdd(int player){
+int32_t getModeAdd(int32_t player){
 	if(gameMode[player] == 0) return novice_mode[player];
 	else if((gameMode[player] == 1) || (gameMode[player] == 2)) return enable_grade[player];
 	else if(gameMode[player] == 3) return devil_minus[player];
@@ -14477,8 +14482,8 @@ int getModeAdd(int player){
 	else return 0;
 }
 // フィールドの最上段を返す
-int checkFieldTop(int player) {
-	int i, j;
+int32_t checkFieldTop(int32_t player) {
+	int32_t i, j;
 
 	for(i = 0; i <= fldsizeh[player]; i++)
 		for(j = 0; j < fldsizew[player]; j++)
@@ -14491,8 +14496,8 @@ int checkFieldTop(int player) {
 
 // フィールドの最上段を返す
 // x軸を指定出来るバージョン
-int checkFieldTop2(int player,int x) {
-	int i;
+int32_t checkFieldTop2(int32_t player,int32_t x) {
+	int32_t i;
 
 	for(i = 0; i <= fldsizeh[player]; i++)
 		if(fld[x + i * fldsizew[player] + player * 220])
@@ -14504,8 +14509,8 @@ int checkFieldTop2(int player,int x) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //   表示するアイテム名を決定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void scanItem(int player) {
-	int i, j;
+void scanItem(int32_t player) {
+	int32_t i, j;
 
 	item_name[player] = 0;
 
@@ -14525,7 +14530,7 @@ void scanItem(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  パッドリピート入力処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void padRepeat(int player) {
+void padRepeat(int32_t player) {
 	if(getPressState(player, 2) && getPressState(player, 3)) {
 		mp[player] = 0;
 		mpc[player] = 0;
@@ -14546,7 +14551,7 @@ void padRepeat(int player) {
 		mpc[player] = 0;
 	}
 }
-void padRepeat2(int player) { // hoge 上下入力バージョン
+void padRepeat2(int32_t player) { // hoge 上下入力バージョン
 	if(getPressState(player, 0) && getPressState(player, 1)) {
 		mp2[player] = 0;
 		mpc2[player] = 0;
@@ -14572,10 +14577,10 @@ void padRepeat2(int player) { // hoge 上下入力バージョン
 //  キー状態の取得
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // ジョイスティック周りを変更 #1.60c7
-int getPressState(int player, int key) { // パッドボタン割り当て対応 #1.60c
-	int jtmp;	// ジョイスティック入力
-	int ktmp;	// キーボード入力
-	int pl;
+int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
+	int32_t jtmp;	// ジョイスティック入力
+	int32_t ktmp;	// キーボード入力
+	int32_t pl;
 
 	// シングルモードでは2P側の入力を常にカット
 	if(maxPlay < player) return 0;
@@ -14616,10 +14621,10 @@ int getPressState(int player, int key) { // パッドボタン割り当て対応
 	}
 }
 
-int getPushState(int player, int key) { // パッドボタン割り当て対応 #1.60c
-	int jtmp;	// ジョイスティック入力
-	int ktmp;	// キーボード入力
-	int pl;
+int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
+	int32_t jtmp;	// ジョイスティック入力
+	int32_t ktmp;	// キーボード入力
+	int32_t pl;
 
 	// シングルモードでは2P側の入力を常にカット
 	if(maxPlay < player) return 0;
@@ -14659,8 +14664,8 @@ int getPushState(int player, int key) { // パッドボタン割り当て対応 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ブロックのあたり判定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2; //, result
+int32_t judgeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2; //, result
 
 	if(IsBig[player]) {
 		// BIGの場合は専用の判定処理を行う #1.60c7m6
@@ -14694,9 +14699,9 @@ int judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ブロックを設置する fldsize対応 #1.60c7
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void setBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2;
-	int		puted;
+void setBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2;
+	int32_t		puted;
 
 	if(IsBig[player]) {
 		// BIGの場合は専用の設置処理を行う #1.60c7m6
@@ -14747,9 +14752,9 @@ void setBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 /* BIG用当たり判定 #1.60c7m6 */
-int judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2; //, result
-	int		k, l, bx3, by3;
+int32_t judgeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2; //, result
+	int32_t		k, l, bx3, by3;
 
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
@@ -14781,10 +14786,10 @@ int judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 /* BIG用設置処理 #1.60c7m6 */
-void setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2;
-	int		k, l, bx3, by3;
-	int		puted;
+void setBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2;
+	int32_t		k, l, bx3, by3;
+	int32_t		puted;
 
 	puted = 0;
 
@@ -14834,8 +14839,8 @@ void setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 	}
 }
 // ブロックを消す　MOVE ERASED せり上がり用
-void removeBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2;
+void removeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2;
 
 	if(IsBig[player]) {
 		// BIGの場合は専用処理を行う #1.60c7m6
@@ -14863,9 +14868,9 @@ void removeBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 // BIG用
-void removeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2;
-	int		k, l, bx3, by3;
+void removeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2;
+	int32_t		k, l, bx3, by3;
 
 	for(i = 0 ; i < 4 ; i++) {
 		if(rots[player] == 8) {
@@ -14896,7 +14901,7 @@ void removeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 //  テストメニュー#1.60c7i4
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void testmenu(void) {
-	int i, j, cursor, mode, param;
+	int32_t i, j, cursor, mode, param;
 	cursor = 0;
 	mode = 0;
 	param = 0;
@@ -15060,14 +15065,14 @@ void testmenu(void) {
 //  初期設定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void initialize(void) {
-	int i, j;
+	int32_t i, j;
 	SetFillColor(0);
 	ClearSecondary();
 	halt;
 
 	// SetConstParam("Caption", "Now Loading...");
 
-	for ( int ii = 1 ; ii <= 5 ; ii ++ )
+	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
 	{
 		TextSize(ii, 12);
 		TextBackColorDisable(ii);
@@ -15145,7 +15150,7 @@ void initialize(void) {
 		}
 	}
 
-	for ( int ii = 1 ; ii <= 5 ; ii ++ )
+	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
 	{
 		TextLayerOff(ii);
 	}
@@ -15195,7 +15200,7 @@ void initialize(void) {
 /* グラフィック読み込み */
 // initializeから独立 #1.60c7o5
 // players : プレイする人数(maxPlayの代わり)
-void LoadGraphics(const char *nameStr, int p1, int p2) {
+void LoadGraphics(const char *nameStr, int32_t p1, int32_t p2) {
 	if ( getDrawRate() == 1 )
 		sprintf(string[0], "res/graphics/lowDetail%s", nameStr);
 	else
@@ -15225,7 +15230,7 @@ void LoadTitle(){
 	}
 }
 
-void LoadBackground(const char *nameStr, int p1, int p2) {
+void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 	if(skip_viewbg) return;
 
 	if ( getDrawRate() == 1 )
@@ -15236,8 +15241,8 @@ void LoadBackground(const char *nameStr, int p1, int p2) {
 	LoadBitmap(string[0], p1, p2);
 }
 
-void loadGraphics(int players) {
-	int i, j, k, tr;
+void loadGraphics(int32_t players) {
+	int32_t i, j, k, tr;
 
 	/* プレーン0にメダルを読み込み #1.60c7m9 */
 	LoadGraphics("medal.png", 0, 0);
@@ -15500,9 +15505,9 @@ void loadGraphics(int players) {
 
 /* 背景読み込みと半透明部分の埋め込み C7T2.5EX */
 //SINGLE-DUAL台の変更時に読み直す必要があるもののみ
-void loadBG(int players,int vsmode){
-		int i, j, k, tr,max;
-		int movframe, framemax, tmp1, tmp2;
+void loadBG(int32_t players,int32_t vsmode){
+		int32_t i, j, k, tr,max;
+		int32_t movframe, framemax, tmp1, tmp2;
 
 	/* プレーン10〜にバックを読み込み */
 	LoadBackground("back01.png", 10, 0);
@@ -15649,7 +15654,7 @@ void loadWaves(void) {
 
 /* BGM読み込み */
 void loadBGM(void) {
-	int i;
+	int32_t i;
 
 	StrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
 	StrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
@@ -15770,17 +15775,17 @@ void restoreSetups() {
 //  キーボード入力関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 #if		0
-int getMaxKey()
+int32_t getMaxKey()
 {
 	return 256;
 }
 
-int IsPushDeleteKey()
+int32_t IsPushDeleteKey()
 {
 	return IsPushKey(0xD3);
 }
 
-int IsPushBSKey()
+int32_t IsPushBSKey()
 {
 	return IsPushKey(0x0E);
 }
@@ -15791,7 +15796,7 @@ int IsPushBSKey()
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void spriteTime() {
 #if		0
-	int ReSize, i, j;
+	int32_t ReSize, i, j;
 
 	// 鏡像処理(ツイン台のみ)
 	if(mirror && domirror && (maxPlay > 0) && !tomoyo_domirror[0] && !tomoyo_domirror[1]) {

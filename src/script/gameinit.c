@@ -55,7 +55,7 @@ void main() {
 
 
 int LoadConfig(void) {
-	int i, cfgbuf[24];
+	int32_t i, cfgbuf[24];
 
 	FillMemory(&cfgbuf, 24, 0);
 	LoadFile("config/data/CONFIG.SAV", &cfgbuf, 24);

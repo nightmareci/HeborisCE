@@ -51,7 +51,7 @@ namespace readdef
 
 	int readdef()
 	{
-		int i,j, cfgbuf[100];
+		int32_t i,j, cfgbuf[100];
 
 		keyAssign[7] = holdkey[0];
 		keyAssign[17] = holdkey[1];

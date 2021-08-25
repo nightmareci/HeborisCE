@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(HeborisC7EX
+project(HeborisC7EX-SDL2
 	LANGUAGES CXX
 )
 set(CMAKE_VERBOSE_MAKEFILE ON)

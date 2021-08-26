@@ -864,7 +864,7 @@ void ConfigMenu() {
 
 				if(statc[0] < 8) {
 					printFont(13, 6 + statc[0] * 2, "_", digitc[rots[0]] * (count % 2));
-					for(i = 0; i < getMaxKey(); i++) {
+					for(i = 0; i < GetMaxKey(); i++) {
 						if(IsPushKey(i)) {
 							PlaySE(5);
 							ncfg[10 + statc[0] + (statc[2] - 1) * 10] = i;
@@ -921,8 +921,8 @@ void ConfigMenu() {
 						ncfg[j] = -1;
 						statc[0]++;
 					} else {
-						for(i=4; i<16; i++) {
-							SelectJoyStick((statc[2] - 3));
+						SelectJoyStick((statc[2] - 3));
+						for(i=4; i<GetMaxJoyKey(); i++) {
 							m = IsPushJoyKey(i);
 							if(m) {
 								PlaySE(5);
@@ -1000,7 +1000,7 @@ void ConfigMenu() {
 
 				if(statc[0] < 6) {
 					printFont(20, 6 + statc[0] * 2, "_", digitc[rots[0]] * (count % 2));
-					for(i = 0; i < getMaxKey(); i++) {
+					for(i = 0; i < GetMaxKey(); i++) {
 						if(IsPushKey(i)) {
 							PlaySE(5);
 							ncfg[j] = i;

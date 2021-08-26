@@ -15775,7 +15775,7 @@ void restoreSetups() {
 //  キーボード入力関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 #if		0
-int32_t getMaxKey()
+int32_t GetMaxKey()
 {
 	return 256;
 }

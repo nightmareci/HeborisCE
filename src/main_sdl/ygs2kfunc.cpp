@@ -14,7 +14,6 @@
 #define		YGS_SOUND_MAX		100
 #define		YGS_MUSIC_MAX		100
 #define		YGS_KEYREPEAT_MAX	SDL_NUM_SCANCODES
-#define		YGS_JOYREPEAT_MAX	20
 #define		YGS_JOYPAD_MAX		2
 #define		YGS_TEXTLAYER_MAX	16
 
@@ -52,7 +51,8 @@ static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
 static int				s_iKeyRepeat[YGS_KEYREPEAT_MAX];
-static int				s_iJoyRepeat[YGS_JOYPAD_MAX][YGS_JOYREPEAT_MAX];
+static int				s_iJoyMaxKey[YGS_JOYPAD_MAX];
+static int				*s_pJoyRepeat[YGS_JOYPAD_MAX];
 static SDL_Joystick		*s_pJoyPads[YGS_JOYPAD_MAX];
 static int				s_iYGSSoundType[YGS_SOUND_MAX];
 static Mix_Chunk		*s_pYGSSound[YGS_SOUND_MAX];
@@ -169,14 +169,6 @@ bool YGS2kInit()
 		s_iKeyRepeat[i] = 0;
 	}
 
-	for ( int pl = 0 ; pl < YGS_JOYPAD_MAX ; pl ++ )
-	{
-		for ( int i = 0 ; i < YGS_JOYREPEAT_MAX ; i ++ )
-		{
-			s_iJoyRepeat[pl][i] = 0;
-		}
-	}
-
 	/* テクスチャ領域の初期化 */
 	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
 
@@ -192,9 +184,20 @@ bool YGS2kInit()
 	s_pYGSMusic = NULL;
 
 	/* パッドの初期化 */
-	for ( int i = 0 ; i < YGS_JOYPAD_MAX ; i ++ )
+	for ( int pl = 0 ; pl < YGS_JOYPAD_MAX ; pl ++ )
 	{
-		s_pJoyPads[i] = SDL_JoystickOpen(i);
+		s_pJoyPads[pl] = SDL_JoystickOpen(pl);
+		if (s_pJoyPads[pl] != NULL)
+		{
+			s_iJoyMaxKey[pl] = SDL_JoystickNumButtons(s_pJoyPads[pl]) + 4;
+			s_pJoyRepeat[pl] = new int[s_iJoyMaxKey[pl]];
+			memset(s_pJoyRepeat[pl], 0, sizeof(int) * s_iJoyMaxKey[pl]);
+		}
+		else
+		{
+			s_iJoyMaxKey[pl] = 0;
+			s_pJoyRepeat[pl] = NULL;
+		}
 	}
 
 	/* テキストレイヤーの初期化 */
@@ -246,6 +249,12 @@ void YGS2kExit()
 		{
 			SDL_JoystickClose(s_pJoyPads[i]);
 			s_pJoyPads[i] = NULL;
+		}
+		if ( s_pJoyRepeat[i] )
+		{
+			delete[] s_pJoyRepeat[i];
+			s_pJoyRepeat[i] = NULL;
+			s_iJoyMaxKey[i] = 0;
 		}
 	}
 
@@ -366,7 +375,7 @@ int IsPressKey ( int key )
 
 int IsPushJoyKey ( int key )
 {
-	return s_iJoyRepeat[s_iActivePad][key] == 1 ? 1 : 0;
+	return s_pJoyRepeat[s_iActivePad][key] == 1 ? 1 : 0;
 }
 
 int IsPressJoyKey ( int key )
@@ -398,7 +407,7 @@ int IsPressJoyKey ( int key )
 
 		default:
 			int		key2 = key - 4;
-			if ( key2 >= 0 && key2 < 16 ) return SDL_JoystickGetButton(s_pJoyPads[s_iActivePad], key2);
+			if ( key2 >= 0 && key2 < SDL_JoystickNumButtons(s_pJoyPads[s_iActivePad])) return SDL_JoystickGetButton(s_pJoyPads[s_iActivePad], key2);
 			break;
 		}
 	}
@@ -431,10 +440,16 @@ int IsPushEndKey()
 	return IsPushKey(SDLK_END);
 }
 
-int getMaxKey()
+int GetMaxKey()
 {
 	return YGS_KEYREPEAT_MAX;
 }
+
+int GetMaxJoyKey()
+{
+	return s_iJoyMaxKey[s_iActivePad];
+}
+
 
 void SetJoyButtonMax ( int max )
 {
@@ -473,15 +488,15 @@ void KeyInput()
 	{
 		s_iActivePad = pl;
 
-		for ( int i = 0 ; i < YGS_JOYREPEAT_MAX ; i ++ )
+		for ( int i = 0 ; i < s_iJoyMaxKey[pl] ; i ++ )
 		{
 			if ( IsPressJoyKey(i) )
 			{
-				s_iJoyRepeat[pl][i] ++;
+				s_pJoyRepeat[pl][i] ++;
 			}
 			else
 			{
-				s_iJoyRepeat[pl][i] = 0;
+				s_pJoyRepeat[pl][i] = 0;
 			}
 		}
 	}

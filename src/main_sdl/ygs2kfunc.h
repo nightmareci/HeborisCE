@@ -25,7 +25,8 @@ int IsPushDeleteKey();
 int IsPushBSKey();
 int IsPushEscKey();
 int IsPushEndKey();
-int getMaxKey();
+int GetMaxKey();
+int GetMaxJoyKey();
 
 void SetJoyButtonMax ( int max );
 void SetConstParam ( const char *param, int value );

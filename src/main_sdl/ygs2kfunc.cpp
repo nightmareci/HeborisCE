@@ -363,14 +363,12 @@ void SelectJoyStick( int pl )
 
 int IsPushKey ( int key )
 {
-	SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
-	return s_iKeyRepeat[scancode] == 1 ? 1 : 0;
+	return s_iKeyRepeat[key] == 1 ? 1 : 0;
 }
 
 int IsPressKey ( int key )
 {
-	SDL_Scancode scancode = SDL_GetScancodeFromKey(key);
-	return s_iKeyRepeat[scancode] != 0 ? 1 : 0;
+	return s_iKeyRepeat[key] != 0 ? 1 : 0;
 }
 
 int IsPushJoyKey ( int key )
@@ -417,27 +415,27 @@ int IsPressJoyKey ( int key )
 
 int IsPushReturnKey()
 {
-	return IsPushKey(SDLK_RETURN);
+	return IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
 }
 
 int IsPushDeleteKey()
 {
-	return IsPushKey(SDLK_DELETE);
+	return IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
 }
 
 int IsPushBSKey()
 {
-	return IsPushKey(SDLK_BACKSPACE);
+	return IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
 }
 
 int IsPushEscKey()
 {
-	return IsPushKey(SDLK_ESCAPE);
+	return IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 }
 
 int IsPushEndKey()
 {
-	return IsPushKey(SDLK_END);
+	return IsPushKey(SDL_GetScancodeFromKey(SDLK_END));
 }
 
 int GetMaxKey()
@@ -469,7 +467,7 @@ void KeyInput()
 
 	for ( int i = 0 ; i < YGS_KEYREPEAT_MAX ; i ++ )
 	{
-		if ( i != 300 && i < keynum && KeyInp[i] == SDL_PRESSED )
+		if ( i < keynum && KeyInp[i] == SDL_PRESSED )
 		{
 			s_iKeyRepeat[i] ++;
 		}

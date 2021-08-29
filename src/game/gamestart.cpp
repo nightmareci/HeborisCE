@@ -425,7 +425,7 @@ int32_t		edrec[2] = {0, 0};
 // 連続スナップ
 int32_t		capc = 0;		// カウンタ
 int32_t		oncap = 0;		// 取得中フラグ
-int32_t		capKey = 0x46;	// 開始/終了キー
+int32_t		capKey = SDL_SCANCODE_PRINTSCREEN;	// 開始/終了キー
 int32_t		capi = 2;		// 取得間隔(フレーム単位)
 int32_t		capx = 0;		// 取得領域の左上X座標
 int32_t		capy = 0;		// 左上Y座標
@@ -1426,8 +1426,8 @@ char	*string[STRING_MAX];
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ソースファイルのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "speed.def"				// レベル調整
-#include "script/mission_info.def"// ミッション情報
+#include "speed.h"				// レベル調整
+#include "script/mission_info.h"// ミッション情報
 
 #include "script/flexdraw.c"		// 複数解像度対応描画関数	#1.60c7p9ex
 #include "script/config.c"		// Config	#1.60c5
@@ -14604,10 +14604,8 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 	}
 	// 通常プレイ中
 	else {
-		SelectJoyStick(pl);
-
 		// ジョイスティックの入力を読み取る
-		jtmp = IsPressJoyKey(joykeyAssign[key + 10 * pl]);
+		jtmp = IsPressJoyKey(&joykeyAssign[key + pl * 10]);
 
 		// キーボードの入力を読み取る
 		ktmp = IsPressKey(keyAssign[key + pl * 10]);
@@ -14646,10 +14644,8 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 	}
 	// 通常プレイ中
 	else {
-		SelectJoyStick(pl);
-
 		// ジョイスティックの入力を読み取る
-		jtmp = IsPushJoyKey(joykeyAssign[key + 10 * pl]);
+		jtmp = IsPushJoyKey(&joykeyAssign[key + 10 * pl]);
 
 		// キーボードの入力を読み取る
 		ktmp = IsPushKey(keyAssign[key + pl * 10]);
@@ -15168,11 +15164,6 @@ void initialize(void) {
 		i = RankingLoad3();
 		if(i == 1) RankingInit3();
 	}
-	// ジョイスティックのボタンは3つ以上使いますよー
-	for(i = 0; i < 2; i++) {
-		SelectJoyStick(i);
-		SetJoyButtonMax(16);
-	}
 
 	// 連続スナップ取得領域設定
 	if((capx < 0) || (capx > 320)) capx = capx % 320;
@@ -15202,7 +15193,7 @@ void initialize(void) {
 // players : プレイする人数(maxPlayの代わり)
 void LoadGraphics(const char *nameStr, int32_t p1, int32_t p2) {
 	if ( getDrawRate() == 1 )
-		sprintf(string[0], "res/graphics/lowDetail%s", nameStr);
+		sprintf(string[0], "res/graphics/lowDetail/%s", nameStr);
 	else
 		sprintf(string[0], "res/graphics/highDetail/%s", nameStr);
 

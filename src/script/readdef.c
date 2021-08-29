@@ -1,7 +1,7 @@
 namespace readdef
 {
-	//#include "option.def"
-	#include "keyconf.def"
+	//#include "option.h"
+	#include "keyconf.h"
 
 	int	fontc[12]  = {9,1,2,3,8,4,3,6,7};	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 	int	digitc[12] = {5,5,7,7,5,5,7,7,5};	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule

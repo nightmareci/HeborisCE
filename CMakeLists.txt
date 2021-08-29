@@ -35,7 +35,7 @@ target_sources(${EXE}
 		src/main_sdl/SDL_kanji.h
 		src/main_sdl/SDL_kanji.cpp
 
-		src/script/mission_info.def
+		src/script/mission_info.h
 		src/script/flexdraw.c
 		src/script/config.c
 		src/script/world.c

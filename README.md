@@ -1,7 +1,10 @@
 ### Heboris C7EX - unofficial version (YGS2K EX)
 
-This version contains the source code for Heboris C7EX. It requires SDL 2.0,
-SDL 2.0 mixer, and SDL 2.0 image libraries to play.
+This version contains the source code for Heboris C7EX. It requires SDL 2.0, SDL
+2.0 mixer, and SDL 2.0 image libraries to play. Many additional changes have
+been made as well, like converting all text to UTF-8 (except for in-game
+Japanese text strings for mission mode, the game's code requires that still be
+Shift-JIS.)
 
 Example dependencies on Ubuntu:
 
@@ -21,29 +24,25 @@ cmake --build build
 
 Requires a C++ compiler and SDL 2.0 development libraries.
 
-#### 変更点 (Changes)
+#### Changes
 
- - JoystickのHATキーに対応しました。
-    - 音楽がボリューム０にフェードアウトしたままスタッフロールに入りエンディング曲が聞こえないのを
-        修正しました。（各種音声ファイルは、ご自身でご用意下さい）
+ - Added support for joystick HATs.
+    - Fixed a problem where the music faded out to silence and then went into
+      the staff roll and you couldn't hear the ending song. (Prepare the audio
+      files yourself.)
 
 
 #### Todo
 
-This repository will likely be maintained to some degree, but no major changes
+This repository will be maintained for bug fixes and ports, but no major changes
 will be made to the actual game's functionality for the most part. Some simple
 fixes and changes may be added, and will be listed in this section if so.
 
  - Save 40L player data state, or allow a custom setting to be saved and used by default.
- - Fix some problems that occur when changing window focus and reverting back to heboris.
  - Allow traditional TGM style scoring. Heboris inflates the scoring to compensate for
    B2B bonuses.
  - Allow different key configurations for the menu vs. the gameplay.
- - Fix the 320x240 screen mode.
  - Any other minor bugs/errors I can find.
-
-If the game screen gets stuck on an image and doesn't change, try deleting your
-CONFIG.SAV file from config/data and restarting.
 
 ## Heboris Overview
 

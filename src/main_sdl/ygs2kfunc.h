@@ -1,12 +1,16 @@
 #ifndef		__YGS2KFUNC_H__
 #define		__YGS2KFUNC_H__
 
+#include "SDL.h"
+
 #ifdef		TextOut
 #undef		TextOut
 #endif
 #ifdef		LoadBitmap
 #undef		LoadBitmap
 #endif
+
+#define		YGS_DEADZONE_MAX	(32767 / 4)
 
 bool YGS2kInit();
 void YGS2kExit();
@@ -15,20 +19,41 @@ bool YGS2kHalt();
 void YGS2kTextOut(int x, int y, const char* text, int r = 255, int g = 255, int b = 255, int size = 12);
 
 int IsPlayMIDI();
-void SelectJoyStick( int pl );
+
+enum JoyKeyType {
+	JOYKEY_AXIS,
+	JOYKEY_HAT,
+	JOYKEY_BUTTON
+};
+
+union JoyKeySetting {
+	struct { int index, value; };
+	int button;
+};
+
+struct JoyKey {
+	int device;
+        SDL_JoystickGUID guid;
+	JoyKeyType type;
+	JoyKeySetting setting;
+};
+
 int IsPushKey ( int key );
 int IsPressKey ( int key );
-int IsPushJoyKey ( int key );
-int IsPressJoyKey ( int key );
+int IsPushJoyKey ( const JoyKey* const key );
+int IsPressJoyKey ( const JoyKey* const key );
 int IsPushReturnKey();
 int IsPushDeleteKey();
 int IsPushBSKey();
 int IsPushEscKey();
 int IsPushEndKey();
 int GetMaxKey();
-int GetMaxJoyKey();
+int GetMaxJoyPad();
+SDL_JoystickGUID GetJoyPadGUID( int device );
+int GetMaxJoyAxis( int device );
+int GetMaxJoyHat( int device );
+int GetMaxJoyButton( int device );
 
-void SetJoyButtonMax ( int max );
 void SetConstParam ( const char *param, int value );
 void KeyInput();
 int Rand ( int max );

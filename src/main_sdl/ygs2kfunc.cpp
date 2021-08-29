@@ -13,8 +13,8 @@
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
 #define		YGS_MUSIC_MAX		100
+#define		YGS_KEY_MAX		10
 #define		YGS_KEYREPEAT_MAX	SDL_NUM_SCANCODES
-#define		YGS_JOYPAD_MAX		2
 #define		YGS_TEXTLAYER_MAX	16
 
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
@@ -50,37 +50,40 @@ static SDL_Renderer		*s_pScreenRenderer = NULL;
 
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
-static int				s_iKeyRepeat[YGS_KEYREPEAT_MAX];
-static int				s_iJoyMaxKey[YGS_JOYPAD_MAX];
-static int				*s_pJoyRepeat[YGS_JOYPAD_MAX];
-static SDL_Joystick		*s_pJoyPads[YGS_JOYPAD_MAX];
-static int				s_iYGSSoundType[YGS_SOUND_MAX];
+static int			s_iKeyRepeat[YGS_KEYREPEAT_MAX];
+static int			s_iJoyPadMax;
+static SDL_Joystick		**s_pJoyPads;
+static int			*s_pJoyAxisMax;
+static int			*s_pJoyHatMax;
+static int			*s_pJoyButtonMax;
+static int			**s_pJoyAxisRepeat;
+static int			**s_pJoyHatRepeat;
+static int			**s_pJoyButtonRepeat;
+static int			s_iYGSSoundType[YGS_SOUND_MAX];
 static Mix_Chunk		*s_pYGSSound[YGS_SOUND_MAX];
-static int				s_iYGSSoundVolume[YGS_SOUND_MAX];
+static int			s_iYGSSoundVolume[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSExMusic[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSMusic;
 
 #define		YGS_KANJIFONTFILE_MAX	3
 static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
 
-static int				s_iActivePad;
-
-static int				s_iWinWidth;
-static int				s_iWinHeight;
+static int			s_iWinWidth;
+static int			s_iWinHeight;
 static float			s_fDrawScale = 1.0f;
 
-static unsigned int		s_uTimeCount;
-static unsigned int		s_uFPSCount;
+static Uint64			s_uTimeCount;
+static Uint64			s_uFPSCount;
 static unsigned int		s_uNowFrame;
 static unsigned int		s_uFPSCnting;
 static unsigned int		s_uFPS;
 static unsigned int		s_uNowFPS = 60;
 
 static STextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
-extern int				screenMode;
+extern int			screenMode;
 
-static int				s_iNewOffsetX = 0, s_iNewOffsetY = 0;
-static int				s_iOffsetX = 0, s_iOffsetY = 0;
+static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
+static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
 static SScreenInfo	s_ScreenInfo[] =
 {
@@ -152,10 +155,11 @@ bool YGS2kInit()
 	s_iWinHeight = winHeight;
 
 
-	/* キャプションの設定 */
+	/* ウィンドウの作成 */
 	s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winWidth, winHeight, windowFlags);
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, winWidth, winHeight);
+	SDL_RenderClear(s_pScreenRenderer);
 
 	/* マウスカーソルを消す場合は */
 	if ( windowFlags & SDL_WINDOW_FULLSCREEN )
@@ -168,6 +172,30 @@ bool YGS2kInit()
 	{
 		s_iKeyRepeat[i] = 0;
 	}
+
+	/* パッドの初期化 */
+	s_iJoyPadMax = SDL_NumJoysticks();
+	s_pJoyPads = (SDL_Joystick**)malloc(sizeof(SDL_Joystick*) * s_iJoyPadMax);
+
+	s_pJoyAxisMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+	s_pJoyHatMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+	s_pJoyButtonMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+
+	s_pJoyAxisRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+	s_pJoyHatRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+	s_pJoyButtonRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+	for (int i = 0; i < s_iJoyPadMax; i++) {
+		s_pJoyPads[i] = SDL_JoystickOpen(i);
+
+		s_pJoyAxisMax[i] = SDL_JoystickNumAxes(s_pJoyPads[i]);
+		s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
+		s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
+
+		s_pJoyAxisRepeat[i] = (int*)calloc(s_pJoyAxisMax[i] * 2, sizeof(int));
+		s_pJoyHatRepeat[i] = (int*)calloc(s_pJoyHatMax[i] * 4, sizeof(int));
+		s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
+	}
+
 
 	/* テクスチャ領域の初期化 */
 	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
@@ -183,23 +211,6 @@ bool YGS2kInit()
 
 	s_pYGSMusic = NULL;
 
-	/* パッドの初期化 */
-	for ( int pl = 0 ; pl < YGS_JOYPAD_MAX ; pl ++ )
-	{
-		s_pJoyPads[pl] = SDL_JoystickOpen(pl);
-		if (s_pJoyPads[pl] != NULL)
-		{
-			s_iJoyMaxKey[pl] = SDL_JoystickNumButtons(s_pJoyPads[pl]) + 4;
-			s_pJoyRepeat[pl] = new int[s_iJoyMaxKey[pl]];
-			memset(s_pJoyRepeat[pl], 0, sizeof(int) * s_iJoyMaxKey[pl]);
-		}
-		else
-		{
-			s_iJoyMaxKey[pl] = 0;
-			s_pJoyRepeat[pl] = NULL;
-		}
-	}
-
 	/* テキストレイヤーの初期化 */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
@@ -209,10 +220,8 @@ bool YGS2kInit()
 	}
 	YGS2kKanjiFontInitialize();
 
-	s_iActivePad = 0;
-
-	s_uTimeCount = SDL_GetTicks();
-	s_uFPSCount  = SDL_GetTicks();
+	s_uTimeCount = SDL_GetPerformanceCounter();
+	s_uFPSCount  = SDL_GetPerformanceCounter();
 	s_uNowFrame  = 0;
 	s_uFPSCnting = 0;
 	s_uFPS       = 0;
@@ -224,6 +233,28 @@ bool YGS2kInit()
 
 void YGS2kExit()
 {
+	/* パッドのクローズ */
+	for (int i = 0; i < s_iJoyPadMax; i++) {
+		SDL_JoystickClose(s_pJoyPads[i]);
+		free(s_pJoyAxisRepeat[i]);
+		free(s_pJoyHatRepeat[i]);
+		free(s_pJoyButtonRepeat[i]);
+	}
+	free(s_pJoyPads);
+	s_pJoyPads = NULL;
+	free(s_pJoyAxisMax);
+	free(s_pJoyHatMax);
+	free(s_pJoyButtonMax);
+	s_pJoyAxisMax = NULL;
+	s_pJoyHatMax = NULL;
+	s_pJoyButtonMax = NULL;
+	free(s_pJoyAxisRepeat);
+	free(s_pJoyHatRepeat);
+	free(s_pJoyButtonRepeat);
+	s_pJoyAxisRepeat = NULL;
+	s_pJoyHatRepeat = NULL;
+	s_pJoyButtonRepeat = NULL;
+	
 	/* テクスチャ領域の解放 */
 	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
 	{
@@ -240,22 +271,6 @@ void YGS2kExit()
 	if ( s_pScreenWindow ) {
 		SDL_DestroyWindow( s_pScreenWindow );
 		s_pScreenWindow = NULL;
-	}
-
-	/* パッドのクローズ */
-	for ( int i = 0 ; i < YGS_JOYPAD_MAX ; i ++ )
-	{
-		if ( s_pJoyPads[i] )
-		{
-			SDL_JoystickClose(s_pJoyPads[i]);
-			s_pJoyPads[i] = NULL;
-		}
-		if ( s_pJoyRepeat[i] )
-		{
-			delete[] s_pJoyRepeat[i];
-			s_pJoyRepeat[i] = NULL;
-			s_iJoyMaxKey[i] = 0;
-		}
 	}
 
 	/* サウンドの解放 */
@@ -287,7 +302,6 @@ void YGS2kExit()
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
-	SDL_Keycode	*key;
 
 	/* テキストレイヤーの描画 */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
@@ -298,11 +312,18 @@ bool YGS2kHalt()
 	/* バックサーフェスをフロントに転送 */
 	SDL_RenderPresent( s_pScreenRenderer );
 
+	/* フレームレート待ち */
+	while (s_uTimeCount + (SDL_GetPerformanceFrequency() / s_uNowFPS) >= SDL_GetPerformanceCounter())
+	{
+		SDL_Delay(1);
+	};
+
+
 	/* 画面塗りつぶし */
 	SDL_RenderClear( s_pScreenRenderer );
 
 	/* イベント処理 */
-	while(SDL_PollEvent(&ev) )
+	while(SDL_PollEvent(&ev))
 	{
 		switch(ev.type){
 			case SDL_QUIT:						// ウィンドウの×ボタンが押された時など
@@ -310,33 +331,29 @@ bool YGS2kHalt()
 				break;
 			case SDL_KEYDOWN:					// キーボードからの入力があった時
 				{
-					key = &(ev.key.keysym.sym); // どのキーが押されたかを取得
-					if ( *key == 27 )			// ESCキー
+					SDL_Keycode	key = ev.key.keysym.sym; // どのキーが押されたかを取得
+					if ( key == SDLK_ESCAPE )
 					{
 						return false;
 					}
 				}
 				break;
+			default:
+				break;
 		}
 	}
-
-	/* フレームレート待ち */
-	while (s_uTimeCount + (1000 / s_uNowFPS) >= SDL_GetTicks())
-	{
-		SDL_Delay(1);
-	};
 
 	/* フレームレート計算 */
 	s_uFPSCnting ++;
 	s_uNowFrame ++;
 
-	s_uTimeCount = SDL_GetTicks();
+	s_uTimeCount = SDL_GetPerformanceCounter();
 
-	if ( s_uFPSCount + 1000 <= SDL_GetTicks() )
+	if ( s_uFPSCount + SDL_GetPerformanceFrequency() <= SDL_GetPerformanceCounter() )
 	{
 		s_uFPS = s_uFPSCnting;
 		s_uFPSCnting = 0;
-		s_uFPSCount = SDL_GetTicks();
+		s_uFPSCount = SDL_GetPerformanceCounter();
 	}
 
 	/* 画面ずらし量の反映 */
@@ -356,11 +373,6 @@ int IsPlayMIDI()
 	return Mix_PlayingMusic();
 }
 
-void SelectJoyStick( int pl )
-{
-	s_iActivePad = pl;
-}
-
 int IsPushKey ( int key )
 {
 	return s_iKeyRepeat[key] == 1 ? 1 : 0;
@@ -371,46 +383,80 @@ int IsPressKey ( int key )
 	return s_iKeyRepeat[key] != 0 ? 1 : 0;
 }
 
-int IsPushJoyKey ( int key )
+int IsPushJoyKey ( const JoyKey* const key )
 {
-	return s_pJoyRepeat[s_iActivePad][key] == 1 ? 1 : 0;
+	SDL_JoystickGUID guid = GetJoyPadGUID(key->device);
+	SDL_JoystickGUID zeroGUID = { 0 };
+	if (memcmp(&guid, &zeroGUID, sizeof(SDL_JoystickGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(SDL_JoystickGUID)) != 0) return 0;
+	switch(key->type)
+	{
+	case JOYKEY_AXIS:
+		if(key->setting.value == -YGS_DEADZONE_MAX)
+		{
+			return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 0] == 1 ? 1 : 0;
+		}
+		else if(key->setting.value == +YGS_DEADZONE_MAX)
+		{
+			return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 1] == 1 ? 1 : 0;
+		}
+		break;
+	case JOYKEY_HAT:
+		switch(key->setting.value)
+		{
+		case SDL_HAT_LEFT:
+			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 0] == 1 ? 1 : 0;
+		case SDL_HAT_RIGHT:
+			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 1] == 1 ? 1 : 0;
+		case SDL_HAT_UP:
+			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 2] == 1 ? 1 : 0;
+		case SDL_HAT_DOWN:
+			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 3] == 1 ? 1 : 0;
+		default:
+			break;
+		}
+		break;
+	case JOYKEY_BUTTON:
+		return s_pJoyButtonRepeat[key->device][key->setting.button] == 1 ? 1 : 0;
+	default:
+		break;
+	}
+	return 0;
 }
 
-int IsPressJoyKey ( int key )
+int IsPressJoyKey ( const JoyKey* const key )
 {
-	if ( s_pJoyPads[s_iActivePad] )
-	{
-		Uint8 hat = SDL_JoystickGetHat(s_pJoyPads[s_iActivePad], 0);
-		switch ( key )
-		{
-		case 0:		// 上
-			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 1) < -32767 / 4 ) return 1;
-			if ( hat & SDL_HAT_UP) return 1;
-			break;
+	if (key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
 
-		case 1:		// 下
-			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 1) > +32767 / 4 ) return 1;
-			if ( hat & SDL_HAT_DOWN) return 1;
-			break;
+	int pressed = 0;
+	SDL_JoystickGUID checkGUID = SDL_JoystickGetDeviceGUID(key->device);
+	if (memcmp(&key->guid, &checkGUID, sizeof(SDL_JoystickGUID)) == 0) {
+		SDL_Joystick* const joy = s_pJoyPads[key->device];
+		if (SDL_JoystickGetAttached(joy)) {
+			switch (key->type) {
+			case JOYKEY_AXIS:
+				pressed =
+					key->setting.value != 0 && SDL_JoystickNumAxes(joy) > key->setting.index &&
+					(
+						(key->setting.value > 0 && SDL_JoystickGetAxis(joy, key->setting.index) > key->setting.value) ||
+						(key->setting.value < 0 && SDL_JoystickGetAxis(joy, key->setting.index) < key->setting.value)
+					);
+				break;
 
-		case 2:		// 左
-			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 0) < -32767 / 4 ) return 1;
-			if ( hat & SDL_HAT_LEFT) return 1;
-			break;
+			case JOYKEY_HAT:
+				pressed =
+					key->setting.value != SDL_HAT_CENTERED &&
+					SDL_JoystickNumHats(joy) > key->setting.index &&
+					SDL_JoystickGetHat(joy, key->setting.index) == key->setting.value;
+				break;
 
-		case 3:		// 右
-			if ( SDL_JoystickGetAxis(s_pJoyPads[s_iActivePad], 0) > +32767 / 4 ) return 1;
-			if ( hat & SDL_HAT_RIGHT) return 1;
-			break;
-
-		default:
-			int		key2 = key - 4;
-			if ( key2 >= 0 && key2 < SDL_JoystickNumButtons(s_pJoyPads[s_iActivePad])) return SDL_JoystickGetButton(s_pJoyPads[s_iActivePad], key2);
-			break;
+			case JOYKEY_BUTTON:
+				pressed = SDL_JoystickGetButton(joy, key->setting.button);
+				break;
+			}
 		}
 	}
 
-	return 0;
+	return pressed;
 }
 
 int IsPushReturnKey()
@@ -438,20 +484,33 @@ int IsPushEndKey()
 	return IsPushKey(SDL_GetScancodeFromKey(SDLK_END));
 }
 
+SDL_JoystickGUID GetJoyPadGUID( int device ) {
+	SDL_JoystickGUID zeroGUID = { 0 };
+	if (device >= s_iJoyPadMax) return zeroGUID;
+	return SDL_JoystickGetGUID( s_pJoyPads[device] );
+}
+
 int GetMaxKey()
 {
 	return YGS_KEYREPEAT_MAX;
 }
 
-int GetMaxJoyKey()
+int GetMaxJoyPad()
 {
-	return s_iJoyMaxKey[s_iActivePad];
+	return s_iJoyPadMax;
 }
 
+int GetMaxJoyAxis( int device ) {
+	return s_pJoyAxisMax[device];
+}
 
-void SetJoyButtonMax ( int max )
+int GetMaxJoyHat( int device ) {
+	return s_pJoyHatMax[device];
+}
+
+int GetMaxJoyButton( int device )
 {
-
+	return s_pJoyButtonMax[device];
 }
 
 void SetConstParam ( const char *param, int value )
@@ -461,7 +520,6 @@ void SetConstParam ( const char *param, int value )
 
 void KeyInput()
 {
-	int		padbak = s_iActivePad;
 	int		keynum = 0;
 	const Uint8	*KeyInp = SDL_GetKeyboardState(&keynum);
 
@@ -477,29 +535,98 @@ void KeyInput()
 		}
 	}
 
-	if ( SDL_NumJoysticks() > 0 )
+	JoyKey key;
+	for ( int i = 0 ; i < s_iJoyPadMax ; i ++ )
 	{
-		SDL_JoystickUpdate();
-	}
+		key.device = i;
+		key.guid = SDL_JoystickGetGUID(s_pJoyPads[i]);
 
-	for ( int pl = 0 ; pl < 2 ; pl ++ )
-	{
-		s_iActivePad = pl;
-
-		for ( int i = 0 ; i < s_iJoyMaxKey[pl] ; i ++ )
+		key.type = JOYKEY_AXIS;
+		for ( int j = 0 ; j < s_pJoyAxisMax[i] ; j ++ )
 		{
-			if ( IsPressJoyKey(i) )
+			key.setting.index = j;
+
+			key.setting.value = -YGS_DEADZONE_MAX;
+			if ( IsPressJoyKey(&key) )
 			{
-				s_pJoyRepeat[pl][i] ++;
+				s_pJoyAxisRepeat[i][j*2+0] ++;
 			}
 			else
 			{
-				s_pJoyRepeat[pl][i] = 0;
+				s_pJoyAxisRepeat[i][j*2+0] = 0;
+			}
+
+			key.setting.value = +YGS_DEADZONE_MAX;
+			if ( IsPressJoyKey(&key) )
+			{
+				s_pJoyAxisRepeat[i][j*2+1] ++;
+			}
+			else
+			{
+				s_pJoyAxisRepeat[i][j*2+1] = 0;
+			}
+		}
+
+		key.type = JOYKEY_HAT;
+		for ( int j = 0 ; j < s_pJoyHatMax[i] ; j ++ )
+		{
+			key.setting.index = j;
+
+			key.setting.value = SDL_HAT_LEFT;
+			if ( IsPressJoyKey(&key) )
+			{
+				s_pJoyHatRepeat[i][j*4+0] ++;
+			}
+			else
+			{
+				s_pJoyHatRepeat[i][j*4+0] = 0;
+			}
+
+			key.setting.value = SDL_HAT_RIGHT;
+			if ( IsPressJoyKey(&key) )
+			{
+				s_pJoyHatRepeat[i][j*4+1] ++;
+			}
+			else
+			{
+				s_pJoyHatRepeat[i][j*4+1] = 0;
+			}
+
+			key.setting.value = SDL_HAT_UP;
+			if ( IsPressJoyKey(&key) )
+			{
+				s_pJoyHatRepeat[i][j*4+2] ++;
+			}
+			else
+			{
+				s_pJoyHatRepeat[i][j*4+2] = 0;
+			}
+
+			key.setting.value = SDL_HAT_DOWN;
+			if ( IsPressJoyKey(&key) )
+			{
+				s_pJoyHatRepeat[i][j*4+3] ++;
+			}
+			else
+			{
+				s_pJoyHatRepeat[i][j*4+3] = 0;
+			}
+		}
+
+		key.type = JOYKEY_BUTTON;
+		for ( int j = 0 ; j < s_pJoyButtonMax[i] ; j ++ )
+		{
+			key.setting.button = j;
+			if ( IsPressJoyKey(&key) )
+			{
+				s_pJoyButtonRepeat[i][j] ++;
+			}
+			else
+			{
+				s_pJoyButtonRepeat[i][j] = 0;
 			}
 		}
 	}
-
-	s_iActivePad = padbak;
 }
 
 int Rand ( int max )

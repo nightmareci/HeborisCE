@@ -53,29 +53,7 @@ SDL_SCANCODE_UNKNOWN, SDL_SCANCODE_UNKNOWN
 };
 
 // →pauseとgiveupを追加 1.60c7g7
-JoyKey	joykeyAssign[10 * 2] = {			// ジョイスティックボタン割り当て
-	{ 0, JOYKEY_AXIS, .setting = { .index = 1, .value = -YGS_DEADZONE_MAX } },
-	{ 0, JOYKEY_AXIS, .setting = { .index = 1, .value = +YGS_DEADZONE_MAX } },
-	{ 0, JOYKEY_AXIS, .setting = { .index = 0, .value = -YGS_DEADZONE_MAX } },
-	{ 0, JOYKEY_AXIS, .setting = { .index = 0, .value = +YGS_DEADZONE_MAX } },
-	{ 0, JOYKEY_BUTTON, .setting.button = 0},
-	{ 0, JOYKEY_BUTTON, .setting.button = 1},
-	{ 0, JOYKEY_BUTTON, .setting.button = 2},
-	{ 0, JOYKEY_BUTTON, .setting.button = 3},
-	{ 0, JOYKEY_BUTTON, .setting.button = 4},
-	{ 0, JOYKEY_BUTTON, .setting.button = 5},
-
-	{ 1, JOYKEY_AXIS, .setting = { .index = 1, .value = -YGS_DEADZONE_MAX } },
-	{ 1, JOYKEY_AXIS, .setting = { .index = 1, .value = +YGS_DEADZONE_MAX } },
-	{ 1, JOYKEY_AXIS, .setting = { .index = 0, .value = -YGS_DEADZONE_MAX } },
-	{ 1, JOYKEY_AXIS, .setting = { .index = 0, .value = +YGS_DEADZONE_MAX } },
-	{ 1, JOYKEY_BUTTON, .setting.button = 0},
-	{ 1, JOYKEY_BUTTON, .setting.button = 1},
-	{ 1, JOYKEY_BUTTON, .setting.button = 2},
-	{ 1, JOYKEY_BUTTON, .setting.button = 3},
-	{ 1, JOYKEY_BUTTON, .setting.button = 4},
-	{ 1, JOYKEY_BUTTON, .setting.button = 5},
-};
+JoyKey	joykeyAssign[10 * 2] = { 0 };			// ジョイスティックボタン割り当て
 
 int	restart;				// 再起動フラグ
 

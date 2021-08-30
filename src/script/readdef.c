@@ -5,10 +5,10 @@ namespace readdef
 
 	int	fontc[12]  = {9,1,2,3,8,4,3,6,7};	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 	int	digitc[12] = {5,5,7,7,5,5,7,7,5};	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
-	int	giveupKey = 0x10;		//捨てゲーキー (デフォルトはQ)
-	int	ssKey = 0xC7;			//スナップショットキー (デフォルトはHome)
-	int pausekey[2] = { 0x3B,0x3C };	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
-	int dispnextkey[2] = { 0x3D,0x3E };	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
+	int	giveupKey = SDL_SCANCODE_Q;		//捨てゲーキー (デフォルトはQ)
+	int	ssKey = SDL_SCANCODE_HOME;		//スナップショットキー (デフォルトはHome)
+	int	pausekey[2] = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 };	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
+	int	dispnextkey[2] = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 };	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
 	int	dtc = 1;				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 	int	fldtr = 96;				//フィールド背景非表示時のフィールド透過度(0-256)
 	int	dispnext = 3;			//ネクストブロック表示数の選択（０〜３）
@@ -28,17 +28,15 @@ namespace readdef
 
 	int	fontsize = 1;			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
 
-	int	joykeyAssign[10 * 2] = {		//ジョイスティックボタン割り当て
-	0, 1, 2, 3,   4, 5, 6, 7, -1, -1,		//default={0,1,2,3,10,7,4,8,-1,-1} →pauseとgiveupを追加 1.60c7g7
-	0, 1, 2, 3,   4, 5, 6, 7, -1, -1
-	};
+	JoyKey	joykeyAssign[10 * 2] = { 0 };		//ジョイスティックボタン割り当て
+
 	//Holdボタン(キーボード)割り当て
-	int	holdkey[2] = { 0x32, 0x52 };	//default 1p側:M(0x32) 2p側:テンキー0(0x52)
+	int	holdkey[2] = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 };	//default 1p側:V 2p側:テンキー0
 
 	int rots[2] = {2, 1};
 	int lvup[2] = {1, 1};
 
-	int		screenMode = 2; // default is 1 - but need to fix error in LITE mode screens
+	int		screenMode = 2;
 	int		systemmem =0;
 	int		nextblock =8;
 	int		smooth =0;
@@ -51,12 +49,12 @@ namespace readdef
 
 	int readdef()
 	{
-		int32_t i,j, cfgbuf[100];
+		int32_t i,j, cfgbuf[CFG_LENGTH];
 
 		keyAssign[7] = holdkey[0];
 		keyAssign[17] = holdkey[1];
 
-		FillMemory(&cfgbuf, 100 * 4, 0);
+		FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
 		cfgbuf[0] = 0x4F424550;
 		cfgbuf[1] = 0x20534953;
 		cfgbuf[2] = 0x464E4F44;
@@ -109,13 +107,9 @@ namespace readdef
 		cfgbuf[78] = fontc[8] + fontc[9] * 0x100 + fontc[10] * 0x10000 + fontc[11] * 0x1000000 ;
 		cfgbuf[79] = digitc[8] + digitc[9] * 0x100 + digitc[10] * 0x10000 + digitc[11] * 0x1000000 ;
 
-		for(j=0;j<=1;j++)
-		for(i=0;i<6;i++){
-			if(!cfgbuf[i + 80 + (j * 6)]) cfgbuf[i + 80 + (j * 6)] = -1;
-			cfgbuf[i + 80 + (j * 6)] = joykeyAssign[i + 4 + (4 * j) + (j * 6)];
-		}
+		memset(cfgbuf + 80, 0, 8 * 10 * 2 * sizeof(int32_t));
 
-		SaveFile("config/data/CONFIG.SAV", &cfgbuf, 400);
+		SaveFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
 
 		return (0);
 	}

@@ -15,7 +15,7 @@ int	lvup[2];		// レベルアップ方式
 int	fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 int	digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
 int	giveupKey = SDL_SCANCODE_Q;	// 捨てゲーキー (デフォルトはQ)
-int	ssKey = 0xC7;		// スナップショットキー (デフォルトはHome)
+int	ssKey = SDL_SCANCODE_HOME;	// スナップショットキー (デフォルトはHome)
 int	pausekey[2] = { SDL_SCANCODE_F1, SDL_SCANCODE_F2 };	// ポーズキー(デフォルトはF1, F2)		#1.60c7g7
 int	dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
 int	dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
@@ -39,21 +39,10 @@ int	downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
 int	lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-int keyAssign[10 * 2] =			// キーボード設定 (↑↓←→ABCD)
-{
-// sxzc bn[space]m
-SDL_SCANCODE_S, SDL_SCANCODE_X, SDL_SCANCODE_Z, SDL_SCANCODE_C,
-SDL_SCANCODE_B, SDL_SCANCODE_N, SDL_SCANCODE_SPACE, SDL_SCANCODE_M,
-SDL_SCANCODE_UNKNOWN, SDL_SCANCODE_UNKNOWN,
-
-// ↑↓←→ num1num2num3num0
-SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
-SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
-SDL_SCANCODE_UNKNOWN, SDL_SCANCODE_UNKNOWN
-};
+int keyAssign[10 * 2];	// キーボード設定 (↑↓←→ABCD)
 
 // →pauseとgiveupを追加 1.60c7g7
-JoyKey	joykeyAssign[10 * 2] = { 0 };			// ジョイスティックボタン割り当て
+JoyKey	joykeyAssign[10 * 2];			// ジョイスティックボタン割り当て
 
 int	restart;				// 再起動フラグ
 
@@ -1324,30 +1313,43 @@ void ConfigMenu() {
 						else if(i == 6) printFont(3, 7 + i + pl * 10, "C(L/R/180 ROT):", 0);
 						else if(i == 7) printFont(3, 7 + i + pl * 10, "D(HOLD)       :", 0);
 
-						// TODO
-						sprintf(string[0],"%2X", keyAssign[i + pl * 10]);
+						if (keyAssign[i + pl * 10] != SDL_SCANCODE_UNKNOWN)
+						{
+							sprintf(string[0],"%2X", keyAssign[i + pl * 10]);
+						}
+						else
+						{
+							sprintf(string[0],"??");
+						}
 						JoyKey* const key = &joykeyAssign[i + pl * 10];
-						switch(key->type) {
-						case JOYKEY_AXIS:
-							sprintf(string[0] + strlen(string[0]), "(JOY%2d: AXIS %2d %c)",
-								key->device,
-								key->setting.index,
-								key->setting.value >= 0 ? '+' : '-'
-							);
-							break;
-						case JOYKEY_HAT:
-							sprintf(string[0] + strlen(string[0]), "(JOY%2d: HAT %2d %2d)",
-								key->device,
-								key->setting.index,
-								key->setting.value
-							);
-							break;
-						case JOYKEY_BUTTON:
-							sprintf(string[0] + strlen(string[0]), "(JOY%2d: BUTTON %2d)",
-								key->device,
-								key->setting.button
-							);
-							break;
+						SDL_JoystickGUID zeroGUID = { 0 };
+						if (memcmp(&key->guid, &zeroGUID, sizeof(SDL_JoystickGUID)) != 0)
+						{
+							switch(key->type) {
+							case JOYKEY_AXIS:
+								sprintf(string[0] + strlen(string[0]), "(JOY%2d: AXIS %2d %c)",
+									key->device,
+									key->setting.index,
+									key->setting.value >= 0 ? '+' : '-'
+								);
+								break;
+							case JOYKEY_HAT:
+								sprintf(string[0] + strlen(string[0]), "(JOY%2d: HAT %2d %2d)",
+									key->device,
+									key->setting.index,
+									key->setting.value
+								);
+								break;
+							case JOYKEY_BUTTON:
+								sprintf(string[0] + strlen(string[0]), "(JOY%2d: BUTTON %2d)",
+									key->device,
+									key->setting.button
+								);
+								break;
+							}
+						}
+						else {
+							sprintf(string[0] + strlen(string[0]), "(NO JOY ASSIGN)");
 						}
 						printFont(19, 7 + i + pl * 10, string[0], 0);
 					}

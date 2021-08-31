@@ -47,7 +47,7 @@ Iのみ
 の方が分かりやすいしプレイしやすいが…
 */
 
-int	blkWDataX[7 * 4 * 4] =	// worldタイプミノ 相対X位置
+int32_t	blkWDataX[7 * 4 * 4] =	// worldタイプミノ 相対X位置
 {
 	0, 1, 2, 3, 		2, 2, 2, 2, 		3, 2, 1, 0, 		1, 1, 1, 1, // I
 	2, 2, 1, 0, 		2, 1, 1, 1, 		0, 0, 1, 2, 		0, 1, 1, 1, // L
@@ -58,7 +58,7 @@ int	blkWDataX[7 * 4 * 4] =	// worldタイプミノ 相対X位置
 	2, 1, 1, 0, 		2, 2, 1, 1, 		0, 1, 1, 2, 		0, 0, 1, 1, // S
 };
 
-int	blkWDataY[7 * 4 * 4] =	// worldタイプミノ 相対Y位置
+int32_t	blkWDataY[7 * 4 * 4] =	// worldタイプミノ 相対Y位置
 {
 	1, 1, 1, 1, 		0, 1, 2, 3, 		2, 2, 2, 2, 		3, 2, 1, 0, // I
 	0, 1, 1, 1, 		2, 2, 1, 0, 		2, 1, 1, 1, 		0, 0, 1, 2, // L
@@ -71,8 +71,8 @@ int	blkWDataY[7 * 4 * 4] =	// worldタイプミノ 相対Y位置
 
 // 9色だと、wcol[9]が不正な値になっているので10色に修正#1.60c7k6
 // これが[]が赤に化ける原因だったわけだが
-//int	wcol[20] = {0, 5, 2, 3, 1, 7, 6, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-int	wcol[7] = {5,2,3,1,7,6,4};
+//int32_t	wcol[20] = {0, 5, 2, 3, 1, 7, 6, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+int32_t	wcol[7] = {5,2,3,1,7,6,4};
 
 /*
 0>>3:(-1, 0)>(+2, 0)>(-1, -2)>(+2, +1)  0>>1:(-2, 0)>(+1, 0)>(+1, -2)>(-2, +1)
@@ -83,7 +83,7 @@ int	wcol[7] = {5,2,3,1,7,6,4};
 
 // I型ブロック壁蹴りテーブル（4候補×4方向×2回転×2補正座標）
 /*
-int iBlockKickTable[4 * 4 * 2 * 2] = {
+int32_t iBlockKickTable[4 * 4 * 2 * 2] = {
 	// 左回転
 	-1, 0,		 2, 0,		-1, -2,		 2, 1,		// 0>>3
 	 2, 0,		-1, 0,		 2, -1,		-1, 2,		// 1>>0
@@ -100,7 +100,7 @@ int iBlockKickTable[4 * 4 * 2 * 2] = {
 
 // 左回転の場合は、棒が上へすっぽ抜けるほうが優先
 // 右回転の場合は、棒が下に収まるほうが優先
-int iBlockKickTable[4 * 4 * 2 * 2] = {
+int32_t iBlockKickTable[4 * 4 * 2 * 2] = {
 	// 左回転
 	-1, 0,		 2, 0,		-1, -2,		 2, 1,		// 0>>3
 	 2, 0,		-1, 0,		 2, -1,		-1, 2,		// 1>>0
@@ -116,7 +116,7 @@ int iBlockKickTable[4 * 4 * 2 * 2] = {
 // SRS-X専用　180度回転壁蹴りテーブル（I以外）
 // 偶数番号は2回180°回転すれば元の位置に戻る（かもしれない）が、
 // 奇数番号は下への補正が優先される（かもしれない）
-int otherBlock180KickTable[11 * 2 * 4] ={
+int32_t otherBlock180KickTable[11 * 2 * 4] ={
 	 1, 0,   2, 0,   1, 1,   2, 1,  -1, 0,  -2, 0,  -1, 1,  -2, 1,   0,-1,   3, 0,  -3, 0,		// 0>>2─┐
 	 0, 1,   0, 2,  -1, 1,  -1, 2,   0,-1,   0,-2,  -1,-1,  -1,-2,   1, 0,   0, 3,   0,-3,		// 1>>3─┼┐
 	-1, 0,  -2, 0,  -1,-1,  -2,-1,   1, 0,   2, 0,   1,-1,   2,-1,   0, 1,  -3, 0,   3, 0,		// 2>>0─┘│
@@ -125,7 +125,7 @@ int otherBlock180KickTable[11 * 2 * 4] ={
 
 // SRS-X専用　180度回転壁蹴りテーブル（I）
 // やり方次第では驚異の壁飛ばし、壁抜けが可能ww
-int iBlock180KickTable[11 * 2 * 4] ={
+int32_t iBlock180KickTable[11 * 2 * 4] ={
 	 -1, 0,  -2, 0,   1, 0,   2, 0,   0, 1,    0,0, 0,0, 0,0, 0,0, 0,0, 0,0,
 	  0, 1,   0, 2,   0,-1,   0,-2,  -1, 0,    0,0, 0,0, 0,0, 0,0, 0,0, 0,0,
 	  1, 0,   2, 0,  -1, 0,  -2, 0,   0,-1,    0,0, 0,0, 0,0, 0,0, 0,0, 0,0,
@@ -134,10 +134,10 @@ int iBlock180KickTable[11 * 2 * 4] ={
 // player: プレイヤー番号
 // kickm : 接地状態で移動できる回数
 // kickr : 接地状態で回転できる回数
-void statWMove(int player, int kickm, int kickr) {
-	int		bak, bottom, move, don, flash, kosa, rolling ,synchro,landing, fsmooth;
-	int		mx, my, sx[11], sy[11], i, k, l;
-	int		j,lockT;
+void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
+	int32_t		bak, bottom, move, don, flash, kosa, rolling ,synchro,landing, fsmooth;
+	int32_t		mx, my, sx[11], sy[11], i, k, l;
+	int32_t		j,lockT;
 
 	fsmooth = 0;
 	don = 0;
@@ -718,7 +718,7 @@ void statWMove(int player, int kickm, int kickr) {
 }
 
 
-int	co(int a, int b, int c) {	// conditional op
+int32_t	co(int32_t a, int32_t b, int32_t c) {	// conditional op
 	if(a) return b;
 	else return c;
 }

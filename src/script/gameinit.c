@@ -7,7 +7,7 @@
 //■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■
 
 import "string.dll"
-int screenMode, colorMode, systemmem;
+int32_t screenMode, colorMode, systemmem;
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //   初期設定
@@ -54,7 +54,7 @@ void main() {
 }
 
 
-int LoadConfig(void) {
+int32_t LoadConfig(void) {
 	int32_t i, cfgbuf[24];
 
 	FillMemory(&cfgbuf, 24, 0);

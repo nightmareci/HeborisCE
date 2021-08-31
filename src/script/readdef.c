@@ -3,51 +3,51 @@ namespace readdef
 	//#include "option.h"
 	#include "keyconf.h"
 
-	int	fontc[12]  = {9,1,2,3,8,4,3,6,7};	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
-	int	digitc[12] = {5,5,7,7,5,5,7,7,5};	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
-	int	giveupKey = SDL_SCANCODE_Q;		//捨てゲーキー (デフォルトはQ)
-	int	ssKey = SDL_SCANCODE_HOME;		//スナップショットキー (デフォルトはHome)
-	int	pausekey[2] = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 };	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
-	int	dispnextkey[2] = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 };	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
-	int	dtc = 1;				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
-	int	fldtr = 96;				//フィールド背景非表示時のフィールド透過度(0-256)
-	int	dispnext = 3;			//ネクストブロック表示数の選択（０〜３）
-	int	movesound = 1;			//ブロック移動音の選択	0:OFF 1:ON
-	int	wavebgm = 0;			//BGMの選択
-	int	maxPlay = 0;			//プレイヤー人数の選択	0:シングル 1:デュアル
+	int32_t	fontc[12]  = {9,1,2,3,8,4,3,6,7};	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
+	int32_t	digitc[12] = {5,5,7,7,5,5,7,7,5};	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
+	SDL_Scancode	giveupKey = SDL_SCANCODE_Q;		//捨てゲーキー (デフォルトはQ)
+	SDL_Scancode	ssKey = SDL_SCANCODE_HOME;		//スナップショットキー (デフォルトはHome)
+	SDL_Scancode	pausekey[2] = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 };	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
+	SDL_Scancode	dispnextkey[2] = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 };	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
+	int32_t	dtc = 1;				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
+	int32_t	fldtr = 96;				//フィールド背景非表示時のフィールド透過度(0-256)
+	int32_t	dispnext = 3;			//ネクストブロック表示数の選択（０〜３）
+	int32_t	movesound = 1;			//ブロック移動音の選択	0:OFF 1:ON
+	int32_t	wavebgm = 0;			//BGMの選択
+	int32_t	maxPlay = 0;			//プレイヤー人数の選択	0:シングル 1:デュアル
 
-	int	breakeffect = 1;	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
-	int	showcombo = 0;		//コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
-	int	top_frame = 0;		//ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
+	int32_t	breakeffect = 1;	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
+	int32_t	showcombo = 0;		//コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
+	int32_t	top_frame = 0;		//ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
 
-	int	w_reverse = 1;		//ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
+	int32_t	w_reverse = 1;		//ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
 
-	int	downtype = 1;		//下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
+	int32_t	downtype = 1;		//下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
-	int	lvupbonus = 0;		//レベルアップボーナス 0:TI 1:TGM/TAP #1.60c7g3
+	int32_t	lvupbonus = 0;		//レベルアップボーナス 0:TI 1:TGM/TAP #1.60c7g3
 
-	int	fontsize = 1;			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
+	int32_t	fontsize = 1;			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
 
 	JoyKey	joykeyAssign[10 * 2] = { 0 };		//ジョイスティックボタン割り当て
 
 	//Holdボタン(キーボード)割り当て
-	int	holdkey[2] = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 };	//default 1p側:V 2p側:テンキー0
+	SDL_Scancode	holdkey[2] = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 };	//default 1p側:V 2p側:テンキー0
 
-	int rots[2] = {2, 1};
-	int lvup[2] = {1, 1};
+	int32_t rots[2] = {2, 1};
+	int32_t lvup[2] = {1, 1};
 
-	int		screenMode = 2;
-	int		systemmem =0;
-	int		nextblock =8;
-	int		smooth =0;
-	int		nanameallow =1;
-	int		sonicdrop =0;
-	int		blockflash =3;
-	int		fastlrmove =1;
-	int		background =2;
+	int32_t		screenMode = 2;
+	int32_t		systemmem =0;
+	int32_t		nextblock =8;
+	int32_t		smooth =0;
+	int32_t		nanameallow =1;
+	int32_t		sonicdrop =0;
+	int32_t		blockflash =3;
+	int32_t		fastlrmove =1;
+	int32_t		background =2;
 
 
-	int readdef()
+	int32_t readdef()
 	{
 		int32_t i,j, cfgbuf[CFG_LENGTH];
 

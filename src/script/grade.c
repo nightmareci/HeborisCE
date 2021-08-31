@@ -1,5 +1,5 @@
 /* TGM式段位上昇 */
-void GradeUp(int player){
+void GradeUp(int32_t player){
 	if(gameMode[player] >= 4) return;
 	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVIL以外
 		// (S8までなら)段位上昇判定 #1.60c7g5
@@ -30,8 +30,8 @@ void GradeUp(int player){
 	}
 }
 /* TAP式段位 #C7T5EX*/
-void GradeUp2(int player, int lines){
-	int i[2],gbai[2];
+void GradeUp2(int32_t player, int32_t lines){
+	int32_t i[2],gbai[2];
 	if( (gameMode[player] == 1) || (gameMode[player] == 2) ) {
 		if(enable_grade[player] == 2){
 			if(grade[player]==0){//9
@@ -345,9 +345,9 @@ void GradeUp2(int player, int lines){
 }
 
 /* ??式段位　*/
-void GradeUp3(int player) {//ブロックを置く度に
-	int 	lap_timeT[2], isqcool;
-	int	gup3sec[2],secinlv[2];
+void GradeUp3(int32_t player) {//ブロックを置く度に
+	int32_t 	lap_timeT[2], isqcool;
+	int32_t	gup3sec[2],secinlv[2];
 
 	if( (gameMode[player] == 1) || (gameMode[player] == 2) ) {
 
@@ -398,8 +398,8 @@ void GradeUp3(int player) {//ブロックを置く度に
 	}
 
 }
-void isregret(int player){	//100超えるごと呼び出し
-	int	border_time2[2],regretgosa[2];
+void isregret(int32_t player){	//100超えるごと呼び出し
+	int32_t	border_time2[2],regretgosa[2];
 	regretgosa[player] = tr2[player]/40;
 	if(repversw >= 49){
 	border_time2[player]= border_time[border_rank[player]]+ 6 + regretgosa[player];
@@ -430,7 +430,7 @@ void isregret(int player){	//100超えるごと呼び出し
 	grade[player]++;
 }
 
-void reset_gradeup3(int player){//セクションが変わるごとにリセット
+void reset_gradeup3(int32_t player){//セクションが変わるごとにリセット
 	skillg[player] = 0;
 	time99[player] = 0;
 	timeN[player] = 0;

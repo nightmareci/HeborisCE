@@ -1,9 +1,9 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.09 - PRACTICEモードメニュー
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statSelectLevel(int player) {
-	int i;
-	int color;
+void statSelectLevel(int32_t player) {
+	int32_t i;
+	int32_t color;
 
 	color = 1 + p_shirase[0]; // SHIRASEモードで赤くする#1.60c6.2c
 
@@ -1046,7 +1046,7 @@ void PracticeStart(void){
 }
 
 
-void loadWait(int player, int no) { // hoge heboris.iniで設定されたwaitを実際のwaitに代入するための関数。
+void loadWait(int32_t player, int32_t no) { // hoge heboris.iniで設定されたwaitを実際のwaitに代入するための関数。
 	if(syutugen[no] != -1)	wait1[player]  = syutugen[no];
 	if(syoukyo[no]  != -1)	wait2[player]  =  syoukyo[no];
 	if(settyaku[no] != -1)	wait3[player]  = settyaku[no];
@@ -1066,7 +1066,7 @@ void loadWait(int player, int no) { // hoge heboris.iniで設定されたwaitを
 //  プラクティスで死んだとき#1.60cd
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void PracticeDeath() {
-	int i;
+	int32_t i;
 
 	// FPSを戻す #1.60c7n7
 	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
@@ -1109,7 +1109,7 @@ void PracticeDeath() {
 //  Practiceモードで窒息or捨てゲーした時の処理#1.60cd
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void PracticeOver(void) {
-	int i,tmp;
+	int32_t i,tmp;
 
 	// FPSを戻す #1.60c7n7
 	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);

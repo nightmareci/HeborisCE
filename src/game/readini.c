@@ -1,6 +1,6 @@
 #include "include.h"
 
-int atoi_special(const char *chr)
+int32_t atoi_special(const char *chr)
 {
 	if ( strlen(chr) > 2 && chr[0] == '0' && chr[1] == 'x' )
 	{

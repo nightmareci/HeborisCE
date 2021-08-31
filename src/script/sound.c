@@ -2,7 +2,7 @@
 //  全効果音停止 #1.60c7j6
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void StopAllWaves(void) {
-	int i;
+	int32_t i;
 	for(i = 0; i <= 49; i++) {
 		StopWave(i);
 		SetVolumeWave(i, sevolume);	// #1.60c7o8
@@ -13,7 +13,7 @@ void StopAllWaves(void) {
 //  全BGM停止 #1.60c7l1
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void StopAllBGM(void) {
-	int i;
+	int32_t i;
 	for(i = 50; i <= 69; i++) {
 		StopWave(i);
 		SetVolumeWave(i, bgmvolume);	// #1.60c7o8
@@ -23,13 +23,13 @@ void StopAllBGM(void) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  効果音再生（の予約）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void PlaySE(int no) {
+void PlaySE(int32_t no) {
 	if(no < 50) {
 		se_play[no] = 1;
 	}
 }
 
-void StopSE(int no) {
+void StopSE(int32_t no) {
 	if(no < 50) {
 		se_play[no] = 2;
 	}
@@ -37,7 +37,7 @@ void StopSE(int no) {
 
 // 予約された効果音を全て再生
 void PlayAllSE() {
-	int i;
+	int32_t i;
 
 	for(i = 0; i < 50; i++) {
 		if(se_play[i] == 1) {
@@ -54,8 +54,8 @@ void PlayAllSE() {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ゲーム開始時のBGMレベル設定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int setstartBGM(int mode, int pl) {
-	int	i,bgmmode;
+int32_t setstartBGM(int32_t mode, int32_t pl) {
+	int32_t	i,bgmmode;
 
 	i = 0;
 
@@ -113,8 +113,8 @@ int setstartBGM(int mode, int pl) {
 }
 
 // レベルセレクト用 #1.60c7s6
-int setstartBGM_debug(int mode, int pl) {
-	int i,bgmmode;
+int32_t setstartBGM_debug(int32_t mode, int32_t pl) {
+	int32_t i,bgmmode;
 
 	i = 0;
 
@@ -141,7 +141,7 @@ int setstartBGM_debug(int mode, int pl) {
 
 	return i;
 }
-int BgmModeDecide(int pl,int mode){
+int32_t BgmModeDecide(int32_t pl,int32_t mode){
 	if(mode==0){
 		if(!novice_mode[pl]){//HANABI
 			return 0;
@@ -167,8 +167,8 @@ int BgmModeDecide(int pl,int mode){
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイ専用時のBGMレベル設定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int ReplaysetstartBGM(int mode, int pl) {
-	int	i,bgmmode;
+int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
+	int32_t	i,bgmmode;
 
 	i = 0;
 
@@ -225,7 +225,7 @@ int ReplaysetstartBGM(int mode, int pl) {
 //  BGMフェードアウト
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void bgmFadeout(void) {
-	int player;
+	int32_t player;
 
 	if(wavebgm == 0) return;
 
@@ -248,8 +248,8 @@ void bgmFadeout(void) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  BGMのフェードアウトチェック
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void checkFadeout(int pl) {
-	int	bgmmode[2];
+void checkFadeout(int32_t pl) {
+	int32_t	bgmmode[2];
 		if((gameMode[pl] <= 3) && (fadelv[pl] == 0)) {
 			if(((gameMode[pl] == 1) || (gameMode[pl] == 2)) && (enable_grade[pl] == 4)) {
 				// MASTER用
@@ -275,8 +275,8 @@ void checkFadeout(int pl) {
 }
 // 段位4設定時のMASTER＆20G用
 // 速度スキップに対応していなかったのを多分修正 C7U3.0
-void checkMasterFadeout(int player) {
-	int secinlv[2];
+void checkMasterFadeout(int32_t player) {
+	int32_t secinlv[2];
 	secinlv[player] = tc[player] - ((tc[player] / 100) * 100);		// レベルの下2桁
 
 	// 下2桁が85以上の場合
@@ -310,7 +310,7 @@ void checkMasterFadeout(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  BGMの切り替え
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void changeBGM(int player) {
+void changeBGM(int32_t player) {
 	StopAllBGM();
 	if((!isfever[0]) && (!isfever[1]))
 		PlayWave(50 +bgmlv);
@@ -322,8 +322,8 @@ void changeBGM(int player) {
 //  サウンドテスト#1.60c7c
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void SoundTestProc(void) {
-	int i;
-	int snd;
+	int32_t i;
+	int32_t snd;
 
 	snd = 0;
 

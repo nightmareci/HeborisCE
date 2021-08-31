@@ -13,13 +13,13 @@
 [end]
 */
 
-int		screenMode = 1;
-int		systemmem =0;
-int		nextblock =7;
-int		blockkind =0;
-int		smooth =0;
-int		nanameallow =1;
-int		sonicdrop =0;
-int		blockflash =2;
-int		fastlrmove =1;
-int		background =0;
+int32_t		screenMode = 1;
+int32_t		systemmem =0;
+int32_t		nextblock =7;
+int32_t		blockkind =0;
+int32_t		smooth =0;
+int32_t		nanameallow =1;
+int32_t		sonicdrop =0;
+int32_t		blockflash =2;
+int32_t		fastlrmove =1;
+int32_t		background =0;

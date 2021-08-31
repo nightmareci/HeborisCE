@@ -1,55 +1,55 @@
-int	screenMode;		// ウィンドウモード	0:全画面 1:ウィンドウ(320x240) 2:ウィンドウ(640x480)
-int	colorMode;		// カラーモード		0:16bit (65536色) 1:32bit (1677万色)
-int	systemmem;		// サーフェス格納	0:VRAM(高速) 1:システムメモリ(低速)
-int	nextblock;		// ツモ
-//int	blockkind;		// ブロックグラフィック	0:aa 1:ab 2:ba 3:bb
-int	smooth;			// ブロック落下	0:ノーマル 1:スムーズ
-int	nanameallow;		// 斜め入力	0:無効 1:有効
-int	sonicdrop;		// 上入れ即接地0:有効 1:無効
-int	fastlrmove;		// 横先行入力	0:有効 1:無効
-int	blockflash;		// ブロック枠	0:点滅 1:点灯 2:無し
-int	background;		// フィールド背景0:スクロール 1:スクロール無し 2:ベタ
+int32_t	screenMode;		// ウィンドウモード	0:全画面 1:ウィンドウ(320x240) 2:ウィンドウ(640x480)
+int32_t	colorMode;		// カラーモード		0:16bit (65536色) 1:32bit (1677万色)
+int32_t	systemmem;		// サーフェス格納	0:VRAM(高速) 1:システムメモリ(低速)
+int32_t	nextblock;		// ツモ
+//int32_t	blockkind;		// ブロックグラフィック	0:aa 1:ab 2:ba 3:bb
+int32_t	smooth;			// ブロック落下	0:ノーマル 1:スムーズ
+int32_t	nanameallow;		// 斜め入力	0:無効 1:有効
+int32_t	sonicdrop;		// 上入れ即接地0:有効 1:無効
+int32_t	fastlrmove;		// 横先行入力	0:有効 1:無効
+int32_t	blockflash;		// ブロック枠	0:点滅 1:点灯 2:無し
+int32_t	background;		// フィールド背景0:スクロール 1:スクロール無し 2:ベタ
 
-int	rots[2];		// 回転規則
-int	lvup[2];		// レベルアップ方式
-int	fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
-int	digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
-int	giveupKey = SDL_SCANCODE_Q;	// 捨てゲーキー (デフォルトはQ)
-int	ssKey = SDL_SCANCODE_HOME;	// スナップショットキー (デフォルトはHome)
-int	pausekey[2] = { SDL_SCANCODE_F1, SDL_SCANCODE_F2 };	// ポーズキー(デフォルトはF1, F2)		#1.60c7g7
-int	dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
-int	dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
-int	fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-int	wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
+int32_t	rots[2];		// 回転規則
+int32_t	lvup[2];		// レベルアップ方式
+int32_t	fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
+int32_t	digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
+int32_t	giveupKey = SDL_SCANCODE_Q;	// 捨てゲーキー (デフォルトはQ)
+int32_t	ssKey = SDL_SCANCODE_HOME;	// スナップショットキー (デフォルトはHome)
+int32_t	pausekey[2] = { SDL_SCANCODE_F1, SDL_SCANCODE_F2 };	// ポーズキー(デフォルトはF1, F2)		#1.60c7g7
+int32_t	dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
+int32_t	dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
+int32_t	fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
+int32_t	wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
 // ver.160c6
-int	dispnext;		// ネクスト表示個数設定
-int	movesound;		// ブロック移動音設定	0:OFF　1:ON
-int	fontsize;		// メイン画面で描画するフォントの大きさ	0:標準　1:小型
-int	maxPlay;		// プレイする最大人数	0:シングル台　1:ツイン台
-int	lastmaxPlay;		// 設定変更前の、プレイする最大人数	0:シングル台　1:ツイン台
-int	lasttopframe;
+int32_t	dispnext;		// ネクスト表示個数設定
+int32_t	movesound;		// ブロック移動音設定	0:OFF　1:ON
+int32_t	fontsize;		// メイン画面で描画するフォントの大きさ	0:標準　1:小型
+int32_t	maxPlay;		// プレイする最大人数	0:シングル台　1:ツイン台
+int32_t	lastmaxPlay;		// 設定変更前の、プレイする最大人数	0:シングル台　1:ツイン台
+int32_t	lasttopframe;
 
-int	breakeffect;		// ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
-int	showcombo;		// コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
-//int	quickerase;		// ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
+int32_t	breakeffect;		// ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
+int32_t	showcombo;		// コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
+//int32_t	quickerase;		// ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
 
-int	w_reverse;		// ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
+int32_t	w_reverse;		// ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
 
-int	downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
+int32_t	downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
-int	lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
+int32_t	lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-int keyAssign[10 * 2];	// キーボード設定 (↑↓←→ABCD)
+int32_t keyAssign[10 * 2];	// キーボード設定 (↑↓←→ABCD)
 
 // →pauseとgiveupを追加 1.60c7g7
 JoyKey	joykeyAssign[10 * 2];			// ジョイスティックボタン割り当て
 
-int	restart;				// 再起動フラグ
+int32_t	restart;				// 再起動フラグ
 
 #define CFG_LENGTH 240
 
 // 設定をバイナリデータに保存 1.60c5
-int SaveConfig(void) {
+int32_t SaveConfig(void) {
 	int32_t i, j, cfgbuf[CFG_LENGTH];
 
 	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
@@ -108,14 +108,14 @@ int SaveConfig(void) {
 	cfgbuf[79] = digitc[8] + digitc[9] * 0x100 + digitc[10] * 0x10000 + digitc[11] * 0x1000000;
 
 	int32_t *joykeybuf = &cfgbuf[80];
-	for (int pl = 0; pl < 2; pl++) {
-		for (int key = 0; key < 10; key++) {
+	for (int32_t pl = 0; pl < 2; pl++) {
+		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
 			JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 			plbuf[0] = pljoy->device;
-			for (int i = 0; i < 4; i++) {
+			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = 0;
-				for (int j = 0; j < 4; j++) {
+				for (int32_t j = 0; j < 4; j++) {
 					plbuf[1 + i] |= (uint32_t)pljoy->guid.data[i * 4 + j] << (j * 8);
 				}
 			}
@@ -140,7 +140,7 @@ int SaveConfig(void) {
 }
 
 // 設定をバイナリデータから読み込み 1.60c5
-int LoadConfig(void) {
+int32_t LoadConfig(void) {
 	int32_t i, j, cfgbuf[CFG_LENGTH];
 
 
@@ -213,13 +213,13 @@ int LoadConfig(void) {
 	}
 
 	int32_t *joykeybuf = &cfgbuf[80];
-	for (int pl = 0; pl < 2; pl++) {
-		for (int key = 0; key < 10; key++) {
+	for (int32_t pl = 0; pl < 2; pl++) {
+		for (int32_t key = 0; key < 10; key++) {
 			JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
 			pljoy->device = plbuf[0];
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
+			for (int32_t i = 0; i < 4; i++) {
+				for (int32_t j = 0; j < 4; j++) {
 					pljoy->guid.data[i * 4 + j] = (Uint8)((uint32_t)plbuf[1 + i] >> (j * 8));
 				}
 			}
@@ -244,11 +244,11 @@ int LoadConfig(void) {
 
 
 void ConfigMenu() {
-	int i, j, m, pl, count, pages;
+	int32_t i, j, m, pl, count, pages;
 	int32_t ncfg[CFG_LENGTH];
-	int need_reset;	// 設定保存時にリセットするか
-	int need_reloadBG;
-	int last_BG;
+	int32_t need_reset;	// 設定保存時にリセットするか
+	int32_t need_reloadBG;
+	int32_t last_BG;
 
 	pages = 3;
 
@@ -313,13 +313,13 @@ void ConfigMenu() {
 	ncfg[79] = digitc[8];
 
 	int32_t *joykeybuf = &ncfg[80];
-	for (int pl = 0; pl < 2; pl++) {
+	for (int32_t pl = 0; pl < 2; pl++) {
 		int32_t *plbuf = &joykeybuf[pl * 10 * 8];
 		JoyKey *pljoy = &joykeyAssign[pl * 10];
 		plbuf[0] = pljoy->device;
-		for (int i = 0; i < 4; i++) {
+		for (int32_t i = 0; i < 4; i++) {
 			plbuf[1 + i] = 0;
-			for (int j = 0; j < 4; j++) {
+			for (int32_t j = 0; j < 4; j++) {
 				plbuf[1 + i] |= (uint32_t)pljoy->guid.data[i * 4 + j] << (j * 8);
 			}
 		}
@@ -539,11 +539,7 @@ void ConfigMenu() {
 						PlaySE(5);
 
 						if(statc[0] == 1){
-#if		HEBORIS_DIRECTX9 || SDL_USE_OPENGL
-							ncfg[0] = (ncfg[0] & 0x100) + ((ncfg[0] % 0x100) + 13 + m) % 13;	// screenMode
-#else
 							ncfg[0] = (ncfg[0] & 0x100) + ((ncfg[0] % 0x100) + 4 + m) % 4;	// screenMode
-#endif
 							need_reset = 1;
 						}
 #if		0
@@ -989,13 +985,13 @@ void ConfigMenu() {
 					printFont(13, 6 + statc[0], "_", digitc[rots[0]] * (count % 2));
 					JoyKey pushKey;
 					bool pushed = false;
-					for (int i = 0; i < GetMaxJoyPad(); i++)
+					for (int32_t i = 0; i < GetMaxJoyPad(); i++)
 					{
 						pushKey.device = i;
 						pushKey.guid = GetJoyPadGUID(i);
 
 						pushKey.type = JOYKEY_AXIS;
-						for (int j = 0; j < GetMaxJoyAxis(i); j++)
+						for (int32_t j = 0; j < GetMaxJoyAxis(i); j++)
 						{
 							pushKey.setting.index = j;
 
@@ -1015,7 +1011,7 @@ void ConfigMenu() {
 						if (pushed) break;
 
 						pushKey.type = JOYKEY_HAT;
-						for (int j = 0; j < GetMaxJoyHat(i); j++)
+						for (int32_t j = 0; j < GetMaxJoyHat(i); j++)
 						{
 							pushKey.setting.index = j;
 
@@ -1047,7 +1043,7 @@ void ConfigMenu() {
 						if (pushed) break;
 
 						pushKey.type = JOYKEY_BUTTON;
-						for (int j = 0; j < GetMaxJoyButton(i); j++)
+						for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
 						{
 							pushKey.setting.button = j;
 							if (IsPushJoyKey(&pushKey))
@@ -1062,9 +1058,9 @@ void ConfigMenu() {
 					{
 						PlaySE(5);
 						ncfg[j+0+statc[0]*8] = pushKey.device;
-						for (int i = 0; i < 4; i++) {
+						for (int32_t i = 0; i < 4; i++) {
 							ncfg[j+1+i+statc[0]*8] = 0;
-							for (int k = 0; k < 4; k++) {
+							for (int32_t k = 0; k < 4; k++) {
 								ncfg[j+1+i+statc[0]*8] |= (uint32_t)pushKey.guid.data[i * 4 + k] << (k * 8);
 							}
 						}
@@ -1088,12 +1084,12 @@ void ConfigMenu() {
 					if(IsPushReturnKey()) {
 				//	if(getPushState(pl, 1)) {
 						PlaySE(10);
-						for (int key = 0; key < 10; key++) {
+						for (int32_t key = 0; key < 10; key++) {
 							JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
 							pljoy->device = plcfg[0];
-							for (int i = 0; i < 4; i++) {
-								for (int j = 0; j < 4; j++) {
+							for (int32_t i = 0; i < 4; i++) {
+								for (int32_t j = 0; j < 4; j++) {
 									pljoy->guid.data[i * 4 + j] = (Uint8)((uint32_t)plcfg[1 + i] >> (j * 8));
 								}
 							}
@@ -1117,13 +1113,13 @@ void ConfigMenu() {
 					else if(IsPushDeleteKey()) {
 				//	else if(getPushState(pl, 0)) {
 						PlaySE(5);
-						for (int key = 0; key < 10; key++) {
+						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
 							JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 							plcfg[0] = pljoy->device;
-							for (int i = 0; i < 4; i++) {
+							for (int32_t i = 0; i < 4; i++) {
 								plcfg[i] = 0;
-								for (int j = 0; j < 4; j++) {
+								for (int32_t j = 0; j < 4; j++) {
 									plcfg[1 + i] |= (uint32_t)pljoy->guid.data[i * 4 + j] << (j * 8);
 								}
 							}
@@ -1145,13 +1141,13 @@ void ConfigMenu() {
 					else if(IsPushBSKey()) {
 				//	else if(getPushState(pl, 2) || getPushState(pl, 3)) {
 						PlaySE(5);
-						for (int key = 0; key < 10; key++) {
+						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
 							JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 							plcfg[0] = pljoy->device;
-							for (int i = 0; i < 4; i++) {
+							for (int32_t i = 0; i < 4; i++) {
 								plcfg[i] = 0;
-								for (int j = 0; j < 4; j++) {
+								for (int32_t j = 0; j < 4; j++) {
 									plcfg[1 + i] |= (uint32_t)pljoy->guid.data[i * 4 + j] << (j * 8);
 								}
 							}
@@ -1179,9 +1175,9 @@ void ConfigMenu() {
 					int32_t *plcfg = &ncfg[80 + pl * 10 * 8];
 					JoyKey *pljoy = &joykeyAssign[pl * 10];
 					plcfg[0] = pljoy->device;
-					for (int i = 0; i < 4; i++) {
+					for (int32_t i = 0; i < 4; i++) {
 						plcfg[i] = 0;
-						for (int j = 0; j < 4; j++) {
+						for (int32_t j = 0; j < 4; j++) {
 							plcfg[1 + i] |= (uint32_t)pljoy->guid.data[i * 4 + j] << (j * 8);
 						}
 					}
@@ -1372,7 +1368,7 @@ void ConfigMenu() {
 
 /* オプション #1.60c7n4 */
 void GameOption() {
-	int i, j, cursor;
+	int32_t i, j, cursor;
 	cursor = 0;
 
 	loop {

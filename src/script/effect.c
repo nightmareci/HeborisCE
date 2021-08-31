@@ -1,7 +1,7 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  READY後のSTART!演出
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void effect(int player) {
+void effect(int32_t player) {
 	if(ready_go_style) return;
 	statc[player * 10]++;
 
@@ -17,8 +17,8 @@ void effect(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  オブジェクト関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void objectCreate(int p, int s, int x, int y, int v, int w, int j, int c) {
-	int		i;
+void objectCreate(int32_t p, int32_t s, int32_t x, int32_t y, int32_t v, int32_t w, int32_t j, int32_t c) {
+	int32_t		i;
 	for(i = 0; i < 100; i++)
 		if(obj[i] == 0) {
 			obj[i] = s;
@@ -36,8 +36,8 @@ void objectCreate(int p, int s, int x, int y, int v, int w, int j, int c) {
 }
 
 // 全消しだけで使われている
-void objectCreate2(int p, int s, int x, int y, int v, int w, int j, int c) {
-	int		i;
+void objectCreate2(int32_t p, int32_t s, int32_t x, int32_t y, int32_t v, int32_t w, int32_t j, int32_t c) {
+	int32_t		i;
 	for(i = 0; i < 100; i++)
 		if(obj[i] == 0) {
 			obj[i] = s;
@@ -55,7 +55,7 @@ void objectCreate2(int p, int s, int x, int y, int v, int w, int j, int c) {
 }
 
 void objectExecute(void) {
-	int		i;
+	int32_t		i;
 	for(i = 0; i < 100; i++) {
 		if(obj[i]) {
 			// jump(obj[i] - 1, o00, o01, o02, o03, o04, o05, o06, o07,o08,o09,o10,o11,o12,o13);
@@ -112,8 +112,8 @@ void objectExecute(void) {
 
 // objectStatBlock / objectStatBlock2
 // 破壊エフェクトの変更に伴い全面変更 #1.60c7h8
-void objectStatBlock(int no) {
-	int		zoom, offset, rate ,k, l;
+void objectStatBlock(int32_t no) {
+	int32_t		zoom, offset, rate ,k, l;
 
 	if((objj[no] < 0) && (rots[objp[no]] == 6)){
 		ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
@@ -208,8 +208,8 @@ void objectStatBlock(int no) {
 	}
 }
 
-void objectStatBlock2(int no) {
-	int		zoom, offset, rate, k, l;
+void objectStatBlock2(int32_t no) {
+	int32_t		zoom, offset, rate, k, l;
 
 	if((objj[no] < 0) && (rots[objp[no]] == 6)){
 		ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
@@ -290,8 +290,8 @@ void objectStatBlock2(int no) {
 	}
 }
 // objp[no]:BtoB や T-Spin の判定に使用
-void objectStatLine(int no) {
-	int scale;
+void objectStatLine(int32_t no) {
+	int32_t scale;
 	if(!istimestop[(objy[no] / 100 == 132)]){
 		objw[no] = objw[no] + 50;
 		obja[no]++;
@@ -331,7 +331,7 @@ void objectStatLine(int no) {
 	}
 }
 
-void objectAllCrear(int no) {
+void objectAllCrear(int32_t no) {
 	objw[no]++;
 	if(objy[no] > 13) objy[no]--;
 
@@ -344,8 +344,8 @@ void objectAllCrear(int no) {
 }
 
 // 弾け飛ぶブロック #1.60c7o6
-void objectPopBlock(int no) {
-	int		zoom, offset, rate, k, l;
+void objectPopBlock(int32_t no) {
+	int32_t		zoom, offset, rate, k, l;
 
 	if( (!breakeffect) || (objj[no] == 8) || (objj[no] == 9) || (objj[no] < 0)) {
 		obj[no] = 0;
@@ -380,7 +380,7 @@ void objectPopBlock(int no) {
 }
 
 // 花火
-void objectHanabi(int no) {
+void objectHanabi(int32_t no) {
 
 	if( (!breakeffect) || (objj[no] < 0) || (objj[no] > 6) ) {
 		obj[no] = 0;
@@ -396,7 +396,7 @@ void objectHanabi(int no) {
 	if(obja[no] >= 48) obj[no] = 0;
 }
 //プラチナブロック消去エフェクトC7T2.8
-void objectplatina_erase(int no) {
+void objectplatina_erase(int32_t no) {
 	// 32x32
 	// 60frames
 
@@ -406,7 +406,7 @@ void objectplatina_erase(int no) {
 	if(obja[no] >= 60) obj[no] = 0;
 }
 //流れ星（座標計算）
-void objectNagareboshiP(int no) {
+void objectNagareboshiP(int32_t no) {
 	objx[no]=objx[no]-4;
 	objy[no]=objy[no]+6;
 
@@ -415,7 +415,7 @@ void objectNagareboshiP(int no) {
 		if(obja[no] >= 30) obj[no] = 0;
 }
 //流れ星（描画）
-void objectNagareboshiC(int no) {
+void objectNagareboshiC(int32_t no) {
 		// 32x32
 		// 35frames
 
@@ -426,7 +426,7 @@ void objectNagareboshiC(int no) {
 }
 //アイテム発動警告
 //objw[no]：REFLECTで跳ね返された
-void objectItemWarning(int no){
+void objectItemWarning(int32_t no){
 
 	if((objc[no] == 0) && ((stat[objp[no]] == 5) || (fmirror_cnt[objp[no]] >= 0))){
 		objc[no] = 1;
@@ -465,8 +465,8 @@ void objectItemWarning(int no){
 //メダル獲得
 //objv メダルの種類  0:AC 1:ST 2:SK 3:RE 4:RO 5:CO
 //objc メダルの段階　0:銅 1:銀 2:金 3:プラ
-void objectGetmedal(int no){
-	int i,j,k;
+void objectGetmedal(int32_t no){
+	int32_t i,j,k;
 	if(medaltype >= 2){
 		obj[no] = 0;
 		return;
@@ -506,7 +506,7 @@ void objectGetmedal(int no){
 	if(obja[no] >= 16) obj[no] = 0;
 }
 //アイテムブロック消去エフェクト
-void objectitem_erase(int no) {
+void objectitem_erase(int32_t no) {
 	// 80x80
 	// 30frames
 
@@ -516,7 +516,7 @@ void objectitem_erase(int no) {
 	if(obja[no] >= 30) obj[no] = 0;
 }
 //ライン消去エフェクト
-void objectdelfield(int no) {
+void objectdelfield(int32_t no) {
 
 	ExBltRect(45, objx[no] / 100, objy[no] / 100,0, obja[no] * 8 + (128 * (objc[no])), 80, 8);
 
@@ -529,15 +529,15 @@ void objectdelfield(int no) {
 }
 //エフェクト全消去
 void objectClear(void) {
-	int		i;
+	int32_t		i;
 
 	for(i = 0; i < 100; i++) {
 		obj[i] = 0;
 	}
 }
 //指定したプレイヤーのエフェクトのみ全消去
-void objectClearPl(int player) {
-	int		i;
+void objectClearPl(int32_t player) {
+	int32_t		i;
 
 	for(i = 0; i < 100; i++) {
 		if(objp[i] == player)
@@ -545,8 +545,8 @@ void objectClearPl(int player) {
 	}
 }
 
-void objectComboClearPl(int player) {
-	int		i;
+void objectComboClearPl(int32_t player) {
+	int32_t		i;
 
 	for(i = 0; i < 100; i++) {
 		if((obj[i] == 2) && (objy[i] / 100 == 100 + 32 * player))

@@ -8,22 +8,22 @@
 //ビギ、マス*4(段位別)、20G*2、デビ、デビ-、トモTi、トモEH、エス*3、エンドレス
 bool	allocked2 = false;
 char*	rkname[5 * 15 * 2];			// 名前
-int		rkdata[5 * 15 * 2];		// 花火／段位／ステージ／ライン
-int		rktime2[5 * 15 * 2];		// タイム
-int		rkclear[5 * 15 * 2];		// 0=途中で窒息 1=ロール失敗 2=ロールクリア
-int		rkother[5 * 15 * 2];		// その他（レベルやクリア率など）
-int		rkrots[5 * 15 * 2];		// 回転ルール
+int32_t		rkdata[5 * 15 * 2];		// 花火／段位／ステージ／ライン
+int32_t		rktime2[5 * 15 * 2];		// タイム
+int32_t		rkclear[5 * 15 * 2];		// 0=途中で窒息 1=ロール失敗 2=ロールクリア
+int32_t		rkother[5 * 15 * 2];		// その他（レベルやクリア率など）
+int32_t		rkrots[5 * 15 * 2];		// 回転ルール
 
-int		rkac[5 * 15 * 2];		// ACメダル #LITE30.2
-int		rkst[5 * 15 * 2];		// STメダル #LITE30.2
-int		rksk[5 * 15 * 2];		// SKメダル #LITE30.2
-int		rkco[5 * 15 * 2];		// COメダル #LITE30.2
-int		rkre[5 * 15 * 2];		// REメダル #LITE30.2
-int		modecolor[15] = {4,1,1,1,1,5,5,2,2,3,3,0,0,2,9};		// モード名表示色
+int32_t		rkac[5 * 15 * 2];		// ACメダル #LITE30.2
+int32_t		rkst[5 * 15 * 2];		// STメダル #LITE30.2
+int32_t		rksk[5 * 15 * 2];		// SKメダル #LITE30.2
+int32_t		rkco[5 * 15 * 2];		// COメダル #LITE30.2
+int32_t		rkre[5 * 15 * 2];		// REメダル #LITE30.2
+int32_t		modecolor[15] = {4,1,1,1,1,5,5,2,2,3,3,0,0,2,9};		// モード名表示色
 
 // ランキング初期化
 void RankingInit2() {
-	int i;
+	int32_t i;
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		StrCpy(rkname[i], "NOP");
@@ -41,8 +41,8 @@ void RankingInit2() {
 }
 
 // 何位に入るかチェック（ランク外なら-1）
-int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
-	int i, j, rank;
+int32_t RankingCheck2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear) {
+	int32_t i, j, rank;
 
 	if(playback || demo) return -1;
 //	if(rmode >= 8) return -1;
@@ -69,10 +69,10 @@ int RankingCheck2(int rmode, int rrots, int rdata, int rtime, int rclear) {
 }
 
 // ランキングに登録
-void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
-	int rother, char *rname, int rank, int rac, int rst, int rsk, int rco ,int rre) {
+void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear,
+	int32_t rother, char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre) {
 
-	int i, j, rcolor;
+	int32_t i, j, rcolor;
 
 	if(playback || demo) return;
 	if((rank < 0) || (rank > 4)) return;
@@ -107,7 +107,7 @@ void RankingRegist2(int rmode, int rrots, int rdata, int rtime, int rclear,
 }
 
 // ランキング表示
-void RankingProc_2(int cat) {
+void RankingProc_2(int32_t cat) {
 	count = 0;
 	flag = 0;
 //	category = cat;
@@ -210,7 +210,7 @@ void RankingProc2_2() {
 }
 
 void RankingView2() {//5位まで
-	int i, j, k, color;
+	int32_t i, j, k, color;
 
 	// 背景描画
 	count++;
@@ -399,7 +399,7 @@ void RankingView2() {//5位まで
 }
 // ランキングを保存
 void RankingSave2() {
-	int i, temp2[3];
+	int32_t i, temp2[3];
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
@@ -440,8 +440,8 @@ void RankingSave2() {
 }
 
 // ランキングを読み込み
-int RankingLoad2() {
-	int i, temp2[3];
+int32_t RankingLoad2() {
+	int32_t i, temp2[3];
 
 	// ヘッダだけ読み込み
 	FillMemory(&saveBuf, 5000 * 4, 0);
@@ -486,13 +486,13 @@ int RankingLoad2() {
 }
 
 // ランキングを読み書きする時に使用
-int RankingGet(int rmode, int rrots) {
+int32_t RankingGet(int32_t rmode, int32_t rrots) {
 	// 普通のモード
 	return ((rmode * 10) + (rrots * 5));
 }
 // 外部からランキングのデータを使いたい時に使用
-int RankingGet2(int rmode,int rtype, int rrots,int player) {
-	int cat[2];
+int32_t RankingGet2(int32_t rmode,int32_t rtype, int32_t rrots,int32_t player) {
+	int32_t cat[2];
 	if((rrots==0)||(rrots==1)||(rrots==4)||(rrots==5)){
 		rankingrule = 0 ;//ARS
 	}else{
@@ -545,7 +545,7 @@ int RankingGet2(int rmode,int rtype, int rrots,int player) {
 // 5名 × 15モード × 2回転ルールタイプ
 // 名前を格納する変数(rkname)のメモリを確保
 void RankingAlloc() {
-	int i;
+	int32_t i;
 	if ( !allocked2 )
 	{
 		for(i = 0; i < (5 * 15 * 2 ); i++) rkname[i] = new char[4];
@@ -554,7 +554,7 @@ void RankingAlloc() {
 }
 
 
-void getModeNameEx( int mode, int number ) {
+void getModeNameEx( int32_t mode, int32_t number ) {
 	if(mode == 0)
 		sprintf(string[number], "BEGINNER");
 	else if(mode == 1)
@@ -585,7 +585,7 @@ void getModeNameEx( int mode, int number ) {
 		sprintf(string[number], "ENDLESS");
 }
 
-void getRuleNameEx( int rule, int number ) {
+void getRuleNameEx( int32_t rule, int32_t number ) {
 
 		if(rule == 0)
 			sprintf(string[number], "ARS");
@@ -593,8 +593,8 @@ void getRuleNameEx( int rule, int number ) {
 			sprintf(string[number], "SRS");
 }
 //besttime(ACEのみ)
-void viewbesttime(int player){
-	int	tmp,color;
+void viewbesttime(int32_t player){
+	int32_t	tmp,color;
 
 	if(Isbesttime==0)return;
 
@@ -610,8 +610,8 @@ void viewbesttime(int player){
 		printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 11, string[0], color);
 	}
 }
-void viewbesttimes(int player){
-	int	tmp,color;
+void viewbesttimes(int32_t player){
+	int32_t	tmp,color;
 
 	if(Isbesttime==0)return;
 	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
@@ -629,7 +629,7 @@ void viewbesttimes(int player){
 	}
 }
 
-int ARSSRSch(int rots){
+int32_t ARSSRSch(int32_t rots){
 	if((rots==0)||(rots==1)||(rots==4)||(rots==5)||(rots==8)){
 	rankingrule = 0 ;//ARS
 	}else{

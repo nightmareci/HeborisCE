@@ -1,115 +1,115 @@
 // 描画倍率を可変できるようになった関数群。
 // 通常の描画関数の頭に Ex をつけます。
 
-int zoomRate = 1;			/* 描画倍率 */
+int32_t zoomRate = 1;			/* 描画倍率 */
 
-void setDrawRate(int size) {
+void setDrawRate(int32_t size) {
 	zoomRate = size;
 }
 
-int getDrawRate() {
+int32_t getDrawRate() {
 	return zoomRate;
 }
 
-void ExBlt(int pno, int dx, int dy)
+void ExBlt(int32_t pno, int32_t dx, int32_t dy)
 {
 	Blt(pno, dx * zoomRate, dy * zoomRate);
 }
 
-void ExBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
+void ExBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy)
 {
 	BltRect(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate);
 }
 
-void ExBltFast(int pno, int dx, int dy)
+void ExBltFast(int32_t pno, int32_t dx, int32_t dy)
 {
 	BltFast(pno, dx * zoomRate, dy * zoomRate);
 }
 
-void ExBltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
+void ExBltFastRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy)
 {
 	BltFastRect(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate);
 }
 
 
-void ExBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
+void ExBlendBlt(int32_t pno, int32_t dx, int32_t dy, int32_t ar, int32_t ag, int32_t ab, int32_t br, int32_t bg, int32_t bb)
 {
 	BlendBlt(pno, dx * zoomRate, dy * zoomRate, ar, ag, ab, br, bg, bb);
 }
 
-void ExBlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
+void ExBlendBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t ar, int32_t ag, int32_t ab, int32_t br, int32_t bg, int32_t bb)
 {
 	BlendBltRect(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, ar, ag, ab, br, bg, bb);
 }
 
-void ExBltR(int pno, int dx, int dy, int scx, int scy)
+void ExBltR(int32_t pno, int32_t dx, int32_t dy, int32_t scx, int32_t scy)
 {
 	BltR(pno, dx * zoomRate, dy * zoomRate, scx, scy);
 }
 
-void ExBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
+void ExBltRectR(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t scx, int32_t scy)
 {
 	BltRectR(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, scx, scy);
 }
 
-void ExBltFastR(int pno, int dx, int dy, int scx, int scy)
+void ExBltFastR(int32_t pno, int32_t dx, int32_t dy, int32_t scx, int32_t scy)
 {
 	BltFastR(pno, dx * zoomRate, dy * zoomRate, scx, scy);
 }
 
-void ExBltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
+void ExBltFastRectR(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t scx, int32_t scy)
 {
 	BltFastRectR(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, scx, scy);
 }
 
 /*
-void ExBltTrans(int pno, int dx, int dy)
+void ExBltTrans(int32_t pno, int32_t dx, int32_t dy)
 {
 	BltTrans(pno, dx * zoomRate, dy * zoomRate);
 }
 */
 
-void BlendExBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
+void BlendExBlt(int32_t pno, int32_t dx, int32_t dy, int32_t ar, int32_t ag, int32_t ab, int32_t br, int32_t bg, int32_t bb)
 {
 	BlendBlt(pno, dx * zoomRate, dy * zoomRate, ar, ag, ab, br, bg, bb);
 }
 
-void BlendExBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
+void BlendExBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t ar, int32_t ag, int32_t ab, int32_t br, int32_t bg, int32_t bb)
 {
 	BlendBltRect(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, ar, ag, ab, br, bg, bb);
 }
 
-void BlendExBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
+void BlendExBltR(int32_t pno, int32_t dx, int32_t dy, int32_t ar, int32_t ag, int32_t ab, int32_t br, int32_t bg, int32_t bb, int32_t scx, int32_t scy)
 {
 	BlendBltR(pno, dx * zoomRate, dy * zoomRate, ar, ag, ab, br, bg, bb, scx, scy);
 }
 
-void BlendExBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
+void BlendExBltRectR(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t ar, int32_t ag, int32_t ab, int32_t br, int32_t bg, int32_t bb, int32_t scx, int32_t scy)
 {
 	BlendBltRectR(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, ar, ag, ab, br, bg, bb, scx, scy);
 }
 
-void ExTextLayerOn(int n, int x, int y)
+void ExTextLayerOn(int32_t n, int32_t x, int32_t y)
 {
 	 TextLayerOn(n, x * zoomRate, y * zoomRate);
 }
 
-void ExTextMove(int n, int x, int y)
+void ExTextMove(int32_t n, int32_t x, int32_t y)
 {
 	 TextMove(n, x * zoomRate, y * zoomRate);
 }
 
-void ExTextSize(int n, int size)
+void ExTextSize(int32_t n, int32_t size)
 {
 	 TextSize(n, size * zoomRate);
 }
 
-void ExTextHeight(int n, int size)
+void ExTextHeight(int32_t n, int32_t size)
 {
 	 TextHeight(n, size * zoomRate);
 }
 
-void ExCreateSurface(int pno, int x, int y)
+void ExCreateSurface(int32_t pno, int32_t x, int32_t y)
 {
 	 CreateSurface(pno, x * zoomRate, y * zoomRate);
 }

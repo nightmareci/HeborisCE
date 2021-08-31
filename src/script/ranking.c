@@ -2,7 +2,7 @@
 //  ランキング関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void RankingInit(void) {
-	int	i, j;
+	int32_t	i, j;
 
 	for(i = 0; i < 8; i++) {
 		for(j = 0; j < 5; j++) {
@@ -17,7 +17,7 @@ void RankingInit(void) {
 }
 
 void RankingConvert(void) {
-	int	i, j, temp, temp2[3];
+	int32_t	i, j, temp, temp2[3];
 
 	LoadFile("config/data/RANKING.SAV", &saveBuf, 1312);
 	for(i = 0; i < 40; i++) {
@@ -44,8 +44,8 @@ void RankingConvert(void) {
 
 // 何位に入るかチェック（ランク外なら-1）
 // 変数end追加 #1.60c7k3
-int RankingCheck(int rmode, int rtt, int rsc, int rtime, int rlv, int end) {
-	int		i, j, rank;
+int32_t RankingCheck(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rtime, int32_t rlv, int32_t end) {
+	int32_t		i, j, rank;
 
 	if(rmode >= 4) return -1;	// 通常でないモードではランキングなし#1.60c7l5
 
@@ -73,8 +73,8 @@ int RankingCheck(int rmode, int rtt, int rsc, int rtime, int rlv, int end) {
 	return (rank);
 }
 
-void RankingRegist(int rmode, int rtt, int rsc, int rli, int rlv, int rtime, int end, char *rname) {
-	int		i, rank, temp;
+void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t rlv, int32_t rtime, int32_t end, char *rname) {
+	int32_t		i, rank, temp;
 
 	rank = RankingCheck(rmode, rtt, rsc, rtime, rlv, end);
 
@@ -99,8 +99,8 @@ void RankingRegist(int rmode, int rtt, int rsc, int rli, int rlv, int rtime, int
 	rkfl[temp] = end;
 }
 
-void RankingProc_1(int cat) {
-	int i;
+void RankingProc_1(int32_t cat) {
+	int32_t i;
 
 	count = 0;
 	flag = 0;
@@ -127,7 +127,7 @@ void RankingProc_1(int cat) {
 }
 
 void RankingProc2_1(void) {
-	int i;
+	int32_t i;
 
 	count = 0;
 	flag = 0;
@@ -166,8 +166,8 @@ void RankingProc2_1(void) {
 	}
 }
 
-void RankingCreate(int cat, int mode) {
-	int	i, j;
+void RankingCreate(int32_t cat, int32_t mode) {
+	int32_t	i, j;
 
 	for(i = 0; i < 5; i++) {
 		StrCpy(string[3], "TH");
@@ -182,8 +182,8 @@ void RankingCreate(int cat, int mode) {
 	}
 }
 
-int RankingView(void) {
-	int		i, xxx, col;
+int32_t RankingView(void) {
+	int32_t		i, xxx, col;
 
 	KeyInput();
 
@@ -282,8 +282,8 @@ int RankingView(void) {
 	return (0);
 }
 
-int RankingSave(void) {
-	int i, temp, temp2[3];
+int32_t RankingSave(void) {
+	int32_t i, temp, temp2[3];
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -312,8 +312,8 @@ int RankingSave(void) {
 	return (0);
 }
 
-int RankingLoad(void) {
-	int i, temp, temp2[3];
+int32_t RankingLoad(void) {
+	int32_t i, temp, temp2[3];
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 

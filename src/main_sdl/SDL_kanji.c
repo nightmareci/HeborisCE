@@ -42,7 +42,7 @@ static void ParseChar(Kanji_Font* font, int index, FILE* fp, int shift) {
 	font->moji[index] = (Uint32*)malloc(sizeof(Uint32)*font->k_size);
 
 	for (y = 0; y < font->k_size; y++) {
-		fgets(buf, BUF, fp);
+		(void)fgets(buf, BUF, fp);
 		font->moji[index][y] = (strtol(buf, 0, 16) >> shift);
 	}
 }
@@ -68,7 +68,7 @@ static int ParseFont(Kanji_Font* font, FILE* fp) {
 			index = strtol(p, 0, 10);
 
 			while (strstr(buf, "BITMAP") == NULL) {
-				fgets(buf, BUF, fp);
+				(void)fgets(buf, BUF, fp);
 			}
 
 			if (index > 255) {

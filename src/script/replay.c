@@ -1,8 +1,8 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  キーが押されてたらリプレイを保存する#1.60c7i9
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void ReplaySaveCheck(int player, int statnumber) {
-	int i;
+void ReplaySaveCheck(int32_t player, int32_t statnumber) {
+	int32_t i;
 
 	//速度制限（テスト）
 	if(abs_YGS2K(GetRealFPS() - max_fps_2) >= 10) return;
@@ -20,8 +20,8 @@ void ReplaySaveCheck(int player, int statnumber) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイデータをセーブ
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void saveReplayData(int pl, int number) {
-	int i, j, temp1, temp2, max;
+void saveReplayData(int32_t pl, int32_t number) {
+	int32_t i, j, temp1, temp2, max;
 
 	if(gameMode[pl] == 4){	// VSはフォーマットが一部異なる
 		saveReplay_VS(number);
@@ -184,8 +184,8 @@ void saveReplayData(int pl, int number) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  VSモードのリプレイデータをセーブ
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void saveReplay_VS(int number) {
-	int i, j, temp1, temp2, max, pl;
+void saveReplay_VS(int32_t number) {
+	int32_t i, j, temp1, temp2, max, pl;
 	pl = 0;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
@@ -318,8 +318,8 @@ void saveReplay_VS(int number) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int loadReplayData(int pl, int number) {
-	int i, j, temp1, temp2, max,k,sptemp[4];
+int32_t loadReplayData(int32_t pl, int32_t number) {
+	int32_t i, j, temp1, temp2, max,k,sptemp[4];
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -538,8 +538,8 @@ int loadReplayData(int pl, int number) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  VSのリプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int loadReplay_VS(int number) {
-	int i, j, temp1, temp2, max[2],k,sptemp[4],pl;
+int32_t loadReplay_VS(int32_t number) {
+	int32_t i, j, temp1, temp2, max[2],k,sptemp[4],pl;
 	pl = 0;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
@@ -718,8 +718,8 @@ int loadReplay_VS(int number) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイ関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int ReplaySelectProc(void) {
-	int i,bgmmode;
+int32_t ReplaySelectProc(void) {
+	int32_t i,bgmmode;
 
 	ReplaySelectInitial();
 	flag = 0;
@@ -803,7 +803,7 @@ int ReplaySelectProc(void) {
 		return (0);
 }
 //BGMを決定
-int ReplayBgmModeDecide(int pl,int mode,int nv,int dm,int eg){
+int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg){
 	if(mode==0){
 		if(!nv){//HANABI
 			return 0;
@@ -826,7 +826,7 @@ int ReplayBgmModeDecide(int pl,int mode,int nv,int dm,int eg){
 		}
 	}
 }
-int getModeAddRep(void){
+int32_t getModeAddRep(void){
 	if(saveBuf[201] == 0) return saveBuf[259];
 	else if((saveBuf[201] == 1) || (saveBuf[201] == 2)) return saveBuf[232];
 	else if(saveBuf[201] == 3) return saveBuf[254];
@@ -839,7 +839,7 @@ int getModeAddRep(void){
 	else return 0;
 }
 void ReplaySelectInitial(void) {
-	int		i;
+	int32_t		i;
 
 	cnt = 0;
 	csr = 0;
@@ -889,7 +889,7 @@ void ReplaySelectInitial(void) {
 }
 
 void ReplaySelect(void) {
-	int		i,start,end;
+	int32_t		i,start,end;
 
 	KeyInput();
 
@@ -996,8 +996,8 @@ void ReplaySelect(void) {
 }
 
 // リプレイ詳細 #1.60c7p5
-void ReplayDetail(int number) {
-	int i,k,sptemp[4];
+void ReplayDetail(int32_t number) {
+	int32_t i,k,sptemp[4];
 
 	// リプレイデータ読み込み
 	loadReplayData(0, number);
@@ -1408,8 +1408,8 @@ void ReplayDetail(int number) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイデータをロード（保存メニュー用）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int loadReplayData2(int pl, int number) {
-	int i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
+int32_t loadReplayData2(int32_t pl, int32_t number) {
+	int32_t i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
 
 	FillMemory(&tmpBuf, 300 * 4, 0);
 
@@ -1467,7 +1467,7 @@ int loadReplayData2(int pl, int number) {
 	return (0);
 }
 
-int getModeAddRep2(int *tmpBuf){
+int32_t getModeAddRep2(int32_t *tmpBuf){
 	if(tmpBuf[201] == 0) return tmpBuf[259];
 	else if((tmpBuf[201] == 1) || (tmpBuf[201] == 2)) return tmpBuf[232];
 	else if(tmpBuf[201] == 3) return tmpBuf[254];

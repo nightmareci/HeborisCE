@@ -2,15 +2,15 @@
 //  スタッフロールデータを初期化
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-void staffInitPl(int player) {
+void staffInitPl(int32_t player) {
 //	staffroll_y_ex[player] = 2000;		//無理矢理…
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  スタッフロール文字列を描画
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void staffExecute(int player) {
-	int i;
+void staffExecute(int32_t player) {
+	int32_t i;
 
 	if( ending[player] != 2 ) return;
 
@@ -26,7 +26,7 @@ void staffExecute(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  新しい文字列を下から表示させる
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void staffRoll(int player) {
+void staffRoll(int32_t player) {
 	if( (ending[player] == 2) && (onRecord[player]) && (!pause[player]) ) {
 		if(fastroll[player]){
 			endtime[player]=endtime[player]+2; // 経過時間+1 #1.60c7o6

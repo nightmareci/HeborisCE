@@ -1,7 +1,7 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.23 - MISSIONモード セレクト画面
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statMissionSelect(int player) {
+void statMissionSelect(int32_t player) {
 	padRepeat(player);
 	padRepeat2(player);
 	if( (!IsPlayWave(62)) && (wavebgm >= 1) ) {
@@ -173,7 +173,7 @@ void statMissionSelect(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.24 - MISSIONモード エディット画面
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statMissionEditor(int player) {
+void statMissionEditor(int32_t player) {
 	padRepeat(player);
 	padRepeat2(player);
 
@@ -504,7 +504,7 @@ void statMissionEditor(int player) {
 //  問題の表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewMission() {
-	int i,tmp,minus,c_tmp,c_tmp1,c_tmp2;
+	int32_t i,tmp,minus,c_tmp,c_tmp1,c_tmp2;
 	tmp = 0;
 	minus = 0;
 
@@ -756,7 +756,7 @@ void viewMission() {
 }
 
 // ミッション名を取得
-void getMissionName(int mtype,int number) {
+void getMissionName(int32_t mtype,int32_t number) {
 	if(!english) {
 		strcpy(string[0], mission_name_jp[mtype]);
 	} else {
@@ -766,7 +766,7 @@ void getMissionName(int mtype,int number) {
 		strcat(string[0],"+");
 }
 // ロード名を取得
-void getRoadName(int no){
+void getRoadName(int32_t no){
 	if(no == 0)
 		sprintf(string[0], " BIG ROAD");
 	else if(no == 1)
@@ -803,9 +803,9 @@ void getRoadName(int no){
 		sprintf(string[0], " NO.%02d", no);
 }
 /* ミッションモードのノルマ上昇 */
-void missionNormUp(int lines) {
-	int i, j,gap;
-	int by2, tmp;
+void missionNormUp(int32_t lines) {
+	int32_t i, j,gap;
+	int32_t by2, tmp;
 
 	// レベルスター系列（ビッグ･HS1&2･アナザー･X-RAY･カラー・ロールロール・ミラー）
 	if( (mission_type[c_mission] == 0) || (mission_type[c_mission] == 1) || (mission_type[c_mission] == 8) ||
@@ -1156,8 +1156,8 @@ void missionNormUp(int lines) {
 
 /* 問題の設定（落下速度etc）をゲームに反映させる */
 void missionSetStatus() {
-	int i;
-	int tmp;
+	int32_t i;
+	int32_t tmp;
 	// ノルマ
 	c_norm[0] = 0;
 
@@ -1442,8 +1442,8 @@ void missionSetStatus() {
 
 // イレイサー用初期化
 void setEraserLines() {
-	int i, tmp,max,min;
-	int line[22];	// ラインの重複防止用
+	int32_t i, tmp,max,min;
+	int32_t line[22];	// ラインの重複防止用
 
 	for(i = 0; i < 22; i++) line[i] = 0;
 
@@ -1489,7 +1489,7 @@ void setEraserLines() {
 
 // イレイサーの線を表示
 void viewEraserLines() {
-	int i;
+	int32_t i;
 
 	for(i = 0; i < eraser_now_lines; i++) {
 		if(i >= 4) break;	// 最大で4本まで
@@ -1503,7 +1503,7 @@ void viewEraserLines() {
 
 // ターゲットでのステージ読み込み
 void loadTargetStage() {
-	int tmp;
+	int32_t tmp;
 statc[0 * 10 + 6] = mission_opt_3[c_mission];
 	if(mission_opt_1[c_mission] == mission_opt_2[c_mission]){	//ステージが1つだけ
 		tmp = mission_opt_1[c_mission];
@@ -1530,8 +1530,8 @@ statc[0 * 10 + 6] = mission_opt_3[c_mission];
 //  40〜  59 問題２
 
 /* ロード */
-void loadMissionData(int number) {
-	int i;
+void loadMissionData(int32_t number) {
+	int32_t i;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -1555,8 +1555,8 @@ void loadMissionData(int number) {
 }
 
 /* セーブ */
-void saveMissionData(int number) {
-	int i;
+void saveMissionData(int32_t number) {
+	int32_t i;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 

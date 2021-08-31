@@ -1,6 +1,6 @@
 /* TOMOYOモードでの部分的初期化処理 #1.60c7l8 */
-void tomoyoInitial(int player) {
-	int sbak[20];
+void tomoyoInitial(int32_t player) {
+	int32_t sbak[20];
 
 	// 初期化されては困るものをバックアップにコピー
 	sbak[0]  = stage[player];	// ステージ
@@ -58,9 +58,9 @@ void tomoyoInitial(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.17 - TOMOYOモード ステージクリア／タイムオーバー
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void statTomoyoNextStage(int player) {
-	int i, j, ext, timelimit_tomoyo;	//laststage[player]はgamestartへ
-	int ltime_s[2],Stage_update;
+void statTomoyoNextStage(int32_t player) {
+	int32_t i, j, ext, timelimit_tomoyo;	//laststage[player]はgamestartへ
+	int32_t ltime_s[2],Stage_update;
 	ext = 0;
 	timelimit_tomoyo = 320*60;	//EX7への足切り
 
@@ -289,7 +289,7 @@ void statTomoyoNextStage(int player) {
 }
 
 // ステージクリア判定 #1.60c7l8
-void tomoyoCheckStageClear(int player) {
+void tomoyoCheckStageClear(int32_t player) {
 	if(gameMode[player] == 6) {
 		// 残りプラチナブロック数を数える
 		rest_pblock[player] = getPlatinumBlock(player);
@@ -302,8 +302,8 @@ void tomoyoCheckStageClear(int player) {
 }
 
 // フィールド内に残っているプラチナブロックの数を数える
-int getPlatinumBlock(int player) {
-	int i, j, result;
+int32_t getPlatinumBlock(int32_t player) {
+	int32_t i, j, result;
 	result = 0;
 
 	for(i = 0; i < 10; i++)
@@ -329,8 +329,8 @@ int getPlatinumBlock(int player) {
 // statc[player * 10 + 1] : メニュー／フィールド
 // statc[player * 10 + 2] : 戻り先ステータス
 // statc[player * 10 + 3] : フィールド画面に入った瞬間ブロックを置いてしまうのを防ぐフラグ
-void statTomoyoEditor(int player) {
-	int tmp, bx1, by1;
+void statTomoyoEditor(int32_t player) {
+	int32_t tmp, bx1, by1;
 
 	padRepeat(player);
 	padRepeat2(player);
@@ -741,8 +741,8 @@ void statTomoyoEditor(int player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // statc[player * 10]     : カーソル位置
 // statc[player * 10 + 1] : プレイ／トレーニングA／トレーニングB／エディット
-void statTomoyoSelect(int player) {
-	int i;
+void statTomoyoSelect(int32_t player) {
+	int32_t i;
 
 	padRepeat(player);
 	padRepeat2(player);
@@ -965,8 +965,8 @@ void statTomoyoSelect(int player) {
 // statc[player * 10 + 1] : コンティニュー残り時間
 // statc[player * 10 + 2] : 2人同時でプレイしているか
 // statc[player * 10 + 3] : リプレイセーブ表示
-void statTomoyoResult(int player) {
-	int tmp;
+void statTomoyoResult(int32_t player) {
+	int32_t tmp;
 
 	statc[player * 10 + 1]++;
 
@@ -1114,8 +1114,8 @@ void statTomoyoResult(int player) {
 // statc[player * 10 + 1] : タイマー
 // statc[player * 10 + 2] : カーソル位置
 // statc[player * 10 + 3] : 現在のステージ
-void statTomoyoSelect_FP(int player) {
-	int i;
+void statTomoyoSelect_FP(int32_t player) {
+	int32_t i;
 
 	if(statc[player * 10 + 1] == 0){
 		loadTomoyoStage(player, stage[player]);
@@ -1284,8 +1284,8 @@ void statTomoyoSelect_FP(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステージ上のプラチナブロック配置をランダムにする
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void randPlatinum(int player, int tgtnum){
-	int empty, i, j, put_flag[22], end_flag, put_num;
+void randPlatinum(int32_t player, int32_t tgtnum){
+	int32_t empty, i, j, put_flag[22], end_flag, put_num;
 
 	if((tomoyo_rise[player]) || (tgtnum == 0)) return;
 	for(i = 0; i < 22; i++) put_flag[i] = 0;
@@ -1344,8 +1344,8 @@ void randPlatinum(int player, int tgtnum){
 // 250〜449   せり上がりフィールド
 
 /* ステージデータをロード */
-void loadTomoyoStage(int player, int number) {
-	int i;
+void loadTomoyoStage(int32_t player, int32_t number) {
+	int32_t i;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -1398,8 +1398,8 @@ void loadTomoyoStage(int player, int number) {
 }
 
 /* ステージデータをセーブ */
-void saveTomoyoStage(int player, int number) {
-	int i;
+void saveTomoyoStage(int32_t player, int32_t number) {
+	int32_t i;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 

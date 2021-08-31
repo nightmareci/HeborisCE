@@ -21,7 +21,7 @@ enum
 static char	s_szIniReadName [INIREAD_READNAME_MAX];
 static char	s_szIniReadValue[INIREAD_READVALUE_MAX];
 static char s_cLastChar;
-static int  s_iIniReadMode;
+static int32_t  s_iIniReadMode;
 static bool s_bInComment = false;
 static bool s_bInCommentBlock = false;
 static bool s_bInQuote = false;
@@ -58,9 +58,9 @@ inline bool IsSpaceChar(char chr)
 	return chr == ' ' || chr == '\t' || chr == '\r' || chr == '\n';
 }
 
-static void IniReadProcess(const char* buf, int size)
+static void IniReadProcess(const char* buf, int32_t size)
 {
-	for ( int i = 0 ; i < size ; i ++ )
+	for ( int32_t i = 0 ; i < size ; i ++ )
 	{
 		char	chr = buf[i];
 
@@ -237,7 +237,7 @@ void LoadIniFile(const char *filename)
 		char	buf[INIREAD_READBUFFER_MAX];
 		while ( !feof(file) )
 		{
-			int readsize = 0;
+			int32_t readsize = 0;
 			readsize = fread(buf, 1, INIREAD_READBUFFER_MAX, file);
 			IniReadProcess(buf, readsize);
 		}

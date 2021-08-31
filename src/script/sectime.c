@@ -1,18 +1,18 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  セクションタイムランキング関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int		st_version = 2;	// バージョン
+int32_t		st_version = 2;	// バージョン
 						// 0:無効 1:c7p6/
 //30*3　(ビギ+マス123+20G), デビ+マス4,トモ が30づつ(ただし表示数は違う)
-int		st_time[90];	// タイム
-int		st_end[90];		// 0:未カンスト 1:ロール途中窒息 2:完全クリア
-int		st_lvstop[90];		//レベルストップした時間
-int		st_others[90];		//落としたブロック数
+int32_t		st_time[90];	// タイム
+int32_t		st_end[90];		// 0:未カンスト 1:ロール途中窒息 2:完全クリア
+int32_t		st_lvstop[90];		//レベルストップした時間
+int32_t		st_others[90];		//落としたブロック数
 
 //str*		st_rkname[135];			// 名前
 // 初期化
 void ST_RankingInit(void) {
-	int	i, j;
+	int32_t	i, j;
 
 	for(i=0; i<90; i++) {
 		st_time[i] = 5400;
@@ -24,8 +24,8 @@ void ST_RankingInit(void) {
 }
 
 // STメダルの色を判定
-int ST_RankingCheck(int player, int rmode, int section,int enable_grade) {
-	int	tmp;
+int32_t ST_RankingCheck(int32_t player, int32_t rmode, int32_t section,int32_t enable_grade) {
+	int32_t	tmp;
 
 	if((rmode >= 4) || (rmode == 0)) return 0;
 
@@ -52,8 +52,8 @@ int ST_RankingCheck(int player, int rmode, int section,int enable_grade) {
 }
 
 // 記録更新したかチェック
-int ST_RankingCheckAll(int player, int rmode, int enable_grade) {
-	int i,tmp2;
+int32_t ST_RankingCheckAll(int32_t player, int32_t rmode, int32_t enable_grade) {
+	int32_t i,tmp2;
 
 	tmp2 = ST_rankingGet(player,rmode,enable_grade);
 
@@ -74,8 +74,8 @@ int ST_RankingCheckAll(int player, int rmode, int enable_grade) {
 	return 0;
 }
 // ステージごとの記録更新したかチェック
-int Stage_RankingCheck(int player, int rmode) {
-	int i,tmp3;
+int32_t Stage_RankingCheck(int32_t player, int32_t rmode) {
+	int32_t i,tmp3;
 	if(stage[player] >= 27) return 0;
 
 	tmp3 = ST_rankingGet(player,rmode,0);
@@ -86,8 +86,8 @@ int Stage_RankingCheck(int player, int rmode) {
 	return 0;
 }
 // セクションタイムランキング更新
-void ST_RankingUpdate(int player, int rmode, int end,int enable_grade) {
-	int i, temp,tmp4;
+void ST_RankingUpdate(int32_t player, int32_t rmode, int32_t end,int32_t enable_grade) {
+	int32_t i, temp,tmp4;
 
 	tmp4 = ST_rankingGet(player,rmode,enable_grade);
 
@@ -126,7 +126,7 @@ void ST_RankingUpdate(int player, int rmode, int end,int enable_grade) {
 
 // セーブ
 void ST_RankingSave(void) {//12345 6789
-	int i,j, temp2[3];
+	int32_t i,j, temp2[3];
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
@@ -143,8 +143,8 @@ void ST_RankingSave(void) {//12345 6789
 }
 
 // ロード
-int ST_RankingLoad(void) {
-	int i,j, temp2[3];
+int32_t ST_RankingLoad(void) {
+	int32_t i,j, temp2[3];
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
@@ -167,8 +167,8 @@ int ST_RankingLoad(void) {
 	return 0;
 }
 //ベストタイム(ACEのはranking2.c)
-void viewbestSTtime(int player){
-	int	tempbest,color;
+void viewbestSTtime(int32_t player){
+	int32_t	tempbest,color;
 
 	if(Isbesttime==0)return;
 
@@ -184,8 +184,8 @@ void viewbestSTtime(int player){
 	}
 }
 //ベストタイムスモールフォント
-void viewbestSTtimes(int player){
-	int	tempbest,color;
+void viewbestSTtimes(int32_t player){
+	int32_t	tempbest,color;
 
 	if(Isbesttime==0)return;
 
@@ -206,8 +206,8 @@ void viewbestSTtimes(int player){
 	}
 }
 //STランキングのアドレス指定
-int ST_rankingGet(int player,int rmode,int enable_grade){
-	int	temp;
+int32_t ST_rankingGet(int32_t player,int32_t rmode,int32_t enable_grade){
+	int32_t	temp;
 	if(rmode == 0){//ビギナー
 		temp = 0;
 	}else if(rmode == 1){//マスター
@@ -228,7 +228,7 @@ int ST_rankingGet(int player,int rmode,int enable_grade){
 
 // セクションタイムランキング表示
 void ST_RankingView() {
-	int i, max, mode, tmp, tmp5, bps, bps1,bps2,s;
+	int32_t i, max, mode, tmp, tmp5, bps, bps1,bps2,s;
 
 	mode = 1;
 
@@ -429,7 +429,7 @@ void ST_RankingView() {
 
 // プレイヤーデータセーブ
 void PlayerdataSave(void) {//12345 6789
-	int i,j, temp2[3];
+	int32_t i,j, temp2[3];
 
 	FillMemory(&saveBuf, 500 * 4, 0);
 
@@ -447,8 +447,8 @@ void PlayerdataSave(void) {//12345 6789
 }
 
 // プレイヤーデータロード
-int PlayerdataLoad(void) {
-	int i,j, temp2[3];
+int32_t PlayerdataLoad(void) {
+	int32_t i,j, temp2[3];
 
 	FillMemory(&saveBuf, 500 * 4, 0);
 

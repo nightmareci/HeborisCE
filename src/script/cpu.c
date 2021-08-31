@@ -2,12 +2,12 @@
 //  コンピュータの思考ルーチン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // 思考ルーチン内で一時使用する変数
-int		cp_fld[10 * 22 * 2];	// 仮想フィールド x + y * 10
-int		cp_erase[22 * 2];
+int32_t		cp_fld[10 * 22 * 2];	// 仮想フィールド x + y * 10
+int32_t		cp_erase[22 * 2];
 
 /* ブロックのあたり判定 */
-int cpu_judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2;
+int32_t cpu_judgeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2;
 
 	if(IsBig[player]) {
 		// BIGの場合は専用の判定処理を行う
@@ -33,8 +33,8 @@ int cpu_judgeBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 /* ブロックを設置する */
-int cpu_setBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2,puted;
+int32_t cpu_setBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2,puted;
 	puted = 0;
 
 	if(IsBig[player]) {
@@ -61,9 +61,9 @@ int cpu_setBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 /* BIG用当たり判定 */
-int cpu_judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2;
-	int		k, l, bx3, by3;
+int32_t cpu_judgeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2;
+	int32_t		k, l, bx3, by3;
 
 	for(i = 0; i < 4; i++) {
 		if(rots[player] == 8) {
@@ -92,9 +92,9 @@ int cpu_judgeBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 /* BIG用設置処理 */
-int cpu_setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
-	int		i, bx2, by2,puted;
-	int		k, l, bx3, by3;
+int32_t cpu_setBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate) {
+	int32_t		i, bx2, by2,puted;
+	int32_t		k, l, bx3, by3;
 	puted = 0;
 
 	for(i = 0; i < 4; i++) {
@@ -123,8 +123,8 @@ int cpu_setBigBlock(int player, int bx1, int by1, int kind, int rotate) {
 }
 
 /* 目的の場所へブロックを移動させる */
-void cpuMove(int player) {
-	int i, slow;
+void cpuMove(int32_t player) {
+	int32_t i, slow;
 
 	// キー入力初期化
 	for(i=0;i<10;i++) {
@@ -217,7 +217,7 @@ void cpuMove(int player) {
 	}
 }
 
-void cpuDrop(int player){
+void cpuDrop(int32_t player){
 
 	if(isUDreverse[player]){	//上下逆転時
 		if((sonicdrop) || (heboGB[player] == 0) &&
@@ -255,8 +255,8 @@ void cpuDrop(int player){
 }
 
 /* ブロックの総数を調べる */
-int cpuBlockHowManyFilled(int player, int y) {
-	int		j, ret;
+int32_t cpuBlockHowManyFilled(int32_t player, int32_t y) {
+	int32_t		j, ret;
 	ret = 0;
 
 	for(j = 0; j < fldsizew[player]; j++)
@@ -267,8 +267,8 @@ int cpuBlockHowManyFilled(int player, int y) {
 }
 
 // 指定した行で左端から連続しているブロックの数を求める
-int blockHowManyFilledFromLeft(int player, int y) {
-	int		j, ret;
+int32_t blockHowManyFilledFromLeft(int32_t player, int32_t y) {
+	int32_t		j, ret;
 	ret = 0;
 
 	for(j = 0; j < fldsizew[player]; j++)
@@ -282,8 +282,8 @@ int blockHowManyFilledFromLeft(int player, int y) {
 }
 
 /* 下に隙間があるか調べる */
-int cpuCheckFloating(int player, int x, int y) {
-	int y2, y3;
+int32_t cpuCheckFloating(int32_t player, int32_t x, int32_t y) {
+	int32_t y2, y3;
 
 	y2 = y + 1;
 	if(y2 > fldsizeh[player]) y2 = fldsizeh[player];
@@ -296,8 +296,8 @@ int cpuCheckFloating(int player, int x, int y) {
 
 	return 0;
 }
-int cpuCheckFloatingE(int player, int x, int y) {
-	int y2;
+int32_t cpuCheckFloatingE(int32_t player, int32_t x, int32_t y) {
+	int32_t y2;
 
 	//そのブロックが消えるならスルー
 //	if(cp_erase[y+22*player]) return 0;
@@ -313,8 +313,8 @@ int cpuCheckFloatingE(int player, int x, int y) {
 }
 
 /* 横にブロックが隣接しているか調べる */
-int cpuCheckLeftRight(int player, int x, int y) {
-	int ret, x2, x3;
+int32_t cpuCheckLeftRight(int32_t player, int32_t x, int32_t y) {
+	int32_t ret, x2, x3;
 
 	ret = 0;
 	x2 = x + 1;
@@ -327,8 +327,8 @@ int cpuCheckLeftRight(int player, int x, int y) {
 }
 
 /* ラインが消えるか調べる */
-int cpu_blockEraseJudge(int player) {
-	int		i, j, sr,ret;
+int32_t cpu_blockEraseJudge(int32_t player) {
+	int32_t		i, j, sr,ret;
 
 	ret = 0;
 	for(i = 0; i <= fldsizeh[player]; i++) {
@@ -349,8 +349,8 @@ int cpu_blockEraseJudge(int player) {
 //■　■
 //■　■こんな状態なら必要と判断
 //■　■
-int cpu_HowManyNeedIblock(int player) {
-	int i,j, count_left, count_right,total,by,by2;
+int32_t cpu_HowManyNeedIblock(int32_t player) {
+	int32_t i,j, count_left, count_right,total,by,by2;
 
 	count_left = 0;
 	count_right = 0;
@@ -378,16 +378,16 @@ int cpu_HowManyNeedIblock(int player) {
 }
 
 /* 現在のフィールドを仮想フィールドにコピー */
-void cpuCopyField(int player) {
-	int i;
+void cpuCopyField(int32_t player) {
+	int32_t i;
 
 	for(i=0; i<220; i++) {
 		cp_fld[i + player * 220] = fld[i + player * 220];
 	}
 }
 
-int cpu_checkFieldTop(int player,int x) {
-	int i;
+int32_t cpu_checkFieldTop(int32_t player,int32_t x) {
+	int32_t i;
 
 	for(i = 0; i <= fldsizeh[player]; i++)
 		if(fld[x + i * fldsizew[player] + player * 220])
@@ -398,8 +398,8 @@ int cpu_checkFieldTop(int player,int x) {
 }
 //穴が始まる位置を探す
 //■　■
-int cpu_checkHoleStart(int player,int x) {
-	int i,top;
+int32_t cpu_checkHoleStart(int32_t player,int32_t x) {
+	int32_t i,top;
 	top = cpu_checkFieldTop(player,x);
 
 	for(i = 0; i < top; i++)
@@ -410,14 +410,14 @@ int cpu_checkHoleStart(int player,int x) {
 }
 
 /* 最善手の場所を決める */
-void cpuCheckBestSpot(int player) {
-	int i, j, k;
-	int bx2, by2;
-	int bottom;
-	int pts;
-	int tmp;
-	int mfilled;	// 最も埋まってる数
-	int mrot,mrot_s;		// 調べる回転方向数
+void cpuCheckBestSpot(int32_t player) {
+	int32_t i, j, k;
+	int32_t bx2, by2;
+	int32_t bottom;
+	int32_t pts;
+	int32_t tmp;
+	int32_t mfilled;	// 最も埋まってる数
+	int32_t mrot,mrot_s;		// 調べる回転方向数
 
 	for(i=0;i<=21;i++) cp_erase[i+22*player] = 0;
 

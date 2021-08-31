@@ -2,7 +2,7 @@
 //  デモ画面での操作状況
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void showControl(void) {
-	int		zx, zy, bai;
+	int32_t		zx, zy, bai;
 	if(!onRecord[0]) return;
 	zx = - getPressState(0, 2) + getPressState(0, 3);
 	zy = - getPressState(0, 0) + getPressState(0, 1);
@@ -21,7 +21,7 @@ void showControl(void) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  HIDDEN処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void hiddenProc(int player) {
+void hiddenProc(int32_t player) {
 	if(hidden[player] == 0){
 		if(hiddeny[player] < 22)
 			hiddeny[player]++;
@@ -121,8 +121,8 @@ void hiddenProc(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  シャドウタイマー解除 #1.60c7k7
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void disableShadowTimer(int player) {
-	int i,j;
+void disableShadowTimer(int32_t player) {
+	int32_t i,j;
 	shadow_timer_flag[player] = 0;
 
 	// 全てのブロックが見えるようにする
@@ -135,21 +135,21 @@ void disableShadowTimer(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  タイムを時間表記にする (string[0]に格納してくれます)
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void getTime(int time) {
+void getTime(int32_t time) {
 	sprintf(string[0], "%02d:%02d:%02d", time / 3600, (time / 60) % 60, (time % 60) * 5 / 3);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  タイムを秒までの時間表記にする (string[0]に格納してくれます)
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void getSTime(int time) {
+void getSTime(int32_t time) {
 	sprintf(string[0], "%02d:%02d", (time / 60) % 60, (time % 60) * 5 / 3);
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ピンチかどうかチェック
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void pinchCheck(int player) {
-	int		i, j;
+void pinchCheck(int32_t player) {
+	int32_t		i, j;
 
 	pinch[player] = 0;
 	if(ending[player]) return;
@@ -165,8 +165,8 @@ void pinchCheck(int player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ピンチ回復できたかどうかチェック2
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void pinchCheck2(int player) {
-	int		i, j;
+void pinchCheck2(int32_t player) {
+	int32_t		i, j;
 
 	pinch2[player] = 1;
 
@@ -181,7 +181,7 @@ void pinchCheck2(int player) {
 //  背景表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewBack(void) {
-	int i, j, tmp;
+	int32_t i, j, tmp;
 
 	if(backno == 61) tmp = 12;
 	else tmp = backno;
@@ -273,7 +273,7 @@ void viewBack(void) {
 //  スコア表示（SMALL）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewScoreSmall(void) {
-	int		i, color,tmp, j,k[2],zoomx[2],zoomy[2],gradecolor[2],bps[2],bps1[2],bps2[2],add;
+	int32_t		i, color,tmp, j,k[2],zoomx[2],zoomy[2],gradecolor[2],bps[2],bps1[2],bps2[2],add;
 
 	for(i = 0; i < 1 + maxPlay; i++) {
 	if( ((stat[i] != 2) || ((stat[i] == 2) && (statc[i * 10 + 2] != 0))) && (stat[i] != 0) && ((stat[i] !=1) || ((stat[i] ==1) && (statc[i * 10 + 1] != 2))) ){
@@ -1159,8 +1159,8 @@ void viewScoreSmall(void) {
 //  メダル＆タイム表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewTime(void) {
-	int		i, color, j,tmp,tmp1;
-	int		color2,mp;
+	int32_t		i, color, j,tmp,tmp1;
+	int32_t		color2,mp;
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
 
@@ -1511,7 +1511,7 @@ void viewLineInfo(void){
 	}
 }
 // B to B で「x1.5」を出すかどうかの判定
-int isScore(int player) {
+int32_t isScore(int32_t player) {
 	if((gameMode[player] < 4) && (ending[player] < 2)) return 1;
 	else if(gameMode[player] == 5) return 1;
 	else if((gameMode[player] == 7) && (anothermode[player] == 3)) return 1;
@@ -1530,11 +1530,11 @@ void viewScore(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // Big対応 #1.60c7
 void viewField(void) {
-	int		b, i, j, k, fi, color, add, tmp[4];
-	int		gm;	// gamemode #1.60c7f4
-	int		fldt3, fldt4, fldt5;	//シャドウタイマーでうっすらと消えていく演出に使用 #1.60c7j9
-	int		mp;
-	int		tmp_x1, tmp_x2, tmp_y;	// 枠表示用
+	int32_t		b, i, j, k, fi, color, add, tmp[4];
+	int32_t		gm;	// gamemode #1.60c7f4
+	int32_t		fldt3, fldt4, fldt5;	//シャドウタイマーでうっすらと消えていく演出に使用 #1.60c7j9
+	int32_t		mp;
+	int32_t		tmp_x1, tmp_x2, tmp_y;	// 枠表示用
 
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
@@ -1737,9 +1737,9 @@ void viewField(void) {
 //  NEXTブロックとHOLDブロックの表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewPreview(void){
-	int n2[2], n3[2], n4[2], n5[2], n6[2]; // 3Next表示用 #1.60c
-	int nf1[2];//偽者用
-	int i, j, c_tmp[6], mp;
+	int32_t n2[2], n3[2], n4[2], n5[2], n6[2]; // 3Next表示用 #1.60c
+	int32_t nf1[2];//偽者用
+	int32_t i, j, c_tmp[6], mp;
 
 	mp = maxPlay;
 	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
@@ -1877,13 +1877,13 @@ void viewPreview(void){
 }
 /* フィールド背景を表示 #1.60c7n5 */
 void viewFldBackground(void) {
-	int i, k;
+	int32_t i, k;
 
 	for(i = 0; i <= maxPlay; i++) {
 		// ------------------------
 		// ここから C++版上部枠表示
 
-		int		tr;
+		int32_t		tr;
 
 		if(background == 2) {
 			BlendExBltRect(24, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
@@ -1933,7 +1933,7 @@ void viewFldBackground(void) {
 			}
 			else
 			{
-#if		HEBORIS_DIRECTX9 || SDL_USE_OPENGL
+#if		1
 				BlendBltRect(4+pinch[i] * 2, 240 + (ofs_x[i]*2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i]*2), count%64 / 2, count%64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 #else
 				BltFastRect(4+pinch[i] * 2, 240 + (ofs_x[i]*2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i]*2), count%64 / 2, count%64 / 2, 160, 320);
@@ -1952,8 +1952,8 @@ void viewFldBackground(void) {
 }
 
 /* フィールド枠を表示(uponlyを1にすると上部分だけ表示) */
-void viewFldFrame(int uponly,int i) {
-	int j, gm[2],waiting[2],ismission[2];
+void viewFldFrame(int32_t uponly,int32_t i) {
+	int32_t j, gm[2],waiting[2],ismission[2];
 
 		// GAMEMODEに応じて枠の色を変更 #1.60c7f4
 		gm[i] = gameMode[i];
@@ -2032,8 +2032,8 @@ void viewFldFrame(int uponly,int i) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  フォントを表示する
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void printFont(int fontX, int fontY, const char *fontStr, int fontColor) {
-	int		i, sx, sy, stringLength, stringChar;
+void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
+	int32_t		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
@@ -2045,8 +2045,8 @@ void printFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 }
 
 // 1ドットずつY座標を指定できるバージョン #1.60c7k3
-void printFontEx(int fontX, int fontY, const char *fontStr, int fontColor) {
-	int		i, sx, sy, stringLength, stringChar;
+void printFontEx(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
+	int32_t		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
@@ -2064,8 +2064,8 @@ void printFontEx(int fontX, int fontY, const char *fontStr, int fontColor) {
 // =→m
 // >→%
 // ?→.
-void printSMALLFont(int fontX, int fontY, const char *fontStr, int fontColor) {
-	int		i, sx, sy, stringLength, stringChar;
+void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
+	int32_t		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
@@ -2095,8 +2095,8 @@ void printSMALLFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 	}
 }
 // 6 x 9のグリッド単位で座標を指定できるバージョン
-void printSMALLFontEX(int fontX, int fontY, const char *fontStr, int fontColor) {
-	int		i, sx, sy, stringLength, stringChar;
+void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
+	int32_t		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
@@ -2127,8 +2127,8 @@ void printSMALLFontEX(int fontX, int fontY, const char *fontStr, int fontColor) 
 }
 
 // 大きいバージョン（数字のみ）
-void printBIGFont(int fontX, int fontY, const char *fontStr, int fontColor) {
-	int		i, sx, sy, stringLength, stringChar;
+void printBIGFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
+	int32_t		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
@@ -2140,8 +2140,8 @@ void printBIGFont(int fontX, int fontY, const char *fontStr, int fontColor) {
 }
 // とっても小さいバージョン　6x7
 // 数字、/ : < > 、アルファベット大文字が使用可能　ただし字詰め無し
-void printTinyFont(int fontX, int fontY, const char *fontStr) {
-	int		i, sx, sy, stringLength, stringChar;
+void printTinyFont(int32_t fontX, int32_t fontY, const char *fontStr) {
+	int32_t		i, sx, sy, stringLength, stringChar;
 
 	stringLength = StrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
@@ -2155,7 +2155,7 @@ void printTinyFont(int fontX, int fontY, const char *fontStr) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  描画すべきブロックの画像を決める #1.60c7r7
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int getBlockPlaneNo(int player, int color) {
+int32_t getBlockPlaneNo(int32_t player, int32_t color) {
 	// プラチナブロックやアイテムなど
 	if(color >= 10)
 		return 46;
@@ -2193,7 +2193,7 @@ int getBlockPlaneNo(int player, int color) {
 	return 80;
 }
 // beboblk_big.png使用時の数値を求める（BIGブロックとミニブロック）
-int getBigBlock_add(int player){
+int32_t getBigBlock_add(int32_t player){
 	if(heboGB[player]==1)
 		return 6;
 	if(heboGB[player]==2)
@@ -2219,8 +2219,8 @@ int getBigBlock_add(int player){
 //  ブロックを描画する
 //  (枠無し NEXTとTLSに使用#1.60c7j1)
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
-	int	i, j, bx2, by2, add, tmp, bx5, by5;
+void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t player, int32_t use3D) {
+	int32_t	i, j, bx2, by2, add, tmp, bx5, by5;
 	add = 0;
 	tmp = 1;
 	if(color < -1){
@@ -2286,8 +2286,8 @@ void drawBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright
 	}
 }
 //BIG版　用途はTLSのみ
-void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
-	int	i, j, bx2, by2, add, tmp, bx5, by5, pos[2], k, l;
+void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t player, int32_t use3D) {
+	int32_t	i, j, bx2, by2, add, tmp, bx5, by5, pos[2], k, l;
 	add = 0;
 	tmp = 1;
 	if(color < -1){
@@ -2372,8 +2372,8 @@ void drawBigBlockFast(int bx1, int by1, int kind, int rotate, int color, int bri
 //  ブロックを描画する
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // c7g6 drawBlockにplayer関数を追加しました。
-void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
-	int	i, j, bx2, by2, add, tmp, bx5, by5;
+void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t player, int32_t use3D) {
+	int32_t	i, j, bx2, by2, add, tmp, bx5, by5;
 	add = 0;
 	tmp = 1;
 	if( ((isrotatelock[player]) && (color < 8)) || ((ismagnetblock[player]) && (count%2 == 0)) || ((isrollroll[player]) && (color < 8)) )
@@ -2488,9 +2488,9 @@ void drawBlock(int bx1, int by1, int kind, int rotate, int color, int bright, in
 }
 
 /* BIGブロック描画#1.60c7j8 */
-void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int bright, int offset, int flash, int player, int use3D) {
-	int	i, j, bx2, by2, tmp, pos[2];
-	int	k, l, bx3, by3, add, bx5, by5;
+void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t player, int32_t use3D) {
+	int32_t	i, j, bx2, by2, tmp, pos[2];
+	int32_t	k, l, bx3, by3, add, bx5, by5;
 	add = 0;
 	tmp = 1;
 	if( ((isrotatelock[player]) && (color < 8)) || ((ismagnetblock[player]) && (count%2 == 0)) || ((isrollroll[player]) && (color < 8)) )
@@ -2619,7 +2619,7 @@ void drawBigBlockNew(int bx1, int by1, int kind, int rotate, int color, int brig
 
 // Draw Current Block
 // 現在のツモを表示 Big対応 #1.60c7
-void drawCBlock(int player, int color, int bright, int offset, int flash, int not3D) {
+void drawCBlock(int32_t player, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t not3D) {
 	/* BIG時の描画は別関数に独立しました #1.60c7j8 */
 
 	// アイテム #1.60c7n1
@@ -2643,7 +2643,7 @@ void drawCBlock(int player, int color, int bright, int offset, int flash, int no
 
 // T.L.S. (Temporary Landing System) もどき
 // classic.cとworld.cから独立 #1.60c7k4
-void drawTLSBlock(int player, int bottom) {
+void drawTLSBlock(int32_t player, int32_t bottom) {
 	if( !isTLS(player) ) return;
 
 	// 描画
@@ -2663,8 +2663,8 @@ void drawTLSBlock(int player, int bottom) {
 // 変数playerを追加しました#1.60c7j1
 // ブロックの向きも渡すように変更 C7U1
 // 専用の画像を使用 C7U1.7
-void drawhBlock(int bx1, int by1, int kind, int color, int r, int player, int rotate, int use3D) {
-	int		i, j,add,k,tmp;
+void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r, int32_t player, int32_t rotate, int32_t use3D) {
+	int32_t		i, j,add,k,tmp;
 	add = 0;
 	tmp = 1;
 	if(color < -1){

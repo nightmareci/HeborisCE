@@ -1,13 +1,13 @@
 // ブロックデータやjudgeBlockRotateはclassic.cの流用
 // 先にclassic.cを読み込む必要があります
-int	acol[7] = {5,2,3,1,7,6,4};
+int32_t	acol[7] = {5,2,3,1,7,6,4};
 
 // player: プレイヤー番号
 // kickm : 接地状態で移動できる回数
 // kickr : 接地状態で回転できる回数
-void statAMove(int player, int kickm, int kickr) {
-	int		bak, bottom, move, don, flash, kosa, rolling,synchro,landing, fsmooth;
-	int		i, k, l,lockT;
+void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
+	int32_t		bak, bottom, move, don, flash, kosa, rolling,synchro,landing, fsmooth;
+	int32_t		i, k, l,lockT;
 
 	fsmooth = 0;
 	don = 0;

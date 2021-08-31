@@ -70,7 +70,6 @@ static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
 
 static int			s_iWinWidth;
 static int			s_iWinHeight;
-static float			s_fDrawScale = 1.0f;
 
 static Uint64			s_uTimeCount;
 static Uint64			s_uFPSCount;
@@ -118,20 +117,8 @@ bool YGS2kInit()
 
 	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 
-#if		0
-	/* 画面モードの変更 */
-	if ( screenMode >= 0 && screenMode <= 12 )
-	{
-		SScreenInfo		*s = &s_ScreenInfo[screenMode];
-		winWidth  = s->win_w;
-		winHeight = s->win_h;
-		windowFlags |= SDL_WINDOW_OPENGL | (s->full_screen ? SDL_WINDOW_FULLSCREEN : 0);
-		s_fDrawScale = (float)s->win_w / (float)s->real_w;
-		SDL_GL_SetDrawRate(s_fDrawScale);
-	}
-#else
 	/* 画面の設定 */
-	if ( screenMode > 3 ) { screenMode = 1; }
+	if ( screenMode > 3 ) { screenMode = 2; }
 
 	switch ( screenMode )
 	{
@@ -149,7 +136,6 @@ bool YGS2kInit()
 
 	/* ウィンドウの初期化 */
 	windowFlags |= (screenMode == 0 || screenMode == 3) ? SDL_WINDOW_FULLSCREEN : 0;
-#endif
 
 	s_iWinWidth  = winWidth;
 	s_iWinHeight = winHeight;
@@ -162,10 +148,7 @@ bool YGS2kInit()
 	SDL_RenderClear(s_pScreenRenderer);
 
 	/* マウスカーソルを消す場合は */
-	if ( windowFlags & SDL_WINDOW_FULLSCREEN )
-	{
-		SDL_ShowCursor(SDL_DISABLE);
-	}
+	SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) );
 
 	/* キーリピートバッファ初期化 */
 	for ( int i = 0 ; i < YGS_KEYREPEAT_MAX ; i ++ )

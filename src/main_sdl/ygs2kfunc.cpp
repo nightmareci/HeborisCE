@@ -19,22 +19,13 @@
 
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
-struct SScreenInfo
-{
-	int		real_w;
-	int		real_h;
-	int		win_w;
-	int		win_h;
-	int		full_screen;
-};
-
 struct STextLayer
 {
 	bool	enable;
-	int		x;
-	int		y;
-	int		r, g, b;
-	int		size;
+	int	x;
+	int	y;
+	int	r, g, b;
+	int	size;
 	char	string[256];
 };
 
@@ -68,8 +59,8 @@ static Mix_Music		*s_pYGSMusic;
 #define		YGS_KANJIFONTFILE_MAX	3
 static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
 
-static int			s_iWinWidth;
-static int			s_iWinHeight;
+static int			s_iLogicalWidth;
+static int			s_iLogicalHeight;
 
 static Uint64			s_uTimeCount;
 static Uint64			s_uFPSCount;
@@ -79,31 +70,15 @@ static unsigned int		s_uFPS;
 static unsigned int		s_uNowFPS = 60;
 
 static STextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
-extern int			screenMode;
+extern int32_t			screenMode;
+extern int32_t			displayIndex;
 
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
-static SScreenInfo	s_ScreenInfo[] =
-{
-	{ 320, 240,  320,  240, true },		// 0
-	{ 320, 240,  320,  240, false },	// 1
-	{ 640, 480,  640,  480, false },	// 2
-	{ 640, 480,  640,  480, true },		// 3
-	{ 640, 480,  800,  600, false },	// 4
-	{ 640, 480, 1024,  768, false },	// 5
-	{ 640, 480, 1280,  960, false },	// 6
-	{ 320, 240,  640,  480, true },		// 7
-	{ 320, 240,  480,  360, false },	// 8
-	{ 320, 240,  640,  480, false },	// 9
-	{ 320, 240,  800,  600, false },	// 10
-	{ 320, 240, 1024,  768, false },	// 11
-	{ 320, 240, 1280,  960, false },	// 12
-};
-
 bool YGS2kInit()
 {
-	int		winWidth, winHeight;
+	int		logicalWidth, logicalHeight;
 
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
@@ -115,36 +90,74 @@ bool YGS2kInit()
 		LoadConfig();
 	}
 
-	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+	Uint32		windowFlags = SDL_WINDOW_HIDDEN;
+	int		windowX, windowY;
 
 	/* 画面の設定 */
-	if ( screenMode > 3 ) { screenMode = 2; }
-
-	switch ( screenMode )
+	int32_t windowType = screenMode & SCREEN_WINDOWTYPE_MASK;
+	if (
+			displayIndex >= SDL_GetNumVideoDisplays() ||
+			(windowType == SCREEN_FULLSCREEN && SCREEN_GETDISPLAYMODE(screenMode) >= SDL_GetNumDisplayModes(displayIndex))
+	) {
+		screenMode = SCREEN_WINDOW | SCREEN_DETAIL_MASK;
+		displayIndex = 0;
+		windowFlags |= SDL_WINDOW_RESIZABLE;
+		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
+		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
+	}
+	else
 	{
-	case 0:
-	case 1:
-		winWidth  = 320;
-		winHeight = 240;
-		break;
+		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
+		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
+		switch ( windowType )
+		{
+		case SCREEN_WINDOW_MAXIMIZED:
+			windowFlags |= SDL_WINDOW_MAXIMIZED;
+		case SCREEN_WINDOW:
+			windowFlags |= SDL_WINDOW_RESIZABLE;
+			break;
 
-	default:
-		winWidth  = 640;
-		winHeight = 480;
-		break;
+		case SCREEN_FULLSCREEN_DESKTOP:
+			windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+			break;
+
+		case SCREEN_FULLSCREEN: {
+			windowFlags |= SDL_WINDOW_FULLSCREEN;
+			break;
+		}
+		}
 	}
 
-	/* ウィンドウの初期化 */
-	windowFlags |= (screenMode == 0 || screenMode == 3) ? SDL_WINDOW_FULLSCREEN : 0;
+	if ( screenMode & SCREEN_DETAIL_MASK )
+	{
+		logicalWidth  = 640;
+		logicalHeight = 480;
+	}
+	else
+	{
+		logicalWidth  = 320;
+		logicalHeight = 240;
+	}
 
-	s_iWinWidth  = winWidth;
-	s_iWinHeight = winHeight;
+	s_iLogicalWidth  = logicalWidth;
+	s_iLogicalHeight = logicalHeight;
 
 
 	/* ウィンドウの作成 */
-	s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, winWidth, winHeight, windowFlags);
+	if ( windowType == SCREEN_FULLSCREEN )
+	{
+		SDL_DisplayMode displayMode;
+		SDL_GetDisplayMode(displayIndex, SCREEN_GETDISPLAYMODE(screenMode), &displayMode);
+		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
+		SDL_SetWindowDisplayMode(s_pScreenWindow, &displayMode);
+	}
+	else
+	{
+		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
+	}
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0);
-	SDL_RenderSetLogicalSize(s_pScreenRenderer, winWidth, winHeight);
+	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
+	SDL_ShowWindow(s_pScreenWindow);
 	SDL_RenderClear(s_pScreenRenderer);
 
 	/* マウスカーソルを消す場合は */
@@ -494,6 +507,16 @@ int GetMaxJoyHat( int device ) {
 int GetMaxJoyButton( int device )
 {
 	return s_pJoyButtonMax[device];
+}
+
+int GetMaxDisplayIndex()
+{
+	return SDL_GetNumVideoDisplays();
+}
+
+int GetMaxDisplayMode( int displayIndex )
+{
+	return SDL_GetNumDisplayModes(displayIndex);
 }
 
 void SetConstParam ( const char *param, int value )
@@ -978,7 +1001,7 @@ void BlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int a
 
 void BltR(int pno, int dx, int dy, int scx, int scy)
 {
-	BltRectR(pno, dx, dy, 0, 0, s_iWinWidth, s_iWinHeight, scx, scy);
+	BltRectR(pno, dx, dy, 0, 0, s_iLogicalWidth, s_iLogicalHeight, scx, scy);
 }
 
 void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
@@ -1017,7 +1040,7 @@ void BltTrans(int pno, int dx, int dy)
 
 void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
 {
-	BlendBltRectR(pno, dx, dy, 0, 0, s_iWinWidth, s_iWinHeight, ar, ag, ab, br, bg, bb, scx, scy);
+	BlendBltRectR(pno, dx, dy, 0, 0, s_iLogicalWidth, s_iLogicalHeight, ar, ag, ab, br, bg, bb, scx, scy);
 }
 
 void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)

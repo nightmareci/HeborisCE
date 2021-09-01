@@ -13,8 +13,8 @@
 [end]
 */
 
-int32_t		screenMode = 1;
-int32_t		systemmem =0;
+int32_t		screenMode = SCREEN_WINDOW | SCREEN_DETAILBIT;
+int32_t		displayIndex =0;
 int32_t		nextblock =7;
 int32_t		blockkind =0;
 int32_t		smooth =0;

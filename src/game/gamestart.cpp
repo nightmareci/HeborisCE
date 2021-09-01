@@ -363,6 +363,7 @@ C7U8EX YGS2K
 #include "ygs2kfunc.h"
 #include "prototypes.h"
 #include "inireader.h"
+#include "gamedef.h"
 #include <cstdint>
 
 #define		STRING_MAX		200
@@ -15100,10 +15101,10 @@ void initialize(void) {
 	versus_rot[1] = rots[1];
 
 	// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-	if ( screenMode < 2 || screenMode > 6 ) {
-		setDrawRate(1);
-	} else {
+	if ( screenMode & SCREEN_DETAIL_MASK ) {
 		setDrawRate(2);
+	} else {
+		setDrawRate(1);
 	}
 
 	LoadGraphics("loading.png", 88, 0);		// Loading表示

@@ -54,6 +54,9 @@ int GetMaxJoyAxis( int device );
 int GetMaxJoyHat( int device );
 int GetMaxJoyButton( int device );
 
+int GetMaxDisplayIndex();
+int GetMaxDisplayMode( int displayIndex );
+
 void SetConstParam ( const char *param, int value );
 void KeyInput();
 int Rand ( int max );

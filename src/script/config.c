@@ -381,19 +381,21 @@ void ConfigMenu() {
 			printFont(2,  6, "WINDOW TYPE :", (statc[0] == 1) * fontc[rots[0]]);
 			printFont(2,  7, "SCREEN INDEX:", (statc[0] == 2) * fontc[rots[0]]);
 			printFont(2,  8, "DETAIL LEVEL:", (statc[0] == 3) * fontc[rots[0]]);
-			if((ncfg[0] & SCREEN_WINDOWTYPE_MASK) == SCREEN_FULLSCREEN) printFont(2,  9, "SCREEN MODE :", (statc[0] == 4) * fontc[rots[0]]);
-			printFont(2, 10, "NEXT PATTERN:", (statc[0] == 5) * fontc[rots[0]]);
-			printFont(2, 11, "NEXT DISPLAY:", (statc[0] == 6) * fontc[rots[0]]);
-			printFont(2, 13, "8WAY INPUT  :", (statc[0] == 7) * fontc[rots[0]]);
-			printFont(2, 14, "SONIC DROP  :", (statc[0] == 8) * fontc[rots[0]]);
-			printFont(2, 15, "INIT LR MOVE:", (statc[0] == 9) * fontc[rots[0]]);
-			printFont(2, 17, "BLOCK FALL  :", (statc[0] == 10) * fontc[rots[0]]);
-			printFont(2, 19, "SHOW LEVEL  :", (statc[0] == 11) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
-			printFont(2, 21, "MOVE SOUND  :", (statc[0] == 12) * fontc[rots[0]]);
-			printFont(2, 22, "BGM         :", (statc[0] == 13) * fontc[rots[0]]);
-			printFont(2, 23, "WORLDREVERSE:", (statc[0] == 14) * fontc[rots[0]]);
-			printFont(2, 24, "DOWN TYPE   :", (statc[0] == 15) * fontc[rots[0]]);
-			printFont(2, 25, "LVUP BONUS  :", (statc[0] == 16) * fontc[rots[0]]);
+			printFont(2,  9, "VSYNC       :", (statc[0] == 4) * fontc[rots[0]]);
+			if((ncfg[0] & SCREEN_WINDOWTYPE_MASK) == SCREEN_FULLSCREEN) printFont(2, 10, "SCREEN MODE :", (statc[0] == 5) * fontc[rots[0]]);
+
+			printFont(2, 12, "NEXT PATTERN:", (statc[0] == 6) * fontc[rots[0]]);
+			printFont(2, 13, "NEXT DISPLAY:", (statc[0] == 7) * fontc[rots[0]]);
+			printFont(2, 14, "8WAY INPUT  :", (statc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 15, "SONIC DROP  :", (statc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 16, "INIT LR MOVE:", (statc[0] == 10) * fontc[rots[0]]);
+			printFont(2, 17, "BLOCK FALL  :", (statc[0] == 11) * fontc[rots[0]]);
+			printFont(2, 19, "SHOW LEVEL  :", (statc[0] == 12) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
+			printFont(2, 21, "MOVE SOUND  :", (statc[0] == 13) * fontc[rots[0]]);
+			printFont(2, 22, "BGM         :", (statc[0] == 14) * fontc[rots[0]]);
+			printFont(2, 23, "WORLDREVERSE:", (statc[0] == 15) * fontc[rots[0]]);
+			printFont(2, 24, "DOWN TYPE   :", (statc[0] == 16) * fontc[rots[0]]);
+			printFont(2, 25, "LVUP BONUS  :", (statc[0] == 17) * fontc[rots[0]]);
 			printFont(2, 28, "A:SAVE&RETURN  B:CANCEL", 9);
 
 			i = statc[0];
@@ -406,22 +408,22 @@ void ConfigMenu() {
 			case 3:
 			case 4:
 			case 5:
-			case 6:
 				printFont(1, 5 + i, "b", fontc[rots[0]]); break;
+			case 6:
 			case 7:
 			case 8:
 			case 9:
-				printFont(1, 6 + i, "b", fontc[rots[0]]); break;
 			case 10:
-				printFont(1, 7 + i, "b", fontc[rots[0]]); break;
 			case 11:
-				printFont(1, 8 + i, "b", fontc[rots[0]]); break;
+				printFont(1, 6 + i, "b", fontc[rots[0]]); break;
 			case 12:
+				printFont(1, 7 + i, "b", fontc[rots[0]]); break;
 			case 13:
 			case 14:
 			case 15:
 			case 16:
-				printFont(1, 9 + i, "b", fontc[rots[0]]); break;
+			case 17:
+				printFont(1, 8 + i, "b", fontc[rots[0]]); break;
 			default: break;
 			}
 
@@ -446,7 +448,7 @@ void ConfigMenu() {
 						{
 							sprintf(string[1], "%dX%d %dHZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
 						}
-						printFont(15, 9, string[1], (statc[0] == 4) * (count % 2) * digitc[rots[0]]);
+						printFont(15, 10, string[1], (statc[0] == 5) * (count % 2) * digitc[rots[0]]);
 					}
 					break;
 				default: sprintf(string[0], "???"); break;
@@ -457,6 +459,9 @@ void ConfigMenu() {
 				printFont(15, 7, string[0], (statc[0] == 2) * (count % 2) * digitc[rots[0]]);
 				sprintf(string[0], "%s", ncfg[0] & SCREEN_DETAIL_MASK ? "HIGH (640X480)" : "LOW (320X240)");
 				printFont(15, 8, string[0], (statc[0] == 3) * (count % 2) * digitc[rots[0]]);
+				if(ncfg[0] & SCREEN_VSYNC_MASK) sprintf(string[0], "ON");
+				else sprintf(string[0], "OFF");
+				printFont(15, 9, string[0], (statc[0] == 4) * (count % 2) * digitc[rots[0]]);
 
 				if((ncfg[2] > 1)&&(ncfg[2] < 8))
 				sprintf(string[0], "HEBO%d", ncfg[2]);
@@ -474,34 +479,34 @@ void ConfigMenu() {
 				sprintf(string[0], "TOMOYO");
 				else if(ncfg[2] == 12)
 				sprintf(string[0], "FP");
-				printFont(15, 10, string[0], (statc[0] == 5) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 12, string[0], (statc[0] == 6) * (count % 2) * digitc[rots[0]]);
 
 				sprintf(string[0], "%d", ncfg[45]);
-				printFont(15, 11, string[0], (statc[0] == 6) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 13, string[0], (statc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
 				else sprintf(string[0], "c");		// ○
-				printFont(15, 13, string[0], (statc[0] == 7) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 14, string[0], (statc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
 				else sprintf(string[0], "c");		// ○
-				printFont(15, 14, string[0], (statc[0] == 8) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 15, string[0], (statc[0] == 9) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
 				else sprintf(string[0], "c");		// ○
-				printFont(15, 15, string[0], (statc[0] == 9) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 16, string[0], (statc[0] == 10) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[4]) sprintf(string[0], "SMOOTH");
 				else sprintf(string[0], "NORMAL");
-				printFont(15, 17, string[0], (statc[0] == 10) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 17, string[0], (statc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[36]) sprintf(string[0], "ON");
 				else sprintf(string[0], "OFF");
-				printFont(15, 19, string[0], (statc[0] == 11) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 19, string[0], (statc[0] == 12) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[46]) sprintf(string[0], "ON");
 				else sprintf(string[0], "OFF");
-				printFont(15, 21, string[0], (statc[0] == 12) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 21, string[0], (statc[0] == 13) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[44] == 0) sprintf(string[0], "MIDI (SIMPLE)");
 				else if(ncfg[44] == 1) sprintf(string[0], "MIDI");
@@ -511,23 +516,23 @@ void ConfigMenu() {
 				else if(ncfg[44] == 5) sprintf(string[0], "MOD (.MOD)");
 				else if(ncfg[44] == 6) sprintf(string[0], "MOD (.IT)");
 				else if(ncfg[44] == 7) sprintf(string[0], "MOD (.XM)");
-				printFont(15, 22, string[0], (statc[0] == 13) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 22, string[0], (statc[0] == 14) * (count % 2) * digitc[rots[0]]);
 
 				// WORLDREVERSE
 				if(ncfg[52]) sprintf(string[0], "ON");
 				else sprintf(string[0], "OFF");
-				printFont(15, 23, string[0], (statc[0] == 14) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 23, string[0], (statc[0] == 15) * (count % 2) * digitc[rots[0]]);
 
 				// downtype
 				if(ncfg[53]) sprintf(string[0], "DOWN RESET");
 				else sprintf(string[0], "NO RESET(HEBORIS)");
-				printFont(15, 24, string[0], (statc[0] == 15) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 24, string[0], (statc[0] == 16) * (count % 2) * digitc[rots[0]]);
 
 				// lvupbonus
 				if(ncfg[54]==0) sprintf(string[0], "ON");
 				else if(ncfg[54] ==1)sprintf(string[0], "OFF");
 				else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
-				printFont(15, 25, string[0], (statc[0] == 16) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 25, string[0], (statc[0] == 17) * (count % 2) * digitc[rots[0]]);
 
 				statc[1] = 0;
 //			}
@@ -549,9 +554,9 @@ void ConfigMenu() {
 				padRepeat(pl);
 				if(m) {
 					PlaySE(5);
-					if(m>0 && (ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN && statc[0] == 3) m++;
-					else if(m<0 && (ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN && statc[0] == 5) m--;
-					statc[0] = (statc[0] + m + 17) % 17;
+					if(m>0 && (ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN && statc[0] == 4) m++;
+					else if(m<0 && (ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN && statc[0] == 6) m--;
+					statc[0] = (statc[0] + m + 18) % 18;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
@@ -570,7 +575,7 @@ void ConfigMenu() {
 							need_reset = 1;
 						}
 						else if(statc[0] == 2) {
-							ncfg[0] &= SCREEN_DETAIL_MASK | SCREEN_WINDOWTYPE_MASK;
+							ncfg[0] &= SCREEN_NOTDISPLAYMODE_MASK;
 							ncfg[1] = (ncfg[1] + GetMaxDisplayIndex() + m) % GetMaxDisplayIndex();	// displayIndex
 							need_reset = 1;
 						}
@@ -579,20 +584,24 @@ void ConfigMenu() {
 							need_reset = 1;
 						}
 						else if(statc[0] == 4) {
-							int displayModeIndex = SCREEN_GETDISPLAYMODE(ncfg[0]);
-							displayModeIndex = (displayModeIndex + GetMaxDisplayMode(ncfg[1]) + m) % GetMaxDisplayMode(ncfg[1]);
-							ncfg[0] = (displayModeIndex << SCREEN_DISPLAYMODE_SHIFT) | (ncfg[0] & (SCREEN_DETAIL_MASK | SCREEN_WINDOWTYPE_MASK));
+							ncfg[0] ^= SCREEN_VSYNC_MASK;		// vsync
 							need_reset = 1;
 						}
-						else if(statc[0] == 5) ncfg[2] = (ncfg[2] + 13 + m) % 13;	// nextbloc 8を追加#1.60c7h4
-						else if(statc[0] == 6) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
-						else if(statc[0] == 7) ncfg[5] = !ncfg[5];			// nanameallow
-						else if(statc[0] == 8) ncfg[6] = !ncfg[6];			// sonicdrop
-						else if(statc[0] == 9) ncfg[7] = !ncfg[7];			// fastlrmove
-						else if(statc[0] == 10) ncfg[4] = !ncfg[4];			// smooth
-						else if(statc[0] == 11) ncfg[36] = !ncfg[36];			// tgmlv
-						else if(statc[0] == 12) ncfg[46] = !ncfg[46];			// movesound
-						else if(statc[0] == 13) {
+						else if(statc[0] == 5) {
+							int displayModeIndex = SCREEN_GETDISPLAYMODE(ncfg[0]);
+							displayModeIndex = (displayModeIndex + GetMaxDisplayMode(ncfg[1]) + m) % GetMaxDisplayMode(ncfg[1]);
+							ncfg[0] = (displayModeIndex << SCREEN_DISPLAYMODE_SHIFT) | (ncfg[0] & SCREEN_NOTDISPLAYMODE_MASK);
+							need_reset = 1;
+						}
+						else if(statc[0] == 6) ncfg[2] = (ncfg[2] + 13 + m) % 13;	// nextbloc 8を追加#1.60c7h4
+						else if(statc[0] == 7) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
+						else if(statc[0] == 8) ncfg[5] = !ncfg[5];			// nanameallow
+						else if(statc[0] == 9) ncfg[6] = !ncfg[6];			// sonicdrop
+						else if(statc[0] == 10) ncfg[7] = !ncfg[7];			// fastlrmove
+						else if(statc[0] == 11) ncfg[4] = !ncfg[4];			// smooth
+						else if(statc[0] == 12) ncfg[36] = !ncfg[36];			// tgmlv
+						else if(statc[0] == 13) ncfg[46] = !ncfg[46];			// movesound
+						else if(statc[0] == 14) {
 							// bgmwave
 							ncfg[44] = ncfg[44] + m;
 
@@ -601,9 +610,9 @@ void ConfigMenu() {
 
 							if(bgm) need_reset = 1;
 						}
-						else if(statc[0] == 14) ncfg[52] = !ncfg[52];			// w_reverse
-						else if(statc[0] == 15) ncfg[53] = !ncfg[53];			// downtype
-						else if(statc[0] == 16) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
+						else if(statc[0] == 15) ncfg[52] = !ncfg[52];			// w_reverse
+						else if(statc[0] == 16) ncfg[53] = !ncfg[53];			// downtype
+						else if(statc[0] == 17) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
 
 						else if(statc[0] == 0) {	// page
 							PlaySE(3);

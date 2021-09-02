@@ -1,6 +1,3 @@
-#ifndef		__INIREADER_H__
-#define		__INIREADER_H__
+#pragma once
 
 void LoadIniFile(const char *filename);
-
-#endif

@@ -1,3 +1,5 @@
+#pragma once
+
 str mission_name_editor[42] =
 {
 	"LEVEL STAR",

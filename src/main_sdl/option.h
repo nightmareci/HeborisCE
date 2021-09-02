@@ -1,17 +1,4 @@
-/*
-    * Don't Edit!! *  Created by Heboris2000 Setting Utility V1.60
-    2
-    8
-    1
-    1
-    2
-    1
-    1
-    3
-    2
-    1
-[end]
-*/
+#pragma once
 
 int32_t		screenMode = SCREEN_WINDOW | SCREEN_DETAILBIT;
 int32_t		displayIndex =0;

@@ -1,5 +1,4 @@
-#ifndef SDLbdf_h_
-#define SDLbdf_h_
+#pragma once
 
 #include "SDL.h"
 
@@ -45,6 +44,3 @@ void Kanji_CloseFont(Kanji_Font* font);
 #ifdef __cplusplus
 };
 #endif
-
-#endif
-

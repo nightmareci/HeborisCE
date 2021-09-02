@@ -1,3 +1,5 @@
+#pragma once
+
 // Beginnerモードレベルアップテーブル
 int32_t		lvTableBeg[101] =
 {

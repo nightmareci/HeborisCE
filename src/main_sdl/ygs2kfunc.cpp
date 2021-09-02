@@ -7,9 +7,6 @@
 #include <iostream>
 #include <cstdint>
 
-#define		SCREEN_BPP			0
-#define		USE_SOFTSTRETCH		1
-
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
 #define		YGS_MUSIC_MAX		100
@@ -63,6 +60,7 @@ static int			s_iLogicalWidth;
 static int			s_iLogicalHeight;
 
 static Uint64			s_uTimeCount;
+static Uint64			s_uTimeAccumulatorCount;
 static Uint64			s_uFPSCount;
 static unsigned int		s_uNowFrame;
 static unsigned int		s_uFPSCnting;
@@ -155,7 +153,7 @@ bool YGS2kInit()
 	{
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
 	}
-	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0);
+	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREEN_VSYNC_MASK ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
 	SDL_ShowWindow(s_pScreenWindow);
 	SDL_RenderClear(s_pScreenRenderer);
@@ -217,6 +215,7 @@ bool YGS2kInit()
 	YGS2kKanjiFontInitialize();
 
 	s_uTimeCount = SDL_GetPerformanceCounter();
+	s_uTimeAccumulatorCount = 0;
 	s_uFPSCount  = SDL_GetPerformanceCounter();
 	s_uNowFrame  = 0;
 	s_uFPSCnting = 0;
@@ -298,25 +297,50 @@ void YGS2kExit()
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
+	const Uint64 frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
+	bool renderClear = false;
 
-	/* テキストレイヤーの描画 */
-	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
+	if ( s_uTimeAccumulatorCount < frameTimeCount )
 	{
-		TextBlt(i);
+		/* テキストレイヤーの描画 */
+		for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
+		{
+			TextBlt(i);
+		}
+
+		/* バックサーフェスをフロントに転送 */
+		SDL_RenderPresent( s_pScreenRenderer );
+
+		/* フレームレート待ち */
+		while ( s_uTimeCount + frameTimeCount >= SDL_GetPerformanceCounter() )
+		{
+			SDL_Delay( 1 );
+		}
+
+		s_uTimeAccumulatorCount += SDL_GetPerformanceCounter() - s_uTimeCount;
+
+		renderClear = true;
+	}
+	s_uTimeAccumulatorCount -= frameTimeCount;
+
+	/* フレームレート計算 */
+	s_uFPSCnting ++;
+	s_uNowFrame ++;
+
+	if ( s_uFPSCount + SDL_GetPerformanceFrequency() <= SDL_GetPerformanceCounter() )
+	{
+		s_uFPS = s_uFPSCnting;
+		s_uFPSCnting = 0;
+		s_uFPSCount = SDL_GetPerformanceCounter();
 	}
 
-	/* バックサーフェスをフロントに転送 */
-	SDL_RenderPresent( s_pScreenRenderer );
+	s_uTimeCount = SDL_GetPerformanceCounter();
 
-	/* フレームレート待ち */
-	while (s_uTimeCount + (SDL_GetPerformanceFrequency() / s_uNowFPS) >= SDL_GetPerformanceCounter())
+	if ( renderClear )
 	{
-		SDL_Delay(1);
-	};
-
-
-	/* 画面塗りつぶし */
-	SDL_RenderClear( s_pScreenRenderer );
+		/* 画面塗りつぶし */
+		SDL_RenderClear( s_pScreenRenderer );
+	}
 
 	/* イベント処理 */
 	while(SDL_PollEvent(&ev))
@@ -337,19 +361,6 @@ bool YGS2kHalt()
 			default:
 				break;
 		}
-	}
-
-	/* フレームレート計算 */
-	s_uFPSCnting ++;
-	s_uNowFrame ++;
-
-	s_uTimeCount = SDL_GetPerformanceCounter();
-
-	if ( s_uFPSCount + SDL_GetPerformanceFrequency() <= SDL_GetPerformanceCounter() )
-	{
-		s_uFPS = s_uFPSCnting;
-		s_uFPSCnting = 0;
-		s_uFPSCount = SDL_GetPerformanceCounter();
 	}
 
 	/* 画面ずらし量の反映 */

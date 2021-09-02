@@ -1,3 +1,5 @@
+#pragma once
+
 // ars.c
 void statAMove(int32_t player, int32_t kickm, int32_t kickr);
 

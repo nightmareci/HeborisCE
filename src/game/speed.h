@@ -1,3 +1,5 @@
+#pragma once
+
 //値を変える時は必ずrepverswを更新しそのファイルを残して置いてください
 // Beginnerモードレベルアップテーブル
 int32_t		lvTableBeg[101] =

@@ -1,5 +1,4 @@
-#ifndef		__YGS2KFUNC_H__
-#define		__YGS2KFUNC_H__
+#pragma once
 
 #include "SDL.h"
 
@@ -128,5 +127,3 @@ void YGS2kKanjiFontInitialize();
 void YGS2kKanjiFontFinalize();
 void YGS2kKanjiDrawSub(int x, int y, int kx, int ky);
 void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);
-
-#endif

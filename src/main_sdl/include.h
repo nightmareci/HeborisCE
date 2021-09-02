@@ -1,10 +1,8 @@
-#ifndef		__INCLUDE_H__
-#define		__INCLUDE_H__
+#pragma once
 
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
-#include "SDL_endian.h"
 #include <ctime>
 #include <cstdint>
 
@@ -37,6 +35,4 @@
 #if	defined(WIN32)
 #define	strcasecmp	stricmp
 #define	FillMemory	YGS2kFillMemory
-#endif
-
 #endif

@@ -374,7 +374,10 @@ void ConfigMenu() {
 			printFont(2,  7, "SCREEN INDEX:", (statc[0] == 2) * fontc[rots[0]]);
 			printFont(2,  8, "DETAIL LEVEL:", (statc[0] == 3) * fontc[rots[0]]);
 			printFont(2,  9, "VSYNC       :", (statc[0] == 4) * fontc[rots[0]]);
-			if((ncfg[0] & SCREEN_WINDOWTYPE_MASK) == SCREEN_FULLSCREEN) printFont(2, 10, "SCREEN MODE :", (statc[0] == 5) * fontc[rots[0]]);
+			if(
+				(ncfg[0] & SCREEN_WINDOWTYPE_MASK) == SCREEN_FULLSCREEN ||
+				(ncfg[0] & SCREEN_WINDOWTYPE_MASK) == SCREEN_WINDOW
+			) printFont(2, 10, "SCREEN MODE :", (statc[0] == 5) * fontc[rots[0]]);
 
 			printFont(2, 12, "NEXT PATTERN:", (statc[0] == 6) * fontc[rots[0]]);
 			printFont(2, 13, "NEXT DISPLAY:", (statc[0] == 7) * fontc[rots[0]]);
@@ -422,7 +425,16 @@ void ConfigMenu() {
 //			if(statc[1]) {	// 表示更新
 				/* 画面モード -- ここから */
 				switch(ncfg[0] & SCREEN_WINDOWTYPE_MASK) {
-				case SCREEN_WINDOW: sprintf(string[0], "WINDOW"); break;
+				case SCREEN_WINDOW:
+					sprintf(string[0], "WINDOW");
+					{
+						sprintf(string[1], "%dX%d",
+							(!!(ncfg[0] & SCREEN_DETAIL_MASK) + 1) * 320 * (SCREEN_GETDISPLAYMODE(ncfg[0]) + 1),
+							(!!(ncfg[0] & SCREEN_DETAIL_MASK) + 1) * 240 * (SCREEN_GETDISPLAYMODE(ncfg[0]) + 1)
+						);
+						printFont(15, 10, string[1], (statc[0] == 5) * (count % 2) * digitc[rots[0]]);
+					}
+					break;
 				case SCREEN_WINDOW_MAXIMIZED: sprintf(string[0], "WINDOW MAXIMIZED"); break;
 				case SCREEN_FULLSCREEN_DESKTOP: sprintf(string[0], "FULL SCREEN DESKTOP"); break;
 				case SCREEN_FULLSCREEN:
@@ -546,8 +558,13 @@ void ConfigMenu() {
 				padRepeat(pl);
 				if(m) {
 					PlaySE(5);
-					if(m>0 && (ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN && statc[0] == 4) m++;
-					else if(m<0 && (ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN && statc[0] == 6) m--;
+					if(
+						(ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_FULLSCREEN &&
+						(ncfg[0] & SCREEN_WINDOWTYPE_MASK) != SCREEN_WINDOW
+					) {
+						if(m>0 && statc[0] == 4) m++;
+						else if(m<0 && statc[0] == 6) m--;
+					}
 					statc[0] = (statc[0] + m + 18) % 18;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
@@ -572,6 +589,7 @@ void ConfigMenu() {
 							need_reset = 1;
 						}
 						else if(statc[0] == 3) {
+							ncfg[0] &= SCREEN_NOTDISPLAYMODE_MASK;
 							ncfg[0] ^= SCREEN_DETAIL_MASK;		// detailLevel
 							need_reset = 1;
 						}
@@ -580,9 +598,41 @@ void ConfigMenu() {
 							need_reset = 1;
 						}
 						else if(statc[0] == 5) {
-							int displayModeIndex = SCREEN_GETDISPLAYMODE(ncfg[0]);
-							displayModeIndex = (displayModeIndex + GetMaxDisplayMode(ncfg[1]) + m) % GetMaxDisplayMode(ncfg[1]);
-							ncfg[0] = (displayModeIndex << SCREEN_DISPLAYMODE_SHIFT) | (ncfg[0] & SCREEN_NOTDISPLAYMODE_MASK);
+							switch(ncfg[0] & SCREEN_WINDOWTYPE_MASK)
+							{
+							case SCREEN_WINDOW:
+							{
+								SDL_DisplayMode displayMode;
+								SDL_GetDesktopDisplayMode(ncfg[1], &displayMode);
+								int baseW = (!!(ncfg[0] & SCREEN_DETAIL_MASK) + 1) * 320;
+								int baseH = (!!(ncfg[0] & SCREEN_DETAIL_MASK) + 1) * 240;
+								int maxDisplayMode;
+								if(displayMode.w <= baseW || displayMode.h <= baseH)
+								{
+									maxDisplayMode = 1;
+								}
+								else if(displayMode.w > displayMode.h)
+								{
+									maxDisplayMode = (displayMode.h / baseH) - (displayMode.h % baseH == 0);
+								}
+								else
+								{
+									maxDisplayMode = (displayMode.w / baseW) - (displayMode.w % baseW == 0);
+								}
+								int displayModeIndex = SCREEN_GETDISPLAYMODE(ncfg[0]);
+								displayModeIndex = (displayModeIndex + maxDisplayMode + m) % maxDisplayMode;
+								ncfg[0] = (displayModeIndex << SCREEN_DISPLAYMODE_SHIFT) | (ncfg[0] & SCREEN_NOTDISPLAYMODE_MASK);
+								break;
+							}
+							case SCREEN_FULLSCREEN:
+							{
+								int displayModeIndex = SCREEN_GETDISPLAYMODE(ncfg[0]);
+								displayModeIndex = (displayModeIndex + GetMaxDisplayMode(ncfg[1]) + m) % GetMaxDisplayMode(ncfg[1]);
+								ncfg[0] = (displayModeIndex << SCREEN_DISPLAYMODE_SHIFT) | (ncfg[0] & SCREEN_NOTDISPLAYMODE_MASK);
+								break;
+							}
+							default: break;
+							}
 							need_reset = 1;
 						}
 						else if(statc[0] == 6) ncfg[2] = (ncfg[2] + 13 + m) % 13;	// nextbloc 8を追加#1.60c7h4

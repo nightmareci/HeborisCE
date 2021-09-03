@@ -145,9 +145,47 @@ bool YGS2kInit()
 	if ( windowType == SCREEN_FULLSCREEN )
 	{
 		SDL_DisplayMode displayMode;
-		SDL_GetDisplayMode(displayIndex, SCREEN_GETDISPLAYMODE(screenMode), &displayMode);
-		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
-		SDL_SetWindowDisplayMode(s_pScreenWindow, &displayMode);
+		if ( SDL_GetDisplayMode(displayIndex, SCREEN_GETDISPLAYMODE(screenMode), &displayMode) < 0 ) {
+			screenMode &= SCREEN_DETAIL_MASK;
+			screenMode |= SCREEN_WINDOW;
+			displayIndex = 0;
+			SaveConfig();
+			s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
+		}
+		else {
+			s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
+			SDL_SetWindowDisplayMode(s_pScreenWindow, &displayMode);
+		}
+	}
+	else if ( windowType == SCREEN_WINDOW )
+	{
+		SDL_DisplayMode displayMode;
+		SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
+		int maxDisplayMode;
+		if(displayMode.w <= logicalWidth || displayMode.h <= logicalHeight)
+		{
+			maxDisplayMode = 1;
+		}
+		else if(displayMode.w > displayMode.h)
+		{
+			maxDisplayMode = (displayMode.h / logicalHeight) - (displayMode.h % logicalHeight == 0);
+		}
+		else
+		{
+			maxDisplayMode = (displayMode.w / logicalWidth) - (displayMode.w % logicalWidth == 0);
+		}
+		int maxWidth = maxDisplayMode * logicalWidth;
+		int maxHeight = maxDisplayMode * logicalHeight;
+		int displayModeIndex = SCREEN_GETDISPLAYMODE(screenMode) + 1;
+		int windowW = displayModeIndex * logicalWidth;
+		int windowH = displayModeIndex * logicalHeight;
+		if ( displayModeIndex > maxDisplayMode) {
+			windowW = logicalWidth;
+			windowH = logicalHeight;
+			screenMode &= SCREEN_NOTDISPLAYMODE_MASK;
+			SaveConfig();
+		}
+		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
 	}
 	else
 	{

@@ -19,6 +19,10 @@ void YGS2kTextOut(int x, int y, const char* text, int r = 255, int g = 255, int 
 
 int IsPlayMIDI();
 
+struct JoyPadGUID {
+	int32_t data[4];
+};
+
 enum JoyKeyType {
 	JOYKEY_AXIS,
 	JOYKEY_HAT,
@@ -32,7 +36,7 @@ union JoyKeySetting {
 
 struct JoyKey {
 	int device;
-        SDL_JoystickGUID guid;
+        JoyPadGUID guid;
 	JoyKeyType type;
 	JoyKeySetting setting;
 };
@@ -48,7 +52,7 @@ int IsPushEscKey();
 int IsPushEndKey();
 int GetMaxKey();
 int GetMaxJoyPad();
-SDL_JoystickGUID GetJoyPadGUID( int device );
+JoyPadGUID GetJoyPadGUID( int device );
 int GetMaxJoyAxis( int device );
 int GetMaxJoyHat( int device );
 int GetMaxJoyButton( int device );

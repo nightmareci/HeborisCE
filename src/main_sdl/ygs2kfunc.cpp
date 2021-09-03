@@ -392,9 +392,9 @@ int IsPressKey ( int key )
 
 int IsPushJoyKey ( const JoyKey* const key )
 {
-	SDL_JoystickGUID guid = GetJoyPadGUID(key->device);
-	SDL_JoystickGUID zeroGUID = { 0 };
-	if (memcmp(&guid, &zeroGUID, sizeof(SDL_JoystickGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(SDL_JoystickGUID)) != 0) return 0;
+	JoyPadGUID guid = GetJoyPadGUID(key->device);
+	JoyPadGUID zeroGUID = { 0 };
+	if (memcmp(&guid, &zeroGUID, sizeof(JoyPadGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(JoyPadGUID)) != 0) return 0;
 	switch(key->type)
 	{
 	case JOYKEY_AXIS:
@@ -435,8 +435,8 @@ int IsPressJoyKey ( const JoyKey* const key )
 	if (key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
 
 	int pressed = 0;
-	SDL_JoystickGUID checkGUID = SDL_JoystickGetDeviceGUID(key->device);
-	if (memcmp(&key->guid, &checkGUID, sizeof(SDL_JoystickGUID)) == 0) {
+	JoyPadGUID checkGUID = GetJoyPadGUID(key->device);
+	if (memcmp(&key->guid, &checkGUID, sizeof(JoyPadGUID)) == 0) {
 		SDL_Joystick* const joy = s_pJoyPads[key->device];
 		if (SDL_JoystickGetAttached(joy)) {
 			switch (key->type) {
@@ -491,10 +491,18 @@ int IsPushEndKey()
 	return IsPushKey(SDL_GetScancodeFromKey(SDLK_END));
 }
 
-SDL_JoystickGUID GetJoyPadGUID( int device ) {
-	SDL_JoystickGUID zeroGUID = { 0 };
+JoyPadGUID GetJoyPadGUID( int device ) {
+	JoyPadGUID zeroGUID = { 0 };
 	if (device >= s_iJoyPadMax) return zeroGUID;
-	return SDL_JoystickGetGUID( s_pJoyPads[device] );
+	JoyPadGUID joyPadGUID;
+	SDL_JoystickGUID sdlGUID = SDL_JoystickGetGUID( s_pJoyPads[device] );
+	for (int32_t i = 0; i < 4; i++) {
+		joyPadGUID.data[i] = 0;
+		for (int32_t j = 0; j < 4; j++) {
+			joyPadGUID.data[i] |= (int32_t)((uint32_t)sdlGUID.data[i * 4 + j] << (j * 8));
+		}
+	}
+	return joyPadGUID;
 }
 
 int GetMaxKey()
@@ -556,7 +564,7 @@ void KeyInput()
 	for ( int i = 0 ; i < s_iJoyPadMax ; i ++ )
 	{
 		key.device = i;
-		key.guid = SDL_JoystickGetGUID(s_pJoyPads[i]);
+		key.guid = GetJoyPadGUID(i);
 
 		key.type = JOYKEY_AXIS;
 		for ( int j = 0 ; j < s_pJoyAxisMax[i] ; j ++ )

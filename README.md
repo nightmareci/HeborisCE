@@ -22,7 +22,7 @@ cmake --build build
 ./build/heboris
 ```
 
-Requires a C++ compiler and SDL 2.0 development libraries.
+Requires a C compiler and SDL 2.0 development libraries.
 
 #### Changes
 

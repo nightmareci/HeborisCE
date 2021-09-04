@@ -6,8 +6,7 @@
 // 5名 × 15モード × 2回転ルールタイプ(一個予備)
 //カテゴリー
 //ビギ、マス*4(段位別)、20G*2、デビ、デビ-、トモTi、トモEH、エス*3、エンドレス
-bool	allocked2 = false;
-char*	rkname[5 * 15 * 2];			// 名前
+char	rkname[5 * 15 * 2][4];			// 名前
 int32_t		rkdata[5 * 15 * 2];		// 花火／段位／ステージ／ライン
 int32_t		rktime2[5 * 15 * 2];		// タイム
 int32_t		rkclear[5 * 15 * 2];		// 0=途中で窒息 1=ロール失敗 2=ロールクリア
@@ -70,7 +69,7 @@ int32_t RankingCheck2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime
 
 // ランキングに登録
 void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear,
-	int32_t rother, char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre) {
+	int32_t rother, const char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre) {
 
 	int32_t i, j, rcolor;
 
@@ -399,7 +398,7 @@ void RankingView2() {//5位まで
 }
 // ランキングを保存
 void RankingSave2() {
-	int32_t i, temp2[3];
+	int32_t i;
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
@@ -412,8 +411,12 @@ void RankingSave2() {
 	// ランキングデータ
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前
-		StrCpy(&temp2, rkname[i]);
-		saveBuf[4 + i] = temp2[0];//1
+		saveBuf[4 + i] = (int32_t)(
+			((uint32_t)rkname[i][0] <<  0) |
+			((uint32_t)rkname[i][1] <<  8) |
+			((uint32_t)rkname[i][2] << 16) |
+			((uint32_t)rkname[i][3] << 24)
+		);
 
 		// 段位
 		saveBuf[4 + i + (5 * 15 * 2) * 1] = rkdata[i];//2
@@ -441,7 +444,7 @@ void RankingSave2() {
 
 // ランキングを読み込み
 int32_t RankingLoad2() {
-	int32_t i, temp2[3];
+	int32_t i;
 
 	// ヘッダだけ読み込み
 	FillMemory(&saveBuf, 5000 * 4, 0);
@@ -458,8 +461,10 @@ int32_t RankingLoad2() {
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前
-		temp2[0] = saveBuf[4 + i];
-		StrCpy(rkname[i], &temp2);
+		rkname[i][0] = (char)((saveBuf[4 + i] >>  0) & 0xFF);
+		rkname[i][1] = (char)((saveBuf[4 + i] >>  8) & 0xFF);
+		rkname[i][2] = (char)((saveBuf[4 + i] >> 16) & 0xFF);
+		rkname[i][3] = (char)((saveBuf[4 + i] >> 24) & 0xFF);
 
 		// 段位
 		rkdata[i]  = saveBuf[4 + i + (5 * 15 * 2) * 1];
@@ -542,17 +547,6 @@ int32_t RankingGet2(int32_t rmode,int32_t rtype, int32_t rrots,int32_t player) {
 	}
 	return ((cat[player] * 10) + (rankingrule * 5));
 }
-// 5名 × 15モード × 2回転ルールタイプ
-// 名前を格納する変数(rkname)のメモリを確保
-void RankingAlloc() {
-	int32_t i;
-	if ( !allocked2 )
-	{
-		for(i = 0; i < (5 * 15 * 2 ); i++) rkname[i] = new char[4];
-		allocked2 = true;
-	}
-}
-
 
 void getModeNameEx( int32_t mode, int32_t number ) {
 	if(mode == 0)

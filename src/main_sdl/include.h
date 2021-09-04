@@ -3,8 +3,9 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
-#include <ctime>
-#include <cstdint>
+#include <time.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #define		EXTRA_EFFECT_ENABLE			0
 

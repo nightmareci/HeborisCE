@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 // ars.c
 void statAMove(int32_t player, int32_t kickm, int32_t kickr);
 
@@ -168,7 +170,7 @@ void stat180field(int32_t player);
 void statDelfromUpper(int32_t player);
 void statBanana(int32_t player);
 void GiziSRand(int32_t player);
-int32_t rand(int32_t max,int32_t player);
+int32_t gameRand(int32_t max,int32_t player);
 int32_t abs_YGS2K(int32_t i);
 int32_t getFieldBlock(int32_t player, int32_t bx1, int32_t by1, int32_t opt);
 int32_t getFieldBlock2(int32_t player, int32_t bx1, int32_t by1);
@@ -264,7 +266,8 @@ int32_t ARSSRSch(int32_t rots);
 // ranking3.c
 void RankingInit3();
 int32_t RankingCheck3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear);
-void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear, int32_t rother, const char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre);
+void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear,
+	int32_t rother, char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre);
 void RankingProc_3(int32_t cat,int32_t pages2);
 void RankingProc2_3();
 void RankingView3();
@@ -279,10 +282,7 @@ void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type);
 int32_t viewgrade(int32_t player);
 
 // readdef.c
-namespace readdef
-{
-	int32_t readdef();
-};
+int32_t readdef();
 
 // replay.c
 void ReplaySaveCheck(int32_t player, int32_t statnumber);

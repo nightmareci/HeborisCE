@@ -7,7 +7,7 @@
 // 一ページに2モード3名ずつ
 //ビギ、マス(1、2)、マス(3、4)、20G、デビ、トモ(Ti、EH)、トモ（）エス（NO、ANO）、エス(HE)、エンドレス
 bool	allocked3 = false;
-char*	rkname3[ 6*14*2];			// 名前
+char	rkname3[ 6*14*2][4];			// 名前
 int32_t		rkdata3[ 6*14*2];		// 花火／段位／ステージ／ライン
 int32_t		rktime3[ 6*14*2];		// タイム
 int32_t		rkclear3[ 6*14*2];		// 0=途中で窒息 1=ロール失敗 2=ロールクリア
@@ -471,7 +471,7 @@ void RankingView3() {//3位まで
 }
 // ランキングを保存
 void RankingSave3() {
-	int32_t i, temp2[3];
+	int32_t i;
 
 	FillMemory(&saveBuf, 5000 * 4, 0);
 
@@ -484,8 +484,12 @@ void RankingSave3() {
 	// ランキングデータ
 	for(i = 0; i < ( 6*14*2); i++) {// 6*14*2=6*14*2
 		// 名前
-		StrCpy(&temp2, rkname3[i]);
-		saveBuf[4 + i] = temp2[0];//1
+		saveBuf[4 + i] = (int32_t)(
+			((uint32_t)rkname3[i][0] <<  0) |
+			((uint32_t)rkname3[i][1] <<  8) |
+			((uint32_t)rkname3[i][2] << 16) |
+			((uint32_t)rkname3[i][3] << 24)
+		);
 
 		// 段位
 		saveBuf[4 + i + ( 6*14*2) * 1] = rkdata3[i];//2
@@ -513,7 +517,7 @@ void RankingSave3() {
 
 // ランキングを読み込み
 int32_t RankingLoad3() {
-	int32_t i, temp2[3];
+	int32_t i;
 
 	// ヘッダだけ読み込み
 	FillMemory(&saveBuf, 5000 * 4, 0);
@@ -529,8 +533,10 @@ int32_t RankingLoad3() {
 
 	for(i = 0; i < ( 6*14*2); i++) {
 		// 名前
-		temp2[0] = saveBuf[4 + i];
-		StrCpy(rkname3[i], &temp2);
+		rkname3[i][0] = (char)((saveBuf[4 + i] >>  0) & 0xFF);
+		rkname3[i][1] = (char)((saveBuf[4 + i] >>  8) & 0xFF);
+		rkname3[i][2] = (char)((saveBuf[4 + i] >> 16) & 0xFF);
+		rkname3[i][3] = (char)((saveBuf[4 + i] >> 24) & 0xFF);
 
 		// 段位
 		rkdata3[i]  = saveBuf[4 + i + ( 6*14*2) * 1];
@@ -561,17 +567,6 @@ int32_t RankingGet3(int32_t rmode, int32_t rrots,int32_t rex) {//5*15*2*11,3*2*1
 	// 普通のモード
 	return ((rmode * 14)  + (rrots * 6)+ (rex * 3));
 }
-// 5名 × 15モード × 2回転ルールタイプ
-// 名前を格納する変数(rkname)のメモリを確保
-void RankingAlloc3() {
-	int32_t i;
-	if ( !allocked3 )
-	{
-		for(i = 0; i < ( 6*14*2 ); i++) rkname3[i] = new char[4];		/* C++ TODO: いいのかな? 解放処理いる? */
-		allocked3 = true;
-	}
-}
-
 
 void getModeNameEx3( int32_t mode, int32_t number ) {
 	if(mode == 0)

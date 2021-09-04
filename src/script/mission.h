@@ -1350,12 +1350,12 @@ void missionSetStatus() {
 	//回転不可
 	if(mission_type[c_mission] == 17) {
 		isrotatelock[0] = 1;
-		rt_nblk[0 + 6 * 0] = rand(4,0);
-		rt_nblk[1 + 6 * 0] = rand(4,0);
-		rt_nblk[2 + 6 * 0] = rand(4,0);
-		rt_nblk[3 + 6 * 0] = rand(4,0);
-		rt_nblk[4 + 6 * 0] = rand(4,0);
-		rt_nblk[5 + 6 * 0] = rand(4,0);
+		rt_nblk[0 + 6 * 0] = gameRand(4,0);
+		rt_nblk[1 + 6 * 0] = gameRand(4,0);
+		rt_nblk[2 + 6 * 0] = gameRand(4,0);
+		rt_nblk[3 + 6 * 0] = gameRand(4,0);
+		rt_nblk[4 + 6 * 0] = gameRand(4,0);
+		rt_nblk[5 + 6 * 0] = gameRand(4,0);
 	} else {
 		isrotatelock[0] = 0;
 		rt_nblk[0 + 6 * 0] = 0;
@@ -1478,7 +1478,7 @@ void setEraserLines() {
 			tmp = min+1;
 		}else{
 			do {
-				tmp = rand(22,0);
+				tmp = gameRand(22,0);
 			} while( (tmp < min+1) || (tmp > max+1) || (line[tmp] == 1) );
 		}
 		line[tmp] = 1;
@@ -1510,8 +1510,8 @@ statc[0 * 10 + 6] = mission_opt_3[c_mission];
 	}else{
 		// 追加情報で出現ステージの範囲を指定可能 #1.60c7s2
 		do {
-			if(repversw < 46) tmp = rand(100,0);
-			else tmp = rand(mission_opt_2[c_mission] + 1,0);
+			if(repversw < 46) tmp = gameRand(100,0);
+			else tmp = gameRand(mission_opt_2[c_mission] + 1,0);
 		} while( (tmp < mission_opt_1[c_mission]) || (tmp > mission_opt_2[c_mission]) || (target_cleared[tmp] == 1) );
 	target_cleared[tmp] = 1;	// 出現済みフラグON
 	}

@@ -77,7 +77,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			bak = (rt[player] + move);
 				if(istrance[player]){
 					do{
-						k = rand(7,player);
+						k = gameRand(7,player);
 						setNextBlockColors(player, 1);
 					}while(k == blk[player]);
 				}else{

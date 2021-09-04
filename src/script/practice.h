@@ -1039,7 +1039,7 @@ void PracticeStart(void){
 		GiziSRand(0);				// 擬似乱数のシードを生成（リプレイ時除く）
 
 	}
-	hole[0] = rand(10,0);
+	hole[0] = gameRand(10,0);
 	stat[0] = 3;					// Ready
 	statc[0 * 10] = 0;				// ステータスカウンタを0に
 	statc[0 * 10 + 1] = 0;

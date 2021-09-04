@@ -17,7 +17,7 @@ void RankingInit(void) {
 }
 
 void RankingConvert(void) {
-	int32_t	i, j, temp, temp2[3];
+	int32_t	i, j, temp;
 
 	LoadFile("config/data/RANKING.SAV", &saveBuf, 1312);
 	for(i = 0; i < 40; i++) {
@@ -26,8 +26,10 @@ void RankingConvert(void) {
 		rkbl[i] = saveBuf[temp + 1];
 		rklv[i] = saveBuf[temp + 2];
 		rktime[i] = saveBuf[temp + 3];
-		temp2[0] = saveBuf[temp + 4];
-		StrCpy(string[30 + i], &temp2);
+		string[30 + i][0] = (char)((saveBuf[temp + 4] >>  0) & 0xFF);
+		string[30 + i][1] = (char)((saveBuf[temp + 4] >>  8) & 0xFF);
+		string[30 + i][2] = (char)((saveBuf[temp + 4] >> 16) & 0xFF);
+		string[30 + i][3] = (char)((saveBuf[temp + 4] >> 24) & 0xFF);
 	}
 
 	for(i = 0; i < 4; i++) {
@@ -73,7 +75,7 @@ int32_t RankingCheck(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rtime, int
 	return (rank);
 }
 
-void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t rlv, int32_t rtime, int32_t end, char *rname) {
+void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t rlv, int32_t rtime, int32_t end, const char *rname) {
 	int32_t		i, rank, temp;
 
 	rank = RankingCheck(rmode, rtt, rsc, rtime, rlv, end);
@@ -283,7 +285,7 @@ int32_t RankingView(void) {
 }
 
 int32_t RankingSave(void) {
-	int32_t i, temp, temp2[3];
+	int32_t i, temp;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -302,8 +304,12 @@ int32_t RankingSave(void) {
 		saveBuf[temp + 1] = rkbl[i];
 		saveBuf[temp + 2] = rklv[i];
 		saveBuf[temp + 3] = rktime[i];
-		StrCpy(&temp2, string[30 + i]);
-		saveBuf[temp + 4] = temp2[0];
+		saveBuf[temp + 4] = (int32_t)(
+			((uint32_t)string[30 + i][0] <<  0) |
+			((uint32_t)string[30 + i][1] <<  8) |
+			((uint32_t)string[30 + i][2] << 16) |
+			((uint32_t)string[30 + i][3] << 24)
+		);
 		saveBuf[temp + 5] = rkfl[i];
 	}
 
@@ -313,7 +319,7 @@ int32_t RankingSave(void) {
 }
 
 int32_t RankingLoad(void) {
-	int32_t i, temp, temp2[3];
+	int32_t i, temp;
 
 	FillMemory(&saveBuf, 50000 * 4, 0);
 
@@ -334,8 +340,10 @@ int32_t RankingLoad(void) {
 		rkbl[i] = saveBuf[temp + 1];
 		rklv[i] = saveBuf[temp + 2];
 		rktime[i] = saveBuf[temp + 3];
-		temp2[0] = saveBuf[temp + 4];
-		StrCpy(string[30 + i], &temp2);
+		string[30 + i][0] = (char)((saveBuf[temp + 4] >>  0) & 0xFF);
+		string[30 + i][1] = (char)((saveBuf[temp + 4] >>  8) & 0xFF);
+		string[30 + i][2] = (char)((saveBuf[temp + 4] >> 16) & 0xFF);
+		string[30 + i][3] = (char)((saveBuf[temp + 4] >> 24) & 0xFF);
 		rkfl[i] = saveBuf[temp + 5];
 	}
 

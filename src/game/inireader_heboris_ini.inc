@@ -691,7 +691,3 @@ INI_SECTION_DEF(waitkey[24])
 INI_SECTION_DEF(speed[24])
 INI_SECTION_DEF(debug)
 INI_SECTION_DEF(max_fps_2)
-
-INI_SECTION_DEF(cpp_texpow2)
-INI_SECTION_DEF(cpp_texdxt)
-INI_SECTION_DEF(cpp_texfilter)

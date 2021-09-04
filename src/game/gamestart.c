@@ -364,7 +364,8 @@ C7U8EX YGS2K
 #include "prototypes.h"
 #include "inireader.h"
 #include "gamedef.h"
-#include <cstdint>
+#include "heboris_ini.h"
+#include <stdint.h>
 
 #define		STRING_MAX		200
 #define		str			const char*
@@ -1406,11 +1407,6 @@ int32_t fade_seed = 20;	// BGMフェードアウト用
 
 int32_t se_play[50];
 
-// C++用設定
-int32_t cpp_texpow2 = 1;		// [OpenGL] テクスチャの大きさを2の累乗に限定する
-int32_t cpp_texdxt = 0;			// [DirectX] テクスチャをDXT圧縮する
-int32_t cpp_texfilter = 0;		// [DirectX][OpenGL] 拡大された画像の表示形式
-
 // 文字列定数
 str		version = "C7V4EX " FRAMEWORK_VER " 07/11/23";	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 str		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
@@ -1427,31 +1423,30 @@ char	*string[STRING_MAX];
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ソースファイルのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "speed.h"				// レベル調整
-#include "script/mission_info.h"// ミッション情報
+#include "speed.h"			// レベル調整
+#include "script/mission_info.h"	// ミッション情報
 
-#include "script/flexdraw.c"		// 複数解像度対応描画関数	#1.60c7p9ex
-#include "script/config.c"		// Config	#1.60c5
-#include "script/world.c"		// Worldルール #1.60c4
-#include "script/classic.c"		// クラシックルール
-#include "script/ars.c"			// ARSルール
-#include "script/classic_D.c"	// D.R.S
-#include "script/effect.c"		// 演出処理
-#include "script/sound.c"		// 音の処理
-#include "script/practice.c"		// PRACTICEモード
-#include "script/tomoyo.c"		// TOMOYOモード
-#include "script/ranking.c"		// ランキング
-#include "script/readdef.c"		// 設定初期化
-#include "script/replay.c"		// リプレイ
-#include "script/staffroll.c"	// スタッフロール
-#include "script/cpu.c"			// コンピュータ操作
-#include "script/sectime.c"		// セクションタイムランキング
-#include "script/mission.c"		// ミッションモード
-#include "script/view.c"			// 表示処理
-#include "script/grade.c"		// 段位
-#include "script/ranking2.c"		// ランキング2
-#include "script/ranking3.c"		// ランキング3
-#include "readini.c"				// ini読み込み
+#include "script/flexdraw.h"		// 複数解像度対応描画関数	#1.60c7p9ex
+#include "script/config.h"		// Config	#1.60c5
+#include "script/world.h"		// Worldルール #1.60c4
+#include "script/classic.h"		// クラシックルール
+#include "script/ars.h"			// ARSルール
+#include "script/classic_D.h"		// D.R.S
+#include "script/effect.h"		// 演出処理
+#include "script/sound.h"		// 音の処理
+#include "script/practice.h"		// PRACTICEモード
+#include "script/tomoyo.h"		// TOMOYOモード
+#include "script/ranking.h"		// ランキング
+#include "script/readdef.h"		// 設定初期化
+#include "script/replay.h"		// リプレイ
+#include "script/staffroll.h"		// スタッフロール
+#include "script/cpu.h"			// コンピュータ操作
+#include "script/sectime.h"		// セクションタイムランキング
+#include "script/mission.h"		// ミッションモード
+#include "script/view.h"		// 表示処理
+#include "script/grade.h"		// 段位
+#include "script/ranking2.h"		// ランキング2
+#include "script/ranking3.h"		// ランキング3
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
@@ -1476,7 +1471,7 @@ void gameMain(void) {
 		// 文字列バッファの初期化
 		for ( i = 0 ; i < STRING_MAX ; i ++ )
 		{
-			string[i] = new char[512];
+			string[i] = malloc(sizeof(char[512]));
 		}
 
 		initialize();
@@ -1594,7 +1589,7 @@ void gameMain(void) {
 	} while ( restart );
 	for ( i = 0 ; i < STRING_MAX ; i ++ )
 	{
-		delete[] string[i];
+		free(string[i]);
 	}
 }
 
@@ -3170,7 +3165,7 @@ void setNextBlockColors(int32_t player, int32_t first) {
 			rt_nblk[2 + 6 * player] = rt_nblk[3 + 6 * player];
 			rt_nblk[3 + 6 * player] = rt_nblk[4 + 6 * player];
 			rt_nblk[4 + 6 * player] = rt_nblk[5 + 6 * player];
-			rt_nblk[5 + 6 * player] = rand(4,player);
+			rt_nblk[5 + 6 * player] = gameRand(4,player);
 		} else if(ace_irs){
 			rt[player] = rt_nblk[0 + 6 * player];
 			rt_nblk[0 + 6 * player] = 0;
@@ -4132,7 +4127,7 @@ void statBlockSutter(int32_t player) {
 		first_rot[player] = rots[player];
 	}
 	if((gameMode[player] == 4) || (gameMode[player] == 8))
-		hole[player] = rand(10,player);	// DS-RANDOMせり上がりのためにここで穴の位置を設定
+		hole[player] = gameRand(10,player);	// DS-RANDOMせり上がりのためにここで穴の位置を設定
 
 	stat[player] = statc[player * 10 + 1];	// 次のステータスへジャンプ
 	statc[player * 10    ] = 0;				// カウンタはあとかたづけ
@@ -5652,7 +5647,7 @@ void statReady(int32_t player) {
 	if((statc[player * 10] == 0) && (gameMode[player] == 3) && (devil_randrise) && (repversw >= 44)){
 		if((devil_rise_min[tr[player] / 10] > 0) && (devil_rise_max[tr[player] / 10] > 0) && (!devil_minus[player])) {
 			do {
-				devil_nextrise[player] = rand( devil_rise_max[tr[player] / 10] + 1,player);
+				devil_nextrise[player] = gameRand( devil_rise_max[tr[player] / 10] + 1,player);
 			} while(devil_nextrise[player] < devil_rise_min[tr[player] / 10]);
 		}
 	}
@@ -5918,7 +5913,7 @@ void statReady(int32_t player) {
 				if(vs_style[player] == -1){	//入力がなかったらランダム
 					PlaySE(5);
 					do{
-						vs_style[player] = rand(4,player);
+						vs_style[player] = gameRand(4,player);
 					}while((vs_style[player] == 3) && (noitem));
 				}
 				if(vs_style[player] == 1){	//ATTACKはアイテムゲージ2倍
@@ -6170,7 +6165,7 @@ void statBlock(int32_t player) {
 		if(use_item[player] == 0){//ALL
 			if(repversw >=51){
 				do{
-					tmp2[player] = rand(item_pronum,player);
+					tmp2[player] = gameRand(item_pronum,player);
 					tmp[player] = 1;
 					do{
 						tmp2[player] = tmp2[player]-item_pro[tmp[player]-1 ];
@@ -6195,28 +6190,28 @@ void statBlock(int32_t player) {
 				itemhistory[3+player*5]=itemhistory[4+player*5];
 				itemhistory[4+player*5]=tmp[player];
 			}else{
-				item_coming[player] = rand(item_num,player);
+				item_coming[player] = gameRand(item_num,player);
 			}
 		}else if((use_item[player] > 0)&&(use_item[player] <= item_num)){//単発
 			item_coming[player] = use_item[player];
 		}else if(use_item[player] == item_num+1){//few　1~5
 			do{
-				tmp[player] = rand(item_num,player) + 1;
+				tmp[player] = gameRand(item_num,player) + 1;
 			}while((itemhistory[0+player*5]==tmp[player])||(6<=tmp[player]));
 			item_coming[player] = tmp[player];
 			itemhistory[0+player*5]=tmp[player];
 		}else if(use_item[player] == item_num+2){//DS　6 7 12 13 18 26
 			do{
-				tmp[player] = rand(item_num,player) + 1;
+				tmp[player] = gameRand(item_num,player) + 1;
 				if(tmp[player] == 6){//サンダーのときはもう一回
-					tmp[player] = rand(item_num,player) + 1;
+					tmp[player] = gameRand(item_num,player) + 1;
 				}
 			}while((itemhistory[0+player*5]==tmp[player])||((6!=tmp[player])&&(7!=tmp[player])&&(12!=tmp[player])&&(13!=tmp[player])&&(18!=tmp[player])&&(26!=tmp[player])));
 			item_coming[player] = tmp[player];
 			itemhistory[0+player*5]=tmp[player];
 		}else if(use_item[player] == item_num+3){//TGM 1-5 16-25 28-31
 			do{
-				tmp2[player] = rand(item_pronum,player);
+				tmp2[player] = gameRand(item_pronum,player);
 				tmp[player] = 1;
 				do{
 					tmp2[player] = tmp2[player]-item_pro[tmp[player]-1 ];
@@ -6360,7 +6355,7 @@ void statBlock(int32_t player) {
 		PlaySE(21 + next[player]);
 	}
 	if(isfakenext[player]==1){//FAKENEXTの時は適当な音
-		PlaySE(21 + rand(6,player));
+		PlaySE(21 + gameRand(6,player));
 	}
 	if((!isrotatelock[player]) && (!ace_irs))
 		rt[player] = 0;
@@ -6915,7 +6910,7 @@ void doHold(int32_t player, int32_t ihs) {
 				PlaySE(21 + next[player]);
 			}
 			if(isfakenext[player] == 1){//FAKENEXTの時は適当な音
-				PlaySE(21 + rand(6,player));
+				PlaySE(21 + gameRand(6,player));
 			}
 			// 横方向の先行移動を無効にする #1.60c7o9
 			if(repversw >= 11) {
@@ -7208,12 +7203,12 @@ int32_t blockEraseJudgeFf(int32_t player,int32_t mode) {
 		return ret;
 	}else{
 		if((upLineT[1 - player] == 3) && (!disrise)){
-			hole = rand(10,1 - player);
+			hole = gameRand(10,1 - player);
 			//バッファからせり上がりフィールドへ送る
 			for(i = 0; i < Ff_rerise[player]; i++) {
 				for(j = 0; j < fldsizew[player]; j++) {
 					if(j != hole)
-						fldu[j + upLines[1 - player] * fldsizew[player] + (1 - player) * 220] = rand(7,1-player) + 2;
+						fldu[j + upLines[1 - player] * fldsizew[player] + (1 - player) * 220] = gameRand(7,1-player) + 2;
 					else
 						fldu[j + upLines[1 - player] * fldsizew[player] + (1 - player) * 220] = 0;
 				}
@@ -7661,16 +7656,16 @@ void UpLineBlock(int32_t player) {
 		// DS風に3割の確立で穴の位置が変わる C7T3.2EX
 		// MISSIONでは8割の確率
 		if(gameMode[player] != 4){
-			if( rand(10,player) > 6 - ( (4 + (repversw >= 55) )*(gameMode[player] == 8)) ){
+			if( gameRand(10,player) > 6 - ( (4 + (repversw >= 55) )*(gameMode[player] == 8)) ){
 				do {
-					newhole = rand(10,player);
+					newhole = gameRand(10,player);
 				} while(newhole == hole[player]);
 				hole[player] = newhole;
 			}
 		}else{	//対戦　NORMAL 4割　ATTACK 6割　DEFENCE&ITEM 3割
-			if( rand(10,player) > 5-(2*(vs_style[1 - player] == 1))+(1*(vs_style[1 - player] > 1)) ){
+			if( gameRand(10,player) > 5-(2*(vs_style[1 - player] == 1))+(1*(vs_style[1 - player] > 1)) ){
 				do {
-					newhole = rand(10,player);
+					newhole = gameRand(10,player);
 				} while(newhole == hole[player]);
 				hole[player] = newhole;
 			}
@@ -8292,7 +8287,7 @@ int32_t UpLineShirase(int32_t player) {
 	} else if((gameMode[player] == 3) && (devil_randrise) && (repversw >= 44) && (!devil_minus[player])){
 		if((devil_nextrise[player] <= 0) && (devil_rise_min[tr[player] / 10] > 0) && (devil_rise_max[tr[player] / 10] > 0)) {
 			do {
-				devil_nextrise[player] = rand( devil_rise_max[tr[player] / 10] + 1,player);
+				devil_nextrise[player] = gameRand( devil_rise_max[tr[player] / 10] + 1,player);
 			} while(devil_nextrise[player] < devil_rise_min[tr[player] / 10]);
 
 			upLines[player] = 1;
@@ -8632,7 +8627,7 @@ void LevelUp(int32_t player) {
 					if((devil_randrise) && (repversw >= 44)){
 						if((devil_nextrise[player] <= 0) && (devil_rise_min[tr[player] / 10] > 0) && (devil_rise_max[tr[player] / 10] > 0) && (!devil_minus[player])) {
 							do {
-								devil_nextrise[player] = rand( devil_rise_max[tr[player] / 10] + 1,player);
+								devil_nextrise[player] = gameRand( devil_rise_max[tr[player] / 10] + 1,player);
 							} while(devil_nextrise[player] < devil_rise_min[tr[player] / 10]);
 						}
 					}
@@ -12489,7 +12484,7 @@ void winner2() {
 		item_inter[player] = item_interval;
 		//回転法則のランダムセレクト
 		if(versus_rot[player] == 9){
-			rots[player] = rand(9,player);
+			rots[player] = gameRand(9,player);
 		}
 		setNextBlockColors(player, 1);
 
@@ -12620,12 +12615,12 @@ void eraseItem(int32_t player, int32_t type) {
 			isrotatelock[enemy] = 1;
 			PlaySE(37);
 			// NEXTブロックの向きをランダムに
-			rt_nblk[0 + 6 * enemy] = rand(4,enemy);
-			rt_nblk[1 + 6 * enemy] = rand(4,enemy);
-			rt_nblk[2 + 6 * enemy] = rand(4,enemy);
-			rt_nblk[3 + 6 * enemy] = rand(4,enemy);
-			rt_nblk[4 + 6 * enemy] = rand(4,enemy);
-			rt_nblk[5 + 6 * enemy] = rand(4,enemy);
+			rt_nblk[0 + 6 * enemy] = gameRand(4,enemy);
+			rt_nblk[1 + 6 * enemy] = gameRand(4,enemy);
+			rt_nblk[2 + 6 * enemy] = gameRand(4,enemy);
+			rt_nblk[3 + 6 * enemy] = gameRand(4,enemy);
+			rt_nblk[4 + 6 * enemy] = gameRand(4,enemy);
+			rt_nblk[5 + 6 * enemy] = gameRand(4,enemy);
 			thunder_timer = 30;
 			item_timer[enemy] = 600 / (1+ ((sp[enemy] >= 180) && (repversw >= 40)) );//3G以上で半減
 			if(cpu_flag[enemy]) {
@@ -13181,14 +13176,14 @@ void statLaser(int32_t player) {
 	if(statc[player * 10 + 0] == 0){	//最初
 		if(statc[player * 10 + 2] == 0){//レーザー
 			lasernum[player] = 1;
-			laserpos[0 + 4 * player] = bx[player] + rand(4,player) - 2;
+			laserpos[0 + 4 * player] = bx[player] + gameRand(4,player) - 2;
 			if(laserpos[0 + 4 * player] < 0) laserpos[0 + 4 * player] = 0;
 			if(laserpos[0 + 4 * player] > fldsizew[player] - 1) laserpos[0 + 4 * player] = fldsizew[player] - 1;
 			rapid_c[player] = 0;
 			statc[player * 10 + 0]++;
 		}else{//16t
 			lasernum[player] = 1;
-			laserpos[0 + 4 * player] = bx[player] + rand(4,player) - 2;//左端
+			laserpos[0 + 4 * player] = bx[player] + gameRand(4,player) - 2;//左端
 			if(laserpos[0 + 4 * player] < 0) laserpos[0 + 4 * player] = 0;
 			if(laserpos[0 + 4 * player] > fldsizew[player] - 3) laserpos[0 + 4 * player] = fldsizew[player] - 3;
 			rapid_c[player] = 0;
@@ -13203,7 +13198,7 @@ void statLaser(int32_t player) {
 					rapid_c[player]++;
 				if((rapid_c[player] > 4) && (lasernum[player] < 4)){	//レーザーを増やす（最大4本）
 					lasernum[player]++;
-					laserpos[lasernum[player] - 1 + 4 * player ] = rand(fldsizew[player] - 1,player);
+					laserpos[lasernum[player] - 1 + 4 * player ] = gameRand(fldsizew[player] - 1,player);
 					rapid_c[player] = 0;
 				}
 				//照準を移動
@@ -13407,11 +13402,11 @@ void statShotgun(int32_t player) {
 		for(i = checkFieldTop(player); i < 22; i++){
 			if(i == 0){
 				do{
-					x = rand(fldsizew[player],player);
+					x = gameRand(fldsizew[player],player);
 				} while(fld[x + i * fldsizew[player] + player * 220] == 0);
 			} else {
 				do{
-					x = rand(fldsizew[player],player);
+					x = gameRand(fldsizew[player],player);
 					limit++;
 					if(limit > 100000) break;
 				} while( ((x == shotgunpos[(i - 1) + 22 * player]) && (limit < 50000)) || (fld[x + i * fldsizew[player] + player * 220] == 0) );
@@ -13732,10 +13727,10 @@ void statItemRulet(int32_t player) {
 		}
 		if(statc[player * 10 + 0] == 120){//決定
 			PlaySE(10);
-			statc[player * 10 + 2] = rand(item_num,player) + 1;
+			statc[player * 10 + 2] = gameRand(item_num,player) + 1;
 			if(repversw < 48)
 				eraseItem(player, statc[player * 10 + 2]);
-			else if((rand(10,player) < 1) || (statc[player * 10 + 2] == item_num + 1)){	//スカ
+			else if((gameRand(10,player) < 1) || (statc[player * 10 + 2] == item_num + 1)){	//スカ
 				statc[player * 10 + 2] = 36;
 				PlaySE(45);
 				if(repversw >= 54){
@@ -13756,7 +13751,7 @@ void statItemRulet(int32_t player) {
 			}
 			if((dorulet[player]) && (repversw >= 48) && (repversw < 62)){
 				dorulet[player] = 0;
-				eraseItem(player, rand(item_num,player) + 1);
+				eraseItem(player, gameRand(item_num,player) + 1);
 			}
 		}
 		if((statc[player * 10 + 0] > 120) && (statc[player * 10 + 0] <= 150) && (statc[player * 10 + 2] == 36)){
@@ -14010,7 +14005,7 @@ void statFreefall(int32_t player) {
 		if(blockEraseJudgeFf(player,0) == 0){	// 消去なし
 			statc[player * 10 + 0] = -100;
 		} else {							// 消去あり
-			statc[player * 10 + 2] = rand(10,player);
+			statc[player * 10 + 2] = gameRand(10,player);
 			statc[player * 10 + 3] = statc[player * 10 + 2];
 			if(IsBigStart[player]) {
 				statc[player * 10 + 2] = (statc[player * 10 + 2] / 2) * 2;
@@ -14110,7 +14105,7 @@ void statFreefall(int32_t player) {
 			}
 
 			for(j = 0; j < fldsizew[player]; j++) {
-				fld[j + fldsizew[player] * fldsizeh[player] + player * 220] = ((j != statc[player * 10 + 2]) && (j != statc[player * 10 + 3])) * (rand(7,player) + 2);
+				fld[j + fldsizew[player] * fldsizeh[player] + player * 220] = ((j != statc[player * 10 + 2]) && (j != statc[player * 10 + 3])) * (gameRand(7,player) + 2);
 				fldt[j + fldsizew[player] * fldsizeh[player] + player * 220] = (fld[j + fldsizew[player] * fldsizeh[player] + player * 220] != 0) * -1;
 				// アイテムを増殖させない #1.60c7o6
 				if((gameMode[player] == 4) || (item_mode[player])) fldi[j + fldsizew[player] * fldsizeh[player] + player * 220] = 0;
@@ -14374,7 +14369,7 @@ void statBanana(int32_t player){
 		for(i = 0; i < 10; i++) flag[i] = 0;
 		for(i = 0; i < 10; i++){
 			do{
-				tmp = rand(10,player);
+				tmp = gameRand(10,player);
 			}while(flag[tmp] == 1);
 			flag[tmp] = 1;
 			banana_pos[i + 10 * player] = tmp;
@@ -14424,7 +14419,7 @@ void GiziSRand(int32_t player){
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  擬似乱数生成
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int32_t rand(int32_t max,int32_t player) {
+int32_t gameRand(int32_t max,int32_t player) {
 
 		randseed[player] = ((randseed[player] * 673 + 994) / 10) % 100000;
 		return abs_YGS2K(randseed[player]) % max;
@@ -15092,7 +15087,7 @@ void initialize(void) {
 	halt;
 
 	if(LoadConfig()) {	//CONFIG.SAVより設定をロード
-		readdef::readdef();
+		readdef();
 		LoadConfig();
 	}
 
@@ -15158,11 +15153,9 @@ void initialize(void) {
 		if(i == 1) RankingInit();
 		if(i == 2) RankingConvert();
 	}else if(ranking_type==1){
-		RankingAlloc();
 		i = RankingLoad2();
 		if(i == 1) RankingInit2();
 	}else{
-		RankingAlloc3();
 		i = RankingLoad3();
 		if(i == 1) RankingInit3();
 	}

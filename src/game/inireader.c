@@ -28,32 +28,32 @@ static bool s_bInQuote = false;
 static bool s_bBeforeYen = false;
 static bool s_bValueRead = false;
 
-inline bool IsValidChar(char chr, bool num_enable)
+static inline bool IsValidChar(char chr, bool num_enable)
 {
 	return ( ( chr >= 'a' && chr <= 'z' ) || ( chr >= 'A' && chr <= 'Z' ) || chr == '_' || chr == '-' || chr == '[' || chr == ']' ) || ( ( chr >= '0' && chr <= '9' ) && num_enable );
 }
 
-inline bool IsEqualChar(char chr)
+static inline bool IsEqualChar(char chr)
 {
 	return chr == '=';
 }
 
-inline bool IsSemiColonChar(char chr)
+static inline bool IsSemiColonChar(char chr)
 {
 	return chr == ';';
 }
 
-inline bool IsDoubleQuoteChar(char chr)
+static inline bool IsDoubleQuoteChar(char chr)
 {
 	return chr == '"';
 }
 
-inline bool IsYenChar(char chr)
+static inline bool IsYenChar(char chr)
 {
 	return chr == '\\';
 }
 
-inline bool IsSpaceChar(char chr)
+static inline bool IsSpaceChar(char chr)
 {
 	return chr == ' ' || chr == '\t' || chr == '\r' || chr == '\n';
 }

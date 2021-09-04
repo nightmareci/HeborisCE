@@ -1,28 +1,28 @@
 ◆スクリプトファイル
-gameinit.c	初期化
-readdef.c	設定ファイル作成（CONFIG.SAVが存在しない場合）
-config.c	設定画面
-gamestart.c	ゲーム全般の処理
-world.c		ワールドルール
-classic.c	クラシックルール
-ars.c		ARSルール
-classic_D.c	D.R.S
-view.c		表示処理
-effect.c	ブロック消去エフェクト等
-sound.c		BGMとサウンドテスト
-practice.c	プラクティスモード
-tomoyo.c	TOMOYOモード（旧称SAKURAモード）
-ranking.c	旧ランキング
-ranking2.c	新ランキング
-replay.c	リプレイ
-staffroll.c	スタッフロール
-cpu.c		コンピュータの操作
-sectime.c	セクションタイムランキング
-flexdraw.c	描画関数
-grade.c		段位システム
-mission.c	ミッションモード
+gameinit.h	初期化
+readdef.h	設定ファイル作成（CONFIG.SAVが存在しない場合）
+config.h	設定画面
+gamestart.h	ゲーム全般の処理
+world.h		ワールドルール
+classic.h	クラシックルール
+ars.h		ARSルール
+classic_D.h	D.R.S
+view.h		表示処理
+effect.h	ブロック消去エフェクト等
+sound.h		BGMとサウンドテスト
+practice.h	プラクティスモード
+tomoyo.h	TOMOYOモード（旧称SAKURAモード）
+ranking.h	旧ランキング
+ranking2.h	新ランキング
+replay.h	リプレイ
+staffroll.h	スタッフロール
+cpu.h		コンピュータの操作
+sectime.h	セクションタイムランキング
+flexdraw.h	描画関数
+grade.h		段位システム
+mission.h	ミッションモード
 
-mission_info.def　ミッションで使用する文字列データ一式
+mission_info.h  ミッションで使用する文字列データ一式
 
 ◆ゲームの動作には関係ない説明ファイル
 scriptlist.txt	このファイル

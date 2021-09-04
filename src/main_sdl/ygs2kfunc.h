@@ -15,31 +15,31 @@ bool YGS2kInit();
 void YGS2kExit();
 bool YGS2kHalt();
 
-void YGS2kTextOut(int x, int y, const char* text, int r = 255, int g = 255, int b = 255, int size = 12);
+void YGS2kTextOut(int x, int y, const char* text, int r, int g, int b, int size);
 
 int IsPlayMIDI();
 
-struct JoyPadGUID {
+typedef struct {
 	int32_t data[4];
-};
+} JoyPadGUID;
 
-enum JoyKeyType {
+typedef enum {
 	JOYKEY_AXIS,
 	JOYKEY_HAT,
 	JOYKEY_BUTTON
-};
+} JoyKeyType;
 
-union JoyKeySetting {
+typedef union {
 	struct { int index, value; };
 	int button;
-};
+} JoyKeySetting;
 
-struct JoyKey {
+typedef struct {
 	int device;
         JoyPadGUID guid;
 	JoyKeyType type;
 	JoyKeySetting setting;
-};
+} JoyKey;
 
 int IsPushKey ( int key );
 int IsPressKey ( int key );
@@ -118,8 +118,6 @@ int GetFPS();
 int GetRealFPS();
 
 void StrCpy(char *dest, const char *src);
-void StrCpy(void *dest, const char *src);
-void StrCpy(char *dest, const void *src);
 void StrCat(char *str1, const char *str2);
 int StrLen(const char *stri);
 void MidStr(const char *src, int start, int len, char *dest);

@@ -2,11 +2,6 @@
 
 #include "SDL.h"
 
-/* Set up for C function definitions, even when using C++ */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum { KANJI_SJIS, KANJI_EUC, KANJI_JIS } Kanji_CodingSystem;
 
 typedef struct {
@@ -39,8 +34,3 @@ int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy,
 				      SDL_Surface* dst, const char* text, SDL_Color fg);
 
 void Kanji_CloseFont(Kanji_Font* font);
-
-/* Ends C function definitions when using C++ */
-#ifdef __cplusplus
-};
-#endif

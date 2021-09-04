@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(HeborisC7EX-SDL2
-	LANGUAGES CXX
+	LANGUAGES C
 )
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -13,55 +13,55 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif()
 
 set(EXE heboris)
-add_executable(${EXE})
+set(EXE_SOURCES
+	src/game/prototypes.h
+	src/game/gamedef.h
+	src/game/gamestart.h
+	src/game/gamestart.c
+	src/game/inireader_heboris_ini.inc
+	src/game/inireader.c
+	src/game/readini.c
+	src/game/heboris_ini.h
+	src/game/heboris.ini
+	src/game/heboris_user.ini
+
+	src/main_sdl/include.h
+	src/main_sdl/main.c
+	src/main_sdl/ygs2kfunc.h
+	src/main_sdl/ygs2kfunc.c
+	src/main_sdl/SDL_kanji.h
+	src/main_sdl/SDL_kanji.c
+
+	src/script/mission_info.h
+	src/script/flexdraw.h
+	src/script/config.h
+	src/script/world.h
+	src/script/classic.h
+	src/script/ars.h
+	src/script/classic_D.h
+	src/script/effect.h
+	src/script/sound.h
+	src/script/practice.h
+	src/script/tomoyo.h
+	src/script/ranking.h
+	src/script/readdef.h
+	src/script/replay.h
+	src/script/staffroll.h
+	src/script/cpu.h
+	src/script/sectime.h
+	src/script/mission.h
+	src/script/view.h
+	src/script/grade.h
+	src/script/ranking2.h
+	src/script/ranking3.h
+)
+add_executable(${EXE} ${EXE_SOURCES})
 
 target_include_directories(${EXE} PRIVATE src src/game src/main_sdl)
-target_sources(${EXE}
-	PRIVATE
-		src/game/prototypes.h
-		src/game/gamedef.h
-		src/game/gamestart.h
-		src/game/gamestart.cpp
-		src/game/inireader_heboris_ini.inc
-		src/game/inireader.cpp
-		src/game/readini.c
-		src/game/heboris.ini
-		src/game/heboris_user.ini
-
-		src/main_sdl/include.h
-		src/main_sdl/main.cpp
-		src/main_sdl/ygs2kfunc.h
-		src/main_sdl/ygs2kfunc.cpp
-		src/main_sdl/SDL_kanji.h
-		src/main_sdl/SDL_kanji.cpp
-
-		src/script/mission_info.h
-		src/script/flexdraw.c
-		src/script/config.c
-		src/script/world.c
-		src/script/classic.c
-		src/script/ars.c
-		src/script/classic_D.c
-		src/script/effect.c
-		src/script/sound.c
-		src/script/practice.c
-		src/script/tomoyo.c
-		src/script/ranking.c
-		src/script/readdef.c
-		src/script/replay.c
-		src/script/staffroll.c
-		src/script/cpu.c
-		src/script/sectime.c
-		src/script/mission.c
-		src/script/view.c
-		src/script/grade.c
-		src/script/ranking2.c
-		src/script/ranking3.c
-)
 
 file(MAKE_DIRECTORY replay config/data)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
 
 find_package(PkgConfig)
 function(target_pkg_config_import TARGET DEPENDENCY)

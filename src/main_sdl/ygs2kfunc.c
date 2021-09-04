@@ -4,8 +4,8 @@
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
 
-#include <iostream>
-#include <cstdint>
+#include <stdio.h>
+#include <stdint.h>
 
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
@@ -16,7 +16,7 @@
 
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
-struct STextLayer
+typedef struct
 {
 	bool	enable;
 	int	x;
@@ -24,7 +24,7 @@ struct STextLayer
 	int	r, g, b;
 	int	size;
 	char	string[256];
-};
+} STextLayer;
 
 enum
 {
@@ -85,7 +85,7 @@ bool YGS2kInit()
 	/* CONFIG.SAVより設定をロード */
 	if ( LoadConfig() )
 	{
-		readdef::readdef();
+		readdef();
 		LoadConfig();
 	}
 
@@ -1187,16 +1187,6 @@ int GetRealFPS()
 void StrCpy(char *dest, const char *src)
 {
 	strcpy(dest, src);
-}
-
-void StrCpy(void *dest, const char *src)
-{
-	strcpy((char*)dest, src);
-}
-
-void StrCpy(char *dest, const void *src)
-{
-	strcpy(dest, (const char*)src);
 }
 
 void StrCat(char *str1, const char *str2)

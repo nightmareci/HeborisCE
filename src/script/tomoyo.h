@@ -1307,7 +1307,7 @@ void randPlatinum(int32_t player, int32_t tgtnum){
 				for(j = 0; j < fldsizew[player]; j++) {
 					if((fld[j + i * fldsizew[player] + player * 220] >= 2) && (fld[j + i * fldsizew[player] + player * 220] <= 8)) {
 						empty = 0;
-						if((tgtnum == 99) || (rand(10, player) == 0)) {
+						if((tgtnum == 99) || (gameRand(10, player) == 0)) {
 							fld[j + i * fldsizew[player] + player * 220] = fld[j + i * fldsizew[player] + player * 220] + 9;
 							put_num++;
 							put_flag[i] = 1;

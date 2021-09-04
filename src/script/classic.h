@@ -97,7 +97,7 @@ void statCMove(int32_t player) {
 			bak = (rt[player] + move);
 				if(istrance[player]){
 					do{
-						k = rand(7,player);
+						k = gameRand(7,player);
 						setNextBlockColors(player, 1);
 					}while(k == blk[player]);
 				}else{

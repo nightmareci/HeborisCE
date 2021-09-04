@@ -94,6 +94,7 @@ void TextHeight ( int layer, int height );
 void TextOut ( int layer, const char* text );
 void TextBlt ( int layer );
 void TextLayerOff ( int layer );
+void BltAlways(bool always);
 void Blt(int pno, int dx, int dy);
 void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy);
 void BltFast(int pno, int dx, int dy);

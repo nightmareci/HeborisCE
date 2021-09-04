@@ -59,6 +59,7 @@ static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
 static int			s_iLogicalWidth;
 static int			s_iLogicalHeight;
 
+static int			s_bBltAlways;
 static Uint64			s_uTimeCount;
 static Uint64			s_uTimeAccumulatorCount;
 static Uint64			s_uFPSCount;
@@ -252,12 +253,13 @@ bool YGS2kInit()
 	}
 	YGS2kKanjiFontInitialize();
 
-	s_uTimeCount = SDL_GetPerformanceCounter();
-	s_uTimeAccumulatorCount = 0;
-	s_uFPSCount  = SDL_GetPerformanceCounter();
-	s_uNowFrame  = 0;
-	s_uFPSCnting = 0;
-	s_uFPS       = 0;
+	s_uTimeCount		= SDL_GetPerformanceCounter();
+	s_uTimeAccumulatorCount	= 0;
+	s_uFPSCount		= SDL_GetPerformanceCounter();
+	s_uNowFrame		= 0;
+	s_uFPSCnting		= 0;
+	s_uFPS			= 0;
+	s_bBltAlways		= false;
 
 	srand(time(NULL));
 
@@ -335,10 +337,9 @@ void YGS2kExit()
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
-	const Uint64 frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
-	bool renderClear = false;
-
-	if ( s_uTimeAccumulatorCount < frameTimeCount )
+	const Uint64	frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
+	bool		renderClear = false;
+	if ( s_bBltAlways )
 	{
 		/* テキストレイヤーの描画 */
 		for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
@@ -355,11 +356,35 @@ bool YGS2kHalt()
 			SDL_Delay( 1 );
 		}
 
-		s_uTimeAccumulatorCount += SDL_GetPerformanceCounter() - s_uTimeCount;
+		s_uTimeAccumulatorCount = 0;
 
 		renderClear = true;
 	}
-	s_uTimeAccumulatorCount -= frameTimeCount;
+	else
+	{
+		if ( s_uTimeAccumulatorCount < frameTimeCount )
+		{
+			/* テキストレイヤーの描画 */
+			for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
+			{
+				TextBlt(i);
+			}
+
+			/* バックサーフェスをフロントに転送 */
+			SDL_RenderPresent( s_pScreenRenderer );
+
+			/* フレームレート待ち */
+			while ( s_uTimeCount + frameTimeCount >= SDL_GetPerformanceCounter() )
+			{
+				SDL_Delay( 1 );
+			}
+
+			s_uTimeAccumulatorCount += SDL_GetPerformanceCounter() - s_uTimeCount;
+
+			renderClear = true;
+		}
+		s_uTimeAccumulatorCount -= frameTimeCount;
+	}
 
 	/* フレームレート計算 */
 	s_uFPSCnting ++;
@@ -1003,6 +1028,11 @@ void TextBlt ( int layer )
 void TextLayerOff ( int layer )
 {
 	s_TextLayer[layer].enable = false;
+}
+
+void BltAlways(bool always)
+{
+	s_bBltAlways = always;
 }
 
 void Blt(int pno, int dx, int dy)

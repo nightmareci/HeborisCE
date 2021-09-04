@@ -580,7 +580,7 @@ void ConfigMenu() {
 						PlaySE(5);
 
 						if(statc[0] == 1) {
-							ncfg[0] = (((ncfg[0] & SCREEN_WINDOWTYPE_MASK) + SCREEN_NUMWINDOWTYPES + m)) % SCREEN_NUMWINDOWTYPES;	// screenMode
+							ncfg[0] = (ncfg[0] & (SCREEN_VSYNC_MASK | SCREEN_DETAIL_MASK)) | ((((ncfg[0] & SCREEN_WINDOWTYPE_MASK) + SCREEN_NUMWINDOWTYPES + m)) % SCREEN_NUMWINDOWTYPES);	// screenMode
 							need_reset = 1;
 						}
 						else if(statc[0] == 2) {

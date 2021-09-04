@@ -15063,6 +15063,7 @@ void testmenu(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void initialize(void) {
 	int32_t i, j;
+	BltAlways(true);
 	SetFillColor(0);
 	ClearSecondary();
 	halt;
@@ -15187,6 +15188,8 @@ void initialize(void) {
 	// SetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
 	/* ここからポーズ有効 #1.60c7p9ex */
 	// SetConstParam("EnablePause", 1);
+
+	BltAlways(false);
 }
 
 /* グラフィック読み込み */

@@ -1,6 +1,6 @@
 #include "SDL_kanji.h"
 
-#include "include.h"
+#include "main_sdl/include.h"
 
 #include <string.h>
 #include <stdio.h>

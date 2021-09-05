@@ -355,29 +355,9 @@ C7U8EX YGS2K
 これ以前はchangelog2.txtへ移動
 */
 
-//▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
-//  外部ライブラリのインポート
-//▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "include.h"
-
-#include "ygs2kfunc.h"
-#include "prototypes.h"
-#include "inireader.h"
-#include "gamedef.h"
-#include "heboris_ini.h"
-#include <stdint.h>
-
-#define		STRING_MAX		200
-#define		str			const char*
-#define		loop			while ( loopFlag )
-#define		halt			spriteTime()
-#define		time			gametime
-#define		ctime			cgametime
-#define		stime			sgametime
-#define		wait1			gamewait1
-#define		wait2			gamewait2
-#define		wait3			gamewait3
-#define		waitt			gamewaitt
+#include "gamestart.h"
+#include "speed.h"
+#include "script/include.h"
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
@@ -1419,34 +1399,6 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 char	*string[STRING_MAX];
-
-//▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
-//  ソースファイルのインポート
-//▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "speed.h"			// レベル調整
-#include "script/mission_info.h"	// ミッション情報
-
-#include "script/flexdraw.h"		// 複数解像度対応描画関数	#1.60c7p9ex
-#include "script/config.h"		// Config	#1.60c5
-#include "script/world.h"		// Worldルール #1.60c4
-#include "script/classic.h"		// クラシックルール
-#include "script/ars.h"			// ARSルール
-#include "script/classic_D.h"		// D.R.S
-#include "script/effect.h"		// 演出処理
-#include "script/sound.h"		// 音の処理
-#include "script/practice.h"		// PRACTICEモード
-#include "script/tomoyo.h"		// TOMOYOモード
-#include "script/ranking.h"		// ランキング
-#include "script/readdef.h"		// 設定初期化
-#include "script/replay.h"		// リプレイ
-#include "script/staffroll.h"		// スタッフロール
-#include "script/cpu.h"			// コンピュータ操作
-#include "script/sectime.h"		// セクションタイムランキング
-#include "script/mission.h"		// ミッションモード
-#include "script/view.h"		// 表示処理
-#include "script/grade.h"		// 段位
-#include "script/ranking2.h"		// ランキング2
-#include "script/ranking3.h"		// ランキング3
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン

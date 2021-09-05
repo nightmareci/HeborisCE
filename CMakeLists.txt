@@ -17,20 +17,27 @@ set(EXE_SOURCES
 	src/game/prototypes.h
 	src/game/gamedef.h
 	src/game/gamestart.h
-	src/game/gamestart.c
-	src/game/inireader_heboris_ini.inc
-	src/game/inireader.c
-	src/game/readini.c
 	src/game/heboris_ini.h
+	src/game/speed.h
+
+	src/game/inireader_heboris_ini.inc
 	src/game/heboris.ini
 	src/game/heboris_user.ini
 
+	src/game/gamestart.c
+	src/game/inireader.c
+	src/game/readini.c
+	src/game/speed.c
+
 	src/main_sdl/include.h
-	src/main_sdl/main.c
 	src/main_sdl/ygs2kfunc.h
-	src/main_sdl/ygs2kfunc.c
 	src/main_sdl/SDL_kanji.h
+
+	src/main_sdl/main.c
+	src/main_sdl/ygs2kfunc.c
 	src/main_sdl/SDL_kanji.c
+
+	src/script/include.h
 
 	src/script/mission_info.h
 	src/script/flexdraw.h
@@ -54,6 +61,29 @@ set(EXE_SOURCES
 	src/script/grade.h
 	src/script/ranking2.h
 	src/script/ranking3.h
+
+	src/script/mission_info.c
+	src/script/flexdraw.c
+	src/script/config.c
+	src/script/world.c
+	src/script/classic.c
+	src/script/ars.c
+	src/script/classic_D.c
+	src/script/effect.c
+	src/script/sound.c
+	src/script/practice.c
+	src/script/tomoyo.c
+	src/script/ranking.c
+	src/script/readdef.c
+	src/script/replay.c
+	src/script/staffroll.c
+	src/script/cpu.c
+	src/script/sectime.c
+	src/script/mission.c
+	src/script/view.c
+	src/script/grade.c
+	src/script/ranking2.c
+	src/script/ranking3.c
 )
 add_executable(${EXE} ${EXE_SOURCES})
 

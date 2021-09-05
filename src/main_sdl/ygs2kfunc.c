@@ -1,4 +1,4 @@
-#include "include.h"
+#include "main_sdl/include.h"
 #include "prototypes.h"
 #include "gamedef.h"
 #include "SDL_kanji.h"

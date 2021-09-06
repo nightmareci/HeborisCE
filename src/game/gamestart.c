@@ -15025,17 +15025,25 @@ void initialize(void) {
 
 	TextLayerOn(1, 10, 220);
 	TextOut(1, version);
+	for ( int i = 1 ; i <= 5 ; i ++ )
+	{
+		TextBlt(i);
+	}
 	halt;
 
 
 	//
 	//TextLayerOn(2, 10, 75);
-    //TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
+	//TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
 	//halt;
 
 
 	TextLayerOn(3, 10, 10);
 	TextOut(3, "Config Loading");
+	for ( int i = 1 ; i <= 5 ; i ++ )
+	{
+		TextBlt(i);
+	}
 	halt;
 
 	if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -15065,6 +15073,10 @@ void initialize(void) {
 	// グラフィック読み込み
 	TextLayerOn(4, 10, 23);
 	TextOut(4, "Graphics Loading");
+	for ( int i = 1 ; i <= 5 ; i ++ )
+	{
+		TextBlt(i);
+	}
 	ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 	halt;
 	loadGraphics(maxPlay);
@@ -15073,6 +15085,10 @@ void initialize(void) {
 	if(se) {
 		TextLayerOn(1, 10, 36);
 		TextOut(1, "Sound Effect Loading");
+		for ( int i = 1 ; i <= 5 ; i ++ )
+		{
+			TextBlt(i);
+		}
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
 		loadWaves();	// #1.60c7o5
@@ -15084,6 +15100,10 @@ void initialize(void) {
 	if(bgm) {
 		TextLayerOn(5, 10, 49);
 		TextOut(5, "BGM Loading");
+		for ( int i = 1 ; i <= 5 ; i ++ )
+		{
+			TextBlt(i);
+		}
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
 

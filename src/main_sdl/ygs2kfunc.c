@@ -299,7 +299,7 @@ void YGS2kExit()
 			s_pYGSTexture[i] = NULL;
 		}
 	}
-	if (s_pScreenRenderer ) {
+	if ( s_pScreenRenderer ) {
 		SDL_DestroyRenderer( s_pScreenRenderer );
 		s_pScreenRenderer = NULL;
 	}
@@ -336,17 +336,13 @@ void YGS2kExit()
 
 bool YGS2kHalt()
 {
+	SDL_RenderFlush( s_pScreenRenderer );
+
 	SDL_Event	ev;
 	const Uint64	frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
 	bool		renderClear = false;
 	if ( s_bBltAlways )
 	{
-		/* テキストレイヤーの描画 */
-		for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
-		{
-			TextBlt(i);
-		}
-
 		/* バックサーフェスをフロントに転送 */
 		SDL_RenderPresent( s_pScreenRenderer );
 
@@ -364,12 +360,6 @@ bool YGS2kHalt()
 	{
 		if ( s_uTimeAccumulatorCount < frameTimeCount )
 		{
-			/* テキストレイヤーの描画 */
-			for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
-			{
-				TextBlt(i);
-			}
-
 			/* バックサーフェスをフロントに転送 */
 			SDL_RenderPresent( s_pScreenRenderer );
 
@@ -399,12 +389,6 @@ bool YGS2kHalt()
 
 	s_uTimeCount = SDL_GetPerformanceCounter();
 
-	if ( renderClear )
-	{
-		/* 画面塗りつぶし */
-		SDL_RenderClear( s_pScreenRenderer );
-	}
-
 	/* イベント処理 */
 	while(SDL_PollEvent(&ev))
 	{
@@ -424,6 +408,12 @@ bool YGS2kHalt()
 			default:
 				break;
 		}
+	}
+
+	if ( renderClear )
+	{
+		/* 画面塗りつぶし */
+		SDL_RenderClear( s_pScreenRenderer );
 	}
 
 	/* 画面ずらし量の反映 */

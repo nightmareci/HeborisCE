@@ -11,6 +11,7 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
+	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
 
 	/* サウンドの初期化 */
 	Mix_Init(

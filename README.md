@@ -1,15 +1,13 @@
 ### Heboris C7EX - unofficial version (YGS2K EX)
 
-This version contains the source code for Heboris C7EX. It requires SDL 2.0, SDL
-2.0 mixer, and SDL 2.0 image libraries to play. Many additional changes have
-been made as well, like converting all text to UTF-8 (except for in-game
-Japanese text strings for mission mode, the game's code requires that still be
-Shift-JIS.)
+This version contains the source code for Heboris C7EX. It requires a C
+compiler, SDL 2.0, SDL 2.0 mixer, and SDL 2.0 image libraries to build and
+play.
 
 Example dependencies on Ubuntu:
 
 ```
-apt-get install cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
+apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
 ```
 
 #### Installation
@@ -22,25 +20,42 @@ cmake --build build
 ./build/heboris
 ```
 
-Requires a C compiler and SDL 2.0 development libraries.
-
 #### Changes
 
- - Added support for joystick HATs.
-    - Fixed a problem where the music faded out to silence and then went into
-      the staff roll and you couldn't hear the ending song. (Prepare the audio
-      files yourself.)
-
+ - Port to use SDL 2.0 and (probably) work on all SDL 2.0-supported platforms.
+ - Change to a CMake build system.
+ - Convert all source code from C++ to C.
+ - Convert source code to UTF-8, so the Japanese comments are easy to work with
+   on modern systems. Text strings used in-game remain Shift-JIS, though.
+ - Move the script sources from merely being included in gamestart.c, out to
+   being individually compiled. Massively improves compile time on multi-core,
+   bad-single-threaded-performance systems.
+ - Implement full support for configuration of all game inputs, for both
+   keyboard and joystick input.
+ - Implement advanced joystick input, allowing any mapping of joystick inputs
+   to game inputs.
+ - Convert to exclusively use built-in SDL 2.0 features, like SDL_render for
+   hardware-accelerated graphics.
+ - Implement comprehensive display mode settings. Vsync is included in this.
+   Also includes scaling to fill the display, with a correct 4:3 aspect ratio
+   viewport.
+ - Revise how save data is managed, guaranteeing the format is identical across
+   all platforms.
+ - Fix the "low detail" 320x240 graphics setting.
+ - Implement guaranteed-long-term-correct frame timing; part of that system is
+   efficiently timed screen updates, only when appropriate.
 
 #### Todo
 
-This repository will be maintained for bug fixes and ports, but no major changes
-will be made to the actual game's functionality for the most part. Some simple
-fixes and changes may be added, and will be listed in this section if so.
+This repository will be maintained for bug fixes and ports, but no major
+changes will be made to the actual game's functionality for the most part. Some
+simple fixes and changes may be added, and will be listed in this section if
+so.
 
- - Save 40L player data state, or allow a custom setting to be saved and used by default.
- - Allow traditional TGM style scoring. Heboris inflates the scoring to compensate for
-   B2B bonuses.
+ - Save 40L player data state, or allow a custom setting to be saved and used
+   by default.
+ - Allow traditional TGM style scoring. Heboris inflates the scoring to
+   compensate for B2B bonuses.
  - Allow different key configurations for the menu vs. the gameplay.
  - Any other minor bugs/errors I can find.
 

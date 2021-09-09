@@ -27,7 +27,7 @@ typedef struct {
 
 	int32_t	fontsize;
 
-	JoyKey	joykeyAssign[10 * 2];
+	SJoyKey	joykeyAssign[10 * 2];
 
 	SDL_Scancode	holdkey[2];
 

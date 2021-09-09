@@ -43,7 +43,7 @@ int32_t	lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.6
 int32_t keyAssign[10 * 2];	// キーボード設定 (↑↓←→ABCD)
 
 // →pauseとgiveupを追加 1.60c7g7
-JoyKey	joykeyAssign[10 * 2];	// ジョイスティックボタン割り当て
+SJoyKey	joykeyAssign[10 * 2];	// ジョイスティックボタン割り当て
 
 int32_t	restart;		// 再起動フラグ
 
@@ -110,7 +110,7 @@ int32_t SaveConfig(void) {
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
-			JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
+			SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 			plbuf[0] = pljoy->device;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
@@ -210,13 +210,13 @@ int32_t LoadConfig(void) {
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
-			JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
+			SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
 			pljoy->device = plbuf[0];
 			for (int32_t i = 0; i < 4; i++) {
 				pljoy->guid.data[i] = plbuf[1 + i];
 			}
-			pljoy->type = (JoyKeyType)plbuf[5];
+			pljoy->type = (EJoyKeyType)plbuf[5];
 			switch (pljoy->type) {
 			case JOYKEY_AXIS:
 			case JOYKEY_HAT:
@@ -308,7 +308,7 @@ void ConfigMenu() {
 	int32_t *joykeybuf = &ncfg[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		int32_t *plbuf = &joykeybuf[pl * 10 * 8];
-		JoyKey *pljoy = &joykeyAssign[pl * 10];
+		SJoyKey *pljoy = &joykeyAssign[pl * 10];
 		plbuf[0] = pljoy->device;
 		for (int32_t i = 0; i < 4; i++) {
 			plbuf[1 + i] = pljoy->guid.data[i];
@@ -1048,7 +1048,7 @@ void ConfigMenu() {
 
 				j = 80 + pl * 10 * 8;
 				for(i = 0; i < statc[0]; i++) {
-					switch((JoyKeyType)ncfg[j+5+i*8])
+					switch((EJoyKeyType)ncfg[j+5+i*8])
 					{
 					case JOYKEY_AXIS:
 						snprintf(string[0], 512u, "JOY %2d: AXIS %2d %c", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
@@ -1065,7 +1065,7 @@ void ConfigMenu() {
 
 				if(statc[0] < 10) {
 					printFont(13, 6 + statc[0], "_", digitc[rots[0]] * (count % 2));
-					JoyKey pushKey;
+					SJoyKey pushKey;
 					bool pushed = false;
 					for (int32_t i = 0; i < GetMaxJoyPad(); i++)
 					{
@@ -1164,13 +1164,13 @@ void ConfigMenu() {
 				//	if(getPushState(pl, 1)) {
 						PlaySE(10);
 						for (int32_t key = 0; key < 10; key++) {
-							JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
+							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
 							pljoy->device = plcfg[0];
 							for (int32_t i = 0; i < 4; i++) {
 								pljoy->guid.data[i] = plcfg[1 + i];
 							}
-							pljoy->type = (JoyKeyType)plcfg[5];
+							pljoy->type = (EJoyKeyType)plcfg[5];
 							switch (pljoy->type) {
 							case JOYKEY_AXIS:
 							case JOYKEY_HAT:
@@ -1192,7 +1192,7 @@ void ConfigMenu() {
 						PlaySE(5);
 						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-							JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
+							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 							plcfg[0] = pljoy->device;
 							for (int32_t i = 0; i < 4; i++) {
 								plcfg[1 + i] = pljoy->guid.data[i];
@@ -1217,7 +1217,7 @@ void ConfigMenu() {
 						PlaySE(5);
 						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-							JoyKey *pljoy = &joykeyAssign[pl * 10 + key];
+							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
 							plcfg[0] = pljoy->device;
 							for (int32_t i = 0; i < 4; i++) {
 								plcfg[1 + i] = pljoy->guid.data[i];
@@ -1244,7 +1244,7 @@ void ConfigMenu() {
 				if( IsPushEndKey()) {
 					PlaySE(5);
 					int32_t *plcfg = &ncfg[80 + pl * 10 * 8];
-					JoyKey *pljoy = &joykeyAssign[pl * 10];
+					SJoyKey *pljoy = &joykeyAssign[pl * 10];
 					plcfg[0] = pljoy->device;
 					for (int32_t i = 0; i < 4; i++) {
 						plcfg[1 + i] = pljoy->guid.data[i];
@@ -1385,9 +1385,9 @@ void ConfigMenu() {
 						{
 							sprintf(string[0],"??");
 						}
-						JoyKey* const key = &joykeyAssign[i + pl * 10];
-						JoyPadGUID zeroGUID = { 0 };
-						if (memcmp(&key->guid, &zeroGUID, sizeof(JoyPadGUID)) != 0)
+						SJoyKey* const key = &joykeyAssign[i + pl * 10];
+						SJoyPadGUID zeroGUID = { 0 };
+						if (memcmp(&key->guid, &zeroGUID, sizeof(SJoyPadGUID)) != 0)
 						{
 							switch(key->type) {
 							case JOYKEY_AXIS:

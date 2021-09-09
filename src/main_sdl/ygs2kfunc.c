@@ -443,11 +443,11 @@ int IsPressKey ( int key )
 	return s_iKeyRepeat[key] != 0 ? 1 : 0;
 }
 
-int IsPushJoyKey ( const JoyKey* const key )
+int IsPushJoyKey ( const SJoyKey* const key )
 {
-	JoyPadGUID guid = GetJoyPadGUID(key->device);
-	JoyPadGUID zeroGUID = { 0 };
-	if (memcmp(&guid, &zeroGUID, sizeof(JoyPadGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(JoyPadGUID)) != 0) return 0;
+	SJoyPadGUID guid = GetJoyPadGUID(key->device);
+	SJoyPadGUID zeroGUID = { 0 };
+	if (memcmp(&guid, &zeroGUID, sizeof(SJoyPadGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(SJoyPadGUID)) != 0) return 0;
 	switch(key->type)
 	{
 	case JOYKEY_AXIS:
@@ -483,13 +483,13 @@ int IsPushJoyKey ( const JoyKey* const key )
 	return 0;
 }
 
-int IsPressJoyKey ( const JoyKey* const key )
+int IsPressJoyKey ( const SJoyKey* const key )
 {
 	if (key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
 
 	int pressed = 0;
-	JoyPadGUID checkGUID = GetJoyPadGUID(key->device);
-	if (memcmp(&key->guid, &checkGUID, sizeof(JoyPadGUID)) == 0) {
+	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
+	if (memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
 		SDL_Joystick* const joy = s_pJoyPads[key->device];
 		if (SDL_JoystickGetAttached(joy)) {
 			switch (key->type) {
@@ -544,10 +544,10 @@ int IsPushEndKey()
 	return IsPushKey(SDL_GetScancodeFromKey(SDLK_END));
 }
 
-JoyPadGUID GetJoyPadGUID( int device ) {
-	JoyPadGUID zeroGUID = { 0 };
+SJoyPadGUID GetJoyPadGUID( int device ) {
+	SJoyPadGUID zeroGUID = { 0 };
 	if (device >= s_iJoyPadMax) return zeroGUID;
-	JoyPadGUID joyPadGUID;
+	SJoyPadGUID joyPadGUID;
 	SDL_JoystickGUID sdlGUID = SDL_JoystickGetGUID( s_pJoyPads[device] );
 	for (int32_t i = 0; i < 4; i++) {
 		joyPadGUID.data[i] = 0;
@@ -613,7 +613,7 @@ void KeyInput()
 		}
 	}
 
-	JoyKey key;
+	SJoyKey key;
 	for ( int i = 0 ; i < s_iJoyPadMax ; i ++ )
 	{
 		key.device = i;
@@ -786,8 +786,8 @@ void PauseWave ( int no )
 
 void SetVolumeWave( int no, int vol )
 {
-	int		volume = (vol + 10000) * 127 / 10000;
-	if ( volume > 127 ) { volume = 127; }
+	int		volume = (vol + 10000) * MIX_MAX_VOLUME / 10000;
+	if ( volume > MIX_MAX_VOLUME ) { volume = MIX_MAX_VOLUME; }
 	if ( volume < 0 )   { volume = 0; }
 	s_iYGSSoundVolume[no] = volume;
 
@@ -843,13 +843,13 @@ void LoadWave( const char* filename, int no )
 	{
 		s_pYGSExMusic[no] = Mix_LoadMUS(filename);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_MUS;
-		s_iYGSSoundVolume[no] = 127;
+		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
 	}
 	else
 	{
 		s_pYGSSound[no] = Mix_LoadWAV(filename);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_WAV;
-		s_iYGSSoundVolume[no] = 127;
+		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
 	}
 }
 
@@ -877,13 +877,8 @@ void LoadBitmap( const char* filename, int plane, int val )
 		s_pYGSTexture[plane] = NULL;
 	}
 
-	SDL_Surface		*surface	= IMG_Load(filename);
-	if ( surface != NULL )
-	{
-		s_pYGSTexture[plane] = SDL_CreateTextureFromSurface(s_pScreenRenderer, surface);
-		SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
-		SDL_FreeSurface(surface);
-	}
+	s_pYGSTexture[plane] = IMG_LoadTexture(s_pScreenRenderer, filename);
+	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
 void PlayMIDI()

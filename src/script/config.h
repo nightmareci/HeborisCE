@@ -9,7 +9,7 @@ void ConfigMenu();
 int32_t LoadConfig(void);
 int32_t SaveConfig(void);
 extern int32_t restart;
-extern JoyKey joykeyAssign[10 *2];
+extern SJoyKey joykeyAssign[10 *2];
 extern int32_t keyAssign[10 *2];
 extern int32_t lvupbonus;
 extern int32_t downtype;

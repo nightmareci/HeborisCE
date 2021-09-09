@@ -21,30 +21,30 @@ int IsPlayMIDI();
 
 typedef struct {
 	int32_t data[4];
-} JoyPadGUID;
+} SJoyPadGUID;
 
 typedef enum {
 	JOYKEY_AXIS,
 	JOYKEY_HAT,
 	JOYKEY_BUTTON
-} JoyKeyType;
+} EJoyKeyType;
 
 typedef union {
 	struct { int index, value; };
 	int button;
-} JoyKeySetting;
+} SJoyKeySetting;
 
 typedef struct {
 	int device;
-        JoyPadGUID guid;
-	JoyKeyType type;
-	JoyKeySetting setting;
-} JoyKey;
+        SJoyPadGUID guid;
+	EJoyKeyType type;
+	SJoyKeySetting setting;
+} SJoyKey;
 
 int IsPushKey ( int key );
 int IsPressKey ( int key );
-int IsPushJoyKey ( const JoyKey* const key );
-int IsPressJoyKey ( const JoyKey* const key );
+int IsPushJoyKey ( const SJoyKey* const key );
+int IsPressJoyKey ( const SJoyKey* const key );
 int IsPushReturnKey();
 int IsPushDeleteKey();
 int IsPushBSKey();
@@ -52,7 +52,7 @@ int IsPushEscKey();
 int IsPushEndKey();
 int GetMaxKey();
 int GetMaxJoyPad();
-JoyPadGUID GetJoyPadGUID( int device );
+SJoyPadGUID GetJoyPadGUID( int device );
 int GetMaxJoyAxis( int device );
 int GetMaxJoyHat( int device );
 int GetMaxJoyButton( int device );

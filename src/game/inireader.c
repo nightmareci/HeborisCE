@@ -231,16 +231,15 @@ void LoadIniFile(const char *filename)
 	s_bInCommentBlock = false;
 	s_bValueRead = false;
 
-	FILE	*file = fopen(filename, "rb");
+	SDL_RWops	*file = SDL_RWFromFile(filename, "rb");
 	if ( file != NULL )
 	{
 		char	buf[INIREAD_READBUFFER_MAX];
-		while ( !feof(file) )
+		size_t readsize;
+		while ( (readsize = SDL_RWread(file, buf, 1, sizeof(buf)) ) )
 		{
-			int32_t readsize = 0;
-			readsize = fread(buf, 1, INIREAD_READBUFFER_MAX, file);
 			IniReadProcess(buf, readsize);
 		}
-		fclose(file);
+		SDL_RWclose(file);
 	}
 }

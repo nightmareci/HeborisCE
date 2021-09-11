@@ -12,7 +12,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 	add_definitions(-DLINUX)
 endif()
 
-set(EXE heboris)
+set(EXE HeborisC7EX-SDL2)
 set(EXE_SOURCES
 	src/game/prototypes.h
 	src/game/gamedef.h
@@ -85,27 +85,43 @@ set(EXE_SOURCES
 	src/script/ranking2.c
 	src/script/ranking3.c
 )
-add_executable(${EXE} ${EXE_SOURCES})
 
-target_include_directories(${EXE} PRIVATE src src/game src/main_sdl)
-
-file(MAKE_DIRECTORY replay config/data)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
+option(LOAD_FROM_SOURCE_DIR "Load resources from the source directory" OFF)
+if(LOAD_FROM_SOURCE_DIR)
+	add_definitions(-DBASE_PATH="${CMAKE_SOURCE_DIR}/")
+endif()
 
 find_package(PkgConfig)
-function(target_pkg_config_import TARGET DEPENDENCY)
-	string(TOUPPER ${DEPENDENCY} DEPENDENCY_VARIABLE)
-	pkg_check_modules(${DEPENDENCY_VARIABLE} REQUIRED ${DEPENDENCY})
-	target_compile_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_CFLAGS}")
-	target_compile_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_CFLAGS_OTHER}")
-	target_include_directories(${TARGET} SYSTEM PRIVATE "${${DEPENDENCY_VARIABLE}_INCLUDE_DIRS}")
-	target_link_directories(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LIBRARY_DIRS}")
-	target_link_libraries(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LIBRARIES}")
-	target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS}")
-	target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS_OTHER}")
-endfunction()
 if(PKG_CONFIG_FOUND)
+	function(target_pkg_config_import TARGET DEPENDENCY)
+		string(TOUPPER ${DEPENDENCY} DEPENDENCY_VARIABLE)
+		pkg_check_modules(${DEPENDENCY_VARIABLE} REQUIRED ${DEPENDENCY})
+		target_compile_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_CFLAGS}")
+		target_compile_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_CFLAGS_OTHER}")
+		target_include_directories(${TARGET} SYSTEM PRIVATE "${${DEPENDENCY_VARIABLE}_INCLUDE_DIRS}")
+		target_link_directories(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LIBRARY_DIRS}")
+		target_link_libraries(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LIBRARIES}")
+		target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS}")
+		target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS_OTHER}")
+	endfunction()
+
+	option(BUILD_MACOS_BUNDLE "Build as a macOS application bundle" OFF)
+	if(BUILD_MACOS_BUNDLE)
+		set(BUNDLE_IDENTIFIER "com.github.nightmareci.${EXE}")
+		add_executable(${EXE} MACOSX_BUNDLE "pkg/macos/${EXE}.icns" ${EXE_SOURCES})
+		set_source_files_properties("pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+		set(SDL_FILESYSTEM_BASE_DIR_TYPE parent)
+		set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
+		set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
+		set(MACOSX_BUNDLE_ICON_FILE ${EXE})
+		set_target_properties(${EXE} PROPERTIES
+			BUNDLE True
+			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/pkg/macos/MacOSXBundleInfo.plist.in"
+		)
+	else()
+		add_executable(${EXE} ${EXE_SOURCES})
+	endif()
+
 	target_link_libraries(${EXE} PRIVATE
 		m
 		${CMAKE_DL_LIBS}
@@ -130,3 +146,9 @@ else()
 			SDL2::SDL2_mixer
 	)
 endif()
+
+target_include_directories(${EXE} PRIVATE src src/game src/main_sdl)
+
+file(MAKE_DIRECTORY replay config/data)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")

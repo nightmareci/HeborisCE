@@ -83,6 +83,8 @@ void EnableBlendColorKey(int plane, int key);
 void CreateSurface(int surf, int w, int h);
 void ClearSecondary();
 void SetFillColor(int col);
+char* AllocFilenameWithBasePath( const char* filename );
+const char* GetBasePath();
 void LoadFile( const char* filename, void* buf, int size );
 void SaveFile( const char* filename, void* buf, int size );
 void TextLayerOn ( int layer, int x, int y );

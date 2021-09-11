@@ -10,14 +10,14 @@ Example dependencies on Ubuntu:
 apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
 ```
 
-#### Installation
+#### Download, Build, and Run
 
 ```
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DLOAD_FROM_SOURCE_DIR=1
 cmake --build build
-./build/heboris
+./build/HeborisC7EX-SDL2
 ```
 
 #### Changes

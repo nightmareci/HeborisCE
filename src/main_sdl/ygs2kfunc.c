@@ -36,6 +36,7 @@ enum
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 
+static char			*s_pBasePath;
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
 static int			s_iKeyRepeat[YGS_KEYREPEAT_MAX];
@@ -81,6 +82,12 @@ bool YGS2kInit()
 
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
+
+	#ifdef BASE_PATH
+	s_pBasePath = SDL_strdup(BASE_PATH);
+	#else
+	if (!(s_pBasePath = SDL_GetBasePath())) s_pBasePath = SDL_strdup("./");
+	#endif
 
 	/* CONFIG.SAVより設定をロード */
 	if ( LoadConfig() )
@@ -332,6 +339,8 @@ void YGS2kExit()
 		Mix_FreeMusic(s_pYGSMusic);
 		s_pYGSMusic = NULL;
 	}
+
+	SDL_free(s_pBasePath);
 }
 
 bool YGS2kHalt()
@@ -838,19 +847,21 @@ void LoadWave( const char* filename, int no )
 
 	s_iYGSSoundType[no] = YGS_SOUNDTYPE_NONE;
 
+	char *basePathFilename = AllocFilenameWithBasePath(filename);
 	// 拡張子、または番号(50番以降がBGM)によって読み込み方法を変える
 	if ( strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
 	{
-		s_pYGSExMusic[no] = Mix_LoadMUS(filename);
+		s_pYGSExMusic[no] = Mix_LoadMUS(basePathFilename);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_MUS;
 		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
 	}
 	else
 	{
-		s_pYGSSound[no] = Mix_LoadWAV(filename);
+		s_pYGSSound[no] = Mix_LoadWAV(basePathFilename);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_WAV;
 		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
 	}
+	free(basePathFilename);
 }
 
 void SetLoopModeWave( int no, int mode )
@@ -866,7 +877,9 @@ void LoadMIDI( const char* filename )
 		s_pYGSMusic = NULL;
 	}
 
-	s_pYGSMusic = Mix_LoadMUS(filename);
+	char *basePathFilename = AllocFilenameWithBasePath(filename);
+	s_pYGSMusic = Mix_LoadMUS(basePathFilename);
+	free(basePathFilename);
 }
 
 void LoadBitmap( const char* filename, int plane, int val )
@@ -877,7 +890,9 @@ void LoadBitmap( const char* filename, int plane, int val )
 		s_pYGSTexture[plane] = NULL;
 	}
 
-	s_pYGSTexture[plane] = IMG_LoadTexture(s_pScreenRenderer, filename);
+	char *basePathFilename = AllocFilenameWithBasePath(filename);
+	s_pYGSTexture[plane] = IMG_LoadTexture(s_pScreenRenderer, basePathFilename);
+	free(basePathFilename);
 	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
@@ -916,14 +931,29 @@ void SetFillColor(int col)
 
 }
 
+char* AllocFilenameWithBasePath(const char* filename) {
+	size_t pathSize = strlen(s_pBasePath) + strlen(filename) + 1;
+	char* path = malloc(pathSize);
+	path[0] = '\0';
+	strcat(path, s_pBasePath);
+	strcat(path, filename);
+	return path;
+}
+
+const char* GetBasePath() {
+	return s_pBasePath;
+}
+
 void LoadFile( const char* filename, void* buf, int size )
 {
-	FILE	*file;
-	file = fopen(filename, "rb");
+	char *basePathFilename = AllocFilenameWithBasePath(filename);
+	SDL_RWops	*file = SDL_RWFromFile(basePathFilename, "rb");
+	free(basePathFilename);
+
 	if ( file )
 	{
-		fread(buf, 1, size, file);
-		fclose(file);
+		SDL_RWread(file, buf, 1, size);
+		SDL_RWclose(file);
 
 		int32_t		i, *buf2;
 
@@ -938,7 +968,6 @@ void LoadFile( const char* filename, void* buf, int size )
 
 void SaveFile( const char* filename, void* buf, int size )
 {
-	FILE	*file;
 	int32_t		i, *buf2;
 
 	/* エンディアン変換 */
@@ -948,11 +977,14 @@ void SaveFile( const char* filename, void* buf, int size )
 		buf2[i] = SWAP32(buf2[i]);
 	}
 
-	file = fopen(filename, "wb");
+	char *basePathFilename = AllocFilenameWithBasePath(filename);
+	SDL_RWops	*file = SDL_RWFromFile(basePathFilename, "wb");
+	free(basePathFilename);
+
 	if ( file )
 	{
-		fwrite(buf, 1, size, file);
-		fclose(file);
+		SDL_RWwrite(file, buf, 1, size);
+		SDL_RWclose(file);
 	}
 
 	/* もどす */
@@ -1218,17 +1250,26 @@ void FillMemory(void* buf, int size, int val)
 
 void YGS2kKanjiFontInitialize()
 {
+	char* filename;
 	/* 10pxフォント読み込み */
-	s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj10.bdf", 10);
+	filename = AllocFilenameWithBasePath("res/font/knj10.bdf");
+	s_pKanjiFont[0] = Kanji_OpenFont(filename, 10);
+	free(filename);
 	if ( s_pKanjiFont[0] )
 	{
-		Kanji_AddFont(s_pKanjiFont[0], "res/font/5x10a.bdf");
+		filename = AllocFilenameWithBasePath("res/font/5x10a.bdf");
+		Kanji_AddFont(s_pKanjiFont[0], filename);
+		free(filename);
 	}
 	else
 	{
 		/* フォントがない場合代替を使う */
-		s_pKanjiFont[0] = Kanji_OpenFont("res/font/knj12.bdf", 10);
-		Kanji_AddFont(s_pKanjiFont[0], "res/font/6x12a.bdf");
+		filename = AllocFilenameWithBasePath("res/font/knj12.bdf");
+		s_pKanjiFont[0] = Kanji_OpenFont(filename, 10);
+		free(filename);
+		filename = AllocFilenameWithBasePath("res/font/6x12a.bdf");
+		Kanji_AddFont(s_pKanjiFont[0], filename);
+		free(filename);
 	}
 
 	if ( s_pKanjiFont[0] )
@@ -1237,18 +1278,26 @@ void YGS2kKanjiFontInitialize()
 	}
 
 	/* 12pxフォント読み込み */
-	s_pKanjiFont[1] = Kanji_OpenFont("res/font/knj12.bdf", 12);
+	filename = AllocFilenameWithBasePath("res/font/knj12.bdf");
+	s_pKanjiFont[1] = Kanji_OpenFont(filename, 12);
+	free(filename);
 	if ( s_pKanjiFont[1] )
 	{
-		Kanji_AddFont(s_pKanjiFont[1], "res/font/6x12a.bdf");
+		filename = AllocFilenameWithBasePath("res/font/6x12a.bdf");
+		Kanji_AddFont(s_pKanjiFont[1], filename);
+		free(filename);
 		Kanji_SetCodingSystem(s_pKanjiFont[1], KANJI_SJIS);
 	}
 
 	/* 16pxフォント読み込み */
-	s_pKanjiFont[2] = Kanji_OpenFont("res/font/knj16.bdf", 16);
+	filename = AllocFilenameWithBasePath("res/font/knj16.bdf");
+	s_pKanjiFont[2] = Kanji_OpenFont(filename, 16);
+	free(filename);
 	if ( s_pKanjiFont[2] )
 	{
-		Kanji_AddFont(s_pKanjiFont[2], "res/font/8x16a.bdf");
+		filename = AllocFilenameWithBasePath("res/font/8x16a.bdf");
+		Kanji_AddFont(s_pKanjiFont[2], filename);
+		free(filename);
 		Kanji_SetCodingSystem(s_pKanjiFont[2], KANJI_SJIS);
 	}
 }

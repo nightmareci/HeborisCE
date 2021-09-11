@@ -92,7 +92,7 @@ int Kanji_AddFont(Kanji_Font* font, const char* file) {
 
 	fp = fopen(file, "r");
 	if(fp==NULL){
-		fprintf(stderr, "cant open [%s]¥n", file);
+		fprintf(stderr, "cant open [%s]\n", file);
 		return -1;
 	}
 
@@ -449,7 +449,7 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text,
 	textbuf = SDL_CreateRGBSurface(0, font->a_size*len, font->k_size,
 							   bpp, 0, 0, 0, 0);
 	if (textbuf == NULL) {
-		fprintf(stderr,"ERROR: at Kanji_RenderText¥n");
+		fprintf(stderr,"ERROR: at Kanji_RenderText\n");
 		return NULL;
 	}
 	bgcol = SDL_MapRGB(textbuf->format, 255-fg.r, 255-fg.g, 255-fg.b);
@@ -475,7 +475,7 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text,
 	textbuf = SDL_CreateRGBSurface(0, font->k_size, font->a_size*len,
 							   bpp, 0, 0, 0, 0);
 	if (textbuf == NULL) {
-		fprintf(stderr,"ERROR: at Kanji_RenderText¥n");
+		fprintf(stderr,"ERROR: at Kanji_RenderText\n");
 		return NULL;
 	}
 

@@ -37,6 +37,7 @@ static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 
 static char			*s_pBasePath;
+static char			*s_pPrefPath;
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
 static int			s_iKeyRepeat[YGS_KEYREPEAT_MAX];
@@ -83,10 +84,20 @@ bool YGS2kInit()
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
 
-	#ifdef BASE_PATH
-	s_pBasePath = SDL_strdup(BASE_PATH);
+	#if defined(PACKAGETYPE_INSTALLABLE) || defined(PACKAGETYPE_PORTABLE)
+	if (!(s_pBasePath = SDL_GetBasePath())) {
+		return false;
+	}
 	#else
-	if (!(s_pBasePath = SDL_GetBasePath())) s_pBasePath = SDL_strdup("./");
+	s_pBasePath = SDL_strdup("./");
+	#endif
+
+	#ifdef PACKAGETYPE_INSTALLABLE
+	if (!(s_pPrefPath = SDL_GetPrefPath("nightmareci", "HeborisC7EX SDL2"))) {
+		return false;
+	}
+	#else
+	s_pPrefPath = SDL_strdup(s_pBasePath);
 	#endif
 
 	/* CONFIG.SAVより設定をロード */
@@ -340,6 +351,7 @@ void YGS2kExit()
 		s_pYGSMusic = NULL;
 	}
 
+	SDL_free(s_pPrefPath);
 	SDL_free(s_pBasePath);
 }
 

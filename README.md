@@ -4,25 +4,31 @@ This version contains the source code for Heboris C7EX. It requires a C
 compiler, SDL 2.0, SDL 2.0 mixer, and SDL 2.0 image libraries to build and
 play.
 
-Example dependencies on Ubuntu:
+Example of installing dependencies on Ubuntu:
 
-```
-apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
+If using Git to get the source code, rather than downloading a zip of it from GitHub:
+```sh
+sudo apt-get install git
 ```
 
-#### Download, Build, and Run
-
+Building dependencies:
+```sh
+sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
 ```
+
+#### Download, Build, and Run Without Installing
+
+```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DLOAD_FROM_SOURCE_DIR=1
+cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/HeborisC7EX-SDL2
 ```
 
 #### Changes
 
- - Port to use SDL 2.0 and (probably) work on all SDL 2.0-supported platforms.
+ - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported platforms.
  - Change to a CMake build system.
  - Convert all source code from C++ to C.
  - Convert source code to UTF-8, so the Japanese comments are easy to work with
@@ -34,7 +40,7 @@ cmake --build build
    keyboard and joystick input.
  - Implement advanced joystick input, allowing any mapping of joystick inputs
    to game inputs.
- - Convert to exclusively use built-in SDL 2.0 features, like SDL_render for
+ - Convert to exclusively use fully cross-platform APIs, like SDL_render for
    hardware-accelerated graphics.
  - Implement comprehensive display mode settings. Vsync is included in this.
    Also includes scaling to fill the display, with a correct 4:3 aspect ratio
@@ -52,12 +58,21 @@ changes will be made to the actual game's functionality for the most part. Some
 simple fixes and changes may be added, and will be listed in this section if
 so.
 
+ - Implement automated packaging of builds. At least support Windows, macOS, and
+   desktop Linux.
  - Save 40L player data state, or allow a custom setting to be saved and used
    by default.
  - Allow traditional TGM style scoring. Heboris inflates the scoring to
    compensate for B2B bonuses.
- - Allow different key configurations for the menu vs. the gameplay.
+ - Put all configuration options into in-game menus.
  - Any other minor bugs/errors I can find.
+
+#### Definitely Not Legal Advice
+
+This software is copyrighted to Kenji Hoshimoto, but the distribution terms are
+currently unknown. So, to be polite, only distribute it noncommercially, and
+keep the source code available, because that's basically how it's been
+distributed for its whole history.
 
 ## Heboris Overview
 
@@ -82,10 +97,10 @@ ACE-ARS2    : Same as ACE-ARS, except soft drop and hard drop.
 DS-WORLD    : SRS, you can rotate or move infinity!
               Fast drop is slower than TI-WORLD.
 SRS-X       : Original rotation rule based on SRS. But you can use Zangi-moves!
-               You can move 24 times, or rotate 12 times.
-               And C-botton is "180 degree rotarion" with original wall kicks.
+              You can move 24 times, or rotate 12 times.
+              And C-botton is "180 degree rotarion" with original wall kicks.
 D.R.S       : If you have ever played DTET,let's use this!
-               Added T and I ground kick(only once!) to it.
+              Added T and I ground kick(only once!) to it.
 
 ----------------------------------------------------
 2. Special modes
@@ -94,7 +109,7 @@ You can play these extra modes.
 
 BIG MODE
  Start BEGINNER,MASTER,20G,DEVIL, or ACE mode
-  with holding C botton.
+ with holding C botton.
  Blocks are always 2 times bigger.
 
 SCORE TRIAL in BEGINNER mode
@@ -171,5 +186,5 @@ to be changed in the in-game menu. Here is where some
 5. License
 ---------------------------------------------------
 
-(c) 1998-2002 Kenji Hosimoto
+(c) 1998-2002 Kenji Hoshimoto
 ```

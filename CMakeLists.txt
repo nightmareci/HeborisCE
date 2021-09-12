@@ -86,11 +86,7 @@ set(EXE_SOURCES
 	src/script/ranking3.c
 )
 
-option(LOAD_FROM_SOURCE_DIR "Load resources from the source directory" OFF)
-if(LOAD_FROM_SOURCE_DIR)
-	add_definitions(-DBASE_PATH="${CMAKE_SOURCE_DIR}/")
-endif()
-
+# TODO: Use PhysicsFS for file handling, since currently things will go wrong if the necessary save data directories are missing, and currently the code can't create them.
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
 	function(target_pkg_config_import TARGET DEPENDENCY)
@@ -105,19 +101,44 @@ if(PKG_CONFIG_FOUND)
 		target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS_OTHER}")
 	endfunction()
 
-	option(BUILD_MACOS_BUNDLE "Build as a macOS application bundle" OFF)
-	if(BUILD_MACOS_BUNDLE)
-		set(BUNDLE_IDENTIFIER "com.github.nightmareci.${EXE}")
-		add_executable(${EXE} MACOSX_BUNDLE "pkg/macos/${EXE}.icns" ${EXE_SOURCES})
-		set_source_files_properties("pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-		set(SDL_FILESYSTEM_BASE_DIR_TYPE parent)
-		set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
-		set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
-		set(MACOSX_BUNDLE_ICON_FILE ${EXE})
-		set_target_properties(${EXE} PROPERTIES
-			BUNDLE True
-			MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/pkg/macos/MacOSXBundleInfo.plist.in"
-		)
+	if(PACKAGE_TYPE)
+		# TODO: For macOS packaging, since CMake itself can't do everything: add_custom_command(TARGET ${EXE} POST_BUILD COMMAND ... DEPENDS ... VERBATIM)
+		if(${PACKAGE_TYPE} STREQUAL "Portable")
+			add_compile_definitions(PACKAGETYPE_PORTABLE)
+			if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+				add_executable(${EXE} MACOSX_BUNDLE "pkg/macos/${EXE}.icns" ${EXE_SOURCES})
+				set_source_files_properties("pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+				set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
+				set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
+				set(MACOSX_BUNDLE_ICON_FILE ${EXE})
+				set(SDL_FILESYSTEM_BASE_DIR_TYPE parent)
+				set_target_properties(${EXE} PROPERTIES
+					BUNDLE True
+					MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/pkg/macos/MacOSXBundleInfo.plist.in"
+				)
+			else()
+				add_executable(${EXE} ${EXE_SOURCES})
+			endif()
+		elseif(${PACKAGE_TYPE} STREQUAL "Installable")
+			# TODO: Implement logic that ensures save data goes into the proper place for Installable builds.
+			add_compile_definitions(PACKAGETYPE_INSTALLABLE)
+			if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+				add_executable(${EXE} MACOSX_BUNDLE "pkg/macos/${EXE}.icns" ${EXE_SOURCES})
+				set_source_files_properties("pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+				set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
+				set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
+				set(MACOSX_BUNDLE_ICON_FILE ${EXE})
+				set(SDL_FILESYSTEM_BASE_DIR_TYPE resource)
+				set_target_properties(${EXE} PROPERTIES
+					BUNDLE True
+					MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/pkg/macos/MacOSXBundleInfo.plist.in"
+				)
+			else()
+				add_executable(${EXE} ${EXE_SOURCES})
+			endif()
+		else()
+			message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported")
+		endif()
 	else()
 		add_executable(${EXE} ${EXE_SOURCES})
 	endif()

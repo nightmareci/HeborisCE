@@ -933,7 +933,7 @@ void statSelectLevel(int32_t player) {
 
 			if(p_stage != -1) {
 				stage[0] = p_stage;			// ステージ設定
-				stat[0] = 18;					// ステージエディタ
+				stat_[0] = 18;					// ステージエディタ
 				statc[0 * 10] = 1;				// ステータスカウンタを0に
 				statc[0 * 10 + 1] = 0;			// ステータスカウンタを0に
 				statc[0 * 10 + 2] = 9;			// 戻り先設定
@@ -956,7 +956,7 @@ void statSelectLevel(int32_t player) {
 // START!の部分だけ分離#1.60cf
 void PracticeStart(void){
 	playerInitial(1); // 2Pを初期化して結果を消去
-	stat[1] = 10; // 2Pの動きを停止
+	stat_[1] = 10; // 2Pの動きを停止
 
 	TextLayerOff(0);
 	upLines[0] = 0;
@@ -1043,7 +1043,7 @@ void PracticeStart(void){
 
 	}
 	hole[0] = gameRand(10,0);
-	stat[0] = 3;					// Ready
+	stat_[0] = 3;					// Ready
 	statc[0 * 10] = 0;				// ステータスカウンタを0に
 	statc[0 * 10 + 1] = 0;
 }
@@ -1156,8 +1156,8 @@ void PracticeOver(void) {
 	versusInit(0);					// ネクストを初期化 #1.60c7
 	playerInitial(0);				// 1Pのみ初期化
 	gameMode[0] = 5;				// VSモード
-	stat[0] = 9;					// ステータスNo.9(VSモードレベルセレクト)
-	stat[1] = 10;					// 2PはステータスNo.10(WAIT)
+	stat_[0] = 9;					// ステータスNo.9(VSモードレベルセレクト)
+	stat_[1] = 10;					// 2PはステータスNo.10(WAIT)
 	backno = p_backno;
 	flag = 0;
 

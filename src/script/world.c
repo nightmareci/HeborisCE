@@ -155,7 +155,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 		if((repversw >= 64) && (!statc[player * 10 + 6])){
 			doHold(player, 0);
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
-			if(stat[player] == 7) return;
+			if(stat_[player] == 7) return;
 		}
 
 		bs[player] = bs[player] + sp[player];
@@ -174,7 +174,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 		if(repversw < 35){
 			doHold(player, 0);
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
-			if(stat[player] == 7) return;
+			if(stat_[player] == 7) return;
 		}
 
 		// ロールロール処理 #1.60c7j5
@@ -626,7 +626,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 		if((repversw >= 35) && (repversw < 64) && (!statc[player * 10 + 2]) && (!statc[player * 10 + 6])){
 			 doHold(player, 0);
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
-			if(stat[player] == 7) return;
+			if(stat_[player] == 7) return;
 		}
 
 		statc[player * 10 + 6] = 0;
@@ -644,7 +644,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 
 		if(statc[player * 10 + 2] > 2 - (repversw >= 9)) {	// 接着時の灰色化を1フレ短縮 #1.60c7k8
 			setBlock (player, bx[player], by[player], blk[player], rt[player]);
-			if(stat[player] == 7) return;
+			if(stat_[player] == 7) return;
 
 			ndelay[player] = 1;
 
@@ -682,7 +682,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 			if((ace_irs == 2) && (repversw >= 35)) doIRS2plus(player);
 			// ブロック消去判断により1フレ短縮 #1.60c7k8
 			if ((blockEraseJudge(player)) || (repversw < 9)) {
-				stat[player] = 8;
+				stat_[player] = 8;
 				statc[player * 10] = 0;
 				statc[player * 10 + 1] = 0;
 				statc[player * 10 + 2] = 0;
@@ -693,7 +693,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 				//ステータス変更と同時に次のステータス関数を実行する事で1フレ短縮　C7V2.1
 				if(repversw >= 54) statEraseBlock(player);
 			} else {
-				stat[player] = 6;
+				stat_[player] = 6;
 				statc[player * 10] = wait1[player];
 				statc[player * 10 + 1] = 15;
 				statc[player * 10 + 2] = 0;

@@ -745,7 +745,7 @@ int32_t ReplaySelectProc(void) {
 
 		timeOn[0] = 0;
 		onRecord[0] = 0;
-		stat[0] = 1;					// ブロックシャッター実行
+		stat_[0] = 1;					// ブロックシャッター実行
 		statc[0] = 0;					// ステータスカウンタを0に
 		statc[1] = 3;					// シャッター後はステータスNo.3
 		if(examination[0])
@@ -789,7 +789,7 @@ int32_t ReplaySelectProc(void) {
 			onRecord[1] = 0;
 			hnext[1] = max_hnext[1];
 			gameMode[1] = 4;		// 2P 設定
-			stat[1] = 1;			// ブロックシャッター実行
+			stat_[1] = 1;			// ブロックシャッター実行
 			statc[0 + 10] = 0;		// ステータスカウンタを0に
 			statc[1 + 10] = 3;		// シャッター後はステータスNo.3
 			if(!tmp_maxPlay)

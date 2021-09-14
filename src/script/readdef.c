@@ -35,7 +35,7 @@ typedef struct {
 	int32_t lvup[2];
 
 	int32_t		screenMode;
-	int32_t		displayIndex;
+	int32_t		screenIndex;
 	int32_t		nextblock;
 	int32_t		smooth;
 	int32_t		nanameallow;
@@ -89,8 +89,8 @@ static const settings defsettings = {
 	.rots = {2, 1},
 	.lvup = {1, 1},
 
-	.screenMode =SCREEN_WINDOW | SCREEN_DETAIL_MASK,
-	.displayIndex =0,
+	.screenMode =SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL,
+	.screenIndex =0,
 	.nextblock =8,
 	.smooth =0,
 	.nanameallow =1,
@@ -115,7 +115,7 @@ int32_t readdef()
 	cfgbuf[3] = 0x31764750;
 
 	cfgbuf[4] = defsettings.screenMode;
-	cfgbuf[5] = defsettings.displayIndex;
+	cfgbuf[5] = defsettings.screenIndex;
 	cfgbuf[6] = defsettings.nextblock;
 	//cfgbuf[7] = defsettings.blockkind;
 	cfgbuf[8] = defsettings.smooth;

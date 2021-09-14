@@ -1,7 +1,7 @@
 #pragma once
 
-int32_t		screenMode = SCREEN_WINDOW | SCREEN_DETAILBIT;
-int32_t		displayIndex =0;
+int32_t		screenMode = SCREEN_WINDOW | SCREEN_DETAILLEVEL;
+int32_t		screenIndex = 0x00000000;
 int32_t		nextblock =7;
 int32_t		blockkind =0;
 int32_t		smooth =0;

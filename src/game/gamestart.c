@@ -15057,7 +15057,7 @@ void initialize(void) {
 	versus_rot[1] = rots[1];
 
 	// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-	if ( screenMode & SCREEN_DETAIL_MASK ) {
+	if ( screenMode & SCREENMODE_DETAILLEVEL ) {
 		setDrawRate(2);
 	} else {
 		setDrawRate(1);

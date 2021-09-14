@@ -72,7 +72,7 @@ static unsigned int		s_uNowFPS = 60;
 
 static STextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
 extern int32_t			screenMode;
-extern int32_t			displayIndex;
+extern int32_t			screenIndex;
 
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
@@ -111,41 +111,43 @@ bool YGS2kInit()
 	int		windowX, windowY;
 
 	/* 画面の設定 */
-	int32_t windowType = screenMode & SCREEN_WINDOWTYPE_MASK;
+	ScreenModeFlag windowType = screenMode & SCREENMODE_WINDOWTYPE;
+	int displayIndex = SCREENINDEX_DISPLAY_TOVALUE(screenIndex);
+	int modeIndex = SCREENINDEX_MODE_TOVALUE(screenIndex);
 	if (
 			displayIndex >= SDL_GetNumVideoDisplays() ||
-			(windowType == SCREEN_FULLSCREEN && SCREEN_GETDISPLAYMODE(screenMode) >= SDL_GetNumDisplayModes(displayIndex))
+			(windowType == SCREENMODE_FULLSCREEN && modeIndex >= SDL_GetNumDisplayModes(displayIndex))
 	) {
-		screenMode = SCREEN_WINDOW | SCREEN_DETAIL_MASK;
-		displayIndex = 0;
+		screenMode = SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL;
+		screenIndex = 0;
 		windowFlags |= SDL_WINDOW_RESIZABLE;
-		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
-		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
+		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(screenIndex);
+		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(screenIndex);
 	}
 	else
 	{
 		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
 		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
-		switch ( windowType )
+		switch ( windowType & SCREENMODE_WINDOWTYPE )
 		{
-		case SCREEN_WINDOW_MAXIMIZED:
+		case SCREENMODE_WINDOW_MAXIMIZED:
 			windowFlags |= SDL_WINDOW_MAXIMIZED;
-		case SCREEN_WINDOW:
+		case SCREENMODE_WINDOW:
 			windowFlags |= SDL_WINDOW_RESIZABLE;
 			break;
 
-		case SCREEN_FULLSCREEN_DESKTOP:
+		case SCREENMODE_FULLSCREEN_DESKTOP:
 			windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 			break;
 
-		case SCREEN_FULLSCREEN: {
+		case SCREENMODE_FULLSCREEN: {
 			windowFlags |= SDL_WINDOW_FULLSCREEN;
 			break;
 		}
 		}
 	}
 
-	if ( screenMode & SCREEN_DETAIL_MASK )
+	if ( screenMode & SCREENMODE_DETAILLEVEL )
 	{
 		logicalWidth  = 640;
 		logicalHeight = 480;
@@ -161,13 +163,13 @@ bool YGS2kInit()
 
 
 	/* ウィンドウの作成 */
-	if ( windowType == SCREEN_FULLSCREEN )
+	if ( windowType == SCREENMODE_FULLSCREEN )
 	{
 		SDL_DisplayMode displayMode;
-		if ( SDL_GetDisplayMode(displayIndex, SCREEN_GETDISPLAYMODE(screenMode), &displayMode) < 0 ) {
-			screenMode &= SCREEN_DETAIL_MASK;
-			screenMode |= SCREEN_WINDOW;
-			displayIndex = 0;
+		if ( SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0 ) {
+			screenMode &= SCREENMODE_DETAILLEVEL | SCREENMODE_INTSCALE;
+			screenMode |= SCREENMODE_WINDOW;
+			screenIndex = 0;
 			SaveConfig();
 			s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 		}
@@ -176,32 +178,32 @@ bool YGS2kInit()
 			SDL_SetWindowDisplayMode(s_pScreenWindow, &displayMode);
 		}
 	}
-	else if ( windowType == SCREEN_WINDOW )
+	else if ( windowType == SCREENMODE_WINDOW )
 	{
 		SDL_DisplayMode displayMode;
 		SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
-		int maxDisplayMode;
+		int maxScale;
 		if(displayMode.w <= logicalWidth || displayMode.h <= logicalHeight)
 		{
-			maxDisplayMode = 1;
+			maxScale = 1;
 		}
 		else if(displayMode.w > displayMode.h)
 		{
-			maxDisplayMode = (displayMode.h / logicalHeight) - (displayMode.h % logicalHeight == 0);
+			maxScale = (displayMode.h / logicalHeight) - (displayMode.h % logicalHeight == 0);
 		}
 		else
 		{
-			maxDisplayMode = (displayMode.w / logicalWidth) - (displayMode.w % logicalWidth == 0);
+			maxScale = (displayMode.w / logicalWidth) - (displayMode.w % logicalWidth == 0);
 		}
-		int maxWidth = maxDisplayMode * logicalWidth;
-		int maxHeight = maxDisplayMode * logicalHeight;
-		int displayModeIndex = SCREEN_GETDISPLAYMODE(screenMode) + 1;
-		int windowW = displayModeIndex * logicalWidth;
-		int windowH = displayModeIndex * logicalHeight;
-		if ( displayModeIndex > maxDisplayMode) {
+		int maxWidth = maxScale * logicalWidth;
+		int maxHeight = maxScale * logicalHeight;
+		int scale = modeIndex + 1;
+		int windowW = scale * logicalWidth;
+		int windowH = scale * logicalHeight;
+		if ( scale > maxScale) {
 			windowW = logicalWidth;
 			windowH = logicalHeight;
-			screenMode &= SCREEN_NOTDISPLAYMODE_MASK;
+			screenIndex = SCREENINDEX_TOSETTING(displayIndex, 0);
 			SaveConfig();
 		}
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
@@ -210,8 +212,9 @@ bool YGS2kInit()
 	{
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
 	}
-	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREEN_VSYNC_MASK ? SDL_RENDERER_PRESENTVSYNC : 0);
+	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
+	SDL_RenderSetIntegerScale(s_pScreenRenderer, !!(screenMode & SCREENMODE_INTSCALE));
 	SDL_ShowWindow(s_pScreenWindow);
 	SDL_RenderClear(s_pScreenRenderer);
 

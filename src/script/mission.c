@@ -150,7 +150,7 @@ void statMissionSelect(int32_t player) {
 				bgmlv = mission_bgm[c_mission];
 			else fadelv[0] = 10;
 			if(repversw < 54)missionSetStatus();
-			stat[player] = 1;				// ブロックシャッター実行
+			stat_[player] = 1;				// ブロックシャッター実行
 			statc[player * 10] = 0;			// ステータスカウンタを0に
 			statc[player * 10 + 1] = 3;		// シャッター後はステータスNo.3
 			statc[player * 10 + 4] = 0;
@@ -160,7 +160,7 @@ void statMissionSelect(int32_t player) {
 			// EDIT
 			StopAllBGM();
 			statc[player * 10 + 4] = 0;
-			stat[player] = 24;
+			stat_[player] = 24;
 		}
 		if(vslevel[0] == 3) {
 			// LOAD
@@ -498,7 +498,7 @@ void statMissionEditor(int32_t player) {
 
 	// AまたはBボタン
 	if( getPushState(player, 4) || getPushState(player, 5) ) {
-		stat[player] = 23;	// セレクト画面に戻る
+		stat_[player] = 23;	// セレクト画面に戻る
 		statc[0 + player * 10] = 0;
 	}
 }
@@ -877,7 +877,7 @@ void missionNormUp(int32_t lines) {
 
 				for(i = 0; i < 22; i++) erase[i] = 1;
 
-				stat[0] = 25;	// 全ライン消去
+				stat_[0] = 25;	// 全ライン消去
 				statc[0 * 10 + 0] = wait1[0];	//待ち時間スキップ
 				statc[0 * 10 + 1] = 3;	// Ready
 				statc[0 * 10 + 2] = 1;	// ステージ読み込みあり
@@ -965,7 +965,7 @@ void missionNormUp(int32_t lines) {
 	}
 
 	// OOBAKA
-	if( (mission_type[c_mission] == 29) && (stat[0] == 6) && ((timeOn[0]) || (repversw < 58)) ) {
+	if( (mission_type[c_mission] == 29) && (stat_[0] == 6) && ((timeOn[0]) || (repversw < 58)) ) {
 		c_norm[0]++;
 	}
 

@@ -431,7 +431,7 @@ void objectNagareboshiC(int32_t no) {
 //objw[no]：REFLECTで跳ね返された
 void objectItemWarning(int32_t no){
 
-	if((objc[no] == 0) && ((stat[objp[no]] == 5) || (fmirror_cnt[objp[no]] >= 0))){
+	if((objc[no] == 0) && ((stat_[objp[no]] == 5) || (fmirror_cnt[objp[no]] >= 0))){
 		objc[no] = 1;
 		objy[no] = 1;
 	}

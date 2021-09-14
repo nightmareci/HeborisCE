@@ -329,7 +329,7 @@ void ConfigMenu() {
 
 	for(i = 0; i < 10; i++) statc[i] = 0;
 
-	stat[0] = 0;
+	stat_[0] = 0;
 	statc[0] = 1;
 	statc[1] = 1;
 	statc[2] = 0;
@@ -367,7 +367,7 @@ void ConfigMenu() {
 		printFont(1, 1, "HEBORIS SETTING MENU", fontc[rots[0]]);
 
 		// main setting
-		if(stat[0] == 0){
+		if(stat_[0] == 0){
 			printFont(23, 1, "- MAIN", fontc[rots[0]]);
 			printFont(2,  3, "<< INPUT <<             >> DESIGN >>", digitc[rots[0]] * (statc[0] == 0) * (count % 2));
 			printFont(2,  6, "WINDOW TYPE :", (statc[0] == 1) * fontc[rots[0]]);
@@ -574,7 +574,7 @@ void ConfigMenu() {
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
 					PlaySE(3);
-					stat[0] = (stat[0] + 1 + pages)%pages;
+					stat_[0] = (stat_[0] + 1 + pages)%pages;
 					statc[0] = 0;
 					statc[1] = 1;
 				} else {
@@ -668,7 +668,7 @@ void ConfigMenu() {
 
 						else if(statc[0] == 0) {	// page
 							PlaySE(3);
-							stat[0] = (stat[0] + m + pages) % pages;
+							stat_[0] = (stat_[0] + m + pages) % pages;
 							statc[0] = 0;
 							statc[1] = 0;
 						}
@@ -736,16 +736,16 @@ void ConfigMenu() {
 					} else if(need_reloadBG==1){	//プレイする最大人数の変更があったら…
 						loadBG(maxPlay,0);			// 背景だけ再読み込み C7T2.5EX
 					}
-					stat[0] = -1;
+					stat_[0] = -1;
 				}
 
-				if(getPushState(pl, 5)) stat[0] = -1;	// B:設定破棄&タイトル画面に戻る
+				if(getPushState(pl, 5)) stat_[0] = -1;	// B:設定破棄&タイトル画面に戻る
 			}
 		}
 
 
 		// design setting
-		else if(stat[0] == 1) {
+		else if(stat_[0] == 1) {
 			printFont(23, 1, "- DESIGN SETTING", fontc[rots[0]]);
 			printFont(2, 3, "<< MAIN <<               >> INPUT >>", digitc[rots[0]] * (statc[0] == 0) * (count % 2));
 
@@ -859,7 +859,7 @@ void ConfigMenu() {
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
 					PlaySE(3);
-					stat[0] = (stat[0] + 1 + pages)%pages;
+					stat_[0] = (stat_[0] + 1 + pages)%pages;
 					statc[0] = 0;
 					statc[1] = 1;
 				} else {
@@ -897,7 +897,7 @@ void ConfigMenu() {
 
 						if(statc[0] == 0){
 							PlaySE(3);
-							stat[0] = (stat[0] + m + pages)%pages;
+							stat_[0] = (stat_[0] + m + pages)%pages;
 							statc[0] = 0;
 						}
 						statc[1] = 1;
@@ -914,12 +914,12 @@ void ConfigMenu() {
 				if(getPushState(pl, 4) || getPushState(pl, 5)) {	// A&B:mainに戻る
 					PlaySE(3);
 					PlaySE(5);
-					stat[0] = 0;
+					stat_[0] = 0;
 					statc[0] = 0;
 					statc[1] = 1;
 				}
 			}
-		} else if(stat[0] == 2) {
+		} else if(stat_[0] == 2) {
 			// input setting
 			// menu
 			if(statc[2] == 0) {
@@ -956,7 +956,7 @@ void ConfigMenu() {
 					// HOLDボタンでページ切り替え #1.60c7k8
 					if(getPushState(pl, 7)) {
 						PlaySE(3);
-						stat[0] = (stat[0] + 1 + pages)%pages;
+						stat_[0] = (stat_[0] + 1 + pages)%pages;
 						statc[0] = 0;
 						statc[1] = 1;
 					} else {
@@ -965,7 +965,7 @@ void ConfigMenu() {
 							PlaySE(5);
 							if(statc[0] == 0){
 								PlaySE(3);
-								stat[0] = (stat[0] + m + pages)%pages;
+								stat_[0] = (stat_[0] + m + pages)%pages;
 								statc[0] = 0;
 								statc[1] = 1;
 							}
@@ -981,7 +981,7 @@ void ConfigMenu() {
 					if(getPushState(pl, 5)) {
 						PlaySE(3);
 						PlaySE(5);
-						stat[0] = 0;
+						stat_[0] = 0;
 						statc[0] = 0;
 						statc[1] = 1;
 					}
@@ -1439,7 +1439,7 @@ void ConfigMenu() {
 		}
 
 		// exit setting menu
-		else if(stat[0] == -1) break;
+		else if(stat_[0] == -1) break;
 		spriteTime ();
 	}
 }

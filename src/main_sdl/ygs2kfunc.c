@@ -35,6 +35,7 @@ enum
 
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
+static SDL_Texture		*s_pScreenRenderTarget = NULL;
 
 static char			*s_pBasePath;
 static char			*s_pPrefPath;
@@ -167,7 +168,7 @@ bool YGS2kInit()
 	{
 		SDL_DisplayMode displayMode;
 		if ( SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0 ) {
-			screenMode &= SCREENMODE_DETAILLEVEL | SCREENMODE_INTSCALE;
+			screenMode &= ~SCREENMODE_WINDOWTYPE;
 			screenMode |= SCREENMODE_WINDOW;
 			screenIndex = 0;
 			SaveConfig();
@@ -214,9 +215,26 @@ bool YGS2kInit()
 	}
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
-	SDL_RenderSetIntegerScale(s_pScreenRenderer, !!(screenMode & SCREENMODE_INTSCALE));
+	if ( SCALEMODE_TOVALUE(screenMode) == SCALEMODE_INTEGER )
+	{
+		SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE);
+	}
+	else if (SCALEMODE_TOVALUE(screenMode) == SCALEMODE_PERFECTSTRETCH )
+	{
+		if (SDL_RenderTargetSupported(s_pScreenRenderer))
+		{
+			s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
+			SDL_RenderClear(s_pScreenRenderer);
+			SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
+			SDL_RenderClear(s_pScreenRenderer);
+		}
+		else
+		{
+			// Set scale mode to fast stretch.
+			screenMode &= ~SCREENMODE_SCALEMODE;
+		}
+	}
 	SDL_ShowWindow(s_pScreenWindow);
-	SDL_RenderClear(s_pScreenRenderer);
 
 	/* マウスカーソルを消す場合は */
 	SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) );
@@ -320,6 +338,11 @@ void YGS2kExit()
 			s_pYGSTexture[i] = NULL;
 		}
 	}
+	if ( s_pScreenRenderTarget ) {
+		SDL_SetRenderTarget(s_pScreenRenderer, NULL);
+		SDL_DestroyTexture( s_pScreenRenderTarget );
+		s_pScreenRenderTarget = NULL;
+	}
 	if ( s_pScreenRenderer ) {
 		SDL_DestroyRenderer( s_pScreenRenderer );
 		s_pScreenRenderer = NULL;
@@ -368,7 +391,17 @@ bool YGS2kHalt()
 	if ( s_bBltAlways )
 	{
 		/* バックサーフェスをフロントに転送 */
-		SDL_RenderPresent( s_pScreenRenderer );
+		if ( s_pScreenRenderTarget )
+		{
+			SDL_SetRenderTarget(s_pScreenRenderer, NULL);
+			SDL_RenderClear( s_pScreenRenderer );
+			SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, NULL, NULL);
+			SDL_RenderPresent(s_pScreenRenderer);
+			SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
+		}
+		else {
+			SDL_RenderPresent(s_pScreenRenderer);
+		}
 
 		/* フレームレート待ち */
 		while ( s_uTimeCount + frameTimeCount >= SDL_GetPerformanceCounter() )
@@ -385,7 +418,17 @@ bool YGS2kHalt()
 		if ( s_uTimeAccumulatorCount < frameTimeCount )
 		{
 			/* バックサーフェスをフロントに転送 */
-			SDL_RenderPresent( s_pScreenRenderer );
+			if ( s_pScreenRenderTarget )
+			{
+				SDL_SetRenderTarget(s_pScreenRenderer, NULL);
+				SDL_RenderClear( s_pScreenRenderer );
+				SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, NULL, NULL);
+				SDL_RenderPresent(s_pScreenRenderer);
+				SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
+			}
+			else {
+				SDL_RenderPresent(s_pScreenRenderer);
+			}
 
 			/* フレームレート待ち */
 			while ( s_uTimeCount + frameTimeCount >= SDL_GetPerformanceCounter() )
@@ -613,6 +656,11 @@ int GetMaxDisplayIndex()
 int GetMaxDisplayMode( int displayIndex )
 {
 	return SDL_GetNumDisplayModes(displayIndex);
+}
+
+int GetMaxScaleMode()
+{
+	return SDL_RenderTargetSupported(s_pScreenRenderer) ? MAXSCALEMODE : MAXSCALEMODE - 1;
 }
 
 void SetConstParam ( const char *param, int value )

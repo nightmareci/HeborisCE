@@ -374,19 +374,19 @@ void ConfigMenu() {
 			printFont(2,  7, "SCREEN INDEX:", (statc[0] == 2) * fontc[rots[0]]);
 			printFont(2,  8, "DETAIL LEVEL:", (statc[0] == 3) * fontc[rots[0]]);
 			printFont(2,  9, "VSYNC       :", (statc[0] == 4) * fontc[rots[0]]);
-			printFont(2, 10, "INT SCALE   :", (statc[0] == 5) * fontc[rots[0]]);
+			printFont(2, 10, "SCALE MODE  :", (statc[0] == 5) * fontc[rots[0]]);
 			if(
 				(ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_FULLSCREEN ||
 				(ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW
 			) printFont(2, 11, "SCREEN MODE :", (statc[0] == 6) * fontc[rots[0]]);
 
-			printFont(2, 12, "NEXT PATTERN:", (statc[0] == 7) * fontc[rots[0]]);
-			printFont(2, 13, "NEXT DISPLAY:", (statc[0] == 8) * fontc[rots[0]]);
-			printFont(2, 14, "8WAY INPUT  :", (statc[0] == 9) * fontc[rots[0]]);
-			printFont(2, 15, "SONIC DROP  :", (statc[0] == 10) * fontc[rots[0]]);
-			printFont(2, 16, "INIT LR MOVE:", (statc[0] == 11) * fontc[rots[0]]);
-			printFont(2, 17, "BLOCK FALL  :", (statc[0] == 12) * fontc[rots[0]]);
-			printFont(2, 19, "SHOW LEVEL  :", (statc[0] == 13) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
+			printFont(2, 14, "NEXT PATTERN:", (statc[0] == 7) * fontc[rots[0]]);
+			printFont(2, 15, "NEXT DISPLAY:", (statc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 16, "8WAY INPUT  :", (statc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 17, "SONIC DROP  :", (statc[0] == 10) * fontc[rots[0]]);
+			printFont(2, 18, "INIT LR MOVE:", (statc[0] == 11) * fontc[rots[0]]);
+			printFont(2, 19, "BLOCK FALL  :", (statc[0] == 12) * fontc[rots[0]]);
+			printFont(2, 20, "SHOW LEVEL  :", (statc[0] == 13) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
 			printFont(2, 21, "MOVE SOUND  :", (statc[0] == 14) * fontc[rots[0]]);
 			printFont(2, 22, "BGM         :", (statc[0] == 15) * fontc[rots[0]]);
 			printFont(2, 23, "WORLDREVERSE:", (statc[0] == 16) * fontc[rots[0]]);
@@ -405,21 +405,20 @@ void ConfigMenu() {
 			case 4:
 			case 5:
 			case 6:
+				printFont(1, 5 + i, "b", fontc[rots[0]]); break;
 			case 7:
 			case 8:
 			case 9:
 			case 10:
 			case 11:
 			case 12:
-				printFont(1, 5 + i, "b", fontc[rots[0]]); break;
 			case 13:
-				printFont(1, 7 + i, "b", fontc[rots[0]]); break;
 			case 14:
 			case 15:
 			case 16:
 			case 17:
 			case 18:
-				printFont(1, 8 + i, "b", fontc[rots[0]]); break;
+				printFont(1, 7 + i, "b", fontc[rots[0]]); break;
 			default: break;
 			}
 
@@ -467,8 +466,13 @@ void ConfigMenu() {
 				if(ncfg[0] & SCREENMODE_VSYNC) sprintf(string[0], "ON");
 				else sprintf(string[0], "OFF");
 				printFont(15, 9, string[0], (statc[0] == 4) * (count % 2) * digitc[rots[0]]);
-				if(ncfg[0] & SCREENMODE_INTSCALE) sprintf(string[0], "ON");
-				else sprintf(string[0], "OFF");
+
+				switch(SCALEMODE_TOVALUE(ncfg[0])) {
+				default:
+				case SCALEMODE_FASTSTRETCH: sprintf(string[0], "FAST STRETCH"); break;
+				case SCALEMODE_INTEGER: sprintf(string[0], "INTEGER"); break;
+				case SCALEMODE_PERFECTSTRETCH: sprintf(string[0], "PERFECT STRETCH"); break;
+				}
 				printFont(15, 10, string[0], (statc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
 				if((ncfg[2] > 1)&&(ncfg[2] < 8))
@@ -487,30 +491,30 @@ void ConfigMenu() {
 				sprintf(string[0], "TOMOYO");
 				else if(ncfg[2] == 12)
 				sprintf(string[0], "FP");
-				printFont(15, 12, string[0], (statc[0] == 7) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 14, string[0], (statc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
 				sprintf(string[0], "%d", ncfg[45]);
-				printFont(15, 13, string[0], (statc[0] == 8) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 15, string[0], (statc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
 				else sprintf(string[0], "c");		// ○
-				printFont(15, 14, string[0], (statc[0] == 9) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 16, string[0], (statc[0] == 9) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
 				else sprintf(string[0], "c");		// ○
-				printFont(15, 15, string[0], (statc[0] == 10) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 17, string[0], (statc[0] == 10) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
 				else sprintf(string[0], "c");		// ○
-				printFont(15, 16, string[0], (statc[0] == 11) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 18, string[0], (statc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[4]) sprintf(string[0], "SMOOTH");
 				else sprintf(string[0], "NORMAL");
-				printFont(15, 17, string[0], (statc[0] == 12) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 19, string[0], (statc[0] == 12) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[36]) sprintf(string[0], "ON");
 				else sprintf(string[0], "OFF");
-				printFont(15, 19, string[0], (statc[0] == 13) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 20, string[0], (statc[0] == 13) * (count % 2) * digitc[rots[0]]);
 
 				if(ncfg[46]) sprintf(string[0], "ON");
 				else sprintf(string[0], "OFF");
@@ -569,7 +573,7 @@ void ConfigMenu() {
 						if(m>0 && statc[0] == 5) m++;
 						else if(m<0 && statc[0] == 7) m--;
 					}
-					statc[0] = (statc[0] + m + 18) % 18;
+					statc[0] = (statc[0] + m + 19) % 19;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
@@ -585,7 +589,7 @@ void ConfigMenu() {
 
 						if(statc[0] == 1) {
 							ncfg[1] &= ~SCREENINDEX_MODE;
-							ncfg[0] = (ncfg[0] & ~SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & SCREENMODE_WINDOWTYPE) + SCREENMODE_NUMWINDOWTYPES + m)) % SCREENMODE_NUMWINDOWTYPES);	// screenMode
+							ncfg[0] = (ncfg[0] & ~SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & SCREENMODE_WINDOWTYPE) + SCREENMODE_NUMWINDOWTYPES + m)) % SCREENMODE_NUMWINDOWTYPES);
 							need_reset = 1;
 						}
 						else if(statc[0] == 2) {
@@ -595,15 +599,17 @@ void ConfigMenu() {
 						}
 						else if(statc[0] == 3) {
 							if((ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW) ncfg[1] &= ~SCREENINDEX_MODE;
-							ncfg[0] ^= SCREENMODE_DETAILLEVEL;	// detailLevel
+							ncfg[0] ^= SCREENMODE_DETAILLEVEL;
 							need_reset = 1;
 						}
 						else if(statc[0] == 4) {
-							ncfg[0] ^= SCREENMODE_VSYNC;		// vsync
+							ncfg[0] ^= SCREENMODE_VSYNC;
 							need_reset = 1;
 						}
 						else if(statc[0] == 5) {
-							ncfg[0] ^= SCREENMODE_INTSCALE;		// intScale
+							ScaleMode scaleMode = SCALEMODE_TOVALUE(ncfg[0]);
+							scaleMode = (scaleMode + GetMaxScaleMode() + m) % GetMaxScaleMode();
+							ncfg[0] = (ncfg[0] & ~SCREENMODE_SCALEMODE) | SCALEMODE_TOSETTING(scaleMode);
 							need_reset = 1;
 						}
 						else if(statc[0] == 6) {
@@ -1171,7 +1177,6 @@ void ConfigMenu() {
 				} else {
 					printFont(3, 17, "OK[ENTER] / RETRY[DEL] / CANCEL[BS]", digitc[rots[0]] * (count % 2));
 					if(IsPushReturnKey()) {
-				//	if(getPushState(pl, 1)) {
 						PlaySE(10);
 						for (int32_t key = 0; key < 10; key++) {
 							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
@@ -1198,7 +1203,6 @@ void ConfigMenu() {
 						statc[2] = 0;
 					}
 					else if(IsPushDeleteKey()) {
-				//	else if(getPushState(pl, 0)) {
 						PlaySE(5);
 						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
@@ -1223,7 +1227,6 @@ void ConfigMenu() {
 						statc[0] = 0;
 					}
 					else if(IsPushBSKey()) {
-				//	else if(getPushState(pl, 2) || getPushState(pl, 3)) {
 						PlaySE(5);
 						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];

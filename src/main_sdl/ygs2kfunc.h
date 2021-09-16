@@ -59,6 +59,7 @@ int GetMaxJoyButton( int device );
 
 int GetMaxDisplayIndex();
 int GetMaxDisplayMode( int displayIndex );
+int GetMaxScaleMode();
 
 void SetConstParam ( const char *param, int value );
 void KeyInput();

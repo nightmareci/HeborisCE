@@ -86,6 +86,10 @@ set(EXE_SOURCES
 	src/script/ranking3.c
 )
 
+if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
+endif()
+
 # TODO: Use PhysicsFS for file handling, since currently things will go wrong if the necessary save data directories are missing, and currently the code can't create them.
 if(VCPKG_TOOLCHAIN)
 	find_package(SDL2 REQUIRED)
@@ -102,7 +106,6 @@ if(VCPKG_TOOLCHAIN)
 else()
 	find_package(PkgConfig)
 	if(PKG_CONFIG_FOUND)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
 		function(target_pkg_config_import TARGET DEPENDENCY)
 			string(TOUPPER ${DEPENDENCY} DEPENDENCY_VARIABLE)
 			pkg_check_modules(${DEPENDENCY_VARIABLE} REQUIRED ${DEPENDENCY})

@@ -3,6 +3,7 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
+#include "physfs_rwops.h"
 #include <time.h>
 #include <stdint.h>
 #include <stdbool.h>

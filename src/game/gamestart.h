@@ -12,7 +12,7 @@
 #include "heboris_ini.h"
 
 #define		STRING_MAX		200
-#define		str			const char*
+#define		cstr			const char*
 #define		loop			while ( loopFlag )
 #define		halt			spriteTime()
 #define		time			gametime
@@ -144,8 +144,8 @@ extern int32_t fldihardno;
 extern int32_t fldigsno;
 extern int32_t fldisno;
 extern int32_t item_pronum;
-extern str RankString;
-extern str version;
+extern cstr RankString;
+extern cstr version;
 extern int32_t se_play[50];
 extern int32_t fade_seed;
 extern int32_t repdata[20 *2];
@@ -618,9 +618,9 @@ extern int32_t gmflag1_e[2];
 extern int32_t gmflag2[2];
 extern int32_t gmflag1[2];
 extern int32_t grade[2];
-extern str gname2[35];
-extern str dgname[17];
-extern str gname[20];
+extern cstr gname2[35];
+extern cstr dgname[17];
+extern cstr gname[20];
 extern int32_t gscore[18];
 extern char nextfp_list[4096];
 extern char nextdengen_list[4096];

@@ -1,9 +1,6 @@
 #include "SDL_kanji.h"
 
-#include "main_sdl/include.h"
-
 #include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
@@ -16,7 +13,7 @@ static void InitFont(Kanji_Font* font) {
 	}
 }
 
-Kanji_Font* Kanji_OpenFont(const char* file, int size) {
+Kanji_Font* Kanji_OpenFont(SDL_RWops* src, int size) {
 	Kanji_Font* font;
 	font = (Kanji_Font*)malloc(sizeof(Kanji_Font));
 
@@ -25,7 +22,7 @@ Kanji_Font* Kanji_OpenFont(const char* file, int size) {
 	font->sys = KANJI_JIS;
 
 	InitFont(font);
-	if (0 == Kanji_AddFont(font, file)) {
+	if (0 == Kanji_AddFont(font, src)) {
 		return font;
 	}
 	else {
@@ -34,23 +31,62 @@ Kanji_Font* Kanji_OpenFont(const char* file, int size) {
 	}
 }
 
-static void ParseChar(Kanji_Font* font, int index, FILE* fp, int shift) {
-	char buf[BUF];
-	int y;
+static char* sgets(char* buf, int count, char** src, char* end) {
+	if (buf != NULL && count > 0 && *src < end) {
+		int i;
+		for (i = 0; i < count - 1 && *src + i < end; i++) {
+			if ((*src)[i] == '\n' || (*src)[i] == '\r') {
+				do {
+					buf[i] = (*src)[i];
+					i++;
+				} while (i < count - 1 && *src + i < end && (*src)[i] == '\n' && (*src)[i] == '\r');
+				buf[i] = '\0';
+				*src += i;
+				if (*src < end) {
+					return buf;
+				}
+				else {
+					return NULL;
+				}
+			}
+			else {
+				buf[i] = (*src)[i];
+			}
+		}
+		buf[i] = '\0';
+		*src += i;
+		return buf;
+	}
 
+	return NULL;
+}
+
+static void ParseChar(Kanji_Font* font, int index, char** line, char *end, int shift) {
 	/* 既にロードされている文字は読み込まない */
 	if (font->moji[index] != 0) return;
 
 	font->moji[index] = (Uint32*)malloc(sizeof(Uint32)*font->k_size);
 
-	for (y = 0; y < font->k_size; y++) {
-		fgets(buf, BUF, fp);
+	char buf[BUF];
+	for (size_t y = 0; y < font->k_size; y++) {
+		sgets(buf, BUF, line, end);
 		font->moji[index][y] = (strtol(buf, 0, 16) >> shift);
 	}
 }
 
-static int ParseFont(Kanji_Font* font, FILE* fp) {
-	char buf[BUF], *p;
+static int ParseFont(Kanji_Font* font, SDL_RWops* src) {
+	char buf[BUF];
+
+	Sint64 size = SDL_RWsize(src);
+	char* srcdata = malloc(size);
+	if (!srcdata) return 1;
+	if (SDL_RWread(src, srcdata, size, 1) == 0) {
+		free(srcdata);
+		return 1;
+	}
+
+	char* end = srcdata + size;
+	char *p;
 	int index;
 	int k_rshift, a_rshift;
 	int s;
@@ -60,8 +96,9 @@ static int ParseFont(Kanji_Font* font, FILE* fp) {
 	for (s = 8; s < font->a_size; s += 8) {}
 	a_rshift = s - font->a_size;
 
+	char* line = srcdata;
 	while (1) {
-		if (fgets(buf, BUF, fp) == NULL) {
+		if (sgets(buf, BUF, &line, end) == NULL) {
 			break;
 		}
 
@@ -70,35 +107,27 @@ static int ParseFont(Kanji_Font* font, FILE* fp) {
 			index = strtol(p, 0, 10);
 
 			while (strstr(buf, "BITMAP") == NULL) {
-				fgets(buf, BUF, fp);
+				sgets(buf, BUF, &line, end);
 			}
 
 			if (index > 255) {
 				index = (((index & 0xff00) >> 8) - 0x20) * 96
 					+ (index & 0xff) - 0x20 + 0xff;
-				ParseChar(font, index, fp, k_rshift);
+				ParseChar(font, index, &line, end, k_rshift);
 			}
 			else {
-				ParseChar(font, index, fp, a_rshift);
+				ParseChar(font, index, &line, end, a_rshift);
 			}
 		}
 	}
 
+	free(srcdata);
+
 	return 0;
 }
 
-int Kanji_AddFont(Kanji_Font* font, const char* file) {
-	FILE* fp;
-
-	fp = fopen(file, "r");
-	if(fp==NULL){
-		fprintf(stderr, "cant open [%s]\n", file);
-		return -1;
-	}
-
-	if (0 != ParseFont(font, fp)) return -1;
-
-	fclose(fp);
+int Kanji_AddFont(Kanji_Font* font, SDL_RWops *src) {
+	if (0 != ParseFont(font, src)) return -1;
 	return 0;
 }
 

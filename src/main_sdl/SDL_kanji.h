@@ -12,9 +12,9 @@ typedef struct {
 	Uint32* moji[96*96+256];
 } Kanji_Font;
 
-Kanji_Font* Kanji_OpenFont(const char* file, int size);
+Kanji_Font* Kanji_OpenFont(SDL_RWops *src, int size);
 
-int Kanji_AddFont(Kanji_Font* font, const char* file);
+int Kanji_AddFont(Kanji_Font* font, SDL_RWops *src);
 
 void Kanji_SetCodingSystem(Kanji_Font* font, Kanji_CodingSystem sys);
 

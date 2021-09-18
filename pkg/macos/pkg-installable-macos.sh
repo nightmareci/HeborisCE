@@ -15,12 +15,13 @@ cmake --build "$BUILD_DIR" -j`sysctl -n hw.cpu`
 SRC_FOLDER="$BASE_DIR/srcfolder"
 
 mkdir -p "$SRC_FOLDER"
-cp README.md changelog.txt heboris.ini heboris.txt "$SRC_FOLDER"
+cp README.md changelog.txt heboris.txt "$SRC_FOLDER"
 
 cp -r "$BUILD_DIR/$NAME.app" "$SRC_FOLDER"
 mkdir -p "$SRC_FOLDER/$NAME.app/Contents/libs"
 dylibbundler -x "$SRC_FOLDER/$NAME.app/Contents/MacOS/$NAME" -d "$SRC_FOLDER/$NAME.app/Contents/libs" -b -i /usr/lib
 mkdir -p "$SRC_FOLDER/$NAME.app/Contents/Resources/config"
+cp heboris.ini "$SRC_FOLDER/$NAME.app/Contents/Resources"
 cp -r "config/mission" "$SRC_FOLDER/$NAME.app/Contents/Resources/config"
 cp -r "config/stage" "$SRC_FOLDER/$NAME.app/Contents/Resources/config"
 cp -r "res" "$SRC_FOLDER/$NAME.app/Contents/Resources"

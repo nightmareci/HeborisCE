@@ -36,10 +36,15 @@ static char* sgets(char* buf, int count, char** src, char* end) {
 		int i;
 		for (i = 0; i < count - 1 && *src + i < end; i++) {
 			if ((*src)[i] == '\n' || (*src)[i] == '\r') {
-				do {
-					buf[i] = (*src)[i];
-					i++;
-				} while (i < count - 1 && *src + i < end && (*src)[i] == '\n' && (*src)[i] == '\r');
+				char endc = (*src)[i];
+				buf[i] = endc;
+				i++;
+				if (i < count - 1 && *src + i < end) {
+					if (((*src)[i] == '\n' || (*src)[i] == '\r') && (*src)[i] != endc) {
+						buf[i] = (*src)[i];
+						i++;
+					}
+				}
 				buf[i] = '\0';
 				*src += i;
 				if (*src < end) {

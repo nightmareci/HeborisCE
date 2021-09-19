@@ -891,7 +891,7 @@ void LoadWave( const char* filename, int no )
 
 	// 拡張子、または番号(50番以降がBGM)によって読み込み方法を変える
 	SDL_RWops *src;
-	src = RWFromFile(filename, RWMODE_READ);
+	src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ);
 	if ( !src ) return;
 	if ( strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
 	{
@@ -920,7 +920,7 @@ void LoadMIDI( const char* filename )
 		s_pYGSMusic = NULL;
 	}
 
-	SDL_RWops *src = RWFromFile(filename, RWMODE_READ);
+	SDL_RWops *src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ);
 	s_pYGSMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
 }
 
@@ -932,7 +932,7 @@ void LoadBitmap( const char* filename, int plane, int val )
 		s_pYGSTexture[plane] = NULL;
 	}
 
-	SDL_RWops *src = RWFromFile(filename, RWMODE_READ);
+	SDL_RWops *src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ);
 	s_pYGSTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE);
 	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
@@ -974,7 +974,7 @@ void SetFillColor(int col)
 
 void LoadFile( const char* filename, void* buf, int size )
 {
-	SDL_RWops	*src = RWFromFile(filename, RWMODE_READ);
+	SDL_RWops	*src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ);
 
 	if ( src )
 	{
@@ -1003,7 +1003,7 @@ void SaveFile( const char* filename, void* buf, int size )
 		buf2[i] = SWAP32(buf2[i]);
 	}
 
-	SDL_RWops	*dst = RWFromFile(filename, RWMODE_WRITE);
+	SDL_RWops	*dst = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_WRITE);
 
 	if ( dst )
 	{
@@ -1277,7 +1277,7 @@ void YGS2kKanjiFontInitialize()
 	SDL_RWops *src;
 
 	/* 10pxフォント読み込み */
-	src = RWFromFile("res/font/knj10.bdf", RWMODE_READ);
+	src = PHYSFS_RWFromFile("res/font/knj10.bdf", PHYSFS_RWMODE_READ);
 	if ( src )
 	{
 		s_pKanjiFont[0] = Kanji_OpenFont(src, 10);
@@ -1289,7 +1289,7 @@ void YGS2kKanjiFontInitialize()
 	}
 	if ( s_pKanjiFont[0] )
 	{
-		src = RWFromFile("res/font/5x10a.bdf", RWMODE_READ);
+		src = PHYSFS_RWFromFile("res/font/5x10a.bdf", PHYSFS_RWMODE_READ);
 		if ( src ) {
 			Kanji_AddFont(s_pKanjiFont[0], src);
 			SDL_RWclose(src);
@@ -1298,7 +1298,7 @@ void YGS2kKanjiFontInitialize()
 	else
 	{
 		/* フォントがない場合代替を使う */
-		src = RWFromFile("res/font/knj12.bdf", RWMODE_READ);
+		src = PHYSFS_RWFromFile("res/font/knj12.bdf", PHYSFS_RWMODE_READ);
 		if ( src )
 		{
 			s_pKanjiFont[0] = Kanji_OpenFont(src, 10);
@@ -1309,7 +1309,7 @@ void YGS2kKanjiFontInitialize()
 		}
 		if ( s_pKanjiFont[0] )
 		{
-			src = RWFromFile("res/font/6x12a.bdf", RWMODE_READ);
+			src = PHYSFS_RWFromFile("res/font/6x12a.bdf", PHYSFS_RWMODE_READ);
 			if ( src ) {
 				Kanji_AddFont(s_pKanjiFont[0], src);
 				SDL_RWclose(src);
@@ -1323,7 +1323,7 @@ void YGS2kKanjiFontInitialize()
 	}
 
 	/* 12pxフォント読み込み */
-	src = RWFromFile("res/font/knj12.bdf", RWMODE_READ);
+	src = PHYSFS_RWFromFile("res/font/knj12.bdf", PHYSFS_RWMODE_READ);
 	if ( src ) {
 		s_pKanjiFont[1] = Kanji_OpenFont(src, 12);
 		SDL_RWclose(src);
@@ -1334,7 +1334,7 @@ void YGS2kKanjiFontInitialize()
 	}
 	if ( s_pKanjiFont[1] )
 	{
-		src = RWFromFile("res/font/6x12a.bdf", RWMODE_READ);
+		src = PHYSFS_RWFromFile("res/font/6x12a.bdf", PHYSFS_RWMODE_READ);
 		if ( src )
 		{
 			Kanji_AddFont(s_pKanjiFont[1], src);
@@ -1344,7 +1344,7 @@ void YGS2kKanjiFontInitialize()
 	}
 
 	/* 16pxフォント読み込み */
-	src = RWFromFile("res/font/knj16.bdf", RWMODE_READ);
+	src = PHYSFS_RWFromFile("res/font/knj16.bdf", PHYSFS_RWMODE_READ);
 	if ( src )
 	{
 		s_pKanjiFont[2] = Kanji_OpenFont(src, 16);
@@ -1356,7 +1356,7 @@ void YGS2kKanjiFontInitialize()
 	}
 	if ( s_pKanjiFont[2] )
 	{
-		src = RWFromFile("res/font/8x16a.bdf", RWMODE_READ);
+		src = PHYSFS_RWFromFile("res/font/8x16a.bdf", PHYSFS_RWMODE_READ);
 		if ( src )
 		{
 			Kanji_AddFont(s_pKanjiFont[2], src);

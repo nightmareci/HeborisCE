@@ -66,7 +66,7 @@ void statTomoyoNextStage(int32_t player) {
 	ext = 0;
 	timelimit_tomoyo = 320*60;	//EX7への足切り
 
-	statc[player * 10 + 0]++;
+	statusc[player * 10 + 0]++;
 
 	StopSE(32);
 	pinch[player] = 0;
@@ -128,7 +128,7 @@ void statTomoyoNextStage(int32_t player) {
 	}
 
 	if(sclear[player]) {
-		if(statc[player * 10 + 0] == 1){
+		if(statusc[player * 10 + 0] == 1){
 		for(i = 0; i < 10; i++)	//フィールド消去 C7T3.2
 			for(j = 0; j < 22; j++) {
 				fld[i + j * 10 + player * 220] = 0;
@@ -137,7 +137,7 @@ void statTomoyoNextStage(int32_t player) {
 			}
 		}
 		// 花火
-		if((statc[player * 10 + 0] % 10 == 0) && (tomoyo_hanabi[player] < 10)) {
+		if((statusc[player * 10 + 0] % 10 == 0) && (tomoyo_hanabi[player] < 10)) {
 			PlaySE(35);
 			objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + Rand(20), 0, 0, Rand(7)+1, 0);
 			tomoyo_hanabi[player]++;
@@ -175,7 +175,7 @@ void statTomoyoNextStage(int32_t player) {
 		if(ext_s[player] < (ext*60)){
 			ext_s[player] = ext_s[player]+4;
 		}
-		if((timeextend_snd_cnt[player] < ext) && ((statc[player * 10 + 0]-1) % 15 == 0)){
+		if((timeextend_snd_cnt[player] < ext) && ((statusc[player * 10 + 0]-1) % 15 == 0)){
 			PlaySE(42);
 			timeextend_snd_cnt[player]++;
 		}
@@ -200,11 +200,11 @@ void statTomoyoNextStage(int32_t player) {
 
 	// ボタンを押すと早く次のステージへ
 	if( getPushState(player, 4) ) {
-		statc[player * 10 + 0] = 300;
+		statusc[player * 10 + 0] = 300;
 	}
 
 	// 次のステージ
-	if(statc[player * 10 + 0] >= 300) {
+	if(statusc[player * 10 + 0] >= 300) {
 		if(start_stage[player] >= 27) {
 			// 自作面 #1.60c7r6
 			if((start_stage[player] >= 27) && (start_stage[player] < 45))
@@ -263,15 +263,15 @@ void statTomoyoNextStage(int32_t player) {
 			else if(lv[player] > 0)lv[player]--;
 			sp[player] = lvTabletomoyohebo[lv[player]];
 		}
-		stat_[player] = 3;					// Ready
-		statc[player * 10] = 0;				// ステータスカウンタを0に
-		statc[player * 10 + 1] = 0;			//
+		status[player] = 3;					// Ready
+		statusc[player * 10] = 0;				// ステータスカウンタを0に
+		statusc[player * 10 + 1] = 0;			//
 		if((stage[player] >= 100) && (!t_training[player])){
-			stat_[player] = 36;				// F-Pointセレクト
-			statc[player * 10] = 1;
-			statc[player * 10 + 1] = 0;
-			statc[player * 10 + 2] = 0;
-			statc[player * 10 + 3] = 0;
+			status[player] = 36;				// F-Pointセレクト
+			statusc[player * 10] = 1;
+			statusc[player * 10 + 1] = 0;
+			statusc[player * 10 + 2] = 0;
+			statusc[player * 10 + 3] = 0;
 		}
 
 		if( (stage[player] > laststage[player]) && (!t_training[player])) {
@@ -280,7 +280,7 @@ void statTomoyoNextStage(int32_t player) {
 			PlayWave(28);
 			stage[player] = laststage[player];
 			ending[player] = 1;
-			stat_[player] = 13;
+			status[player] = 13;
 			if(laststage[player] == 199)
 				sc[player] = sc[player] + 100000;
 			end_f[player] = 1 + (stage[player] >= 26);
@@ -327,10 +327,10 @@ int32_t getPlatinumBlock(int32_t player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.18 - TOMOYOモード ステージエディタ
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-// statc[player * 10]     : カーソル位置
-// statc[player * 10 + 1] : メニュー／フィールド
-// statc[player * 10 + 2] : 戻り先ステータス
-// statc[player * 10 + 3] : フィールド画面に入った瞬間ブロックを置いてしまうのを防ぐフラグ
+// statusc[player * 10]     : カーソル位置
+// statusc[player * 10 + 1] : メニュー／フィールド
+// statusc[player * 10 + 2] : 戻り先ステータス
+// statusc[player * 10 + 3] : フィールド画面に入った瞬間ブロックを置いてしまうのを防ぐフラグ
 void statTomoyoEditor(int32_t player) {
 	int32_t tmp, bx1, by1;
 
@@ -338,50 +338,50 @@ void statTomoyoEditor(int32_t player) {
 	padRepeat2(player);
 
 	/* ■メニュー画面■ */
-	if( statc[player * 10 + 1] == 0 ) {
-		printFont(15 + 24 * player - 12 * maxPlay, 8 + statc[player * 10] +(1*(statc[player * 10] >= 13)) , "b", 1);
+	if( statusc[player * 10 + 1] == 0 ) {
+		printFont(15 + 24 * player - 12 * maxPlay, 8 + statusc[player * 10] +(1*(statusc[player * 10] >= 13)) , "b", 1);
 
 		sprintf(string[0],"STAGE:%2d",stage[player] + 1);
-		printFont(16 + 24 * player - 12 * maxPlay, 8, string[0],  (statc[player * 10] == 0) );
+		printFont(16 + 24 * player - 12 * maxPlay, 8, string[0],  (statusc[player * 10] == 0) );
 
-		printFont(16 + 24 * player - 12 * maxPlay, 9, "FIELD",    (statc[player * 10] == 1) );
+		printFont(16 + 24 * player - 12 * maxPlay, 9, "FIELD",    (statusc[player * 10] == 1) );
 
-		printFont(16 + 24 * player - 12 * maxPlay,10, "MIRROR",   (statc[player * 10] == 2) + (isfmirror[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,11, "ROLL ROLL",(statc[player * 10] == 3) + (rollroll_flag[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,12, "X-RAY",    (statc[player * 10] == 4) + (xray_flag[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,13, "COLOR",    (statc[player * 10] == 5) + (color_flag[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,14, "BIG",      (statc[player * 10] == 6) + (IsBig[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,15, "BLIND",    (statc[player * 10] == 7) + (blind_flag[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,10, "MIRROR",   (statusc[player * 10] == 2) + (isfmirror[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,11, "ROLL ROLL",(statusc[player * 10] == 3) + (rollroll_flag[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,12, "X-RAY",    (statusc[player * 10] == 4) + (xray_flag[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,13, "COLOR",    (statusc[player * 10] == 5) + (color_flag[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,14, "BIG",      (statusc[player * 10] == 6) + (IsBig[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,15, "BLIND",    (statusc[player * 10] == 7) + (blind_flag[player] * 2) );
 		sprintf(string[0],"SPEED:%4d",min_speed[player]);
-		printFont(16 + 24 * player - 12 * maxPlay,16, string[0],   (statc[player * 10] == 8) );
-		printFont(16 + 24 * player - 12 * maxPlay,17, "THUNDER",   (statc[player * 10] == 9) + (isthunder[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,18, "HIDE NEXT", (statc[player * 10] == 10) + (hnext_flag[player] * 2) );
-		printFont(16 + 24 * player - 12 * maxPlay,19, "BOOST FIRE",(statc[player * 10] == 11) + (tomoyo_waits[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,16, string[0],   (statusc[player * 10] == 8) );
+		printFont(16 + 24 * player - 12 * maxPlay,17, "THUNDER",   (statusc[player * 10] == 9) + (isthunder[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,18, "HIDE NEXT", (statusc[player * 10] == 10) + (hnext_flag[player] * 2) );
+		printFont(16 + 24 * player - 12 * maxPlay,19, "BOOST FIRE",(statusc[player * 10] == 11) + (tomoyo_waits[player] * 2) );
 
 		if(!tomoyo_rise[player])
-			printFont(16 + 24 * player - 12 * maxPlay,20, "RISE:OFF",   (statc[player * 10] == 12));
+			printFont(16 + 24 * player - 12 * maxPlay,20, "RISE:OFF",   (statusc[player * 10] == 12));
 		else{
-			printFont(16 + 24 * player - 12 * maxPlay,20, "RISE:ON",   (statc[player * 10] == 12));
+			printFont(16 + 24 * player - 12 * maxPlay,20, "RISE:ON",   (statusc[player * 10] == 12));
 			sprintf(string[0],"INTER:%3d",tomoyo_rise[player]);
-			printFont(16 + 24 * player - 12 * maxPlay,21, string[0],   (statc[player * 10] == 12) + 4);
+			printFont(16 + 24 * player - 12 * maxPlay,21, string[0],   (statusc[player * 10] == 12) + 4);
 		}
-		printFont(16 + 24 * player - 12 * maxPlay,22, " [LOAD]",     (statc[player * 10] == 13) );
-		printFont(16 + 24 * player - 12 * maxPlay,23, " [SAVE]",     (statc[player * 10] == 14) );
+		printFont(16 + 24 * player - 12 * maxPlay,22, " [LOAD]",     (statusc[player * 10] == 13) );
+		printFont(16 + 24 * player - 12 * maxPlay,23, " [SAVE]",     (statusc[player * 10] == 14) );
 
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 0) ) {
 			PlayWave(5);
-			statc[player * 10]--;
-			if(statc[player * 10] < 0) statc[player * 10] = 14;
+			statusc[player * 10]--;
+			if(statusc[player * 10] < 0) statusc[player * 10] = 14;
 		}
 
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 1) ) {
 			PlayWave(5);
-			statc[player * 10]++;
-			if(statc[player * 10] > 14) statc[player * 10] = 0;
+			statusc[player * 10]++;
+			if(statusc[player * 10] > 14) statusc[player * 10] = 0;
 		}
 
 		// ←
@@ -390,49 +390,49 @@ void statTomoyoEditor(int32_t player) {
 			PlayWave(3);
 
 			// STAGE
-			if(statc[player * 10] == 0) {
+			if(statusc[player * 10] == 0) {
 				stage[player]--;
 				if(stage[player] < 0) stage[player] = 199;
 			}
 			// MIRROR
-			if(statc[player * 10] == 2) {
+			if(statusc[player * 10] == 2) {
 				isfmirror[player] = !isfmirror[player];
 			}
 			// ROLL ROLL
-			if(statc[player * 10] == 3) {
+			if(statusc[player * 10] == 3) {
 				rollroll_flag[player] = !rollroll_flag[player];
 			}
 			// X-RAY #1.60c7p9ex
-			if(statc[player * 10] == 4) {
+			if(statusc[player * 10] == 4) {
 				xray_flag[player] = !xray_flag[player];
 			}
 			// COLOR #1.60c7p9ex
-			if(statc[player * 10] == 5) {
+			if(statusc[player * 10] == 5) {
 				color_flag[player] = !color_flag[player];
 			}
 			// BIG #1.60c7l8
-			if(statc[player * 10] == 6) {
+			if(statusc[player * 10] == 6) {
 				IsBig[player] = !IsBig[player];
 			}
 			// BLIND
-			if(statc[player * 10] == 7) {
+			if(statusc[player * 10] == 7) {
 				blind_flag[player] = !blind_flag[player];
 			}
 			// 最低速度
-			if(statc[player * 10] == 8) {
+			if(statusc[player * 10] == 8) {
 				min_speed[player]--;
 				if(min_speed[player] < 0) min_speed[player] = 1200;
 			}
-			if(statc[player * 10] == 9) {
+			if(statusc[player * 10] == 9) {
 				isthunder[player] = !isthunder[player];
 			}
-			if(statc[player * 10] == 10) {
+			if(statusc[player * 10] == 10) {
 				hnext_flag[player] = !hnext_flag[player];
 			}
-			if(statc[player * 10] == 11) {
+			if(statusc[player * 10] == 11) {
 				tomoyo_waits[player] = !tomoyo_waits[player];
 			}
-			if(statc[player * 10] == 12) {
+			if(statusc[player * 10] == 12) {
 				tomoyo_rise[player]--;
 				if(tomoyo_rise[player] < 0) tomoyo_rise[player] = 99;
 			}
@@ -444,47 +444,47 @@ void statTomoyoEditor(int32_t player) {
 			PlayWave(3);
 
 			// STAGE
-			if(statc[player * 10] == 0) {
+			if(statusc[player * 10] == 0) {
 				stage[player]++;
 				if(stage[player] > 199) stage[player] = 0;
 			}
 			// MIRROR
-			if(statc[player * 10] == 2) {
+			if(statusc[player * 10] == 2) {
 				isfmirror[player] = !isfmirror[player];
 			}
 			// ROLL ROLL
-			if(statc[player * 10] == 3) {
+			if(statusc[player * 10] == 3) {
 				rollroll_flag[player] = !rollroll_flag[player];
 			}
 			// X-RAY #1.60c7p9ex
-			if(statc[player * 10] == 4) {
+			if(statusc[player * 10] == 4) {
 				xray_flag[player] = !xray_flag[player];
 			}
 			// COLOR #1.60c7p9ex
-			if(statc[player * 10] == 5) {
+			if(statusc[player * 10] == 5) {
 				color_flag[player] = !color_flag[player];
 			}
 			// BIG #1.60c7l8
-			if(statc[player * 10] == 6) {
+			if(statusc[player * 10] == 6) {
 				IsBig[player] = !IsBig[player];
 			}
-			if(statc[player * 10] == 7) {
+			if(statusc[player * 10] == 7) {
 				blind_flag[player] = !blind_flag[player];
 			}
-			if(statc[player * 10] == 8) {
+			if(statusc[player * 10] == 8) {
 				min_speed[player]++;
 				if(min_speed[player] > 1200) min_speed[player] = 0;
 			}
-			if(statc[player * 10] == 9) {
+			if(statusc[player * 10] == 9) {
 				isthunder[player] = !isthunder[player];
 			}
-			if(statc[player * 10] == 10) {
+			if(statusc[player * 10] == 10) {
 				hnext_flag[player] = !hnext_flag[player];
 			}
-			if(statc[player * 10] == 11) {
+			if(statusc[player * 10] == 11) {
 				tomoyo_waits[player] = !tomoyo_waits[player];
 			}
-			if(statc[player * 10] == 12) {
+			if(statusc[player * 10] == 12) {
 				tomoyo_rise[player]++;
 				if(tomoyo_rise[player] > 99) tomoyo_rise[player] = 0;
 			}
@@ -495,79 +495,79 @@ void statTomoyoEditor(int32_t player) {
 			PlayWave(10);
 
 			// STAGE
-			if(statc[player * 10] == 0) {
+			if(statusc[player * 10] == 0) {
 				loadTomoyoStage(player, stage[player]);
 			}
 			// FIELD
-			if(statc[player * 10] == 1) {
+			if(statusc[player * 10] == 1) {
 				bx[player] = 0;					// X座標
 				by[player] = 1;					// Y座標
 				blk[player] = 0;				// 配置するブロック
-				statc[player * 10 + 1] = 1;		// ステータスカウンタを1にしてフィールド画面へ
-				statc[player * 10 + 3] = 1;		// そのままだと画面が切り替わった瞬間、ブロックを配置してしまうので
+				statusc[player * 10 + 1] = 1;		// ステータスカウンタを1にしてフィールド画面へ
+				statusc[player * 10 + 3] = 1;		// そのままだと画面が切り替わった瞬間、ブロックを配置してしまうので
 												// それを回避するためのフラグ
 			}
 			// RISE
-			if(statc[player * 10] == 12) {
+			if(statusc[player * 10] == 12) {
 				bx[player] = 0;					// X座標
 				by[player] = 1;					// Y座標
 				blk[player] = 0;				// 配置するブロック
-				statc[player * 10 + 1] = 2;		// ステータスカウンタを2にしてせり上がりフィールド画面へ
-				statc[player * 10 + 3] = 1;		// そのままだと画面が切り替わった瞬間、ブロックを配置してしまうので
+				statusc[player * 10 + 1] = 2;		// ステータスカウンタを2にしてせり上がりフィールド画面へ
+				statusc[player * 10 + 3] = 1;		// そのままだと画面が切り替わった瞬間、ブロックを配置してしまうので
 												// それを回避するためのフラグ
 			}
 			// MIRROR
-			if(statc[player * 10] == 2) {
+			if(statusc[player * 10] == 2) {
 				isfmirror[player] = !isfmirror[player];
 			}
 			// ROLL ROLL
-			if(statc[player * 10] == 3) {
+			if(statusc[player * 10] == 3) {
 				rollroll_flag[player] = !rollroll_flag[player];
 			}
 			// X-RAY #1.60c7p9ex
-			if(statc[player * 10] == 4) {
+			if(statusc[player * 10] == 4) {
 				xray_flag[player] = !xray_flag[player];
 			}
 			// COLOR #1.60c7p9ex
-			if(statc[player * 10] == 5) {
+			if(statusc[player * 10] == 5) {
 				color_flag[player] = !color_flag[player];
 			}
 			// BIG #1.60c7l8
-			if(statc[player * 10] == 6) {
+			if(statusc[player * 10] == 6) {
 				IsBig[player] = !IsBig[player];
 			}
-			if(statc[player * 10] == 7) {
+			if(statusc[player * 10] == 7) {
 				blind_flag[player] = !blind_flag[player];
 			}
-			if(statc[player * 10] == 9) {
+			if(statusc[player * 10] == 9) {
 				isthunder[player] = !isthunder[player];
 			}
-			if(statc[player * 10] == 10) {
+			if(statusc[player * 10] == 10) {
 				hnext_flag[player] = !hnext_flag[player];
 			}
-			if(statc[player * 10] == 11) {
+			if(statusc[player * 10] == 11) {
 				tomoyo_waits[player] = !tomoyo_waits[player];
 			}
 			// LOAD
-			if(statc[player * 10] == 13) {
+			if(statusc[player * 10] == 13) {
 				loadTomoyoStage(player, stage[player]);
 			}
 			// SAVE
-			if(statc[player * 10] == 14) {
+			if(statusc[player * 10] == 14) {
 				saveTomoyoStage(player, stage[player]);
 			}
 		}
 
 		// Bボタン
 		if( getPushState(player, 5) ) {
-			stat_[player] = statc[player * 10 + 2];	// 戻り先へ
-			statc[player * 10] = 0;					// ステータスカウンタを0に
-			statc[player * 10 + 1] = 0;				//
-			statc[player * 10 + 2] = 0;
+			status[player] = statusc[player * 10 + 2];	// 戻り先へ
+			statusc[player * 10] = 0;					// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 0;				//
+			statusc[player * 10 + 2] = 0;
 		}
 
 	/* ■フィールド画面■ */
-	} else if( statc[player * 10 + 1] == 1 ){		// FIELD
+	} else if( statusc[player * 10 + 1] == 1 ){		// FIELD
 		// カーソル表示
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 3) * 8;
@@ -626,7 +626,7 @@ void statTomoyoEditor(int32_t player) {
 		}
 
 		// Aボタンで配置
-		if( getPressState(player, 4) && !statc[player * 10 + 3] ) {
+		if( getPressState(player, 4) && !statusc[player * 10 + 3] ) {
 			if(fld[bx[player] + by[player] * fldsizew[player] + player * 220] != blk[player] + 1) {
 				PlayWave(3);
 			}
@@ -634,7 +634,7 @@ void statTomoyoEditor(int32_t player) {
 			fldt[bx[player] + by[player] * fldsizew[player] + player * 220] = -1;
 		}
 		if( !getPressState(player, 4) ) {
-			statc[player * 10 + 3] = 0;
+			statusc[player * 10 + 3] = 0;
 		}
 
 		// HOLDボタンでブロック消去
@@ -648,10 +648,10 @@ void statTomoyoEditor(int32_t player) {
 
 		// Bボタンで戻る
 		if( getPushState(player, 5) ) {
-			statc[player * 10 + 1] = 0;			// ステータスカウンタを0にしてメニューに戻る
-			statc[player * 10 + 3] = 0;
+			statusc[player * 10 + 1] = 0;			// ステータスカウンタを0にしてメニューに戻る
+			statusc[player * 10 + 3] = 0;
 		}
-	} else if( statc[player * 10 + 1] == 2 ){		// RISE
+	} else if( statusc[player * 10 + 1] == 2 ){		// RISE
 		// カーソル表示
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 4) * 8;
@@ -710,7 +710,7 @@ void statTomoyoEditor(int32_t player) {
 		}
 
 		// Aボタンで配置
-		if( getPressState(player, 4) && !statc[player * 10 + 3] ) {
+		if( getPressState(player, 4) && !statusc[player * 10 + 3] ) {
 			if(tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] != blk[player] + 1) {
 				PlayWave(3);
 			}
@@ -718,7 +718,7 @@ void statTomoyoEditor(int32_t player) {
 //			fldt[bx[player] + by[player] * fldsizew[player] + player * 210] = -1;
 		}
 		if( !getPressState(player, 4) ) {
-			statc[player * 10 + 3] = 0;
+			statusc[player * 10 + 3] = 0;
 		}
 
 		// HOLDボタンでブロック消去
@@ -732,8 +732,8 @@ void statTomoyoEditor(int32_t player) {
 
 		// Bボタンで戻る
 		if( getPushState(player, 5) ) {
-			statc[player * 10 + 1] = 0;			// ステータスカウンタを0にしてメニューに戻る
-			statc[player * 10 + 3] = 0;
+			statusc[player * 10 + 1] = 0;			// ステータスカウンタを0にしてメニューに戻る
+			statusc[player * 10 + 3] = 0;
 		}
 	}
 }
@@ -741,8 +741,8 @@ void statTomoyoEditor(int32_t player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.19 - TOMOYOモード セレクト画面
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-// statc[player * 10]     : カーソル位置
-// statc[player * 10 + 1] : プレイ／トレーニングA／トレーニングB／エディット
+// statusc[player * 10]     : カーソル位置
+// statusc[player * 10 + 1] : プレイ／トレーニングA／トレーニングB／エディット
 void statTomoyoSelect(int32_t player) {
 	int32_t i;
 
@@ -767,53 +767,53 @@ void statTomoyoSelect(int32_t player) {
 		sprintf(string[0],"%2d",start_stage[player] + 1);
 	}
 
-	printFont(15 + 24 * player - 12 * maxPlay, 9, string[0],  (statc[player * 10] == 0) * count % 9 );
+	printFont(15 + 24 * player - 12 * maxPlay, 9, string[0],  (statusc[player * 10] == 0) * count % 9 );
 
 	// NEXTC #1.60c7l7
 	printFont(15 + 24 * player - 12 * maxPlay, 11, "NEXTC", 3);
 	sprintf(string[0],"%d",start_nextc[player]);
-	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0],  (statc[player * 10] == 1) * count % 9 );
+	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0],  (statusc[player * 10] == 1) * count % 9 );
 
 	// ゲームモード
 	printFont(15 + 24 * player - 12 * maxPlay, 14, "MODE", 3);
-	if(statc[player * 10 + 1] == 0)
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "PLAY", (statc[player * 10] == 2) * count % 9);
-	if(statc[player * 10 + 1] == 1)
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "TRAINING-A", (statc[player * 10] == 2) * count % 9);
-	if(statc[player * 10 + 1] == 2)
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "TRAINING-B", (statc[player * 10] == 2) * count % 9);
-	if(statc[player * 10 + 1] == 3)
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "EDIT", (statc[player * 10] == 2) * count % 9);
+	if(statusc[player * 10 + 1] == 0)
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "PLAY", (statusc[player * 10] == 2) * count % 9);
+	if(statusc[player * 10 + 1] == 1)
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "TRAINING-A", (statusc[player * 10] == 2) * count % 9);
+	if(statusc[player * 10 + 1] == 2)
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "TRAINING-B", (statusc[player * 10] == 2) * count % 9);
+	if(statusc[player * 10 + 1] == 3)
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "EDIT", (statusc[player * 10] == 2) * count % 9);
 
 	// ランダムモード #1.60c7l9
 	// DUAL対応 #1.60c7m1
 	printFont(15 + 24 * player - 12 * maxPlay, 17, "RANDOM", 3);
 	if(randommode[player])
-		printFont(15 + 24 * player - 12 * maxPlay, 18, "ON", (statc[player * 10] == 3) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, "ON", (statusc[player * 10] == 3) * count % 9);
 	else
-		printFont(15 + 24 * player - 12 * maxPlay, 18, "OFF", (statc[player * 10] == 3) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, "OFF", (statusc[player * 10] == 3) * count % 9);
 
 	// 足切りON/OFF #1.60c7m5
 	printFont(15 + 24 * player - 12 * maxPlay, 20, "BORDER", 3);
 	if(t_noborder[player])
-		printFont(15 + 24 * player - 12 * maxPlay, 21, "OFF", (statc[player * 10] == 4) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, "OFF", (statusc[player * 10] == 4) * count % 9);
 	else
-		printFont(15 + 24 * player - 12 * maxPlay, 21, "ON", (statc[player * 10] == 4) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, "ON", (statusc[player * 10] == 4) * count % 9);
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 0) ) {
 		PlayWave(5);
-		statc[player * 10]--;
-		if(statc[player * 10] < 0) statc[player * 10] = 4;
+		statusc[player * 10]--;
+		if(statusc[player * 10] < 0) statusc[player * 10] = 4;
 	}
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 1) ) {
 		PlayWave(5);
-		statc[player * 10]++;
-		if(statc[player * 10] > 4) statc[player * 10] = 0;
+		statusc[player * 10]++;
+		if(statusc[player * 10] > 4) statusc[player * 10] = 0;
 	}
 
 	// ←
@@ -823,35 +823,35 @@ void statTomoyoSelect(int32_t player) {
 
 		// 回転法則
 		/*
-		if(statc[player * 10] == 0) {
+		if(statusc[player * 10] == 0) {
 			rots[player]--;
 			if(rots[player] < 0) rots[player] = 3;
 		}
 		*/
 		// ステージ番号
-		if(statc[player * 10] == 0) {
+		if(statusc[player * 10] == 0) {
 			start_stage[player]--;
 			if(start_stage[player] < 0) start_stage[player] = 199;
 			// ステージデータ読み込み #1.60c7l9
 			loadTomoyoStage(player, start_stage[player]);
 		}
 		// NEXTC #1.60c7l7
-		if(statc[player * 10] == 1) {
+		if(statusc[player * 10] == 1) {
 			start_nextc[player]--;
 			if(start_nextc[player] < 0) start_nextc[player] = 1399;
 		}
 		// モード
-		if(statc[player * 10] == 2) {
-			statc[player * 10 + 1]--;
-			if(statc[player * 10 + 1] < 0) statc[player * 10 + 1] = 3;
+		if(statusc[player * 10] == 2) {
+			statusc[player * 10 + 1]--;
+			if(statusc[player * 10 + 1] < 0) statusc[player * 10 + 1] = 3;
 		}
 		// ランダムモード #1.60c7l9
-		if(statc[player * 10] == 3) {
+		if(statusc[player * 10] == 3) {
 			randommode[player] = !randommode[player];
 			versusInit(player);
 		}
 		// 足切りON/OFF #1.60c7m5
-		if(statc[player * 10] == 4) {
+		if(statusc[player * 10] == 4) {
 			t_noborder[player] = !t_noborder[player];
 		}
 	}
@@ -863,35 +863,35 @@ void statTomoyoSelect(int32_t player) {
 
 		// 回転法則
 		/*
-		if(statc[player * 10] == 0) {
+		if(statusc[player * 10] == 0) {
 			rots[player]++;
 			if(rots[player] > 3) rots[player] = 0;
 		}
 		*/
 		// ステージ番号
-		if(statc[player * 10] == 0) {
+		if(statusc[player * 10] == 0) {
 			start_stage[player]++;
 			if(start_stage[player] > 199) start_stage[player] = 0;
 			// ステージデータ読み込み #1.60c7l9
 			loadTomoyoStage(player, start_stage[player]);
 		}
 		// NEXTC #1.60c7l7
-		if(statc[player * 10] == 1) {
+		if(statusc[player * 10] == 1) {
 			start_nextc[player]++;
 			if(start_nextc[player] > 1399) start_nextc[player] = 0;
 		}
 		// モード
-		if(statc[player * 10] == 2) {
-			statc[player * 10 + 1]++;
-			if(statc[player * 10 + 1] > 3) statc[player * 10 + 1] = 0;
+		if(statusc[player * 10] == 2) {
+			statusc[player * 10 + 1]++;
+			if(statusc[player * 10 + 1] > 3) statusc[player * 10 + 1] = 0;
 		}
 		// ランダムモード #1.60c7l9
-		if(statc[player * 10] == 3) {
+		if(statusc[player * 10] == 3) {
 			randommode[player] = !randommode[player];
 			versusInit(player);
 		}
 		// 足切りON/OFF #1.60c7m5
-		if(statc[player * 10] == 4) {
+		if(statusc[player * 10] == 4) {
 			t_noborder[player] = !t_noborder[player];
 		}
 	}
@@ -903,9 +903,9 @@ void statTomoyoSelect(int32_t player) {
 			fld[i + 220 * player] = 0;
 			fldt[i + 220 * player] = 0;
 		}
-		stat_[player] = 2;					// SOLO MODEモードセレクト
-		statc[player * 10] = 0;				// ステータスカウンタを0に
-		statc[player * 10 + 1] = 0;			//
+		status[player] = 2;					// SOLO MODEモードセレクト
+		statusc[player * 10] = 0;				// ステータスカウンタを0に
+		statusc[player * 10 + 1] = 0;			//
 	}
 
 	// HOLDボタンでnextcを0に戻す
@@ -928,30 +928,30 @@ void statTomoyoSelect(int32_t player) {
 
 		bgmlv = setstartBGM(gameMode[player], player);		// BGM設定 #1.60c7o8
 
-		if( statc[player * 10 + 1] == 3 ) {
+		if( statusc[player * 10 + 1] == 3 ) {
 			// エディット
-			stat_[player] = 18;					// ステージエディタ
-			statc[player * 10] = 1;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 0;			// ステータスカウンタを0に
-			statc[player * 10 + 2] = 19;		// 戻り先設定
-		} else if( statc[player * 10 + 1] == 2 ) {
+			status[player] = 18;					// ステージエディタ
+			statusc[player * 10] = 1;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 0;			// ステータスカウンタを0に
+			statusc[player * 10 + 2] = 19;		// 戻り先設定
+		} else if( statusc[player * 10 + 1] == 2 ) {
 			// トレーニングB
 			t_training[player] = 2;				// トレーニングON
-			stat_[player] = 1;					// ブロックシャッター
-			statc[player * 10] = 0;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 3;			// Ready
-		} else if( statc[player * 10 + 1] == 1 ) {
+			status[player] = 1;					// ブロックシャッター
+			statusc[player * 10] = 0;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 3;			// Ready
+		} else if( statusc[player * 10 + 1] == 1 ) {
 			// トレーニングA
 			t_training[player] = 1;				// トレーニングON
-			stat_[player] = 1;					// ブロックシャッター
-			statc[player * 10] = 0;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 3;			// Ready
+			status[player] = 1;					// ブロックシャッター
+			statusc[player * 10] = 0;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 3;			// Ready
 		} else {
 			// プレイ
 			t_training[player] = 0;				// トレーニングOFF
-			stat_[player] = 1;					// ブロックシャッター
-			statc[player * 10] = 0;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 3;			// Ready
+			status[player] = 1;					// ブロックシャッター
+			statusc[player * 10] = 0;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 3;			// Ready
 		}
 	}
 	// NEXTをまとめてセット #1.60c7l9
@@ -963,18 +963,18 @@ void statTomoyoSelect(int32_t player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.20 - TOMOYOモード 結果表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-// statc[player * 10]     : コンティニューするか
-// statc[player * 10 + 1] : コンティニュー残り時間
-// statc[player * 10 + 2] : 2人同時でプレイしているか
-// statc[player * 10 + 3] : リプレイセーブ表示
+// statusc[player * 10]     : コンティニューするか
+// statusc[player * 10 + 1] : コンティニュー残り時間
+// statusc[player * 10 + 2] : 2人同時でプレイしているか
+// statusc[player * 10 + 3] : リプレイセーブ表示
 void statTomoyoResult(int32_t player) {
 	int32_t tmp;
 
-	statc[player * 10 + 1]++;
+	statusc[player * 10 + 1]++;
 
 	// 音楽を流す
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( (stat_[1 - player] == 0) && (!IsPlayWave(63)) && (wavebgm >= 1) ) PlayWave(63);
+	if( (status[1 - player] == 0) && (!IsPlayWave(63)) && (wavebgm >= 1) ) PlayWave(63);
 
 	// 警告音が鳴っていたら止める
 	StopSE(40);
@@ -987,8 +987,8 @@ void statTomoyoResult(int32_t player) {
 
 	// リプレイセーブ #1.60c7n8
 	ReplaySaveCheck(player, 3);
-	if(statc[player * 10 + 3]) {
-		sprintf(string[0], "SAVED : %02d", statc[player * 10 + 3]);
+	if(statusc[player * 10 + 3]) {
+		sprintf(string[0], "SAVED : %02d", statusc[player * 10 + 3]);
 		printFont(15 + 24 * player - 12 * maxPlay, 24, string[0], 5);
 	}
 
@@ -1045,10 +1045,10 @@ void statTomoyoResult(int32_t player) {
 	}
 	// コンティニュー選択
 	if( (!playback) && (!ending[player]) ) {
-		printSMALLFont(120 + 192 * player - 96 * maxPlay, 144, "CONTINUE", (statc[player * 10] == 0) * fontc[rots[player]]);
-		printSMALLFont(120 + 192 * player - 96 * maxPlay, 154, "END", (statc[player * 10] == 1) * fontc[rots[player]]);
+		printSMALLFont(120 + 192 * player - 96 * maxPlay, 144, "CONTINUE", (statusc[player * 10] == 0) * fontc[rots[player]]);
+		printSMALLFont(120 + 192 * player - 96 * maxPlay, 154, "END", (statusc[player * 10] == 1) * fontc[rots[player]]);
 
-		sprintf(string[0], "%2d", 10 - (statc[player * 10 + 1] / 60));
+		sprintf(string[0], "%2d", 10 - (statusc[player * 10 + 1] / 60));
 		printFont(17 + 24 * player - 12 * maxPlay, 22, "TIME", 6);
 		printFont(21 + 24 * player - 12 * maxPlay, 22, string[0], 0);
 	}
@@ -1057,18 +1057,18 @@ void statTomoyoResult(int32_t player) {
 	if(getPushState(player, 0) || getPushState(player, 1)) {
 		if(!ending[player]) {
 			PlayWave(5);
-			statc[player * 10] = !statc[player * 10];
+			statusc[player * 10] = !statusc[player * 10];
 		}
 	}
 
 	// Aボタン
-	if( (getPushState(player, 4)) || (statc[player * 10 + 1] >= 10 * 60) ) {
+	if( (getPushState(player, 4)) || (statusc[player * 10 + 1] >= 10 * 60) ) {
 		StopAllBGM();
 
 		if( playback ) {
 			// リプレイ #1.60c7n8
-			stat_[player] = 0;	// 参加待ち（タイトルへ）
-		} else if( (!statc[player * 10]) && (statc[player * 10 + 1] < 10 * 60) && (!ending[player]) ) {
+			status[player] = 0;	// 参加待ち（タイトルへ）
+		} else if( (!statusc[player * 10]) && (statusc[player * 10 + 1] < 10 * 60) && (!ending[player]) ) {
 			// YES
 			PlayWave(10);
 
@@ -1093,18 +1093,18 @@ void statTomoyoResult(int32_t player) {
 			time2[player] = 0;					// TOMOYO用プレイタイムをリセット
 			replay_save[player] = 1;			// リプレイセーブを可能にする
 
-			stat_[player] = 1;					// ブロックシャッター
-			statc[player * 10] = 0;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 3;			// Ready
+			status[player] = 1;					// ブロックシャッター
+			statusc[player * 10] = 0;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 3;			// Ready
 		} else {
 			// NO
-			stat_[player] = 11;				// ネームエントリ表示 #1.60c7p1
-			statc[player * 10] = 0;			// ステータスカウンタを0に
-			statc[player * 10 + 1] = 0;
-			statc[player * 10 + 2] = 0;
-			statc[player * 10 + 3] = 0;
-			statc[player * 10 + 4] = 0;
-			statc[player * 10 + 5] = 0;
+			status[player] = 11;				// ネームエントリ表示 #1.60c7p1
+			statusc[player * 10] = 0;			// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 0;
+			statusc[player * 10 + 2] = 0;
+			statusc[player * 10 + 3] = 0;
+			statusc[player * 10 + 4] = 0;
+			statusc[player * 10 + 5] = 0;
 		}
 	}
 }
@@ -1112,18 +1112,18 @@ void statTomoyoResult(int32_t player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.36 - TOMOYOモード F-Point用　ステージセレクト
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-// statc[player * 10]     : モード（0=最初 1=途中）
-// statc[player * 10 + 1] : タイマー
-// statc[player * 10 + 2] : カーソル位置
-// statc[player * 10 + 3] : 現在のステージ
+// statusc[player * 10]     : モード（0=最初 1=途中）
+// statusc[player * 10 + 1] : タイマー
+// statusc[player * 10 + 2] : カーソル位置
+// statusc[player * 10 + 3] : 現在のステージ
 void statTomoyoSelect_FP(int32_t player) {
 	int32_t i;
 
-	if(statc[player * 10 + 1] == 0){
+	if(statusc[player * 10 + 1] == 0){
 		loadTomoyoStage(player, stage[player]);
 		FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 		if(repversw <= 46) FP_bonus[player] = 10800;
-		statc[player * 10 + 3] = stage[player] - 99;
+		statusc[player * 10 + 3] = stage[player] - 99;
 		if(stage[player] == 190){	//ステージ90突破で流れ星
 			StopAllBGM();
 			PlayWave(43);
@@ -1131,7 +1131,7 @@ void statTomoyoSelect_FP(int32_t player) {
 		}
 	}
 
-	statc[player * 10 + 1]++;
+	statusc[player * 10 + 1]++;
 
 	padRepeat(player);
 	padRepeat2(player);
@@ -1141,7 +1141,7 @@ void statTomoyoSelect_FP(int32_t player) {
 	// ステージ番号
 	printFont(15 + 24 * player - 12 * maxPlay, 8, "    STAGE", 4);
 
-	if(statc[player * 10] == 0){	//最初
+	if(statusc[player * 10] == 0){	//最初
 		printFont(15 + 24 * player - 12 * maxPlay, 7, "  FIRST", 4);
 
 		sprintf(string[0],"F-POINT%3d",start_stage[player] - 99);
@@ -1176,40 +1176,40 @@ void statTomoyoSelect_FP(int32_t player) {
 	} else {
 		printFont(15 + 24 * player - 12 * maxPlay, 7, "   NEXT", 4);
 
-		sprintf(string[0], "%2d", 10 - (statc[player * 10 + 1] / 60));
+		sprintf(string[0], "%2d", 10 - (statusc[player * 10 + 1] / 60));
 		printFont(17 + 24 * player - 12 * maxPlay, 23, "TIME", 6);
 		printFont(21 + 24 * player - 12 * maxPlay, 23, string[0], 0);
 
 		for(i=0;i<=3;i++){
-			if(statc[player * 10 + 3] < 90){
-				if(statc[player * 10 + 3] + FP_next[i] <= 90)
-				sprintf(string[0], "%2d", statc[player * 10 + 3] + FP_next[i]);
+			if(statusc[player * 10 + 3] < 90){
+				if(statusc[player * 10 + 3] + FP_next[i] <= 90)
+				sprintf(string[0], "%2d", statusc[player * 10 + 3] + FP_next[i]);
 				else sprintf(string[0], "90");
 			}else{
-				if(statc[player * 10 + 3] + FP_next[i] <= 100)
-					sprintf(string[0], "%2d", statc[player * 10 + 3] + FP_next[i]);
+				if(statusc[player * 10 + 3] + FP_next[i] <= 100)
+					sprintf(string[0], "%2d", statusc[player * 10 + 3] + FP_next[i]);
 				else sprintf(string[0], "100");
 			}
 			printFont(18 + 24 * player - 12 * maxPlay, 10 + (i * 2), string[0], 0);
 		}
 
-		printFont(15 + 24 * player - 12 * maxPlay, 10 + ( statc[player * 10 + 2] * 2), "b", fontc[rots[player]]);
+		printFont(15 + 24 * player - 12 * maxPlay, 10 + ( statusc[player * 10 + 2] * 2), "b", fontc[rots[player]]);
 
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 0) ) {
 			PlayWave(5);
-			statc[player * 10 + 2]--;
-			if(statc[player * 10 + 2] < 0) statc[player * 10 + 2] = 3;
-			if(statc[player * 10 + 3] < 90){
-				if(statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] <= 90)
-				stage[player] = statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] + 99;
+			statusc[player * 10 + 2]--;
+			if(statusc[player * 10 + 2] < 0) statusc[player * 10 + 2] = 3;
+			if(statusc[player * 10 + 3] < 90){
+				if(statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] <= 90)
+				stage[player] = statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] + 99;
 				else stage[player] = 189;
 				if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 				loadTomoyoStage(player, stage[player]);
 			}else{
-				if(statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] <= 100)
-					stage[player] = statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] + 99;
+				if(statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] <= 100)
+					stage[player] = statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] + 99;
 				else stage[player] = 199;
 				if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 				loadTomoyoStage(player, stage[player]);
@@ -1220,17 +1220,17 @@ void statTomoyoSelect_FP(int32_t player) {
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, 1) ) {
 			PlayWave(5);
-			statc[player * 10 + 2]++;
-			if(statc[player * 10 + 2] > 3) statc[player * 10 + 2] = 0;
-			if(statc[player * 10 + 3] < 90){
-				if(statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] <= 90)
-				stage[player] = statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] + 99;
+			statusc[player * 10 + 2]++;
+			if(statusc[player * 10 + 2] > 3) statusc[player * 10 + 2] = 0;
+			if(statusc[player * 10 + 3] < 90){
+				if(statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] <= 90)
+				stage[player] = statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] + 99;
 				else stage[player] = 189;
 				if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 				loadTomoyoStage(player, stage[player]);
 			}else{
-				if(statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] <= 100)
-					stage[player] = statc[player * 10 + 3] + FP_next[statc[player * 10 + 2]] + 99;
+				if(statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] <= 100)
+					stage[player] = statusc[player * 10 + 3] + FP_next[statusc[player * 10 + 2]] + 99;
 				else stage[player] = 199;
 				if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 				loadTomoyoStage(player, stage[player]);
@@ -1239,18 +1239,18 @@ void statTomoyoSelect_FP(int32_t player) {
 	}
 
 	// Aボタン
-	if( (getPushState(player, 4)) || ((statc[player * 10] != 0) && (statc[player * 10 + 1] > 600)) ) {
+	if( (getPushState(player, 4)) || ((statusc[player * 10] != 0) && (statusc[player * 10 + 1] > 600)) ) {
 		PlayWave(10);
-		if( statc[player * 10] == 0 ) {
+		if( statusc[player * 10] == 0 ) {
 			// 最初
 			stage[player] = start_stage[player];
 			bgmlv = setstartBGM(gameMode[player], player);	//BGMセット
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
-			stat_[player] = 1;					// ブロックシャッター
-			statc[player * 10] = 0;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 3;			// Ready
-			statc[player * 10 + 2] = 0;
-			statc[player * 10 + 3] = 0;
+			status[player] = 1;					// ブロックシャッター
+			statusc[player * 10] = 0;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 3;			// Ready
+			statusc[player * 10 + 2] = 0;
+			statusc[player * 10 + 3] = 0;
 		}else{
 			//途中
 			//BGM切り替え判定
@@ -1264,22 +1264,22 @@ void statTomoyoSelect_FP(int32_t player) {
 				changeBGM(0);
 			}
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
-			stat_[player] = 3;					// Ready
-			statc[player * 10] = 0;				// ステータスカウンタを0に
-			statc[player * 10 + 1] = 0;			//
-			statc[player * 10 + 2] = 0;
-			statc[player * 10 + 3] = 0;
+			status[player] = 3;					// Ready
+			statusc[player * 10] = 0;				// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 0;			//
+			statusc[player * 10 + 2] = 0;
+			statusc[player * 10 + 3] = 0;
 		}
 	}
-	if(( statc[player * 10] == 0 ) && (getPushState(player, 5))) {		// Bボタンでモード選択画面に戻る
+	if(( statusc[player * 10] == 0 ) && (getPushState(player, 5))) {		// Bボタンでモード選択画面に戻る
 		sp[player] = 1;
 		PlayWave(5);
 		randommode[player] = 1;
 		versusInit(player);				// NEXTを生成し直す
 		randommode[player] = 0;
-		stat_[player] = 1;				// ブロックシャッター実行
-		statc[player * 10] = 0;			// ステータスカウンタを0に
-		statc[player * 10 + 1] = 2;		// シャッター後はステータスNo.2
+		status[player] = 1;				// ブロックシャッター実行
+		statusc[player * 10] = 0;			// ステータスカウンタを0に
+		statusc[player * 10 + 1] = 2;		// シャッター後はステータスNo.2
 		relaymode[player] = 0;
 	}
 }

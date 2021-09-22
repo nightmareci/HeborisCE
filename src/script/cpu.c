@@ -142,7 +142,7 @@ void cpuMove(int32_t player) {
 	if(cp_rot_c[player] > 0) cp_rot_c[player]--;
 
 	// 移動
-	if( (stat_[player] == 4) || (stat_[player] == 5) ) {
+	if( (status[player] == 4) || (status[player] == 5) ) {
 		if(cp_hold[player]) {
 			// HOLD
 			if(istrance[player]) cp_input[4 + player * 10] = 1;

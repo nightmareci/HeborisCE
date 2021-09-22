@@ -39,14 +39,14 @@ void statCMove(int32_t player) {
 	synchro = 0;
 	hiddenProc(player);
 
-	if(!statc[player * 10 + 2]) {
+	if(!statusc[player * 10 + 2]) {
 		padRepeat(player);
 
 		// Hold
-		if((repversw >= 64) && (!statc[player * 10 + 6])){
+		if((repversw >= 64) && (!statusc[player * 10 + 6])){
 			doHold(player, 0);
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
-			if(stat_[player] == 7) return;
+			if(status[player] == 7) return;
 		}
 
 		bs[player] = bs[player] + sp[player];
@@ -64,7 +64,7 @@ void statCMove(int32_t player) {
 		if(repversw < 35){
 			doHold(player, 0);
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
-			if(stat_[player] == 7) return;
+			if(status[player] == 7) return;
 		}
 
 		// ロールロール処理 #1.60c7j5
@@ -91,7 +91,7 @@ void statCMove(int32_t player) {
 		}
 
 		// 回転!!
-		if((statc[player * 10 + 6] != 0) && (repversw >= 59))
+		if((statusc[player * 10 + 6] != 0) && (repversw >= 59))
 			move = 0;
 		else
 			move = (getPushState(player, 5) || rolling) - (getPushState(player, 4) || getPushState(player, 6));
@@ -118,7 +118,7 @@ void statCMove(int32_t player) {
 					c_cblk_r[player] = ccol[k];
 
 				// 回転させた回数+1 #1.60c7s6
-				statc[player * 10 + 5]++;
+				statusc[player * 10 + 5]++;
 
 				// T-SPIN権利獲得 #1.60c7n6
 				if( judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0 ) {
@@ -148,7 +148,7 @@ void statCMove(int32_t player) {
 								c_cblk_r[player] = ccol[k];
 
 							// 回転させた回数+1 #1.60c7s6
-							statc[player * 10 + 5]++;
+							statusc[player * 10 + 5]++;
 
 							// T-SPIN権利獲得 #1.60c7n6
 							if( judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0 ) {
@@ -167,7 +167,7 @@ void statCMove(int32_t player) {
 									c_cblk_r[player] = wcol[k];
 
 								// 回転させた回数+1 #1.60c7s6
-								statc[player * 10 + 5]++;
+								statusc[player * 10 + 5]++;
 
 								kickc[player]++;
 
@@ -204,7 +204,7 @@ void statCMove(int32_t player) {
 									c_cblk_r[player] = ccol[k];
 
 								// 回転させた回数+1 #1.60c7s6
-								statc[player * 10 + 5]++;
+								statusc[player * 10 + 5]++;
 
 								break;
 							}
@@ -227,7 +227,7 @@ void statCMove(int32_t player) {
 								if(istrance[player])
 									c_cblk_r[player] = ccol[k];
 								// 回転させた回数+1 #1.60c7s6
-								statc[player * 10 + 5]++;
+								statusc[player * 10 + 5]++;
 
 								kickc[player]++;
 								break;
@@ -242,7 +242,7 @@ void statCMove(int32_t player) {
 		// 左右に移動
 		move = getPressState(player, 3) - getPressState(player, 2);
 		if(isLRreverse[player]) move = 0 - move;
-		if(move && (statc[player * 10 + 4])) {
+		if(move && (statusc[player * 10 + 4])) {
 			if((block_spectrum) && (heboGB[player]==0))
 			{
 				/* スムーズ時の表示異常を修正 via C++ Port */
@@ -266,7 +266,7 @@ void statCMove(int32_t player) {
 				}
 		}
 		synchro = 0;
-//		statc[player * 10 + 4] = 1; 				 // 最初の1フレームは移動させないゾ
+//		statusc[player * 10 + 4] = 1; 				 // 最初の1フレームは移動させないゾ
 
 		if(!nanameallow) move = 0;
 
@@ -275,7 +275,7 @@ void statCMove(int32_t player) {
 		if((!getPressState(player, 0+(1*(isUDreverse[player])))) || (!downtype) || (repversw < 12)) up_flag[player] = 0;
 
 		// 高速落下!! 下入れ制限改造#1.60c7f9
-		if((!move) && getPressState(player, 1-(1*(isUDreverse[player]))) && (sp[player] < 60) && (!down_flag[player]) && ((statc[player * 10 + 4]) || (repversw < 27))) {
+		if((!move) && getPressState(player, 1-(1*(isUDreverse[player]))) && (sp[player] < 60) && (!down_flag[player]) && ((statusc[player * 10 + 4]) || (repversw < 27))) {
 			bs[player] = 61;
 			if((gameMode[player]>=9)||((gameMode[player]==6)&&(anothermode[player]==4))||((gameMode[player]==7)&&(anothermode[player]==3))){
 				sc[player]++;//直入れ
@@ -307,7 +307,7 @@ void statCMove(int32_t player) {
 			// 下入れ制限#1.60c7f9
 			// 下入れ即接着 #1.60c7k8
 			if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player])
-						&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
+						&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 				if (repversw < 9)
 					bk[player] = bk[player] + 8;
 				else
@@ -321,7 +321,7 @@ void statCMove(int32_t player) {
 				else if(heboGB[player] == 1)
 					PlaySE(1);
 				kickc[player] = 0;	// 永久床蹴り防止用 #1.60c3
-				statc[player * 10 + 2]++;
+				statusc[player * 10 + 2]++;
 				drawCBlock(player, 0, 0, 0, 10, 0);
 				// 下入れ制限#1.60c7f9
 				if((getPressState(player, 1)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
@@ -336,7 +336,7 @@ void statCMove(int32_t player) {
 
 			// 上キーで一瞬で落下
 			// 上入れ制限追加 #1.60c7p1
-			if(getPressState(player, 0+(1*(isUDreverse[player]))) && (!move) && (!sonicdrop) && (!up_flag[player]) && (heboGB[player]==0) && ((statc[player * 10 + 4]) || (repversw < 27))) {
+			if(getPressState(player, 0+(1*(isUDreverse[player]))) && (!move) && (!sonicdrop) && (!up_flag[player]) && (heboGB[player]==0) && ((statusc[player * 10 + 4]) || (repversw < 27))) {
 				if((sp[player] <= 240) && (!ending[player])) {
 					if(gameMode[player]==10){
 						sc[player] = sc[player] + ( bottom - by[player] - 1 ) * 23 / 20;
@@ -367,7 +367,7 @@ void statCMove(int32_t player) {
 				bk[player] = 0;
 				if(!smooth) don = 1;
 				if((downtype) && (repversw < 54)) up_flag[player] = 1;
-				statc[player * 10 + 5] = 0;	// 回転させた数リセット #1.60c7s6
+				statusc[player * 10 + 5] = 0;	// 回転させた数リセット #1.60c7s6
 			}
 		}
 
@@ -396,12 +396,12 @@ void statCMove(int32_t player) {
 
 				// 下キーで即固定 #1.60c7r3
 				if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) && (repversw >= 15)
-							&& (statc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
+							&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 					PlaySE(1);
 					if(heboGB[player]==0)
 						PlaySE(3);
 					kickc[player] = 0;
-					statc[player * 10 + 2]++;
+					statusc[player * 10 + 2]++;
 					drawCBlock(player, 0, 0, 0, 10, 0);
 					if(downtype) down_flag[player] = 1;	// 下入れ制限
 					if(repversw >= 57) goto lockflash;	// SUPERなSKIP
@@ -409,11 +409,11 @@ void statCMove(int32_t player) {
 				}
 			} else {
 				// 回転させた数リセット #1.60c7s6
-				statc[player * 10 + 5] = 0;
+				statusc[player * 10 + 5] = 0;
 			}
 		}
 
-		statc[player * 10 + 4] = 1; 				 // 最初の1フレームは移動させないゾ
+		statusc[player * 10 + 4] = 1; 				 // 最初の1フレームは移動させないゾ
 
 		if((don) && (heboGB[player]!=1)) PlaySE(1);
 
@@ -427,17 +427,17 @@ void statCMove(int32_t player) {
 			drawCBlock(player, blk[player] + 1, kosa, 0, flash, 0);
 
 		// Hold
-		if((repversw >= 35) && (repversw < 64) && (!statc[player * 10 + 2]) && (!statc[player * 10 + 6])){
+		if((repversw >= 35) && (repversw < 64) && (!statusc[player * 10 + 2]) && (!statusc[player * 10 + 6])){
 			doHold(player, 0);
 			// HOLDしてゲームオーバーになった場合はここで止める #1.60c7m2
-			if(stat_[player] == 7) return;
+			if(status[player] == 7) return;
 		}
 
-		statc[player * 10 + 6] = 0;
-		if((repversw >= 59) && (statc[player * 10 + 2] != 0)) goto lockflash;	// SUPERなSKIP
+		statusc[player * 10 + 6] = 0;
+		if((repversw >= 59) && (statusc[player * 10 + 2] != 0)) goto lockflash;	// SUPERなSKIP
 	} else {
 		lockflash:
-		statc[player * 10 + 2]++;
+		statusc[player * 10 + 2]++;
 		if((c_nblk[0 + player * 6] != 8) && (c_nblk[0 + player * 6] >= 0))drawCBlock (player, 0, 0, 0, 10, 0);
 
 		// ↓を離している場合、下入れ制限解除#1.60c7n6
@@ -446,9 +446,9 @@ void statCMove(int32_t player) {
 		if(!getPressState(player, 0+(1*(isUDreverse[player])))) up_flag[player] = 0;
 		else if((downtype) && (repversw >= 54)) up_flag[player] = 1;
 
-		if(statc[player * 10 + 2] > 2 - (repversw >= 9)) {	// 接着時の灰色化を1フレ短縮 #1.60c7k8
+		if(statusc[player * 10 + 2] > 2 - (repversw >= 9)) {	// 接着時の灰色化を1フレ短縮 #1.60c7k8
 			setBlock(player, bx[player], by[player], blk[player], rt[player]);
-			if(stat_[player] == 7) return;
+			if(status[player] == 7) return;
 
 			ndelay[player] = 1;
 
@@ -456,7 +456,7 @@ void statCMove(int32_t player) {
 
 			// T-SPIN獲得 #1.60c7s6
 			//すでにtspin_flagは立ってる
-			if((tspin_flag[player]) && (blk[player] == 4) && ((tspin_type>=2) || (gameMode[player] == 8)) && (statc[player * 10 + 5] > 0) && (isTSpin(player) >= 3) ) {
+			if((tspin_flag[player]) && (blk[player] == 4) && ((tspin_type>=2) || (gameMode[player] == 8)) && (statusc[player * 10 + 5] > 0) && (isTSpin(player) >= 3) ) {
 				PlaySE(34);
 				tspin_c[player] = 120;
 				last_tspin[player] = 0;
@@ -484,25 +484,25 @@ void statCMove(int32_t player) {
 			if((ace_irs == 2) && (repversw >= 35)) doIRS2plus(player);
 			// ブロック消去判断により1フレ短縮 #1.60c7k8
 			if ((blockEraseJudge(player)) || (repversw < 9)) {
-				stat_[player] = 8;
-				statc[player * 10] = 0;
-				statc[player * 10 + 1] = 0;
-				statc[player * 10 + 2] = 0;
-				statc[player * 10 + 3] = 0;
-				statc[player * 10 + 4] = 0;
-				statc[player * 10 + 5] = 0;
-				statc[player * 10 + 6] = 0;
+				status[player] = 8;
+				statusc[player * 10] = 0;
+				statusc[player * 10 + 1] = 0;
+				statusc[player * 10 + 2] = 0;
+				statusc[player * 10 + 3] = 0;
+				statusc[player * 10 + 4] = 0;
+				statusc[player * 10 + 5] = 0;
+				statusc[player * 10 + 6] = 0;
 				//ステータス変更と同時に次のステータス関数を実行する事で1フレ短縮　C7V2.1
 				if(repversw >= 54) statEraseBlock(player);
 			} else {
-				stat_[player] = 6;
-				statc[player * 10] = wait1[player];
-				statc[player * 10 + 1] = 15;
-				statc[player * 10 + 2] = 0;
-				statc[player * 10 + 3] = 2;
-				statc[player * 10 + 4] = 0;
-				statc[player * 10 + 5] = 0;
-				statc[player * 10 + 6] = 0;
+				status[player] = 6;
+				statusc[player * 10] = wait1[player];
+				statusc[player * 10 + 1] = 15;
+				statusc[player * 10 + 2] = 0;
+				statusc[player * 10 + 3] = 2;
+				statusc[player * 10 + 4] = 0;
+				statusc[player * 10 + 5] = 0;
+				statusc[player * 10 + 6] = 0;
 
 				cmbpts[player] = 0;
 				combo[player] = 0;

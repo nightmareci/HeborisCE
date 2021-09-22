@@ -10,30 +10,30 @@ void statMissionSelect(int32_t player) {
 	if( (!IsPlayWave(62)) && (wavebgm >= 1) ) {
 		PlayWave(62);
 	}
-	if(statc[player * 10 + 4] > 0){
-		statc[player * 10 + 4]--;
-		if(statc[player * 10 + 4] == 0) PlaySE(5);
-	} else if(statc[player * 10 + 4] < 0){
-		statc[player * 10 + 4]++;
-		if(statc[player * 10 + 4] == 0) PlaySE(5);
+	if(statusc[player * 10 + 4] > 0){
+		statusc[player * 10 + 4]--;
+		if(statusc[player * 10 + 4] == 0) PlaySE(5);
+	} else if(statusc[player * 10 + 4] < 0){
+		statusc[player * 10 + 4]++;
+		if(statusc[player * 10 + 4] == 0) PlaySE(5);
 	}
 
 	printFont(15 + 24 * player - 12 * maxPlay, 5, "START!", (vslevel[0] <= 1) * count % 9);
 	ExBltRect(77, 120 + 192 * player -96 * maxPlay , 52,  (count % 40) * 3, 28, 60, 8);
 
 		printFont(15 + 24 * player - 12 * maxPlay, 10, "<        >", (vslevel[0] == 0) * count % 9);
-		if(statc[player * 10 + 4] < 0){
-			ExBltRect(55,128 + ((16+statc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 63,
+		if(statusc[player * 10 + 4] < 0){
+			ExBltRect(55,128 + ((16+statusc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 63,
 				(64*(rots[player]+1))*(rots[player]<8),32*(fontc[(rots[player]+1)*(rots[player]<8)]),
-				(statc[player * 10 + 4]* -4),32);
+				(statusc[player * 10 + 4]* -4),32);
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 63,
-				(64*rots[player])+(statc[player * 10 + 4] * -4),32*fontc[rots[player]],((16+statc[player * 10 + 4])* 4),32);
-		} else if(statc[player * 10 + 4] > 0){
-			ExBltRect(55,128 + (statc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 63,
-				(64*rots[player]),32*fontc[rots[player]],((16-statc[player * 10 + 4])* 4),32);
+				(64*rots[player])+(statusc[player * 10 + 4] * -4),32*fontc[rots[player]],((16+statusc[player * 10 + 4])* 4),32);
+		} else if(statusc[player * 10 + 4] > 0){
+			ExBltRect(55,128 + (statusc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 63,
+				(64*rots[player]),32*fontc[rots[player]],((16-statusc[player * 10 + 4])* 4),32);
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 63,
-				(64*(rots[player]-1))+576*(rots[player]==0)+((16-statc[player * 10 + 4]) * 4),
-				32*fontc[rots[player]-1+(9*(rots[player]==0))],(statc[player * 10 + 4] * 4),32);
+				(64*(rots[player]-1))+576*(rots[player]==0)+((16-statusc[player * 10 + 4]) * 4),
+				32*fontc[rots[player]-1+(9*(rots[player]==0))],(statusc[player * 10 + 4] * 4),32);
 		} else ExBltRect(55,128 + 192 * player -96 * maxPlay , 63, 64*rots[player] ,32*fontc[rots[player]],64,32);
 		ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
 
@@ -82,7 +82,7 @@ void statMissionSelect(int32_t player) {
 		if(vslevel[0] == 0) {
 			rots[player]--;
 			if(rots[player] < 0) rots[player] = 8;
-			statc[player * 10 + 4] = -16;
+			statusc[player * 10 + 4] = -16;
 			setNextBlockColors(player, 1);
 		}
 		if(vslevel[0] == 1) {
@@ -105,7 +105,7 @@ void statMissionSelect(int32_t player) {
 		if(vslevel[0] == 0) {
 			rots[player]++;
 			if(rots[player] > 8) rots[player] = 0;
-			statc[player * 10 + 4] = 16;
+			statusc[player * 10 + 4] = 16;
 			setNextBlockColors(player, 1);
 		}
 		if(vslevel[0] == 1) {
@@ -150,17 +150,17 @@ void statMissionSelect(int32_t player) {
 				bgmlv = mission_bgm[c_mission];
 			else fadelv[0] = 10;
 			if(repversw < 54)missionSetStatus();
-			stat_[player] = 1;				// ブロックシャッター実行
-			statc[player * 10] = 0;			// ステータスカウンタを0に
-			statc[player * 10 + 1] = 3;		// シャッター後はステータスNo.3
-			statc[player * 10 + 4] = 0;
+			status[player] = 1;				// ブロックシャッター実行
+			statusc[player * 10] = 0;			// ステータスカウンタを0に
+			statusc[player * 10 + 1] = 3;		// シャッター後はステータスNo.3
+			statusc[player * 10 + 4] = 0;
 			return;
 		}
 		if((vslevel[0] == 2) && ((mission_file >= 25) || (debug))) {
 			// EDIT
 			StopAllBGM();
-			statc[player * 10 + 4] = 0;
-			stat_[player] = 24;
+			statusc[player * 10 + 4] = 0;
+			status[player] = 24;
 		}
 		if(vslevel[0] == 3) {
 			// LOAD
@@ -183,17 +183,17 @@ void statMissionEditor(int32_t player) {
 	// 問題の種類
 	printFont(15 + 24 * player - 12 * maxPlay, 5, "TYPE", fontc[rots[player]]);
 
-	printFont(15 + 24 * player - 12 * maxPlay, 6, mission_name_editor[mission_type[c_mission]], (statc[0 + player * 10] == 0) * count % 9);
+	printFont(15 + 24 * player - 12 * maxPlay, 6, mission_name_editor[mission_type[c_mission]], (statusc[0 + player * 10] == 0) * count % 9);
 
 	// ノルマ
 	printFont(15 + 24 * player - 12 * maxPlay, 7, "NORM", fontc[rots[player]]);
 	sprintf(string[0], "%d", mission_norm[c_mission]);
-	printFont(15 + 24 * player - 12 * maxPlay, 8, string[0], (statc[0 + player * 10] == 1) * count % 9);
+	printFont(15 + 24 * player - 12 * maxPlay, 8, string[0], (statusc[0 + player * 10] == 1) * count % 9);
 
 	// 制限時間
 	printFont(15 + 24 * player - 12 * maxPlay, 9, "TIME", fontc[rots[player]]);
 	getTime(mission_time[c_mission]);
-	printFont(15 + 24 * player - 12 * maxPlay, 10, string[0], (statc[0 + player * 10] == 2) * count % 9);
+	printFont(15 + 24 * player - 12 * maxPlay, 10, string[0], (statusc[0 + player * 10] == 2) * count % 9);
 
 	// レベル
 	printFont(15 + 24 * player - 12 * maxPlay, 11, "LEVEL", fontc[rots[player]]);
@@ -201,7 +201,7 @@ void statMissionEditor(int32_t player) {
 		sprintf(string[0], "PLUS %d", mission_lv[c_mission] + 1 - 15);
 	else
 		sprintf(string[0], "%d", mission_lv[c_mission] + 1);
-	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0], (statc[0 + player * 10] == 3) * count % 9);
+	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0], (statusc[0 + player * 10] == 3) * count % 9);
 
 	// エンディング
 	printFont(15 + 24 * player - 12 * maxPlay, 13, "ENDING", fontc[rots[player]]);
@@ -220,7 +220,7 @@ void statMissionEditor(int32_t player) {
 	} else if(mission_end[c_mission] == 6) {
 		sprintf(string[0], "DEVIL+M ROLL");
 	}
-	printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], (statc[0 + player * 10] == 4) * count % 9);
+	printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], (statusc[0 + player * 10] == 4) * count % 9);
 
 	// 消去ライン数
 	if(mission_erase[c_mission] < -20){
@@ -233,25 +233,25 @@ void statMissionEditor(int32_t player) {
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "ERASE LINE", fontc[rots[player]]);
 		sprintf(string[0], "%d", mission_erase[c_mission]);
 	}
-	printFont(15 + 24 * player - 12 * maxPlay, 16, string[0], (statc[0 + player * 10] == 5) * count % 9);
+	printFont(15 + 24 * player - 12 * maxPlay, 16, string[0], (statusc[0 + player * 10] == 5) * count % 9);
 	// 追加情報
 	// 18行目MAX 19行目MIN 20行目OPT(ターゲットだと解説)　21行目解説
 	printFont(15 + 24 * player - 12 * maxPlay, 17, "OPTIONS", fontc[rots[player]]);
 	if((mission_type[c_mission] == 2)||(mission_type[c_mission] == 3)){
 		sprintf(string[0], "GRADE:%d",mission_opt_1[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "0=N1=E2=H");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 
 	}
 	else if(mission_type[c_mission] == 6){   //ターゲット
 		sprintf(string[0], "MINSTAGE:%d", mission_opt_1[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "MAXSTAGE:%d", mission_opt_2[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
-		if((statc[0 + player * 10] == 6) || (statc[0 + player * 10] == 7)){
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
+		if((statusc[0 + player * 10] == 6) || (statusc[0 + player * 10] == 7)){
 			sprintf(string[0], "0-26=TI ");
 			printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], 3);
 			sprintf(string[0], "27-44=EH");
@@ -268,124 +268,124 @@ void statMissionEditor(int32_t player) {
 			}else{
 				sprintf(string[0], "RANDTGT:%d", mission_opt_3[c_mission]);
 			}
-			printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+			printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		}
 	}
 	else if((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39)){   //イレイさー
 		sprintf(string[0], "MINLINE:%d", mission_opt_1[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "MAXLINE:%d", mission_opt_2[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "VIEWLINE:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "MAX:3");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "MIN:0");
-		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 10){  //アナザー
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "BLINDON:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "0:OFF 1:ON");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 19){  //DEVIL 800
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "RISEPACE:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "MAX:20");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "MIN:1");
-		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 20){  //DEVIL 1200
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "SPEED:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "0:OLD");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "1:DOOM");
-		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 21){  //GARBAGE
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "RISELINE:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "MAX:18");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 26){  //ALLCLEAR
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "NOBIG:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "0:OFF 1:ON");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 27){  //COMBO
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "NOT1LINE:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		sprintf(string[0], "0:OFF 1:ON");
-		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "HOLD USE:%d",mission_opt_2[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "BLOCK:%d", mission_opt_3[c_mission]);
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
-		printFont(15 + 24 * player - 12 * maxPlay, 21, "(0-8)", (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 21, "(0-8)", (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	// その他
 	else {
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statc[0 + player * 10] == 6) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statc[0 + player * 10] == 7) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		sprintf(string[0], "NO OPTION");
-		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statc[0 + player * 10] == 8) * count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 24, "BGM", fontc[rots[player]]);
 	if(mission_bgm[c_mission] == -1)
 		sprintf(string[0], "FADE");
 	else
 		sprintf(string[0], "%d", mission_bgm[c_mission]);
-	printFont(19 + 24 * player - 12 * maxPlay, 24, string[0], (statc[0 + player * 10] == 9) * count % 9);
+	printFont(19 + 24 * player - 12 * maxPlay, 24, string[0], (statusc[0 + player * 10] == 9) * count % 9);
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 0) ) {
 		PlaySE(5);
-		statc[0 + player * 10]--;
-		if(statc[0 + player * 10] < 0) statc[0 + player * 10] = 9;
+		statusc[0 + player * 10]--;
+		if(statusc[0 + player * 10] < 0) statusc[0 + player * 10] = 9;
 	}
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, 1) ) {
 		PlaySE(5);
-		statc[0 + player * 10]++;
-		if(statc[0 + player * 10] > 9) statc[0 + player * 10] = 0;
+		statusc[0 + player * 10]++;
+		if(statusc[0 + player * 10] > 9) statusc[0 + player * 10] = 0;
 	}
 
 	// ←
@@ -394,49 +394,49 @@ void statMissionEditor(int32_t player) {
 		PlaySE(3);
 
 		// TYPE
-		if(statc[0 + player * 10] == 0) {
+		if(statusc[0 + player * 10] == 0) {
 			mission_type[c_mission]--;
 			if(mission_type[c_mission] < 0) mission_type[c_mission] = 41;
 		}
 		// NORM
-		if(statc[0 + player * 10] == 1) {
+		if(statusc[0 + player * 10] == 1) {
 			mission_norm[c_mission]--;
 			if(mission_norm[c_mission] < 0) mission_norm[c_mission] = 99;
 		}
 		// TIME
-		if(statc[0 + player * 10] == 2) {
+		if(statusc[0 + player * 10] == 2) {
 			mission_time[c_mission] = mission_time[c_mission] - 60;
 			if(mission_time[c_mission] < 0) mission_time[c_mission] = 60 * 60 * 20;
 		}
 		// LEVEL
-		if(statc[0 + player * 10] == 3) {
+		if(statusc[0 + player * 10] == 3) {
 			mission_lv[c_mission]--;
 			if(mission_lv[c_mission] < 0) mission_lv[c_mission] = 29;
 		}
 		// ENDING
-		if(statc[0 + player * 10] == 4) {
+		if(statusc[0 + player * 10] == 4) {
 			mission_end[c_mission]--;
 			if(mission_end[c_mission] < 0) mission_end[c_mission] = 6;
 		}
 		// ERASE LINE
-		if(statc[0 + player * 10] == 5) {
+		if(statusc[0 + player * 10] == 5) {
 			mission_erase[c_mission]--;
 			if(mission_erase[c_mission] < -40) mission_erase[c_mission] = 21;
 		}
 		// OPTIONS
-		if(statc[0 + player * 10] == 6) {
+		if(statusc[0 + player * 10] == 6) {
 			mission_opt_1[c_mission]--;
 			if(mission_opt_1[c_mission] < 0) mission_opt_1[c_mission] = 199;
 		}
-		if(statc[0 + player * 10] == 7) {
+		if(statusc[0 + player * 10] == 7) {
 			mission_opt_2[c_mission]--;
 			if(mission_opt_2[c_mission] < 0) mission_opt_2[c_mission] = 199;
 		}
-		if(statc[0 + player * 10] == 8) {
+		if(statusc[0 + player * 10] == 8) {
 			mission_opt_3[c_mission]--;
 			if(mission_opt_3[c_mission] < 0) mission_opt_3[c_mission] = 99;
 		}
-		if(statc[0 + player * 10] == 9) {
+		if(statusc[0 + player * 10] == 9) {
 			mission_bgm[c_mission]--;
 			if(mission_bgm[c_mission] < -1) mission_bgm[c_mission] = 19;
 		}
@@ -448,49 +448,49 @@ void statMissionEditor(int32_t player) {
 		PlaySE(3);
 
 		// TYPE
-		if(statc[0 + player * 10] == 0) {
+		if(statusc[0 + player * 10] == 0) {
 			mission_type[c_mission]++;
 			if(mission_type[c_mission] > 41) mission_type[c_mission] = 0;
 		}
 		// NORM
-		if(statc[0 + player * 10] == 1) {
+		if(statusc[0 + player * 10] == 1) {
 			mission_norm[c_mission]++;
 			if(mission_norm[c_mission] > 99) mission_norm[c_mission] = 0;
 		}
 		// TIME
-		if(statc[0 + player * 10] == 2) {
+		if(statusc[0 + player * 10] == 2) {
 			mission_time[c_mission] = mission_time[c_mission] + 60;
 			if(mission_time[c_mission] > 60 * 60 * 20) mission_time[c_mission] = 0;
 		}
 		// LEVEL
-		if(statc[0 + player * 10] == 3) {
+		if(statusc[0 + player * 10] == 3) {
 			mission_lv[c_mission]++;
 			if(mission_lv[c_mission] > 29) mission_lv[c_mission] = 0;
 		}
 		// ENDING
-		if(statc[0 + player * 10] == 4) {
+		if(statusc[0 + player * 10] == 4) {
 			mission_end[c_mission]++;
 			if(mission_end[c_mission] > 6) mission_end[c_mission] = 0;
 		}
 		// ERASE LINE
-		if(statc[0 + player * 10] == 5) {
+		if(statusc[0 + player * 10] == 5) {
 			mission_erase[c_mission]++;
 			if(mission_erase[c_mission] > 21) mission_erase[c_mission] = -40;
 		}
 		// OPTIONS
-		if(statc[0 + player * 10] == 6) {
+		if(statusc[0 + player * 10] == 6) {
 			mission_opt_1[c_mission]++;
 			if(mission_opt_1[c_mission] > 199) mission_opt_1[c_mission] = 0;
 		}
-		if(statc[0 + player * 10] == 7) {
+		if(statusc[0 + player * 10] == 7) {
 			mission_opt_2[c_mission]++;
 			if(mission_opt_2[c_mission] > 199) mission_opt_2[c_mission] = 0;
 		}
-		if(statc[0 + player * 10] == 8) {
+		if(statusc[0 + player * 10] == 8) {
 			mission_opt_3[c_mission]++;
 			if(mission_opt_3[c_mission] > 99) mission_opt_3[c_mission] = 0;
 		}
-		if(statc[0 + player * 10] == 9) {
+		if(statusc[0 + player * 10] == 9) {
 			mission_bgm[c_mission]++;
 			if(mission_bgm[c_mission] > 19) mission_bgm[c_mission] = -1;
 		}
@@ -498,8 +498,8 @@ void statMissionEditor(int32_t player) {
 
 	// AまたはBボタン
 	if( getPushState(player, 4) || getPushState(player, 5) ) {
-		stat_[player] = 23;	// セレクト画面に戻る
-		statc[0 + player * 10] = 0;
+		status[player] = 23;	// セレクト画面に戻る
+		statusc[0 + player * 10] = 0;
 	}
 }
 
@@ -877,10 +877,10 @@ void missionNormUp(int32_t lines) {
 
 				for(i = 0; i < 22; i++) erase[i] = 1;
 
-				stat_[0] = 25;	// 全ライン消去
-				statc[0 * 10 + 0] = wait1[0];	//待ち時間スキップ
-				statc[0 * 10 + 1] = 3;	// Ready
-				statc[0 * 10 + 2] = 1;	// ステージ読み込みあり
+				status[0] = 25;	// 全ライン消去
+				statusc[0 * 10 + 0] = wait1[0];	//待ち時間スキップ
+				statusc[0 * 10 + 1] = 3;	// Ready
+				statusc[0 * 10 + 2] = 1;	// ステージ読み込みあり
 			}
 		}
 	}
@@ -965,7 +965,7 @@ void missionNormUp(int32_t lines) {
 	}
 
 	// OOBAKA
-	if( (mission_type[c_mission] == 29) && (stat_[0] == 6) && ((timeOn[0]) || (repversw < 58)) ) {
+	if( (mission_type[c_mission] == 29) && (status[0] == 6) && ((timeOn[0]) || (repversw < 58)) ) {
 		c_norm[0]++;
 	}
 
@@ -1507,7 +1507,7 @@ void viewEraserLines() {
 // ターゲットでのステージ読み込み
 void loadTargetStage() {
 	int32_t tmp;
-statc[0 * 10 + 6] = mission_opt_3[c_mission];
+statusc[0 * 10 + 6] = mission_opt_3[c_mission];
 	if(mission_opt_1[c_mission] == mission_opt_2[c_mission]){	//ステージが1つだけ
 		tmp = mission_opt_1[c_mission];
 	}else{

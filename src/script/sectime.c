@@ -196,7 +196,7 @@ void viewbestSTtimes(int32_t player){
 	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//セクションタイム
 
 	}else if((gameMode[player]==6) && (stage[player] < 27)){//ベストタイム
-		if( (gameMode[player] == 6) && ((!maxPlay) || (stat_[1 - player] == 0)) ) {
+		if( (gameMode[player] == 6) && ((!maxPlay) || (status[1 - player] == 0)) ) {
 			//bestの文字
 			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 251, 91, 21, 7);
 			//timeの文字

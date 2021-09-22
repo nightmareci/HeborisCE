@@ -13,7 +13,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 		for(i = 0; i < 10; i++) {
 			if(IsPushKey(2 + i + player * 14)) {
 				saveReplayData(player, i + player * 10 + 1);
-				statc[player * 10 + statnumber] = i + player * 10 + 1;
+				statusc[player * 10 + statnumber] = i + player * 10 + 1;
 			}
 		}
 	}
@@ -745,11 +745,11 @@ int32_t ReplaySelectProc(void) {
 
 		timeOn[0] = 0;
 		onRecord[0] = 0;
-		stat_[0] = 1;					// ブロックシャッター実行
-		statc[0] = 0;					// ステータスカウンタを0に
-		statc[1] = 3;					// シャッター後はステータスNo.3
+		status[0] = 1;					// ブロックシャッター実行
+		statusc[0] = 0;					// ステータスカウンタを0に
+		statusc[1] = 3;					// シャッター後はステータスNo.3
 		if(examination[0])
-		statc[1] = 30;
+		statusc[1] = 30;
 		//next[0] = nextb[nextc[0]];		// #1.60c7
 		if(gameMode[0] == 6){
 			if((start_stage[0] >= 27) && (start_stage[0] <= 44))
@@ -789,9 +789,9 @@ int32_t ReplaySelectProc(void) {
 			onRecord[1] = 0;
 			hnext[1] = max_hnext[1];
 			gameMode[1] = 4;		// 2P 設定
-			stat_[1] = 1;			// ブロックシャッター実行
-			statc[0 + 10] = 0;		// ステータスカウンタを0に
-			statc[1 + 10] = 3;		// シャッター後はステータスNo.3
+			status[1] = 1;			// ブロックシャッター実行
+			statusc[0 + 10] = 0;		// ステータスカウンタを0に
+			statusc[1 + 10] = 3;		// シャッター後はステータスNo.3
 			if(!tmp_maxPlay)
 				maxPlay = 1;
 			domirror = 0;

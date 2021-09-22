@@ -372,7 +372,7 @@ void statSelectLevel(int32_t player) {
 
 	padRepeat2(0);
 	// ↑
-	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statc[1])){
+	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
 		if(getPressState(player, 0)) {
 			PlaySE(5);
 
@@ -383,7 +383,7 @@ void statSelectLevel(int32_t player) {
 	}
 
 	// ↓
-	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statc[1])){
+	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
 		if(getPressState(player, 1)) {
 			PlaySE(5);
 
@@ -933,10 +933,10 @@ void statSelectLevel(int32_t player) {
 
 			if(p_stage != -1) {
 				stage[0] = p_stage;			// ステージ設定
-				stat_[0] = 18;					// ステージエディタ
-				statc[0 * 10] = 1;				// ステータスカウンタを0に
-				statc[0 * 10 + 1] = 0;			// ステータスカウンタを0に
-				statc[0 * 10 + 2] = 9;			// 戻り先設定
+				status[0] = 18;					// ステージエディタ
+				statusc[0 * 10] = 1;				// ステータスカウンタを0に
+				statusc[0 * 10 + 1] = 0;			// ステータスカウンタを0に
+				statusc[0 * 10 + 2] = 9;			// 戻り先設定
 				loadTomoyoStage(0,p_stage);	// 読み込み
 			} else {
 				for(i=0;i<220;i++) {
@@ -956,7 +956,7 @@ void statSelectLevel(int32_t player) {
 // START!の部分だけ分離#1.60cf
 void PracticeStart(void){
 	playerInitial(1); // 2Pを初期化して結果を消去
-	stat_[1] = 10; // 2Pの動きを停止
+	status[1] = 10; // 2Pの動きを停止
 
 	TextLayerOff(0);
 	upLines[0] = 0;
@@ -1043,9 +1043,9 @@ void PracticeStart(void){
 
 	}
 	hole[0] = gameRand(10,0);
-	stat_[0] = 3;					// Ready
-	statc[0 * 10] = 0;				// ステータスカウンタを0に
-	statc[0 * 10 + 1] = 0;
+	status[0] = 3;					// Ready
+	statusc[0 * 10] = 0;				// ステータスカウンタを0に
+	statusc[0 * 10 + 1] = 0;
 }
 
 
@@ -1156,8 +1156,8 @@ void PracticeOver(void) {
 	versusInit(0);					// ネクストを初期化 #1.60c7
 	playerInitial(0);				// 1Pのみ初期化
 	gameMode[0] = 5;				// VSモード
-	stat_[0] = 9;					// ステータスNo.9(VSモードレベルセレクト)
-	stat_[1] = 10;					// 2PはステータスNo.10(WAIT)
+	status[0] = 9;					// ステータスNo.9(VSモードレベルセレクト)
+	status[1] = 10;					// 2PはステータスNo.10(WAIT)
 	backno = p_backno;
 	flag = 0;
 

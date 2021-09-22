@@ -727,7 +727,7 @@ extern int32_t blk[2];
 extern int32_t fld[10 *22 *2];
 extern int32_t next[2 *3];
 extern int32_t sc[2],lv[2],li[2];
-extern int32_t stat_[2],statc[10 *2];
+extern int32_t status[2],statusc[10 *2];
 extern int32_t backno;
 extern int32_t count;
 extern int32_t bgmteisiflg;

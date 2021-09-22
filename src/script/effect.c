@@ -6,14 +6,14 @@
 
 void effect(int32_t player) {
 	if(ready_go_style) return;
-	statc[player * 10]++;
+	statusc[player * 10]++;
 
-	if(statc[player * 10 + 1] == 1) {
-		if(statc[player * 10] < 30)
+	if(statusc[player * 10 + 1] == 1) {
+		if(statusc[player * 10] < 30)
 			//                           ↓が+になっていたので修正#1.60c7f6
 			ExBltRect(3, 117 + player * 192 - 96 * maxPlay, 119, 0, 17, 86, 17);
 		else
-			statc[player * 10 + 1] = 0;
+			statusc[player * 10 + 1] = 0;
 	}
 }
 
@@ -431,7 +431,7 @@ void objectNagareboshiC(int32_t no) {
 //objw[no]：REFLECTで跳ね返された
 void objectItemWarning(int32_t no){
 
-	if((objc[no] == 0) && ((stat_[objp[no]] == 5) || (fmirror_cnt[objp[no]] >= 0))){
+	if((objc[no] == 0) && ((status[objp[no]] == 5) || (fmirror_cnt[objp[no]] >= 0))){
 		objc[no] = 1;
 		objy[no] = 1;
 	}

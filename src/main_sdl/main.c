@@ -2,8 +2,6 @@
 #include "gamestart.h"
 #include "physfs.h"
 
-bool PollEvent(); // イベント処理
-
 int main(int argc, char* argv[])
 {
 	/* SDLの初期化 */

@@ -146,7 +146,7 @@ void RankingProc2_1(void) {
 
 		spriteTime();
 
-		if(getPushState(0, 4) || getPushState(1, 4) || getPushState(0, 5) || getPushState(1, 5)) {
+		if(getPushState(0, 4) || getPushState(1, 4) || getPushState(0, 5) || getPushState(1, 5) || IsPushEscKey()) {
 			flag = -1;
 		}
 

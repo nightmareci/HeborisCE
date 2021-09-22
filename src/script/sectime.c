@@ -401,7 +401,7 @@ void ST_RankingView() {
 
 		KeyInput();
 
-		if(getPushState(0, 4) || getPushState(0, 5)) {
+		if(getPushState(0, 4) || getPushState(0, 5) || IsPushEscKey()) {
 			// AかBで戻る
 			return;
 		}

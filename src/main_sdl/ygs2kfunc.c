@@ -228,28 +228,28 @@ bool YGS2kInit()
 	}
 
 	/* パッドの初期化 */
-	s_iJoyPadMax = SDL_NumJoysticks();
-	s_pJoyPads = (SDL_Joystick**)malloc(sizeof(SDL_Joystick*) * s_iJoyPadMax);
+	if ((s_iJoyPadMax = SDL_NumJoysticks()))
+	{
+		s_pJoyPads = (SDL_Joystick**)malloc(sizeof(SDL_Joystick*) * s_iJoyPadMax);
+		s_pJoyAxisMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+		s_pJoyHatMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+		s_pJoyButtonMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
 
-	s_pJoyAxisMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-	s_pJoyHatMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-	s_pJoyButtonMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+		s_pJoyAxisRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+		s_pJoyHatRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+		s_pJoyButtonRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+		for (int i = 0; i < s_iJoyPadMax; i++) {
+			s_pJoyPads[i] = SDL_JoystickOpen(i);
 
-	s_pJoyAxisRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-	s_pJoyHatRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-	s_pJoyButtonRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-	for (int i = 0; i < s_iJoyPadMax; i++) {
-		s_pJoyPads[i] = SDL_JoystickOpen(i);
+			s_pJoyAxisMax[i] = SDL_JoystickNumAxes(s_pJoyPads[i]);
+			s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
+			s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
 
-		s_pJoyAxisMax[i] = SDL_JoystickNumAxes(s_pJoyPads[i]);
-		s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
-		s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
-
-		s_pJoyAxisRepeat[i] = (int*)calloc(s_pJoyAxisMax[i] * 2, sizeof(int));
-		s_pJoyHatRepeat[i] = (int*)calloc(s_pJoyHatMax[i] * 4, sizeof(int));
-		s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
+			s_pJoyAxisRepeat[i] = (int*)calloc(s_pJoyAxisMax[i] * 2, sizeof(int));
+			s_pJoyHatRepeat[i] = (int*)calloc(s_pJoyHatMax[i] * 4, sizeof(int));
+			s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
+		}
 	}
-
 
 	/* テクスチャ領域の初期化 */
 	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
@@ -282,7 +282,7 @@ bool YGS2kInit()
 	s_uFPS			= 0;
 	s_bBltAlways		= false;
 
-	srand(time(NULL));
+	srand((unsigned)time(NULL));
 
 	return true;
 }
@@ -290,26 +290,28 @@ bool YGS2kInit()
 void YGS2kExit()
 {
 	/* パッドのクローズ */
-	for (int i = 0; i < s_iJoyPadMax; i++) {
-		SDL_JoystickClose(s_pJoyPads[i]);
-		free(s_pJoyAxisRepeat[i]);
-		free(s_pJoyHatRepeat[i]);
-		free(s_pJoyButtonRepeat[i]);
+	if (s_iJoyPadMax) {
+		for (int i = 0; i < s_iJoyPadMax; i++) {
+			SDL_JoystickClose(s_pJoyPads[i]);
+			free(s_pJoyAxisRepeat[i]);
+			free(s_pJoyHatRepeat[i]);
+			free(s_pJoyButtonRepeat[i]);
+		}
+		free(s_pJoyPads);
+		s_pJoyPads = NULL;
+		free(s_pJoyAxisMax);
+		free(s_pJoyHatMax);
+		free(s_pJoyButtonMax);
+		s_pJoyAxisMax = NULL;
+		s_pJoyHatMax = NULL;
+		s_pJoyButtonMax = NULL;
+		free(s_pJoyAxisRepeat);
+		free(s_pJoyHatRepeat);
+		free(s_pJoyButtonRepeat);
+		s_pJoyAxisRepeat = NULL;
+		s_pJoyHatRepeat = NULL;
+		s_pJoyButtonRepeat = NULL;
 	}
-	free(s_pJoyPads);
-	s_pJoyPads = NULL;
-	free(s_pJoyAxisMax);
-	free(s_pJoyHatMax);
-	free(s_pJoyButtonMax);
-	s_pJoyAxisMax = NULL;
-	s_pJoyHatMax = NULL;
-	s_pJoyButtonMax = NULL;
-	free(s_pJoyAxisRepeat);
-	free(s_pJoyHatRepeat);
-	free(s_pJoyButtonRepeat);
-	s_pJoyAxisRepeat = NULL;
-	s_pJoyHatRepeat = NULL;
-	s_pJoyButtonRepeat = NULL;
 	
 	/* テクスチャ領域の解放 */
 	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
@@ -491,6 +493,8 @@ int IsPressKey ( int key )
 
 int IsPushJoyKey ( const SJoyKey* const key )
 {
+	if (!s_iJoyPadMax) return 0;
+
 	SJoyPadGUID guid = GetJoyPadGUID(key->device);
 	SJoyPadGUID zeroGUID = { 0 };
 	if (memcmp(&guid, &zeroGUID, sizeof(SJoyPadGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(SJoyPadGUID)) != 0) return 0;
@@ -531,7 +535,7 @@ int IsPushJoyKey ( const SJoyKey* const key )
 
 int IsPressJoyKey ( const SJoyKey* const key )
 {
-	if (key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
+	if (!s_iJoyPadMax || key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
 
 	int pressed = 0;
 	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
@@ -875,18 +879,6 @@ void LoadWave( const char* filename, int no )
 	int		len = strlen(filename);
 	if ( len < 4 ) { return; }
 
-	if ( s_pYGSSound[no] != NULL )
-	{
-		Mix_FreeChunk(s_pYGSSound[no]);
-		s_pYGSSound[no] = NULL;
-	}
-
-	if ( s_pYGSExMusic[no] != NULL )
-	{
-		Mix_FreeMusic(s_pYGSExMusic[no]);
-		s_pYGSExMusic[no] = NULL;
-	}
-
 	s_iYGSSoundType[no] = YGS_SOUNDTYPE_NONE;
 
 	// 拡張子、または番号(50番以降がBGM)によって読み込み方法を変える
@@ -895,12 +887,22 @@ void LoadWave( const char* filename, int no )
 	if ( !src ) return;
 	if ( strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
 	{
+		if ( s_pYGSExMusic[no] != NULL )
+		{
+			Mix_FreeMusic(s_pYGSExMusic[no]);
+			s_pYGSExMusic[no] = NULL;
+		}
 		s_pYGSExMusic[no] = Mix_LoadMUS_RW(src, SDL_TRUE);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_MUS;
 		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
 	}
 	else
 	{
+		if ( s_pYGSSound[no] != NULL )
+		{
+			Mix_FreeChunk(s_pYGSSound[no]);
+			s_pYGSSound[no] = NULL;
+		}
 		s_pYGSSound[no] = Mix_LoadWAV_RW(src, SDL_TRUE);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_WAV;
 		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
@@ -920,7 +922,8 @@ void LoadMIDI( const char* filename )
 		s_pYGSMusic = NULL;
 	}
 
-	SDL_RWops *src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ);
+	SDL_RWops* src;
+	if (!(src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ))) return;
 	s_pYGSMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
 }
 
@@ -932,14 +935,15 @@ void LoadBitmap( const char* filename, int plane, int val )
 		s_pYGSTexture[plane] = NULL;
 	}
 
-	SDL_RWops *src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ);
-	s_pYGSTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE);
+	SDL_RWops* src;
+	if (!(src = PHYSFS_RWFromFile(filename, PHYSFS_RWMODE_READ))) return;
+	if (!(s_pYGSTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE))) return;
 	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
 void PlayMIDI()
 {
-	Mix_PlayMusic(s_pYGSMusic, -1);
+	if ( s_pYGSMusic ) Mix_PlayMusic(s_pYGSMusic, -1);
 }
 
 void StopMIDI()
@@ -1175,8 +1179,6 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 {
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
-
 	// ちゃんと拡大して描画する
 	SDL_Rect	src;
 	SDL_Rect	dst;
@@ -1189,8 +1191,8 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 
 	if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
-
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
 }
 

@@ -151,9 +151,9 @@ void RankingProc_3(int32_t cat,int32_t pages2) {
 
 		KeyInput();
 
-			RankingView3();//3位まで表示
+		RankingView3();//3位まで表示
 		// AかBで戻る
-		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
+		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || IsPushEscKey() ) {
 			flag = 1;
 		}
 
@@ -195,7 +195,7 @@ void RankingProc2_3() {
 		}
 
 		// AかBで戻る
-		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) ) {
+		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || IsPushEscKey() ) {
 			return;
 		}
 

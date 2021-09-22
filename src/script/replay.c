@@ -912,7 +912,7 @@ void ReplaySelect(void) {
 	}
 
 	// Bで戻る
-	if(getPushState(0, 5)) {
+	if(getPushState(0, 5) || IsPushEscKey()) {
 		restoreSetups();
 		if(gameMode[0] == 8) gameMode[0] = 0;
 		if(gameMode[0] == 4){

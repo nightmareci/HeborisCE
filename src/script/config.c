@@ -459,7 +459,7 @@ void ConfigMenu() {
 				}
 				/* ここまで */
 				printFont(15, 6, string[0], (statc[0] == 1) * (count % 2) * digitc[rots[0]]);
-				sprintf(string[0], "%d", SCREENINDEX_DISPLAY_TOVALUE(screenIndex));
+				sprintf(string[0], "%d", SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
 				printFont(15, 7, string[0], (statc[0] == 2) * (count % 2) * digitc[rots[0]]);
 				sprintf(string[0], "%s", ncfg[0] & SCREENMODE_DETAILLEVEL ? "HIGH (640X480)" : "LOW (320X240)");
 				printFont(15, 8, string[0], (statc[0] == 3) * (count % 2) * digitc[rots[0]]);
@@ -618,7 +618,7 @@ void ConfigMenu() {
 							case SCREENMODE_WINDOW:
 							{
 								SDL_DisplayMode displayMode;
-								SDL_GetDesktopDisplayMode(ncfg[1], &displayMode);
+								SDL_GetDesktopDisplayMode(SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), &displayMode);
 								int baseW = (!!(ncfg[0] & SCREENMODE_DETAILLEVEL) + 1) * 320;
 								int baseH = (!!(ncfg[0] & SCREENMODE_DETAILLEVEL) + 1) * 240;
 								int maxMode;

@@ -15110,7 +15110,7 @@ void initialize(void) {
 		if(wavebgm != 0) {
 			loadBGM();	// #1.60c7s6
 		} else {
-			LoadMIDI("bgm/bgm.mid");
+			LoadMIDI("res/bgm/bgm.mid");
 			PlayMIDI();
 		}
 	}

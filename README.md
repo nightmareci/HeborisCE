@@ -1,7 +1,7 @@
 ### Heboris C7EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7EX. It requires a C
-compiler, SDL 2.0, SDL 2.0 mixer, and SDL 2.0 image libraries to build and
+compiler, SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS libraries to build and
 play.
 
 Example of installing dependencies on Ubuntu:
@@ -13,7 +13,7 @@ sudo apt-get install git
 
 Building dependencies:
 ```sh
-sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev
+sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libphysfs-dev
 ```
 
 #### Download, Build, and Run Without Installing
@@ -24,6 +24,39 @@ cd HeborisC7EX-SDL2
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/HeborisC7EX-SDL2
+```
+
+#### Download and Package for macOS
+
+The packaging script for macOS requires separate arm64 and x86_64 installations
+of CMake and the libraries, which is possible to do with Homebrew, but only on
+Apple Silicon Macs (TODO: Transition to using MacPorts, since that directly
+supports universal binary libraries). The packaging script must be run with the
+working directory at the root of the repo.
+
+The "Installable" version will work unnotarized, though users will have to
+approve it, and will get the "Apple could not verify..." message.
+```sh
+git clone https://github.com/nightmareci/HeborisC7EX-SDL2
+cd HeborisC7EX-SDL2
+./pkg/macos/pkg.sh Installable
+```
+
+You can also create a "Portable" version; distribution of this version
+basically requires you have an Apple Developer subscription, so the app can get
+access to the folder it's in. But building it for use on the same system it was
+built on works fine, and is a convenient way to have it easy to customize the
+theme. The "Portable" version requires the built app be in the folder with the
+other files (res folder, etc.).
+```sh
+./pkg/macos/pkg.sh Portable
+```
+
+The packaging script can optionally take a codesigning identity, so you can
+sign the app for future notarization. By default, it uses adhoc signing if no
+identity is provided.
+```sh
+./pkg/macos/pkg.sh Portable 'Apple Developer Codesigning ID'
 ```
 
 #### Changes
@@ -50,22 +83,21 @@ cmake --build build
  - Fix the "low detail" 320x240 graphics setting.
  - Implement guaranteed-long-term-correct frame timing; part of that system is
    efficiently timed screen updates, only when appropriate.
+ - Use PhysicsFS for file and directory access; now the game can create missing
+   directories for save data. This was necessary for an "installable" version
+   of the game, where the save data directory is outside the game's
+   resources/program directory.
 
 #### Todo
 
-This repository will be maintained for bug fixes and ports, but no major
-changes will be made to the actual game's functionality for the most part. Some
-simple fixes and changes may be added, and will be listed in this section if
-so.
+This repository will be maintained for bug fixes, non-new-content enhancements
+(like new video settings), and ports.
 
  - Implement automated packaging of builds. At least support Windows, macOS, and
    desktop Linux.
- - Save 40L player data state, or allow a custom setting to be saved and used
-   by default.
- - Allow traditional TGM style scoring. Heboris inflates the scoring to
-   compensate for B2B bonuses.
- - Put all configuration options into in-game menus.
- - Any other minor bugs/errors I can find.
+ - Put all configuration options into in-game menus. Part of this includes
+   moving the INI settings into the CONFIG.SAV file, and removing all INI
+   usage.
 
 #### Definitely Not Legal Advice
 

@@ -15643,9 +15643,11 @@ void loadBGM(void) {
 			if(wavebgm == 1) StrCat(string[i], ".mid");				// MIDI
 			else if(wavebgm == 3) StrCat(string[i], ".ogg");		// OGG
 			else if(wavebgm == 4) StrCat(string[i], ".mp3");		// MP3
-			else if(wavebgm == 5) StrCat(string[i], ".mod");		// MOD (.mod)
-			else if(wavebgm == 6) StrCat(string[i], ".it");			// MOD (.it)
-			else if(wavebgm >= 7) StrCat(string[i], ".xm");			// MOD (.xm)
+			else if(wavebgm == 5) StrCat(string[i], ".flac");		// FLAC
+			else if(wavebgm == 6) StrCat(string[i], ".opus");		// OPUS
+			else if(wavebgm == 7) StrCat(string[i], ".mod");		// MOD (.mod)
+			else if(wavebgm == 8) StrCat(string[i], ".it");			// MOD (.it)
+			else if(wavebgm >= 9) StrCat(string[i], ".xm");			// MOD (.xm)
 			else StrCat(string[i], ".wav");							// WAV
 
 			// 読み込み

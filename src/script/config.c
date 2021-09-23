@@ -525,9 +525,11 @@ void ConfigMenu() {
 				else if(ncfg[44] == 2) sprintf(string[0], "WAVE");
 				else if(ncfg[44] == 3) sprintf(string[0], "OGG");
 				else if(ncfg[44] == 4) sprintf(string[0], "MP3");
-				else if(ncfg[44] == 5) sprintf(string[0], "MOD (.MOD)");
-				else if(ncfg[44] == 6) sprintf(string[0], "MOD (.IT)");
-				else if(ncfg[44] == 7) sprintf(string[0], "MOD (.XM)");
+				else if(ncfg[44] == 5) sprintf(string[0], "FLAC");
+				else if(ncfg[44] == 6) sprintf(string[0], "OPUS");
+				else if(ncfg[44] == 7) sprintf(string[0], "MOD (.MOD)");
+				else if(ncfg[44] == 8) sprintf(string[0], "MOD (.IT)");
+				else if(ncfg[44] == 9) sprintf(string[0], "MOD (.XM)");
 				printFont(15, 22, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
 
 				// WORLDREVERSE
@@ -663,8 +665,8 @@ void ConfigMenu() {
 							// bgmwave
 							ncfg[44] = ncfg[44] + m;
 
-							if(ncfg[44] < 0) ncfg[44] = 7;
-							if(ncfg[44] > 7) ncfg[44] = 0;
+							if(ncfg[44] < 0) ncfg[44] = 9;
+							if(ncfg[44] > 9) ncfg[44] = 0;
 
 							if(bgm) need_reset = 1;
 						}

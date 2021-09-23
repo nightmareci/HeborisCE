@@ -44,6 +44,8 @@ for arch in arm64 x86_64 ; do
 	codesign --remove-signature "$ARCH_APP_DIR/$NAME.app" || exit 1 ;
 done
 
+# Copy a built app into the source folder, that will have its code files
+# replaced with codesigned, universal binaries.
 SRC_FOLDER="$BASE_DIR/srcfolder"
 if [ "$PACKAGE_TYPE" = Installable ] ; then
 	APP_DIR="$SRC_FOLDER" ;
@@ -79,28 +81,23 @@ rm "$APP_DIR/$NAME.app/Contents/MacOS/$NAME" || exit 1
 lipo "$BASE_DIR/app-arm64/$NAME.app/Contents/MacOS/$NAME" "$BASE_DIR/app-x86_64/$NAME.app/Contents/MacOS/$NAME" -create -output "$APP_DIR/$NAME.app/Contents/MacOS/$NAME" || exit 1 ;
 
 # Codesign.
-
 if [ "$2" ] ; then
 	IDENTITY="$2" ;
 else
 	IDENTITY="-" ;
 fi
-
 for lib in `ls "$APP_DIR/$NAME.app/Contents/libs/"` ; do
 	codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/entitlements.xml" "$APP_DIR/$NAME.app/Contents/libs/$lib" || exit 1 ;
 done
 codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/entitlements.xml" "$APP_DIR/$NAME.app" || exit 1
 
-TMP_DMG_DIR="$BASE_DIR/dmg"
-
+# Generate final DMG package.
 hdiutil create "$BASE_DIR/tmp.dmg" -ov -volname "$NAME" -fs HFS+ -srcfolder "$SRC_FOLDER" || exit 1
 hdiutil convert "$BASE_DIR/tmp.dmg" -format UDZO -o "$BASE_DIR/$NAME.dmg" || exit 1
 rm "$BASE_DIR/tmp.dmg" || exit 1
-
 for arch in arm64 x86_64 ; do
 	rm -r "$BUILD_DIR-$arch" || exit 1 ;
 	rm -r "$BASE_DIR/app-$arch" || exit 1 ;
 done
 rm -r "$SRC_FOLDER" || exit 1
-
 codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/entitlements.xml" "$BASE_DIR/$NAME.dmg" || exit 1

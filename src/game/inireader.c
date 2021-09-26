@@ -231,7 +231,7 @@ void LoadIniFile(const char *filename)
 	s_bInCommentBlock = false;
 	s_bValueRead = false;
 
-	SDL_RWops	*file = PHYSFSRWops_FromFile(filename, PHYSFSRWOPS_MODE_READ);
+	SDL_RWops	*file = PHYSFSRWOPS_openRead(filename);
 	if ( file != NULL )
 	{
 		char	buf[INIREAD_READBUFFER_MAX];

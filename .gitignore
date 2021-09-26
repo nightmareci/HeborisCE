@@ -1,4 +1,7 @@
-build*/**
+build*
+out
+CMakeSettings.json
 src/game/*.gch
 *.SAV
 .vscode
+.vs

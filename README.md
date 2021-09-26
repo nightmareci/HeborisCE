@@ -59,6 +59,14 @@ identity is provided.
 ./pkg/macos/pkg.sh Portable 'Apple Developer Codesigning ID'
 ```
 
+#### Debugging Tips
+
+In the "default" type of building (without use of the CMake PACKAGE_TYPE
+option) by default the game uses its working directory for all files, the
+classic style of old Heboris versions. But that type of build also supports
+passing a directory as a command line argument for where all files are, which
+can be helpful for setting up debugging in IDEs.
+
 #### Changes
 
  - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported platforms.

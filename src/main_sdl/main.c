@@ -80,7 +80,15 @@ int main(int argc, char* argv[])
 	SDL_free(basePath);
 	basePath = NULL;
 	#else
-	const char *baseDir = "./";
+	const char *baseDir;
+	if ( argc > 1 )
+	{
+		baseDir = argv[1];
+	}
+	else
+	{
+		const char* baseDir = "./";
+	}
 	if ( !PHYSFS_mount(baseDir, NULL, 0) )
 	{
 		fprintf(stderr, "Error mounting base dir: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));

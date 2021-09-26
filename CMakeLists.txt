@@ -34,12 +34,12 @@ set(EXE_SOURCES
 	src/main_sdl/include.h
 	src/main_sdl/ygs2kfunc.h
 	src/main_sdl/SDL_kanji.h
-	src/main_sdl/physfs_rwops.h
+	src/main_sdl/physfsrwops.h
 
 	src/main_sdl/main.c
 	src/main_sdl/ygs2kfunc.c
 	src/main_sdl/SDL_kanji.c
-	src/main_sdl/physfs_rwops.c
+	src/main_sdl/physfsrwops.c
 
 	src/script/include.h
 
@@ -188,5 +188,3 @@ else()
 endif()
 
 target_include_directories(${EXE} PRIVATE src src/game src/main_sdl)
-
-file(MAKE_DIRECTORY replay config/data)

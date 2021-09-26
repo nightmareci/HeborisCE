@@ -62,14 +62,14 @@ static int RWclose( struct SDL_RWops *context )
 	return success;
 }
 
-SDL_RWops *PHYSFS_RWFromFile( const char *filename, PHYSFS_RWmode mode )
+SDL_RWops *PHYSFSRWops_FromFile( const char *filename, PHYSFSRWops_Mode mode )
 {
 	PHYSFS_File *file = NULL;
 	switch( mode )
 	{
-	case PHYSFS_RWMODE_APPEND: file = PHYSFS_openAppend(filename); break;
-	case PHYSFS_RWMODE_READ: file = PHYSFS_openRead(filename); break;
-	case PHYSFS_RWMODE_WRITE: file = PHYSFS_openWrite(filename); break;
+	case PHYSFSRWOPS_MODE_APPEND: file = PHYSFS_openAppend(filename); break;
+	case PHYSFSRWOPS_MODE_READ: file = PHYSFS_openRead(filename); break;
+	case PHYSFSRWOPS_MODE_WRITE: file = PHYSFS_openWrite(filename); break;
 	}
 	if( !file )
 	{

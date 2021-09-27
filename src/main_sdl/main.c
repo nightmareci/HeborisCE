@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		const char* baseDir = "./";
+		baseDir = "./";
 	}
 	if ( !PHYSFS_mount(baseDir, NULL, 0) )
 	{

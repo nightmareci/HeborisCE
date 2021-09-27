@@ -26,6 +26,23 @@ cmake --build build
 ./build/HeborisC7EX-SDL2
 ```
 
+#### Selecting a MIDI Soundfont if MIDI Doesn't Work
+
+At least on Windows and macOS, it seems MIDI always works fine, but not always
+on Linux. If MIDI music doesn't seem to work, you can manually select a
+soundfont like this, on Linux:
+
+```sh
+SDL_SOUNDFONTS='/usr/share/soundfonts/default.sf2' ./build/HeborisC7EX-SDL2
+```
+
+Provide a full path to a .sf2 file after `SDL_SOUNDFONTS=` to select the
+soundfont you want to use.
+
+On Linux, soundfont packages install their .sf2 files in
+`/usr/share/soundfonts`, though you can use any .sf2 soundfont you want, such
+as those just downloaded from some website.
+
 #### Download and Package for macOS
 
 The packaging script for macOS requires separate arm64 and x86_64 installations

@@ -368,8 +368,8 @@ void ConfigMenu() {
 
 		if(status[0] == 0){
 			// main setting
-			printFont(23, 1, "- MAIN", fontc[rots[0]]);
-			printFont(2,  3, "<< VIDEO <<             >> DESIGN >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(23, 1, "- GAME", fontc[rots[0]]);
+			printFont(2,  3, "<< A/V <<               >> DESIGN >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
 			printFont(2, 6, "NEXT PATTERN:", (statusc[0] == 1) * fontc[rots[0]]);
 			printFont(2, 7, "NEXT DISPLAY:", (statusc[0] == 2) * fontc[rots[0]]);
 			printFont(2, 8, "8WAY INPUT  :", (statusc[0] == 3) * fontc[rots[0]]);
@@ -377,11 +377,9 @@ void ConfigMenu() {
 			printFont(2, 10, "INIT LR MOVE:", (statusc[0] == 5) * fontc[rots[0]]);
 			printFont(2, 11, "BLOCK FALL  :", (statusc[0] == 6) * fontc[rots[0]]);
 			printFont(2, 12, "SHOW LEVEL  :", (statusc[0] == 7) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
-			printFont(2, 13, "MOVE SOUND  :", (statusc[0] == 8) * fontc[rots[0]]);
-			printFont(2, 14, "BGM         :", (statusc[0] == 9) * fontc[rots[0]]);
-			printFont(2, 15, "WORLDREVERSE:", (statusc[0] == 10) * fontc[rots[0]]);
-			printFont(2, 16, "DOWN TYPE   :", (statusc[0] == 11) * fontc[rots[0]]);
-			printFont(2, 17, "LVUP BONUS  :", (statusc[0] == 12) * fontc[rots[0]]);
+			printFont(2, 13, "WORLDREVERSE:", (statusc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 14, "DOWN TYPE   :", (statusc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 15, "LVUP BONUS  :", (statusc[0] == 10) * fontc[rots[0]]);
 			printFont(2, 28, "A:SAVE&RETURN  B:CANCEL", 9);
 
 			i = statusc[0];
@@ -393,83 +391,64 @@ void ConfigMenu() {
 				printFont(1, 5 + i, "b", fontc[rots[0]]); break;
 			}
 
-//			if(statusc[1]) {	// 表示更新
+			if((ncfg[2] > 1)&&(ncfg[2] < 8))
+			sprintf(string[0], "HEBO%d", ncfg[2]);
+			else if(ncfg[2] == 0)
+			sprintf(string[0], "RANDOM");
+			else if(ncfg[2] == 1)
+			sprintf(string[0], "MEMORY1");
+			else if(ncfg[2] == 8)
+			sprintf(string[0], "MEMORY4");
+			else if(ncfg[2] == 9)
+			sprintf(string[0], "GUIDELINE");
+			else if(ncfg[2] == 10)
+			sprintf(string[0], "DENGEN");
+			else if(ncfg[2] == 11)
+			sprintf(string[0], "TOMOYO");
+			else if(ncfg[2] == 12)
+			sprintf(string[0], "FP");
+			printFont(15, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
-				if((ncfg[2] > 1)&&(ncfg[2] < 8))
-				sprintf(string[0], "HEBO%d", ncfg[2]);
-				else if(ncfg[2] == 0)
-				sprintf(string[0], "RANDOM");
-				else if(ncfg[2] == 1)
-				sprintf(string[0], "MEMORY1");
-				else if(ncfg[2] == 8)
-				sprintf(string[0], "MEMORY4");
-				else if(ncfg[2] == 9)
-				sprintf(string[0], "GUIDELINE");
-				else if(ncfg[2] == 10)
-				sprintf(string[0], "DENGEN");
-				else if(ncfg[2] == 11)
-				sprintf(string[0], "TOMOYO");
-				else if(ncfg[2] == 12)
-				sprintf(string[0], "FP");
-				printFont(15, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
+			sprintf(string[0], "%d", ncfg[45]);
+			printFont(15, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
-				sprintf(string[0], "%d", ncfg[45]);
-				printFont(15, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
+			if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
+			else sprintf(string[0], "c");		// ○
+			printFont(15, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
-				else sprintf(string[0], "c");		// ○
-				printFont(15, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
+			if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
+			else sprintf(string[0], "c");		// ○
+			printFont(15, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
-				else sprintf(string[0], "c");		// ○
-				printFont(15, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
+			if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
+			else sprintf(string[0], "c");		// ○
+			printFont(15, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
-				else sprintf(string[0], "c");		// ○
-				printFont(15, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
+			if(ncfg[4]) sprintf(string[0], "SMOOTH");
+			else sprintf(string[0], "NORMAL");
+			printFont(15, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[4]) sprintf(string[0], "SMOOTH");
-				else sprintf(string[0], "NORMAL");
-				printFont(15, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
+			if(ncfg[36]) sprintf(string[0], "ON");
+			else sprintf(string[0], "OFF");
+			printFont(15, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[36]) sprintf(string[0], "ON");
-				else sprintf(string[0], "OFF");
-				printFont(15, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
+			// WORLDREVERSE
+			if(ncfg[52]) sprintf(string[0], "ON");
+			else sprintf(string[0], "OFF");
+			printFont(15, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[46]) sprintf(string[0], "ON");
-				else sprintf(string[0], "OFF");
-				printFont(15, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+			// downtype
+			if(ncfg[53]) sprintf(string[0], "DOWN RESET");
+			else sprintf(string[0], "NO RESET(HEBORIS)");
+			printFont(15, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
 
-				if(ncfg[44] == 0) sprintf(string[0], "MIDI (SIMPLE)");
-				else if(ncfg[44] == 1) sprintf(string[0], "MIDI");
-				else if(ncfg[44] == 2) sprintf(string[0], "WAVE");
-				else if(ncfg[44] == 3) sprintf(string[0], "OGG");
-				else if(ncfg[44] == 4) sprintf(string[0], "MP3");
-				else if(ncfg[44] == 5) sprintf(string[0], "FLAC");
-				else if(ncfg[44] == 6) sprintf(string[0], "OPUS");
-				else if(ncfg[44] == 7) sprintf(string[0], "MOD (.MOD)");
-				else if(ncfg[44] == 8) sprintf(string[0], "MOD (.IT)");
-				else if(ncfg[44] == 9) sprintf(string[0], "MOD (.XM)");
-				printFont(15, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+			// lvupbonus
+			if(ncfg[54]==0) sprintf(string[0], "ON");
+			else if(ncfg[54] ==1)sprintf(string[0], "OFF");
+			else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
+			printFont(15, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
 
-				// WORLDREVERSE
-				if(ncfg[52]) sprintf(string[0], "ON");
-				else sprintf(string[0], "OFF");
-				printFont(15, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
-
-				// downtype
-				if(ncfg[53]) sprintf(string[0], "DOWN RESET");
-				else sprintf(string[0], "NO RESET(HEBORIS)");
-				printFont(15, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
-
-				// lvupbonus
-				if(ncfg[54]==0) sprintf(string[0], "ON");
-				else if(ncfg[54] ==1)sprintf(string[0], "OFF");
-				else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
-				printFont(15, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
-
-				statusc[1] = 0;
-//			}
+			statusc[1] = 0;
 
 			for(pl = 0; pl < 2; pl++) {
 				// ↑↓カーソルリピード #1.60c7k8
@@ -485,7 +464,7 @@ void ConfigMenu() {
 				padRepeat(pl);
 				if(m) {
 					PlaySE(5);
-					statusc[0] = (statusc[0] + m + 13) % 13;
+					statusc[0] = (statusc[0] + m + 11) % 11;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
@@ -504,16 +483,6 @@ void ConfigMenu() {
 						else if(statusc[0] == 5) ncfg[7] = !ncfg[7];			// fastlrmove
 						else if(statusc[0] == 6) ncfg[4] = !ncfg[4];			// smooth
 						else if(statusc[0] == 7) ncfg[36] = !ncfg[36];			// tgmlv
-						else if(statusc[0] == 8) ncfg[46] = !ncfg[46];			// movesound
-						else if(statusc[0] == 9) {
-							// bgmwave
-							ncfg[44] = ncfg[44] + m;
-
-							if(ncfg[44] < 0) ncfg[44] = 9;
-							if(ncfg[44] > 9) ncfg[44] = 0;
-
-							if(bgm) need_reset = 1;
-						}
 						else if(statusc[0] == 10) ncfg[52] = !ncfg[52];			// w_reverse
 						else if(statusc[0] == 11) ncfg[53] = !ncfg[53];			// downtype
 						else if(statusc[0] == 12) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
@@ -596,7 +565,7 @@ void ConfigMenu() {
 		} else if(status[0] == 1) {
 			// design setting
 			printFont(23, 1, "- DESIGN SETTING", fontc[rots[0]]);
-			printFont(2, 3, "<< MAIN <<               >> INPUT >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(2, 3, "<< GAME <<               >> INPUT >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
 
 			printFont( 2,  6, "BLOCK FRAME    :", fontc[rots[0]] * (statusc[0] == 1));
 			printFont( 2,  7, "FIELD BG       :", fontc[rots[0]] * (statusc[0] == 2));
@@ -628,7 +597,7 @@ void ConfigMenu() {
 			printFont( 2, 22, "SHOW COMBOS    :", fontc[rots[0]] * (statusc[0] == 25));
 			printFont( 2, 23, "TOP FRAME      :", fontc[rots[0]] * (statusc[0] == 26));
 
-			printFont(2, 28, "A/B:RETURN MAIN", 9);
+			printFont(2, 28, "A/B:RETURN", 9);
 
 			i = statusc[0];
 			if((i >= 13) && (i <= 21)) {
@@ -771,7 +740,7 @@ void ConfigMenu() {
 			// menu
 			if(statusc[2] == 0) {
 				printFont(23, 1, "- INPUT SETTING", fontc[rots[0]]);
-				printFont(2,  3, "<< DESIGN <<             >> VIDEO >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+				printFont(2,  3, "<< DESIGN <<               >> A/V >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
 				printFont(2,  6, "[KEYBOARD 1P]", fontc[rots[0]] * (statusc[0] == 1));
 				printFont(2,  8, "[KEYBOARD 2P]", fontc[rots[0]] * (statusc[0] == 2));
 				printFont(2, 10, "[JOYSTICK 1P]", fontc[rots[0]] * (statusc[0] == 3));
@@ -779,7 +748,7 @@ void ConfigMenu() {
 				printFont(2, 14, "[FUNCTION KEY]", fontc[rots[0]] * (statusc[0] == 5));
 				printFont(2, 16, "[INPUT TEST]", fontc[rots[0]] * (statusc[0] == 6));
 				printFont(2, 18, "[DISP ASSIGN]", fontc[rots[0]] * (statusc[0] == 7));
-				printFont(2, 28, "A:DO ASSIGN  B:RETURN MAIN", 9);
+				printFont(2, 28, "A:DO ASSIGN  B:RETURN", 9);
 
 				if(statusc[0] != 0) printFont(1, 4+statusc[0]*2, "b", fontc[rots[0]]);
 				else printFont(1, 3, "b", fontc[rots[0]]);
@@ -1280,14 +1249,17 @@ void ConfigMenu() {
 		} else if(status[0] == 3) {
 			// video setting
 			bool showScreenModeSetting = (ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_FULLSCREEN || (ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW;
-			printFont(23, 1, "- VIDEO SETTING", fontc[rots[0]]);
-			printFont(2,  3, "<< INPUT <<               >> MAIN >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(23, 1, "- A/V SETTING", fontc[rots[0]]);
+			printFont(2,  3, "<< INPUT <<               >> GAME >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
 			printFont(2,  6, "WINDOW TYPE :", (statusc[0] == 1) * fontc[rots[0]]);
 			printFont(2,  7, "SCREEN INDEX:", (statusc[0] == 2) * fontc[rots[0]]);
 			printFont(2,  8, "DETAIL LEVEL:", (statusc[0] == 3) * fontc[rots[0]]);
 			printFont(2,  9, "VSYNC       :", (statusc[0] == 4) * fontc[rots[0]]);
 			printFont(2, 10, "SCALE MODE  :", (statusc[0] == 5) * fontc[rots[0]]);
 			if(showScreenModeSetting) printFont(2, 11, "SCREEN MODE :", (statusc[0] == 6) * fontc[rots[0]]);
+			printFont(2, 12, "MOVE SOUND  :", (statusc[0] == 7) * fontc[rots[0]]);
+			printFont(2, 13, "BGM         :", (statusc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 28, "A/B:RETURN", 9);
 
 			switch(statusc[0]) {
 			case 0:
@@ -1347,6 +1319,22 @@ void ConfigMenu() {
 			}
 			printFont(15, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
+			if(ncfg[46]) sprintf(string[0], "ON");
+			else sprintf(string[0], "OFF");
+			printFont(15, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
+
+			if(ncfg[44] == 0) sprintf(string[0], "MIDI (SIMPLE)");
+			else if(ncfg[44] == 1) sprintf(string[0], "MIDI");
+			else if(ncfg[44] == 2) sprintf(string[0], "WAVE");
+			else if(ncfg[44] == 3) sprintf(string[0], "OGG");
+			else if(ncfg[44] == 4) sprintf(string[0], "MP3");
+			else if(ncfg[44] == 5) sprintf(string[0], "FLAC");
+			else if(ncfg[44] == 6) sprintf(string[0], "OPUS");
+			else if(ncfg[44] == 7) sprintf(string[0], "MOD (.MOD)");
+			else if(ncfg[44] == 8) sprintf(string[0], "MOD (.IT)");
+			else if(ncfg[44] == 9) sprintf(string[0], "MOD (.XM)");
+			printFont(15, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+
 			for(pl = 0; pl < 2; pl++) {
 				if(getPushState(pl, 4) || getPushState(pl, 5)) {
 					PlaySE(3);
@@ -1355,7 +1343,8 @@ void ConfigMenu() {
 					statusc[1] = 1;
 				} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, 1) - getPressState(pl, 0))) {
 					PlaySE(5);
-					statusc[0] = (statusc[0] + m + 6 + showScreenModeSetting) % (6 + showScreenModeSetting);
+					if(!showScreenModeSetting && ((statusc[0] + m + 9) % 9) == 6) m *= 2;
+					statusc[0] = (statusc[0] + m + 9) % 9;
 				} else if(padRepeat(pl), (m = getPushState(pl, 3) - getPushState(pl, 2))) {
 					if(statusc[0] == 0) {
 						PlaySE(3);
@@ -1420,6 +1409,16 @@ void ConfigMenu() {
 						default: break;
 						}
 						need_reset = 1;
+					}
+					else if(statusc[0] == 7) ncfg[46] = !ncfg[46];			// movesound
+					else if(statusc[0] == 8) {
+						// bgmwave
+						ncfg[44] = ncfg[44] + m;
+
+						if(ncfg[44] < 0) ncfg[44] = 9;
+						if(ncfg[44] > 9) ncfg[44] = 0;
+
+						if(bgm) need_reset = 1;
 					}
 				}
 			}

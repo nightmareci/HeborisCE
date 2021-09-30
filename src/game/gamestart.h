@@ -193,7 +193,6 @@ extern int32_t FP_bonus[2];
 extern int32_t novice_flag[2];
 extern int32_t novice_mode[2];
 extern int32_t exam_ranking;
-extern int32_t bgmload[20];
 extern int32_t devil_nextrise[2];
 extern int32_t devil_randrise;
 extern int32_t devil_minus[2];

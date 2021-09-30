@@ -86,7 +86,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[54] = fontsize;
 	cfgbuf[55] = maxPlay;
 	cfgbuf[60] = movesound;
-	cfgbuf[61] = wavebgm;
+	cfgbuf[61] = (bgm << 16) | (wavebgm & 0xFFFF);
 	cfgbuf[62] = breakeffect;
 	cfgbuf[63] = showcombo;
 	cfgbuf[64] = top_frame;
@@ -177,7 +177,8 @@ int32_t LoadConfig(void) {
 	fontsize = cfgbuf[54];
 	maxPlay = cfgbuf[55];
 	movesound = cfgbuf[60];
-	wavebgm = cfgbuf[61];
+	bgm = !!(cfgbuf[61] & 0x10000);
+	wavebgm = (int32_t)(int16_t)(cfgbuf[61] & 0xFFFF);
 
 	breakeffect = cfgbuf[62];
 	showcombo = cfgbuf[63];
@@ -264,7 +265,7 @@ void ConfigMenu() {
 	ncfg[36] = dtc;
 
 	ncfg[43] = fldtr;
-	ncfg[44] = wavebgm;
+	ncfg[44] = (bgm << 16) | (wavebgm & 0xFFFF);
 	ncfg[45] = dispnext;
 	ncfg[46] = movesound;
 	ncfg[47] = fontsize;
@@ -516,7 +517,8 @@ void ConfigMenu() {
 					dtc = ncfg[36];
 
 					fldtr = ncfg[43];
-					wavebgm = ncfg[44];
+					bgm = (ncfg[44] >> 16) & 1;
+					wavebgm = (int32_t)(int16_t)(ncfg[44] & 0xFFFF);
 					dispnext = ncfg[45];
 					movesound = ncfg[46];
 					fontsize = ncfg[47];
@@ -1258,7 +1260,8 @@ void ConfigMenu() {
 			printFont(2, 10, "SCALE MODE  :", (statusc[0] == 5) * fontc[rots[0]]);
 			if(showScreenModeSetting) printFont(2, 11, "SCREEN MODE :", (statusc[0] == 6) * fontc[rots[0]]);
 			printFont(2, 12, "MOVE SOUND  :", (statusc[0] == 7) * fontc[rots[0]]);
-			printFont(2, 13, "BGM         :", (statusc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 13, "PLAY BGM    :", (statusc[0] == 8) * fontc[rots[0]]);
+			if(ncfg[44] & 0x10000) printFont(2, 14, "BGM TYPE    :", (statusc[0] == 9) * fontc[rots[0]]);
 			printFont(2, 28, "A/B:RETURN", 9);
 
 			switch(statusc[0]) {
@@ -1323,17 +1326,24 @@ void ConfigMenu() {
 			else sprintf(string[0], "OFF");
 			printFont(15, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
-			if(ncfg[44] == 0) sprintf(string[0], "MIDI (SIMPLE)");
-			else if(ncfg[44] == 1) sprintf(string[0], "MIDI");
-			else if(ncfg[44] == 2) sprintf(string[0], "WAVE");
-			else if(ncfg[44] == 3) sprintf(string[0], "OGG");
-			else if(ncfg[44] == 4) sprintf(string[0], "MP3");
-			else if(ncfg[44] == 5) sprintf(string[0], "FLAC");
-			else if(ncfg[44] == 6) sprintf(string[0], "OPUS");
-			else if(ncfg[44] == 7) sprintf(string[0], "MOD (.MOD)");
-			else if(ncfg[44] == 8) sprintf(string[0], "MOD (.IT)");
-			else if(ncfg[44] == 9) sprintf(string[0], "MOD (.XM)");
+			if(ncfg[44] & 0x10000) sprintf(string[0], "ON");
+			else sprintf(string[0], "OFF");
 			printFont(15, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+
+			if(ncfg[44] & 0x10000) {
+				int32_t wavebgm_temp = (int32_t)(int16_t)(ncfg[44] & 0xFFFF);
+				if(wavebgm_temp == 0) sprintf(string[0], "MIDI (SIMPLE)");
+				else if(wavebgm_temp == 1) sprintf(string[0], "MIDI");
+				else if(wavebgm_temp == 2) sprintf(string[0], "WAVE");
+				else if(wavebgm_temp == 3) sprintf(string[0], "OGG");
+				else if(wavebgm_temp == 4) sprintf(string[0], "MP3");
+				else if(wavebgm_temp == 5) sprintf(string[0], "FLAC");
+				else if(wavebgm_temp == 6) sprintf(string[0], "OPUS");
+				else if(wavebgm_temp == 7) sprintf(string[0], "MOD (.MOD)");
+				else if(wavebgm_temp == 8) sprintf(string[0], "MOD (.IT)");
+				else if(wavebgm_temp == 9) sprintf(string[0], "MOD (.XM)");
+				printFont(15, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+			}
 
 			for(pl = 0; pl < 2; pl++) {
 				if(getPushState(pl, 4) || getPushState(pl, 5)) {
@@ -1343,8 +1353,9 @@ void ConfigMenu() {
 					statusc[1] = 1;
 				} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, 1) - getPressState(pl, 0))) {
 					PlaySE(5);
-					if(!showScreenModeSetting && ((statusc[0] + m + 9) % 9) == 6) m *= 2;
-					statusc[0] = (statusc[0] + m + 9) % 9;
+					int32_t numSettings = 9 + !!(ncfg[44] & 0x10000);
+					if(!showScreenModeSetting && ((statusc[0] + m + numSettings) % numSettings) == 6) m *= 2;
+					statusc[0] = (statusc[0] + m + numSettings) % numSettings;
 				} else if(padRepeat(pl), (m = getPushState(pl, 3) - getPushState(pl, 2))) {
 					if(statusc[0] == 0) {
 						PlaySE(3);
@@ -1412,13 +1423,21 @@ void ConfigMenu() {
 					}
 					else if(statusc[0] == 7) ncfg[46] = !ncfg[46];			// movesound
 					else if(statusc[0] == 8) {
-						// bgmwave
-						ncfg[44] = ncfg[44] + m;
+						bool bgm_temp = (bool)((ncfg[44] >> 16) & 1);
+						bgm_temp = !bgm_temp;
+						ncfg[44] = ((int32_t)bgm_temp << 16) | (ncfg[44] & 0xFFFF);
+						need_reset = 1;
+					}
+					else if(statusc[0] == 9) {
+						// wavebgm
+						int32_t wavebgm_temp = (int32_t)(int16_t)(ncfg[44] & 0xFFFF);
+						wavebgm_temp = wavebgm_temp + m;
 
-						if(ncfg[44] < 0) ncfg[44] = 9;
-						if(ncfg[44] > 9) ncfg[44] = 0;
+						if(wavebgm_temp < 0) wavebgm_temp = 9;
+						if(wavebgm_temp > 9) wavebgm_temp = 0;
 
-						if(bgm) need_reset = 1;
+						ncfg[44] = (ncfg[44] & 0x10000) | (wavebgm_temp & 0xFFFF);
+						need_reset = 1;
 					}
 				}
 			}

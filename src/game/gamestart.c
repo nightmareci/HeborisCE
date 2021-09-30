@@ -880,7 +880,7 @@ int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示
 // 以下hogeパッチより
 int32_t		sevolume = -1500;	//効果音のボリューム。0が標準、-10000で無音。
 int32_t		se = 1;			//効果音を流すかどうか。(0なら流さない)
-int32_t		bgm = 1;		//BGMを流すかどうか。(0なら流さない)
+int32_t		bgm;		//BGMを流すかどうか。(0なら流さない)
 
 // #1.60c7o6追加変数
 int32_t		endtime[2];		// スタッフロール経過時間
@@ -1318,7 +1318,7 @@ int32_t		devil_minus[2];
 int32_t		devil_randrise = 1;	// DEVIL(DOOM)のせり上がり間隔をセクションごとのランダムにする 1=ON
 int32_t		devil_nextrise[2];
 
-int32_t		bgmload[20] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};	//指定したBGMを読み込むか
+int32_t		bgmload[20];	//指定したBGMを読み込むか
 int32_t		exam_ranking = 1;	//試験時のランキング登録有無
 
 int32_t		novice_mode[2];		//noviceモード
@@ -1336,16 +1336,18 @@ int32_t		fastroll[2];		//高速スタッフロール用
 int32_t		fpbas_mode[2];		//FP基本モードfpbas_mode
 
 int32_t		std_opt[2];		//STDモード
-int32_t		flds[10 * 22 * 2];		// スクウェア用フィールドの状態  x + y * 10 + pl * 210
-int32_t		fldsbuf[10 * 22 * 2];		// スクウェア用フィールドの状態  x + y * 10 + pl * 210
+int32_t		flds[10 * 22 * 2];	// スクウェア用フィールドの状態  x + y * 10 + pl * 210
+int32_t		fldsbuf[10 * 22 * 2];	// スクウェア用フィールドの状態  x + y * 10 + pl * 210
 
-int32_t		squaremode[2];			//四角用
-int32_t		itemhistory[2*5];		//アイテム履歴
-int32_t		item_pro[50]={5,8,5,9,6,3,5,4,6,8,
-					  4,7,5,6,5,3,6,6,5,4,
-					  9,1,5,1,7,7,8,3,3,5,
-					  7,4,3,3,1,5,3,2,7,   5,
-					     5,5,5,5,5,5,5,5,5,5};		//アイテム出現率（ini出設定）
+int32_t		squaremode[2];		//四角用
+int32_t		itemhistory[2*5];	//アイテム履歴
+int32_t		item_pro[50]={		//アイテム出現率（ini出設定）
+	5,8,5,9,6,3,5,4,6,8,
+	4,7,5,6,5,3,6,6,5,4,
+	9,1,5,1,7,7,8,3,3,5,
+	7,4,3,3,1,5,3,2,7,5,
+	5,5,5,5,5,5,5,5,5,5
+};
 int32_t		p_nextblock;		// 練習用ツモ決定
 int32_t		squarecnt[2];		//スクウェアカウント
 int32_t		ori_opt[2];			//オリモードオプション
@@ -15098,6 +15100,10 @@ void initialize(void) {
 
 	// BGM読み込み
 	if(bgm) {
+		for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
+		{
+			bgmload[i] = 1;
+		}
 		TextLayerOn(5, 10, 49);
 		TextOut(5, "BGM Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
@@ -15113,6 +15119,9 @@ void initialize(void) {
 			LoadMIDI("res/bgm/bgm.mid");
 			PlayMIDI();
 		}
+	}
+	else {
+		memset(bgmload, 0, sizeof(bgmload));
 	}
 
 	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
@@ -15638,7 +15647,7 @@ void loadBGM(void) {
 	StrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 
 	for(i = 0; i <= 19; i++) {
-		if(bgmload[i] == 1){
+		if(bgmload[i]){
 			// 拡張子を決める
 			if(wavebgm == 1) StrCat(string[i], ".mid");				// MIDI
 			else if(wavebgm == 3) StrCat(string[i], ".ogg");		// OGG

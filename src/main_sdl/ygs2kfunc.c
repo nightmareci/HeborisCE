@@ -787,12 +787,15 @@ void PlayWave ( int no )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-if ((no == 56) || (no == 57)) {
-		Mix_PlayMusic(s_pYGSExMusic[no], 0);
-}else{
-		Mix_PlayMusic(s_pYGSExMusic[no], -1);
-}
+		if ((no == 56) || (no == 57)) {
+			Mix_PlayMusic(s_pYGSExMusic[no], 0);
+		} else {
+			Mix_PlayMusic(s_pYGSExMusic[no], -1);
+		}
 		Mix_VolumeMusic(s_iYGSSoundVolume[no]);
+		break;
+
+	default:
 		break;
 	}
 }
@@ -808,6 +811,9 @@ void ReplayWave ( int no )
 	case YGS_SOUNDTYPE_MUS:
 		Mix_RewindMusic();
 		break;
+	
+	default:
+		break;
 	}
 }
 
@@ -822,6 +828,9 @@ void StopWave ( int no )
 	case YGS_SOUNDTYPE_MUS:
 		Mix_HaltMusic();
 		break;
+		
+	default:
+		break;
 	}
 }
 
@@ -835,6 +844,9 @@ void PauseWave ( int no )
 
 	case YGS_SOUNDTYPE_MUS:
 		Mix_PauseMusic();
+		break;
+
+	default:
 		break;
 	}
 }
@@ -855,6 +867,9 @@ void SetVolumeWave( int no, int vol )
 	case YGS_SOUNDTYPE_MUS:
 		Mix_VolumeMusic(volume);
 		break;
+
+	default:
+		break;
 	}
 }
 
@@ -865,13 +880,13 @@ int IsPlayWave( int no )
 	case YGS_SOUNDTYPE_WAV:
 		/* なぜかここを実行すると落ちる… */
 		return Mix_Playing(no);
-		break;
 
 	case YGS_SOUNDTYPE_MUS:
 		return Mix_PlayingMusic();
-		break;
+		
+	default:
+		return 0;
 	}
-	return 0;
 }
 
 void LoadWave( const char* filename, int no )
@@ -916,7 +931,7 @@ void SetLoopModeWave( int no, int mode )
 
 void LoadMIDI( const char* filename )
 {
-	if ( s_pYGSMusic != NULL )
+	if ( s_pYGSMusic )
 	{
 		Mix_FreeMusic(s_pYGSMusic);
 		s_pYGSMusic = NULL;

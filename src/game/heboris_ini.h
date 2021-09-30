@@ -76,8 +76,6 @@ extern int32_t world_drop_snd;
 extern int32_t sevolume;
 extern int32_t bgmvolume;
 extern int32_t se;
-extern int32_t bgm;
-extern int32_t bgmload[20];
 extern int32_t nmlroll_bgmloop;
 extern int32_t bgnroll_bgmloop;
 extern int32_t beginner_rollbgm;

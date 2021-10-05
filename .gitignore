@@ -6,3 +6,4 @@ src/game/*.gch
 .vscode
 .vs
 AppDir
+*.AppImage

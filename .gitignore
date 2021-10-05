@@ -1,9 +1,10 @@
+# Data files generated when running a WorkingDir package type build in-source
+config/data
+replay
+
+# Buildsystem generated files
 build*
 out
 CMakeSettings.json
-src/game/*.gch
-*.SAV
 .vscode
 .vs
-AppDir
-*.AppImage

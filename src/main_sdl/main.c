@@ -1,4 +1,5 @@
 #include "main_sdl/include.h"
+#include "paths.h"
 #include "gamestart.h"
 #include "physfs.h"
 
@@ -38,23 +39,27 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	#if defined(PACKAGETYPE_INSTALLABLE) || defined(PACKAGETYPE_PORTABLE)
 	char *basePath;
-	if ( !(basePath = SDL_GetBasePath()) ) {
-		fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
+	if ( !(basePath = BASE_PATH) ) {
+		fprintf(stderr, "Failed getting base path.\n");
 		return EXIT_FAILURE;
 	}
-	if ( !PHYSFS_mount(basePath, NULL, 0) )
+	char *basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1);
+	sprintf(basePathAppended, "%s%s", basePath, BASE_PATH_APPEND);
+	SDL_free(basePath);
+	basePath = NULL;
+	if ( !PHYSFS_mount(basePathAppended, NULL, 0) )
 	{
 		fprintf(stderr, "Error mounting base path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		return EXIT_FAILURE;
 	}
+	free(basePathAppended);
+	basePathAppended = NULL;
 
-	#ifdef PACKAGETYPE_INSTALLABLE
 	char *prefPath;
-	if ( !(prefPath = SDL_GetPrefPath("nightmareci", "HeborisC7EX SDL2")) )
+	if ( !(prefPath = PREF_PATH) )
 	{
-		fprintf(stderr, "Failed getting pref path: %s\n", SDL_GetError());
+		fprintf(stderr, "Failed getting pref path.\n");
 		return EXIT_FAILURE;
 	}
 	if ( !PHYSFS_setWriteDir(prefPath) )
@@ -69,38 +74,6 @@ int main(int argc, char* argv[])
 	}
 	SDL_free(prefPath);
 	prefPath = NULL;
-	#else
-	if ( !PHYSFS_setWriteDir(basePath) )
-	{
-		fprintf(stderr, "Error setting pref path for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return EXIT_FAILURE;
-	}
-	#endif
-
-	SDL_free(basePath);
-	basePath = NULL;
-	#else
-	const char *baseDir;
-	if ( argc > 1 )
-	{
-		baseDir = argv[1];
-	}
-	else
-	{
-		baseDir = "./";
-	}
-	if ( !PHYSFS_mount(baseDir, NULL, 0) )
-	{
-		fprintf(stderr, "Error mounting base dir: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return EXIT_FAILURE;
-	}
-	if ( !PHYSFS_setWriteDir(baseDir) )
-	{
-		fprintf(stderr, "Error setting base dir for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return EXIT_FAILURE;
-	}
-	baseDir = NULL;
-	#endif
 
 	if (
 		!PHYSFS_mkdir("replay") ||

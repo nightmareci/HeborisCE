@@ -5,3 +5,4 @@ src/game/*.gch
 *.SAV
 .vscode
 .vs
+AppDir

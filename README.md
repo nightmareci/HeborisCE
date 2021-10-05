@@ -76,6 +76,17 @@ identity is provided.
 ./pkg/macos/pkg.sh Portable 'Apple Developer Codesigning ID'
 ```
 
+#### Download and Package for Linux (AppImage)
+
+```sh
+git clone https://github.com/nightmareci/HeborisC7EX-SDL2
+cd HeborisC7EX-SDL2
+# Download linuxdeploy here: https://github.com/linuxdeploy/linuxdeploy/releases/
+# You have to provide the full path to linuxdeploy and make it executable, this is just an example that *might* work for you.
+chmod +x ~/Downloads/linuxdeploy-x86_64.AppImage
+./pkg/appimage/pkg.sh ~/Downloads/linuxdeploy-x86_64.AppImage
+```
+
 #### Debugging Tips
 
 In the "default" type of building (without use of the CMake PACKAGE_TYPE

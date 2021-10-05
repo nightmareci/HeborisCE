@@ -1,0 +1,5 @@
+#pragma once
+
+#define BASE_PATH @BASE_PATH@
+#define BASE_PATH_APPEND @BASE_PATH_APPEND@
+#define PREF_PATH @PREF_PATH@

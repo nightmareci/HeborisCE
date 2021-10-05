@@ -39,41 +39,58 @@ int main(int argc, char* argv[])
 		return EXIT_FAILURE;
 	}
 
-	char *basePath;
-	if ( !(basePath = BASE_PATH) ) {
-		fprintf(stderr, "Failed getting base path.\n");
-		return EXIT_FAILURE;
-	}
-	char *basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1);
-	sprintf(basePathAppended, "%s%s", basePath, BASE_PATH_APPEND);
-	SDL_free(basePath);
-	basePath = NULL;
-	if ( !PHYSFS_mount(basePathAppended, NULL, 0) )
+	if ( argc > 1 && strlen(argv[1]) > 0 )
 	{
-		fprintf(stderr, "Error mounting base path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return EXIT_FAILURE;
+		char *specifiedPath = argv[1];
+		if ( !PHYSFS_mount(specifiedPath, NULL, 0) )
+		{
+			fprintf(stderr, "Error mounting specified path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return EXIT_FAILURE;
+		}
+		if ( !PHYSFS_setWriteDir(specifiedPath) )
+		{
+			fprintf(stderr, "Error setting specified path for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return EXIT_FAILURE;
+		}
 	}
-	free(basePathAppended);
-	basePathAppended = NULL;
+	else
+	{
+		char *basePath;
+		if ( !(basePath = BASE_PATH) ) {
+			fprintf(stderr, "Failed getting base path.\n");
+			return EXIT_FAILURE;
+		}
+		char *basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1);
+		sprintf(basePathAppended, "%s%s", basePath, BASE_PATH_APPEND);
+		SDL_free(basePath);
+		basePath = NULL;
+		if ( !PHYSFS_mount(basePathAppended, NULL, 0) )
+		{
+			fprintf(stderr, "Error mounting base path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return EXIT_FAILURE;
+		}
+		free(basePathAppended);
+		basePathAppended = NULL;
 
-	char *prefPath;
-	if ( !(prefPath = PREF_PATH) )
-	{
-		fprintf(stderr, "Failed getting pref path.\n");
-		return EXIT_FAILURE;
+		char *prefPath;
+		if ( !(prefPath = PREF_PATH) )
+		{
+			fprintf(stderr, "Failed getting pref path.\n");
+			return EXIT_FAILURE;
+		}
+		if ( !PHYSFS_setWriteDir(prefPath) )
+		{
+			fprintf(stderr, "Error setting pref path for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return EXIT_FAILURE;
+		}
+		if ( !PHYSFS_mount(prefPath, NULL, 0) )
+		{
+			fprintf(stderr, "Error mounting pref path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return EXIT_FAILURE;
+		}
+		SDL_free(prefPath);
+		prefPath = NULL;
 	}
-	if ( !PHYSFS_setWriteDir(prefPath) )
-	{
-		fprintf(stderr, "Error setting pref path for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return EXIT_FAILURE;
-	}
-	if ( !PHYSFS_mount(prefPath, NULL, 0) )
-	{
-		fprintf(stderr, "Error mounting pref path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return EXIT_FAILURE;
-	}
-	SDL_free(prefPath);
-	prefPath = NULL;
 
 	if (
 		!PHYSFS_mkdir("replay") ||

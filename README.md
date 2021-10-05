@@ -1,6 +1,6 @@
-### Heboris C7EX - unofficial version (YGS2K EX)
+### Heboris C7-EX - unofficial version (YGS2K EX)
 
-This version contains the source code for Heboris C7EX. It requires a C
+This version contains the source code for Heboris C7-EX. It requires a C
 compiler, SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS libraries to build and
 play.
 
@@ -64,7 +64,7 @@ basically requires you have an Apple Developer subscription, so the app can get
 access to the folder it's in. But building it for use on the same system it was
 built on works fine, and is a convenient way to have it easy to customize the
 theme. The "Portable" version requires the built app be in the folder with the
-other files (res folder, etc.).
+other files (`res` folder, etc.).
 ```sh
 ./pkg/macos/pkg.sh Portable
 ```
@@ -81,19 +81,26 @@ identity is provided.
 ```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-# Download linuxdeploy here: https://github.com/linuxdeploy/linuxdeploy/releases/
-# You have to provide the full path to linuxdeploy and make it executable, this is just an example that *might* work for you.
+# Download linuxdeploy here; you're expected to download a local copy, not use a version from a package manager: https://github.com/linuxdeploy/linuxdeploy/releases/
+# You have to add executable permission to linuxdeploy and provide the path to it; this is just an example that *might* work for you, adjust if necessary.
+# You have to use full paths with the source and build directory arguments passed to the pkg.sh script, relative paths won't work.
 chmod +x ~/Downloads/linuxdeploy-x86_64.AppImage
-./pkg/appimage/pkg.sh ~/Downloads/linuxdeploy-x86_64.AppImage
+./pkg/appimage/pkg.sh ~/Downloads/linuxdeploy-x86_64.AppImage "$PWD" "$PWD/build-appimage"
 ```
 
 #### Debugging Tips
 
-In the "default" type of building (without use of the CMake PACKAGE_TYPE
-option) by default the game uses its working directory for all files, the
-classic style of old Heboris versions. But that type of build also supports
-passing a directory as a command line argument for where all files are, which
-can be helpful for setting up debugging in IDEs.
+Regardless of the package type used for building, you can add a command line
+argument for the path where resources are read from and data files are written,
+making the game behave similarly to old Heboris versions, but explicitly
+setting where all files are. This feature can be used to get debugging working
+in IDEs, by setting that command line argument to where the source root is.
+
+An alternative to using the explicit resource/data directory command line
+argument is to use the `WorkingDir` package type when building (the default if
+`PACKAGE_TYPE` isn't provided to the CMake configuration step) and configuring
+your IDE to run the game with its working directory set to the source root.
+This option isn't available in all IDEs, however.
 
 #### Changes
 
@@ -134,6 +141,8 @@ This repository will be maintained for bug fixes, non-new-content enhancements
  - Put all configuration options into in-game menus. Part of this includes
    moving the INI settings into the CONFIG.SAV file, and removing all INI
    usage.
+ - Change the Linux AppImage package to bundle in a MIDI soundfont and have
+   that soundfont used.
 
 #### Definitely Not Legal Advice
 

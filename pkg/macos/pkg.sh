@@ -5,10 +5,10 @@ if [ `uname -m` != arm64 ] ; then
 	exit 1 ;
 fi
 
-if [ "$1" = Installable -o "$1" = Portable ] ; then
+if [ "$1" = 'Installable Mac App' -o "$1" = 'Portable Mac App' ] ; then
 	PACKAGE_TYPE="$1" ;
 else
-	echo "Requested package type \"$1\" is invalid; valid options are Installable or Portable" ;
+	echo "Requested package type \"$1\" is invalid; valid options are \"Installable Mac App\" or \"Portable Mac App\"" ;
 	echo "Usage: $0 package_type [codesign_identity]" ;
 	exit 1 ;
 fi
@@ -47,16 +47,16 @@ done
 # Copy a built app into the source folder, that will have its code files
 # replaced with codesigned, universal binaries.
 SRC_FOLDER="$BASE_DIR/srcfolder"
-if [ "$PACKAGE_TYPE" = Installable ] ; then
+if [ "$PACKAGE_TYPE" = 'Installable Mac App' ] ; then
 	APP_DIR="$SRC_FOLDER" ;
-elif [ "$PACKAGE_TYPE" = Portable ] ; then
+elif [ "$PACKAGE_TYPE" = 'Portable Mac App' ] ; then
 	APP_DIR="$SRC_FOLDER/$NAME" ;
 fi
 mkdir -p "$APP_DIR" || exit 1
 cp -r "$BASE_DIR/app-arm64/$NAME.app" "$APP_DIR" || exit 1
 
 # Copy resources into place.
-if [ "$PACKAGE_TYPE" = Installable ] ; then
+if [ "$PACKAGE_TYPE" = 'Installable Mac App' ] ; then
 	cp README.md changelog.txt heboris.txt "$APP_DIR" || exit 1 ;
 	RESOURCES_DIR="$APP_DIR/$NAME.app/Contents/Resources" ;
 	mkdir -p "$RESOURCES_DIR/config" || exit 1 ;
@@ -64,7 +64,7 @@ if [ "$PACKAGE_TYPE" = Installable ] ; then
 	cp -r "config/stage" "$RESOURCES_DIR/config" || exit 1 ;
 	cp -r "res" "$RESOURCES_DIR" || exit 1 ;
 	cp heboris.ini "$RESOURCES_DIR" || exit 1 ;
-elif [ "$PACKAGE_TYPE" = Portable ] ; then
+elif [ "$PACKAGE_TYPE" = 'Portable Mac App' ] ; then
 	cp README.md changelog.txt heboris.txt heboris.ini "$APP_DIR" || exit 1 ;
 	mkdir -p "$APP_DIR/config" || exit 1 ;
 	cp -r "config/mission" "$APP_DIR/config" || exit 1 ;

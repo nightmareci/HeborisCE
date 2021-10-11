@@ -51,29 +51,29 @@ Apple Silicon Macs (TODO: Transition to using MacPorts, since that directly
 supports universal binary libraries). The packaging script must be run with the
 working directory at the root of the repo.
 
-The "Installable" version will work unnotarized, though users will have to
-approve it, and will get the "Apple could not verify..." message.
+The "Installable Mac App" version will work unnotarized, though users will have
+to approve it, and will get the "Apple could not verify..." message.
 ```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-./pkg/macos/pkg.sh Installable
+./pkg/macos/pkg.sh 'Installable Mac App'
 ```
 
-You can also create a "Portable" version; distribution of this version
+You can also create a "Portable Mac App" version; distribution of this version
 basically requires you have an Apple Developer subscription, so the app can get
 access to the folder it's in. But building it for use on the same system it was
 built on works fine, and is a convenient way to have it easy to customize the
-theme. The "Portable" version requires the built app be in the folder with the
-other files (`res` folder, etc.).
+theme. The "Portable Mac App" version requires the built app be in the folder
+with the other files (`res` folder, etc.).
 ```sh
-./pkg/macos/pkg.sh Portable
+./pkg/macos/pkg.sh 'Portable Mac App'
 ```
 
 The packaging script can optionally take a codesigning identity, so you can
 sign the app for future notarization. By default, it uses adhoc signing if no
 identity is provided.
 ```sh
-./pkg/macos/pkg.sh Portable 'Apple Developer Codesigning ID'
+./pkg/macos/pkg.sh 'Portable Mac App' 'Apple Developer Codesigning ID'
 ```
 
 #### Download and Package for Linux (AppImage)

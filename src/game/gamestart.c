@@ -1390,7 +1390,7 @@ int32_t fade_seed = 20;	// BGMフェードアウト用
 int32_t se_play[50];
 
 // 文字列定数
-cstr		version = "C7V4EX " FRAMEWORK_VER " 07/11/23";	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
+cstr		version = "C7V4EX 07/11/23 " FRAMEWORK_VER " V" HEBORISC7EXSDL2_VERSION;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 cstr		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */

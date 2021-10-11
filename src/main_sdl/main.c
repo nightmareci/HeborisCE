@@ -44,12 +44,12 @@ int main(int argc, char* argv[])
 		char *specifiedPath = argv[1];
 		if ( !PHYSFS_mount(specifiedPath, NULL, 0) )
 		{
-			fprintf(stderr, "Error mounting specified path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error mounting specified path \"%s\": %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			return EXIT_FAILURE;
 		}
 		if ( !PHYSFS_setWriteDir(specifiedPath) )
 		{
-			fprintf(stderr, "Error setting specified path for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error setting specified path \"%s\" for writing: %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			return EXIT_FAILURE;
 		}
 	}
@@ -66,7 +66,8 @@ int main(int argc, char* argv[])
 		basePath = NULL;
 		if ( !PHYSFS_mount(basePathAppended, NULL, 0) )
 		{
-			fprintf(stderr, "Error mounting base path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error mounting base path \"%s\": %s\n", basePathAppended, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			free(basePathAppended);
 			return EXIT_FAILURE;
 		}
 		free(basePathAppended);
@@ -80,12 +81,14 @@ int main(int argc, char* argv[])
 		}
 		if ( !PHYSFS_setWriteDir(prefPath) )
 		{
-			fprintf(stderr, "Error setting pref path for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error setting pref path \"%s\" for writing: %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			SDL_free(prefPath);
 			return EXIT_FAILURE;
 		}
 		if ( !PHYSFS_mount(prefPath, NULL, 0) )
 		{
-			fprintf(stderr, "Error mounting pref path: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error mounting pref path \"%s\": %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			SDL_free(prefPath);
 			return EXIT_FAILURE;
 		}
 		SDL_free(prefPath);

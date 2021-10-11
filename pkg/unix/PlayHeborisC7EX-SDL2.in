@@ -1,4 +1,0 @@
-#!/bin/sh
-
-cd @HEBORISC7EX_SDL2_SHARE_DIR@
-./HeborisC7EX-SDL2

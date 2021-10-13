@@ -245,11 +245,17 @@ else()
 			sdl2
 			SDL2_image
 			SDL2_mixer
-			physfs
 		)
 		foreach(DEPENDENCY ${DEPENDENCIES})
 			target_pkg_config_import(${EXE} ${DEPENDENCY})
 		endforeach()
+
+		# Some old systems even lack pkg-config support for PhysicsFS,
+		# but a manually-installed up-to-date version of CMake (not
+		# hard to do) can always provide PhysicsFS this way.
+		find_package(PhysFS REQUIRED)
+		target_link_libraries(${EXE} PUBLIC ${PHYSFS_LIBRARY})
+		target_include_directories(${EXE} SYSTEM PRIVATE ${PHYSFS_INCLUDE_DIR})
 	else()
 		message(FATAL_ERROR "pkg-config not found")
 	endif()

@@ -438,7 +438,8 @@ bool YGS2kHalt()
 	s_uTimeCount = SDL_GetPerformanceCounter();
 
 	/* イベント処理 */
-	while(SDL_PollEvent(&ev))
+	SDL_PumpEvents();
+	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_LASTEVENT) == 1)
 	{
 		switch(ev.type){
 			case SDL_QUIT:						// ウィンドウの×ボタンが押された時など

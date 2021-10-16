@@ -15,7 +15,7 @@ Building dependencies:
 sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libphysfs-dev
 ```
 
-#### Setup in Windows MSYS2:
+#### Setup in Windows MSYS2
 
 If using Git to get the source code, rather than downloading a zip of it from GitHub:
 ```sh

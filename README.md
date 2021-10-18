@@ -1,7 +1,7 @@
 ### Heboris C7-EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7-EX.
-It requires a C compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0, SDL 2.0 mixer, and SDL 2.0 image.
+It requires a C compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
 #### Setup On Ubuntu
 

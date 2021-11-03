@@ -477,16 +477,16 @@ void ConfigMenu() {
 					m = getPushState(pl, 3) - getPushState(pl, 2);
 
 					if(m) {
-						if(statusc[0] == 1) ncfg[2] = (ncfg[2] + 13 + m) % 13;	// nextbloc 8を追加#1.60c7h4
+						     if(statusc[0] == 1) ncfg[2] = (ncfg[2] + 13 + m) % 13;	// nextbloc 8を追加#1.60c7h4
 						else if(statusc[0] == 2) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
 						else if(statusc[0] == 3) ncfg[5] = !ncfg[5];			// nanameallow
 						else if(statusc[0] == 4) ncfg[6] = !ncfg[6];			// sonicdrop
 						else if(statusc[0] == 5) ncfg[7] = !ncfg[7];			// fastlrmove
 						else if(statusc[0] == 6) ncfg[4] = !ncfg[4];			// smooth
 						else if(statusc[0] == 7) ncfg[36] = !ncfg[36];			// tgmlv
-						else if(statusc[0] == 10) ncfg[52] = !ncfg[52];			// w_reverse
-						else if(statusc[0] == 11) ncfg[53] = !ncfg[53];			// downtype
-						else if(statusc[0] == 12) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
+						else if(statusc[0] == 8) ncfg[52] = !ncfg[52];			// w_reverse
+						else if(statusc[0] == 9) ncfg[53] = !ncfg[53];			// downtype
+						else if(statusc[0] == 10) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
 
 						else if(statusc[0] == 0) {	// page
 							PlaySE(3);

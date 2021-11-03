@@ -1,10 +1,9 @@
 ### Heboris C7-EX - unofficial version (YGS2K EX)
 
-This version contains the source code for Heboris C7-EX. It requires a C
-compiler, SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS libraries to build and
-play.
+This version contains the source code for Heboris C7-EX.
+It requires a C compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
-Example of installing dependencies on Ubuntu:
+#### Setup On Ubuntu
 
 If using Git to get the source code, rather than downloading a zip of it from GitHub:
 ```sh
@@ -14,6 +13,18 @@ sudo apt-get install git
 Building dependencies:
 ```sh
 sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libphysfs-dev
+```
+
+#### Setup in Windows MSYS2
+
+If using Git to get the source code, rather than downloading a zip of it from GitHub:
+```sh
+pacman -Syu git
+```
+
+Building dependencies:
+```sh
+pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-physfs
 ```
 
 #### Download, Build, and Run Without Installing

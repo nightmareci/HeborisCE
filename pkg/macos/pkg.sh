@@ -37,7 +37,7 @@ for arch in arm64 x86_64 ; do
 	mkdir -p "$ARCH_APP_DIR" || exit 1 ;
 	cp -r "$ARCH_BUILD_DIR/$NAME.app" "$ARCH_APP_DIR" || exit 1 ;
 	mkdir -p "$ARCH_APP_DIR/$NAME.app/Contents/libs" || exit 1 ;
-	dylibbundler -x "$ARCH_APP_DIR/$NAME.app/Contents/MacOS/$NAME" -d "$ARCH_APP_DIR/$NAME.app/Contents/libs" -b -i /usr/lib || exit 1 ;
+	dylibbundler -x "$ARCH_APP_DIR/$NAME.app/Contents/MacOS/$NAME" -cd -d "$ARCH_APP_DIR/$NAME.app/Contents/libs" -p @rpath/../libs/ -b -i /usr/lib || exit 1 ;
 
 	# Remove code signatures.
 	for lib in `ls "$ARCH_APP_DIR/$NAME.app/Contents/libs/"` ; do codesign --remove-signature "$ARCH_APP_DIR/$NAME.app/Contents/libs/$lib" || exit 1 ; done ;
@@ -86,10 +86,15 @@ if [ "$2" ] ; then
 else
 	IDENTITY="-" ;
 fi
+if [ "$IDENTITY" = "-" ] ; then
+	ENTITLEMENTS="entitlements-adhoc.xml" ;
+else
+	ENTITLEMENTS="entitlements-identity-required.xml" ;
+fi
 for lib in `ls "$APP_DIR/$NAME.app/Contents/libs/"` ; do
-	codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/entitlements.xml" "$APP_DIR/$NAME.app/Contents/libs/$lib" || exit 1 ;
+	codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/$ENTITLEMENTS" "$APP_DIR/$NAME.app/Contents/libs/$lib" || exit 1 ;
 done
-codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/entitlements.xml" "$APP_DIR/$NAME.app" || exit 1
+codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/$ENTITLEMENTS" "$APP_DIR/$NAME.app" || exit 1
 
 # Generate final DMG package.
 hdiutil create "$BASE_DIR/tmp.dmg" -ov -volname "$NAME" -fs HFS+ -srcfolder "$SRC_FOLDER" || exit 1
@@ -100,4 +105,4 @@ for arch in arm64 x86_64 ; do
 	rm -r "$BASE_DIR/app-$arch" || exit 1 ;
 done
 rm -r "$SRC_FOLDER" || exit 1
-codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/entitlements.xml" "$BASE_DIR/$NAME.dmg" || exit 1
+codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/$ENTITLEMENTS" "$BASE_DIR/$NAME.dmg" || exit 1

@@ -256,7 +256,7 @@ else()
 		# but a manually-installed up-to-date version of CMake (not
 		# hard to do) can always provide PhysicsFS this way.
 		find_package(PhysFS REQUIRED)
-		target_link_libraries(${EXE} PUBLIC ${PHYSFS_LIBRARY})
+		target_link_libraries(${EXE} PRIVATE ${PHYSFS_LIBRARY})
 		target_include_directories(${EXE} SYSTEM PRIVATE ${PHYSFS_INCLUDE_DIR})
 	else()
 		message(FATAL_ERROR "pkg-config not found")

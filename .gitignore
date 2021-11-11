@@ -8,3 +8,6 @@ out
 CMakeSettings.json
 .vscode
 .vs
+
+# Package files
+HeborisC7EX-SDL2*

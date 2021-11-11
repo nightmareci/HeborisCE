@@ -54,6 +54,21 @@ On Linux, soundfont packages install their .sf2 files in
 `/usr/share/soundfonts`, though you can use any .sf2 soundfont you want, such
 as those just downloaded from some website.
 
+#### Download and Package for Windows
+
+For Windows, building with VCPKG and Visual Studio/MSVC is the officially
+supported method. The packaging script must be run with the
+ working directory
+at the root of the repo.
+
+```bat
+git clone https://github.com/nightmareci/HeborisC7EX-SDL2
+cd HeborisC7EX-SDL2
+REM Starting at the root of the VCPKG install/repo, vcpkg.cmake is at vcpkg\scripts\buildsystems\vcpkg.cmake
+.\pkg\windows\pkg.bat path\to\vcpkg.cmake
+REM Now, HeborisC7EX-SDL2-Windows.zip will be in the repo root.
+```
+
 #### Download and Package for macOS
 
 The packaging script for macOS requires separate arm64 and x86_64 installations

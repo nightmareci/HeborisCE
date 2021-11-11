@@ -494,42 +494,39 @@ int IsPressKey ( int key )
 
 int IsPushJoyKey ( const SJoyKey* const key )
 {
-	if (!s_iJoyPadMax) return 0;
+	if (!s_iJoyPadMax || key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
 
-	SJoyPadGUID guid = GetJoyPadGUID(key->device);
+	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
 	SJoyPadGUID zeroGUID = { 0 };
-	if (memcmp(&guid, &zeroGUID, sizeof(SJoyPadGUID)) == 0 || memcmp(&key->guid, &guid, sizeof(SJoyPadGUID)) != 0) return 0;
-	switch(key->type)
-	{
-	case JOYKEY_AXIS:
-		if(key->setting.value == -YGS_DEADZONE_MAX)
-		{
-			return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 0] == 1 ? 1 : 0;
-		}
-		else if(key->setting.value == +YGS_DEADZONE_MAX)
-		{
-			return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 1] == 1 ? 1 : 0;
-		}
-		break;
-	case JOYKEY_HAT:
-		switch(key->setting.value)
-		{
-		case SDL_HAT_LEFT:
-			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 0] == 1 ? 1 : 0;
-		case SDL_HAT_RIGHT:
-			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 1] == 1 ? 1 : 0;
-		case SDL_HAT_UP:
-			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 2] == 1 ? 1 : 0;
-		case SDL_HAT_DOWN:
-			return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 3] == 1 ? 1 : 0;
+	if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
+		switch (key->type) {
+		case JOYKEY_AXIS:
+			if (key->setting.value == -YGS_DEADZONE_MAX) {
+				return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 0] == 1 ? 1 : 0;
+			}
+			else if (key->setting.value == +YGS_DEADZONE_MAX) {
+				return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 1] == 1 ? 1 : 0;
+			}
+			break;
+		case JOYKEY_HAT:
+			switch (key->setting.value) {
+			case SDL_HAT_LEFT:
+				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 0] == 1 ? 1 : 0;
+			case SDL_HAT_RIGHT:
+				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 1] == 1 ? 1 : 0;
+			case SDL_HAT_UP:
+				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 2] == 1 ? 1 : 0;
+			case SDL_HAT_DOWN:
+				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 3] == 1 ? 1 : 0;
+			default:
+				break;
+			}
+			break;
+		case JOYKEY_BUTTON:
+			return s_pJoyButtonRepeat[key->device][key->setting.button] == 1 ? 1 : 0;
 		default:
 			break;
 		}
-		break;
-	case JOYKEY_BUTTON:
-		return s_pJoyButtonRepeat[key->device][key->setting.button] == 1 ? 1 : 0;
-	default:
-		break;
 	}
 	return 0;
 }
@@ -538,36 +535,33 @@ int IsPressJoyKey ( const SJoyKey* const key )
 {
 	if (!s_iJoyPadMax || key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
 
-	int pressed = 0;
 	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
-	if (memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
+	SJoyPadGUID zeroGUID = { 0 };
+	if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
 		SDL_Joystick* const joy = s_pJoyPads[key->device];
 		if (SDL_JoystickGetAttached(joy)) {
 			switch (key->type) {
 			case JOYKEY_AXIS:
-				pressed =
+				return
 					key->setting.value != 0 && SDL_JoystickNumAxes(joy) > key->setting.index &&
 					(
 						(key->setting.value > 0 && SDL_JoystickGetAxis(joy, key->setting.index) > key->setting.value) ||
 						(key->setting.value < 0 && SDL_JoystickGetAxis(joy, key->setting.index) < key->setting.value)
 					);
-				break;
-
 			case JOYKEY_HAT:
-				pressed =
+				return
 					key->setting.value != SDL_HAT_CENTERED &&
 					SDL_JoystickNumHats(joy) > key->setting.index &&
 					SDL_JoystickGetHat(joy, key->setting.index) == key->setting.value;
-				break;
-
 			case JOYKEY_BUTTON:
-				pressed = SDL_JoystickGetButton(joy, key->setting.button);
+				return SDL_JoystickGetButton(joy, key->setting.button);
+			default:
 				break;
 			}
 		}
 	}
 
-	return pressed;
+	return 0;
 }
 
 int IsPushReturnKey()

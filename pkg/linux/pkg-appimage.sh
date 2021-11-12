@@ -5,8 +5,8 @@ SOURCE_DIR="$2"
 BUILD_DIR="$3"
 
 if [ -z "$LINUXDEPLOY" -o -z "$SOURCE_DIR" -o -z "$BUILD_DIR" ] ; then
-	echo 'Usage: pkg.sh [linuxdeploy-path] [source-dir] [build-dir]'
-	echo 'Download latest version of linuxdeploy here: https://github.com/linuxdeploy/linuxdeploy/releases/'
+	echo 'Usage: pkg-appimage.sh [linuxdeploy-path] [source-dir] [build-dir]'
+	echo 'Download the latest version of linuxdeploy here: https://github.com/linuxdeploy/linuxdeploy/releases/'
 	exit 1
 fi
 

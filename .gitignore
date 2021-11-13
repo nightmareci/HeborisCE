@@ -1,13 +1,13 @@
 # Data files generated when running a WorkingDir package type build in-source
-config/data
-replay
+/config/data
+/replay
 
 # Buildsystem generated files
-build*
-out
-CMakeSettings.json
-.vscode
-.vs
+/build*
+/out
+/CMakeSettings.json
+/.vscode
+/.vs
 
 # Package files
-HeborisC7EX-SDL2*
+/HeborisC7EX-SDL2*

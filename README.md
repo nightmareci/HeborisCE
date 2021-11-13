@@ -102,8 +102,9 @@ identity is provided.
 ./pkg/macos/pkg.sh 'Portable Mac App' 'Apple Developer Codesigning ID'
 ```
 
-#### Download and Package for Linux (AppImage)
+#### Download and Package for Linux
 
+AppImage:
 ```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
@@ -111,7 +112,14 @@ cd HeborisC7EX-SDL2
 # You have to add executable permission to linuxdeploy and provide the path to it; this is just an example that *might* work for you, adjust if necessary.
 # You have to use full paths with the source and build directory arguments passed to the pkg.sh script, relative paths won't work.
 chmod +x ~/Downloads/linuxdeploy-x86_64.AppImage
-./pkg/appimage/pkg.sh ~/Downloads/linuxdeploy-x86_64.AppImage "$PWD" "$PWD/build-appimage"
+./pkg/linux/pkg-appimage.sh ~/Downloads/linuxdeploy-x86_64.AppImage "$PWD" "$PWD/build-appimage"
+```
+
+Flatpak:
+```sh
+git clone https://github.com/nightmareci/HeborisC7EX-SDL2
+cd HeborisC7EX-SDL2
+./pkg/linux/pkg-flatpak.sh . build-flatpak
 ```
 
 #### Debugging Tips

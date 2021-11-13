@@ -14,5 +14,5 @@ rm -rf "$BUILD_DIRECTORY" || exit 1
 mkdir "$BUILD_DIRECTORY" || exit 1
 cd "$BUILD_DIRECTORY" || exit 1
 
-flatpak-builder --repo=repo app "$SOURCE_DIRECTORY/pkg/linux/$NAME-flatpak.yml" || exit 1
+flatpak-builder --repo=repo app "$SOURCE_DIRECTORY/pkg/linux/pkg-flatpak.yml" || exit 1
 flatpak build-bundle repo "$NAME-Linux.flatpak" "io.github.nightmareci.$NAME" || exit 1

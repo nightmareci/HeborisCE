@@ -1,20 +1,25 @@
 #!/bin/sh
 
-LINUXDEPLOY="$1"
-SOURCE_DIR="$2"
-BUILD_DIR="$3"
-
-if [ -z "$LINUXDEPLOY" -o -z "$SOURCE_DIR" -o -z "$BUILD_DIR" ] ; then
-	echo 'Usage: pkg-appimage.sh [linuxdeploy-path] [source-dir] [build-dir]'
-	echo 'Download the latest version of linuxdeploy here: https://github.com/linuxdeploy/linuxdeploy/releases/'
+if [ -z "$1" -o -z "$2" ] ; then
+	echo 'Usage: pkg-appimage.sh [source-dir] [build-dir]'
 	exit 1
 fi
 
-APP_NAME="HeborisC7EX-SDL2"
+SOURCE_DIR=`readlink -f "$1"`
+BUILD_DIR=`readlink -f "$2"`
+
+NAME="HeborisC7EX-SDL2"
 
 rm -rf "$BUILD_DIR" || exit 1
-cmake -B "$BUILD_DIR/build" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DPACKAGE_TYPE=Installable || exit 1
-cmake --build "$BUILD_DIR/build" -j`expr $(nproc) + 2` || exit 1
-DESTDIR="$BUILD_DIR/AppDir" cmake --install "$BUILD_DIR/build" || exit 1
-cd "$BUILD_DIR"
-"$LINUXDEPLOY" --appdir "$BUILD_DIR/AppDir" --output appimage --icon-file "$SOURCE_DIR/pkg/appimage/$APP_NAME.png" --icon-filename "$APP_NAME" --desktop-file "$SOURCE_DIR/pkg/appimage/$APP_NAME.desktop" || exit 1
+mkdir "$BUILD_DIR" || exit 1
+cd "$BUILD_DIR" || exit 1
+
+cmake "$SOURCE_DIR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DPACKAGE_TYPE=Installable || exit 1
+cmake --build build -j`expr $(nproc) + 2` || exit 1
+DESTDIR=AppDir cmake --install build || exit 1
+
+LINUXDEPLOY="linuxdeploy-$(uname -m).AppImage"
+curl -L -O "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/$LINUXDEPLOY" || exit 1
+chmod +x "$LINUXDEPLOY" || exit 1
+
+"./$LINUXDEPLOY" --appdir AppDir --output appimage --icon-file "$SOURCE_DIR/pkg/linux/$NAME.png" --icon-filename "$NAME" --desktop-file "$BUILD_DIR/build/$NAME.desktop" || exit 1

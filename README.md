@@ -1,7 +1,16 @@
 ### Heboris C7-EX - unofficial version (YGS2K EX)
 
-This version contains the source code for Heboris C7-EX.
-It requires a C compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
+This version contains the source code for Heboris C7-EX. It requires a C
+compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0,
+SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
+
+#### Installing Flatpak Version on Linux
+You'll need to install Flatpak, first. The total installation size of Flatpak
+and necessary components is quite large, but the Flatpak package should work on
+any Linux distribution supporting Flatpak:
+```sh
+flatpak install ~/Downloads/HeborisC7EX-SDL2-Linux.flatpak
+```
 
 #### Setup On Ubuntu
 
@@ -57,8 +66,7 @@ as those just downloaded from some website.
 #### Download and Package for Windows
 
 For Windows, building with VCPKG and Visual Studio/MSVC is the officially
-supported method. The packaging script must be run with the
- working directory
+supported method. The packaging script must be run with the working directory
 at the root of the repo.
 
 ```bat
@@ -108,11 +116,7 @@ AppImage:
 ```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-# Download linuxdeploy here; you're expected to download a local copy, not use a version from a package manager: https://github.com/linuxdeploy/linuxdeploy/releases/
-# You have to add executable permission to linuxdeploy and provide the path to it; this is just an example that *might* work for you, adjust if necessary.
-# You have to use full paths with the source and build directory arguments passed to the pkg.sh script, relative paths won't work.
-chmod +x ~/Downloads/linuxdeploy-x86_64.AppImage
-./pkg/linux/pkg-appimage.sh ~/Downloads/linuxdeploy-x86_64.AppImage "$PWD" "$PWD/build-appimage"
+./pkg/linux/pkg-appimage.sh . build-appimage
 ```
 
 Flatpak:

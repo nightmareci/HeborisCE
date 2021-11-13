@@ -23,6 +23,7 @@ modules:
       config-opts:
           - -DCMAKE_INSTALL_PREFIX=/app
           - -DPACKAGE_TYPE=Installable
+          - -DLINUX_DESKTOP_ICON=io.github.nightmareci.HeborisC7EX-SDL2.png
       sources:
         - type: dir
           path: ../..

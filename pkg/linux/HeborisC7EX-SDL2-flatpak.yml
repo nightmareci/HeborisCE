@@ -1,0 +1,36 @@
+app-id: io.github.nightmareci.HeborisC7EX-SDL2
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+command: HeborisC7EX-SDL2
+rename-desktop-file: HeborisC7EX-SDL2.desktop
+rename-icon: HeborisC7EX-SDL2
+modules:
+    - name: physfs
+      buildsystem: cmake-ninja
+      builddir: true
+      config-opts:
+          - -DCMAKE_INSTALL_PREFIX=/app
+          - -DCMAKE_BUILD_TYPE=Release
+          - -DPHYSFS_BUILD_TEST=FALSE
+      sources:
+          - type: archive
+            url: 'http://icculus.org/physfs/downloads/physfs-3.0.2.tar.bz2'
+            sha1: 6a15c458898d0570101d8f173201cde9ced78df7
+    - name: HeborisC7EX-SDL2
+      buildsystem: cmake-ninja
+      builddir: true
+      config-opts:
+          - -DCMAKE_INSTALL_PREFIX=/app
+          - -DPACKAGE_TYPE=Installable
+      sources:
+        - type: dir
+          path: ../..
+finish-args:
+    - --device=all
+    - --share=ipc
+    - --socket=wayland
+    - --socket=fallback-x11
+    - --socket=pulseaudio
+    - --device=dri
+    - --filesystem=home

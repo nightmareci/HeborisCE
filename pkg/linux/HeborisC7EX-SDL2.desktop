@@ -4,7 +4,6 @@ Version=1.0
 Name=HeborisC7EX-SDL2
 Comment=Cross-platform port of Heboris C7-EX
 Exec=HeborisC7EX-SDL2
-Icon=HeborisC7EX-SDL2
 GenericName=HeborisC7EX-SDL2
 Categories=Game
 Terminal=false

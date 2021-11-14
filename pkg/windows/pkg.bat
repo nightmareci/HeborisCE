@@ -13,7 +13,9 @@
 @cmake --build "%BUILD_DIRECTORY%\build" --config Release
 @cmake --install "%BUILD_DIRECTORY%\build"
 
-@tar -c -a -f "%BUILD_DIRECTORY%\%NAME%"-Windows.zip "%BUILD_DIRECTORY%\%NAME%"
+@cd "%BUILD_DIRECTORY%"
+@tar -c -a -f "%NAME%"-Windows.zip "%NAME%"
+@cd ..
 
 @rmdir /s /q "%BUILD_DIRECTORY%\build"
 @rmdir /s /q "%BUILD_DIRECTORY%\%NAME%"

@@ -19,7 +19,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 	add_compile_definitions(LINUX)
 endif()
 
-set(PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
+if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+	set(PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
+else()
+	set(PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
+endif()
 
 set(EXE HeborisC7EX-SDL2)
 set(EXE_SOURCES
@@ -167,7 +171,7 @@ else()
 		endfunction()
 	
 		if(${PACKAGE_TYPE} STREQUAL "WorkingDir")
-			message(STATUS "Configuring working directory version")
+			message(STATUS "Configuring working directory version; CMake installation is not supported")
 			add_executable(${EXE} ${EXE_SOURCES})
 			set(BASE_PATH "SDL_strdup(\"./\")")
 			set(BASE_PATH_APPEND "\"\"")

@@ -122,8 +122,8 @@ rm "$APP_DIRECTORY/$NAME.app/Contents/MacOS/$NAME" || exit 1
 lipo "$BASE_DIRECTORY/app-arm64/$NAME.app/Contents/MacOS/$NAME" "$BASE_DIRECTORY/app-x86_64/$NAME.app/Contents/MacOS/$NAME" -create -output "$APP_DIRECTORY/$NAME.app/Contents/MacOS/$NAME" || exit 1
 
 # Codesign.
-if [ "$2" ] ; then
-	IDENTITY="$2"
+if [ "$4" ] ; then
+	IDENTITY="$4"
 else
 	IDENTITY="-"
 fi

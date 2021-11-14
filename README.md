@@ -5,11 +5,24 @@ compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0,
 SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
 #### Installing Flatpak Version on Linux
-You'll need to install Flatpak, first. The total installation size of Flatpak
-and necessary components is quite large, but the Flatpak package should work on
-any Linux distribution supporting Flatpak:
+The benefit of using the Flatpak release package over building it yourself is
+it's built with a recent compiler (improved optimizations) and bundled with
+recent-version libraries, rather than having to settle on older libraries on
+some distros, like Ubuntu. The total installation size of Flatpak and necessary
+components is quite large, but the Flatpak package should work on any Linux
+distribution supporting Flatpak:
 ```sh
+# Ubuntu, etc. Replace with whatever your distro requires to get Flatpak installed.
+sudo apt-get install flatpak
+
+# You might not have to run these first two lines, but there's no harm in running them if you don't need to.
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install runtime/org.freedesktop.Platform/x86_64/21.08
+
 flatpak install ~/Downloads/HeborisC7EX-SDL2-Linux.flatpak
+
+# You might need to log out and then log back in for the HeborisC7EX-SDL2
+# application to show up in application menus.
 ```
 
 #### Setup On Ubuntu

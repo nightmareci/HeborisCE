@@ -7,10 +7,10 @@ if [ `uname -m` != arm64 ] ; then
 	exit 1
 fi
 
-if [ "$1" = 'Installable Mac App' -o "$1" = 'Portable Mac App' ] ; then
+if [ "$1" = Installable -o "$1" = Portable ] ; then
 	PACKAGE_TYPE="$1"
 else
-	echo "Requested package type \"$1\" is invalid; valid options are \"Installable Mac App\" or \"Portable Mac App\""
+	echo "Requested package type \"$1\" is invalid; valid options are \"Installable\" or \"Portable\""
 	echo "$USAGE"
 	exit 1
 fi
@@ -66,7 +66,7 @@ rm "$BASE_DIRECTORY/codesign-dummy" || exit 1
 for arch in arm64 x86_64 ; do
 	# Build app for current arch.
 	ARCH_BUILD_DIRECTORY="$BUILD_DIRECTORY-$arch"
-	arch -arch "$arch" zsh --login -c "cmake \"$SOURCE_DIRECTORY\" -G Ninja -B \"$ARCH_BUILD_DIRECTORY\" -DCMAKE_BUILD_TYPE=Release -DPACKAGE_TYPE=\"$PACKAGE_TYPE\" || exit 1 ; cmake --build \"$ARCH_BUILD_DIRECTORY\"" || exit 1
+	arch -arch "$arch" zsh --login -c "cmake \"$SOURCE_DIRECTORY\" -G Ninja -B \"$ARCH_BUILD_DIRECTORY\" -DCMAKE_BUILD_TYPE=Release -DPACKAGE_TYPE=\"$PACKAGE_TYPE Mac App\" || exit 1 ; cmake --build \"$ARCH_BUILD_DIRECTORY\"" || exit 1
 
 	# Copy current arch app out of build dir and bundle libs.
 	ARCH_APP_DIRECTORY="$BASE_DIRECTORY/app-$arch"
@@ -88,16 +88,16 @@ done
 # Copy a built app into the source folder, that will have its code files
 # replaced with codesigned, universal binaries.
 SRC_FOLDER="$BASE_DIRECTORY/srcfolder"
-if [ "$PACKAGE_TYPE" = 'Installable Mac App' ] ; then
+if [ "$PACKAGE_TYPE" = Installable ] ; then
 	APP_DIRECTORY="$SRC_FOLDER"
-elif [ "$PACKAGE_TYPE" = 'Portable Mac App' ] ; then
+elif [ "$PACKAGE_TYPE" = Portable ] ; then
 	APP_DIRECTORY="$SRC_FOLDER/$NAME"
 fi
 mkdir -p "$APP_DIRECTORY" || exit 1
 cp -r "$BASE_DIRECTORY/app-arm64/$NAME.app" "$APP_DIRECTORY" || exit 1
 
 # Copy resources into place.
-if [ "$PACKAGE_TYPE" = 'Installable Mac App' ] ; then
+if [ "$PACKAGE_TYPE" = Installable ] ; then
 	cp README.md changelog.txt heboris.txt "$APP_DIRECTORY" || exit 1
 	RESOURCES_DIRECTORY="$APP_DIRECTORY/$NAME.app/Contents/Resources"
 	mkdir -p "$RESOURCES_DIRECTORY/config" || exit 1
@@ -105,7 +105,7 @@ if [ "$PACKAGE_TYPE" = 'Installable Mac App' ] ; then
 	cp -r "config/stage" "$RESOURCES_DIRECTORY/config" || exit 1
 	cp -r "res" "$RESOURCES_DIRECTORY" || exit 1
 	cp heboris.ini "$RESOURCES_DIRECTORY" || exit 1
-elif [ "$PACKAGE_TYPE" = 'Portable Mac App' ] ; then
+elif [ "$PACKAGE_TYPE" = Portable ] ; then
 	cp README.md changelog.txt heboris.txt heboris.ini "$APP_DIRECTORY" || exit 1
 	mkdir -p "$APP_DIRECTORY/config" || exit 1
 	cp -r "config/mission" "$APP_DIRECTORY/config" || exit 1
@@ -139,11 +139,11 @@ codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BA
 
 # Generate final DMG package.
 hdiutil create "$BASE_DIRECTORY/tmp.dmg" -ov -volname "$NAME" -fs HFS+ -srcfolder "$SRC_FOLDER" || exit 1
-hdiutil convert "$BASE_DIRECTORY/tmp.dmg" -format UDZO -o "$BASE_DIRECTORY/$NAME-macOS.dmg" || exit 1
+hdiutil convert "$BASE_DIRECTORY/tmp.dmg" -format UDZO -o "$BASE_DIRECTORY/$NAME-macOS-$PACKAGE_TYPE.dmg" || exit 1
 rm "$BASE_DIRECTORY/tmp.dmg" || exit 1
 for arch in arm64 x86_64 ; do
 	rm -r "$BUILD_DIRECTORY-$arch" || exit 1
 	rm -r "$BASE_DIRECTORY/app-$arch" || exit 1
 done
 rm -r "$SRC_FOLDER" || exit 1
-codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/$ENTITLEMENTS" "$BASE_DIRECTORY/$NAME-macOS.dmg" || exit 1
+codesign -f -o runtime --timestamp -s "$IDENTITY" --entitlements "$(dirname "$BASH_SOURCE")/$ENTITLEMENTS" "$BASE_DIRECTORY/$NAME-macOS-$PACKAGE_TYPE.dmg" || exit 1

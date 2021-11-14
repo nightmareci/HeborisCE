@@ -1,14 +1,24 @@
 @if "%~1"=="" goto error
+@if "%~2"=="" goto error
+@if "%~3"=="" goto error
 
-@del /s /q build-windows-msvc HeborisC7EX-SDL2 HeborisC7EX-SDL2-Windows.zip
+@set NAME=HeborisC7EX-SDL2
+@set VCPKG_TOOLCHAIN="%~1"
+@set SOURCE_DIRECTORY="%~2"
+@set BUILD_DIRECTORY="%~3"
 
-@cmake -B build-windows-msvc -DPACKAGE_TYPE=Portable --toolchain %1 -DCMAKE_INSTALL_PREFIX=HeborisC7EX-SDL2 -DVCPKG_TARGET_TRIPLET=x64-windows
-@cmake --build build-windows-msvc --config Release
-@cmake --install build-windows-msvc
+@rmdir /s /q "%BUILD_DIRECTORY%"
 
-@tar -c -a -f HeborisC7EX-SDL2-Windows.zip HeborisC7EX-SDL2
+@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\build" -DPACKAGE_TYPE=Portable --toolchain "%VCPKG_TOOLCHAIN%" -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\%NAME%" -DVCPKG_TARGET_TRIPLET=x64-windows
+@cmake --build "%BUILD_DIRECTORY%\build" --config Release
+@cmake --install "%BUILD_DIRECTORY%\build"
+
+@tar -c -a -f "%BUILD_DIRECTORY%\%NAME%"-Windows.zip "%BUILD_DIRECTORY%\%NAME%"
+
+@rmdir /s /q "%BUILD_DIRECTORY%\build"
+@rmdir /s /q "%BUILD_DIRECTORY%\%NAME%"
 
 @exit
 
 :error
-@echo Usage: .\pkg\windows\pkg.bat path\to\vcpkg.cmake
+@echo Usage: pkg.bat [path-to-vcpkg.cmake] [source-directory] [build-directory]

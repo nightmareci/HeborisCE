@@ -29,12 +29,14 @@
 @rmdir /s /q "%BUILD_DIRECTORY%\%NAME%"
 @if %ERRORLEVEL% NEQ 0 goto error
 
-@exit
+@goto end
 
 :usage
 @echo Usage: pkg.bat [path-to-vcpkg.cmake] [source-directory] [build-directory]
-@exit
+@goto end
 
 :error
-echo Error encountered
-@exit
+@echo Error encountered
+@goto end
+
+:end

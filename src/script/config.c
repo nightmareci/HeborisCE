@@ -1,51 +1,51 @@
 #include "script/include.h"
 
-int32_t	screenMode;		// スクリーンモード
-int32_t	screenIndex;		// スクリーンインデックス
-int32_t	nextblock;		// ツモ
-//int32_t	blockkind;		// ブロックグラフィック	0:aa 1:ab 2:ba 3:bb
-int32_t	smooth;			// ブロック落下	0:ノーマル 1:スムーズ
-int32_t	nanameallow;		// 斜め入力	0:無効 1:有効
-int32_t	sonicdrop;		// 上入れ即接地0:有効 1:無効
-int32_t	fastlrmove;		// 横先行入力	0:有効 1:無効
-int32_t	blockflash;		// ブロック枠	0:点滅 1:点灯 2:無し
-int32_t	background;		// フィールド背景0:スクロール 1:スクロール無し 2:ベタ
+int32_t screenMode;		// スクリーンモード
+int32_t screenIndex;		// スクリーンインデックス
+int32_t nextblock;		// ツモ
+uint32_t cfgversion;		// 設定ファイルフォーマットのバージョン番号です。
+int32_t smooth;			// ブロック落下	0:ノーマル 1:スムーズ
+int32_t nanameallow;		// 斜め入力	0:無効 1:有効
+int32_t sonicdrop;		// 上入れ即接地0:有効 1:無効
+int32_t fastlrmove;		// 横先行入力	0:有効 1:無効
+int32_t blockflash;		// ブロック枠	0:点滅 1:点灯 2:無し
+int32_t background;		// フィールド背景0:スクロール 1:スクロール無し 2:ベタ
 
-int32_t	rots[2];		// 回転規則
-int32_t	lvup[2];		// レベルアップ方式
-int32_t	fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
-int32_t	digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
-int32_t	giveupKey = SDL_SCANCODE_Q;	// 捨てゲーキー (デフォルトはQ)
-int32_t	ssKey = SDL_SCANCODE_HOME;	// スナップショットキー (デフォルトはHome)
-int32_t	pausekey[2] = { SDL_SCANCODE_F1, SDL_SCANCODE_F2 };	// ポーズキー(デフォルトはF1, F2)		#1.60c7g7
-int32_t	dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
-int32_t	dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
-int32_t	fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-int32_t	wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
+int32_t rots[2];		// 回転規則
+int32_t lvup[2];		// レベルアップ方式
+int32_t fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
+int32_t digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
+int32_t giveupKey = SDL_SCANCODE_Q;	// 捨てゲーキー (デフォルトはQ)
+int32_t ssKey = SDL_SCANCODE_HOME;	// スナップショットキー (デフォルトはHome)
+int32_t pausekey[2] = { SDL_SCANCODE_F1, SDL_SCANCODE_F2 };	// ポーズキー(デフォルトはF1, F2)		#1.60c7g7
+int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
+int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
+int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
+int32_t wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
 // ver.160c6
-int32_t	dispnext;		// ネクスト表示個数設定
-int32_t	movesound;		// ブロック移動音設定	0:OFF　1:ON
-int32_t	fontsize;		// メイン画面で描画するフォントの大きさ	0:標準　1:小型
-int32_t	maxPlay;		// プレイする最大人数	0:シングル台　1:ツイン台
-int32_t	lastmaxPlay;		// 設定変更前の、プレイする最大人数	0:シングル台　1:ツイン台
-int32_t	lasttopframe;
+int32_t dispnext;		// ネクスト表示個数設定
+int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON
+int32_t fontsize;		// メイン画面で描画するフォントの大きさ	0:標準　1:小型
+int32_t maxPlay;		// プレイする最大人数	0:シングル台　1:ツイン台
+int32_t lastmaxPlay;		// 設定変更前の、プレイする最大人数	0:シングル台　1:ツイン台
+int32_t lasttopframe;
 
-int32_t	breakeffect;		// ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
-int32_t	showcombo;		// コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
-//int32_t	quickerase;		// ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
+int32_t breakeffect;		// ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
+int32_t showcombo;		// コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
+//int32_t quickerase;		// ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
 
-int32_t	w_reverse;		// ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
+int32_t w_reverse;		// ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
 
-int32_t	downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
+int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
-int32_t	lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
+int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-int32_t keyAssign[10 * 2];	// キーボード設定 (↑↓←→ABCD)
+int32_t keyAssign[10 * 2]; // キーボード設定 (↑↓←→ABCD)
 
 // →pauseとgiveupを追加 1.60c7g7
-SJoyKey	joykeyAssign[10 * 2];	// ジョイスティックボタン割り当て
+SJoyKey joykeyAssign[10 * 2];	// ジョイスティックボタン割り当て
 
-int32_t	restart;		// 再起動フラグ
+int32_t restart;		// 再起動フラグ
 
 // 設定をバイナリデータに保存 1.60c5
 int32_t SaveConfig(void) {
@@ -60,7 +60,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[4] = screenMode;
 	cfgbuf[5] = screenIndex;
 	cfgbuf[6] = nextblock;
-	//cfgbuf[7] = blockkind;
+	cfgbuf[7] = cfgversion;
 	cfgbuf[8] = smooth;
 	cfgbuf[9] = nanameallow;
 	cfgbuf[10] = sonicdrop;
@@ -86,7 +86,10 @@ int32_t SaveConfig(void) {
 	cfgbuf[54] = fontsize;
 	cfgbuf[55] = maxPlay;
 	cfgbuf[60] = movesound;
-	cfgbuf[61] = (bgm << 16) | (wavebgm & 0xFFFF);
+	cfgbuf[61] =
+		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
+		((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
+		(wavebgm & 0xFF);
 	cfgbuf[62] = breakeffect;
 	cfgbuf[63] = showcombo;
 	cfgbuf[64] = top_frame;
@@ -139,20 +142,18 @@ int32_t SaveConfig(void) {
 int32_t LoadConfig(void) {
 	int32_t i, j, cfgbuf[CFG_LENGTH];
 
-
 	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
-	LoadFile("config/data/CONFIG.SAV", &cfgbuf, 16);
+	LoadFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
 	if(cfgbuf[2] != 0x464E4F44) return (1);
 	if(cfgbuf[3] != 0x31764750) return (1);
-
-	LoadFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
+	if((uint32_t)cfgbuf[7] != CFG_VERSION) return (1);
 
 	screenMode = cfgbuf[4];
 	screenIndex = cfgbuf[5];
 	nextblock = cfgbuf[6];
-	//blockkind = cfgbuf[7];
+	cfgversion = (uint32_t)cfgbuf[7];
 	smooth = cfgbuf[8];
 	nanameallow = cfgbuf[9];
 	sonicdrop = cfgbuf[10];
@@ -176,9 +177,16 @@ int32_t LoadConfig(void) {
 	fldtr = cfgbuf[53];
 	fontsize = cfgbuf[54];
 	maxPlay = cfgbuf[55];
+
 	movesound = cfgbuf[60];
-	bgm = !!(cfgbuf[61] & 0x10000);
-	wavebgm = (int32_t)(int16_t)(cfgbuf[61] & 0xFFFF);
+	se = (cfgbuf[61] >> 23) & 0x1;
+	sevolume = (cfgbuf[61] >> 16) & 0x7F;
+	if(sevolume > 100) sevolume = 100;
+	bgm = (cfgbuf[61] >> 15) & 0x1;
+	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
+	if(bgmvolume > 100) bgmvolume = 100;
+	wavebgm = cfgbuf[61] & 0xFF;
+	if (wavebgm > WAVEBGM_MAX) wavebgm = WAVEBGM_MAX;
 
 	breakeffect = cfgbuf[62];
 	showcombo = cfgbuf[63];
@@ -249,7 +257,7 @@ void ConfigMenu() {
 	ncfg[0]  = screenMode;
 	ncfg[1]  = screenIndex;
 	ncfg[2]  = nextblock;
-	//ncfg[3]  = blockkind;
+	ncfg[3]  = cfgversion;
 	ncfg[4]  = smooth;
 	ncfg[5]  = nanameallow;
 	ncfg[6]  = sonicdrop;
@@ -265,7 +273,10 @@ void ConfigMenu() {
 	ncfg[36] = dtc;
 
 	ncfg[43] = fldtr;
-	ncfg[44] = (bgm << 16) | (wavebgm & 0xFFFF);
+	ncfg[44] =
+		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
+		((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
+		(wavebgm & 0xFF);
 	ncfg[45] = dispnext;
 	ncfg[46] = movesound;
 	ncfg[47] = fontsize;
@@ -502,7 +513,7 @@ void ConfigMenu() {
 					screenMode = ncfg[0];
 					screenIndex = ncfg[1];
 					nextblock = ncfg[2];
-					//blockkind = ncfg[3];
+					cfgversion = (uint32_t)ncfg[3];
 					smooth = ncfg[4];
 					nanameallow = ncfg[5];
 					sonicdrop = ncfg[6];
@@ -517,8 +528,11 @@ void ConfigMenu() {
 					dtc = ncfg[36];
 
 					fldtr = ncfg[43];
-					bgm = (ncfg[44] >> 16) & 1;
-					wavebgm = (int32_t)(int16_t)(ncfg[44] & 0xFFFF);
+					se = (ncfg[44] >> 23) & 0x1;
+					sevolume = (ncfg[44] >> 16) & 0x7F;
+					bgm = (ncfg[44] >> 15) & 0x1;
+					bgmvolume = (ncfg[44] >> 8) & 0x7F;
+					wavebgm = ncfg[44] & 0xFF;
 					dispnext = ncfg[45];
 					movesound = ncfg[46];
 					fontsize = ncfg[47];
@@ -1260,8 +1274,11 @@ void ConfigMenu() {
 			printFont(2, 10, "SCALE MODE  :", (statusc[0] == 5) * fontc[rots[0]]);
 			if(showScreenModeSetting) printFont(2, 11, "SCREEN MODE :", (statusc[0] == 6) * fontc[rots[0]]);
 			printFont(2, 12, "MOVE SOUND  :", (statusc[0] == 7) * fontc[rots[0]]);
-			printFont(2, 13, "PLAY BGM    :", (statusc[0] == 8) * fontc[rots[0]]);
-			if(ncfg[44] & 0x10000) printFont(2, 14, "BGM TYPE    :", (statusc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 13, "PLAY SOUND  :", (statusc[0] == 8) * fontc[rots[0]]);
+			if ((ncfg[44] >> 23) & 0x1) printFont(2, 14, "SOUND VOLUME:", (statusc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 15, "PLAY BGM    :", (statusc[0] == 10) * fontc[rots[0]]);
+			if((ncfg[44] >> 15) & 0x1) printFont(2, 16, "BGM VOLUME  :", (statusc[0] == 11) * fontc[rots[0]]);
+			if((ncfg[44] >> 15) & 0x1) printFont(2, 17, "BGM TYPE    :", (statusc[0] == 12) * fontc[rots[0]]);
 			printFont(2, 28, "A/B:RETURN", 9);
 
 			switch(statusc[0]) {
@@ -1326,12 +1343,24 @@ void ConfigMenu() {
 			else sprintf(string[0], "OFF");
 			printFont(15, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
-			if(ncfg[44] & 0x10000) sprintf(string[0], "ON");
+			if((ncfg[44] >> 23) & 0x1) sprintf(string[0], "ON");
 			else sprintf(string[0], "OFF");
 			printFont(15, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
-			if(ncfg[44] & 0x10000) {
-				int32_t wavebgm_temp = (int32_t)(int16_t)(ncfg[44] & 0xFFFF);
+			if((ncfg[44] >> 23) & 0x1) {
+				sprintf(string[0], "%d", (int)((ncfg[44] >> 16) & 0x7F));
+				printFont(15, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+			}
+
+			if((ncfg[44] >> 15) & 0x1) sprintf(string[0], "ON");
+			else sprintf(string[0], "OFF");
+			printFont(15, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
+
+			if((ncfg[44] >> 15) & 0x1) {
+				sprintf(string[0], "%d", (int)((ncfg[44] >> 8) & 0x7F));
+				printFont(15, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
+
+				int32_t wavebgm_temp = ncfg[44] & 0xF;
 				if(wavebgm_temp == 0) sprintf(string[0], "MIDI (SIMPLE)");
 				else if(wavebgm_temp == 1) sprintf(string[0], "MIDI");
 				else if(wavebgm_temp == 2) sprintf(string[0], "WAVE");
@@ -1342,7 +1371,7 @@ void ConfigMenu() {
 				else if(wavebgm_temp == 7) sprintf(string[0], "MOD (.MOD)");
 				else if(wavebgm_temp == 8) sprintf(string[0], "MOD (.IT)");
 				else if(wavebgm_temp == 9) sprintf(string[0], "MOD (.XM)");
-				printFont(15, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
 			}
 
 			for(pl = 0; pl < 2; pl++) {
@@ -1353,91 +1382,138 @@ void ConfigMenu() {
 					statusc[1] = 1;
 				} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, 1) - getPressState(pl, 0))) {
 					PlaySE(5);
-					int32_t numSettings = 9 + !!(ncfg[44] & 0x10000);
-					if(!showScreenModeSetting && ((statusc[0] + m + numSettings) % numSettings) == 6) m *= 2;
+					const int32_t numSettings = 13;
+					const int32_t nextChoice = (statusc[0] + m + numSettings) % numSettings;
+					if(m > 0) {
+						m +=
+							(nextChoice ==  6 && !showScreenModeSetting) +
+							(nextChoice ==  9 && !((ncfg[44] >> 23) & 0x1)) +
+							(nextChoice == 11 && !((ncfg[44] >> 15) & 0x1)) * 2;
+					}
+					else if(m < 0) {
+						m -=
+							(nextChoice ==  6 && !showScreenModeSetting) +
+							(nextChoice ==  9 && !((ncfg[44] >> 23) & 0x1)) +
+							(nextChoice == 12 && !((ncfg[44] >> 15) & 0x1)) * 2;
+					}
 					statusc[0] = (statusc[0] + m + numSettings) % numSettings;
-				} else if(padRepeat(pl), (m = getPushState(pl, 3) - getPushState(pl, 2))) {
-					if(statusc[0] == 0) {
-						PlaySE(3);
-						status[0] = (status[0] + m + pages) % pages;
-						statusc[0] = 0;
-						statusc[1] = 1;
-					}
-					else if(statusc[0] == 1) {
-						ncfg[1] &= ~SCREENINDEX_MODE;
-						ncfg[0] = (ncfg[0] & ~SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & SCREENMODE_WINDOWTYPE) + SCREENMODE_NUMWINDOWTYPES + m)) % SCREENMODE_NUMWINDOWTYPES);
-						need_reset = 1;
-					}
-					else if(statusc[0] == 2) {
-						ncfg[1] &= ~SCREENINDEX_MODE;
-						ncfg[1] = (ncfg[1] & ~SCREENINDEX_DISPLAY) | SCREENINDEX_DISPLAY_TOSETTING((SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]) + GetMaxDisplayIndex() + m) % GetMaxDisplayIndex());	// displayIndex
-						need_reset = 1;
-					}
-					else if(statusc[0] == 3) {
-						if((ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW) ncfg[1] &= ~SCREENINDEX_MODE;
-						ncfg[0] ^= SCREENMODE_DETAILLEVEL;
-						need_reset = 1;
-					}
-					else if(statusc[0] == 4) {
-						ncfg[0] ^= SCREENMODE_VSYNC;
-						need_reset = 1;
-					}
-					else if(statusc[0] == 5) {
-						ScaleMode scaleMode = SCALEMODE_TOVALUE(ncfg[0]);
-						scaleMode = (scaleMode + GetMaxScaleMode() + m) % GetMaxScaleMode();
-						ncfg[0] = (ncfg[0] & ~SCREENMODE_SCALEMODE) | SCALEMODE_TOSETTING(scaleMode);
-						need_reset = 1;
-					}
-					else if(statusc[0] == 6) {
-						switch(ncfg[0] & SCREENMODE_WINDOWTYPE) {
-						case SCREENMODE_WINDOW: {
-							SDL_DisplayMode displayMode;
-							SDL_GetDesktopDisplayMode(SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), &displayMode);
-							int baseW = (!!(ncfg[0] & SCREENMODE_DETAILLEVEL) + 1) * 320;
-							int baseH = (!!(ncfg[0] & SCREENMODE_DETAILLEVEL) + 1) * 240;
-							int maxMode;
-							if(displayMode.w <= baseW || displayMode.h <= baseH) {
-								maxMode = 1;
-							}
-							else if(displayMode.w > displayMode.h) {
-								maxMode = (displayMode.h / baseH) - (displayMode.h % baseH == 0);
-							}
-							else {
-								maxMode = (displayMode.w / baseW) - (displayMode.w % baseW == 0);
-							}
-							int modeIndex = SCREENINDEX_MODE_TOVALUE(ncfg[1]);
-							modeIndex = (modeIndex + maxMode + m) % maxMode;
-							ncfg[1] = (ncfg[1] & ~SCREENINDEX_MODE) | SCREENINDEX_MODE_TOSETTING(modeIndex);
-							break;
+				} else {
+					padRepeat(pl);
+					m = getPushState(pl, 3) - getPushState(pl, 2);
+					if(m && ((statusc[0] >= 0 && statusc[0] <= 8) || statusc[0] == 10 || statusc[0] == 12)) {
+						if(statusc[0] == 0) {
+							PlaySE(3);
+							status[0] = (status[0] + m + pages) % pages;
+							statusc[0] = 0;
+							statusc[1] = 1;
 						}
-						case SCREENMODE_FULLSCREEN: {
-							int modeIndex = SCREENINDEX_MODE_TOVALUE(ncfg[1]);
-							int maxDisplayMode = GetMaxDisplayMode(SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
-							modeIndex = (modeIndex + maxDisplayMode + m) % maxDisplayMode;
-							ncfg[1] = (ncfg[1] & ~SCREENINDEX_MODE) | SCREENINDEX_MODE_TOSETTING(modeIndex);
-							break;
+						else if(statusc[0] == 1) {
+							ncfg[1] &= ~SCREENINDEX_MODE;
+							ncfg[0] = (ncfg[0] & ~SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & SCREENMODE_WINDOWTYPE) + SCREENMODE_NUMWINDOWTYPES + m)) % SCREENMODE_NUMWINDOWTYPES);
+							need_reset = 1;
 						}
-						default: break;
+						else if(statusc[0] == 2) {
+							ncfg[1] &= ~SCREENINDEX_MODE;
+							ncfg[1] = (ncfg[1] & ~SCREENINDEX_DISPLAY) | SCREENINDEX_DISPLAY_TOSETTING((SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]) + GetMaxDisplayIndex() + m) % GetMaxDisplayIndex());	// displayIndex
+							need_reset = 1;
 						}
-						need_reset = 1;
-					}
-					else if(statusc[0] == 7) ncfg[46] = !ncfg[46];			// movesound
-					else if(statusc[0] == 8) {
-						bool bgm_temp = (bool)((ncfg[44] >> 16) & 1);
-						bgm_temp = !bgm_temp;
-						ncfg[44] = ((int32_t)bgm_temp << 16) | (ncfg[44] & 0xFFFF);
-						need_reset = 1;
-					}
-					else if(statusc[0] == 9) {
-						// wavebgm
-						int32_t wavebgm_temp = (int32_t)(int16_t)(ncfg[44] & 0xFFFF);
-						wavebgm_temp = wavebgm_temp + m;
+						else if(statusc[0] == 3) {
+							if((ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW) ncfg[1] &= ~SCREENINDEX_MODE;
+							ncfg[0] ^= SCREENMODE_DETAILLEVEL;
+							need_reset = 1;
+						}
+						else if(statusc[0] == 4) {
+							ncfg[0] ^= SCREENMODE_VSYNC;
+							need_reset = 1;
+						}
+						else if(statusc[0] == 5) {
+							ScaleMode scaleMode = SCALEMODE_TOVALUE(ncfg[0]);
+							scaleMode = (scaleMode + GetMaxScaleMode() + m) % GetMaxScaleMode();
+							ncfg[0] = (ncfg[0] & ~SCREENMODE_SCALEMODE) | SCALEMODE_TOSETTING(scaleMode);
+							need_reset = 1;
+						}
+						else if(statusc[0] == 6) {
+							switch(ncfg[0] & SCREENMODE_WINDOWTYPE) {
+							case SCREENMODE_WINDOW: {
+								SDL_DisplayMode displayMode;
+								SDL_GetDesktopDisplayMode(SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), &displayMode);
+								int baseW = (!!(ncfg[0] & SCREENMODE_DETAILLEVEL) + 1) * 320;
+								int baseH = (!!(ncfg[0] & SCREENMODE_DETAILLEVEL) + 1) * 240;
+								int maxMode;
+								if(displayMode.w <= baseW || displayMode.h <= baseH) {
+									maxMode = 1;
+								}
+								else if(displayMode.w > displayMode.h) {
+									maxMode = (displayMode.h / baseH) - (displayMode.h % baseH == 0);
+								}
+								else {
+									maxMode = (displayMode.w / baseW) - (displayMode.w % baseW == 0);
+								}
+								int modeIndex = SCREENINDEX_MODE_TOVALUE(ncfg[1]);
+								modeIndex = (modeIndex + maxMode + m) % maxMode;
+								ncfg[1] = (ncfg[1] & ~SCREENINDEX_MODE) | SCREENINDEX_MODE_TOSETTING(modeIndex);
+								break;
+							}
+							case SCREENMODE_FULLSCREEN: {
+								int modeIndex = SCREENINDEX_MODE_TOVALUE(ncfg[1]);
+								int maxDisplayMode = GetMaxDisplayMode(SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
+								modeIndex = (modeIndex + maxDisplayMode + m) % maxDisplayMode;
+								ncfg[1] = (ncfg[1] & ~SCREENINDEX_MODE) | SCREENINDEX_MODE_TOSETTING(modeIndex);
+								break;
+							}
+							default: break;
+							}
+							need_reset = 1;
+						}
+						else if(statusc[0] == 7) ncfg[46] = !ncfg[46];			// movesound
+						else if(statusc[0] == 8) {
+							// se
+							ncfg[44] ^= 0x1 << 23;
+							need_reset = 1;
+						}
+						else if(statusc[0] == 10) {
+							// bgm
+							ncfg[44] ^= 0x1 << 15;
+							need_reset = 1;
+						}
+						else if(statusc[0] == 12) {
+							// wavebgm
+							int32_t wavebgm_temp = ncfg[44] & 0xF;
+							wavebgm_temp += m;
 
-						if(wavebgm_temp < 0) wavebgm_temp = 9;
-						if(wavebgm_temp > 9) wavebgm_temp = 0;
+							if(wavebgm_temp < 0) wavebgm_temp = 9;
+							if(wavebgm_temp > 9) wavebgm_temp = 0;
 
-						ncfg[44] = (ncfg[44] & 0x10000) | (wavebgm_temp & 0xFFFF);
-						need_reset = 1;
+							ncfg[44] = (ncfg[44] & ~0xF) | (wavebgm_temp & 0xF);
+							need_reset = 1;
+						}
+					}
+					else if((m || (mp[pl] && mpc[pl] > 30)) && (statusc[0] == 9 || statusc[0] == 11)) {
+						if(statusc[0] == 9) {
+							// sevolume
+							int32_t sevolume_temp = (ncfg[44] >> 16) & 0x7F;
+							if(m) sevolume_temp += m;
+							else if(mp[pl] && mpc[pl] > 30) sevolume_temp += mp[pl] * 2 - 5;
+							
+							if(sevolume_temp < 0) sevolume_temp = 0;
+							if(sevolume_temp > 100) sevolume_temp = 100;
+							
+							ncfg[44] = (ncfg[44] & ~(0x7F << 16)) | ((sevolume_temp & 0x7F) << 16);
+							SetVolumeAllWaves(sevolume_temp);
+						}
+						else if(statusc[0] == 11) {
+							// bgmvolume
+							int32_t bgmvolume_temp = (ncfg[44] >> 8) & 0x7F;
+							if(m) bgmvolume_temp += m;
+							else if(mp[pl] && mpc[pl] > 30) bgmvolume_temp += mp[pl] * 2 - 5;
+
+							if(bgmvolume_temp < 0) bgmvolume_temp = 0;
+							if(bgmvolume_temp > 100) bgmvolume_temp = 100;
+
+							ncfg[44] = (ncfg[44] & ~(0x7F << 8)) | ((bgmvolume_temp & 0x7F) << 8);
+							SetVolumeAllBGM(bgmvolume_temp);
+							SetVolumeMIDI(bgmvolume_temp);
+						}
 					}
 				}
 			}

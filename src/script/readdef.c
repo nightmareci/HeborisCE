@@ -12,6 +12,10 @@ typedef struct {
 	int32_t	fldtr;
 	int32_t	dispnext;
 	int32_t	movesound;
+	int32_t se;
+	int32_t sevolume;
+	int32_t bgm;
+	int32_t bgmvolume;
 	int32_t	wavebgm;
 	int32_t	maxPlay;
 
@@ -37,6 +41,7 @@ typedef struct {
 	int32_t		screenMode;
 	int32_t		screenIndex;
 	int32_t		nextblock;
+	uint32_t	cfgversion;
 	int32_t		smooth;
 	int32_t		nanameallow;
 	int32_t		sonicdrop;
@@ -66,6 +71,10 @@ static const settings defsettings = {
 	.fldtr = 96,				//フィールド背景非表示時のフィールド透過度(0-256)
 	.dispnext = 3,			//ネクストブロック表示数の選択（０〜３）
 	.movesound = 1,			//ブロック移動音の選択	0:OFF 1:ON
+	.se = 1,
+	.sevolume = 100,
+	.bgm = 0,
+	.bgmvolume = 100,
 	.wavebgm = 0,			//BGMの選択
 	.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
 
@@ -92,6 +101,7 @@ static const settings defsettings = {
 	.screenMode =SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL,
 	.screenIndex =0,
 	.nextblock =8,
+	.cfgversion =CFG_VERSION,
 	.smooth =0,
 	.nanameallow =1,
 	.sonicdrop =0,
@@ -117,7 +127,7 @@ int32_t readdef()
 	cfgbuf[4] = defsettings.screenMode;
 	cfgbuf[5] = defsettings.screenIndex;
 	cfgbuf[6] = defsettings.nextblock;
-	//cfgbuf[7] = defsettings.blockkind;
+	cfgbuf[7] = defsettings.cfgversion;
 	cfgbuf[8] = defsettings.smooth;
 	cfgbuf[9] = defsettings.nanameallow;
 	cfgbuf[10] = defsettings.sonicdrop;
@@ -141,7 +151,10 @@ int32_t readdef()
 	cfgbuf[54] = defsettings.fontsize;
 	cfgbuf[55] = defsettings.maxPlay;
 	cfgbuf[60] = defsettings.movesound;
-	cfgbuf[61] = defsettings.wavebgm;
+	cfgbuf[61] =
+		(( defsettings.se & 0x1) << 23) | (( defsettings.sevolume & 0x7F) << 16) |
+		((defsettings.bgm & 0x1) << 15) | ((defsettings.bgmvolume & 0x7F) <<  8) |
+		(defsettings.wavebgm & 0xFF);
 	cfgbuf[62] = defsettings.breakeffect;
 	cfgbuf[63] = defsettings.showcombo;
 	cfgbuf[64] = defsettings.top_frame;

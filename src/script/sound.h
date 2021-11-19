@@ -16,5 +16,7 @@ int32_t setstartBGM(int32_t mode,int32_t pl);
 void PlayAllSE();
 void StopSE(int32_t no);
 void PlaySE(int32_t no);
-void StopAllBGM(void);
 void StopAllWaves(void);
+void StopAllBGM(void);
+void SetVolumeAllWaves();
+void SetVolumeAllBGM();

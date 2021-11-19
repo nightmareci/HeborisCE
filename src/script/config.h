@@ -4,6 +4,10 @@
 
 #define CFG_LENGTH 240
 
+// 設定ファイルフォーマットのバージョン番号です。
+// フォーマットの変更により互換性が失われた場合、1つ増加します。
+#define CFG_VERSION 1u
+
 void GameOption();
 void ConfigMenu();
 int32_t LoadConfig(void);
@@ -22,6 +26,7 @@ extern int32_t maxPlay;
 extern int32_t fontsize;
 extern int32_t movesound;
 extern int32_t dispnext;
+#define WAVEBGM_MAX 9
 extern int32_t wavebgm;
 extern int32_t fldtr;
 extern int32_t dtc;

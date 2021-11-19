@@ -79,6 +79,7 @@ void LoadMIDI( const char* filename );
 void LoadBitmap( const char* filename, int plane, int value );
 void PlayMIDI();
 void StopMIDI();
+void SetVolumeMIDI(int vol);
 void SetColorKeyPos(int plane, int x, int y);
 void EnableBlendColorKey(int plane, int key);
 void CreateSurface(int surf, int w, int h);

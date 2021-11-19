@@ -14,6 +14,8 @@
 #define		YGS_KEYREPEAT_MAX	SDL_NUM_SCANCODES
 #define		YGS_TEXTLAYER_MAX	16
 
+#define 	YGS_VOLUME_MAX		(MIX_MAX_VOLUME / 3)
+
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
 typedef struct
@@ -53,6 +55,7 @@ static Mix_Chunk		*s_pYGSSound[YGS_SOUND_MAX];
 static int			s_iYGSSoundVolume[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSExMusic[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSMusic;
+static int			s_iYGSMusicVolume;
 
 #define		YGS_KANJIFONTFILE_MAX	3
 static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
@@ -264,6 +267,7 @@ bool YGS2kInit()
 	}
 
 	s_pYGSMusic = NULL;
+	s_iYGSMusicVolume = 0;
 
 	/* テキストレイヤーの初期化 */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
@@ -848,8 +852,8 @@ void PauseWave ( int no )
 
 void SetVolumeWave( int no, int vol )
 {
-	int		volume = (vol + 10000) * MIX_MAX_VOLUME / 10000;
-	if ( volume > MIX_MAX_VOLUME ) { volume = MIX_MAX_VOLUME; }
+	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
+	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
 	if ( volume < 0 )   { volume = 0; }
 	s_iYGSSoundVolume[no] = volume;
 
@@ -904,7 +908,7 @@ void LoadWave( const char* filename, int no )
 		}
 		s_pYGSExMusic[no] = Mix_LoadMUS_RW(src, SDL_TRUE);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_MUS;
-		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
+		s_iYGSSoundVolume[no] = YGS_VOLUME_MAX;
 	}
 	else
 	{
@@ -915,7 +919,7 @@ void LoadWave( const char* filename, int no )
 		}
 		s_pYGSSound[no] = Mix_LoadWAV_RW(src, SDL_TRUE);
 		s_iYGSSoundType[no] = YGS_SOUNDTYPE_WAV;
-		s_iYGSSoundVolume[no] = MIX_MAX_VOLUME;
+		s_iYGSSoundVolume[no] = YGS_VOLUME_MAX;
 	}
 }
 
@@ -935,6 +939,7 @@ void LoadMIDI( const char* filename )
 	SDL_RWops* src;
 	if (!(src = PHYSFSRWOPS_openRead(filename))) return;
 	s_pYGSMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
+	s_iYGSMusicVolume = YGS_VOLUME_MAX;
 }
 
 void LoadBitmap( const char* filename, int plane, int val )
@@ -953,12 +958,24 @@ void LoadBitmap( const char* filename, int plane, int val )
 
 void PlayMIDI()
 {
-	if ( s_pYGSMusic ) Mix_PlayMusic(s_pYGSMusic, -1);
+	if ( s_pYGSMusic )
+	{
+		Mix_PlayMusic(s_pYGSMusic, -1);
+	}
 }
 
 void StopMIDI()
 {
 	Mix_HaltMusic();
+}
+
+void SetVolumeMIDI(int vol)
+{
+	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
+	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
+	if ( volume < 0 )   { volume = 0; }
+	s_iYGSMusicVolume = volume;
+	Mix_VolumeMusic(volume);
 }
 
 void SetColorKeyPos(int plane, int x, int y)

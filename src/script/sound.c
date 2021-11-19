@@ -22,6 +22,19 @@ void StopAllBGM(void) {
 	}
 }
 
+void SetVolumeAllWaves(int32_t vol) {
+	int32_t i;
+	for(i = 0; i <= 49; i++) {
+		SetVolumeWave(i, vol);
+	}
+}
+
+void SetVolumeAllBGM(int32_t vol) {
+	int32_t i;
+	for(i = 50; i <= 69; i++) {
+		SetVolumeWave(i, vol);
+	}
+}
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  効果音再生（の予約）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -239,10 +252,9 @@ void bgmFadeout(void) {
 
 		// BGMフェードアウト処理
 		if(fadelv[player] != 0) {
-			fadelv[player] = fadelv[player] + (fadelv[player] < 10000) * fade_seed;
-
-			if(-fadelv[player] < bgmvolume)
-				SetVolumeWave(50 +bgmlv, -fadelv[player]);
+			fadelv[player] += fade_seed;
+			if(fadelv[player] > 10000) fadelv[player] = 10000;
+			SetVolumeWave(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
 		}
 	}
 }

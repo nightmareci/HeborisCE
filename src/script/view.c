@@ -2282,7 +2282,7 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 }
 //BIG版　用途はTLSのみ
 void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t player, int32_t use3D) {
-	int32_t	i, j, bx2, by2, add, tmp, bx5, by5, pos[2], k, l;
+	int32_t	i, j, bx2, by2, add, tmp, bx5, by5, pos[2], k, l = 0;
 	add = 0;
 	tmp = 1;
 	if(color < -1){

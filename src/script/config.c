@@ -576,7 +576,12 @@ void ConfigMenu() {
 					status[0] = -1;
 				}
 
-				if(getPushState(pl, 5)) status[0] = -1;	// B:設定破棄&タイトル画面に戻る
+				if(getPushState(pl, 5)) {	// B:設定破棄&タイトル画面に戻る
+					SetVolumeAllWaves(sevolume);
+					SetVolumeAllBGM(bgmvolume);
+					SetVolumeMIDI(bgmvolume);
+					status[0] = -1;
+				}
 			}
 		} else if(status[0] == 1) {
 			// design setting

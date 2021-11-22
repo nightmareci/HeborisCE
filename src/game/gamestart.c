@@ -1410,12 +1410,7 @@ void gameMain(void) {
 
 	do
 	{
-#include "heboris.ini"				// hoge 設定を読み込む
-#include "heboris_user.ini"			// ユーザー設定を読み込む #1.60c7l7
-
-		LoadIniFile("heboris.ini");
-		LoadIniFile("heboris_user.ini");
-		LoadIniFile("heboris_cpp.ini");
+		#include "init.inc"
 		YGS2kInit();
 		loopFlag = true;
 

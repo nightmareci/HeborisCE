@@ -303,13 +303,6 @@ See the res folder and the corresponding .txt files in the subdirectories
 for information regarding changing aspects of the game. You can alter the
 graphics, bgm, sound effects, and backgrounds from there.
 
-----------------------------------------------------
-4. Heboris.ini
-----------------------------------------------------
-
-See this file for possible changes made to the game that may not be able
-to be changed in the in-game menu. Here is where some
-
 ---------------------------------------------------
 5. License
 ---------------------------------------------------

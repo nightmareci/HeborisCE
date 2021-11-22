@@ -3,10 +3,9 @@
 #include "main_sdl/include.h"
 #include "main_sdl/ygs2kfunc.h"
 
+#include "game/init.h"
 #include "game/prototypes.h"
-#include "game/inireader.h"
 #include "game/gamedef.h"
-#include "game/heboris_ini.h"
 #include "game/speed.h"			// レベル調整
 #include "game/gamestart.h"
 

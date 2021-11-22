@@ -7,9 +7,7 @@
 
 #include "ygs2kfunc.h"
 #include "prototypes.h"
-#include "inireader.h"
 #include "gamedef.h"
-#include "heboris_ini.h"
 
 #define		STRING_MAX		200
 #define		cstr			const char*

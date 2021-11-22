@@ -30,16 +30,12 @@ set(EXE_SOURCES
 	src/game/prototypes.h
 	src/game/gamedef.h
 	src/game/gamestart.h
-	src/game/heboris_ini.h
+	src/game/init.h
 	src/game/speed.h
 
-	src/game/inireader_heboris_ini.inc
-	src/game/heboris.ini
-	src/game/heboris_user.ini
+	src/game/init.inc
 
 	src/game/gamestart.c
-	src/game/inireader.c
-	src/game/readini.c
 	src/game/speed.c
 
 	src/main_sdl/include.h
@@ -151,7 +147,7 @@ if(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)
 		install(TARGETS ${EXE} DESTINATION ".")
 		install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 		install(DIRECTORY "res" DESTINATION ".")
-		install(FILES "changelog.txt" "heboris.ini" "heboris.txt" "README.md" DESTINATION ".")
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
 		include(pkg/windows/InstallRuntimeDependencies.cmake)
 	endif()
 	configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
@@ -205,7 +201,7 @@ else()
 				install(TARGETS ${EXE} DESTINATION ".")
 				install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 				install(DIRECTORY "res" DESTINATION ".")
-				install(FILES "changelog.txt" "heboris.ini" "heboris.txt" "README.md" DESTINATION ".")
+				install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
 			endif()
 		elseif(${PACKAGE_TYPE} MATCHES "Installable")
 			if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin AND ${PACKAGE_TYPE} MATCHES "Mac App")
@@ -236,7 +232,7 @@ else()
 					install(TARGETS ${EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
 					install(DIRECTORY "config/mission" "config/stage" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/config")
 					install(DIRECTORY "res" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
-					install(FILES "heboris.ini" "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
+					install(FILES "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
 					if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
 						set(LINUX_DESKTOP_ICON "HeborisC7EX-SDL2" CACHE STRING "The file name of the icon to put into the Linux desktop file, without an extension.")
 						configure_file("pkg/linux/HeborisC7EX-SDL2.desktop.in" "HeborisC7EX-SDL2.desktop" @ONLY)

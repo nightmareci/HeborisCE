@@ -18,5 +18,5 @@ void StopSE(int32_t no);
 void PlaySE(int32_t no);
 void StopAllWaves(void);
 void StopAllBGM(void);
-void SetVolumeAllWaves();
-void SetVolumeAllBGM();
+void SetVolumeAllWaves(int32_t vol);
+void SetVolumeAllBGM(int32_t vol);

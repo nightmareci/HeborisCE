@@ -104,9 +104,8 @@ if [ "$PACKAGE_TYPE" = Installable ] ; then
 	cp -r "config/mission" "$RESOURCES_DIRECTORY/config" || exit 1
 	cp -r "config/stage" "$RESOURCES_DIRECTORY/config" || exit 1
 	cp -r "res" "$RESOURCES_DIRECTORY" || exit 1
-	cp heboris.ini "$RESOURCES_DIRECTORY" || exit 1
 elif [ "$PACKAGE_TYPE" = Portable ] ; then
-	cp README.md changelog.txt heboris.txt heboris.ini "$APP_DIRECTORY" || exit 1
+	cp README.md changelog.txt heboris.txt "$APP_DIRECTORY" || exit 1
 	mkdir -p "$APP_DIRECTORY/config" || exit 1
 	cp -r "config/mission" "$APP_DIRECTORY/config" || exit 1
 	cp -r "config/stage" "$APP_DIRECTORY/config" || exit 1

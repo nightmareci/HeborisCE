@@ -12,6 +12,7 @@ void GameOption();
 void ConfigMenu();
 int32_t LoadConfig(void);
 int32_t SaveConfig(void);
+uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
 extern SJoyKey joykeyAssign[10 *2];
 extern int32_t keyAssign[10 *2];

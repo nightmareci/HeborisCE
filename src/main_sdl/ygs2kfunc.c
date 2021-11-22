@@ -89,7 +89,7 @@ bool YGS2kInit()
 	/* CONFIG.SAVより設定をロード */
 	if ( LoadConfig() )
 	{
-		readdef();
+		SetDefaultConfig();
 		LoadConfig();
 	}
 

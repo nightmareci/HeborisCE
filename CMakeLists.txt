@@ -62,7 +62,7 @@ set(EXE_SOURCES
 	src/script/practice.h
 	src/script/tomoyo.h
 	src/script/ranking.h
-	src/script/readdef.h
+	src/script/setdef.h
 	src/script/replay.h
 	src/script/staffroll.h
 	src/script/cpu.h
@@ -85,7 +85,7 @@ set(EXE_SOURCES
 	src/script/practice.c
 	src/script/tomoyo.c
 	src/script/ranking.c
-	src/script/readdef.c
+	src/script/setdef.c
 	src/script/replay.c
 	src/script/staffroll.c
 	src/script/cpu.c

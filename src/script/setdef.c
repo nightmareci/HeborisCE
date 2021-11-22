@@ -48,9 +48,9 @@ typedef struct {
 	int32_t		blockflash;
 	int32_t		fastlrmove;
 	int32_t		background;
-} settings;
+} SConfig;
 
-static const settings defsettings = {
+static const SConfig DefaultConfig = {
 	.keyAssign =
 	{
 		SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
@@ -111,12 +111,12 @@ static const settings defsettings = {
 };
 
 
-int32_t readdef()
+int32_t SetDefaultConfig()
 {
 	int32_t i,j, cfgbuf[CFG_LENGTH];
 
-	keyAssign[7] = defsettings.holdkey[0];
-	keyAssign[17] = defsettings.holdkey[1];
+	keyAssign[7] = DefaultConfig.holdkey[0];
+	keyAssign[17] = DefaultConfig.holdkey[1];
 
 	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
 	cfgbuf[0] = 0x4F424550;
@@ -124,57 +124,57 @@ int32_t readdef()
 	cfgbuf[2] = 0x464E4F44;
 	cfgbuf[3] = 0x31764750;
 
-	cfgbuf[4] = defsettings.screenMode;
-	cfgbuf[5] = defsettings.screenIndex;
-	cfgbuf[6] = defsettings.nextblock;
-	cfgbuf[7] = defsettings.cfgversion;
-	cfgbuf[8] = defsettings.smooth;
-	cfgbuf[9] = defsettings.nanameallow;
-	cfgbuf[10] = defsettings.sonicdrop;
-	cfgbuf[11] = defsettings.blockflash;
-	cfgbuf[12] = defsettings.fastlrmove;
-	cfgbuf[13] = defsettings.background;
+	cfgbuf[4] = DefaultConfig.screenMode;
+	cfgbuf[5] = DefaultConfig.screenIndex;
+	cfgbuf[6] = DefaultConfig.nextblock;
+	cfgbuf[7] = DefaultConfig.cfgversion;
+	cfgbuf[8] = DefaultConfig.smooth;
+	cfgbuf[9] = DefaultConfig.nanameallow;
+	cfgbuf[10] = DefaultConfig.sonicdrop;
+	cfgbuf[11] = DefaultConfig.blockflash;
+	cfgbuf[12] = DefaultConfig.fastlrmove;
+	cfgbuf[13] = DefaultConfig.background;
 
 	for (i = 0; i < 20; i++) {
-		cfgbuf[14 + i] = defsettings.keyAssign[i];
+		cfgbuf[14 + i] = DefaultConfig.keyAssign[i];
 	}
-	cfgbuf[38] = defsettings.giveupKey;
-	cfgbuf[39] = defsettings.ssKey;
+	cfgbuf[38] = DefaultConfig.giveupKey;
+	cfgbuf[39] = DefaultConfig.ssKey;
 
-	cfgbuf[40] = defsettings.rots[0];
-	cfgbuf[41] = defsettings.rots[1];
-	//cfgbuf[42] = defsettings.lvup[0];
-	//cfgbuf[43] = defsettings.lvup[1];
-	cfgbuf[44] = defsettings.dtc;
-	cfgbuf[45] = defsettings.dispnext;
-	cfgbuf[53] = defsettings.fldtr;
-	cfgbuf[54] = defsettings.fontsize;
-	cfgbuf[55] = defsettings.maxPlay;
-	cfgbuf[60] = defsettings.movesound;
+	cfgbuf[40] = DefaultConfig.rots[0];
+	cfgbuf[41] = DefaultConfig.rots[1];
+	//cfgbuf[42] = DefaultConfig.lvup[0];
+	//cfgbuf[43] = DefaultConfig.lvup[1];
+	cfgbuf[44] = DefaultConfig.dtc;
+	cfgbuf[45] = DefaultConfig.dispnext;
+	cfgbuf[53] = DefaultConfig.fldtr;
+	cfgbuf[54] = DefaultConfig.fontsize;
+	cfgbuf[55] = DefaultConfig.maxPlay;
+	cfgbuf[60] = DefaultConfig.movesound;
 	cfgbuf[61] =
-		(( defsettings.se & 0x1) << 23) | (( defsettings.sevolume & 0x7F) << 16) |
-		((defsettings.bgm & 0x1) << 15) | ((defsettings.bgmvolume & 0x7F) <<  8) |
-		(defsettings.wavebgm & 0xFF);
-	cfgbuf[62] = defsettings.breakeffect;
-	cfgbuf[63] = defsettings.showcombo;
-	cfgbuf[64] = defsettings.top_frame;
-	cfgbuf[65] = defsettings.w_reverse;
-	cfgbuf[66] = defsettings.downtype;
-	cfgbuf[67] = defsettings.lvupbonus;
-	cfgbuf[68] = defsettings.pausekey[0];
-	cfgbuf[69] = defsettings.pausekey[1];
-	cfgbuf[70] = defsettings.dispnextkey[0];
-	cfgbuf[71] = defsettings.dispnextkey[1];
+		(( DefaultConfig.se & 0x1) << 23) | (( DefaultConfig.sevolume & 0x7F) << 16) |
+		((DefaultConfig.bgm & 0x1) << 15) | ((DefaultConfig.bgmvolume & 0x7F) <<  8) |
+		(DefaultConfig.wavebgm & 0xFF);
+	cfgbuf[62] = DefaultConfig.breakeffect;
+	cfgbuf[63] = DefaultConfig.showcombo;
+	cfgbuf[64] = DefaultConfig.top_frame;
+	cfgbuf[65] = DefaultConfig.w_reverse;
+	cfgbuf[66] = DefaultConfig.downtype;
+	cfgbuf[67] = DefaultConfig.lvupbonus;
+	cfgbuf[68] = DefaultConfig.pausekey[0];
+	cfgbuf[69] = DefaultConfig.pausekey[1];
+	cfgbuf[70] = DefaultConfig.dispnextkey[0];
+	cfgbuf[71] = DefaultConfig.dispnextkey[1];
 
 
-	cfgbuf[74] = defsettings.fontc[0] + defsettings.fontc[1] * 0x100 + defsettings.fontc[2] * 0x10000 + defsettings.fontc[3] * 0x1000000;
-	cfgbuf[75] = defsettings.digitc[0] + defsettings.digitc[1] * 0x100 + defsettings.digitc[2] * 0x10000 + defsettings.digitc[3] * 0x1000000;
-	cfgbuf[76] = defsettings.fontc[4] + defsettings.fontc[5] * 0x100 + defsettings.fontc[6] * 0x10000 + defsettings.fontc[7] * 0x1000000 ;
-	cfgbuf[77] = defsettings.digitc[4] + defsettings.digitc[5] * 0x100 + defsettings.digitc[6] * 0x10000 + defsettings.digitc[7] * 0x1000000 ;
-	cfgbuf[78] = defsettings.fontc[8] + defsettings.fontc[9] * 0x100 + defsettings.fontc[10] * 0x10000 + defsettings.fontc[11] * 0x1000000 ;
-	cfgbuf[79] = defsettings.digitc[8] + defsettings.digitc[9] * 0x100 + defsettings.digitc[10] * 0x10000 + defsettings.digitc[11] * 0x1000000 ;
+	cfgbuf[74] = DefaultConfig.fontc[0] + DefaultConfig.fontc[1] * 0x100 + DefaultConfig.fontc[2] * 0x10000 + DefaultConfig.fontc[3] * 0x1000000;
+	cfgbuf[75] = DefaultConfig.digitc[0] + DefaultConfig.digitc[1] * 0x100 + DefaultConfig.digitc[2] * 0x10000 + DefaultConfig.digitc[3] * 0x1000000;
+	cfgbuf[76] = DefaultConfig.fontc[4] + DefaultConfig.fontc[5] * 0x100 + DefaultConfig.fontc[6] * 0x10000 + DefaultConfig.fontc[7] * 0x1000000 ;
+	cfgbuf[77] = DefaultConfig.digitc[4] + DefaultConfig.digitc[5] * 0x100 + DefaultConfig.digitc[6] * 0x10000 + DefaultConfig.digitc[7] * 0x1000000 ;
+	cfgbuf[78] = DefaultConfig.fontc[8] + DefaultConfig.fontc[9] * 0x100 + DefaultConfig.fontc[10] * 0x10000 + DefaultConfig.fontc[11] * 0x1000000 ;
+	cfgbuf[79] = DefaultConfig.digitc[8] + DefaultConfig.digitc[9] * 0x100 + DefaultConfig.digitc[10] * 0x10000 + DefaultConfig.digitc[11] * 0x1000000 ;
 
-	memset(cfgbuf + 80, 0, 8 * 10 * 2 * sizeof(int32_t));
+	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
 	SaveFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
 

@@ -133,6 +133,8 @@ int32_t SaveConfig(void) {
 		}
 	}
 
+	cfgbuf[34] = ConfigChecksum(cfgbuf);
+
 	SaveFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
 
 	return (0);
@@ -149,6 +151,7 @@ int32_t LoadConfig(void) {
 	if(cfgbuf[2] != 0x464E4F44) return (1);
 	if(cfgbuf[3] != 0x31764750) return (1);
 	if((uint32_t)cfgbuf[7] != CFG_VERSION) return (1);
+	if((uint32_t)cfgbuf[34] != ConfigChecksum(cfgbuf)) return (1);
 
 	screenMode = cfgbuf[4];
 	screenIndex = cfgbuf[5];
@@ -243,6 +246,14 @@ int32_t LoadConfig(void) {
 	return (0);
 }
 
+uint32_t ConfigChecksum(int32_t *cfgbuf) {
+	uint32_t checksum = 0u;
+	for (int32_t i = 0; i < CFG_LENGTH; i++) {
+		if (i == 34) continue;
+		checksum += (uint32_t)cfgbuf[i];
+	}
+	return checksum;
+}
 
 
 void ConfigMenu() {

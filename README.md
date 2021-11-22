@@ -189,9 +189,6 @@ This repository will be maintained for bug fixes, non-new-content enhancements
 
  - Implement automated packaging of builds. At least support Windows, macOS, and
    desktop Linux.
- - Put all configuration options into in-game menus. Part of this includes
-   moving the INI settings into the CONFIG.SAV file, and removing all INI
-   usage.
  - Change the Linux AppImage package to bundle in a MIDI soundfont and have
    that soundfont used.
 

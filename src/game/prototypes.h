@@ -281,8 +281,8 @@ void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type);
 void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type);
 int32_t viewgrade(int32_t player);
 
-// readdef.c
-int32_t readdef();
+// setdef.c
+int32_t SetDefaultConfig();
 
 // replay.c
 void ReplaySaveCheck(int32_t player, int32_t statnumber);
@@ -385,7 +385,3 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 // world.c
 void statWMove(int32_t player, int32_t kickm, int32_t kickr);
 int32_t	co(int32_t a, int32_t b, int32_t c);
-
-// game/readini.c
-void ReadIniSection(const char *section, const char *value);
-void ReadIniSectionString(const char *section, const char *value);

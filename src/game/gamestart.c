@@ -15048,7 +15048,7 @@ void initialize(void) {
 	halt;
 
 	if(LoadConfig()) {	//CONFIG.SAVより設定をロード
-		readdef();
+		SetDefaultConfig();
 		LoadConfig();
 	}
 

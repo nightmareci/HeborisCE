@@ -2,4 +2,4 @@
 
 #include "script/include.h"
 
-int32_t readdef();
+int32_t SetDefaultConfig();

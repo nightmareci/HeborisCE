@@ -27,8 +27,9 @@ extern int32_t maxPlay;
 extern int32_t fontsize;
 extern int32_t movesound;
 extern int32_t dispnext;
-#define WAVEBGM_MAX 9
+#define WAVEBGM_MAX 10
 extern int32_t wavebgm;
+extern int32_t wavebgm_supported[WAVEBGM_MAX + 1];
 extern int32_t fldtr;
 extern int32_t dtc;
 extern int32_t dispnextkey[2];

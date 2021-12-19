@@ -22,6 +22,7 @@ int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キ�
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
 int32_t wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
+int32_t wavebgm_supported[WAVEBGM_MAX + 1];
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
 int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON
@@ -189,7 +190,9 @@ int32_t LoadConfig(void) {
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
 	wavebgm = cfgbuf[61] & 0xFF;
-	if (wavebgm > WAVEBGM_MAX) wavebgm = WAVEBGM_MAX;
+	if (wavebgm < 0 || wavebgm > WAVEBGM_MAX || !wavebgm_supported[wavebgm]) {
+		wavebgm = 2; // WAVE
+	}
 
 	breakeffect = cfgbuf[62];
 	showcombo = cfgbuf[63];
@@ -1376,7 +1379,7 @@ void ConfigMenu() {
 				sprintf(string[0], "%d", (int)((ncfg[44] >> 8) & 0x7F));
 				printFont(15, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
-				int32_t wavebgm_temp = ncfg[44] & 0xF;
+				int32_t wavebgm_temp = ncfg[44] & 0xFF;
 				if(wavebgm_temp == 0) sprintf(string[0], "MIDI (SIMPLE)");
 				else if(wavebgm_temp == 1) sprintf(string[0], "MIDI");
 				else if(wavebgm_temp == 2) sprintf(string[0], "WAVE");
@@ -1387,6 +1390,7 @@ void ConfigMenu() {
 				else if(wavebgm_temp == 7) sprintf(string[0], "MOD (.MOD)");
 				else if(wavebgm_temp == 8) sprintf(string[0], "MOD (.IT)");
 				else if(wavebgm_temp == 9) sprintf(string[0], "MOD (.XM)");
+				else if(wavebgm_temp == 10) sprintf(string[0], "MOD (.S3M)");
 				printFont(15, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
 			}
 
@@ -1494,13 +1498,24 @@ void ConfigMenu() {
 						}
 						else if(statusc[0] == 12) {
 							// wavebgm
-							int32_t wavebgm_temp = ncfg[44] & 0xF;
+							int32_t wavebgm_temp = ncfg[44] & 0xFF;
+							#if 0
 							wavebgm_temp += m;
 
 							if(wavebgm_temp < 0) wavebgm_temp = 9;
 							if(wavebgm_temp > 9) wavebgm_temp = 0;
+							#endif
+							do {
+								wavebgm_temp += m;
+								if (m < 0 && wavebgm_temp < 0) {
+									wavebgm_temp = WAVEBGM_MAX;
+								}
+								else if (m > 0 && wavebgm_temp > WAVEBGM_MAX) {
+									wavebgm_temp = 0;
+								}
+							} while (!wavebgm_supported[wavebgm_temp]);
 
-							ncfg[44] = (ncfg[44] & ~0xF) | (wavebgm_temp & 0xF);
+							ncfg[44] = (ncfg[44] & ~0xFF) | (wavebgm_temp & 0xFF);
 							need_reset = 1;
 						}
 					}

@@ -15656,7 +15656,8 @@ void loadBGM(void) {
 			else if(wavebgm == 6) StrCat(string[i], ".opus");		// OPUS
 			else if(wavebgm == 7) StrCat(string[i], ".mod");		// MOD (.mod)
 			else if(wavebgm == 8) StrCat(string[i], ".it");			// MOD (.it)
-			else if(wavebgm >= WAVEBGM_MAX) StrCat(string[i], ".xm");	// MOD (.xm)
+			else if(wavebgm == 9) StrCat(string[i], ".xm");			// MOD (.xm)
+			else if(wavebgm >= WAVEBGM_MAX) StrCat(string[i], ".s3m");	// MOD (.s3m)
 			else StrCat(string[i], ".wav");					// WAV
 
 			// 読み込み

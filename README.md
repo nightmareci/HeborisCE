@@ -79,15 +79,27 @@ as those just downloaded from some website.
 #### Download and Package for Windows
 
 For Windows, building with VCPKG and Visual Studio/MSVC is the officially
-supported method. The packaging script must be run with the working directory
-at the root of the repo.
+supported method. The packaging script requires you have x64, x86, and ARM64
+support with Visual Studio set up, as it produces builds for those platforms.
+
+For now, only packaging of portable builds is supported. Installable build
+support might be added in the future, where they're provided as installers.
 
 ```bat
+REM First, install x86, x64, and ARM64 support in the Visual Studio installer.
+
+REM Install required packages for all platforms. You'll need to have the working directory of your shell in the VCPKG install root for these lines.
+REM As of the time this was written, sdl2-mixer[opusfile] is broken, so you can't install SDL 2 mixer with Opus support. The game will work fine without it.
+.\vcpkg install --triplet x64-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
+.\vcpkg install --triplet x86-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
+.\vcpkg install --triplet arm64-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
+
+REM Have your working directory somewhere for source repos here.
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-REM Starting at the root of the VCPKG install/repo, vcpkg.cmake is at vcpkg\scripts\buildsystems\vcpkg.cmake
-.\pkg\windows\pkg.bat path\to\vcpkg.cmake
-REM Now, HeborisC7EX-SDL2-Windows.zip will be in the repo root.
+REM Starting at the root of the VCPKG install/repo, vcpkg.cmake is at [vcpkg-root]\scripts\buildsystems\vcpkg.cmake
+.\pkg\windows\pkg.bat path\to\vcpkg.cmake . build-pkg
+REM All the builds will be in separate ZIPs in the build-pkg directory.
 ```
 
 #### Download and Package for macOS

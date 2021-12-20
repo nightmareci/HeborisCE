@@ -98,7 +98,8 @@ int main(int argc, char* argv[])
 	else
 	{
 		char *basePath;
-		if ( !(basePath = BASE_PATH) ) {
+		if ( !(basePath = BASE_PATH) )
+		{
 			fprintf(stderr, "Failed getting base path.\n");
 			quit(EXIT_FAILURE);
 		}
@@ -152,4 +153,5 @@ int main(int argc, char* argv[])
 
 	/* 辞める */
 	quit(EXIT_SUCCESS);
+	return EXIT_SUCCESS; // This line is never reached, it's just here to silence compiler warnings.
 }

@@ -3,6 +3,7 @@ project(HeborisC7EX-SDL2
 	VERSION 1.0.1
 	LANGUAGES C
 )
+
 set(HEBORISC7EXSDL2_VERSION "${CMAKE_PROJECT_VERSION}")
 add_compile_definitions(HEBORISC7EXSDL2_VERSION="${HEBORISC7EXSDL2_VERSION}")
 
@@ -106,6 +107,7 @@ if(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)
 	find_package(sdl2-image REQUIRED)
 	find_package(sdl2-mixer REQUIRED)
 	find_package(PhysFS REQUIRED)
+
 	add_executable(${EXE} ${EXE_SOURCES})
 	target_link_libraries(${EXE}
 		PUBLIC
@@ -115,11 +117,14 @@ if(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)
 			SDL2::SDL2_mixer
 			${PHYSFS_LIBRARY}
 	)
-	target_include_directories(${EXE} SYSTEM PRIVATE ${PHYSFS_INCLUDE_DIR})
+	target_include_directories(${EXE} SYSTEM PRIVATE
+		${PHYSFS_INCLUDE_DIR}
+	)
 
+	option(HIDE_WINDOWS_CONSOLE "Hide the Windows console.")
 	target_link_options(${EXE}
 		PRIVATE
-			$<$<NOT:$<CONFIG:Debug>>:
+			$<$<BOOL:${HIDE_WINDOWS_CONSOLE}>:
 				/ENTRY:mainCRTStartup
 				/SUBSYSTEM:WINDOWS
 			>
@@ -148,7 +153,7 @@ if(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)
 		install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 		install(DIRECTORY "res" DESTINATION ".")
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
-		include(pkg/windows/InstallRuntimeDependencies.cmake)
+		include(pkg/windows/InstallRuntimeDependenciesMSVC.cmake)
 	endif()
 	configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
 else()
@@ -202,6 +207,9 @@ else()
 				install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 				install(DIRECTORY "res" DESTINATION ".")
 				install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
+				if(MINGW)
+					include(pkg/windows/InstallRuntimeDependenciesMinGW.cmake)
+				endif()
 			endif()
 		elseif(${PACKAGE_TYPE} MATCHES "Installable")
 			if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin AND ${PACKAGE_TYPE} MATCHES "Mac App")
@@ -243,6 +251,9 @@ else()
 					set(BASE_PATH_APPEND "\"\"")
 					configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
 				endif()
+				if(MINGW)
+					include(pkg/windows/InstallRuntimeDependenciesMinGW.cmake)
+				endif()
 			endif()
 		else()
 			message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported")
@@ -273,3 +284,31 @@ else()
 endif()
 
 target_include_directories(${EXE} PRIVATE src src/game src/main_sdl "${CMAKE_CURRENT_BINARY_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}/src/game" "${CMAKE_CURRENT_BINARY_DIR}/src/main_sdl")
+
+# TODO: Finish this for installation of DLLs of MinGW builds.
+#install(CODE "
+#message(STATUS \"Target file: $<TARGET_FILE:${EXE}>\")
+#execute_process(COMMAND sh -c \"ldd $<TARGET_FILE:${EXE}> | sed -ne 's#^[ \\t][ \\t]*[^\\\\/][^\\\\/]*\\\\.[dD][lL][lL] => \\\\(..*\\\\.[dD][lL][lL]\\\\) (0x[0-9a-f][0-9a-f]*)$#\\\\1#p'\" OUTPUT_VARIABLE LIBRARIES_LINES)
+#string(REPLACE \"\\n\" \";\" DEPENDENCIES \${LIBRARIES_LINES})
+#foreach(DEPENDENCY IN LISTS DEPENDENCIES)
+#	message(STATUS \${DEPENDENCY})
+#endforeach()
+#
+#set_property(GLOBAL PROPERTY DEPTH 0)
+#function(test_recurse)
+#	get_property(DEPTH_LAST GLOBAL PROPERTY DEPTH)
+#	math(EXPR DEPTH_CURRENT \"\${DEPTH_LAST} + 1\")
+#	set_property(GLOBAL PROPERTY DEPTH \${DEPTH_CURRENT})
+#	message(STATUS \"Depth at entry: \${DEPTH_CURRENT}\")
+#	if(\${DEPTH_CURRENT} EQUAL 3)
+#		return()
+#	else()
+#		test_recurse()
+#		get_property(DEPTH_AFTER_RECURSE GLOBAL PROPERTY DEPTH)
+#		message(STATUS \"Depth after recurse: \${DEPTH_AFTER_RECURSE}\")
+#	endif()
+#endfunction()
+#
+#test_recurse()
+#message(STATUS \"Done\")
+#")

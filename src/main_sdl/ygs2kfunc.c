@@ -200,24 +200,22 @@ bool YGS2kInit()
 	}
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
-	if ( SCALEMODE_TOVALUE(screenMode) == SCALEMODE_INTEGER )
+	if ( screenMode & SCREENMODE_SCALEMODE )
 	{
 		SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE);
 	}
-	else if (SCALEMODE_TOVALUE(screenMode) == SCALEMODE_PERFECTSTRETCH )
+	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
-		if (SDL_RenderTargetSupported(s_pScreenRenderer))
+		if ( !(screenMode & SCREENMODE_RENDERLEVEL) )
 		{
 			s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
 			SDL_RenderClear(s_pScreenRenderer);
 			SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
 			SDL_RenderClear(s_pScreenRenderer);
 		}
-		else
-		{
-			// Set scale mode to fast stretch.
-			screenMode &= ~SCREENMODE_SCALEMODE;
-		}
+	}
+	else {
+		screenMode |= SCREENMODE_RENDERLEVEL;
 	}
 	SDL_ShowWindow(s_pScreenWindow);
 
@@ -640,9 +638,9 @@ int GetMaxDisplayMode( int displayIndex )
 	return SDL_GetNumDisplayModes(displayIndex);
 }
 
-int GetMaxScaleMode()
+int RenderLevelLowSupported()
 {
-	return SDL_RenderTargetSupported(s_pScreenRenderer) ? MAXSCALEMODE : MAXSCALEMODE - 1;
+	return SDL_RenderTargetSupported(s_pScreenRenderer);
 }
 
 void SetConstParam ( const char *param, int value )

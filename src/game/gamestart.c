@@ -1437,25 +1437,9 @@ void gameMain(void) {
 
 			title();
 
-#if		0
-			if(restart) {			// 再起動 こんなんでいいのかな? (^^; #1.60c5
-				CallScript("script/GAMEINIT.C");
-				printFont(1, 1, "PLEASE WAIT...", 2);
-				halt;
-				JumpScript("script/GAMESTART.C");
-				return;
-	//			goto reload;
-			}
-#else
-			if(restart) {			// 再起動
-				loopFlag = false;
-				break;
-			}
-#endif
-
 			flag = 0;
 			loop {
-	//			spriteTime();
+				spriteTime();
 				KeyInput();
 
 				// リプレイ中の早送り
@@ -1523,8 +1507,6 @@ void gameMain(void) {
 
 
 				lastProc();
-
-				spriteTime();
 
 				// flagが1以上になるとタイトルへ
 				if(flag > 0) {

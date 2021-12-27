@@ -81,6 +81,7 @@ static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
 bool YGS2kInit()
 {
+	int		configChanged = 0;
 	int		logicalWidth, logicalHeight;
 
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
@@ -109,6 +110,7 @@ bool YGS2kInit()
 		windowFlags |= SDL_WINDOW_RESIZABLE;
 		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(screenIndex);
 		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(screenIndex);
+		configChanged = 1;
 	}
 	else
 	{
@@ -156,7 +158,7 @@ bool YGS2kInit()
 			screenMode &= ~SCREENMODE_WINDOWTYPE;
 			screenMode |= SCREENMODE_WINDOW;
 			screenIndex = 0;
-			SaveConfig();
+			configChanged = 1;
 			s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 		}
 		else {
@@ -190,7 +192,7 @@ bool YGS2kInit()
 			windowW = logicalWidth;
 			windowH = logicalHeight;
 			screenIndex = SCREENINDEX_TOSETTING(displayIndex, 0);
-			SaveConfig();
+			configChanged = 1;
 		}
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
 	}
@@ -216,6 +218,7 @@ bool YGS2kInit()
 	}
 	else {
 		screenMode |= SCREENMODE_RENDERLEVEL;
+		configChanged = 1;
 	}
 	SDL_ShowWindow(s_pScreenWindow);
 
@@ -286,6 +289,11 @@ bool YGS2kInit()
 
 	srand((unsigned)time(NULL));
 
+	if ( configChanged )
+	{
+		SaveConfig();
+	}
+
 	return true;
 }
 
@@ -324,8 +332,10 @@ void YGS2kExit()
 			s_pYGSTexture[i] = NULL;
 		}
 	}
+	if ( s_pScreenRenderer ) {
+		SDL_SetRenderTarget( s_pScreenRenderer, NULL );
+	}
 	if ( s_pScreenRenderTarget ) {
-		SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 		SDL_DestroyTexture( s_pScreenRenderTarget );
 		s_pScreenRenderTarget = NULL;
 	}

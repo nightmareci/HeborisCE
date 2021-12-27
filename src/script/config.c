@@ -1557,8 +1557,14 @@ void ConfigMenu() {
 			}
 		}
 
+		if(restart) {
+			loopFlag = false;
+			break;
+		}
 		// exit setting menu
-		else if(status[0] == -1) break;
+		else if(status[0] == -1) {
+			break;
+		}
 		spriteTime ();
 	}
 }

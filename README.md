@@ -76,6 +76,15 @@ On Linux, soundfont packages install their .sf2 files in
 `/usr/share/soundfonts`, though you can use any .sf2 soundfont you want, such
 as those just downloaded from some website.
 
+A soundfont is not included, because they're quite large. But here are some
+free soundfont sources; you'll probably want to stick with General MIDI ("GM") ones:
+
+* [Soundfonts 4U](https://sites.google.com/site/soundfonts4u/)
+* [Ultimate List of Free Soundfonts - TriSamples](https://trisamples.com/free-soundfonts/)
+* [Links to SoundFonts](http://www.synthfont.com/links_to_soundfonts.html)
+
+Unfortunately, there are some dead links on those pages, but some links still work.
+
 #### Download and Package for Windows
 
 For Windows, building with VCPKG and Visual Studio/MSVC is the officially

@@ -209,8 +209,9 @@ This repository will be maintained for bug fixes, non-new-content enhancements
 
  - Implement automated packaging of builds. At least support Windows, macOS, and
    desktop Linux.
- - Change the Linux AppImage package to bundle in a MIDI soundfont and have
-   that soundfont used.
+ - Add a prerecorded copy of the default MIDI music and corresponding support
+   for the "simple" BGM type for non-MIDI formats, as an option for systems
+   without immediately working MIDI playback.
 
 #### Definitely Not Legal Advice
 

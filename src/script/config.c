@@ -1361,10 +1361,10 @@ void ConfigMenu() {
 
 			if (RenderLevelLowSupported()) {
 				if (ncfg[0] & SCREENMODE_RENDERLEVEL) {
-					sprintf(string[0], "LOW (%s)", ncfg[0] & SCREENMODE_DETAILLEVEL ? "640X480" : "320X240");
+					sprintf(string[0], "HIGH");
 				}
 				else {
-					sprintf(string[0], "HIGH");
+					sprintf(string[0], "LOW (%s)", ncfg[0] & SCREENMODE_DETAILLEVEL ? "640X480" : "320X240");
 				}
 				printFont(15, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
 			}

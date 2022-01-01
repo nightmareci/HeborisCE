@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <ctype.h>
 
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
@@ -907,7 +908,7 @@ void LoadWave( const char* filename, int no )
 	SDL_RWops *src;
 	src = PHYSFSRWOPS_openRead(filename);
 	if ( !src ) return;
-	if ( strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
+	if ( SDL_strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
 	{
 		if ( s_pYGSExMusic[no] != NULL )
 		{

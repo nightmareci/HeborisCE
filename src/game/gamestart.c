@@ -10468,7 +10468,7 @@ void statNameEntry(int32_t player) {
 		}
 		rank = RankingCheck2(cat[player], rots[player], temp[player], time[player], end_f[player]);
 	}else{
-			//モードと設定からカテゴリ設定
+		//モードと設定からカテゴリ設定
 		if(gameMode[player]==0){
 			if(novice_mode[player]){
 				cat[player] = 0;
@@ -10561,7 +10561,7 @@ void statNameEntry(int32_t player) {
 			ex[player] = 1;
 			rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], time[player], end_f[player]);
 		}
-			// TOMOYOモードで1面以外から始めた場合は記録に残さない
+		// TOMOYOモードで1面以外から始めた場合は記録に残さない
 		if(gameMode[player]==6){
 			if(((tomoyo_opt[player]==0) && (start_stage[player] != 0)) || ((tomoyo_opt[player]==1) && (start_stage[player] != 27))||(tomoyo_opt[player] == 3)){
 				status[player] = 21;

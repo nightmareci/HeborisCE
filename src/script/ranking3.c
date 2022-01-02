@@ -48,7 +48,6 @@ int32_t RankingCheck3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, i
 	int32_t i, j, rank;
 
 	if(playback || demo) return -1;
-//	if(rmode >= 8) return -1;
 
 	rank = -1;
 
@@ -108,7 +107,8 @@ void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int
 	rkre3[j + rank] = rre;
 }
 
-// ランキング表示(デモ画面、プレイ後に表示)//2pagesはランキング画面が2ページ目
+// ランキング表示(デモ画面、プレイ後に表示)
+// 2pagesはランキング画面が2ページ目
 void RankingProc_3(int32_t cat,int32_t pages2) {
 	count = 0;
 	flag = 0;
@@ -283,193 +283,193 @@ void RankingView3() {//3位まで
 	}else{
 		printFont(0, 29  , "TI-WORLD ACE-SRS DS-WORLD SRS-X", 0);//SRS
 	}
-		for(l = 0; l < 2 ; l++){//l==0上の3段 l==1下の3段
-			// 順位
-			if(rkpage!=9){//オリ以外
-				sprintf(string[0], "1ST");
-				printFont(1, 5 + (l * 13)  , string[0], 2);
-				sprintf(string[0], "2ND");
-				printFont(1, 9 + (l * 13), string[0], 9);
-				sprintf(string[0], "3RD");
-				printFont(1, 13+ (l * 13) , string[0], 4);
-			}else if(rkpage==9){
-				sprintf(string[0], "1ST");
-				printFont(1, 5  , string[0], 2);
-				sprintf(string[0], "2ND");
-				printFont(1, 9, string[0], 9);
-				sprintf(string[0], "3RD");
-				printFont(1, 13 , string[0], 4);
-				sprintf(string[0], "4TH");
-				printFont(1, 18   , string[0], 0);
-				sprintf(string[0], "5TH");
-				printFont(1, 22, string[0], 0);
-				sprintf(string[0], "6TH");
-				printFont(1, 26 , string[0], 0);
+	for(l = 0; l < 2 ; l++){//l==0上の3段 l==1下の3段
+		// 順位
+		if(rkpage!=9){//オリ以外
+			sprintf(string[0], "1ST");
+			printFont(1, 5 + (l * 13)  , string[0], 2);
+			sprintf(string[0], "2ND");
+			printFont(1, 9 + (l * 13), string[0], 9);
+			sprintf(string[0], "3RD");
+			printFont(1, 13+ (l * 13) , string[0], 4);
+		}else if(rkpage==9){
+			sprintf(string[0], "1ST");
+			printFont(1, 5  , string[0], 2);
+			sprintf(string[0], "2ND");
+			printFont(1, 9, string[0], 9);
+			sprintf(string[0], "3RD");
+			printFont(1, 13 , string[0], 4);
+			sprintf(string[0], "4TH");
+			printFont(1, 18   , string[0], 0);
+			sprintf(string[0], "5TH");
+			printFont(1, 22, string[0], 0);
+			sprintf(string[0], "6TH");
+			printFont(1, 26 , string[0], 0);
+		}
+			ExBltRect(85, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANKの文字
+			ExBltRect(85, 40 , 32 + (l * 13) * 8, 35, 0, 21, 7);//nameの文字,文字を置く座標,切り取る座標,切り取るサイズ
+			ExBltRect(85, 190, 32 + (l * 13) * 8, 35, 7*12, 21, 7);//TIMEの文字
+			ExBltRect(85, 260, 32 + ( l * 13) * 8, 35, 7*6, 21, 7);//ROTSの文字
+
+		if(rkpage==0){//ビギナー
+			if(l){//SCORE(sita)
+			ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*7, 25, 7);//SCOREの文字
+			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			}else{//HANABI(ue)
+			ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*11, 29, 7);//HANABIの文字
+			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 			}
-				ExBltRect(85, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANKの文字
-				ExBltRect(85, 40 , 32 + (l * 13) * 8, 35, 0, 21, 7);//nameの文字,文字を置く座標,切り取る座標,切り取るサイズ
-				ExBltRect(85, 190, 32 + (l * 13) * 8, 35, 7*12, 21, 7);//TIMEの文字
-				ExBltRect(85, 260, 32 + ( l * 13) * 8, 35, 7*6, 21, 7);//ROTSの文字
-
-			if(rkpage==0){//ビギナー
-				if(l){//SCORE(sita)
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*7, 25, 7);//SCOREの文字
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
-				}else{//HANABI(ue)
-				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*11, 29, 7);//HANABIの文字
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
-				}
-			}else if(rkpage==5){//TI EH
-				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
-				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 7*4, 25, 7);//CLEARの文字
-			}else if(rkpage==6){//FP
-				ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
-				ExBltRect(85, 126 , 32 + (l * 13) * 8, 35, 7*7, 28, 7);//SCOREの文字
-			}else if((rkpage>=7)&&(rkpage<=8)){//ACE
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
-			}else if(rkpage==9){//ORIJINAL
-				ExBltRect(85, 80, 32 + (l * 13) * 8, 35, 7*7, 28, 7);//LEVELの文字
-				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 14*7, 21, 7);//MODEの文字
-			}else if(rkpage==10){//STANDARD
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
-				ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 2*7, 30, 7);//BLOCKの文字
-			}else if(rkpage==11){
-				if(l){//MARATHON(sita)
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
-				}else{//SQUARE(ue)
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*9, 35, 7);//SQUAREの文字
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
-				}
-			}else{
-				ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 3*7, 27, 7);//CLASSの文字
-				ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+		}else if(rkpage==5){//TI EH
+			ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
+			ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 7*4, 25, 7);//CLEARの文字
+		}else if(rkpage==6){//FP
+			ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
+			ExBltRect(85, 126 , 32 + (l * 13) * 8, 35, 7*7, 28, 7);//SCOREの文字
+		}else if((rkpage>=7)&&(rkpage<=8)){//ACE
+			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
+			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+		}else if(rkpage==9){//ORIJINAL
+			ExBltRect(85, 80, 32 + (l * 13) * 8, 35, 7*7, 28, 7);//LEVELの文字
+			ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 14*7, 21, 7);//MODEの文字
+		}else if(rkpage==10){//STANDARD
+			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
+			ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 2*7, 30, 7);//BLOCKの文字
+		}else if(rkpage==11){
+			if(l){//MARATHON(sita)
+			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
+			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			}else{//SQUARE(ue)
+			ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*9, 35, 7);//SQUAREの文字
+			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 			}
+		}else{
+			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 3*7, 27, 7);//CLASSの文字
+			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+		}
 
-			for(i = 0; i < 3; i++) {
-				j = RankingGet3(rkpage,rankingrule,l);
+		for(i = 0; i < 3; i++) {
+			j = RankingGet3(rkpage,rankingrule,l);
 
-				// 名前
-				printFont(5, 5 + (i * 4) + (l * 13), rkname3[j + i], digitc[rkrots3[j + i]]);
+			// 名前
+			printFont(5, 5 + (i * 4) + (l * 13), rkname3[j + i], digitc[rkrots3[j + i]]);
 
-				if(rkpage == 0) {
-					// スコア
-					sprintf(string[0], "%d", rkdata3[j + i]);
-					printFont(10, 5 + (i * 4) + (l * 13), string[0],digitc[rkrots3[j + i]]);
-
-					// レベル
-					sprintf(string[0], "%d", rkother3[j + i]);
-        				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-	        	 	} else if( (rkpage >= 1) && (rkpage <= 4) ) {
-					if(rkpage == 4){//devil
-						//devilは先に段位を表示
-						// 段位
-               					sprintf(string[0], "%d", rkother3[j + i]);
-						printFont(10, 5 + (i * 4) + l * 13, dgname[rkother3[j + i]], digitc[rkrots3[j + i]]);
-						sprintf(string[0], "%d", rkdata3[j + i]); //devilレベル
-					}else{
-						sprintf(string[0], "%d", rkdata3[j + i]); //mas 20G段位
-						printFont(10, 5 + (i * 4) + (l * 13), gname2[rkdata3[j + i]], digitc[rkrots3[j + i]]);
-						// 段位
-               					sprintf(string[0], "%d", rkother3[j + i]);
-					}
-            				// レベル
-            				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-         			}else if((rkpage == 5) || (rkpage == 6)) {
-					// クリア率
-					if(rkpage == 5){
-						// ステージ
-						if(rkclear3[j + i] == 2){
-							sprintf(string[0], "ALL");
-						}else{
-							if(rkdata3[j + i] <= 19)
-								sprintf(string[0], "%d", rkdata3[j + i] + 1);
-							else if((rkdata3[j + i] <= 26)&&(rkdata3[j + i] >= 20))
-								sprintf(string[0], "EX%d", rkdata3[j + i] - 19);
-							else if(rkdata3[j + i] >=27 )
-								sprintf(string[0], "%d", rkdata3[j + i] - 26);
-						}
-						printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-						sprintf(string[0], "%d%%", rkother3[j + i]);
-						printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-					}else if(rkpage == 6){
-						if(rkdata3[j+i]>100){
-							sprintf(string[0], "%d", rkdata3[j + i] - 99);
-							printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-						}else{
-							sprintf(string[0], "%d", rkdata3[j + i]);
-							printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-						}
-						sprintf(string[0], "%d", rkother3[j + i]);
-						printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-					}
-				} else if((rkpage == 7)||(rkpage == 8)){//ace系
-					// ライン
-					sprintf(string[0], "%d", rkdata3[j + i]);
-					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-
-					// レベル
-					sprintf(string[0], "%d", rkother3[j + i] + 1);
-					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-				} else if((rkpage == 10)||(rkpage == 11)){//STANDARD系
-					// ライン
-					sprintf(string[0], "%d", rkdata3[j + i]);
-					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-
-					// レベル
-					sprintf(string[0], "%d", rkother3[j + i] + 1);
-					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-				}else {
+			if(rkpage == 0) {
 				// スコア
-					sprintf(string[0], "%d", rkdata3[j + i]);
-					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+				sprintf(string[0], "%d", rkdata3[j + i]);
+				printFont(10, 5 + (i * 4) + (l * 13), string[0],digitc[rkrots3[j + i]]);
 
-					if(rkother3[j + i]==0)sprintf(string[0], "BEG");
-					if(rkother3[j + i]==1)sprintf(string[0], "MAS");
-					if(rkother3[j + i]==2)sprintf(string[0], "20G");
-					if(rkother3[j + i]==3)sprintf(string[0], "DEV");
+				// レベル
+				sprintf(string[0], "%d", rkother3[j + i]);
+				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+			} else if( (rkpage >= 1) && (rkpage <= 4) ) {
+				if(rkpage == 4){//devil
+					//devilは先に段位を表示
+					// 段位
+					sprintf(string[0], "%d", rkother3[j + i]);
+					printFont(10, 5 + (i * 4) + l * 13, dgname[rkother3[j + i]], digitc[rkrots3[j + i]]);
+					sprintf(string[0], "%d", rkdata3[j + i]); //devilレベル
+				}else{
+					sprintf(string[0], "%d", rkdata3[j + i]); //mas 20G段位
+					printFont(10, 5 + (i * 4) + (l * 13), gname2[rkdata3[j + i]], digitc[rkrots3[j + i]]);
+					// 段位
+					sprintf(string[0], "%d", rkother3[j + i]);
+				}
+				// レベル
+				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+			}else if((rkpage == 5) || (rkpage == 6)) {
+				// クリア率
+				if(rkpage == 5){
+					// ステージ
+					if(rkclear3[j + i] == 2){
+						sprintf(string[0], "ALL");
+					}else{
+						if(rkdata3[j + i] <= 19)
+							sprintf(string[0], "%d", rkdata3[j + i] + 1);
+						else if((rkdata3[j + i] <= 26)&&(rkdata3[j + i] >= 20))
+							sprintf(string[0], "EX%d", rkdata3[j + i] - 19);
+						else if(rkdata3[j + i] >=27 )
+							sprintf(string[0], "%d", rkdata3[j + i] - 26);
+					}
+					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+					sprintf(string[0], "%d%%", rkother3[j + i]);
+					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+				}else if(rkpage == 6){
+					if(rkdata3[j+i]>100){
+						sprintf(string[0], "%d", rkdata3[j + i] - 99);
+						printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+					}else{
+						sprintf(string[0], "%d", rkdata3[j + i]);
+						printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+					}
+					sprintf(string[0], "%d", rkother3[j + i]);
 					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 				}
-
-				// タイム
-				getTime(rktime3[j + i]);
-				printFont(22, 5 + (i * 4)+ l * 13, string[0], digitc[rkrots3[j + i]]);
-
+			} else if((rkpage == 7)||(rkpage == 8)){//ace系
 				// ライン
-				if(rkclear3[j + i] == 1) {
-					ExBltFastRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
-				}else if(rkclear3[j + i] == 2) {
-					ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
-				}
-					// 回転
-				if(rkrots3[j + i]==0)sprintf(string[0], "HEBORIS");
-				if(rkrots3[j + i]==1)sprintf(string[0], "TI-ARS");
-				if(rkrots3[j + i]==2)sprintf(string[0], "TI-WORLD");
-				if(rkrots3[j + i]==3)sprintf(string[0], "ACE-SRS");
-				if(rkrots3[j + i]==4)sprintf(string[0], "ACE-ARS");
-				if(rkrots3[j + i]==5)sprintf(string[0], "ACE-ARS2");
-				if(rkrots3[j + i]==6)sprintf(string[0], "DS-WORLD");
-				if(rkrots3[j + i]==7)sprintf(string[0], "SRS-X");
-				if(rkrots3[j + i]==8)sprintf(string[0], "D.R.S");
-				printFont(31, 5 + (i * 4) + (l * 13), string[0], fontc[rkrots3[j + i]]);
+				sprintf(string[0], "%d", rkdata3[j + i]);
+				printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
-				// メダル
-				if((rkpage >= 1)&&(rkpage <= 4)) {
-					ExBltRect(85, 16,  5 + ((6 + (i * 4) + (l * 13)) * 8), 0, 77, 27, 7);
-					if(rkac3[j + i]) ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52 - rkac3[j + i] * 13, 15, 12);
-						else ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52, 15, 12);
-					if(rkst3[j + i]) ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 - rkst3[j + i] * 13, 15, 12);
-						else ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 , 15, 12);
-					if(rksk3[j + i]) ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52 - rksk3[j + i] * 13, 15, 12);
-						else ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52, 15, 12);
-					if(rkco3[j + i]) ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52 - rkco3[j + i] * 13, 15, 12);
-					 	else ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52, 15, 12);
-					if(rkre3[j + i]) ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52 - rkre3[j + i] * 13, 15, 12);
-						else ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52, 15, 12);
-				}
+				// レベル
+				sprintf(string[0], "%d", rkother3[j + i] + 1);
+				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+			} else if((rkpage == 10)||(rkpage == 11)){//STANDARD系
+				// ライン
+				sprintf(string[0], "%d", rkdata3[j + i]);
+				printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+
+				// レベル
+				sprintf(string[0], "%d", rkother3[j + i] + 1);
+				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+			}else {
+			// スコア
+				sprintf(string[0], "%d", rkdata3[j + i]);
+				printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+
+				if(rkother3[j + i]==0)sprintf(string[0], "BEG");
+				if(rkother3[j + i]==1)sprintf(string[0], "MAS");
+				if(rkother3[j + i]==2)sprintf(string[0], "20G");
+				if(rkother3[j + i]==3)sprintf(string[0], "DEV");
+				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
+			}
+
+			// タイム
+			getTime(rktime3[j + i]);
+			printFont(22, 5 + (i * 4)+ l * 13, string[0], digitc[rkrots3[j + i]]);
+
+			// ライン
+			if(rkclear3[j + i] == 1) {
+				ExBltFastRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
+			}else if(rkclear3[j + i] == 2) {
+				ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
+			}
+				// 回転
+			if(rkrots3[j + i]==0)sprintf(string[0], "HEBORIS");
+			if(rkrots3[j + i]==1)sprintf(string[0], "TI-ARS");
+			if(rkrots3[j + i]==2)sprintf(string[0], "TI-WORLD");
+			if(rkrots3[j + i]==3)sprintf(string[0], "ACE-SRS");
+			if(rkrots3[j + i]==4)sprintf(string[0], "ACE-ARS");
+			if(rkrots3[j + i]==5)sprintf(string[0], "ACE-ARS2");
+			if(rkrots3[j + i]==6)sprintf(string[0], "DS-WORLD");
+			if(rkrots3[j + i]==7)sprintf(string[0], "SRS-X");
+			if(rkrots3[j + i]==8)sprintf(string[0], "D.R.S");
+			printFont(31, 5 + (i * 4) + (l * 13), string[0], fontc[rkrots3[j + i]]);
+
+			// メダル
+			if((rkpage >= 1)&&(rkpage <= 4)) {
+				ExBltRect(85, 16,  5 + ((6 + (i * 4) + (l * 13)) * 8), 0, 77, 27, 7);
+				if(rkac3[j + i]) ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52 - rkac3[j + i] * 13, 15, 12);
+					else ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52, 15, 12);
+				if(rkst3[j + i]) ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 - rkst3[j + i] * 13, 15, 12);
+					else ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 , 15, 12);
+				if(rksk3[j + i]) ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52 - rksk3[j + i] * 13, 15, 12);
+					else ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52, 15, 12);
+				if(rkco3[j + i]) ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52 - rkco3[j + i] * 13, 15, 12);
+					else ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52, 15, 12);
+				if(rkre3[j + i]) ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52 - rkre3[j + i] * 13, 15, 12);
+					else ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52, 15, 12);
 			}
 		}
+	}
 }
 // ランキングを保存
 void RankingSave3() {
@@ -565,9 +565,9 @@ int32_t RankingLoad3() {
 }
 
 // ランキングを書きする時に使用
-int32_t RankingGet3(int32_t rmode, int32_t rrots,int32_t rex) {//5*15*2*11,3*2*14*2*11
+int32_t RankingGet3(int32_t rmode, int32_t rrots, int32_t rex) {//5*15*2*11,3*2*14*2*11
 	// 普通のモード
-	return ((rmode * 14)  + (rrots * 6)+ (rex * 3));
+	return (rmode * 14) + (rrots * 6) + (rex * 3);
 }
 
 void getModeNameEx3( int32_t mode, int32_t number ) {

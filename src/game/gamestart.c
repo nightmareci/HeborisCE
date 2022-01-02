@@ -4748,10 +4748,9 @@ void statSelectMode(int32_t player) {
 			}  else {
 				if(gameMode[player] == 6) {
 					// TOMOYOの場合はツモリセット
-				//	versusInit(player);
 
 					// ステージ設定
-					if(tomoyo_opt[player] == 0){			//TI
+					if(tomoyo_opt[player] == 0){		//TI
 						ltime[player] = 180 * 60;
 						start_stage[player] = 0;
 					}else if(tomoyo_opt[player] == 1){	//EH
@@ -4761,7 +4760,7 @@ void statSelectMode(int32_t player) {
 						start_stage[player] = 45;
 					else if(tomoyo_opt[player] == 3)	//Edit
 						start_stage[player] = 72;
-					else{								//FP
+					else{					//FP
 						ltime[player] = 1080 * 60;
 						start_stage[player] = 100;
 					}
@@ -10373,11 +10372,12 @@ void statVersusWait(int32_t player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void statNameEntry(int32_t player) {
 	int32_t		move, len, j,k;
-	int32_t		i, rank, add;		// #1.60c7i5
+	int32_t		i, norank, rank, add;		// #1.60c7i5
 	int32_t		st_update,cat[2],ex[2];
 	int32_t		temp[2],temp2[2],color[2];
 
 	add = 0;
+	norank = 0;
 
 	// 判定基準を決める
 	if(gameMode[player] == 0) {
@@ -10517,9 +10517,11 @@ void statNameEntry(int32_t player) {
 			}else if(tomoyo_opt[player]==2){
 				cat[player] = 6;
 				ex[player] = 0;
-			}else if(tomoyo_opt[player]==3){
+			}else if(tomoyo_opt[player]==4){
 				cat[player] = 6;
 				ex[player] = 1;
+			}else{
+				norank = 1;
 			}
 		}else if(gameMode[player]==7){
 			if(anothermode[player]==0){
@@ -10553,7 +10555,12 @@ void statNameEntry(int32_t player) {
 				ex[player] = 1;
 			}
 		}
-		rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], time[player], end_f[player]);
+
+		if(!norank){
+			rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], time[player], end_f[player]);
+		}else{
+			rank = -1;
+		}
 
 
 		if((gameMode[player]==10)&&(rank==-1)){//oriでは4位以下も調べる
@@ -10630,44 +10637,44 @@ void statNameEntry(int32_t player) {
 	}
 */
 	// GRADE #1.60c7m9
-		if((enable_grade[player] == 4) && ((gameMode[player] == 1) || (gameMode[player] == 2))) {
-			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 137 - (add * 3), 228, 119, 26, 7);
+	if((enable_grade[player] == 4) && ((gameMode[player] == 1) || (gameMode[player] == 2))) {
+		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 137 - (add * 3), 228, 119, 26, 7);
 
-				if(grade[player] == 32) {
-					// Gm
-						ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+120,90,48);
-				}else if( grade[player] >= 28 ) {
-					// MK-MM
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+((grade[player]-28)*24),90,24);
-				}  else if( grade[player] == 27 ) {
-					//Master
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216),90,24);
-				} else if( grade[player] >= 18 ) {
-					// m1〜m9
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 180 ,((count % 4 / 2)*216)+((grade[player]-18)*24),90,24);
-				} else if( grade[player] >= 9 ) {
-					// S1〜S9
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 90 ,((count % 4 / 2)*216)+((grade[player]-9)*24),90,24);
-				} else {
-					// 9〜1
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 0 ,((count % 4 / 2)*216)+(grade[player]*24),90,24);
-				}
+		if(grade[player] == 32) {
+			// Gm
+				ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+120,90,48);
+		}else if( grade[player] >= 28 ) {
+			// MK-MM
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+((grade[player]-28)*24),90,24);
+		}  else if( grade[player] == 27 ) {
+			//Master
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216),90,24);
+		} else if( grade[player] >= 18 ) {
+			// m1〜m9
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 180 ,((count % 4 / 2)*216)+((grade[player]-18)*24),90,24);
+		} else if( grade[player] >= 9 ) {
+			// S1〜S9
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 90 ,((count % 4 / 2)*216)+((grade[player]-9)*24),90,24);
+		} else {
+			// 9〜1
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 0 ,((count % 4 / 2)*216)+(grade[player]*24),90,24);
 		}
-		// S-GRADE #1.60c7o1
-		if( sgrade[player] >= min_sgrade ) {
-			ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 160, 220, 91, 31, 7);
-			ExBltRect(3, 152 + 192 * player - 96 * maxPlay, 160, 228, 119, 26, 7);
-			if( sgrade[player] == 18 ) {
-				// GM
-				ExBltRect(26,115 + 192 * player -96 * maxPlay , 168, 270 ,((count % 4 / 2)*216)+168,90,24);
-			} else if( sgrade[player] >= 9 ) {
-				// S1〜S9
-				ExBltRect(26,115 + 192 * player -96 * maxPlay , 168, 90 ,((count % 4 / 2)*216)+((sgrade[player]-9)*24),90,24);
-			} else {
-				// 9〜1
-				ExBltRect(26,115 + 192 * player -96 * maxPlay , 168, 0 ,((count % 4 / 2)*216)+(sgrade[player]*24),90,24);
-			}
+	}
+	// S-GRADE #1.60c7o1
+	if( sgrade[player] >= min_sgrade ) {
+		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 160, 220, 91, 31, 7);
+		ExBltRect(3, 152 + 192 * player - 96 * maxPlay, 160, 228, 119, 26, 7);
+		if( sgrade[player] == 18 ) {
+			// GM
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 168, 270 ,((count % 4 / 2)*216)+168,90,24);
+		} else if( sgrade[player] >= 9 ) {
+			// S1〜S9
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 168, 90 ,((count % 4 / 2)*216)+((sgrade[player]-9)*24),90,24);
+		} else {
+			// 9〜1
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 168, 0 ,((count % 4 / 2)*216)+(sgrade[player]*24),90,24);
 		}
+	}
 	if(statusc[player * 10 + 1] == 0)
 		StrCpy(string[player + 2], "");
 

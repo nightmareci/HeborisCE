@@ -414,7 +414,7 @@ void SoundTestProc(void) {
 			StopAllBGM();
 			if((wavebgm % 2)== 0) {	// No.30→38に変更 #1.60c7i2
 				if(IsPlayMIDI()) ReplayMIDI();
-			} else if(wavebgm >= 1) PlayWave(61);//タイトルBGM
+			} else if((wavebgm % 2) == 1) PlayWave(61);//タイトルBGM
 			return;
 		}
 		spriteTime();

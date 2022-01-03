@@ -242,7 +242,7 @@ int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
 void bgmFadeout(void) {
 	int32_t player;
 
-	if(wavebgm == 0) return;
+	if((wavebgm % 2) == 0) return;
 
 	for( player = 0; player <= maxPlay; player++ ) {
 		if((gameMode[player] <= 3) || (gameMode[player] == 7) || (gameMode[player] == 10)) {
@@ -412,7 +412,7 @@ void SoundTestProc(void) {
 		if(getPushState(0, 5)) {
 			StopAllWaves();
 			StopAllBGM();
-			if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
+			if((wavebgm % 2)== 0) {	// No.30→38に変更 #1.60c7i2
 				if(IsPlayMIDI()) ReplayMIDI();
 			} else if(wavebgm >= 1) PlayWave(61);//タイトルBGM
 			return;

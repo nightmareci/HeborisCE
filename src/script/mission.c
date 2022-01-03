@@ -7,7 +7,7 @@
 void statMissionSelect(int32_t player) {
 	padRepeat(player);
 	padRepeat2(player);
-	if( (!IsPlayWave(62)) && (wavebgm >= 1) ) {
+	if( (!IsPlayWave(62)) && ((wavebgm % 2) == 1) ) {
 		PlayWave(62);
 	}
 	if(statusc[player * 10 + 4] > 0){

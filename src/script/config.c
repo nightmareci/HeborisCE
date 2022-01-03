@@ -1393,15 +1393,24 @@ void ConfigMenu() {
 				int32_t wavebgm_temp = ncfg[44] & 0xFF;
 				if(wavebgm_temp == 0) sprintf(string[0], "MIDI (SIMPLE)");
 				else if(wavebgm_temp == 1) sprintf(string[0], "MIDI");
-				else if(wavebgm_temp == 2) sprintf(string[0], "WAVE");
-				else if(wavebgm_temp == 3) sprintf(string[0], "OGG");
-				else if(wavebgm_temp == 4) sprintf(string[0], "MP3");
-				else if(wavebgm_temp == 5) sprintf(string[0], "FLAC");
-				else if(wavebgm_temp == 6) sprintf(string[0], "OPUS");
-				else if(wavebgm_temp == 7) sprintf(string[0], "MOD (.MOD)");
-				else if(wavebgm_temp == 8) sprintf(string[0], "MOD (.IT)");
-				else if(wavebgm_temp == 9) sprintf(string[0], "MOD (.XM)");
-				else if(wavebgm_temp == 10) sprintf(string[0], "MOD (.S3M)");
+				else if(wavebgm_temp == 2) sprintf(string[0], "WAVE (SIMPLE)");
+				else if(wavebgm_temp == 3) sprintf(string[0], "WAVE");
+				else if(wavebgm_temp == 4) sprintf(string[0], "OGG (SIMPLE)");
+				else if(wavebgm_temp == 5) sprintf(string[0], "OGG");
+				else if(wavebgm_temp == 6) sprintf(string[0], "MP3 (SIMPLE)"");
+				else if(wavebgm_temp == 7) sprintf(string[0], "MP3");
+				else if(wavebgm_temp == 8) sprintf(string[0], "FLAC (SIMPLE)"");
+				else if(wavebgm_temp == 9) sprintf(string[0], "FLAC");
+				else if(wavebgm_temp == 10) sprintf(string[0], "OPUS (SIMPLE)"");
+				else if(wavebgm_temp == 11) sprintf(string[0], "OPUS");
+				else if(wavebgm_temp == 12) sprintf(string[0], "MOD (.MOD) (SIMPLE)"");
+				else if(wavebgm_temp == 13) sprintf(string[0], "MOD (.MOD)");
+				else if(wavebgm_temp == 14) sprintf(string[0], "MOD (.IT) (SIMPLE)"");
+				else if(wavebgm_temp == 15) sprintf(string[0], "MOD (.IT)");
+				else if(wavebgm_temp == 16) sprintf(string[0], "MOD (.XM) (SIMPLE)"");
+				else if(wavebgm_temp == 17) sprintf(string[0], "MOD (.XM)");
+				else if(wavebgm_temp == 18) sprintf(string[0], "MOD (.S3M) (SIMPLE)"");
+				else if(wavebgm_temp == 19) sprintf(string[0], "MOD (.S3M)");
 				printFont(15, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
 			}
 

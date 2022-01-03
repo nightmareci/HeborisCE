@@ -1078,7 +1078,7 @@ void PracticeDeath() {
 	onRecord[0] = 0;
 
 	// BGM停止#1.60c6.2d
-	if(wavebgm >= 1)
+	if((wavebgm % 2) == 1)
 		StopAllBGM();
 
 	// 条件の単純化に合わせ、すべてのブロックの透明を無効化する #1.60c7k6
@@ -1118,7 +1118,7 @@ void PracticeOver(void) {
 	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
 
 	// BGM停止#1.60c6.2d
-	if(wavebgm >= 1)
+	if((wavebgm % 2) == 1)
 		StopAllBGM();
 
 	// 1Pの結果を2Pにコピー (from hogeパッチ)

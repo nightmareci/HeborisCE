@@ -1802,12 +1802,12 @@ void title(void) {
 	// 画面位置修正 via C++ Port
 	SetSecondaryOffset(0,0);
 
-	if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
+	if((wavebgm % 2) == 0) {	// No.30→38に変更 #1.60c7i2
 		if(!IsPlayMIDI()) {
 			PlayMIDI();
 			SetVolumeMIDI(bgmvolume);
 		}
-	} else if(wavebgm >= 1) {
+	} else if((wavebgm % 2 == 1) {
 		if(!IsPlayWave(61)) PlayWave(61);
 	}
 
@@ -4029,7 +4029,7 @@ void statJoinwait(int32_t player) {
 		StopSE(8);
 		PlaySE(10);
 
-		if(wavebgm >= 1) {
+		if((wavebgm % 2) == 1) {
 			if(!IsPlayWave(62)) PlayWave(62);
 		}
 		playerInitial(player);
@@ -4110,10 +4110,10 @@ void statSelectMode(int32_t player) {
 	padRepeat2(player);
 
 	// モードセレクト曲
-	if( (!IsPlayMIDI()) && (wavebgm == 0) ) {
+	if( (!IsPlayMIDI()) && ((wavebgm % 2) == 0) ) {
 		PlayMIDI();
 		SetVolumeMIDI(bgmvolume);
-	} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(62)) && (wavebgm >= 1) ) {
+	} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(62)) && ((wavebgm %2) == 1) ) {
 		PlayWave(62);
 	}
 
@@ -5600,7 +5600,7 @@ void statReady(int32_t player) {
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 			else FP_bonus[player] = 10800;
 		}
-		if(wavebgm >= 1) {
+		if ((wavebgm % 2) == 1) {
 			if( !IsPlayWave(50 +bgmlv) ) PlayWave(50 +bgmlv);
 		}
 
@@ -5784,7 +5784,7 @@ void statReady(int32_t player) {
 				onRecord[player] = 1;				// リプレイ記録開始
 			}
 		} else {
-			if(wavebgm >= 1) {
+			if((wavebgm % 2) == 1) {
 				if( !IsPlayWave(50 +bgmlv) ) PlayWave(50 +bgmlv);
 			}
 
@@ -6404,7 +6404,7 @@ void setGameOver(int32_t player) {
 	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-			if(wavebgm) {
+			if((wavebgm % 2) == 1) {
 				StopAllBGM();
 			} else {
 				if(IsPlayMIDI()) StopMIDI();
@@ -9012,7 +9012,7 @@ void statGameOver(int32_t player) {
 			//PlayWave(8);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-				if(wavebgm) {
+				if((wavebgm % 2) == 1) {
 					StopAllBGM();
 				} else {
 					if(IsPlayMIDI()) StopMIDI();
@@ -10612,7 +10612,7 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(63)) && (wavebgm > 0) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(63)) && ((wavebgm % 2) > 0) )
 		PlayWave(63);
 /*
 	// リプレイセーブ#1.60c7i5
@@ -11207,7 +11207,7 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(63)) && (wavebgm > 0) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(63)) && ((wavebgm % 2) > 0) )
 		PlayWave(63);
 
 	//警告音が鳴っていたら止める
@@ -12118,7 +12118,7 @@ void winner() {
 	int32_t		player, i, j, block, win, obj, c, kosa;
 
 	// BGM停止
-	if(wavebgm > 0) StopAllBGM();
+	if((wavebgm % 2) > 0) StopAllBGM();
 	// 残り時間が少ない時の効果音も停止
 	StopSE(32);
 
@@ -15101,10 +15101,45 @@ void initialize(void) {
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
 
-		if(wavebgm != 0) {
+		if((wavebgm % 2) != 0) {
 			loadBGM();	// #1.60c7s6
 		} else {
-			LoadMIDI("res/bgm/bgm.mid");
+			if (wavebgm/2==0)
+			{
+				LoadMIDI("res/bgm/bgm.mid");
+			}
+			if (wavebgm/2==1)
+			{
+				LoadMIDI("res/bgm/bgm.wav");
+			}
+			if (wavebgm/2==2)
+			{
+				LoadMIDI("res/bgm/bgm.ogg");
+			}
+			if (wavebgm/2==3)
+			{
+				LoadMIDI("res/bgm/bgm.mp3");
+			}
+			if (wavebgm/2==4)
+			{
+				LoadMIDI("res/bgm/bgm.flac");
+			}
+			if (wavebgm/2==5)
+			{
+				LoadMIDI("res/bgm/bgm.opus");
+			}
+			if (wavebgm/2==6)
+			{
+				LoadMIDI("res/bgm/bgm.mod");
+			}
+			if (wavebgm/2==7)
+			{
+				LoadMIDI("res/bgm/bgm.it");
+			}
+			if (wavebgm/2==8)
+			{
+				LoadMIDI("res/bgm/bgm.xm");
+			}
 			PlayMIDI();
 			SetVolumeMIDI(bgmvolume);
 		}
@@ -15638,15 +15673,14 @@ void loadBGM(void) {
 	for(i = 0; i <= 19; i++) {
 		if(bgmload[i]){
 			// 拡張子を決める
-			if(wavebgm == 1) StrCat(string[i], ".mid");			// MIDI
-			else if(wavebgm == 3) StrCat(string[i], ".ogg");		// OGG
-			else if(wavebgm == 4) StrCat(string[i], ".mp3");		// MP3
-			else if(wavebgm == 5) StrCat(string[i], ".flac");		// FLAC
-			else if(wavebgm == 6) StrCat(string[i], ".opus");		// OPUS
-			else if(wavebgm == 7) StrCat(string[i], ".mod");		// MOD (.mod)
-			else if(wavebgm == 8) StrCat(string[i], ".it");			// MOD (.it)
-			else if(wavebgm == 9) StrCat(string[i], ".xm");			// MOD (.xm)
-			else if(wavebgm >= WAVEBGM_MAX) StrCat(string[i], ".s3m");	// MOD (.s3m)
+			if((wavebgm / 2) == 0) StrCat(string[i], ".mid");			// MIDI
+			else if((wavebgm / 2) == 2) StrCat(string[i], ".ogg");		// OGG
+			else if((wavebgm / 2) == 3) StrCat(string[i], ".mp3");		// MP3
+			else if((wavebgm / 2) == 4) StrCat(string[i], ".flac");		// FLAC
+			else if((wavebgm / 2) == 5) StrCat(string[i], ".opus");		// OPUS
+			else if((wavebgm / 2) == 6) StrCat(string[i], ".mod");		// MOD (.mod)
+			else if((wavebgm / 2) == 7) StrCat(string[i], ".it");			// MOD (.it)
+			else if((wavebgm / 2) == 8) StrCat(string[i], ".xm");			// MOD (.xm)
 			else StrCat(string[i], ".wav");					// WAV
 
 			// 読み込み

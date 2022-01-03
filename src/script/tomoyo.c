@@ -974,7 +974,7 @@ void statTomoyoResult(int32_t player) {
 
 	// 音楽を流す
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( (status[1 - player] == 0) && (!IsPlayWave(63)) && (wavebgm >= 1) ) PlayWave(63);
+	if( (status[1 - player] == 0) && (!IsPlayWave(63)) && ((wavebgm % 2) == 1) ) PlayWave(63);
 
 	// 警告音が鳴っていたら止める
 	StopSE(40);

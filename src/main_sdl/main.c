@@ -56,14 +56,23 @@ int main(int argc, char* argv[])
 	wavebgm_supported[0] = !!(formatsInitialized & MIX_INIT_MID);
 	wavebgm_supported[1] = !!(formatsInitialized & MIX_INIT_MID);
 	wavebgm_supported[2] = 1; // WAVEはいつでも利用可能
-	wavebgm_supported[3] = !!(formatsInitialized & MIX_INIT_OGG);
-	wavebgm_supported[4] = !!(formatsInitialized & MIX_INIT_MP3);
-	wavebgm_supported[5] = !!(formatsInitialized & MIX_INIT_FLAC);
-	wavebgm_supported[6] = !!(formatsInitialized & MIX_INIT_OPUS);
-	wavebgm_supported[7] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[8] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[9] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[10] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[3] = 1; // WAVEはいつでも利用可能
+	wavebgm_supported[4] = !!(formatsInitialized & MIX_INIT_OGG);
+	wavebgm_supported[5] = !!(formatsInitialized & MIX_INIT_OGG);
+	wavebgm_supported[6] = !!(formatsInitialized & MIX_INIT_MP3);
+	wavebgm_supported[7] = !!(formatsInitialized & MIX_INIT_MP3);
+	wavebgm_supported[8] = !!(formatsInitialized & MIX_INIT_FLAC);
+	wavebgm_supported[9] = !!(formatsInitialized & MIX_INIT_FLAC);
+	wavebgm_supported[10] = !!(formatsInitialized & MIX_INIT_OPUS);
+	wavebgm_supported[11] = !!(formatsInitialized & MIX_INIT_OPUS);
+	wavebgm_supported[12] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[13] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[14] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[15] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[16] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[17] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[18] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[19] = !!(formatsInitialized & MIX_INIT_MOD);
 
 	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
 	{

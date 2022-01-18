@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.19)
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
   if(DEFINED ENV{VITASDK})
@@ -105,21 +105,9 @@ add_executable(${PROJECT_NAME}
 # Library to link to (drop the -l prefix). This will mostly be stubs.
 target_link_libraries(${PROJECT_NAME}
 	# TODO: change required libraries here
-	vita2d
-	SceDisplay_stub
-	SceGxm_stub
-	SceSysmodule_stub
 	SceCtrl_stub
-	ScePgf_stub
-	ScePvf_stub
-	SceCommonDialog_stub
-	freetype
-	png
-	jpeg
-	z
-	m
-	c
-	SceAppMgr_stub
+	SceTouch_stub
+	SceHid_stub
 )
 
 ## Create Vita files

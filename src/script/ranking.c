@@ -2,7 +2,7 @@
 //  ランキング関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void RankingInit(void) {
 	int32_t	i, j;

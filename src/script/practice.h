@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void PracticeOver(void);
 void viewLineInfo(void);

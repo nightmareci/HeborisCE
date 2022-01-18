@@ -1,8 +1,9 @@
 /* TGM式段位上昇 */
 
-#include "script/include.h"
+#include "../script/include.h"
 
-void GradeUp(int32_t player){
+void Gr:w
+adeUp(int32_t player){
 	if(gameMode[player] >= 4) return;
 	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVIL以外
 		// (S8までなら)段位上昇判定 #1.60c7g5

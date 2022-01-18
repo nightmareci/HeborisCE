@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "include.h"
 
 cstr mission_name_editor[42] =
 {

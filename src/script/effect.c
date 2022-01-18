@@ -2,7 +2,7 @@
 //  READY後のSTART!演出
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void effect(int32_t player) {
 	if(ready_go_style) return;

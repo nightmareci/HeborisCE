@@ -1,7 +1,7 @@
-#include "main_sdl/include.h"
-#include "script/config.h"
+#include "include.h"
+#include "../script/config.h"
 #include "paths.h"
-#include "gamestart.h"
+#include "../game/gamestart.h"
 #include "physfs.h"
 
 static int quitLevel = 0;

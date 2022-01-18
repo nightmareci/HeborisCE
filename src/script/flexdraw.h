@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void ExCreateSurface(int32_t pno,int32_t x,int32_t y);
 void ExTextHeight(int32_t n,int32_t size);

@@ -2,7 +2,7 @@
 //  ステータスNo.23 - MISSIONモード セレクト画面
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void statMissionSelect(int32_t player) {
 	padRepeat(player);

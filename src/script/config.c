@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "include.h"
 
 int32_t screenMode;		// スクリーンモード
 int32_t screenIndex;		// スクリーンインデックス

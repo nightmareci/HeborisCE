@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t RankingLoad(void);
 int32_t RankingSave(void);

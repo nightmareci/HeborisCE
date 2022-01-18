@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "../script/include.h"
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  全効果音停止 #1.60c7j6

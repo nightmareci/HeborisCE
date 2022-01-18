@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewbesttimes(int32_t player);

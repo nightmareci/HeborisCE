@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 extern cstr mission_info_en[42];
 extern cstr mission_info_jp[42];

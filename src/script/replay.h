@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t getModeAddRep2(int32_t *tmpBuf);
 int32_t loadReplayData2(int32_t pl,int32_t number);

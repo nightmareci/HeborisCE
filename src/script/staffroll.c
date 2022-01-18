@@ -2,7 +2,7 @@
 //  スタッフロールデータを初期化
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void staffInitPl(int32_t player) {
 //	staffroll_y_ex[player] = 2000;		//無理矢理…

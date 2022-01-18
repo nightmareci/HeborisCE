@@ -1,7 +1,7 @@
 // ブロックデータやjudgeBlockRotateはclassic.cの流用
 // 先にclassic.cを読み込む必要があります
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t	acol[7] = {5,2,3,1,7,6,4};
 

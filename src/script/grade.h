@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void reset_gradeup3(int32_t player);
 void isregret(int32_t player);

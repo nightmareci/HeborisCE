@@ -1,6 +1,6 @@
 // D.R.S(　DT(ry Rotation System　)
 
-#include "script/include.h"
+#include "../script/include.h"
 
 /*
 > ■ 左回転（反時計回り）の例で説明すると、

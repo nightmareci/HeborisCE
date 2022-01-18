@@ -3,9 +3,9 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  外部ライブラリのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "main_sdl/include.h"
+#include "../main_sdl/include.h"
 
-#include "ygs2kfunc.h"
+#include "../main_sdl/ygs2kfunc.h"
 #include "prototypes.h"
 #include "gamedef.h"
 

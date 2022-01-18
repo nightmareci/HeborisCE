@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "../script/include.h"
 
 /* TOMOYOモードでの部分的初期化処理 #1.60c7l8 */
 void tomoyoInitial(int32_t player) {

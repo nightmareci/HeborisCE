@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t viewgrade(int32_t player);
 void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type);

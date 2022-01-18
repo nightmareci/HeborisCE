@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t PlayerdataLoad(void);
 void PlayerdataSave(void);

@@ -47,7 +47,7 @@ Iのみ
 の方が分かりやすいしプレイしやすいが…
 */
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t	blkWDataX[7 * 4 * 4] =	// worldタイプミノ 相対X位置
 {

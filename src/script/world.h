@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 extern int32_t blockflash;
 extern int32_t sonicdrop;

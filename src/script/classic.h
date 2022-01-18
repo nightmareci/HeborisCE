@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t judgeBigBlockRotate(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
 void effect(int32_t player);

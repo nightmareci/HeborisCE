@@ -2,7 +2,7 @@
 //  ステータスNo.09 - PRACTICEモードメニュー
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void statSelectLevel(int32_t player) {
 	int32_t i;

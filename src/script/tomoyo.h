@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void randPlatinum(int32_t player,int32_t tgtnum);
 void changeBGM(int32_t player);

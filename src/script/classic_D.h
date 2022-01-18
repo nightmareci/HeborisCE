@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void effect(int32_t player);
 void pinchCheck(int32_t player);

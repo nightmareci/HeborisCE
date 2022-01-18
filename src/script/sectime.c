@@ -2,7 +2,7 @@
 //  セクションタイムランキング関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t		st_version = 2;	// バージョン
 						// 0:無効 1:c7p6/

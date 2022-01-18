@@ -2,7 +2,7 @@
 //  デモ画面での操作状況
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void showControl(void) {
 	int32_t		zx, zy, bai;

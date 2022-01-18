@@ -357,7 +357,7 @@ C7U8EX YGS2K
 
 #include "gamestart.h"
 #include "speed.h"
-#include "script/include.h"
+#include "../script/include.h"
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義

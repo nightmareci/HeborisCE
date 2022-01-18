@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "../script/include.h"
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  キーが押されてたらリプレイを保存する#1.60c7i9

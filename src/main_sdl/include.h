@@ -1,8 +1,11 @@
 #pragma once
 
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
+// #include "SDL.h"
+#include <SDL2/SDL.h>
+// #include "SDL_image.h"
+#include <SDL2/SDL_image.h>
+// #include "SDL_mixer.h"
+#include <SDL2/SDL_mixer.h>
 #include "physfsrwops.h"
 #include <time.h>
 #include <stdint.h>

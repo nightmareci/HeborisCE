@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "../script/include.h"
 
 typedef struct {
 	SDL_Scancode keyAssign[10 * 2];

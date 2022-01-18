@@ -1,7 +1,7 @@
 // 描画倍率を可変できるようになった関数群。
 // 通常の描画関数の頭に Ex をつけます。
 
-#include "script/include.h"
+#include "include.h"
 
 int32_t zoomRate = 1;			/* 描画倍率 */
 

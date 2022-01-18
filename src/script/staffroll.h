@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script/include.h"
+#include "../script/include.h"
 
 void staffRoll(int32_t player);
 void staffExecute(int32_t player);

@@ -1,4 +1,4 @@
-#include "script/include.h"
+#include "../script/include.h"
 
 int32_t		blkDataX[7 * 4 * 4] =	// ユニットを構成するブロックの相対Ｘ位置(7種類/ 4角度/ 4ブロック)
 {

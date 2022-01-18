@@ -1,6 +1,6 @@
-#include "main_sdl/include.h"
-#include "prototypes.h"
-#include "gamedef.h"
+#include "include.h"
+#include "../game/prototypes.h"
+#include "../game/gamedef.h"
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
 

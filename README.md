@@ -1,3 +1,16 @@
+### Heboris Vita Port
+
+This is an attempt to make a vita port of the game Heboris (tetris clone)
+
+### Todo
+
+ - [ ] Cmake file for Vita build
+ - [ ] Be able to build something that start on the vita
+ - [ ] Change controls
+ - [ ] Change how config files work
+ - [ ] Fix bugs
+ - [ ] Don't brick my vita
+
 ### Heboris C7-EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7-EX. It requires a C

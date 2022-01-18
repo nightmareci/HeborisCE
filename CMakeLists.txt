@@ -1,33 +1,37 @@
-cmake_minimum_required(VERSION 3.16)
-project(HeborisC7EX-SDL2
-	VERSION 1.0.1
-	LANGUAGES C
+cmake_minimum_required(VERSION 2.8)
+
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+  if(DEFINED ENV{VITASDK})
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VITASDK}/share/vita.toolchain.cmake" CACHE PATH "toolchain file")
+  else()
+    message(FATAL_ERROR "Please define VITASDK to point to your SDK path!")
+  endif()
+endif()
+
+project(Heboris-Vita)
+
+include("$ENV{VITASDK}/share/vita.cmake" REQUIRED)
+
+set(VITA_APP_NAME "Heboris")
+
+set(VITA_TITLEID  "HBRS00001")
+
+set(VITA_VERSION  "00.01")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
+
+include_directories()
+
+
+link_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(HEBORISC7EXSDL2_VERSION "${CMAKE_PROJECT_VERSION}")
-add_compile_definitions(HEBORISC7EXSDL2_VERSION="${HEBORISC7EXSDL2_VERSION}")
-
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_STANDARD_REQUIRED TRUE)
-
-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
-	add_compile_definitions(WIN32)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-	add_compile_definitions(MACOSX)
-elseif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-	add_compile_definitions(LINUX)
-endif()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
-	set(PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
-else()
-	set(PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
-endif()
-
-set(EXE HeborisC7EX-SDL2)
-set(EXE_SOURCES
+# Add all the files needed to compile here
+add_executable(${PROJECT_NAME}
 	src/game/prototypes.h
 	src/game/gamedef.h
 	src/game/gamestart.h
@@ -98,217 +102,30 @@ set(EXE_SOURCES
 	src/script/ranking3.c
 )
 
-if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
-endif()
+# Library to link to (drop the -l prefix). This will mostly be stubs.
+target_link_libraries(${PROJECT_NAME}
+	# TODO: change required libraries here
+	vita2d
+	SceDisplay_stub
+	SceGxm_stub
+	SceSysmodule_stub
+	SceCtrl_stub
+	ScePgf_stub
+	ScePvf_stub
+	SceCommonDialog_stub
+	freetype
+	png
+	jpeg
+	z
+	m
+	c
+	SceAppMgr_stub
+)
 
-if(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)
-	find_package(SDL2 REQUIRED)
-	find_package(sdl2-image REQUIRED)
-	find_package(sdl2-mixer REQUIRED)
-	find_package(PhysFS REQUIRED)
-
-	add_executable(${EXE} ${EXE_SOURCES})
-	target_link_libraries(${EXE}
-		PUBLIC
-			SDL2::SDL2
-			SDL2::SDL2main
-			SDL2::SDL2_image
-			SDL2::SDL2_mixer
-			${PHYSFS_LIBRARY}
-	)
-	target_include_directories(${EXE} SYSTEM PRIVATE
-		${PHYSFS_INCLUDE_DIR}
-	)
-
-	option(HIDE_WINDOWS_CONSOLE "Hide the Windows console.")
-	target_link_options(${EXE}
-		PRIVATE
-			$<$<BOOL:${HIDE_WINDOWS_CONSOLE}>:
-				/ENTRY:mainCRTStartup
-				/SUBSYSTEM:WINDOWS
-			>
-	)
-
-	if(${PACKAGE_TYPE} STREQUAL "WorkingDir")
-		message(STATUS "Configuring working directory version; CMake installation is not supported")
-		set(BASE_PATH "SDL_strdup(\"./\")")
-		set(BASE_PATH_APPEND "\"\"")
-		set(PREF_PATH "SDL_strdup(\"./\")")
-	else()
-		if(${PACKAGE_TYPE} STREQUAL "Portable")
-			message(STATUS "Configuring portable package")
-			set(BASE_PATH "SDL_GetBasePath()")
-			set(BASE_PATH_APPEND "\"\"")
-			set(PREF_PATH "SDL_GetBasePath()")
-		elseif(${PACKAGE_TYPE} STREQUAL "Installable")
-			message(STATUS "Configuring installable package")
-			set(BASE_PATH "SDL_GetBasePath()")
-			set(BASE_PATH_APPEND "\"\"")
-			set(PREF_PATH "SDL_GetPrefPath(\"nightmareci\", \"HeborisC7EX SDL2\")")
-		else()
-			message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported")
-		endif()
-		install(TARGETS ${EXE} DESTINATION ".")
-		install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
-		install(DIRECTORY "res" DESTINATION ".")
-		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
-		include(pkg/windows/InstallRuntimeDependenciesMSVC.cmake)
-	endif()
-	configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-else()
-	find_package(PkgConfig)
-	if(PKG_CONFIG_FOUND)
-		function(target_pkg_config_import TARGET DEPENDENCY)
-			string(TOUPPER ${DEPENDENCY} DEPENDENCY_VARIABLE)
-			pkg_check_modules(${DEPENDENCY_VARIABLE} REQUIRED ${DEPENDENCY})
-			target_compile_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_CFLAGS}")
-			target_compile_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_CFLAGS_OTHER}")
-			target_include_directories(${TARGET} SYSTEM PRIVATE "${${DEPENDENCY_VARIABLE}_INCLUDE_DIRS}")
-			target_link_directories(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LIBRARY_DIRS}")
-			target_link_libraries(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LIBRARIES}")
-			target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS}")
-			target_link_options(${TARGET} PRIVATE "${${DEPENDENCY_VARIABLE}_LDFLAGS_OTHER}")
-		endfunction()
-	
-		if(${PACKAGE_TYPE} STREQUAL "WorkingDir")
-			message(STATUS "Configuring working directory version; CMake installation is not supported")
-			add_executable(${EXE} ${EXE_SOURCES})
-			set(BASE_PATH "SDL_strdup(\"./\")")
-			set(BASE_PATH_APPEND "\"\"")
-			set(PREF_PATH "SDL_strdup(\"./\")")
-			configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-		# TODO: For macOS packaging, since CMake itself can't do everything: add_custom_command(TARGET ${EXE} POST_BUILD COMMAND ... DEPENDS ... VERBATIM)
-		elseif(${PACKAGE_TYPE} MATCHES "Portable")
-			if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin AND ${PACKAGE_TYPE} MATCHES "Mac App")
-				message(STATUS "Configuring portable Mac app package")
-				add_executable(${EXE} MACOSX_BUNDLE "pkg/macos/${EXE}.icns" ${EXE_SOURCES})
-				set(BASE_PATH "SDL_GetBasePath()")
-				set(BASE_PATH_APPEND "\"\"")
-				set(PREF_PATH "SDL_GetBasePath()")
-				configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-				set_source_files_properties("pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-				set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
-				set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
-				set(MACOSX_BUNDLE_ICON_FILE ${EXE})
-				set(SDL_FILESYSTEM_BASE_DIR_TYPE parent)
-				set_target_properties(${EXE} PROPERTIES
-					BUNDLE True
-					MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/pkg/macos/MacOSXBundleInfo.plist.in"
-				)
-			else()
-				message(STATUS "Configuring portable package")
-				add_executable(${EXE} ${EXE_SOURCES})
-				set(BASE_PATH "SDL_GetBasePath()")
-				set(BASE_PATH_APPEND "\"\"")
-				set(PREF_PATH "SDL_GetBasePath()")
-				configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-				install(TARGETS ${EXE} DESTINATION ".")
-				install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
-				install(DIRECTORY "res" DESTINATION ".")
-				install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
-				if(MINGW)
-					include(pkg/windows/InstallRuntimeDependenciesMinGW.cmake)
-				endif()
-			endif()
-		elseif(${PACKAGE_TYPE} MATCHES "Installable")
-			if(${CMAKE_SYSTEM_NAME} STREQUAL Darwin AND ${PACKAGE_TYPE} MATCHES "Mac App")
-				message(STATUS "Configuring installable Mac app package")
-				add_executable(${EXE} MACOSX_BUNDLE "pkg/macos/${EXE}.icns" ${EXE_SOURCES})
-				set(BASE_PATH "SDL_GetBasePath()")
-				set(BASE_PATH_APPEND "\"\"")
-				set(PREF_PATH "SDL_GetPrefPath(\"nightmareci\", \"HeborisC7EX SDL2\")")
-				configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-				set_source_files_properties("pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-				set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
-				set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
-				set(MACOSX_BUNDLE_ICON_FILE ${EXE})
-				set(SDL_FILESYSTEM_BASE_DIR_TYPE resource)
-				set_target_properties(${EXE} PROPERTIES
-					BUNDLE True
-					MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/pkg/macos/MacOSXBundleInfo.plist.in"
-				)
-			else()
-				message(STATUS "Configuring installable package")
-				add_executable(${EXE} ${EXE_SOURCES})
-				set(BASE_PATH "SDL_GetBasePath()")
-				set(PREF_PATH "SDL_GetPrefPath(\"nightmareci\", \"HeborisC7EX SDL2\")")
-				if(UNIX)
-					include(GNUInstallDirs)
-					set(BASE_PATH_APPEND "\"../${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}\"")
-					configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-					install(TARGETS ${EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
-					install(DIRECTORY "config/mission" "config/stage" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/config")
-					install(DIRECTORY "res" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
-					install(FILES "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")
-					if(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
-						set(LINUX_DESKTOP_ICON "HeborisC7EX-SDL2" CACHE STRING "The file name of the icon to put into the Linux desktop file, without an extension.")
-						configure_file("pkg/linux/HeborisC7EX-SDL2.desktop.in" "HeborisC7EX-SDL2.desktop" @ONLY)
-						install(FILES "${CMAKE_CURRENT_BINARY_DIR}/HeborisC7EX-SDL2.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
-						install(FILES "pkg/linux/HeborisC7EX-SDL2.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
-					endif()
-				else()
-					set(BASE_PATH_APPEND "\"\"")
-					configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
-				endif()
-				if(MINGW)
-					include(pkg/windows/InstallRuntimeDependenciesMinGW.cmake)
-				endif()
-			endif()
-		else()
-			message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported")
-		endif()
-	
-		target_link_libraries(${EXE} PRIVATE
-			m
-			${CMAKE_DL_LIBS}
-		)
-		set(DEPENDENCIES
-			sdl2
-			SDL2_image
-			SDL2_mixer
-		)
-		foreach(DEPENDENCY ${DEPENDENCIES})
-			target_pkg_config_import(${EXE} ${DEPENDENCY})
-		endforeach()
-
-		# Some old systems even lack pkg-config support for PhysicsFS,
-		# but a manually-installed up-to-date version of CMake (not
-		# hard to do) can always provide PhysicsFS this way.
-		find_package(PhysFS REQUIRED)
-		target_link_libraries(${EXE} PRIVATE ${PHYSFS_LIBRARY})
-		target_include_directories(${EXE} SYSTEM PRIVATE ${PHYSFS_INCLUDE_DIR})
-	else()
-		message(FATAL_ERROR "pkg-config not found")
-	endif()
-endif()
-
-target_include_directories(${EXE} PRIVATE src src/game src/main_sdl "${CMAKE_CURRENT_BINARY_DIR}/src" "${CMAKE_CURRENT_BINARY_DIR}/src/game" "${CMAKE_CURRENT_BINARY_DIR}/src/main_sdl")
-
-# TODO: Finish this for installation of DLLs of MinGW builds.
-#install(CODE "
-#message(STATUS \"Target file: $<TARGET_FILE:${EXE}>\")
-#execute_process(COMMAND sh -c \"ldd $<TARGET_FILE:${EXE}> | sed -ne 's#^[ \\t][ \\t]*[^\\\\/][^\\\\/]*\\\\.[dD][lL][lL] => \\\\(..*\\\\.[dD][lL][lL]\\\\) (0x[0-9a-f][0-9a-f]*)$#\\\\1#p'\" OUTPUT_VARIABLE LIBRARIES_LINES)
-#string(REPLACE \"\\n\" \";\" DEPENDENCIES \${LIBRARIES_LINES})
-#foreach(DEPENDENCY IN LISTS DEPENDENCIES)
-#	message(STATUS \${DEPENDENCY})
-#endforeach()
-#
-#set_property(GLOBAL PROPERTY DEPTH 0)
-#function(test_recurse)
-#	get_property(DEPTH_LAST GLOBAL PROPERTY DEPTH)
-#	math(EXPR DEPTH_CURRENT \"\${DEPTH_LAST} + 1\")
-#	set_property(GLOBAL PROPERTY DEPTH \${DEPTH_CURRENT})
-#	message(STATUS \"Depth at entry: \${DEPTH_CURRENT}\")
-#	if(\${DEPTH_CURRENT} EQUAL 3)
-#		return()
-#	else()
-#		test_recurse()
-#		get_property(DEPTH_AFTER_RECURSE GLOBAL PROPERTY DEPTH)
-#		message(STATUS \"Depth after recurse: \${DEPTH_AFTER_RECURSE}\")
-#	endif()
-#endfunction()
-#
-#test_recurse()
-#message(STATUS \"Done\")
-#")
+## Create Vita files
+vita_create_self(${PROJECT_NAME}.self ${PROJECT_NAME} UNSAFE)
+vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
+  VERSION ${VITA_VERSION}
+  NAME ${VITA_APP_NAME}
+  # TODO: ADD ressources here
+)

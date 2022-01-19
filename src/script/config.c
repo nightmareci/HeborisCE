@@ -391,7 +391,6 @@ void ConfigMenu() {
 		ExBltRect(77, 0, 36, 320 - (count % 320), 28, count % 320, 8);
 
 		printFont(1, 1, "HEBORIS SETTING MENU", fontc[rots[0]]);
-
 		if(status[0] == 0){
 			// main setting
 			printFont(23, 1, "- GAME", fontc[rots[0]]);

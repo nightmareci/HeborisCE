@@ -152,6 +152,7 @@ bool YGS2kInit()
 
 
 	/* ウィンドウの作成 */
+	windowType = 3;
 	if ( windowType == SCREENMODE_FULLSCREEN )
 	{
 		SDL_DisplayMode displayMode;
@@ -231,7 +232,6 @@ bool YGS2kInit()
 	{
 		s_iKeyRepeat[i] = 0;
 	}
-
 	/* パッドの初期化 */
 	if ((s_iJoyPadMax = SDL_NumJoysticks()))
 	{

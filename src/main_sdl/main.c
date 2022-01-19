@@ -98,6 +98,9 @@ int main(int argc, char* argv[])
 	else
 	{
 		char *basePath;
+		char *BASE_PATH = SDL_strdup("app0:/");
+		char *BASE_PATH_APPEND = "";
+		char *PREF_PATH = SDL_strdup("ux0:/data/");
 		if ( !(basePath = BASE_PATH) )
 		{
 			fprintf(stderr, "Failed getting base path.\n");
@@ -137,16 +140,16 @@ int main(int argc, char* argv[])
 		SDL_free(prefPath);
 		prefPath = NULL;
 	}
-
+	// TODO: Find a way to make this shit works
 	if (
-		!PHYSFS_mkdir("replay") ||
-		!PHYSFS_mkdir("config/data") ||
-		!PHYSFS_mkdir("config/mission") ||
-		!PHYSFS_mkdir("config/stage")
+		!PHYSFS_mkdir("heboris/replay") ||
+		!PHYSFS_mkdir("heboris/config/data") ||
+		!PHYSFS_mkdir("heboris/config/mission") ||
+		!PHYSFS_mkdir("heboris/config/stage")
 	)
 	{
 		fprintf(stderr, "Error creating save data directories: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		quit(EXIT_FAILURE);
+		// quit(EXIT_FAILURE);
 	}
 
 	gameMain();

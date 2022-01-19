@@ -5,7 +5,7 @@ This is an attempt to make a vita port of the game Heboris (tetris clone)
 ### Todo
 
  - [x] Cmake file for Vita build
- - [ ] Be able to build something that start on the vita
+ - [x] Be able to build something that start on the vita
  - [ ] Change controls
  - [ ] Change how config files work
  - [ ] Fix bugs

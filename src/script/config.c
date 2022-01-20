@@ -1016,8 +1016,8 @@ void ConfigMenu() {
 						statusc[0]++;
 					}
 				} else {
-					printFont(3, 17, "OK[ENTER] / RETRY[DEL] / CANCEL[BS]", digitc[rots[0]] * (count % 2));
-					if(IsPushReturnKey()) {
+					printFont(3, 17, "OK X / RETRY [] / CANCEL ()", digitc[rots[0]] * (count % 2));
+					if(IsPushReturnKey() || IsPushJoyKey(&joykeyAssign[12 + 10 * pl])) {
 						PlaySE(10);
 						for (int32_t key = 0; key < 10; key++) {
 							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
@@ -1043,7 +1043,7 @@ void ConfigMenu() {
 						statusc[0] = 0;
 						statusc[2] = 0;
 					}
-					else if(IsPushDeleteKey()) {
+					else if(IsPushDeleteKey() || IsPushJoyKey(&joykeyAssign[13 + 10 * pl])) {
 						PlaySE(5);
 						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
@@ -1067,7 +1067,7 @@ void ConfigMenu() {
 						}
 						statusc[0] = 0;
 					}
-					else if(IsPushBSKey()) {
+					else if(IsPushBSKey() || IsPushJoyKey(&joykeyAssign[11 + 10 * pl])) {
 						PlaySE(5);
 						for (int32_t key = 0; key < 10; key++) {
 							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
@@ -1148,7 +1148,7 @@ void ConfigMenu() {
 					}
 				} else {
 					printFont(3, 18, "OK[ENTER] / RETRY[DEL] / CANCEL[BS]", digitc[rots[0]] * (count % 2));
-					if(IsPushReturnKey()) {
+					if(IsPushReturnKey() || IsPushJoyKey(&joykeyAssign[12 + 10 * pl])) {
 						PlaySE(10);
 						giveupKey = ncfg[34];
 						ssKey = ncfg[35];
@@ -1159,7 +1159,7 @@ void ConfigMenu() {
 						statusc[0] = 0;
 						statusc[2] = 0;
 					}
-					if(IsPushDeleteKey()) {
+					else if(IsPushDeleteKey() || IsPushJoyKey(&joykeyAssign[13 + 10 * pl])) {
 						PlaySE(5);
 						ncfg[34] = giveupKey;
 						ncfg[35] = ssKey;
@@ -1169,7 +1169,7 @@ void ConfigMenu() {
 						ncfg[58] = dispnextkey[1];
 						statusc[0] = 0;
 					}
-					if(IsPushBSKey()) {
+					else if(IsPushBSKey() || IsPushJoyKey(&joykeyAssign[11 + 10 * pl])) {
 						PlaySE(5);
 						ncfg[34] = giveupKey;
 						ncfg[35] = ssKey;

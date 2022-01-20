@@ -1,17 +1,22 @@
-### Heboris Vita Port
+# Heboris Vita Port
 
-This is an attempt to make a vita port of the game Heboris (tetris clone)
+Vita port of Heboris, a Tetris clone. 
 
-### Todo
+This port is based on the Heboris SDL2 source code
 
- - [x] Cmake file for Vita build
- - [x] Be able to build something that start on the vita
- - [ ] Change controls
- - [ ] Change how config files work
- - [ ] Fix bugs
- - [ ] Don't brick my vita
+# Special Thanks
 
-### Heboris C7-EX - unofficial version (YGS2K EX)
+[sarcastic_cat](https://github.com/isage) : For all the help about PhysFS and SDL stuff
+
+gl33ntwine : Easing my debugging process
+
+All the CBPS discord memebers
+
+
+
+
+
+# Heboris C7-EX - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7-EX. It requires a C
 compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0,

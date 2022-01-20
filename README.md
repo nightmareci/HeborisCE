@@ -10,7 +10,7 @@ This port is based on the Heboris SDL2 source code
 
 gl33ntwine : Easing my debugging process
 
-All the CBPS discord memebers
+All the CBPS discord members
 
 
 

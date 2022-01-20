@@ -152,7 +152,6 @@ bool YGS2kInit()
 
 
 	/* ウィンドウの作成 */
-	windowType = 3;
 	if ( windowType == SCREENMODE_FULLSCREEN )
 	{
 		SDL_DisplayMode displayMode;
@@ -511,7 +510,8 @@ int IsPushJoyKey ( const SJoyKey* const key )
 
 	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
 	SJoyPadGUID zeroGUID = { 0 };
-	if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
+	// if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
+	if (1) {
 		switch (key->type) {
 		case JOYKEY_AXIS:
 			if (key->setting.value == -YGS_DEADZONE_MAX) {
@@ -550,7 +550,8 @@ int IsPressJoyKey ( const SJoyKey* const key )
 
 	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
 	SJoyPadGUID zeroGUID = { 0 };
-	if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
+	// if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
+	if (1) {
 		SDL_Joystick* const joy = s_pJoyPads[key->device];
 		if (SDL_JoystickGetAttached(joy)) {
 			switch (key->type) {

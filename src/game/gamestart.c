@@ -1056,7 +1056,7 @@ int32_t fade_seed = 20;	// BGMフェードアウト用
 int32_t se_play[50];
 
 // 文字列定数
-cstr		version = "C7V4EX 07/11/23 VITA V0.1-ALPHA";	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
+cstr		version = "C7V4EX 07/11/23 VITA-SDL2 V1.0.0";	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 cstr		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */

@@ -90,7 +90,168 @@ static const SConfig DefaultConfig = {
 
 	.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
 
-	.joykeyAssign = { 0 },		//ジョイスティックボタン割り当て
+	.joykeyAssign = {
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 8
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 6
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 7
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 9
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 1
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 2
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 3
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 5
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 10
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 11
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 0
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 1
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 2
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 3
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 4
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 5
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 6
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 7
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 8
+	        }
+	    },
+	    {
+	        .device = 0,
+	        .guid = 0,
+	        .type = JOYKEY_BUTTON,
+	        .setting = {
+	            .button = 9
+	        }
+	    },
+	},		//ジョイスティックボタン割り当て
 
 	//Holdボタン(キーボード)割り当て
 	.holdkey = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 },	//default 1p側:V 2p側:テンキー0
@@ -98,7 +259,7 @@ static const SConfig DefaultConfig = {
 	.rots = {2, 1},
 	.lvup = {1, 1},
 
-	.screenMode =SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL,
+	.screenMode = 3 | SCREENMODE_DETAILLEVEL,
 	.screenIndex =0,
 	.nextblock =8,
 	.cfgversion =CFG_VERSION,
@@ -173,6 +334,30 @@ int32_t SetDefaultConfig()
 	cfgbuf[77] = DefaultConfig.digitc[4] + DefaultConfig.digitc[5] * 0x100 + DefaultConfig.digitc[6] * 0x10000 + DefaultConfig.digitc[7] * 0x1000000 ;
 	cfgbuf[78] = DefaultConfig.fontc[8] + DefaultConfig.fontc[9] * 0x100 + DefaultConfig.fontc[10] * 0x10000 + DefaultConfig.fontc[11] * 0x1000000 ;
 	cfgbuf[79] = DefaultConfig.digitc[8] + DefaultConfig.digitc[9] * 0x100 + DefaultConfig.digitc[10] * 0x10000 + DefaultConfig.digitc[11] * 0x1000000 ;
+
+     int32_t *joykeybuf = &cfgbuf[80];
+        for (int32_t pl = 0; pl < 2; pl++) {
+                for (int32_t key = 0; key < 10; key++) {
+                        int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
+                        SJoyKey *pljoy = &DefaultConfig.joykeyAssign[pl * 10 + key];
+                        plbuf[0] = pljoy->device;
+                        for (int32_t i = 0; i < 4; i++) {
+                                plbuf[1 + i] = pljoy->guid.data[i];
+                        }
+                        plbuf[5] = pljoy->type;
+                        switch (pljoy->type) {
+                        case JOYKEY_AXIS:
+                        case JOYKEY_HAT:
+                                plbuf[6] = pljoy->setting.index;
+                                plbuf[7] = pljoy->setting.value;
+                                break;
+
+                        case JOYKEY_BUTTON:
+                                plbuf[6] = pljoy->setting.button;
+                                break;
+                        }
+                }
+        }
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 

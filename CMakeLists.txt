@@ -12,21 +12,21 @@ project(Heboris-Vita)
 
 include("$ENV{VITASDK}/share/vita.cmake" REQUIRED)
 
+set(SRC ${CMAKE_CURRENT_SOURCE_DIR})
+set(BIN ${CMAKE_CURRENT_BINARY_DIR})
+
 set(VITA_APP_NAME "Heboris")
 
-set(VITA_TITLEID  "HBRS00001")
+set(VITA_TITLEID  "HBRS00000")
 
-set(VITA_VERSION  "00.01")
+set(VITA_VERSION  "01.00")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -O0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 -std=c++11")
 
 set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=12")
 
-# set(BASE_PATH "SDL_GetBasePath()")
-# set(BASE_PATH_APPEND "\"\"")
-# set(PREF_PATH "SDL_GetBasePath()")
-# configure_file("src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)
+
 
 include_directories()
 
@@ -107,7 +107,6 @@ add_executable(${PROJECT_NAME}
 	src/script/ranking3.c
 )
 
-
 # Library to link to (drop the -l prefix). This will mostly be stubs.
 target_link_libraries(${PROJECT_NAME}
 	SDL2
@@ -138,6 +137,10 @@ target_link_libraries(${PROJECT_NAME}
 	FLAC
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+   "${VITASDK}/arm-vita-eabi/include/SDL2"
+)
+
 file( GLOB_RECURSE RES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} res/*)
 file( GLOB_RECURSE CONFIG RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} config/*)
 
@@ -163,6 +166,12 @@ vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
   VERSION ${VITA_VERSION}
   NAME ${VITA_APP_NAME}
 
-  ${CONFIGDATA}
-  ${RESDATA}
+	${CONFIGDATA}
+	${RESDATA}
+  
+    # livearea + boot
+	FILE sce_sys/icon0.png sce_sys/icon0.png
+	FILE sce_sys/pic0.png sce_sys/pic0.png
+	FILE sce_sys/livearea/contents/bg0.png sce_sys/livearea/contents/bg0.png
+	FILE sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
 )

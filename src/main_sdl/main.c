@@ -3,6 +3,7 @@
 #include "paths.h"
 #include "../game/gamestart.h"
 #include "physfs.h"
+#include <vitasdk.h>
 
 static int quitLevel = 0;
 static void quit(int status) {
@@ -98,9 +99,6 @@ int main(int argc, char* argv[])
 	else
 	{
 		char *basePath;
-		char *BASE_PATH = SDL_strdup("app0:/");
-		char *BASE_PATH_APPEND = "";
-		char *PREF_PATH = SDL_strdup("ux0:/data/");
 		if ( !(basePath = BASE_PATH) )
 		{
 			fprintf(stderr, "Failed getting base path.\n");
@@ -118,7 +116,7 @@ int main(int argc, char* argv[])
 		}
 		free(basePathAppended);
 		basePathAppended = NULL;
-
+		sceIoMkdir("ux0:/data/heboris/", 0666);
 		char *prefPath;
 		if ( !(prefPath = PREF_PATH) )
 		{
@@ -142,10 +140,10 @@ int main(int argc, char* argv[])
 	}
 	// TODO: Find a way to make this shit works
 	if (
-		!PHYSFS_mkdir("heboris/replay") ||
-		!PHYSFS_mkdir("heboris/config/data") ||
-		!PHYSFS_mkdir("heboris/config/mission") ||
-		!PHYSFS_mkdir("heboris/config/stage")
+		!PHYSFS_mkdir("replay") ||
+		!PHYSFS_mkdir("config/data") ||
+		!PHYSFS_mkdir("config/mission") ||
+		!PHYSFS_mkdir("config/stage")
 	)
 	{
 		fprintf(stderr, "Error creating save data directories: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));

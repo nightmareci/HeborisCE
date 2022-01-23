@@ -1,5 +1,7 @@
 # Heboris Vita Port
 
+![Heboris Title Screen](https://raw.githubusercontent.com/l0wigh/Heboris-Vita/master/hebo.jpg)
+
 Vita port of Heboris, a Tetris clone. 
 
 This port is based on the Heboris SDL2 source code

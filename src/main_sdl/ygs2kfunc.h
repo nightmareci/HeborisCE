@@ -41,6 +41,10 @@ typedef struct {
 	SJoyKeySetting setting;
 } SJoyKey;
 
+#ifdef LINUX_GPIO
+int IsPushGPIO ( int key );
+int IsPressGPIO ( int key );
+#endif
 int IsPushKey ( int key );
 int IsPressKey ( int key );
 int IsPushJoyKey ( const SJoyKey* const key );

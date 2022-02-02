@@ -14518,6 +14518,9 @@ void padRepeat2(int32_t player) { // hoge 上下入力バージョン
 int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
 	int32_t jtmp;	// ジョイスティック入力
 	int32_t ktmp;	// キーボード入力
+#ifdef LINUX_GPIO
+	int32_t gtmp;
+#endif
 	int32_t pl;
 
 	// シングルモードでは2P側の入力を常にカット
@@ -14548,18 +14551,31 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 		// キーボードの入力を読み取る
 		ktmp = IsPressKey(keyAssign[key + pl * 10]);
 
+#ifdef LINUX_GPIO
+		if ( player == 0 )
+			gtmp = IsPressGPIO(key);
+		else
+			gtmp = 0;
+#endif
+
 		if(cpu_flag[pl])
 			return cp_input[key + pl * 10];
-		else if(!keyAssign[key + pl * 10])
-			return jtmp;
+#ifdef LINUX_GPIO
+		else
+			return (jtmp | ktmp | gtmp);
+#else
 		else
 			return (jtmp | ktmp);
+#endif
 	}
 }
 
 int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
 	int32_t jtmp;	// ジョイスティック入力
 	int32_t ktmp;	// キーボード入力
+#ifdef LINUX_GPIO
+	int32_t gtmp;
+#endif
 	int32_t pl;
 
 	// シングルモードでは2P側の入力を常にカット
@@ -14588,10 +14604,22 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		// キーボードの入力を読み取る
 		ktmp = IsPushKey(keyAssign[key + pl * 10]);
 
+#ifdef LINUX_GPIO
+		if ( player == 0 )
+			gtmp = IsPushGPIO(key);
+		else
+			gtmp = 0;
+#endif
+
 		if(cpu_flag[pl])
 			return cp_input[key + pl * 10];
+#ifdef LINUX_GPIO
+		else
+			return (jtmp | ktmp | gtmp);
+#else
 		else
 			return (jtmp | ktmp);
+#endif
 	}
 }
 

@@ -86,6 +86,12 @@ else()
 	message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported")
 endif()
 
+option(ENABLE_LINUX_GPIO_INPUT "Enable input via GPIO (Linux only)" OFF)
+if(${BUILD_TARGET} STREQUAL Linux AND ${ENABLE_LINUX_GPIO_INPUT})
+	add_compile_definitions(LINUX_GPIO)
+	target_link_libraries(${EXE} PRIVATE gpiod)
+endif()
+
 set_target_properties(${EXE}
 	PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${BIN}

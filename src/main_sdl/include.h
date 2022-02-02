@@ -7,6 +7,9 @@
 #include <time.h>
 #include <stdint.h>
 #include <stdbool.h>
+#if defined(LINUX_GPIO)
+#include <gpiod.h>
+#endif
 
 #define		FRAMEWORK_NAME		"SDL2"
 

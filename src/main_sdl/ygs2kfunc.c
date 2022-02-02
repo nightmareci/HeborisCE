@@ -42,6 +42,11 @@ static SDL_Texture		*s_pScreenRenderTarget = NULL;
 
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
+#ifdef LINUX_GPIO
+static int			s_iGPIORepeat[10];
+static struct gpiod_chip	*s_pGPIOChip;
+static struct gpiod_line	*s_pGPIOLines[10];
+#endif
 static int			s_iKeyRepeat[YGS_KEYREPEAT_MAX];
 static int			s_iJoyPadMax;
 static SDL_Joystick		**s_pJoyPads;
@@ -226,11 +231,64 @@ bool YGS2kInit()
 	/* マウスカーソルを消す場合は */
 	SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) );
 
-	/* キーリピートバッファ初期化 */
-	for ( int i = 0 ; i < YGS_KEYREPEAT_MAX ; i ++ )
+#ifdef LINUX_GPIO
+	const char* chipName = "gpiochip0";
+
+	s_pGPIOChip = gpiod_chip_open_by_name(chipName);
+	if ( !s_pGPIOChip )
 	{
-		s_iKeyRepeat[i] = 0;
+		fprintf(stderr, "Failed opening GPIO chip \"%s\". Continuing without GPIO input support.\n", chipName);
 	}
+	else {
+		memset(s_iGPIORepeat, 0, sizeof(s_iGPIORepeat));
+		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
+		if (
+			!(s_pGPIOLines[0] = gpiod_chip_get_line(s_pGPIOChip,  5)) ||
+			!(s_pGPIOLines[1] = gpiod_chip_get_line(s_pGPIOChip, 13)) ||
+			!(s_pGPIOLines[2] = gpiod_chip_get_line(s_pGPIOChip,  6)) ||
+			!(s_pGPIOLines[3] = gpiod_chip_get_line(s_pGPIOChip, 12)) ||
+			!(s_pGPIOLines[4] = gpiod_chip_get_line(s_pGPIOChip, 19)) ||
+			!(s_pGPIOLines[5] = gpiod_chip_get_line(s_pGPIOChip, 16)) ||
+			!(s_pGPIOLines[6] = gpiod_chip_get_line(s_pGPIOChip, 26)) ||
+			!(s_pGPIOLines[7] = gpiod_chip_get_line(s_pGPIOChip, 20)) ||
+			!(s_pGPIOLines[8] = gpiod_chip_get_line(s_pGPIOChip, 21)) ||
+			!(s_pGPIOLines[9] = gpiod_chip_get_line(s_pGPIOChip,  4))
+		)
+		{
+			for ( int i = 0 ; i < 10 ; i ++ )
+			{
+				if (s_pGPIOLines[i]) {
+					gpiod_line_release(s_pGPIOLines[i]);
+					s_pGPIOLines[i] = NULL;
+				}
+			}
+			gpiod_chip_close(s_pGPIOChip);
+			s_pGPIOChip = NULL;
+			fprintf(stderr, "Failed opening GPIO lines. Continuing without GPIO input support.\n");
+		}
+		else
+		{
+			for ( int i = 0 ; i < 10 ; i ++ )
+			{
+				if (gpiod_line_request_input(s_pGPIOLines[i], "input") < 0)
+				{
+					for ( int j = 0 ; j < 10 ; i ++ )
+					{
+						gpiod_line_release(s_pGPIOLines[j]);
+						s_pGPIOLines[i] = NULL;
+					}
+					gpiod_chip_close(s_pGPIOChip);
+					s_pGPIOChip = NULL;
+					fprintf(stderr, "Failed setting GPIO lines for input. Continuing without GPIO input support.\n");
+					break;
+				}
+			}
+		}
+	}
+#endif
+
+	/* キーリピートバッファ初期化 */
+	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
 
 	/* パッドの初期化 */
 	if ((s_iJoyPadMax = SDL_NumJoysticks()))
@@ -300,9 +358,25 @@ bool YGS2kInit()
 
 void YGS2kExit()
 {
+#ifdef LINUX_GPIO
+	if ( s_pGPIOChip )
+	{
+		for ( int i = 0 ; i < 10 ; i ++ )
+		{
+			gpiod_line_release(s_pGPIOLines[i]);
+		}
+		gpiod_chip_close(s_pGPIOChip);
+
+		s_pGPIOChip = NULL;
+		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
+	}
+#endif
+
 	/* パッドのクローズ */
-	if (s_iJoyPadMax) {
-		for (int i = 0; i < s_iJoyPadMax; i++) {
+	if ( s_iJoyPadMax )
+	{
+		for ( int i = 0 ; i < s_iJoyPadMax ; i ++)
+		{
 			SDL_JoystickClose(s_pJoyPads[i]);
 			free(s_pJoyAxisRepeat[i]);
 			free(s_pJoyHatRepeat[i]);
@@ -495,6 +569,18 @@ int IsPlayMIDI()
 	return Mix_PlayingMusic();
 }
 
+#ifdef LINUX_GPIO
+int IsPushGPIO ( int key )
+{
+	return s_iGPIORepeat[key] == 1 ? 1 : 0;
+}
+
+int IsPressGPIO ( int key )
+{
+	return s_iGPIORepeat[key] != 0 ? 1 : 0;
+}
+#endif
+
 int IsPushKey ( int key )
 {
 	return s_iKeyRepeat[key] == 1 ? 1 : 0;
@@ -661,6 +747,20 @@ void SetConstParam ( const char *param, int value )
 
 void KeyInput()
 {
+#ifdef LINUX_GPIO
+	for ( int i = 0 ; i < 10 ; i ++ )
+	{
+		if ( gpiod_line_get_value(s_pGPIOLines[i]) == 1 )
+		{
+			s_iGPIORepeat[i] ++;
+		}
+		else
+		{
+			s_iGPIORepeat[i] = 0;
+		}
+	}
+#endif
+
 	int		keynum = 0;
 	const Uint8	*KeyInp = SDL_GetKeyboardState(&keynum);
 

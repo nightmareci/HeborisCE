@@ -167,9 +167,9 @@ Raspberry Pi OS installation:
 sudo apt install libgpiod-dev
 ```
 
-Set `ENABLE_GPIO_INPUT` when running CMake, then build:
+Set `ENABLE_LINUX_GPIO_INPUT` when running CMake, then build:
 ```sh
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_GPIO_INPUT=1
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_LINUX_GPIO_INPUT=1
 cmake --build build
 ./build/HeborisC7EX-SDL2
 ```

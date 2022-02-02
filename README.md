@@ -159,6 +159,45 @@ cd HeborisC7EX-SDL2
 ./pkg/linux/pkg-flatpak.sh . build-flatpak
 ```
 
+#### Input Via GPIO
+You must install `libgpiod` in order to build support for GPIO.
+
+Raspberry Pi OS installation:
+```sh
+sudo apt install libgpiod-dev
+```
+
+Set `ENABLE_GPIO_INPUT` when running CMake, then build:
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_GPIO_INPUT=1
+cmake --build build
+./build/HeborisC7EX-SDL2
+```
+
+No efforts will be made to support Linux systems without support for
+`libgpiod`; recent Linux kernel versions support it, just upgrade to something
+that supports it. It's a hard requirement, because it's the most appropriate
+way for a game written in C to access GPIO for input, as it doesn't require
+root access. Plus, `libgpiod`, being a built-in Linux kernel feature, is
+supported on all systems with GPIO, not just Raspberry Pi.
+
+TODO: Implement full configuration of GPIO pin settings, only shown in-game if
+enabled in a build. For now, this is the pin layout, intended only for
+Raspberry Pi, based on the layout set in Texmaster, with the addition of the
+"give up" input:
+
+* Pin 1 or Pin 17: 3.3V; connect a GPIO pin to one of the connections on a button, 3.3V to the other connection.
+* GPIO5 / Pin 29: Up
+* GPIO13 / Pin 33: Down
+* GPIO6 / Pin 31: Left
+* GPIO12 / Pin 32: Right
+* GPIO19 / Pin 35: A
+* GPIO16 / Pin 36: B
+* GPIO26 / Pin 37: C
+* GPIO20 / Pin 38: D
+* GPIO21 / Pin 40: Give Up
+* GPIO4 / Pin 7: Pause
+
 #### Debugging Tips
 
 Regardless of the package type used for building, you can add a command line

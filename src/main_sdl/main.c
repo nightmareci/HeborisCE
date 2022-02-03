@@ -3,9 +3,10 @@
 #include "paths.h"
 #include "gamestart.h"
 #include "physfs.h"
+#include <assert.h>
 
 static int quitLevel = 0;
-static void quit(int status) {
+static int quit(int status) {
 	switch ( quitLevel )
 	{
 	case 5: if ( !PHYSFS_deinit() ) fprintf(stderr, "Failed closing access to files: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
@@ -15,7 +16,7 @@ static void quit(int status) {
 	case 1: SDL_Quit();
 	default: break;
 	}
-	exit(status);
+	return status;
 }
 
 int main(int argc, char* argv[])
@@ -24,7 +25,7 @@ int main(int argc, char* argv[])
 	if ( SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 )
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		quit(EXIT_FAILURE);
+		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
@@ -33,7 +34,7 @@ int main(int argc, char* argv[])
 	if ( IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
 	{
 		fprintf(stderr, "Couldn't initialize image support: %s\n", IMG_GetError());
-		quit(EXIT_FAILURE);
+		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 
@@ -49,7 +50,7 @@ int main(int argc, char* argv[])
 	if ( !formatsInitialized )
 	{
 		fprintf(stderr, "Couldn't initialize audio mixing: %s\n", Mix_GetError());
-		quit(EXIT_FAILURE);
+		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 
@@ -68,7 +69,7 @@ int main(int argc, char* argv[])
 	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
 	{
 		fprintf(stderr, "Couldn't open audio: %s\n", Mix_GetError());
-		quit(EXIT_FAILURE);
+		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 
@@ -77,7 +78,7 @@ int main(int argc, char* argv[])
 	if ( !PHYSFS_init(argv[0]) )
 	{
 		fprintf(stderr, "Couldn't initialize file access: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		quit(EXIT_FAILURE);
+		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 
@@ -87,12 +88,12 @@ int main(int argc, char* argv[])
 		if ( !PHYSFS_mount(specifiedPath, NULL, 0) )
 		{
 			fprintf(stderr, "Error mounting specified path \"%s\": %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
 		if ( !PHYSFS_setWriteDir(specifiedPath) )
 		{
 			fprintf(stderr, "Error setting specified path \"%s\" for writing: %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
 	}
 	else
@@ -101,9 +102,14 @@ int main(int argc, char* argv[])
 		if ( !(basePath = BASE_PATH) )
 		{
 			fprintf(stderr, "Failed getting base path.\n");
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
-		char *basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1);
+		char* basePathAppended;
+		if ( !(basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1)) )
+		{
+			fprintf(stderr, "Failed creating base path.\n");
+			return quit(EXIT_FAILURE);
+		}
 		sprintf(basePathAppended, "%s%s", basePath, BASE_PATH_APPEND);
 		SDL_free(basePath);
 		basePath = NULL;
@@ -111,7 +117,7 @@ int main(int argc, char* argv[])
 		{
 			fprintf(stderr, "Error mounting base path \"%s\": %s\n", basePathAppended, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			free(basePathAppended);
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
 		free(basePathAppended);
 		basePathAppended = NULL;
@@ -120,19 +126,19 @@ int main(int argc, char* argv[])
 		if ( !(prefPath = PREF_PATH) )
 		{
 			fprintf(stderr, "Failed getting pref path.\n");
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
 		if ( !PHYSFS_setWriteDir(prefPath) )
 		{
 			fprintf(stderr, "Error setting pref path \"%s\" for writing: %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			SDL_free(prefPath);
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
 		if ( !PHYSFS_mount(prefPath, NULL, 0) )
 		{
 			fprintf(stderr, "Error mounting pref path \"%s\": %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			SDL_free(prefPath);
-			quit(EXIT_FAILURE);
+			return quit(EXIT_FAILURE);
 		}
 		SDL_free(prefPath);
 		prefPath = NULL;
@@ -146,12 +152,11 @@ int main(int argc, char* argv[])
 	)
 	{
 		fprintf(stderr, "Error creating save data directories: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		quit(EXIT_FAILURE);
+		return quit(EXIT_FAILURE);
 	}
 
 	gameMain();
 
 	/* 辞める */
-	quit(EXIT_SUCCESS);
-	return EXIT_SUCCESS; // This line is never reached, it's just here to silence compiler warnings.
+	return quit(EXIT_SUCCESS);
 }

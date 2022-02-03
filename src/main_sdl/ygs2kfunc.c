@@ -308,8 +308,8 @@ bool YGS2kInit()
 			s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
 			s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
 
-			s_pJoyAxisRepeat[i] = (int*)calloc(s_pJoyAxisMax[i] * 2, sizeof(int));
-			s_pJoyHatRepeat[i] = (int*)calloc(s_pJoyHatMax[i] * 4, sizeof(int));
+			s_pJoyAxisRepeat[i] = (int*)calloc((size_t)s_pJoyAxisMax[i] * 2, sizeof(int));
+			s_pJoyHatRepeat[i] = (int*)calloc((size_t)s_pJoyHatMax[i] * 4, sizeof(int));
 			s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
 		}
 	}
@@ -691,7 +691,7 @@ int IsPushEndKey()
 SJoyPadGUID GetJoyPadGUID( int device ) {
 	SJoyPadGUID zeroGUID = { 0 };
 	if (device >= s_iJoyPadMax) return zeroGUID;
-	SJoyPadGUID joyPadGUID;
+	SJoyPadGUID joyPadGUID = { 0 };
 	SDL_JoystickGUID sdlGUID = SDL_JoystickGetGUID( s_pJoyPads[device] );
 	for (int32_t i = 0; i < 4; i++) {
 		joyPadGUID.data[i] = 0;
@@ -776,7 +776,7 @@ void KeyInput()
 		}
 	}
 
-	SJoyKey key;
+	SJoyKey key = { 0 };
 	for ( int i = 0 ; i < s_iJoyPadMax ; i ++ )
 	{
 		key.device = i;
@@ -1228,8 +1228,8 @@ void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_Rect	src;
-	SDL_Rect	dst;
+	SDL_Rect	src = { 0 };
+	SDL_Rect	dst = { 0 };
 
 	src.x = sx;					src.y = sy;
 	src.w = hx;					src.h = hy;
@@ -1277,8 +1277,8 @@ void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, 
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
-	SDL_Rect	src;
-	SDL_Rect	dst;
+	SDL_Rect	src = { 0 };
+	SDL_Rect	dst = { 0 };
 
 	src.x = sx;					src.y = sy;
 	src.w = hx;					src.h = hy;
@@ -1316,8 +1316,8 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
-	SDL_Rect	src;
-	SDL_Rect	dst;
+	SDL_Rect	src = { 0 };
+	SDL_Rect	dst = { 0 };
 
 	src.x = sx;					src.y = sy;
 	src.w = hx;					src.h = hy;
@@ -1513,7 +1513,7 @@ void YGS2kKanjiFontFinalize()
 
 void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)
 {
-	SDL_Color col;
+	SDL_Color col = { 0 };
 	int		font = 0;
 
 	if ( size >= 12 )

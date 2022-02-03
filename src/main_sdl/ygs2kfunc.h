@@ -36,7 +36,7 @@ typedef union {
 
 typedef struct {
 	int device;
-        SJoyPadGUID guid;
+	SJoyPadGUID guid;
 	EJoyKeyType type;
 	SJoyKeySetting setting;
 } SJoyKey;
@@ -134,5 +134,4 @@ void FillMemory(void* buf, int size, int val);
 
 void YGS2kKanjiFontInitialize();
 void YGS2kKanjiFontFinalize();
-void YGS2kKanjiDrawSub(int x, int y, int kx, int ky);
 void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);

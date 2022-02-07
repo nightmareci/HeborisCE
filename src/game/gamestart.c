@@ -3625,11 +3625,15 @@ int32_t doGiveup() {
 			// 捨てゲーした時の動作を選べるようにした#1.60c7i6
 			if(giveup_func == 1) {
 				if(tmp1 != 0){
-					status[0] = 2;
+					status[0] = 1;
+					statusc[0 * 10 + 0] = 0;
+					statusc[0 * 10 + 1] = 2;
 					statusc[0 * 10 + 4] = 16;
 				}
 				if(tmp2 != 0){
-					status[1] = 2;
+					status[1] = 1;
+					statusc[1 * 10 + 0] = 0;
+					statusc[1 * 10 + 1] = 2;
 					statusc[1 * 10 + 4] = 16;
 				}
 			} else if(giveup_func == 2) {

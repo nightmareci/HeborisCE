@@ -4907,31 +4907,31 @@ int32_t Admitgradecheck(int32_t player){
 			return 1;
 		}
 	}
-	if(admit_grade[player]>0){
+if(admit_grade[player]>0){
 	//降格条件
 	//認定段位が高くなると落ちやすくなる
 		if(admit_grade[player] > 31){//GM以上
 			if (admit_grade[player]> sort_grade[0]);  // if your best of last 5 is less
-			exam_grade[player] = admit_grade[player]; // give demotion exam.
+			exam_grade[player] = sort_grade[0]; // demoted to best grade in last 5 if you fail.
 			return 2;
 		}
 		if(admit_grade[player] > 24){//m8以上
 			if((sort_grade[0] + sort_grade[1]) / 2 < admit_grade[player] - 3){
-				exam_grade[player] = admit_grade[player]; // give demotion exam.
+				exam_grade[player] = admit_grade[player] - 3; // give demotion exam.
 				return 2;
 			}
 		}
 
 		if(admit_grade[player] > 18){//m1以上
 			if(((sort_grade[0]+ sort_grade[1]+ sort_grade[2]) / 3) < admit_grade[player]-4){
-				exam_grade[player] = admit_grade[player]; // give demotion exam.
+				exam_grade[player] = admit_grade[player] - 4; // give demotion exam.
 				return 2;
 			}
 		}
 		//大きいほうから3つの平均が現在より5つ下
-		if(admit_grade[player] > 10){
+		if(admit_grade[player] > 10){//s3以上
 			if((grade_his[0]+grade_his[1]+grade_his[2]+grade_his[3]+grade_his[4]) / 5 < admit_grade[player]-5){
-				exam_grade[player] = admit_grade[player]; // give demotion exam.
+				exam_grade[player] = admit_grade[player] - 5; // give demotion exam.
 				return 2;
 			}
 		}

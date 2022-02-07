@@ -4771,7 +4771,9 @@ void statSelectMode(int32_t player) {
 					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (Rand(10) < 2)) ||(getPressState(player,7))){
 						item_mode[player] = 0;
 						hebo_plus[player] = 0;
-						examination[player] = 1;
+						examination[player] = Admitgradecheck(player);
+						if(examination[player]==0)
+							examination[player] = 1; // force exam if not already demotion or promotion.  if forced for g4, and neithe is due it will be for current qualified grade
 					}
 					//admitgradecheck(player);
 					if((enable_randexam==2) && (!item_mode[player]) && (!hebo_plus[player])&&(Admitgradecheck(player)>0)&&(!cp_player_1p)){
@@ -4870,65 +4872,68 @@ int32_t Admitgradecheck(int32_t player){
         	    }
         	}
     	}
-    	for(i = 0 ; i < 3 ; i++){
+    	for(i = 0 ; i < 5 ; i++){
 		sort_grade[i] = grade_his_buf[i];//並べ替え
 	}
-	temp1[player]=grade_his[0]+grade_his[1]+grade_his[2];
+	temp1[player]= sort_grade[0]+ sort_grade[1]+ sort_grade[2];
 	temp2[player]=5-grade_pasttime[player];//試験から経過時間
-	if(admit_grade[player]<32){
+	if(admit_grade[player]<32){ // not GM yet
 
 		//昇格
 		temp2[player]=5-grade_pasttime[player];
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
-		if((grade_his[0] == grade_his[1])&&((admit_grade[player]-grade_his[0]) > temp2[player])){
-			exam_grade[player]=grade_his[0];
+		if((sort_grade[0] == sort_grade[1])&&((sort_grade[0]- admit_grade[player]) >= temp2[player])){  // if best two grades are identical, and enough time has passed 
+			exam_grade[player]= sort_grade[0];                                                          // give exam for best grade in history. sooner if it's much better
 			return 1;
 		}
-
-		temp1[player]=grade_his[0]+grade_his[1]+grade_his[2]/3;
+		// check average of best three
+		temp1[player]= (sort_grade[0]+ sort_grade[1]+ sort_grade[2])/3;
 		temp2[player]=4-grade_pasttime[player];//試験から経過時間
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
-		if((temp1[player]%3==0)&&((admit_grade[player]-grade_his[0]) > temp2[player])){
-			exam_grade[player]=temp1[player];
+		if((admit_grade[player] < temp1[player]) && (temp2[player]==1)){ // 1 in 3 chance, and best 3 are better, and at least three since next exam
+			exam_grade[player]=temp1[player];                                            // give exam for average
 			return 1;
 		}
-		temp1[player]=grade_his[0]+grade_his[1]+grade_his[2]+ grade_his[3]/3;
+		// check average of best 4
+		temp1[player]= (sort_grade[0]+ sort_grade[1]+ sort_grade[2]+ sort_grade[3])/4;
 		temp2[player]=3-grade_pasttime[player];//試験から経過時間
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
-		if((2 <= grade_pasttime[player])&&(temp1[player] == 0)&&((admit_grade[player]-temp1[player]) > temp2[player])){
-			exam_grade[player]=temp1[player];
+		if ((admit_grade[player] < temp1[player]) && (temp2[player] == 1)) { // if best 4 are greater an d it's been 3 games since last exam.
+			exam_grade[player]=temp1[player];								 // give exam for average
 			return 1;
 		}
 	}
 	if(admit_grade[player]>0){
 	//降格条件
 	//認定段位が高くなると落ちやすくなる
-		if(admit_grade[player] > 18){//m8以上
-			exam_grade[player]=grade_his[0];
+		if(admit_grade[player] > 31){//GM以上
+			if (admit_grade[player]> sort_grade[0]);  // if your best of last 5 is less
+			exam_grade[player] = admit_grade[player]; // give demotion exam.
 			return 2;
 		}
 		if(admit_grade[player] > 24){//m8以上
-			if((grade_his[0] + grade_his[1]) / 2 < admit_grade[player] - 3){
-				exam_grade[player]=grade_his[0];
+			if((sort_grade[0] + sort_grade[1]) / 2 < admit_grade[player] - 3){
+				exam_grade[player] = admit_grade[player]; // give demotion exam.
 				return 2;
 			}
 		}
 
 		if(admit_grade[player] > 18){//m1以上
-			if((grade_his[0]+grade_his[1]+grade_his[2]) / 3 < admit_grade[player]-4){
-				exam_grade[player]=grade_his[0];
+			if(((sort_grade[0]+ sort_grade[1]+ sort_grade[2]) / 3) < admit_grade[player]-4){
+				exam_grade[player] = admit_grade[player]; // give demotion exam.
 				return 2;
 			}
 		}
 		//大きいほうから3つの平均が現在より5つ下
 		if(admit_grade[player] > 10){
-			if((grade_his[0]+grade_his[1]+grade_his[2]+grade_his[3]+grade_his[4]) / 3 < admit_grade[player]-5){
-				exam_grade[player]=sort_grade[0];
+			if((grade_his[0]+grade_his[1]+grade_his[2]+grade_his[3]+grade_his[4]) / 5 < admit_grade[player]-5){
+				exam_grade[player] = admit_grade[player]; // give demotion exam.
 				return 2;
 			}
 		}
 	}
-
+	// force exam for existing qualified grade if another wouldnt' start
+	exam_grade[player] = admit_grade[player];
 	return 0;//何もなし
 }
 

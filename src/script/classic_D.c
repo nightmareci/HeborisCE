@@ -136,7 +136,13 @@ void statDMove(int32_t player) {
 			move = 0;
 		else
 			move = (getPushState(player, 5) || rolling) - (getPushState(player, 4));
+				    // for old style, force negative
+
 		if((getPushState(player, 6) != 0) && (statusc[player * 10 + 6] == 0)) move = 2;
+		// different for DRS
+		if (repversw > 65 && (heboGB[player] == 2) && (move!=0)) // sega rotation
+			move = -1;                // safe because roll roll can't happen in old style
+
 		if((move != 0) && (isrotatelock[player] == 0)) {
 			bak = (rt[player] + move);
 				if(istrance[player]){

@@ -4,6 +4,7 @@
 
 # Buildsystem generated files
 /build*
+/pkg/windows/Icon.aps
 /out
 /CMakeSettings.json
 /.vscode

@@ -3,7 +3,10 @@ find_package(sdl2-image REQUIRED)
 find_package(sdl2-mixer REQUIRED)
 find_package(PhysFS REQUIRED)
 
-add_executable(${EXE} ${EXE_SOURCES})
+add_executable(${EXE}
+	${EXE_SOURCES}
+	"${SRC}/pkg/windows/Icon.rc"
+)
 target_link_libraries(${EXE}
 	PUBLIC
 		SDL2::SDL2
@@ -49,6 +52,6 @@ else()
 	install(DIRECTORY "${SRC}/config/mission" "${SRC}/config/stage" DESTINATION "config")
 	install(DIRECTORY "${SRC}/res" DESTINATION ".")
 	install(FILES "${SRC}/changelog.txt" "${SRC}/heboris.txt" "${SRC}/README.md" DESTINATION ".")
-	include(${SRC}/cmake/windows/InstallRuntimeDependenciesMSVC.cmake REQUIRED)
+	include("${SRC}/cmake/windows/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
 endif()
 configure_file("${SRC}/src/main_sdl/paths.h.in" "src/main_sdl/paths.h" @ONLY)

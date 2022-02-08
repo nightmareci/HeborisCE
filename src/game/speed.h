@@ -48,6 +48,7 @@ extern int32_t wait3_tomoyo26;
 extern int32_t wait2_tomoyo26;
 extern int32_t wait1_tomoyo26;
 extern int32_t lvTabletomoyohebo[20];
+extern int32_t lvTablesegahebo[20];
 extern int32_t lvTabletomoyo24[31];
 extern int32_t lvTabletomoyo[31];
 extern int32_t wait3_limit15;

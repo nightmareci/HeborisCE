@@ -8728,15 +8728,21 @@ void LevelUp(int32_t player) {
 			lc[player] = 0;
 			// アナザー3
 			lv[player]++;
+			int uppedlevel = lv[player]; // correct level speed, but not for past replays
+			if (repversw > 65) // new version
+				uppedlevel++; // one higer, cuz we are subtracting later.
 			if(heboGB[player] == 2){
 				if(lv[player]<19){
-					sp[player] = lvTabletomoyohebo[lv[player]-1];
+					if (repversw > 65) // new version
+						sp[player] = lvTablesegahebo[uppedlevel-1];  // use better table
+					else
+						sp[player] = lvTabletomoyohebo[uppedlevel-1];
 				}
 			}else{
 				if(lv[player]<=15){
-					sp[player] = lvTableHeboGB[lv[player]-1];
-					wait3[player] = wait3_HeboGB_tbl[lv[player]-1];
-					waitt[player] = waitt_HeboGB_tbl[lv[player]-1];
+					sp[player] = lvTableHeboGB[uppedlevel-1];
+					wait3[player] = wait3_HeboGB_tbl[uppedlevel-1];
+					waitt[player] = waitt_HeboGB_tbl[uppedlevel-1];
 				}
 			}
 

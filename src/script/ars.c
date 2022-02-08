@@ -413,8 +413,11 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				}
 			}
 		}
-
-		while(bs[player] > 60) {
+		// correct gravity for 1g and higher
+		int one_g = 60;
+		if (repversw > 65) // new replay version
+			one_g--;
+		while (bs[player] > one_g) {
 			bk[player] = 0;
 			tspin_flag[player] = 0;	// T-SPIN権利剥奪 #1.60c7o9
 

@@ -1,10 +1,11 @@
-### Heboris C7-EX - unofficial version (YGS2K EX)
+![Application Icon](/pkg/HeborisC7EX-SDL2.png)
+# Heboris C7-EX SDL2 - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7-EX. It requires a C
 compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0,
 SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
-#### Installing Flatpak Version on Linux
+## Installing Flatpak Version on Linux
 The benefit of using the Flatpak release package over building it yourself is
 it's built with a recent compiler (improved optimizations) and bundled with
 recent-version libraries, rather than having to settle on older libraries on
@@ -25,7 +26,7 @@ flatpak install ~/Downloads/HeborisC7EX-SDL2-Linux.flatpak
 # application to show up in application menus.
 ```
 
-#### Setup On Ubuntu
+## Setup On Ubuntu
 
 If using Git to get the source code, rather than downloading a zip of it from GitHub:
 ```sh
@@ -37,7 +38,7 @@ Building dependencies:
 sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libphysfs-dev
 ```
 
-#### Setup in Windows MSYS2
+## Setup in Windows MSYS2
 
 If using Git to get the source code, rather than downloading a zip of it from GitHub:
 ```sh
@@ -49,7 +50,7 @@ Building dependencies:
 pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-physfs
 ```
 
-#### Download, Build, and Run Without Installing
+## Download, Build, and Run Without Installing
 
 ```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
@@ -59,7 +60,7 @@ cmake --build build
 ./build/HeborisC7EX-SDL2
 ```
 
-#### Selecting a MIDI Soundfont if MIDI Doesn't Work
+## Selecting a MIDI Soundfont if MIDI Doesn't Work
 
 At least on Windows and macOS, it seems MIDI always works fine, but not always
 on Linux. If MIDI music doesn't seem to work, you can manually select a
@@ -85,7 +86,7 @@ free soundfont sources; you'll probably want to stick with General MIDI ("GM") o
 
 Unfortunately, there are some dead links on those pages, but some links still work.
 
-#### Download and Package for Windows
+## Download and Package for Windows
 
 For Windows, building with VCPKG and Visual Studio/MSVC is the officially
 supported method. The packaging script requires you have x64, x86, and ARM64
@@ -111,27 +112,35 @@ REM Starting at the root of the VCPKG install/repo, vcpkg.cmake is at [vcpkg-roo
 REM All the builds will be in separate ZIPs in the build-pkg directory.
 ```
 
-#### Download and Package for macOS
+## Download and Package for macOS
 
 The macOS packaging script will just use the libraries you have installed.
 Homebrew or MacPorts will work, though only MacPorts can provide Universal
 builds of the libraries, so packages built with Homebrew aren't suitable for
 distribution.
 
-The "Installable" version will work unnotarized, though users will have to
+The "Installable Mac App" version will work unnotarized, though users will have to
 approve it, and will get the "Apple could not verify..." message.
 ```sh
 git clone https://github.com/nightmareci/HeborisC7EX-SDL2
 cd HeborisC7EX-SDL2
-./pkg/macos/pkg.sh Installable . build-pkg
+./pkg/macos/pkg.sh 'Installable Mac App' . build-pkg
 ```
 
-You can also create a "Portable" version; distribution of this version
+You can also create a "Portable Mac App" version; distribution of this version
 basically requires you have an Apple Developer subscription, so the app can get
 access to the folder it's in. But building it for use on the same system it was
 built on works fine, and is a convenient way to have it easy to customize the
-theme. The "Portable" version requires the built app be in the folder with the
+theme. The "Portable Mac App" version requires the built app be in the folder with the
 other files (`res` folder, etc.).
+```sh
+./pkg/macos/pkg.sh 'Portable Mac App' . build-pkg
+```
+
+A third type, "Portable", creates a command line binary with the libraries in
+a separate `libs` folder. It's similar to "Portable Mac App" in usage, as you
+can modify the files and still run it, but you can easily have terminal output
+with it, and run it from command line.
 ```sh
 ./pkg/macos/pkg.sh Portable . build-pkg
 ```
@@ -140,10 +149,10 @@ The packaging script can optionally take a codesigning identity, so you can
 sign the app for future notarization. By default, it uses adhoc signing if no
 identity is provided.
 ```sh
-./pkg/macos/pkg.sh Portable . build-pkg 'Apple Developer Codesigning ID'
+./pkg/macos/pkg.sh 'Portable Mac App' . build-pkg 'Apple Developer Codesigning ID'
 ```
 
-#### Download and Package for Linux
+## Download and Package for Linux
 
 AppImage:
 ```sh
@@ -159,7 +168,7 @@ cd HeborisC7EX-SDL2
 ./pkg/linux/pkg-flatpak.sh . build-flatpak
 ```
 
-#### Input Via GPIO
+## Input Via GPIO
 You must install `libgpiod` in order to build support for GPIO.
 
 Raspberry Pi OS installation:
@@ -198,7 +207,7 @@ Raspberry Pi, based on the layout set in Texmaster, with the addition of the
 * GPIO21 / Pin 40: Give Up
 * GPIO4 / Pin 7: Pause
 
-#### Debugging Tips
+## Debugging Tips
 
 Regardless of the package type used for building, you can add a command line
 argument for the path where resources are read from and data files are written,
@@ -212,7 +221,7 @@ argument is to use the `WorkingDir` package type when building (the default if
 your IDE to run the game with its working directory set to the source root.
 This option isn't available in all IDEs, however.
 
-#### Changes
+## Changes
 
  - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported platforms.
  - Change to a CMake build system.
@@ -241,7 +250,7 @@ This option isn't available in all IDEs, however.
    of the game, where the save data directory is outside the game's
    resources/program directory.
 
-#### Todo
+## Todo
 
 This repository will be maintained for bug fixes, non-new-content enhancements
 (like new video settings), and ports.
@@ -252,7 +261,7 @@ This repository will be maintained for bug fixes, non-new-content enhancements
    for the "simple" BGM type for non-MIDI formats, as an option for systems
    without immediately working MIDI playback.
 
-#### Definitely Not Legal Advice
+## Definitely Not Legal Advice
 
 This software is copyrighted to Kenji Hoshimoto, but the distribution terms are
 currently unknown. So, to be polite, only distribute it noncommercially, and

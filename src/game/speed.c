@@ -435,6 +435,12 @@ int32_t lvTabletomoyohebo[20] =
 	   1,   2,   3,   5,   8,  10,  12,  15,  20,  30,
 	  30,   1,   5,  12,  30,  60,  60,  60,  60,  60
 };
+// ACE-Old Style: ARS level table
+int32_t lvTablesegahebo[20] =
+{
+	   1,   2,   3,   4,   5,  6,  8,  10,  15,  30,
+	  6,   8,  10,  15,  30,  60,  60,  60,  60,  60
+};
 
 // Ver26以前のTOMOYOモードWAIT値 #1.60c7m1
 int32_t	wait1_tomoyo26 = 26;		// 固定→次

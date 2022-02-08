@@ -2686,7 +2686,7 @@ void playerInitial(int32_t player) {
 	misstimer[player] = 0;
 
 	// 旧バージョンのリプレイデータを再生するためのスイッチ #1.60c7H2
-	repversw = 65;	// 0:1.60c7f3以前 1:1.60c7f4以降 3:1.60c7g7以降 4:1.60c7h2以降 5:1.60c7h5以降 6:1.60c7i2以降
+	repversw = 66;	// 0:1.60c7f3以前 1:1.60c7f4以降 3:1.60c7g7以降 4:1.60c7h2以降 5:1.60c7h5以降 6:1.60c7i2以降
 					// 7:1.60c7j3以降 8:1.60c7k5以降 9:1.60c7k8以降 10:1.60c7n6以降 11:1.60c7o9以降 12:1.60c7p1以降
 					// 13:1.60c7p5以降 14:1.60c7q8以降 15:1.60c7r3以降 16:1.60c7r7以降 17:1.60c7s6以降 18:1.60c7t3以降
 					// 19:C7T6.4以降 20:C7T6.8以降 21:C7T7.2以降 22C7T7.7以降 23:C7T8以降 25:C7T9.2以降 26:C7T9.4以降
@@ -2695,7 +2695,7 @@ void playerInitial(int32_t player) {
 					// 41:C7U4.5以降 42:C7U4.7以降 43:C7U4.72以降 44:C7U4.9以降 45:C7U5.0以降 46:C7U5.2以降 47:C7U5.45以降
 					// 48:C7U5.3以降 48:C7U6以降	-中略-
 					// 54:C7V2.1以降 55:C7V2.4以降 56:C7V2.43以降 57:C7V2.5以降 58:C7V3.3以降 59:C7V3.4以降 60:C7V3.45以降
-					// 61:C7V3.55以降 62:C7V3.6以降 63:C7V3.65以降 64:C7V3.7以降 65:C7V3.75以降
+					// 61:C7V3.55以降 62:C7V3.6以降 63:C7V3.65以降 64:C7V3.7以降 65:C7V3.75以降 66: SDL2 1.0.1
 	//SetVolumeWaveAll(100);
 	item_pronum = 0;
 	for(i = 0; i < 9; i++)
@@ -8728,15 +8728,21 @@ void LevelUp(int32_t player) {
 			lc[player] = 0;
 			// アナザー3
 			lv[player]++;
+			int uppedlevel = lv[player]; // correct level speed, but not for past replays
+			if (repversw > 65) // new version
+				uppedlevel++; // one higer, cuz we are subtracting later.
 			if(heboGB[player] == 2){
 				if(lv[player]<19){
-					sp[player] = lvTabletomoyohebo[lv[player]-1];
+					if (repversw > 65) // new version
+						sp[player] = lvTablesegahebo[uppedlevel-1];  // use better table
+					else
+						sp[player] = lvTabletomoyohebo[uppedlevel-1];
 				}
 			}else{
 				if(lv[player]<=15){
-					sp[player] = lvTableHeboGB[lv[player]-1];
-					wait3[player] = wait3_HeboGB_tbl[lv[player]-1];
-					waitt[player] = waitt_HeboGB_tbl[lv[player]-1];
+					sp[player] = lvTableHeboGB[uppedlevel-1];
+					wait3[player] = wait3_HeboGB_tbl[uppedlevel-1];
+					waitt[player] = waitt_HeboGB_tbl[uppedlevel-1];
 				}
 			}
 

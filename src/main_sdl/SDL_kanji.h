@@ -22,13 +22,13 @@ int Kanji_FontWidth(Kanji_Font* font, const char* text);
 
 void Kanji_SetCodingSystem(Kanji_Font* font, Kanji_CodingSystem sys);
 
-void Kanji_PutText(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, SDL_Color color));
-void Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, SDL_Surface* dst, const char* text, SDL_Color fg);
-void Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, SDL_Renderer* dst, const char* text, SDL_Color fg);
+void Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color));
+void Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* text, SDL_Color fg);
+void Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* text, SDL_Color fg);
 
-void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, SDL_Color color));
-void Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, SDL_Surface* dst, const char* text, SDL_Color fg);
-void Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, SDL_Renderer* dst, const char* txt, SDL_Color fg);
+void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color));
+void Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* text, SDL_Color fg);
+void Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg);
 
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color fg, int bpp);
 SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text, SDL_Color fg, int bpp);

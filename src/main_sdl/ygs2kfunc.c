@@ -17,6 +17,9 @@
 
 #define 	YGS_VOLUME_MAX		MIX_MAX_VOLUME
 
+#define		YGS_WIDE_SCREEN (4.0f / 3.0f)
+#define		YGS_NARROW_SCREEN (3.0f / 4.0f)
+
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
 typedef struct
@@ -39,6 +42,8 @@ enum
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pScreenRenderTarget = NULL;
+static int			s_iScreenDims[2] = { 0 };
+static float			s_fScreenSubpixelOffset = 0.0f;
 
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
@@ -84,6 +89,63 @@ extern int32_t			screenIndex;
 
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
+
+static float GetScreenSubpixelOffset()
+{
+	// The returned subpixel offset nudges all draws to have pixel
+	// coordinates roughly centered in the floating point coordinate
+	// space. Without this offset, pixel coordinates are at the
+	// upper left of the intended pixels, resulting in off-by-one
+	// drawing errors sometimes.
+	//
+	// For the case of non-integer scales of the original
+	// resolution, the use of the ceiling function pulls back the
+	// offset into a position within the upper left square of
+	// pixels, still not at the upper left corner, which seems to
+	// produce correct draws on all configurations. Without it,
+	// incorrect draws happen sometimes.
+	//
+	// The 0.5 offset within the ceiling function's argument
+	// ensures the offset will be within the upper left
+	// square for integer scales of the original resolution,
+	// as I found that without the 0.5 offset, rendering
+	// errors happen at integer scales.
+	//
+	// I think the exact position of the offset doesn't
+	// matter, it just needs to be in the upper left square
+	// of pixels. This formula guarantees that at all
+	// resolutions.
+	//
+	// A subpixel offset isn't needed for correct rendering
+	// when at or below the original resolution.
+	// -Brandon McGriff <nightmareci@gmail.com>
+	if (s_iScreenDims[1] > 240 * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1))
+	{
+		float offsetH;
+		const float aspect = (float)s_iScreenDims[0] / s_iScreenDims[1];
+		if (aspect != YGS_WIDE_SCREEN)
+		{
+			if (aspect > YGS_WIDE_SCREEN)
+			{
+				offsetH = s_iScreenDims[1];
+			}
+			else
+			{
+				offsetH = s_iScreenDims[0] * YGS_NARROW_SCREEN;
+			}
+		}
+		else
+		{
+			offsetH = s_iScreenDims[1];
+		}
+
+		return 0.5f / ceilf(offsetH / (240.0f * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1.0f)) + 0.5f);
+	}
+	else
+	{
+		return 0.0f;
+	}
+}
 
 bool YGS2kInit()
 {
@@ -206,6 +268,8 @@ bool YGS2kInit()
 	{
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
 	}
+	SDL_GetWindowSize(s_pScreenWindow, &s_iScreenDims[0], &s_iScreenDims[1]);
+	s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
 	if ( screenMode & SCREENMODE_SCALEMODE )
@@ -451,6 +515,15 @@ void YGS2kExit()
 
 bool YGS2kHalt()
 {
+	if ((screenMode & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW) {
+		int lastDims[2] = { s_iScreenDims[0], s_iScreenDims[1] };
+		float offsetH;
+		SDL_GetWindowSize(s_pScreenWindow, &s_iScreenDims[0], &s_iScreenDims[1]);
+		if (s_iScreenDims[0] != lastDims[0] || s_iScreenDims[1] != lastDims[1]) {
+			s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
+		}
+	}
+
 	SDL_RenderFlush( s_pScreenRenderer );
 
 	SDL_Event	ev;
@@ -463,7 +536,8 @@ bool YGS2kHalt()
 		{
 			SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 			SDL_RenderClear( s_pScreenRenderer );
-			SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, NULL, NULL);
+			const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1) };
+			SDL_RenderCopyF(s_pScreenRenderer, s_pScreenRenderTarget, NULL, &dstrect);
 			SDL_RenderPresent(s_pScreenRenderer);
 			SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
 		}
@@ -490,7 +564,8 @@ bool YGS2kHalt()
 			{
 				SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 				SDL_RenderClear( s_pScreenRenderer );
-				SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, NULL, NULL);
+				const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1) };
+				SDL_RenderCopyF(s_pScreenRenderer, s_pScreenRenderTarget, NULL, &dstrect);
 				SDL_RenderPresent(s_pScreenRenderer);
 				SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
 			}
@@ -1228,15 +1303,30 @@ void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
-	SDL_Rect	src = { 0 };
-	SDL_Rect	dst = { 0 };
+	if ( s_pScreenRenderTarget )
+	{
+		SDL_Rect	src = { 0 };
+		SDL_Rect	dst = { 0 };
 
-	src.x = sx;					src.y = sy;
-	src.w = hx;					src.h = hy;
-	dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
-	dst.w = hx;					dst.h = hy;
+		src.x = sx;			src.y = sy;
+		src.w = hx;			src.h = hy;
+		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+		dst.w = hx;			dst.h = hy;
 
-	SDL_RenderCopy(s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst);
+		SDL_RenderCopy(s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst);
+	}
+	else
+	{
+		SDL_Rect	src = { 0 };
+		SDL_FRect	dst = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset };
+
+		src.x  = sx;			src.y  = sy;
+		src.w  = hx;			src.h  = hy;
+		dst.x += dx + s_iOffsetX;	dst.y += dy + s_iOffsetY;
+		dst.w  = hx;			dst.h  = hy;
+
+		SDL_RenderCopyF(s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst);
+	}
 }
 
 void BltFast(int pno, int dx, int dy)
@@ -1277,18 +1367,36 @@ void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, 
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
-	SDL_Rect	src = { 0 };
-	SDL_Rect	dst = { 0 };
+	if ( s_pScreenRenderTarget )
+	{
+		SDL_Rect	src = { 0 };
+		SDL_Rect	dst = { 0 };
 
-	src.x = sx;					src.y = sy;
-	src.w = hx;					src.h = hy;
-	dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
-	dst.w = hx * ((float)scx / 65536.0f);
-	dst.h = hy * ((float)scy / 65536.0f);
+		src.x = sx;					src.y = sy;
+		src.w = hx;					src.h = hy;
+		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+		dst.w = hx * (scx / 65536.0f);
+		dst.h = hy * (scy / 65536.0f);
 
-	if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
+		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+		SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+	}
+	else
+	{
+		SDL_Rect	src = { 0 };
+		SDL_FRect	dst = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset };
+
+		src.x  = sx;			src.y  = sy;
+		src.w  = hx;			src.h  = hy;
+		dst.x += dx + s_iOffsetX;	dst.y += dy + s_iOffsetY;
+		dst.w  = (int)(hx * (scx / 65536.0f));
+		dst.h  = (int)(hy * (scy / 65536.0f));
+
+		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
+
+		SDL_RenderCopyF( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+	}
 }
 
 void BltFastR(int pno, int dx, int dy, int scx, int scy)
@@ -1316,20 +1424,40 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
-	SDL_Rect	src = { 0 };
-	SDL_Rect	dst = { 0 };
+	if ( s_pScreenRenderTarget )
+	{
+		SDL_Rect	src = { 0 };
+		SDL_Rect	dst = { 0 };
 
-	src.x = sx;					src.y = sy;
-	src.w = hx;					src.h = hy;
-	dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
-	dst.w = hx * ((float)scx / 65536.0f);
-	dst.h = hy * ((float)scy / 65536.0f);
+		src.x = sx;					src.y = sy;
+		src.w = hx;					src.h = hy;
+		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+		dst.w = hx * (scx / 65536.0f);
+		dst.h = hy * (scy / 65536.0f);
 
-	if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
+		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
-	SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
+		SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+	}
+	else
+	{
+		SDL_Rect	src = { 0 };
+		SDL_FRect	dst = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset };
+
+		src.x  = sx;			src.y  = sy;
+		src.w  = hx;			src.h  = hy;
+		dst.x += dx + s_iOffsetX;	dst.y += dy + s_iOffsetY;
+		dst.w  = hx * (scx / 65536.0f);
+		dst.h  = hy * (scy / 65536.0f);
+
+		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
+
+		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
+		SDL_RenderCopyF( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+	}
 }
 
 void SetSecondaryOffset(int x, int y)
@@ -1531,6 +1659,12 @@ void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str
 
 	if ( s_pKanjiFont[font] )
 	{
-		Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, s_pScreenRenderer, str, col);
+		if ( s_pScreenRenderTarget )
+		{
+			Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, 0.0f, 0.0f, s_pScreenRenderer, str, col);
+		}
+		else {
+			Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, s_pScreenRenderer, str, col);
+		}
 	}
 }

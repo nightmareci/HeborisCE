@@ -195,7 +195,7 @@ static void ConvertCodingSystem(Kanji_Font* font, unsigned char *c1, unsigned ch
 	}
 }
 
-static void Kanji_PutpixelSurface(SDL_Surface *s, int x, int y, SDL_Color color) {
+static void Kanji_PutpixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color) {
 	Uint8 *p,bpp;
 	if(SDL_MUSTLOCK(s)){
 		if(SDL_LockSurface(s)<0) return;
@@ -221,15 +221,15 @@ static void Kanji_PutpixelSurface(SDL_Surface *s, int x, int y, SDL_Color color)
 	}
 }
 
-static void Kanji_PutpixelRenderer(SDL_Renderer *s, int x, int y, SDL_Color pixel) {
+static void Kanji_PutpixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
 	Uint8 r, g, b, a;
 	SDL_GetRenderDrawColor(s, &r, &g, &b, &a);
 	SDL_SetRenderDrawColor(s, pixel.r, pixel.g, pixel.b, pixel.a);
-	SDL_RenderDrawPoint(s, x, y);
+	SDL_RenderDrawPointF(s, subx + x, suby + y);
 	SDL_SetRenderDrawColor(s, r, g, b, a);
 }
 
-void Kanji_PutText(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, SDL_Color color)) {
+void Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color)) {
 	int index;
 	int x, y, cx = dx, cy = dy;
 	unsigned char high, low;
@@ -273,7 +273,7 @@ void Kanji_PutText(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, 
 			for (y = miny; y < maxy; y++) {
 				for (x = minx; x < maxx; x++) {
 					if (font->moji[index][y] & (1 << (font->a_size-x-1))) {
-						putPixel(dst, cx+x, cy+y, fg);
+						putPixel(dst, cx+x, cy+y, subx, suby, fg);
 					}
 				}
 			}
@@ -298,7 +298,7 @@ void Kanji_PutText(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, 
 			for (y = miny; y < maxy; y++) {
 				for (x = minx; x < maxx; x++) {
 					if (font->moji[index][y] & (1 << (font->k_size-x-1))) {
-						putPixel(dst, cx+x, cy+y, fg);
+						putPixel(dst, cx+x, cy+y, subx, suby, fg);
 					}
 				}
 			}
@@ -307,17 +307,17 @@ void Kanji_PutText(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, 
 	}
 }
 
-void Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, SDL_Surface* dst, const char* txt, SDL_Color fg) {
-	Kanji_PutText(font, dx, dy, dst, dst->w, dst->h, txt, fg, (void (*)(void*, int, int, SDL_Color))Kanji_PutpixelSurface);
+void Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
+	Kanji_PutText(font, dx, dy, subx, suby, dst, dst->w, dst->h, txt, fg, (void (*)(void*, int, int, float, float, SDL_Color))Kanji_PutpixelSurface);
 }
 
-void Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
+void Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
 	int dw, dh;
 	SDL_RenderGetLogicalSize(dst, &dw, &dh);
-	Kanji_PutText(font, dx, dy, dst, dw, dh, txt, fg, (void (*)(void*, int, int, SDL_Color))Kanji_PutpixelRenderer);
+	Kanji_PutText(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (void (*)(void*, int, int, float, float, SDL_Color))Kanji_PutpixelRenderer);
 }
 
-void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, SDL_Color color)) {
+void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color)) {
 	int index;
 	int x, y, cx = dx, cy = dy;
 	unsigned char high, low;
@@ -366,7 +366,7 @@ void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, void* dst, int dw, int 
 			for (y = miny; y < maxy; y++) {
 				for (x = minx; x < maxx; x++) {
 					if (font->moji[index][y] & (1 << (font->k_size-x-1))) {
-						putPixel(dst, cx+x, cy+y, fg);
+						putPixel(dst, cx+x, cy+y, subx, suby, fg);
 					}
 				}
 			}
@@ -382,14 +382,14 @@ void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, void* dst, int dw, int 
 	}
 }
 
-void Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, SDL_Surface* dst, const char* txt, SDL_Color fg) {
-	Kanji_PutTextTate(font, dx, dy, dst, dst->w, dst->h, txt, fg, (void (*)(void*, int, int, SDL_Color))Kanji_PutpixelSurface);
+void Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
+	Kanji_PutTextTate(font, dx, dy, subx, suby, dst, dst->w, dst->h, txt, fg, (void (*)(void*, int, int, float, float, SDL_Color))Kanji_PutpixelSurface);
 }
 
-void Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
+void Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
 	int dw, dh;
 	SDL_RenderGetLogicalSize(dst, &dw, &dh);
-	Kanji_PutTextTate(font, dx, dy, dst, dw, dh, txt, fg, (void (*)(void*, int, int, SDL_Color))Kanji_PutpixelRenderer);
+	Kanji_PutTextTate(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (void (*)(void*, int, int, float, float, SDL_Color))Kanji_PutpixelRenderer);
 }
 
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color fg, int bpp) {
@@ -410,7 +410,7 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color f
 	SDL_FillRect(textbuf, NULL, bgcol);
 	SDL_SetColorKey(textbuf, SDL_TRUE, bgcol);
 
-	Kanji_PutTextSurface(font, 0, 0, textbuf, text, fg);
+	Kanji_PutTextSurface(font, 0, 0, 0.0f, 0.0f, textbuf, text, fg);
 
 	return textbuf;
 }
@@ -435,7 +435,7 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text, SDL_Col
 	SDL_FillRect(textbuf, NULL, bgcol);
 	SDL_SetColorKey(textbuf, SDL_TRUE, bgcol);
 
-	Kanji_PutTextTateSurface(font, 0, 0, textbuf, text, fg);
+	Kanji_PutTextTateSurface(font, 0, 0, 0.0f, 0.0f, textbuf, text, fg);
 
 	return textbuf;
 }

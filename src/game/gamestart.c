@@ -4556,19 +4556,22 @@ void statSelectMode(int32_t player) {
 
 
 	// Cボタン
-	//if(statusc[player * 10 + 2] != 0){
+	if(statusc[player * 10 + 2] == 2 && gameMode[player] != 6) {
+		printFont(26 + 10 * player - 12 * maxPlay, 15, "C:", 0);
+		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
+	}
 	if( getPressState(player, 6) ) {
 		if(statusc[player * 10 + 2] == 1){
-		if(gameMode[player] == 6)//RANDOM
-			ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 70, 7*6, 33, 7);
-		else//BIG
-			ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 0, 7*1, 20, 7);
-		}
+			if(gameMode[player] == 6)//RANDOM
+				ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 70, 7*6, 33, 7);
+			else//BIG
+				ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 0, 7*1, 20, 7);
+			}
 		else if(statusc[player * 10 + 2] == 2){
-		if(gameMode[player] == 6)
-			printFont(15 + 24 * player - 12 * maxPlay, 19 , "RANDOM", 7);
-		else
-			printFont(15 + 24 * player - 12 * maxPlay, 19 , "BIG", 7);
+			if(gameMode[player] == 6)
+				printFont(15 + 24 * player - 12 * maxPlay, 19 , "RANDOM", 7);
+			else
+				printFont(15 + 24 * player - 12 * maxPlay, 19 , "BIG", 7);
 		}
 	}
 	// HOLDボタン

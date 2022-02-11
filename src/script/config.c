@@ -43,6 +43,8 @@ int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.6
 
 int32_t keyAssign[10 * 2]; // キーボード設定 (↑↓←→ABCD)
 
+int32_t segacheat; // allow CW and/or 180 rotation in old schoo.
+
 // →pauseとgiveupを追加 1.60c7g7
 SJoyKey joykeyAssign[10 * 2];	// ジョイスティックボタン割り当て
 
@@ -78,7 +80,7 @@ int32_t SaveConfig(void) {
 
 	cfgbuf[40] = rots[0];
 	cfgbuf[41] = rots[1];
-	//cfgbuf[42] = lvup[0];
+	cfgbuf[42] = segacheat;
 	//cfgbuf[43] = lvup[1];
 	cfgbuf[44] = dtc;
 	cfgbuf[45] = dispnext;
@@ -173,7 +175,7 @@ int32_t LoadConfig(void) {
 
 	rots[0] = cfgbuf[40];
 	rots[1] = cfgbuf[41];
-	//lvup[0] = cfgbuf[42];
+	segacheat = cfgbuf[42];
 	//lvup[1] = cfgbuf[43];
 	dtc     = cfgbuf[44];
 	dispnext = cfgbuf[45];
@@ -285,7 +287,7 @@ void ConfigMenu() {
 	ncfg[34] = giveupKey;
 	ncfg[35] = ssKey;
 	ncfg[36] = dtc;
-
+	ncfg[42] = segacheat;
 	ncfg[43] = fldtr;
 	ncfg[44] =
 		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
@@ -406,6 +408,7 @@ void ConfigMenu() {
 			printFont(2, 13, "WORLDREVERSE:", (statusc[0] == 8) * fontc[rots[0]]);
 			printFont(2, 14, "DOWN TYPE   :", (statusc[0] == 9) * fontc[rots[0]]);
 			printFont(2, 15, "LVUP BONUS  :", (statusc[0] == 10) * fontc[rots[0]]);
+			printFont(2, 16, "OLDSTYLE ARS:", (statusc[0] == 11) * fontc[rots[0]]); // allow CW and 180 i oldschool ARS
 			printFont(2, 28, "A:SAVE&RETURN  B:CANCEL", 9);
 
 			i = statusc[0];
@@ -473,6 +476,11 @@ void ConfigMenu() {
 			else if(ncfg[54] ==1)sprintf(string[0], "OFF");
 			else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
 			printFont(15, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
+			// segacheat
+			if (ncfg[42]==0) sprintf(string[0], "CCW ONLY");
+			else if (ncfg[42] == 1)sprintf(string[0], "CW AND 180 ALLOW");
+			else if (ncfg[42] == 2)sprintf(string[0], "D.R.S. 3 STATE+CW+180");
+			printFont(15, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
 			statusc[1] = 0;
 
@@ -490,7 +498,7 @@ void ConfigMenu() {
 				padRepeat(pl);
 				if(m) {
 					PlaySE(5);
-					statusc[0] = (statusc[0] + m + 11) % 11;
+					statusc[0] = (statusc[0] + m + 12) % 12;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
@@ -510,8 +518,9 @@ void ConfigMenu() {
 						else if(statusc[0] == 6) ncfg[4] = !ncfg[4];			// smooth
 						else if(statusc[0] == 7) ncfg[36] = !ncfg[36];			// tgmlv
 						else if(statusc[0] == 8) ncfg[52] = !ncfg[52];			// w_reverse
-						else if(statusc[0] == 9) ncfg[53] = !ncfg[53];			// downtype
+						else if (statusc[0] == 9) ncfg[53] = !ncfg[53];			// downtype
 						else if(statusc[0] == 10) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
+						else if (statusc[0] == 11) ncfg[42] = (ncfg[42]+ 3 + m)%3;			// segacheat
 
 						else if(statusc[0] == 0) {	// page
 							PlaySE(3);
@@ -540,7 +549,7 @@ void ConfigMenu() {
 //					giveupKey = ncfg[34];
 //					ssKey = ncfg[35];
 					dtc = ncfg[36];
-
+					segacheat = ncfg[42];
 					fldtr = ncfg[43];
 					se = (ncfg[44] >> 23) & 0x1;
 					sevolume = (ncfg[44] >> 16) & 0x7F;

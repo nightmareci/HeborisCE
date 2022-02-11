@@ -141,7 +141,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 	saveBuf[265] = b2bcheck;		// Back to Back
 	saveBuf[266] = p_bgmlv;
 	saveBuf[267] = relaymode[pl];
-
+	saveBuf[268] = segacheat;
 
 	saveBuf[290] = smooth;
 	saveBuf[291] = nanameallow;
@@ -517,7 +517,8 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 			relaymode[pl] = saveBuf[267];
 		}
 	}
-
+	if (repversw > 65)
+		segacheat = saveBuf[268];
 	if(IsBigStart[pl]) {
 		IsBig[pl] = 1;
 	}

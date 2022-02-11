@@ -2237,7 +2237,7 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 
 	for(j = ((!use3D) || (tmp) || (heboGB[player]>0)); j < 2; j++)
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8){
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]) * 8;
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]) * 8;
 		}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2251,7 +2251,7 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 			if(color < 8) tmp = getBigBlock_add(player);
 			else tmp = 8;
 			if((flash == 999) || (flash == 0)){
-				if(rots[player] == 8){
+				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i]);
 					by5 = ((by1 - 3) + blkDDataY[kind * 16 + rotate * 4 + i]);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2303,7 +2303,7 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 
 	for(j = ((!use3D) || (tmp) || (heboGB[player]>0)); j < 2; j++)
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8){
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 		}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2318,7 +2318,7 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 		if(!j){
 			if(color < 8) tmp = getBigBlock_add(player);
 			else tmp = 8;
-				if(rots[player] == 8){
+				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = ((by1 - 3) + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2394,7 +2394,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 
 	for(j = ((!use3D) || (tmp) || (flash == 999) || (heboGB[player]>0)); j < 3; j++){
 		for(i = 0; i < 4; i++) {
-			if(rots[player] == 8){
+			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 				bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]) * 8;
 				by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]) * 8;
 			}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2405,7 +2405,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 				by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i]) * 8;
 			}
 			if(j == 0){
-				if(rots[player] == 8){
+				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i]);
 					by5 = (by[player] + blkDDataY[kind * 16 + rotate * 4 + i]);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2510,7 +2510,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 
 	for(j = ((!use3D) || (tmp) || (flash == 999) || (heboGB[player])); j < 3; j++){
 		for(i = 0; i < 4; i++) {
-			if(rots[player] == 8){
+			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 				bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 				by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 			}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2521,7 +2521,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 				by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 			}
 			if(j == 0){
-				if(rots[player] == 8){
+				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = (by[player] + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2680,7 +2680,7 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 	for(j = ((tmp) || (!use3D)); j < 2; j++)
 	for(i = 0; i < 4; i++)
 		if(!j){
-			if(rots[player] == 8)
+			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
 				ExBltFastRect(83,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
@@ -2696,7 +2696,7 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 		}else{
-			if(rots[player] == 8)
+			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
 				ExBltFastRect(76,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,

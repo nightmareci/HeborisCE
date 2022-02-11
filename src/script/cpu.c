@@ -17,7 +17,7 @@ int32_t cpu_judgeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, i
 		return cpu_judgeBigBlock(player, bx1, by1, kind, rotate);
 	}
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat==2) || (heboGB[player]!=2) || repversw<66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		} else if( isWRule(player) ) {
@@ -45,7 +45,7 @@ int32_t cpu_setBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int
 		return cpu_setBigBlock(player, bx1, by1, kind, rotate);
 	}
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		} else if( isWRule(player) ) {
@@ -69,7 +69,7 @@ int32_t cpu_judgeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind
 	int32_t		k, l, bx3, by3;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		} else if( isWRule(player) ) {
@@ -101,7 +101,7 @@ int32_t cpu_setBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, 
 	puted = 0;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		} else if( isWRule(player) ) {
@@ -464,7 +464,7 @@ void cpuCheckBestSpot(int32_t player) {
 
 				for(k=0; k<4; k++) {
 					// 座標を決める
-					if(rots[player] == 8) {
+					if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 						bx2 = (i + blkDDataX[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 						by2 = (bottom + blkDDataY[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 					} else if( isWRule(player) ) {
@@ -556,7 +556,7 @@ void cpuCheckBestSpot(int32_t player) {
 
 						for(k=0; k<4; k++) {
 							// 座標を決める
-							if(rots[player] == 8) {
+							if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 								bx2 = (i + blkDDataX[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 								by2 = (bottom + blkDDataY[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 							} else if( isWRule(player) ) {

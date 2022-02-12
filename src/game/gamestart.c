@@ -4859,7 +4859,7 @@ void statSelectMode(int32_t player) {
 //1:昇段
 //2:降格
 int32_t Admitgradecheck(int32_t player){
-	int32_t i,j,temp1[2],temp2[2],grade_his_buf[5],sort_grade[3];
+	int32_t i,j,temp1[2],temp2[2],grade_his_buf[5],sort_grade[5];
 	if(gameMode[player]!=1)return 0;
 	if(enable_grade[player]!=4)return 0;
 	for(i=0;i<5;i++){

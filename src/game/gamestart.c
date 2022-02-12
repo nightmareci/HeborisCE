@@ -6742,7 +6742,7 @@ void statMove(int32_t player) {
 			statWMove( player, 128 -2 + (repversw >= 16),128);	// SRS-X 38まで
 		else
 			statWMove( player, 18 + (6 * (repversw >= 40)) -1 - (8*(gameMode[player] == 4)),12);	// SRS-X
-	} else if(rots[player] == 8) {
+	} else if(rots[player] == 8 ) {
 		statDMove(player);	// D.R.S
 	} else {
 		statCMove(player);								// classic.c

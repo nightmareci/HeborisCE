@@ -140,7 +140,7 @@ void statDMove(int32_t player) {
 
 		if((getPushState(player, 6) != 0) && (statusc[player * 10 + 6] == 0)) move = 2;
 		// different for DRS
-		if (repversw > 65 && (heboGB[player] == 2) && (move!=0)) // sega rotation
+		if (repversw > 65 && (heboGB[player] == 2) && (move!=0) && ((segacheat == 2) || (heboGB[player] != 2)) ) // sega rotation
 			move = -1;                // safe because roll roll can't happen in old style
 
 		if((move != 0) && (isrotatelock[player] == 0)) {
@@ -359,7 +359,7 @@ void statDMove(int32_t player) {
 			// BIG時、2マス単位モードの場合は移動量を2倍する #1.60c7m6
 			if(IsBig[player] && BigMove[player]) move = move * 2;
 
-			if((mpc[player] == 1) || (mpc[player] >= waitt[player]) || ((isremote[player]) && (gameMode[player] != 4)) || (mpc[player] >= 10 - (2 * (repversw >= 64))))
+			if((mpc[player] == 1) || (mpc[player] >= waitt[player]) || ((isremote[player]) && (gameMode[player] != 4)) || (((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)&&(mpc[player] >= 10 - (2 * (repversw >= 64)))))
 				if(judgeBlock(player, bx[player] + move, by[player], blk[player], rt[player]) == 0) {
 					bx[player] = bx[player] + move;
 					if(movesound) PlaySE(5);

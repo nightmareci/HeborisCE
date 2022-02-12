@@ -29,14 +29,6 @@
 @cmake --install "%BUILD_DIRECTORY%\x86\build" --config Release
 @if %ERRORLEVEL% NEQ 0 goto error
 
-@echo Building for ARM64
-@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\ARM64\build" -DPACKAGE_TYPE=Portable -DHIDE_WINDOWS_CONSOLE=1 --toolchain "%VCPKG_TOOLCHAIN%" -DVCPKG_TARGET_TRIPLET=arm64-windows -A ARM64 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\ARM64\%NAME%"
-@if %ERRORLEVEL% NEQ 0 goto error
-@cmake --build "%BUILD_DIRECTORY%\ARM64\build" --config Release
-@if %ERRORLEVEL% NEQ 0 goto error
-@cmake --install "%BUILD_DIRECTORY%\ARM64\build" --config Release
-@if %ERRORLEVEL% NEQ 0 goto error
-
 
 @cd "%BUILD_DIRECTORY%"
 @if %ERRORLEVEL% NEQ 0 goto error
@@ -55,21 +47,10 @@
 @cd ..
 @if %ERRORLEVEL% NEQ 0 goto error
 
-@cd ARM64
-@if %ERRORLEVEL% NEQ 0 goto error
-@tar -c -a -f "..\%NAME%-Windows-ARM64.zip" "%NAME%"
-@if %ERRORLEVEL% NEQ 0 goto error
-@cd ..
-@if %ERRORLEVEL% NEQ 0 goto error
-
-
 @rmdir /s /q x64
 @if %ERRORLEVEL% NEQ 0 goto error
 
 @rmdir /s /q x86
-@if %ERRORLEVEL% NEQ 0 goto error
-
-@rmdir /s /q ARM64
 @if %ERRORLEVEL% NEQ 0 goto error
 
 

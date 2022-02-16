@@ -77,7 +77,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 		else
 			move = (getPushState(player, 5) || rolling) - (getPushState(player, 4) || getPushState(player, 6));
 		// for old style, force negative
-		if (repversw > 65 && (heboGB[player] == 2)) // sega rotation
+		if (repversw > 65 && (heboGB[player] == 2)&& !segacheat) // sega rotation
 			move = abs(move)*-1;
 
 		if((move) && (isrotatelock[player] == 0)) {

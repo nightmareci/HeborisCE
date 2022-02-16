@@ -2695,7 +2695,7 @@ void playerInitial(int32_t player) {
 					// 41:C7U4.5以降 42:C7U4.7以降 43:C7U4.72以降 44:C7U4.9以降 45:C7U5.0以降 46:C7U5.2以降 47:C7U5.45以降
 					// 48:C7U5.3以降 48:C7U6以降	-中略-
 					// 54:C7V2.1以降 55:C7V2.4以降 56:C7V2.43以降 57:C7V2.5以降 58:C7V3.3以降 59:C7V3.4以降 60:C7V3.45以降
-					// 61:C7V3.55以降 62:C7V3.6以降 63:C7V3.65以降 64:C7V3.7以降 65:C7V3.75以降 66: SDL2 1.0.1
+					// 61:C7V3.55以降 62:C7V3.6以降 63:C7V3.65以降 64:C7V3.7以降 65:C7V3.75以降 66: SDL2 1.0.1以降
 	//SetVolumeWaveAll(100);
 	item_pronum = 0;
 	for(i = 0; i < 9; i++)
@@ -3625,15 +3625,15 @@ int32_t doGiveup() {
 			// 捨てゲーした時の動作を選べるようにした#1.60c7i6
 			if(giveup_func == 1) {
 				if(tmp1 != 0){
-					status[0] = 1;
-					statusc[0 * 10 + 0] = 0;
-					statusc[0 * 10 + 1] = 2;
+					statusc[0 * 10 + 1] = 2;	// set NEXT status to 2
+					status[0] = 1;				// init random and update first seed
+					statusc[0 * 10] = 0;			// zero out counter
 					statusc[0 * 10 + 4] = 16;
 				}
 				if(tmp2 != 0){
-					status[1] = 1;
-					statusc[1 * 10 + 0] = 0;
-					statusc[1 * 10 + 1] = 2;
+					statusc[1 * 10 + 1] = 2;	// set NEXT status to 2
+					status[1] = 1;				// init random and update first seed
+					statusc[1 * 10] = 0;			// zero out counter
 					statusc[1 * 10 + 4] = 16;
 				}
 			} else if(giveup_func == 2) {
@@ -4556,22 +4556,23 @@ void statSelectMode(int32_t player) {
 
 
 	// Cボタン
-	if(statusc[player * 10 + 2] == 2 && gameMode[player] != 6) {
+	// Cボタン
+	if (statusc[player * 10 + 2] == 2 && gameMode[player] != 6) {
 		printFont(26 + 10 * player - 12 * maxPlay, 15, "C:", 0);
 		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
-	}
+	}	
 	if( getPressState(player, 6) ) {
 		if(statusc[player * 10 + 2] == 1){
 			if(gameMode[player] == 6)//RANDOM
 				ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 70, 7*6, 33, 7);
 			else//BIG
 				ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 0, 7*1, 20, 7);
-			}
+		}
 		else if(statusc[player * 10 + 2] == 2){
-			if(gameMode[player] == 6)
-				printFont(15 + 24 * player - 12 * maxPlay, 19 , "RANDOM", 7);
-			else
-				printFont(15 + 24 * player - 12 * maxPlay, 19 , "BIG", 7);
+		if(gameMode[player] == 6)
+			printFont(15 + 24 * player - 12 * maxPlay, 19 , "RANDOM", 7);
+		else
+			printFont(15 + 24 * player - 12 * maxPlay, 19 , "BIG", 7);
 		}
 	}
 	// HOLDボタン
@@ -4910,7 +4911,7 @@ int32_t Admitgradecheck(int32_t player){
 			return 1;
 		}
 	}
-if(admit_grade[player]>0){
+	if(admit_grade[player]>0){
 	//降格条件
 	//認定段位が高くなると落ちやすくなる
 		if(admit_grade[player] > 31){//GM以上
@@ -4939,7 +4940,7 @@ if(admit_grade[player]>0){
 			}
 		}
 	}
-	// force exam for existing qualified grade if another wouldnt' start
+	// set grade from forced exam to be same as qualified grade for G4 , ignored for all other modes anyway
 	exam_grade[player] = admit_grade[player];
 	return 0;//何もなし
 }
@@ -5456,7 +5457,10 @@ void setStartLevel(int32_t pl) {				// 各種速度設定ロード (loadReplay�
 				waitt[pl] = waitt_HeboGB_tbl[0];
 			}else{
 				heboGB[pl] = 2;//SEGA系
-				sp[pl] = lvTabletomoyohebo[0];
+				if (repversw>65)
+					sp[pl] = lvTablesegahebo[0];
+				else
+					sp[pl] = lvTabletomoyohebo[0];
 				wait1[pl] = 30;
 				wait2[pl] = 39;
 				wait3[pl] = 30;
@@ -6665,15 +6669,15 @@ void setBlockSpawnPosition(int32_t player) {
 		if(IsBig[player]) {
 			// BIG
 			bx[player] = 2;
-			by[player] = (( isWRule(player) && (blk[player] != 0) ) * 2)  - 2 * ((blk[player] == 0 ) && (rots[player] == 8));
+			by[player] = (( isWRule(player) && (blk[player] != 0) ) * 2)  - 2 * ((blk[player] == 0 ) && ((rots[player] == 8) && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)));
 		} else {
 			// 通常
 			bx[player] = 3;
-			by[player] = 1 + ( (blk[player] != 0) && isWRule(player) ) - 1 * ((blk[player] == 0 ) && (rots[player] == 8));
+			by[player] = 1 + ( (blk[player] != 0) && isWRule(player) ) - 1 * ((blk[player] == 0 ) && ((rots[player] == 8) && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)));
 		}
 	}
 	// D.R.Sの先行移動
-	if(rots[player] == 8){
+	if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 		if(getPressState(player, 2) && (judgeBlock(player, bx[player] - 1 - (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] - 1 - (1 * (IsBig[player] && BigMove[player]));
 			if(movesound) PlaySE(5);
@@ -6738,7 +6742,7 @@ void statMove(int32_t player) {
 			statWMove( player, 128 -2 + (repversw >= 16),128);	// SRS-X 38まで
 		else
 			statWMove( player, 18 + (6 * (repversw >= 40)) -1 - (8*(gameMode[player] == 4)),12);	// SRS-X
-	} else if(rots[player] == 8) {
+	} else if(rots[player] == 8 ) {
 		statDMove(player);	// D.R.S
 	} else {
 		statCMove(player);								// classic.c
@@ -8748,7 +8752,7 @@ void LevelUp(int32_t player) {
 					waitt[player] = waitt_HeboGB_tbl[uppedlevel-1];
 				}
 			}
-
+			
 			PlaySE(30);
 			StopSE(32);
 			bgfadesw = 1;
@@ -12785,7 +12789,7 @@ void eraseItem(int32_t player, int32_t type) {
 		// 弾け飛ぶアニメーション #1.60c7o6
 		if(!((type==9) && (repversw >= 35))){
 			for(i = 0; i < 4; i++) {
-				if(rots[enemy] == 8) {
+				if(rots[enemy] == 8 && ((segacheat == 2) || (heboGB[enemy] != 2) || repversw < 66)) {
 					bx2 = (bx[enemy] + blkDDataX[blk[enemy] * 16 + rt[enemy] * 4 + i]);
 					by2 = (by[enemy] + blkDDataY[blk[enemy] * 16 + rt[enemy] * 4 + i]);
 				} else if(isWRule(enemy)) {
@@ -14653,7 +14657,7 @@ int32_t judgeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32
 	}
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		}else if( isWRule(player) ) {
@@ -14692,7 +14696,7 @@ void setBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t ro
 	puted = 0;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		}else if( isWRule(player) ) {
@@ -14737,7 +14741,7 @@ int32_t judgeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, in
 	int32_t		k, l, bx3, by3;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		}else if( isWRule(player) ) {
@@ -14774,7 +14778,7 @@ void setBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t
 	puted = 0;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		}else if( isWRule(player) ) {
@@ -14829,7 +14833,7 @@ void removeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t
 	}
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		}else if( isWRule(player) ) {
@@ -14853,7 +14857,7 @@ void removeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int3
 	int32_t		k, l, bx3, by3;
 
 	for(i = 0 ; i < 4 ; i++) {
-		if(rots[player] == 8) {
+		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		}else if( isWRule(player) ) {

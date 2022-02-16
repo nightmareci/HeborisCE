@@ -42,7 +42,6 @@ enum
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pScreenRenderTarget = NULL;
-static int			s_iScreenDims[2] = { 0 };
 static float			s_fScreenSubpixelOffset = 0.0f;
 
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
@@ -93,57 +92,37 @@ static int			s_iOffsetX = 0, s_iOffsetY = 0;
 static float GetScreenSubpixelOffset()
 {
 	// The returned subpixel offset nudges all draws to have pixel
-	// coordinates roughly centered in the floating point coordinate
-	// space. Without this offset, pixel coordinates are at the
-	// upper left of the intended pixels, resulting in off-by-one
-	// drawing errors sometimes.
+	// coordinates that end up centered in the floating point coordinate
+	// space. Without this offset, pixel coordinates are at the upper left
+	// of the intended pixels, resulting in off-by-one drawing errors
+	// sometimes.
 	//
-	// For the case of non-integer scales of the original
-	// resolution, the use of the ceiling function pulls back the
-	// offset into a position within the upper left square of
-	// pixels, still not at the upper left corner, which seems to
-	// produce correct draws on all configurations. Without it,
-	// incorrect draws happen sometimes.
+	// I think the exact position of the offset doesn't matter, it just
+	// needs to be in the upper left square of pixels, away from the edges.
+	// This formula guarantees that at all resolutions.
 	//
-	// The 0.5 offset within the ceiling function's argument
-	// ensures the offset will be within the upper left
-	// square for integer scales of the original resolution,
-	// as I found that without the 0.5 offset, rendering
-	// errors happen at integer scales.
+	// If the numerator is exactly 0.5f, then system-dependent rounding
+	// errors can occur, because the coordinate is located exactly in the
+	// pixel center, producing sampling artifacts on some systems, but not
+	// on others. By using a numerator less than 0.5f, the rounding of draw
+	// coordinates by the graphics implementation is guaranteed to place
+	// drawn pixels in the center.
 	//
-	// I think the exact position of the offset doesn't
-	// matter, it just needs to be in the upper left square
-	// of pixels. This formula guarantees that at all
-	// resolutions.
+	// The SDL function providing the scale is always what is needed here,
+	// being an integer value when integer scaling is in effect, or a
+	// non-integer scale when fill-screen scaling is in effect.
 	//
-	// A subpixel offset isn't needed for correct rendering
-	// when at or below the original resolution.
+	// Integer scales don't need an offset; when an offset is applied at
+	// integer scales with "low" render level, rendering is off.
+	//
 	// -Brandon McGriff <nightmareci@gmail.com>
-	if (s_iScreenDims[1] > 240 * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1))
-	{
-		float offsetH;
-		const float aspect = (float)s_iScreenDims[0] / s_iScreenDims[1];
-		if (aspect != YGS_WIDE_SCREEN)
-		{
-			if (aspect > YGS_WIDE_SCREEN)
-			{
-				offsetH = s_iScreenDims[1];
-			}
-			else
-			{
-				offsetH = s_iScreenDims[0] * YGS_NARROW_SCREEN;
-			}
-		}
-		else
-		{
-			offsetH = s_iScreenDims[1];
-		}
-
-		return 0.5f / ceilf(offsetH / (240.0f * (!!(screenMode & SCREENMODE_DETAILLEVEL) + 1.0f)) + 0.5f);
-	}
-	else
-	{
+	float scale;
+	SDL_RenderGetScale(s_pScreenRenderer, &scale, NULL);
+	if (fmodf(scale, 1.0f) == 0.0f) {
 		return 0.0f;
+	}
+	else {
+		return 0.25f / scale;
 	}
 }
 
@@ -268,14 +247,15 @@ bool YGS2kInit()
 	{
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
 	}
-	SDL_GetWindowSize(s_pScreenWindow, &s_iScreenDims[0], &s_iScreenDims[1]);
-	s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
+
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
 	if ( screenMode & SCREENMODE_SCALEMODE )
 	{
 		SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE);
+		SDL_SetWindowMinimumSize(s_pScreenWindow, logicalWidth, logicalHeight);
 	}
+	s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
 	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
 		if ( !(screenMode & SCREENMODE_RENDERLEVEL) )
@@ -515,20 +495,10 @@ void YGS2kExit()
 
 bool YGS2kHalt()
 {
-	if ((screenMode & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW) {
-		int lastDims[2] = { s_iScreenDims[0], s_iScreenDims[1] };
-		float offsetH;
-		SDL_GetWindowSize(s_pScreenWindow, &s_iScreenDims[0], &s_iScreenDims[1]);
-		if (s_iScreenDims[0] != lastDims[0] || s_iScreenDims[1] != lastDims[1]) {
-			s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
-		}
-	}
-
 	SDL_RenderFlush( s_pScreenRenderer );
 
 	SDL_Event	ev;
 	const Uint64	frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
-	bool		renderClear = false;
 	if ( s_bBltAlways )
 	{
 		/* バックサーフェスをフロントに転送 */
@@ -553,7 +523,8 @@ bool YGS2kHalt()
 
 		s_uTimeAccumulatorCount = 0;
 
-		renderClear = true;
+		/* 画面塗りつぶし */
+		SDL_RenderClear( s_pScreenRenderer );
 	}
 	else
 	{
@@ -581,7 +552,8 @@ bool YGS2kHalt()
 
 			s_uTimeAccumulatorCount += SDL_GetPerformanceCounter() - s_uTimeCount;
 
-			renderClear = true;
+			/* 画面塗りつぶし */
+			SDL_RenderClear( s_pScreenRenderer );
 		}
 		s_uTimeAccumulatorCount -= frameTimeCount;
 	}
@@ -616,15 +588,15 @@ bool YGS2kHalt()
 					}
 				}
 				break;
+			case SDL_WINDOWEVENT:
+				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+					s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
+				}
+				break;
+
 			default:
 				break;
 		}
-	}
-
-	if ( renderClear )
-	{
-		/* 画面塗りつぶし */
-		SDL_RenderClear( s_pScreenRenderer );
 	}
 
 	/* 画面ずらし量の反映 */

@@ -4915,9 +4915,10 @@ int32_t Admitgradecheck(int32_t player){
 	//降格条件
 	//認定段位が高くなると落ちやすくなる
 		if(admit_grade[player] > 31){//GM以上
-			if (admit_grade[player]> sort_grade[0]);  // if your best of last 5 is less
-			exam_grade[player] = sort_grade[0]; // demoted to best grade in last 5 if you fail.
-			return 2;
+			if (admit_grade[player]> sort_grade[0]) { // if your best of last 5 is less
+				exam_grade[player] = sort_grade[0]; // demoted to best grade in last 5 if you fail.
+				return 2;
+			}
 		}
 		if(admit_grade[player] > 24){//m8以上
 			if((sort_grade[0] + sort_grade[1]) / 2 < admit_grade[player] - 3){

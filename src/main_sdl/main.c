@@ -85,14 +85,22 @@ int main(int argc, char* argv[])
 	if ( argc > 1 && strlen(argv[1]) > 0 )
 	{
 		char *specifiedPath = argv[1];
+		if ( !PHYSFS_setWriteDir(specifiedPath) )
+		{
+			if ( !PHYSFS_mkdir(specifiedPath) )
+			{
+				fprintf(stderr, "Error creating specified path \"%s\": %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				return quit(EXIT_FAILURE);
+			}
+			if ( !PHYSFS_setWriteDir(specifiedPath) )
+			{
+				fprintf(stderr, "Error setting specified path \"%s\" for writing: %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				return quit(EXIT_FAILURE);
+			}
+		}
 		if ( !PHYSFS_mount(specifiedPath, NULL, 0) )
 		{
 			fprintf(stderr, "Error mounting specified path \"%s\": %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_setWriteDir(specifiedPath) )
-		{
-			fprintf(stderr, "Error setting specified path \"%s\" for writing: %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			return quit(EXIT_FAILURE);
 		}
 	}
@@ -130,8 +138,16 @@ int main(int argc, char* argv[])
 		}
 		if ( !PHYSFS_setWriteDir(prefPath) )
 		{
-			fprintf(stderr, "Error setting pref path \"%s\" for writing: %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(prefPath);
+			if ( !PHYSFS_mkdir(prefPath) )
+			{
+				fprintf(stderr, "Error creating pref path \"%s\": %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				return quit(EXIT_FAILURE);
+			}
+			if ( !PHYSFS_setWriteDir(prefPath) )
+			{
+				fprintf(stderr, "Error setting pref path \"%s\" for writing: %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+				SDL_free(prefPath);
+			}
 			return quit(EXIT_FAILURE);
 		}
 		if ( !PHYSFS_mount(prefPath, NULL, 0) )

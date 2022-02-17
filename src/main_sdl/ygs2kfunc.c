@@ -91,38 +91,42 @@ static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
 static float GetScreenSubpixelOffset()
 {
-	// The returned subpixel offset nudges all draws to have pixel
-	// coordinates that end up centered in the floating point coordinate
-	// space. Without this offset, pixel coordinates are at the upper left
-	// of the intended pixels, resulting in off-by-one drawing errors
-	// sometimes.
+	// The returned subpixel offset nudges all draws to have pixel coordinates
+	// that end up centered in the floating point coordinate space. Without
+	// this offset, pixel coordinates are at the upper left of the intended
+	// pixels, resulting in off-by-one drawing errors sometimes.
 	//
-	// I think the exact position of the offset doesn't matter, it just
-	// needs to be in the upper left square of pixels, away from the edges.
-	// This formula guarantees that at all resolutions.
+	// The numerator of the return value is the fraction of a pixel to adjust
+	// draw position rightwards and downwards, and the division by the current
+	// scale converts that subpixel amount to the amount to adjust by within
+	// the currently set logical resolution (320x240 or 640x480), so it adjusts
+	// by less than 0.375 if the render resolution is above logical resolution,
+	// or greater than 0.375 if below logical resolution. If the numerator is
+	// exactly 0.5f, then system-dependent rounding errors can occur, because
+	// the coordinate is located exactly in the pixel center, producing
+	// sampling artifacts on some systems, but not on others. By using a
+	// numerator less than 0.5f, the rounding of draw coordinates by the
+	// graphics implementation should place drawn pixels in the center. I also
+	// saw scaling artifacts happen with a numerator of 0.25f, so maybe the
+	// numerator needs to be somewhere in the open range (0.25f, 0.5f) to
+	// likely work everywhere; for now, the midpoint, 0.375f, is used, and
+	// seems to work correctly on some systems I've tested.
 	//
-	// If the numerator is exactly 0.5f, then system-dependent rounding
-	// errors can occur, because the coordinate is located exactly in the
-	// pixel center, producing sampling artifacts on some systems, but not
-	// on others. By using a numerator less than 0.5f, the rounding of draw
-	// coordinates by the graphics implementation is guaranteed to place
-	// drawn pixels in the center.
-	//
-	// The SDL function providing the scale is always what is needed here,
+	// Getting the scale from SDL_RenderGetScale is always appropriate here,
 	// being an integer value when integer scaling is in effect, or a
-	// non-integer scale when fill-screen scaling is in effect.
-	//
-	// Integer scales don't need an offset; when an offset is applied at
-	// integer scales with "low" render level, rendering is off.
+	// non-integer scale when fill-screen scaling is in effect. Even if the
+	// scale value is below 1.0f, the formula is still correct.
 	//
 	// -Brandon McGriff <nightmareci@gmail.com>
-	float scale;
-	SDL_RenderGetScale(s_pScreenRenderer, &scale, NULL);
-	if (fmodf(scale, 1.0f) == 0.0f) {
-		return 0.0f;
+	if ( s_pScreenRenderer )
+	{
+		float scale;
+		SDL_RenderGetScale(s_pScreenRenderer, &scale, NULL);
+		return 0.375f / scale;
 	}
-	else {
-		return 0.25f / scale;
+	else
+	{
+		return 0.0f;
 	}
 }
 

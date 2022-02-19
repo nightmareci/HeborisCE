@@ -11,10 +11,7 @@ set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=
 # Add all the files needed to compile here
 add_executable(${EXE} ${EXE_SOURCES})
 
-set(BASE_PATH "SDL_strdup(\"app0:/\")")
-set(BASE_PATH_APPEND "\"\"")
-set(PREF_PATH "SDL_strdup(\"ux0:/data/${EXE}/\")")
-configure_file("${SRC}/src/main_sdl/paths.h.in" "${BIN}/src/main_sdl/paths.h" @ONLY)
+add_compile_definitions(USE_PHYSFS_SETSANECONFIG)
 
 target_link_directories(${EXE} PRIVATE ${BIN})
 
@@ -58,19 +55,19 @@ file( GLOB_RECURSE CONFIG RELATIVE ${SRC} config/*)
 
 set(RESDATA "")
 
-FOREACH(ITEM ${RES})
-  list(APPEND RESDATA "FILE")
+foreach(ITEM ${RES})
+  list(APPEND RESDATA FILE)
   list(APPEND RESDATA ${ITEM})
   list(APPEND RESDATA ${ITEM})
-ENDFOREACH()
+endforeach()
 
 set(CONFIGDATA "")
 
-FOREACH(ITEM ${CONFIG})
-  list(APPEND CONFIGDATA "FILE")
+foreach(ITEM ${CONFIG})
+  list(APPEND CONFIGDATA FILE)
   list(APPEND CONFIGDATA ${ITEM})
   list(APPEND CONFIGDATA ${ITEM})
-ENDFOREACH()
+endforeach()
 
 # Create Vita files
 vita_create_self(${EXE}.self ${EXE} UNSAFE)

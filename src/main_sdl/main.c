@@ -1,6 +1,8 @@
 #include "main_sdl/include.h"
 #include "script/config.h"
+#ifndef USE_PHYSFS_SETSANECONFIG
 #include "paths.h"
+#endif
 #include "gamestart.h"
 #include "physfs.h"
 #include <assert.h>
@@ -96,8 +98,13 @@ int main(int argc, char* argv[])
 			return quit(EXIT_FAILURE);
 		}
 	}
-	else
-	{
+#ifdef USE_PHYSFS_SETSANECONFIG
+	else if ( !PHYSFS_setSaneConfig("nightmareci", "HeborisC7EX SDL2", NULL, 0, 0) ) {
+		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		return quit(EXIT_FAILURE);
+	}
+#else
+	else {
 		char *basePath;
 		if ( !(basePath = BASE_PATH) )
 		{
@@ -108,6 +115,7 @@ int main(int argc, char* argv[])
 		if ( !(basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1)) )
 		{
 			fprintf(stderr, "Failed creating base path.\n");
+			SDL_free(basePath);
 			return quit(EXIT_FAILURE);
 		}
 		sprintf(basePathAppended, "%s%s", basePath, BASE_PATH_APPEND);
@@ -143,6 +151,7 @@ int main(int argc, char* argv[])
 		SDL_free(prefPath);
 		prefPath = NULL;
 	}
+#endif
 
 	if (
 		!PHYSFS_mkdir("replay") ||

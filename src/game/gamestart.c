@@ -9470,6 +9470,8 @@ void statEraseBlock(int32_t player) {
 				if(b_to_b_flag[player] == 0){
 					if(b2bcheck)
 						b_to_b_flag[player]=1; //Back to Back判定開始
+					if (heboGB[player]>0)      // old stlye hass no back to back
+						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
 					PlaySE(17);
 				}
 				else{ //B to B Heboris
@@ -9482,6 +9484,8 @@ void statEraseBlock(int32_t player) {
 				if(b_to_b_flag[player] == 0){
 					PlaySE(17);
 					b_to_b_flag[player]=lines+1; //Back to Back判定開始
+					if (heboGB[player]>0)      // old stlye hass no back to back
+						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
 				}
 				else{ //B to B T-Spin erase
 					PlaySE(18);

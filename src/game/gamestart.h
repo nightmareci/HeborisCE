@@ -137,6 +137,8 @@ void title(void);
 void backupSetups();
 void initialize(void);
 void gameMain(void);
+uint32_t SegaSeed[2];
+uint32_t BloxeedSeed[2];
 extern char *string[STRING_MAX];
 extern int32_t fldihardno;
 extern int32_t fldigsno;

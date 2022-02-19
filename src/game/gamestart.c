@@ -1402,6 +1402,10 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 char	*string[STRING_MAX];
 
+// globals for new randomizers
+uint32_t    SegaSeed[2]={711800410,711800410};     // generates sega's poweron pattern
+uint32_t	BloxeedSeed[2]={0x2A6D8010,0x2A6D8010};   // generated Bloxeed's poweron pattern.
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -2829,6 +2833,53 @@ void versusInit(int32_t player) {
 
 		for(i = 1; i < 1400; i++) {
 			nextb[i + player * 1400] = Rand(7);
+		}
+	}else if((nextblock == 13)|| ((p_nextblock ==13)&&(gameMode[player] == 5))) {
+		//SEGA TETRIS
+		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
+	        uint16_t stemp;
+			SegaSeed[player]*=41;							// multiply seed by 41
+        	stemp = (uint16_t)SegaSeed[player] + (SegaSeed[player] >> 16); 				// sum lower and upper bits. store as 16 bit
+        	SegaSeed[player] = (stemp << 16) | (uint16_t)SegaSeed[player]; // lower bits of sum moved up, and lower bits of original multiplied number saved to new seed
+			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return.
+			switch (temp) 									 // convert pieces from sega to heboris ordering
+			{
+				case 1: temp=3; break;
+				case 2: temp=6; break;
+				case 3: temp=2; break;
+				case 5: temp=1; break;
+				case 6: temp=5; break;
+			default: temp=temp; break; // t and I are correct
+			}
+
+			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
+			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // fill in the rest in case you aren't playing old style
+		}
+	}else if((nextblock == 14)|| ((p_nextblock ==14)&&(gameMode[player] == 5))) {
+		//BLOXEED
+		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
+			uint32_t d0, d1;
+	        uint16_t stemp;
+			d1=BloxeedSeed[player];
+			d0 = d1;
+        	d1 = d0*41;
+        	stemp = (uint16_t)d1 + (d1 >> 16);
+        	BloxeedSeed[player] = (stemp << 16) | (uint16_t)d1;
+			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F));
+
+			temp=temp %7;
+			switch (temp)          // fancier piece table i hink?
+			{
+				case 1: temp=3; break;
+				case 2: temp=6; break;
+				case 3: temp=2; break;
+				case 5: temp=1; break;
+				case 6: temp=5; break;
+			default: temp=temp; break; // t and I are correct
+			}
+
+			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
+			if (i < 400) nextb[i + (player * 1400)+1000] = temp;
 		}
 	} else {
 		shu = nextblock;
@@ -6101,8 +6152,33 @@ void statBlock(int32_t player) {
 	blk[player] = next[player];
 	dhold[player] = disable_hold;		// hold使用可能に	#1.60c
 	dhold2[player] = 0;
-
+	
 	nextc[player] = (nextc[player] + 1) % 1400;
+	// correction for shorter sequences. wtf why did they miss this?
+	// safe because it will never reach 1400 before these hit. 
+	if (repversw>65)
+	{
+		if (nextblock==10) // sega poweron pattern
+		{
+			nextc[player] = (nextc[player]) % StrLen(nextdengen_list); // actual size of it. should be 1000
+		}
+		if (nextblock==11) // Tomoyo bag
+		{
+			nextc[player] = (nextc[player]) % StrLen(nextb_list); // actual size of it. should be 255
+		}
+		if (nextblock==12) // flashpoint poweron pattern
+		{
+			nextc[player] = (nextc[player]) % StrLen(nextfp_list); // actual size of it. should be 1000
+		}
+		if (nextblock==13) // actual sega randomizer. 
+		{
+			nextc[player] = (nextc[player]) % 1000;  // loops at 1000. no string length to check
+		}
+		if (nextblock==14) // supposed to be the bloxeed randomizer.  still working on it.
+		{
+			nextc[player] = (nextc[player]) % 1000;  // loops at 1000. no string length to check
+		}
+	}
 	if(!isfever[player])
 		next[player] = nextb[nextc[player] + player * 1400];
 	else		//フィーバー中は棒のみ出現

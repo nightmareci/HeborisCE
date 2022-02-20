@@ -8855,8 +8855,10 @@ void LevelUp(int32_t player) {
 			bgfadesw = 1;          // change on level 13
 			if (lv[player]==15)
 			bgfadesw = 1;          // change on level 15
+			if (lv[player]==50)
+			bgfadesw = 1;          // change at level 50, to use background 11.
 			if (lv[player]==99)
-			bgfadesw = 1;          // change whe nlevel counter is "maxed" at 99.
+			bgfadesw = 1;          // change when level counter is "maxed" at 99, to use background 12.
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 9];

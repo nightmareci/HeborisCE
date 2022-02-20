@@ -2855,6 +2855,7 @@ void versusInit(int32_t player) {
 			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // fill in the rest in case you aren't playing old style
 		}
+		PlayerdataSave(); // save randomizer state
 	}else if((nextblock == 14)|| ((p_nextblock ==14)&&(gameMode[player] == 5))) {
 		//BLOXEED
 		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
@@ -2881,6 +2882,7 @@ void versusInit(int32_t player) {
 			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			if (i < 400) nextb[i + (player * 1400)+1000] = temp;
 		}
+		PlayerdataSave(); // save randomizer state
 	} else {
 		shu = nextblock;
 		for(i = 0; i < 1400 / shu + 1; i++) {
@@ -6154,7 +6156,7 @@ void statBlock(int32_t player) {
 	dhold2[player] = 0;
 	
 	nextc[player] = (nextc[player] + 1) % 1400;
-	// correction for shorter sequences. wtf why did they miss this?
+	// correction for shorter sequences. 
 	// safe because it will never reach 1400 before these hit. 
 	if (repversw>65)
 	{
@@ -14984,7 +14986,7 @@ void testmenu(void) {
 
 			printFont(2, 3, "[GRAPHIC TEST]", (cursor == 0) * fontc[rots[0]]);
 			printFont(2, 4, "[RANKING ERASE]",(cursor == 1) * fontc[rots[0]]);
-			printFont(2, 5, "[RESET]",        (cursor == 2) * fontc[rots[0]]);
+			printFont(2, 5, "[RESET SEEDS]",        (cursor == 2) * fontc[rots[0]]);
 
 			// キー入力
 			KeyInput();
@@ -15099,26 +15101,36 @@ void testmenu(void) {
 		}
 		// RESET
 		else if( mode == 3 ) {
-			printFont(1, 1, "RESET GAME?", 4);
+			if(param == 0) {
+			printFont(1, 1, "RESET SEEDS?", 4);
 
 			printFont(1, 3, "A+C : YES", 2);
 			printFont(1, 4, "B   : NO",  1);
-
+			}
+			else
+			{
+				printFont(1, 1, "POWERON PATTERNS RESTORED", 4);
+				
+				printFont(1, 4, "B   : EXIT",1);
+				
+			}
 			// キー入力
 			KeyInput();
 
-			// A+Cで決定
-			if( (getPressState(0, 4)) && (getPressState(0, 6)) ) {
+			// A+Cで決定 
+			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
 				PlaySE(10);
-				ClearSecondary();
-				printFont(1, 1, "PLEASE WAIT...", 2);
-				restart = 1;
-				return;
+				SegaSeed[0]=711800410;     // generates sega's poweron pattern
+                BloxeedSeed[0]=0x2A6D8010;   // generated Bloxeed's poweron pattern.
+				SegaSeed[1]=711800410;     // generates sega's poweron pattern
+                BloxeedSeed[1]=0x2A6D8010;   // generated Bloxeed's poweron pattern.
+				param=1;
 			}
 
 			// Bで戻る
 			if( getPushState(0, 5) ) {
 				mode = 0;
+				if (param==1) return;
 			}
 		}
 

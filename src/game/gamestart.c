@@ -8834,7 +8834,29 @@ void LevelUp(int32_t player) {
 			
 			PlaySE(30);
 			StopSE(32);
-			bgfadesw = 1;
+			// only do changes at proper levels
+			if (heboGB[player]==1) // gb
+			bgfadesw = 1;          // change anyway
+			if (lv[player]==2)
+			bgfadesw = 1;          // change on level 2
+			if (lv[player]==4)
+			bgfadesw = 1;          // change on level 4
+			if (lv[player]==6)
+			bgfadesw = 1;          // change on level 6
+			if (lv[player]==8)
+			bgfadesw = 1;          // change on level 8
+			if (lv[player]==9)
+			bgfadesw = 1;          // change on level 9
+			if (lv[player]==10)
+			bgfadesw = 1;          // change on level 10
+			if (lv[player]==11)
+			bgfadesw = 1;          // change on level 11
+			if (lv[player]==13)
+			bgfadesw = 1;          // change on level 13
+			if (lv[player]==15)
+			bgfadesw = 1;          // change on level 15
+			if (lv[player]==99)
+			bgfadesw = 1;          // change whe nlevel counter is "maxed" at 99.
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 9];

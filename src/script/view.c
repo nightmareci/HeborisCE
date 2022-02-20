@@ -281,7 +281,7 @@ void viewScoreSmall(void) {
 	for(i = 0; i < 1 + maxPlay; i++) {
 	if( ((status[i] != 2) || ((status[i] == 2) && (statusc[i * 10 + 2] != 0))) && (status[i] != 0) && ((status[i] !=1) || ((status[i] ==1) && (statusc[i * 10 + 1] != 2))) ){
 		if((i) && ((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4)) )) return;
-		color = (count % 4 / 2) * ((sp[i] >= 1200) || (isboost[i])) * digitc[rots[i]];
+		color = (count % 4 / 2) * ((sp[i] >= 1200) || (isboost[i]) || ((heboGB[i]==2)&&(lv[i]>14))) * digitc[rots[i]];
 		gradecolor[i] = (count % 4 / 2) * ((sp[i] >= 1200) || (isboost[i]));
 		if(sc[i] > 9999999) sc[i] = 9999999;
 		if(li[i] > 9999) li[i] = 9999;

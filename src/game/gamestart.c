@@ -1404,7 +1404,7 @@ char	*string[STRING_MAX];
 
 // globals for new randomizers
 uint32_t    SegaSeed[2]={711800410,711800410};     // generates sega's poweron pattern
-uint32_t	BloxeedSeed[2]={0x2A6D8010,0x2A6D8010};   // generated Bloxeed's poweron pattern.
+uint32_t	BloxeedSeed[2]={711800411,711800411};   // generated Bloxeed's poweron pattern. on ehigher. but see later.
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
@@ -2858,18 +2858,25 @@ void versusInit(int32_t player) {
 		PlayerdataSave(); // save randomizer state
 	}else if((nextblock == 14)|| ((p_nextblock ==14)&&(gameMode[player] == 5))) {
 		//BLOXEED
-		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
-			uint32_t d0, d1;
-	        uint16_t stemp;
+		uint32_t BloxeedPieceSeed;				// bloxeed rando is ran once, and then it's RESULT is stored here.
+		uint32_t d0, d1;
+        uint16_t stemp;
 			d1=BloxeedSeed[player];
 			d0 = d1;
         	d1 = d0*41;
         	stemp = (uint16_t)d1 + (d1 >> 16);
         	BloxeedSeed[player] = (stemp << 16) | (uint16_t)d1;
-			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F));
+			BloxeedPieceSeed= ((d0 & 0xFFFF0000) | stemp); // use this as the seed to generate the sequence.
 
-			temp=temp %7;
-			switch (temp)          // fancier piece table i hink?
+		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
+			d1=BloxeedPieceSeed;
+			d0 = d1;
+        	d1 = d0*41;
+        	stemp = (uint16_t)d1 + (d1 >> 16);
+        	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
+			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F)%7);
+
+			switch (temp)          // 
 			{
 				case 1: temp=3; break;
 				case 2: temp=6; break;
@@ -15145,9 +15152,9 @@ void testmenu(void) {
 			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
 				PlaySE(10);
 				SegaSeed[0]=711800410;     // generates sega's poweron pattern
-                BloxeedSeed[0]=0x2A6D8010;   // generated Bloxeed's poweron pattern.
+                BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
 				SegaSeed[1]=711800410;     // generates sega's poweron pattern
-                BloxeedSeed[1]=0x2A6D8010;   // generated Bloxeed's poweron pattern.
+                BloxeedSeed[1]=711800411;   // generated Bloxeed's poweron pattern.
 				param=1;
 			}
 

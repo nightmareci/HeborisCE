@@ -444,6 +444,10 @@ void PlayerdataSave(void) {//12345 6789
 		}
 		saveBuf[1 + 10 + j]=admit_grade[j];
 		saveBuf[1 + 12 + j]=grade_pasttime[j];
+		saveBuf[1 +14]=SegaSeed[0];
+		saveBuf[1 +15]=SegaSeed[1];
+		saveBuf[1 +16]=BloxeedSeed[0];
+		saveBuf[1 +17]=BloxeedSeed[1];
 	}
 
 	SaveFile("config/data/PLAYERDATA.SAV", &saveBuf, 100 * 4);
@@ -471,6 +475,16 @@ int32_t PlayerdataLoad(void) {
 		}
 		admit_grade[j] = saveBuf[1 + 10 + j];
 		grade_pasttime[j]=saveBuf[1 + 12 + j];
+		SegaSeed[0]=saveBuf[1 +14];
+		if (SegaSeed[0]>0)  // if we had a real seed there
+		{                   // load the resr
+			SegaSeed[1]=saveBuf[1 +15];
+			BloxeedSeed[0]=saveBuf[1 +16];
+			BloxeedSeed[1]=saveBuf[1 +17];
+		}
+		else{
+			SegaSeed[0]=711800410; // restore default
+		}
 	}
 	return 0;
 }

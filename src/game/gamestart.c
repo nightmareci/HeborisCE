@@ -1402,6 +1402,10 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 char	*string[STRING_MAX];
 
+// globals for new randomizers
+uint32_t    SegaSeed[2]={711800410,711800410};     // generates sega's poweron pattern
+uint32_t	BloxeedSeed[2]={711800411,711800411};   // generated Bloxeed's poweron pattern. on ehigher. but see later.
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -2830,6 +2834,62 @@ void versusInit(int32_t player) {
 		for(i = 1; i < 1400; i++) {
 			nextb[i + player * 1400] = Rand(7);
 		}
+	}else if((nextblock == 13)|| ((p_nextblock ==13)&&(gameMode[player] == 5))) {
+		//SEGA TETRIS
+		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
+	        uint16_t stemp;
+			SegaSeed[player]*=41;							// multiply seed by 41
+        	stemp = (uint16_t)SegaSeed[player] + (SegaSeed[player] >> 16); 				// sum lower and upper bits. store as 16 bit
+        	SegaSeed[player] = (stemp << 16) | (uint16_t)SegaSeed[player]; // lower bits of sum moved up, and lower bits of original multiplied number saved to new seed
+			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return.
+			switch (temp) 									 // convert pieces from sega to heboris ordering
+			{
+				case 1: temp=3; break;
+				case 2: temp=6; break;
+				case 3: temp=2; break;
+				case 5: temp=1; break;
+				case 6: temp=5; break;
+			default: temp=temp; break; // t and I are correct
+			}
+
+			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
+			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // fill in the rest in case you aren't playing old style
+		}
+		PlayerdataSave(); // save randomizer state
+	}else if((nextblock == 14)|| ((p_nextblock ==14)&&(gameMode[player] == 5))) {
+		//BLOXEED
+		uint32_t BloxeedPieceSeed;				// bloxeed rando is ran once, and then it's RESULT is stored here.
+		uint32_t d0, d1;
+        uint16_t stemp;
+			d1=BloxeedSeed[player];
+			d0 = d1;
+        	d1 = d0*41;
+        	stemp = (uint16_t)d1 + (d1 >> 16);
+        	BloxeedSeed[player] = (stemp << 16) | (uint16_t)d1;
+			BloxeedPieceSeed= ((d0 & 0xFFFF0000) | stemp); // use this as the seed to generate the sequence.
+
+		for(i = 0; i < 1400; ++i) { // Bloxeed doesn't actually loop at 1000, but hebo does at 1400.
+			d1=BloxeedPieceSeed;
+			d0 = d1;
+        	d1 = d0*41;
+        	stemp = (uint16_t)d1 + (d1 >> 16);
+        	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
+			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F)%7);
+
+			switch (temp)          // 
+			{
+				case 1: temp=3; break;
+				case 2: temp=6; break;
+				case 3: temp=2; break;
+				case 5: temp=1; break;
+				case 6: temp=5; break;
+			default: temp=temp; break; // t and I are correct
+			}
+
+			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
+//			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // bloxeed doesn't loop.
+		}
+		PlayerdataSave(); // save randomizer state
 	} else {
 		shu = nextblock;
 		for(i = 0; i < 1400 / shu + 1; i++) {
@@ -6101,8 +6161,29 @@ void statBlock(int32_t player) {
 	blk[player] = next[player];
 	dhold[player] = disable_hold;		// hold使用可能に	#1.60c
 	dhold2[player] = 0;
-
+	
 	nextc[player] = (nextc[player] + 1) % 1400;
+	// correction for shorter sequences. 
+	// safe because it will never reach 1400 before these hit. 
+	if (repversw>65)
+	{
+		if (nextblock==10) // sega poweron pattern
+		{
+			nextc[player] = (nextc[player]) % StrLen(nextdengen_list); // actual size of it. should be 1000
+		}
+		if (nextblock==11) // Tomoyo bag
+		{
+			nextc[player] = (nextc[player]) % StrLen(nextb_list); // actual size of it. should be 255
+		}
+		if (nextblock==12) // flashpoint poweron pattern
+		{
+			nextc[player] = (nextc[player]) % StrLen(nextfp_list); // actual size of it. should be 1000
+		}
+		if (nextblock==13) // actual sega randomizer. 
+		{
+			nextc[player] = (nextc[player]) % 1000;  // loops at 1000. no string length to check
+		}
+	}
 	if(!isfever[player])
 		next[player] = nextb[nextc[player] + player * 1400];
 	else		//フィーバー中は棒のみ出現
@@ -8756,7 +8837,31 @@ void LevelUp(int32_t player) {
 			
 			PlaySE(30);
 			StopSE(32);
-			bgfadesw = 1;
+			// only do changes at proper levels
+			if (heboGB[player]==1) // gb
+			bgfadesw = 1;          // change anyway
+			if (lv[player]==2)
+			bgfadesw = 1;          // change on level 2
+			if (lv[player]==4)
+			bgfadesw = 1;          // change on level 4
+			if (lv[player]==6)
+			bgfadesw = 1;          // change on level 6
+			if (lv[player]==8)
+			bgfadesw = 1;          // change on level 8
+			if (lv[player]==9)
+			bgfadesw = 1;          // change on level 9
+			if (lv[player]==10)
+			bgfadesw = 1;          // change on level 10
+			if (lv[player]==11)
+			bgfadesw = 1;          // change on level 11
+			if (lv[player]==13)
+			bgfadesw = 1;          // change on level 13
+			if (lv[player]==15)
+			bgfadesw = 1;          // change on level 15
+			if (lv[player]==50)
+			bgfadesw = 1;          // change at level 50, to use background 11.
+			if (lv[player]==99)
+			bgfadesw = 1;          // change when level counter is "maxed" at 99, to use background 12.
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 9];
@@ -9394,6 +9499,8 @@ void statEraseBlock(int32_t player) {
 				if(b_to_b_flag[player] == 0){
 					if(b2bcheck)
 						b_to_b_flag[player]=1; //Back to Back判定開始
+					if (heboGB[player]>0)      // old stlye hass no back to back
+						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
 					PlaySE(17);
 				}
 				else{ //B to B Heboris
@@ -9406,6 +9513,8 @@ void statEraseBlock(int32_t player) {
 				if(b_to_b_flag[player] == 0){
 					PlaySE(17);
 					b_to_b_flag[player]=lines+1; //Back to Back判定開始
+					if (heboGB[player]>0)      // old stlye hass no back to back
+						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
 				}
 				else{ //B to B T-Spin erase
 					PlaySE(18);
@@ -14904,7 +15013,7 @@ void testmenu(void) {
 
 			printFont(2, 3, "[GRAPHIC TEST]", (cursor == 0) * fontc[rots[0]]);
 			printFont(2, 4, "[RANKING ERASE]",(cursor == 1) * fontc[rots[0]]);
-			printFont(2, 5, "[RESET]",        (cursor == 2) * fontc[rots[0]]);
+			printFont(2, 5, "[RESET SEEDS]",        (cursor == 2) * fontc[rots[0]]);
 
 			// キー入力
 			KeyInput();
@@ -15019,26 +15128,36 @@ void testmenu(void) {
 		}
 		// RESET
 		else if( mode == 3 ) {
-			printFont(1, 1, "RESET GAME?", 4);
+			if(param == 0) {
+			printFont(1, 1, "RESET SEEDS?", 4);
 
 			printFont(1, 3, "A+C : YES", 2);
 			printFont(1, 4, "B   : NO",  1);
-
+			}
+			else
+			{
+				printFont(1, 1, "POWERON PATTERNS RESTORED", 4);
+				
+				printFont(1, 4, "B   : EXIT",1);
+				
+			}
 			// キー入力
 			KeyInput();
 
-			// A+Cで決定
-			if( (getPressState(0, 4)) && (getPressState(0, 6)) ) {
+			// A+Cで決定 
+			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
 				PlaySE(10);
-				ClearSecondary();
-				printFont(1, 1, "PLEASE WAIT...", 2);
-				restart = 1;
-				return;
+				SegaSeed[0]=711800410;     // generates sega's poweron pattern
+                BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
+				SegaSeed[1]=711800410;     // generates sega's poweron pattern
+                BloxeedSeed[1]=711800411;   // generated Bloxeed's poweron pattern.
+				param=1;
 			}
 
 			// Bで戻る
 			if( getPushState(0, 5) ) {
 				mode = 0;
+				if (param==1) return;
 			}
 		}
 

@@ -436,6 +436,10 @@ void ConfigMenu() {
 			sprintf(string[0], "TOMOYO");
 			else if(ncfg[2] == 12)
 			sprintf(string[0], "FP");
+			else if(ncfg[2] == 13)
+			sprintf(string[0], "SEGA");
+			else if(ncfg[2] == 14)
+			sprintf(string[0], "BLOXEED");
 			printFont(15, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
 			sprintf(string[0], "%d", ncfg[45]);
@@ -510,7 +514,7 @@ void ConfigMenu() {
 					m = getPushState(pl, 3) - getPushState(pl, 2);
 
 					if(m) {
-						     if(statusc[0] == 1) ncfg[2] = (ncfg[2] + 13 + m) % 13;	// nextbloc 8を追加#1.60c7h4
+						     if(statusc[0] == 1) ncfg[2] = (ncfg[2] + 15 + m) % 15;	// nextbloc 8を追加#1.60c7h4
 						else if(statusc[0] == 2) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
 						else if(statusc[0] == 3) ncfg[5] = !ncfg[5];			// nanameallow
 						else if(statusc[0] == 4) ncfg[6] = !ncfg[6];			// sonicdrop

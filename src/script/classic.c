@@ -274,8 +274,13 @@ void statCMove(int32_t player) {
 		if(!nanameallow) move = 0;
 
 		// ↓を離している、またはdowntypeが0の場合、下入れ制限解除#1.60c7f9
-		if((!getPressState(player, 1-(1*(isUDreverse[player])))) || (!downtype)) down_flag[player] = 0;
-		if((!getPressState(player, 0+(1*(isUDreverse[player])))) || (!downtype) || (repversw < 12)) up_flag[player] = 0;
+		int32_t downtypetemp=downtype;
+		if (heboGB[player]==2 && repversw>65)
+		{
+			downtypetemp=0;
+		}
+		if((!getPressState(player, 1-(1*(isUDreverse[player])))) || (!downtypetemp)) down_flag[player] = 0;
+		if((!getPressState(player, 0+(1*(isUDreverse[player])))) || (!downtypetemp) || (repversw < 12)) up_flag[player] = 0;
 
 		// 高速落下!! 下入れ制限改造#1.60c7f9
 		if((!move) && getPressState(player, 1-(1*(isUDreverse[player]))) && (sp[player] < 60) && (!down_flag[player]) && ((statusc[player * 10 + 4]) || (repversw < 27))) {

@@ -6183,10 +6183,6 @@ void statBlock(int32_t player) {
 		{
 			nextc[player] = (nextc[player]) % 1000;  // loops at 1000. no string length to check
 		}
-		if (nextblock==14) // supposed to be the bloxeed randomizer.  still working on it.
-		{
-			nextc[player] = (nextc[player]) % 1000;  // loops at 1000. no string length to check
-		}
 	}
 	if(!isfever[player])
 		next[player] = nextb[nextc[player] + player * 1400];

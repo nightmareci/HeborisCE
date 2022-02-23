@@ -2868,7 +2868,7 @@ void versusInit(int32_t player) {
         	BloxeedSeed[player] = (stemp << 16) | (uint16_t)d1;
 			BloxeedPieceSeed= ((d0 & 0xFFFF0000) | stemp); // use this as the seed to generate the sequence.
 
-		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
+		for(i = 0; i < 1400; ++i) { // Bloxeed doesn't actually loop at 1000, but hebo does at 1400.
 			d1=BloxeedPieceSeed;
 			d0 = d1;
         	d1 = d0*41;
@@ -2887,7 +2887,7 @@ void versusInit(int32_t player) {
 			}
 
 			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
-			if (i < 400) nextb[i + (player * 1400)+1000] = temp;
+//			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // bloxeed doesn't loop.
 		}
 		PlayerdataSave(); // save randomizer state
 	} else {

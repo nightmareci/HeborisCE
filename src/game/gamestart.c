@@ -2771,7 +2771,7 @@ void versusInit(int32_t player) {
 
 	// ツモの読み込み #1.60c7g3
 	len = 0;
-
+	SavedSeed=rand()+(rand()<<7)+(rand()<<14)+(rand()<<21)+(rand()<<28); // fill it with some random bits.
 	// tomoyoのパターン #1.60c7l9
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
@@ -2906,10 +2906,10 @@ void versusInit(int32_t player) {
 					//初手
 					if((shu * i + j == 0) && ( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) )) {
 						do {
-							temp = Rand(7);
+							temp = TGMConvert(LCGRand(&SavedSeed)%7);
 						} while((temp != 0) && (temp != 1) && (temp != 4) && (temp != 5));
 					} else
-						temp = Rand(7);
+						temp = TGMConvert(LCGRand(&SavedSeed)%7);
 
 					if((same == 0) && (mae == temp)) {
 						k = 1;
@@ -2956,10 +2956,10 @@ void tgmNextInit(int32_t player) {
 	// next_adjustが動作してなかったのでとりあえず修正 #1.60c7i4
 	if( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) ) {
 		do {
-			nextb[0 + player * 1400] = Rand(7);
+			nextb[0 + player * 1400] = TGMConvert(LCGRand(&SavedSeed)%7);
 		} while((nextb[0 + player * 1400] == 2) || (nextb[0 + player * 1400] == 3) || (nextb[0 + player * 1400] == 6));
 	} else {
-		nextb[0 + player * 1400] = Rand(7);
+		nextb[0 + player * 1400] = TGMConvert(LCGRand(&SavedSeed)%7);
 	}
 	// 初手生成時に履歴がずれていなかった LITE30.20より C7U1.5
 	for(j = 0; j < 3; j++) {
@@ -2971,12 +2971,12 @@ void tgmNextInit(int32_t player) {
 	// 残りのツモを生成
 	for(i = 1; i < 1400; i++) {
 		// ツモを引く
-		block = Rand(7);
+		block = TGMConvert(LCGRand(&SavedSeed)%7);
 
 		// 引いたツモが履歴にあったら最大4回引き直し→6回に変更c7t3.1	これもリプレイには影響なし？
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3])) {
 			for(j = 0; j < 6; j++) {
-				block = Rand(7);
+				block = TGMConvert(LCGRand(&SavedSeed)%7);
 
 				// 4つの履歴に無かったらその場で抜ける
 				if((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
@@ -3001,7 +3001,7 @@ void SakuraNextInit(int32_t player) {
 	int32_t i, j;
 	int32_t history[6];  // history size SIX for this one.
 	int32_t block;
-
+    
 
 	// empty history. piece can never be a seven, so that's placeholder.
 		history[0] = 7; 
@@ -3016,12 +3016,12 @@ void SakuraNextInit(int32_t player) {
 	// a bit different from normal memory 4
 	for(i = 0; i < 1400; i++) {
 		// pick random block
-		block = Rand(7);
+		block = TGMConvert(LCGRand(&SavedSeed)%7);
 
 		// four rerolls, with special roll for 5
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5])) {
 			for(j = 0; j < 4; j++) {
-				block = Rand(7);
+				block =TGMConvert(LCGRand(&SavedSeed)%7);
 
 				// 4つの履歴に無かったらその場で抜ける
 				if((block != history[0]) && (block != history[1]) && (block != history[2]) &&(block != history[3]) &&(block != history[4]) && (block != history[5]))
@@ -3032,13 +3032,13 @@ void SakuraNextInit(int32_t player) {
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5]))
 		{
 			// flip a coin between second and sixth.
-			block=history[Rand(2)*4+1]; // either
+			block=history[LCGRand(&SavedSeed)%2*4+1]; // either
 		}
 		// if that was a 7, because it wasn't initialized yet
 		if (block==7)
 		{
 			// then pick a random piece
-			block = Rand(7); // no more repeat checks.
+			block = TGMConvert(LCGRand(&SavedSeed)%7); // no more repeat checks.
 		}
 		// push up history
 		for(j=0;j<5;j++) {
@@ -3060,21 +3060,23 @@ uint32_t LCGRand(uint32_t *lcgseed)
 	
 	uint32_t lcgmultiply=0x41c64e6d; // default for TAP/TGM
 	*lcgseed=(*lcgseed)*lcgmultiply+lcgadd; // happily ignore overflow
-	return (*lcgseed>>10) && 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution. :)
+	return (*lcgseed>>10) & 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution. :)
 }
 // convert pieces from tgm numbers to heboris numbers. use on pieces you get from LCGRand to duplicate real TGM seeds.
 int32_t TGMConvert(int32_t piece)
 {
+	int32_t retval;
 				switch (piece)          // 
 			{
-				case 1: return 3;      
-				case 2: return 6;
-				case 3: return 5;
-				case 4: return 1;		
-				case 5: return 2;
-				case 6: return 4;      
-			default: return piece; // I is correct
+				case 1: retval= 3;break;
+				case 2: retval= 6;break;
+				case 3: retval=  5;break;
+				case 4: retval=  1;break;
+				case 5: retval=  2;break;
+				case 6: retval=  4;break;
+			default: retval=  piece;break; // I is correct
 			}
+			return retval;
 
 }
 
@@ -3094,7 +3096,7 @@ void guidelineNextInit(int32_t player) {
 		for(j = 0; j < 7; j++) block[j] = 0;
 
 		do {
-			tmp = Rand(7);
+			tmp = TGMConvert(LCGRand(&SavedSeed)%7);
 		} while((tmp == 2) || (tmp == 3) || (tmp == 6));
 
 		// ブロックが出たフラグON
@@ -3114,7 +3116,7 @@ void guidelineNextInit(int32_t player) {
 		// ツモ作成
 		for(j = first; j < 7; j++) {
 			do {
-				tmp = Rand(7);	// ツモを引く
+				tmp = TGMConvert(LCGRand(&SavedSeed)%7);	// ツモを引く
 			} while(block[tmp] == 1);
 
 			// ブロックが出たフラグON

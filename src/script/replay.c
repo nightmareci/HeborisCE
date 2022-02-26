@@ -142,6 +142,8 @@ void saveReplayData(int32_t pl, int32_t number) {
 	saveBuf[266] = p_bgmlv;
 	saveBuf[267] = relaymode[pl];
 	saveBuf[268] = segacheat;
+	saveBuf[269] = SavedSeed[0];
+	saveBuf[270] = SavedSeed[1];
 
 	saveBuf[290] = smooth;
 	saveBuf[291] = nanameallow;
@@ -271,6 +273,8 @@ void saveReplay_VS(int32_t number) {
 	saveBuf[265] = b2bcheck;		// Back to Back
 //	saveBuf[266]
 //	saveBuf[267]
+	saveBuf[269] = SavedSeed[0];
+	saveBuf[270] = SavedSeed[1];
 
 	saveBuf[290] = smooth;
 	saveBuf[291] = nanameallow;
@@ -518,7 +522,11 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 		}
 	}
 	if (repversw > 65)
+	{
 		segacheat = saveBuf[268];
+		SavedSeed[0]= saveBuf[269];
+		SavedSeed[1]= saveBuf[270];
+	}
 	if(IsBigStart[pl]) {
 		IsBig[pl] = 1;
 	}
@@ -713,6 +721,8 @@ int32_t loadReplay_VS(int32_t number) {
 		next[pl] = nextb[nextc[pl] + pl * 1400];	// #1.60c7n7
 		setNextBlockColors(pl, 1);	// #1.60c7n2
 	}
+	SavedSeed[0]= saveBuf[269]; // harmless if it's zero anyway
+	SavedSeed[1]= saveBuf[270]; // harmless if it's zero anyway
 
 
 	return (0);

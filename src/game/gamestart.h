@@ -118,6 +118,7 @@ void tgmNextInit(int32_t player);
 void SakuraNextInit(int32_t player);
 void guidelineNextInit(int32_t player);
 uint32_t LCGRand(uint32_t *lcgseed);
+int32_t TGMConvert(int32_t piece);
 void playerInitial(int32_t player);
 void setNextBlockColors(int32_t player,int32_t first);
 void gameAllInit(void);

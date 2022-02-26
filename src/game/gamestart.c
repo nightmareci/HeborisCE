@@ -3062,6 +3062,22 @@ uint32_t LCGRand(uint32_t *lcgseed)
 	*lcgseed=(*lcgseed)*lcgmultiply+lcgadd; // happily ignore overflow
 	return (*lcgseed>>10) && 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution. :)
 }
+// convert pieces from tgm numbers to heboris numbers. use on pieces you get from LCGRand to duplicate real TGM seeds.
+int32_t TGMConvert(int32_t piece)
+{
+				switch (piece)          // 
+			{
+				case 1: return 3;      
+				case 2: return 6;
+				case 3: return 5;
+				case 4: return 1;		
+				case 5: return 2;
+				case 6: return 4;      
+			default: return piece; // I is correct
+			}
+
+}
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ガイドライン対応ゲーム風なNEXT生成処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲

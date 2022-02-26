@@ -333,6 +333,15 @@ void statSelectLevel(int32_t player) {
 		}else if(p_nextblock==12){
 			printFont(19 - 12 * maxPlay, 19, "FP PTN", count % 9 * (vslevel[0] == 37));
 		}
+		else if(p_nextblock==13){
+			printFont(19 - 12 * maxPlay, 19, "SEGA TETRIS", count % 9 * (vslevel[0] == 37));
+		}
+		else if(p_nextblock==14){
+			printFont(19 - 12 * maxPlay, 19, "BLOXEED", count % 9 * (vslevel[0] == 37));
+		}
+		else if(p_nextblock==15){
+			printFont(19 - 12 * maxPlay, 19, "EH-MEMORY6", count % 9 * (vslevel[0] == 37));
+		}
 
 		// ツモ送りの有無 #1.60c7j9
 		printFont(15 - 12 * maxPlay, 20, "NEXT PASS", color);	// Y座標ズレ修正 #1.60c7p9ex改造
@@ -617,7 +626,7 @@ void statSelectLevel(int32_t player) {
 		// ツモ読み込み #1.60c7g3
 		if(vslevel[0] == 37) {
 			p_nextblock--;
-			if(p_nextblock < 0)p_nextblock = 12;
+			if(p_nextblock < 0)p_nextblock = 15;
 			b_nextc[0] = 0;
 			versusInit(0);					// ネクストを初期化
 		}
@@ -879,7 +888,7 @@ void statSelectLevel(int32_t player) {
 			// ツモ読み込み #1.60c7g3
 			if(vslevel[0] == 37) {
 				p_nextblock++;
-				if(p_nextblock > 12)p_nextblock = 0;
+				if(p_nextblock > 15)p_nextblock = 0;
 				b_nextc[0] = 0;
 				versusInit(0);					// ネクストを初期化
 			}

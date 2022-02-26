@@ -1405,7 +1405,7 @@ char	*string[STRING_MAX];
 // globals for new randomizers
 uint32_t    SegaSeed[2]={711800410,711800410};     // generates sega's poweron pattern
 uint32_t	BloxeedSeed[2]={711800411,711800411};   // generated Bloxeed's poweron pattern. on ehigher. but see later.
-
+uint32_t	SavedSeed=0;							// needed to save randomizer states
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -2775,7 +2775,8 @@ void versusInit(int32_t player) {
 	// tomoyoのパターン #1.60c7l9
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
-			len = StrLen(nextb_list);
+			// use sakura bag.
+			len = StrLen(nextb_list);			
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
@@ -2784,7 +2785,8 @@ void versusInit(int32_t player) {
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
-		}else{							//F-Pointは電源パターン
+		}
+			else{							//F-Point stages, use f point pattern.
 			len = StrLen(nextfp_list);
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
@@ -2801,6 +2803,9 @@ void versusInit(int32_t player) {
 	} else if((nextblock == 8)|| ((p_nextblock ==8)&&(gameMode[player] == 5))) {
 		// TGM風NEXT生成#1.60c7h4
 		tgmNextInit(player);
+	} else if((nextblock == 15)|| ((p_nextblock ==15)&&(gameMode[player] == 5))) {
+		// TGM風NEXT生成#1.60c7h4
+		SakuraNextInit(player);
 	} else if((nextblock == 10)|| ((p_nextblock ==10)&&(gameMode[player] == 5))) {
 		//電源パターンNEXT生成
 		len = StrLen(nextdengen_list);
@@ -2992,6 +2997,71 @@ void tgmNextInit(int32_t player) {
 	}
 }
 
+void SakuraNextInit(int32_t player) {
+	int32_t i, j;
+	int32_t history[6];  // history size SIX for this one.
+	int32_t block;
+
+
+	// empty history. piece can never be a seven, so that's placeholder.
+		history[0] = 7; 
+		history[1] = 7;
+		history[2] = 7;
+		history[3] = 7;
+		history[4] = 7;
+		history[5] = 7;
+
+	// by Arika's superplay, next adjust doesn't happen.
+    // so we start at zero.
+	// a bit different from normal memory 4
+	for(i = 0; i < 1400; i++) {
+		// pick random block
+		block = Rand(7);
+
+		// four rerolls, with special roll for 5
+		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5])) {
+			for(j = 0; j < 4; j++) {
+				block = Rand(7);
+
+				// 4つの履歴に無かったらその場で抜ける
+				if((block != history[0]) && (block != history[1]) && (block != history[2]) &&(block != history[3]) &&(block != history[4]) && (block != history[5]))
+					break;
+			}
+		}
+		// if still in history.
+		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5]))
+		{
+			// flip a coin between second and sixth.
+			block=history[Rand(2)*4+1]; // either
+		}
+		// if that was a 7, because it wasn't initialized yet
+		if (block==7)
+		{
+			// then pick a random piece
+			block = Rand(7); // no more repeat checks.
+		}
+		// push up history
+		for(j=0;j<5;j++) {
+			history[5 - j] = history[5 - (j + 1)];
+		}
+
+		// add block to history.
+		history[0] = block;
+
+		// add block to sequence.
+		nextb[i + player * 1400] = block;
+	}
+}
+
+// LCG.  may be used to avoid storing whoel piece sequences. ALL TGM games use it :)
+uint32_t LCGRand(uint32_t *lcgseed)
+{
+	uint32_t lcgadd=12345; // default for all TGM games
+	
+	uint32_t lcgmultiply=0x41c64e6d; // default for TAP/TGM
+	*lcgseed=(*lcgseed)*lcgmultiply+lcgadd; // happily ignore overflow
+	return (*lcgseed>>10) && 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution. :)
+}
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ガイドライン対応ゲーム風なNEXT生成処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲

@@ -2772,7 +2772,7 @@ void versusInit(int32_t player) {
 
 	// ツモの読み込み #1.60c7g3
 	len = 0;
-	PieceSeed=rand()+(rand()<<7)+(rand()<<14)+(rand()<<21)+(rand()<<28); // fill it with some random bits.
+	PieceSeed=(rand()<<17)+(rand()<<2)+(rand()>>13); // fill it with 32 random bits.
 	SavedSeed[player]=PieceSeed;
 	// tomoyoのパターン #1.60c7l9
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
@@ -2848,7 +2848,7 @@ void versusInit(int32_t player) {
 			SegaSeed[player]*=41;							// multiply seed by 41
         	stemp = (uint16_t)SegaSeed[player] + (SegaSeed[player] >> 16); 				// sum lower and upper bits. store as 16 bit
         	SegaSeed[player] = (stemp << 16) | (uint16_t)SegaSeed[player]; // lower bits of sum moved up, and lower bits of original multiplied number saved to new seed
-			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return.
+			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return. multiples of 3 bits give closest to uniform for 7 pieces.
 			switch (temp) 									 // convert pieces from sega to heboris ordering
 			{
 				case 1: temp=3; break;
@@ -2881,7 +2881,7 @@ void versusInit(int32_t player) {
         	d1 = d0*41;
         	stemp = (uint16_t)d1 + (d1 >> 16);
         	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
-			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F)%7);
+			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F)%7);  // Bad Sega, less suniform distibution than before!
 
 			switch (temp)          // 
 			{
@@ -2908,10 +2908,10 @@ void versusInit(int32_t player) {
 					//初手
 					if((shu * i + j == 0) && ( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) )) {
 						do {
-							temp = TGMConvert(LCGRand(&PieceSeed)%7);
+							temp = TGMPiece(&PieceSeed);
 						} while((temp != 0) && (temp != 1) && (temp != 4) && (temp != 5));
 					} else
-						temp = TGMConvert(LCGRand(&PieceSeed)%7);
+						temp = TGMPiece(&PieceSeed);
 
 					if((same == 0) && (mae == temp)) {
 						k = 1;
@@ -2958,10 +2958,10 @@ void tgmNextInit(int32_t player) {
 	// next_adjustが動作してなかったのでとりあえず修正 #1.60c7i4
 	if( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) ) {
 		do {
-			nextb[0 + player * 1400] = TGMConvert(LCGRand(&PieceSeed)%7);
+			nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
 		} while((nextb[0 + player * 1400] == 2) || (nextb[0 + player * 1400] == 3) || (nextb[0 + player * 1400] == 6));
 	} else {
-		nextb[0 + player * 1400] = TGMConvert(LCGRand(&PieceSeed)%7);
+		nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
 	}
 	// 初手生成時に履歴がずれていなかった LITE30.20より C7U1.5
 	for(j = 0; j < 3; j++) {
@@ -2973,12 +2973,12 @@ void tgmNextInit(int32_t player) {
 	// 残りのツモを生成
 	for(i = 1; i < 1400; i++) {
 		// ツモを引く
-		block = TGMConvert(LCGRand(&PieceSeed)%7);
+		block = TGMPiece(&PieceSeed);
 
 		// 引いたツモが履歴にあったら最大4回引き直し→6回に変更c7t3.1	これもリプレイには影響なし？
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3])) {
 			for(j = 0; j < 6; j++) {
-				block = TGMConvert(LCGRand(&PieceSeed)%7);
+				block = TGMPiece(&PieceSeed);
 
 				// 4つの履歴に無かったらその場で抜ける
 				if((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
@@ -3018,12 +3018,12 @@ void SakuraNextInit(int32_t player) {
 	// a bit different from normal memory 4
 	for(i = 0; i < 1400; i++) {
 		// pick random block
-		block = TGMConvert(LCGRand(&PieceSeed)%7);
+		block = TGMPiece(&PieceSeed);
 
 		// four rerolls, with special roll for 5
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5])) {
 			for(j = 0; j < 4; j++) {
-				block =TGMConvert(LCGRand(&PieceSeed)%7);
+				block =TGMPiece(&PieceSeed);
 
 				// 4つの履歴に無かったらその場で抜ける
 				if((block != history[0]) && (block != history[1]) && (block != history[2]) &&(block != history[3]) &&(block != history[4]) && (block != history[5]))
@@ -3034,13 +3034,13 @@ void SakuraNextInit(int32_t player) {
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5]))
 		{
 			// flip a coin between second and sixth.
-			block=history[LCGRand(&PieceSeed)%2*4+1]; // either
+			block=history[LCGRand(&PieceSeed)%2*4+1]; // can't use shortcut.
 		}
 		// if that was a 7, because it wasn't initialized yet
 		if (block==7)
 		{
 			// then pick a random piece
-			block = TGMConvert(LCGRand(&PieceSeed)%7); // no more repeat checks.
+			block = TGMPiece(&PieceSeed); // no more repeat checks.
 		}
 		// push up history
 		for(j=0;j<5;j++) {
@@ -3055,16 +3055,16 @@ void SakuraNextInit(int32_t player) {
 	}
 }
 
-// LCG.  may be used to avoid storing whoel piece sequences. ALL TGM games use it :)
+// LCG.  may be used to avoid storing whole piece sequences. ALL TGM games appear to use it :) Slight bias for I piece, since 0=I. Aren't we nice?
 uint32_t LCGRand(uint32_t *lcgseed)
 {
-	uint32_t lcgadd=12345; // default for all TGM games
+	uint32_t lcgadd=12345; // default for all TGM games, as far as I know
 	
-	uint32_t lcgmultiply=0x41c64e6d; // default for TAP/TGM
+	uint32_t lcgmultiply=0x41c64e6d; // default for TAP/TI? Good enough for Arika, good enough for us.
 	*lcgseed=(*lcgseed)*lcgmultiply+lcgadd; // happily ignore overflow
-	return (*lcgseed>>10) & 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution. :)
+	return (*lcgseed>>10) & 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution, in theory. :)
 }
-// convert pieces from tgm numbers to heboris numbers. use on pieces you get from LCGRand to duplicate real TGM seeds.
+// convert pieces from tgm numbers to heboris numbers. Use on pieces you get from LCGRand to duplicate real TGM seeds.
 int32_t TGMConvert(int32_t piece)
 {
 	int32_t retval;
@@ -3080,6 +3080,11 @@ int32_t TGMConvert(int32_t piece)
 			}
 			return retval;
 
+}
+// combine them into one function and mod 7 :)
+int32_t TGMPiece(uint32_t *tgmseed)
+{
+	return TGMConvert(LCGRand(tgmseed)%7); // already a pointer
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

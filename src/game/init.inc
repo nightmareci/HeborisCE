@@ -644,7 +644,7 @@ over1000_start = 1000;
 
 //TOMOYO-EHeart最終面の仕掛け（２つのフィールドが明るくなったり暗くなったり）を消す
 //0=消さない　1=消す
-disable_ehlast_gimmick = 0;
+disable_ehlast_gimmick = 1; // disabled until someone implements SwapToSecondary. required fo r gimick to work.
 
 //**********************************************************
 // 背景アニメ設定

@@ -1277,7 +1277,7 @@ void Blt(int pno, int dx, int dy)
 
 void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
-	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen ernder target as source
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
 	{
 		SDL_Rect	src = { 0 };
 		SDL_Rect	dst = { 0 };
@@ -1290,6 +1290,7 @@ void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		return;
 	}
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	if ( s_pScreenRenderTarget )
@@ -1353,7 +1354,7 @@ void BltR(int pno, int dx, int dy, int scx, int scy)
 
 void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
 {
-	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen ernder target as source
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
 	{
 		SDL_Rect	src = { 0 };
 		SDL_Rect	dst = { 0 };
@@ -1369,6 +1370,7 @@ void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, 
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		return;
 	}
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
@@ -1426,7 +1428,7 @@ void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, 
 
 void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
 {
-	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen ernder target as source
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
 	{
 		SDL_Rect	src = { 0 };
 		SDL_Rect	dst = { 0 };
@@ -1443,6 +1445,7 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, SDL_ALPHA_OPAQUE);		return;
 	}
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する

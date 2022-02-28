@@ -1711,11 +1711,11 @@ void lastProc(void) {
 	}
 	// TOMOYO E-Heart最終面ギミック C7U0
 	for(pl = 0; pl <= maxPlay ; pl++){
-	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){
-		SwapToSecondary(23);
-		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);
-		SwapToSecondary(23);
-		ExBltFastRect(23, 160*(!pl), 0,160*pl,0,160,240);
+	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){ 
+// 		SwapToSecondary(23);  // does nothing
+//		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);  // does nothing because the previous thing did nothing
+//		SwapToSecondary(23);                               // doe snothing
+		ExBltFastRect(100, 160*(!pl), 0,160*pl,0,160,240);  // hack to render to rendering texture directly if present.
 		if((ending[pl] != 3) && (status[pl] != 21) && (status[pl] != 20)){
 			if(tomoyo_ehfinal_c[pl] < 220)
 				fadec = 19;

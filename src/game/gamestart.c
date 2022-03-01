@@ -6265,7 +6265,7 @@ void statBlock(int32_t player) {
 	nextc[player] = (nextc[player] + 1) % 1400;
 	// correction for shorter sequences. 
 	// safe because it will never reach 1400 before these hit. 
-	if (repversw>65)
+	if ((repversw>65) && ((gameMode[player]!=6) || (randommode[player]))) // exception fo tomoyo mode, because it loves to replace the piece sequence without telling you.
 	{
 		if (nextblock==10) // sega poweron pattern
 		{

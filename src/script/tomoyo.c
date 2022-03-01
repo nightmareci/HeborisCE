@@ -256,6 +256,13 @@ void statTomoyoNextStage(int32_t player) {
 			nextc[player] = stage_nextc[player];
 			next[player] = nextb[nextc[player] + player * 1400];
 		}
+		// if in basic mode
+		if((tomoyo_opt[player]==4)&&(fpbas_mode[player]))
+		{
+			// reset nextc
+			nextc[player] = stage_nextc[player];
+			next[player] = nextb[nextc[player] + player * 1400];
+		}
 		// 初期化
 		tomoyoInitial(player);
 		if((fpbas_mode[player]) || (repversw < 58)){
@@ -878,6 +885,8 @@ void statTomoyoSelect(int32_t player) {
 		// NEXTC #1.60c7l7
 		if(statusc[player * 10] == 1) {
 			start_nextc[player]++;
+			// check randomizer
+			
 			if(start_nextc[player] > 1399) start_nextc[player] = 0;
 		}
 		// モード
@@ -1088,7 +1097,12 @@ void statTomoyoResult(int32_t player) {
 
 			// スタート時のステージを設定 #1.60c7n8
 			start_stage[player] = stage[player];
-			start_nextc[player] = stage_nextc[player];
+			// if not in basic fp mode
+			if(!((tomoyo_opt[player]==4)&&(fpbas_mode[player])))
+			{
+				// set data for new replay, if saves
+				start_nextc[player] = stage_nextc[player];
+			}
 
 			time2[player] = 0;					// TOMOYO用プレイタイムをリセット
 			replay_save[player] = 1;			// リプレイセーブを可能にする

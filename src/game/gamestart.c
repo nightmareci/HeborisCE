@@ -2774,6 +2774,8 @@ void versusInit(int32_t player) {
 	len = 0;
 	PieceSeed=(rand()<<17)+(rand()<<2)+(rand()>>13); // fill it with 32 random bits.
 	SavedSeed[player]=PieceSeed;
+	// re-initialize start_nextc
+	start_nextc[player]=0;		// continuing sets start_nextc to stage_nextc. this undoes this to avoid breaking the FOLLOWING replay.
 	// tomoyoのパターン #1.60c7l9
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
@@ -6046,7 +6048,9 @@ void statReady(int32_t player) {
 		if( (gameMode[player] == 6) || ((gameMode[0] == 5) && (p_nextpass)) ) {
 			if((!pass_flg[player]) && (getPressState(player, 7))) {
 				PlaySE(6);	// hold.wav
-
+				// if not in FP-Basic
+				if(!fpbas_mode[player])
+				{
 				hold[player] = next[player];
 
 				// HOLDミノの色を設定 #1.60c7p1
@@ -6068,6 +6072,7 @@ void statReady(int32_t player) {
 				setNextBlockColors(player,0);
 				dhold[player] = 0;
 				dhold2[player] = 0;
+				}
 			}
 			pass_flg[player] = getPressState(player, 7);
 		}

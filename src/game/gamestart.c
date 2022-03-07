@@ -2883,8 +2883,12 @@ void versusInit(int32_t player) {
         	d1 = d0*41;
         	stemp = (uint16_t)d1 + (d1 >> 16);
         	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
-			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F)%7);  // Bad Sega, less suniform distibution than before!
-
+			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F));  // Bad Sega, less suniform distibution than before!
+			if (temp==127) // bias for Z
+			{
+				temp=0;    // correct to I piece, aren't we nice?
+			}
+			temp=temp%7;   // NOW take mod 7.
 			switch (temp)          // 
 			{
 				case 1: temp=3; break;

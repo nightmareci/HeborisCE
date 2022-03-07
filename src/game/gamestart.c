@@ -2888,6 +2888,22 @@ void versusInit(int32_t player) {
 			{
 				temp=0;    // correct to I piece, aren't we nice?
 			}
+				if (temp==121) // this is an S
+				{
+					temp=0;    // Sega says this is also an I
+				}
+				if (temp==120) // this is an S
+				{
+					temp=0;    // Sega says this is also an I
+				}
+				if (temp==114) // this is an S
+				{
+					temp=0;    // Sega says this is also an I
+				}
+				if (temp==113) // this is an S
+				{
+					temp=0;    // Sega says this is also an I
+				}
 			temp=temp%7;   // NOW take mod 7.
 			switch (temp)          // 
 			{

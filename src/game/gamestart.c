@@ -2884,28 +2884,25 @@ void versusInit(int32_t player) {
         	stemp = (uint16_t)d1 + (d1 >> 16);
         	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
 			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F));  // Bad Sega, less suniform distibution than before!
-			if (temp==127) // bias for Z
+			bool ConvertSZ=false;						 // Bloxeed converts 1/8th of all S and Z to I piece (roughly)
+			if ((temp&0x70)==0x70) // all three high bits are set
 			{
-				temp=0;    // correct to I piece, aren't we nice?
+				ConvertSZ=true;    // then convert S and Z to I. aren't we nice?
 			}
-				if (temp==121) // this is an S
+			temp=temp%7;   // NOW we can take mod 7, after checking those high bits.
+			// convert S and Z to I if the top three bits were set.
+			if (ConvertSZ)
+			{
+				if (temp==1)  // sega Z
 				{
-					temp=0;    // Sega says this is also an I
+					temp=0;   // convert to i
 				}
-				if (temp==120) // this is an S
+				if (temp==2)  // sega S
 				{
-					temp=0;    // Sega says this is also an I
+					temp=0;   // convert to i
 				}
-				if (temp==114) // this is an S
-				{
-					temp=0;    // Sega says this is also an I
-				}
-				if (temp==113) // this is an S
-				{
-					temp=0;    // Sega says this is also an I
-				}
-			temp=temp%7;   // NOW take mod 7.
-			switch (temp)          // 
+			}
+			switch (temp)          // convert from sega to hebo pieces.
 			{
 				case 1: temp=3; break;
 				case 2: temp=6; break;
@@ -2914,7 +2911,6 @@ void versusInit(int32_t player) {
 				case 6: temp=5; break;
 			default: temp=temp; break; // t and I are correct
 			}
-
 			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 //			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // bloxeed doesn't loop.
 		}

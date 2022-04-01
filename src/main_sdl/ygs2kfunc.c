@@ -251,7 +251,7 @@ bool YGS2kInit()
 	{
 		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
 	}
-
+	// fix to allow rendering to the texture.
 	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight);
 	if ( screenMode & SCREENMODE_SCALEMODE )
@@ -1277,6 +1277,20 @@ void Blt(int pno, int dx, int dy)
 
 void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
+	{
+		SDL_Rect	src = { 0 };
+		SDL_Rect	dst = { 0 };
+
+		src.x = sx;			src.y = sy;
+		src.w = hx;			src.h = hy;
+		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+		dst.w = hx;			dst.h = hy;
+
+		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
+		return;
+	}
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	if ( s_pScreenRenderTarget )
@@ -1340,6 +1354,23 @@ void BltR(int pno, int dx, int dy, int scx, int scy)
 
 void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
 {
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
+	{
+		SDL_Rect	src = { 0 };
+		SDL_Rect	dst = { 0 };
+
+		src.x = sx;					src.y = sy;
+		src.w = hx;					src.h = hy;
+		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+		dst.w = hx * (scx / 65536.0f);
+		dst.h = hy * (scy / 65536.0f);
+
+		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
+
+		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
+		return;
+	}
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
@@ -1397,6 +1428,24 @@ void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, 
 
 void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
 {
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
+	{
+		SDL_Rect	src = { 0 };
+		SDL_Rect	dst = { 0 };
+
+		src.x = sx;					src.y = sy;
+		src.w = hx;					src.h = hy;
+		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
+		dst.w = hx * (scx / 65536.0f);
+		dst.h = hy * (scy / 65536.0f);
+
+		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
+
+		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, ar);
+		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
+		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, SDL_ALPHA_OPAQUE);		return;
+	}
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する

@@ -1405,7 +1405,8 @@ char	*string[STRING_MAX];
 // globals for new randomizers
 uint32_t    SegaSeed[2]={711800410,711800410};     // generates sega's poweron pattern
 uint32_t	BloxeedSeed[2]={711800411,711800411};   // generated Bloxeed's poweron pattern. on ehigher. but see later.
-
+uint32_t	SavedSeed[2]={0,0};							// needed to save randomizer states
+uint32_t	PieceSeed=0;							// needed to generate pieces without loosing saved seed.
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -1710,11 +1711,11 @@ void lastProc(void) {
 	}
 	// TOMOYO E-Heart最終面ギミック C7U0
 	for(pl = 0; pl <= maxPlay ; pl++){
-	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){
-		SwapToSecondary(23);
-		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);
-		SwapToSecondary(23);
-		ExBltFastRect(23, 160*(!pl), 0,160*pl,0,160,240);
+	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){ 
+// 		SwapToSecondary(23);  // does nothing
+//		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);  // does nothing because the previous thing did nothing
+//		SwapToSecondary(23);                               // doe snothing
+		ExBltFastRect(100, 160*(!pl), 0,160*pl,0,160,240);  // hack to render to rendering texture directly if present.
 		if((ending[pl] != 3) && (status[pl] != 21) && (status[pl] != 20)){
 			if(tomoyo_ehfinal_c[pl] < 220)
 				fadec = 19;
@@ -2771,11 +2772,15 @@ void versusInit(int32_t player) {
 
 	// ツモの読み込み #1.60c7g3
 	len = 0;
-
+	PieceSeed=(rand()<<17)+(rand()<<2)+(rand()>>13); // fill it with 32 random bits.
+	SavedSeed[player]=PieceSeed;
+	// re-initialize start_nextc
+	start_nextc[player]=0;		// continuing sets start_nextc to stage_nextc. this undoes this to avoid breaking the FOLLOWING replay.
 	// tomoyoのパターン #1.60c7l9
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
-			len = StrLen(nextb_list);
+			// use sakura bag.
+			len = StrLen(nextb_list);			
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
@@ -2784,7 +2789,8 @@ void versusInit(int32_t player) {
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
-		}else{							//F-Pointは電源パターン
+		}
+			else{							//F-Point stages, use f point pattern.
 			len = StrLen(nextfp_list);
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
@@ -2801,6 +2807,9 @@ void versusInit(int32_t player) {
 	} else if((nextblock == 8)|| ((p_nextblock ==8)&&(gameMode[player] == 5))) {
 		// TGM風NEXT生成#1.60c7h4
 		tgmNextInit(player);
+	} else if((nextblock == 15)|| ((p_nextblock ==15)&&(gameMode[player] == 5))) {
+		// TGM風NEXT生成#1.60c7h4
+		SakuraNextInit(player);
 	} else if((nextblock == 10)|| ((p_nextblock ==10)&&(gameMode[player] == 5))) {
 		//電源パターンNEXT生成
 		len = StrLen(nextdengen_list);
@@ -2841,7 +2850,7 @@ void versusInit(int32_t player) {
 			SegaSeed[player]*=41;							// multiply seed by 41
         	stemp = (uint16_t)SegaSeed[player] + (SegaSeed[player] >> 16); 				// sum lower and upper bits. store as 16 bit
         	SegaSeed[player] = (stemp << 16) | (uint16_t)SegaSeed[player]; // lower bits of sum moved up, and lower bits of original multiplied number saved to new seed
-			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return.
+			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return. multiples of 3 bits give closest to uniform for 7 pieces.
 			switch (temp) 									 // convert pieces from sega to heboris ordering
 			{
 				case 1: temp=3; break;
@@ -2874,9 +2883,26 @@ void versusInit(int32_t player) {
         	d1 = d0*41;
         	stemp = (uint16_t)d1 + (d1 >> 16);
         	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
-			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F)%7);
-
-			switch (temp)          // 
+			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F));  // Bad Sega, less suniform distibution than before!
+			bool ConvertSZ=false;						 // Bloxeed converts 1/8th of all S and Z to I piece (roughly)
+			if ((temp&0x70)==0x70) // all three high bits are set
+			{
+				ConvertSZ=true;    // then convert S and Z to I. aren't we nice?
+			}
+			temp=temp%7;   // NOW we can take mod 7, after checking those high bits.
+			// convert S and Z to I if the top three bits were set.
+			if (ConvertSZ)
+			{
+				if (temp==1)  // sega Z
+				{
+					temp=0;   // convert to i
+				}
+				if (temp==2)  // sega S
+				{
+					temp=0;   // convert to i
+				}
+			}
+			switch (temp)          // convert from sega to hebo pieces.
 			{
 				case 1: temp=3; break;
 				case 2: temp=6; break;
@@ -2885,7 +2911,6 @@ void versusInit(int32_t player) {
 				case 6: temp=5; break;
 			default: temp=temp; break; // t and I are correct
 			}
-
 			if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 //			if (i < 400) nextb[i + (player * 1400)+1000] = temp; // bloxeed doesn't loop.
 		}
@@ -2901,10 +2926,10 @@ void versusInit(int32_t player) {
 					//初手
 					if((shu * i + j == 0) && ( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) )) {
 						do {
-							temp = Rand(7);
+							temp = TGMPiece(&PieceSeed);
 						} while((temp != 0) && (temp != 1) && (temp != 4) && (temp != 5));
 					} else
-						temp = Rand(7);
+						temp = TGMPiece(&PieceSeed);
 
 					if((same == 0) && (mae == temp)) {
 						k = 1;
@@ -2951,10 +2976,10 @@ void tgmNextInit(int32_t player) {
 	// next_adjustが動作してなかったのでとりあえず修正 #1.60c7i4
 	if( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) ) {
 		do {
-			nextb[0 + player * 1400] = Rand(7);
+			nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
 		} while((nextb[0 + player * 1400] == 2) || (nextb[0 + player * 1400] == 3) || (nextb[0 + player * 1400] == 6));
 	} else {
-		nextb[0 + player * 1400] = Rand(7);
+		nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
 	}
 	// 初手生成時に履歴がずれていなかった LITE30.20より C7U1.5
 	for(j = 0; j < 3; j++) {
@@ -2966,12 +2991,12 @@ void tgmNextInit(int32_t player) {
 	// 残りのツモを生成
 	for(i = 1; i < 1400; i++) {
 		// ツモを引く
-		block = Rand(7);
+		block = TGMPiece(&PieceSeed);
 
 		// 引いたツモが履歴にあったら最大4回引き直し→6回に変更c7t3.1	これもリプレイには影響なし？
 		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3])) {
 			for(j = 0; j < 6; j++) {
-				block = Rand(7);
+				block = TGMPiece(&PieceSeed);
 
 				// 4つの履歴に無かったらその場で抜ける
 				if((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
@@ -2992,6 +3017,94 @@ void tgmNextInit(int32_t player) {
 	}
 }
 
+void SakuraNextInit(int32_t player) {
+	int32_t i, j;
+	int32_t history[6];  // history size SIX for this one.
+	int32_t block;
+    
+
+	// empty history. piece can never be a seven, so that's placeholder.
+		history[0] = 7; 
+		history[1] = 7;
+		history[2] = 7;
+		history[3] = 7;
+		history[4] = 7;
+		history[5] = 7;
+
+	// by Arika's superplay, next adjust doesn't happen.
+    // so we start at zero.
+	// a bit different from normal memory 4
+	for(i = 0; i < 1400; i++) {
+		// pick random block
+		block = TGMPiece(&PieceSeed);
+
+		// four rerolls, with special roll for 5
+		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5])) {
+			for(j = 0; j < 4; j++) {
+				block =TGMPiece(&PieceSeed);
+
+				// 4つの履歴に無かったらその場で抜ける
+				if((block != history[0]) && (block != history[1]) && (block != history[2]) &&(block != history[3]) &&(block != history[4]) && (block != history[5]))
+					break;
+			}
+		}
+		// if still in history.
+		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3]) || (block == history[4]) || (block == history[5]))
+		{
+			// flip a coin between second and sixth.
+			block=history[LCGRand(&PieceSeed)%2*4+1]; // can't use shortcut.
+		}
+		// if that was a 7, because it wasn't initialized yet
+		if (block==7)
+		{
+			// then pick a random piece
+			block = TGMPiece(&PieceSeed); // no more repeat checks.
+		}
+		// push up history
+		for(j=0;j<5;j++) {
+			history[5 - j] = history[5 - (j + 1)];
+		}
+
+		// add block to history.
+		history[0] = block;
+
+		// add block to sequence.
+		nextb[i + player * 1400] = block;
+	}
+}
+
+// LCG.  may be used to avoid storing whole piece sequences. ALL TGM games appear to use it :) Slight bias for I piece, since 0=I. Aren't we nice?
+uint32_t LCGRand(uint32_t *lcgseed)
+{
+	uint32_t lcgadd=12345; // default for all TGM games, as far as I know
+	
+	uint32_t lcgmultiply=0x41c64e6d; // default for TAP/TI? Good enough for Arika, good enough for us.
+	*lcgseed=(*lcgseed)*lcgmultiply+lcgadd; // happily ignore overflow
+	return (*lcgseed>>10) & 0x7fff; //return 15 bits after discarding 10 least significant, which provides mostly balanced mod 7 distribution, in theory. :)
+}
+// convert pieces from tgm numbers to heboris numbers. Use on pieces you get from LCGRand to duplicate real TGM seeds.
+int32_t TGMConvert(int32_t piece)
+{
+	int32_t retval;
+				switch (piece)          // 
+			{
+				case 1: retval= 3;break;
+				case 2: retval= 6;break;
+				case 3: retval=  5;break;
+				case 4: retval=  1;break;
+				case 5: retval=  2;break;
+				case 6: retval=  4;break;
+			default: retval=  piece;break; // I is correct
+			}
+			return retval;
+
+}
+// combine them into one function and mod 7 :)
+int32_t TGMPiece(uint32_t *tgmseed)
+{
+	return TGMConvert(LCGRand(tgmseed)%7); // already a pointer
+}
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ガイドライン対応ゲーム風なNEXT生成処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -3008,7 +3121,7 @@ void guidelineNextInit(int32_t player) {
 		for(j = 0; j < 7; j++) block[j] = 0;
 
 		do {
-			tmp = Rand(7);
+			tmp = TGMConvert(LCGRand(&PieceSeed)%7);
 		} while((tmp == 2) || (tmp == 3) || (tmp == 6));
 
 		// ブロックが出たフラグON
@@ -3028,7 +3141,7 @@ void guidelineNextInit(int32_t player) {
 		// ツモ作成
 		for(j = first; j < 7; j++) {
 			do {
-				tmp = Rand(7);	// ツモを引く
+				tmp = TGMConvert(LCGRand(&PieceSeed)%7);	// ツモを引く
 			} while(block[tmp] == 1);
 
 			// ブロックが出たフラグON
@@ -5951,7 +6064,9 @@ void statReady(int32_t player) {
 		if( (gameMode[player] == 6) || ((gameMode[0] == 5) && (p_nextpass)) ) {
 			if((!pass_flg[player]) && (getPressState(player, 7))) {
 				PlaySE(6);	// hold.wav
-
+				// if not in FP-Basic
+				if(!fpbas_mode[player])
+				{
 				hold[player] = next[player];
 
 				// HOLDミノの色を設定 #1.60c7p1
@@ -5973,6 +6088,7 @@ void statReady(int32_t player) {
 				setNextBlockColors(player,0);
 				dhold[player] = 0;
 				dhold2[player] = 0;
+				}
 			}
 			pass_flg[player] = getPressState(player, 7);
 		}
@@ -6165,7 +6281,7 @@ void statBlock(int32_t player) {
 	nextc[player] = (nextc[player] + 1) % 1400;
 	// correction for shorter sequences. 
 	// safe because it will never reach 1400 before these hit. 
-	if (repversw>65)
+	if ((repversw>65) && ((gameMode[player]!=6) || (randommode[player]))) // exception fo tomoyo mode, because it loves to replace the piece sequence without telling you.
 	{
 		if (nextblock==10) // sega poweron pattern
 		{
@@ -9515,6 +9631,8 @@ void statEraseBlock(int32_t player) {
 					b_to_b_flag[player]=lines+1; //Back to Back判定開始
 					if (heboGB[player]>0)      // old stlye hass no back to back
 						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
+					if ((gameMode[player]==9)&& (repversw>65))   // in simple, t-spins DON'T give back to back, only Heboris!  but works with hold replays.
+						b_to_b_flag[player]=0; // this chang actually make t-spins better
 				}
 				else{ //B to B T-Spin erase
 					PlaySE(18);

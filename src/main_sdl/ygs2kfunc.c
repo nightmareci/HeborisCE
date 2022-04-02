@@ -1140,12 +1140,12 @@ void SetVolumeMIDI(int vol)
 
 void SetColorKeyPos(int plane, int x, int y)
 {
-   // sets transparent color to the specified pixel.  Since we use actual alph achannel in ou rassets, this is a no-oop
+   // sets transparent color to the specified pixel.  Since we use actual alpha channel in our assets, this is a no-oop
 }
 
 void EnableBlendColorKey(int plane, int key)
 {
-   // alows for parial transparency.   again, because we use real transparency, its' a no-op.
+   // alows for parial transparency.   again, because we use real transparency, it's a no-op.
 }
 
 void CreateSurface(int surf, int w, int h)
@@ -1161,7 +1161,7 @@ void ClearSecondary()
 
 void SetFillColor(int col)
 {
-	// sets the color that ClearSecondaryuses to fill the render target. since ClearSecondary is a no-op, so is this.
+	// sets the color that ClearSecondary uses to fill the render target. since ClearSecondary is a no-op, so is this.
 }
 
 void LoadFile( const char* filename, void* buf, int size )
@@ -1232,7 +1232,7 @@ void TextColor ( int layer, int r, int g, int b )
 
 void TextBackColorDisable ( int layer )
 {
-	// turns off the shadow effect for text in the listed layer. since we don't eevn use said shadow effect to begin with, it's a no-op.
+	// turns off the shadow effect for text in the listed layer. since we don't even use said shadow effect to begin with, it's a no-op.
 }
 
 void TextSize ( int layer, int size )
@@ -1242,7 +1242,7 @@ void TextSize ( int layer, int size )
 
 void TextHeight ( int layer, int height )
 {
-	// only used in flexdraw.c for ExTextHeight. But since ExTextHeight is unused, we don't need ot bother implementing it. 
+	// only used in flexdraw.c for ExTextHeight. But since ExTextHeight is unused, we don't need to bother implementing it. 
 }
 
 void TextOut ( int layer, const char* text )
@@ -1419,7 +1419,7 @@ void BltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int s
 
 void BltTrans(int pno, int dx, int dy)
 {
-	// completely unused.  so we don't need ot care what it even does.
+	// completely unused.  so we don't need to care what it even does.
 }
 
 void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)

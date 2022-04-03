@@ -1085,7 +1085,7 @@ void LoadWave( const char* filename, int no )
 
 void SetLoopModeWave( int no, int mode )
 {
-
+   // true=loop, false=no loop.  since this is only used on BGMs, and all BGMs already loop, this is a no-op.
 }
 
 void LoadMIDI( const char* filename )
@@ -1140,27 +1140,28 @@ void SetVolumeMIDI(int vol)
 
 void SetColorKeyPos(int plane, int x, int y)
 {
-
+   // sets transparent color to the specified pixel.  Since we use actual alpha channel in our assets, this is a no-oop
 }
 
 void EnableBlendColorKey(int plane, int key)
 {
-
+   // alows for parial transparency.   again, because we use real transparency, it's a no-op.
 }
 
 void CreateSurface(int surf, int w, int h)
 {
-
+    // required for orignal YGS2K engine. not needed at all for SDL2 renderer.
 }
 
 void ClearSecondary()
 {
-
+    // used to write the listed color to all pixels of the rendering area.
+	// with SDL2 renderer, we never need to do this, so it's a no-op
 }
 
 void SetFillColor(int col)
 {
-
+	// sets the color that ClearSecondary uses to fill the render target. since ClearSecondary is a no-op, so is this.
 }
 
 void LoadFile( const char* filename, void* buf, int size )
@@ -1231,7 +1232,7 @@ void TextColor ( int layer, int r, int g, int b )
 
 void TextBackColorDisable ( int layer )
 {
-
+	// turns off the shadow effect for text in the listed layer. since we don't even use said shadow effect to begin with, it's a no-op.
 }
 
 void TextSize ( int layer, int size )
@@ -1241,7 +1242,7 @@ void TextSize ( int layer, int size )
 
 void TextHeight ( int layer, int height )
 {
-
+	// only used in flexdraw.c for ExTextHeight. But since ExTextHeight is unused, we don't need to bother implementing it. 
 }
 
 void TextOut ( int layer, const char* text )
@@ -1418,7 +1419,7 @@ void BltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int s
 
 void BltTrans(int pno, int dx, int dy)
 {
-
+	// completely unused.  so we don't need to care what it even does.
 }
 
 void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
@@ -1493,12 +1494,14 @@ void SetSecondaryOffset(int x, int y)
 
 void SetColorKeyRGB(int pno, int r, int g, int b)
 {
-
+	//  again because we have actual transparency in our assets, this is a no-op.
 }
 
 void SwapToSecondary(int pno)
 {
-
+     // swaps the rendering target with a layer.  not implemented because no one can figuer out HOW in SDL. 
+	 // Only required for EH-Final gimmick, which currently has a workaround.
+	 // it's also used in the graphic loader, and the backgroud loader, but doesn't seem needed.
 }
 
 void SetFPS(int fps)

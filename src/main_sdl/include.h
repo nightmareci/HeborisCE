@@ -4,6 +4,7 @@
 #include "SDL_image.h"
 #include "SDL_mixer.h"
 #include "physfsrwops.h"
+#include "platform.h"
 #include <time.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -13,7 +14,9 @@
 
 #define		FRAMEWORK_NAME		"SDL2"
 
-#if		defined(WIN32)
+#if		defined(VITA)
+#define		FRAMEWORK_VER		"VITA-" FRAMEWORK_NAME
+#elif		defined(WIN32)
 #define		FRAMEWORK_VER		"WIN-" FRAMEWORK_NAME
 #elif	defined(MACOSX)
 #define		FRAMEWORK_VER		"OSX-" FRAMEWORK_NAME

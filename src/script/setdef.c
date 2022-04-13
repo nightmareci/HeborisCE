@@ -50,69 +50,69 @@ typedef struct {
 	int32_t		background;
 } SConfig;
 
-static const SConfig DefaultConfig = {
-	.keyAssign =
-	{
-		SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
-		SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V,
-		SDL_SCANCODE_Q, SDL_SCANCODE_W,
-
-		SDL_SCANCODE_KP_8, SDL_SCANCODE_KP_5, SDL_SCANCODE_KP_4, SDL_SCANCODE_KP_6,
-		SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
-		SDL_SCANCODE_PAGEUP, SDL_SCANCODE_PAGEDOWN,
-	},
-	.fontc = {9,1,2,3,8,4,3,6,7},	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
-	.digitc = {5,5,7,7,5,5,7,7,5},	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
-	.giveupKey = SDL_SCANCODE_Q,		//捨てゲーキー (デフォルトはQ)
-	.ssKey = SDL_SCANCODE_HOME,		//スナップショットキー (デフォルトはHome)
-	.pausekey = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 },	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
-	.dispnextkey = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 },	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
-	.dtc = 1,				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
-	.fldtr = 96,				//フィールド背景非表示時のフィールド透過度(0-256)
-	.dispnext = 3,			//ネクストブロック表示数の選択（０〜３）
-	.movesound = 1,			//ブロック移動音の選択	0:OFF 1:ON
-	.se = 1,
-	.sevolume = 100,
-	.bgm = 0,
-	.bgmvolume = 100,
-	.wavebgm = 0,			//BGMの選択
-	.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
-
-	.breakeffect = 1,	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
-	.showcombo = 0,		//コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
-	.top_frame = 0,		//ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
-
-	.w_reverse = 1,		//ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
-
-	.downtype = 1,		//下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
-
-	.lvupbonus = 0,		//レベルアップボーナス 0:TI 1:TGM/TAP #1.60c7g3
-
-	.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
-
-	.joykeyAssign = { 0 },		//ジョイスティックボタン割り当て
-
-	//Holdボタン(キーボード)割り当て
-	.holdkey = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 },	//default 1p側:V 2p側:テンキー0
-
-	.rots = {2, 1},
-	.lvup = {1, 1},
-
-	.screenMode =SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL,
-	.screenIndex =0,
-	.nextblock =8,
-	.cfgversion =CFG_VERSION,
-	.smooth =0,
-	.nanameallow =1,
-	.sonicdrop =0,
-	.blockflash =3,
-	.fastlrmove =1,
-	.background =2,
-};
-
 
 int32_t SetDefaultConfig()
 {
+	const SConfig DefaultConfig = {
+		.keyAssign =
+		{
+			SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
+			SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V,
+			SDL_SCANCODE_Q, SDL_SCANCODE_W,
+
+			SDL_SCANCODE_KP_8, SDL_SCANCODE_KP_5, SDL_SCANCODE_KP_4, SDL_SCANCODE_KP_6,
+			SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
+			SDL_SCANCODE_PAGEUP, SDL_SCANCODE_PAGEDOWN,
+		},
+		.fontc = {9,1,2,3,8,4,3,6,7},	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
+		.digitc = {5,5,7,7,5,5,7,7,5},	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
+		.giveupKey = SDL_SCANCODE_Q,		//捨てゲーキー (デフォルトはQ)
+		.ssKey = SDL_SCANCODE_HOME,		//スナップショットキー (デフォルトはHome)
+		.pausekey = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 },	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
+		.dispnextkey = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 },	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
+		.dtc = 1,				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
+		.fldtr = 96,				//フィールド背景非表示時のフィールド透過度(0-256)
+		.dispnext = 3,			//ネクストブロック表示数の選択（０〜３）
+		.movesound = 1,			//ブロック移動音の選択	0:OFF 1:ON
+		.se = 1,
+		.sevolume = 100,
+		.bgm = 0,
+		.bgmvolume = 100,
+		.wavebgm = 0,			//BGMの選択
+		.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
+
+		.breakeffect = 1,	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
+		.showcombo = 0,		//コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
+		.top_frame = 0,		//ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
+
+		.w_reverse = 1,		//ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
+
+		.downtype = 1,		//下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
+
+		.lvupbonus = 0,		//レベルアップボーナス 0:TI 1:TGM/TAP #1.60c7g3
+
+		.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
+
+		.joykeyAssign = DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
+
+		//Holdボタン(キーボード)割り当て
+		.holdkey = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 },	//default 1p側:V 2p側:テンキー0
+
+		.rots = {2, 1},
+		.lvup = {1, 1},
+
+		.screenMode =DEFAULT_SCREEN_MODE,
+		.screenIndex =0,
+		.nextblock =8,
+		.cfgversion =CFG_VERSION,
+		.smooth =0,
+		.nanameallow =1,
+		.sonicdrop =0,
+		.blockflash =3,
+		.fastlrmove =1,
+		.background =2,
+	};
+
 	int32_t i,j, cfgbuf[CFG_LENGTH];
 
 	keyAssign[7] = DefaultConfig.holdkey[0];
@@ -173,6 +173,30 @@ int32_t SetDefaultConfig()
 	cfgbuf[77] = DefaultConfig.digitc[4] + DefaultConfig.digitc[5] * 0x100 + DefaultConfig.digitc[6] * 0x10000 + DefaultConfig.digitc[7] * 0x1000000 ;
 	cfgbuf[78] = DefaultConfig.fontc[8] + DefaultConfig.fontc[9] * 0x100 + DefaultConfig.fontc[10] * 0x10000 + DefaultConfig.fontc[11] * 0x1000000 ;
 	cfgbuf[79] = DefaultConfig.digitc[8] + DefaultConfig.digitc[9] * 0x100 + DefaultConfig.digitc[10] * 0x10000 + DefaultConfig.digitc[11] * 0x1000000 ;
+
+	int32_t *joykeybuf = &cfgbuf[80];
+	for (int32_t pl = 0; pl < 2; pl++) {
+		for (int32_t key = 0; key < 10; key++) {
+			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
+			const SJoyKey *pljoy = &DefaultConfig.joykeyAssign[pl * 10 + key];
+			plbuf[0] = pljoy->device;
+			for (int32_t i = 0; i < 4; i++) {
+				plbuf[1 + i] = pljoy->guid.data[i];
+			}
+			plbuf[5] = pljoy->type;
+			switch (pljoy->type) {
+			case JOYKEY_AXIS:
+			case JOYKEY_HAT:
+				plbuf[6] = pljoy->setting.index;
+				plbuf[7] = pljoy->setting.value;
+				break;
+
+			case JOYKEY_BUTTON:
+				plbuf[6] = pljoy->setting.button;
+				break;
+			}
+		}
+	}
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 

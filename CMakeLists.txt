@@ -52,7 +52,15 @@ if(CMAKE_C_COMPILER_ID MATCHES Clang)
 endif()
 
 set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default, the current platform is the build target. Can be explicitly set to \"Vita\", to force building for PlayStation Vita.")
+
 message(STATUS "Build target: ${BUILD_TARGET}")
+
+# Override these defaults for platforms as required. These defaults are
+# intended for "desktop" platforms, where keyboard input is guaranteed, with
+# the game created in a window, in the high detail 640x480 screen mode.
+set(DEFAULT_JOYKEY_ASSIGN "{ 0 }")
+set(DEFAULT_SCREEN_MODE "(SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL)")
+set(SCREEN_SUBPIXEL_OFFSET "GetScreenSubpixelOffset()")
 
 if(${BUILD_TARGET} STREQUAL Vita)
 	add_compile_definitions(VITA)

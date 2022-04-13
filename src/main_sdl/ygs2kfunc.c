@@ -138,6 +138,89 @@ bool YGS2kInit()
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
 
+#ifdef LINUX_GPIO
+	const char* chipName = "gpiochip0";
+
+	s_pGPIOChip = gpiod_chip_open_by_name(chipName);
+	if ( !s_pGPIOChip )
+	{
+		fprintf(stderr, "Failed opening GPIO chip \"%s\". Continuing without GPIO input support.\n", chipName);
+	}
+	else {
+		memset(s_iGPIORepeat, 0, sizeof(s_iGPIORepeat));
+		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
+		if (
+			!(s_pGPIOLines[0] = gpiod_chip_get_line(s_pGPIOChip,  5)) ||
+			!(s_pGPIOLines[1] = gpiod_chip_get_line(s_pGPIOChip, 13)) ||
+			!(s_pGPIOLines[2] = gpiod_chip_get_line(s_pGPIOChip,  6)) ||
+			!(s_pGPIOLines[3] = gpiod_chip_get_line(s_pGPIOChip, 12)) ||
+			!(s_pGPIOLines[4] = gpiod_chip_get_line(s_pGPIOChip, 19)) ||
+			!(s_pGPIOLines[5] = gpiod_chip_get_line(s_pGPIOChip, 16)) ||
+			!(s_pGPIOLines[6] = gpiod_chip_get_line(s_pGPIOChip, 26)) ||
+			!(s_pGPIOLines[7] = gpiod_chip_get_line(s_pGPIOChip, 20)) ||
+			!(s_pGPIOLines[8] = gpiod_chip_get_line(s_pGPIOChip, 21)) ||
+			!(s_pGPIOLines[9] = gpiod_chip_get_line(s_pGPIOChip,  4))
+		)
+		{
+			for ( int i = 0 ; i < 10 ; i ++ )
+			{
+				if (s_pGPIOLines[i]) {
+					gpiod_line_release(s_pGPIOLines[i]);
+					s_pGPIOLines[i] = NULL;
+				}
+			}
+			gpiod_chip_close(s_pGPIOChip);
+			s_pGPIOChip = NULL;
+			fprintf(stderr, "Failed opening GPIO lines. Continuing without GPIO input support.\n");
+		}
+		else
+		{
+			for ( int i = 0 ; i < 10 ; i ++ )
+			{
+				if (gpiod_line_request_input(s_pGPIOLines[i], "input") < 0)
+				{
+					for ( int j = 0 ; j < 10 ; i ++ )
+					{
+						gpiod_line_release(s_pGPIOLines[j]);
+						s_pGPIOLines[i] = NULL;
+					}
+					gpiod_chip_close(s_pGPIOChip);
+					s_pGPIOChip = NULL;
+					fprintf(stderr, "Failed setting GPIO lines for input. Continuing without GPIO input support.\n");
+					break;
+				}
+			}
+		}
+	}
+#endif
+
+	/* キーリピートバッファ初期化 */
+	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
+
+	/* パッドの初期化 */
+	if ((s_iJoyPadMax = SDL_NumJoysticks()))
+	{
+		s_pJoyPads = (SDL_Joystick**)malloc(sizeof(SDL_Joystick*) * s_iJoyPadMax);
+		s_pJoyAxisMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+		s_pJoyHatMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+		s_pJoyButtonMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
+
+		s_pJoyAxisRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+		s_pJoyHatRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+		s_pJoyButtonRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
+		for (int i = 0; i < s_iJoyPadMax; i++) {
+			s_pJoyPads[i] = SDL_JoystickOpen(i);
+
+			s_pJoyAxisMax[i] = SDL_JoystickNumAxes(s_pJoyPads[i]);
+			s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
+			s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
+
+			s_pJoyAxisRepeat[i] = (int*)calloc((size_t)s_pJoyAxisMax[i] * 2, sizeof(int));
+			s_pJoyHatRepeat[i] = (int*)calloc((size_t)s_pJoyHatMax[i] * 4, sizeof(int));
+			s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
+		}
+	}
+
 	/* CONFIG.SAVより設定をロード */
 	if ( LoadConfig() )
 	{
@@ -156,7 +239,7 @@ bool YGS2kInit()
 			displayIndex >= SDL_GetNumVideoDisplays() ||
 			(windowType == SCREENMODE_FULLSCREEN && modeIndex >= SDL_GetNumDisplayModes(displayIndex))
 	) {
-		screenMode = SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL;
+		screenMode = DEFAULT_SCREEN_MODE;
 		screenIndex = 0;
 		windowFlags |= SDL_WINDOW_RESIZABLE;
 		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(screenIndex);
@@ -259,7 +342,7 @@ bool YGS2kInit()
 		SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE);
 		SDL_SetWindowMinimumSize(s_pScreenWindow, logicalWidth, logicalHeight);
 	}
-	s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
+	s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
 	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
 		if ( !(screenMode & SCREENMODE_RENDERLEVEL) )
@@ -278,89 +361,6 @@ bool YGS2kInit()
 
 	/* マウスカーソルを消す場合は */
 	SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) );
-
-#ifdef LINUX_GPIO
-	const char* chipName = "gpiochip0";
-
-	s_pGPIOChip = gpiod_chip_open_by_name(chipName);
-	if ( !s_pGPIOChip )
-	{
-		fprintf(stderr, "Failed opening GPIO chip \"%s\". Continuing without GPIO input support.\n", chipName);
-	}
-	else {
-		memset(s_iGPIORepeat, 0, sizeof(s_iGPIORepeat));
-		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
-		if (
-			!(s_pGPIOLines[0] = gpiod_chip_get_line(s_pGPIOChip,  5)) ||
-			!(s_pGPIOLines[1] = gpiod_chip_get_line(s_pGPIOChip, 13)) ||
-			!(s_pGPIOLines[2] = gpiod_chip_get_line(s_pGPIOChip,  6)) ||
-			!(s_pGPIOLines[3] = gpiod_chip_get_line(s_pGPIOChip, 12)) ||
-			!(s_pGPIOLines[4] = gpiod_chip_get_line(s_pGPIOChip, 19)) ||
-			!(s_pGPIOLines[5] = gpiod_chip_get_line(s_pGPIOChip, 16)) ||
-			!(s_pGPIOLines[6] = gpiod_chip_get_line(s_pGPIOChip, 26)) ||
-			!(s_pGPIOLines[7] = gpiod_chip_get_line(s_pGPIOChip, 20)) ||
-			!(s_pGPIOLines[8] = gpiod_chip_get_line(s_pGPIOChip, 21)) ||
-			!(s_pGPIOLines[9] = gpiod_chip_get_line(s_pGPIOChip,  4))
-		)
-		{
-			for ( int i = 0 ; i < 10 ; i ++ )
-			{
-				if (s_pGPIOLines[i]) {
-					gpiod_line_release(s_pGPIOLines[i]);
-					s_pGPIOLines[i] = NULL;
-				}
-			}
-			gpiod_chip_close(s_pGPIOChip);
-			s_pGPIOChip = NULL;
-			fprintf(stderr, "Failed opening GPIO lines. Continuing without GPIO input support.\n");
-		}
-		else
-		{
-			for ( int i = 0 ; i < 10 ; i ++ )
-			{
-				if (gpiod_line_request_input(s_pGPIOLines[i], "input") < 0)
-				{
-					for ( int j = 0 ; j < 10 ; i ++ )
-					{
-						gpiod_line_release(s_pGPIOLines[j]);
-						s_pGPIOLines[i] = NULL;
-					}
-					gpiod_chip_close(s_pGPIOChip);
-					s_pGPIOChip = NULL;
-					fprintf(stderr, "Failed setting GPIO lines for input. Continuing without GPIO input support.\n");
-					break;
-				}
-			}
-		}
-	}
-#endif
-
-	/* キーリピートバッファ初期化 */
-	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
-
-	/* パッドの初期化 */
-	if ((s_iJoyPadMax = SDL_NumJoysticks()))
-	{
-		s_pJoyPads = (SDL_Joystick**)malloc(sizeof(SDL_Joystick*) * s_iJoyPadMax);
-		s_pJoyAxisMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-		s_pJoyHatMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-		s_pJoyButtonMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-
-		s_pJoyAxisRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-		s_pJoyHatRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-		s_pJoyButtonRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-		for (int i = 0; i < s_iJoyPadMax; i++) {
-			s_pJoyPads[i] = SDL_JoystickOpen(i);
-
-			s_pJoyAxisMax[i] = SDL_JoystickNumAxes(s_pJoyPads[i]);
-			s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
-			s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
-
-			s_pJoyAxisRepeat[i] = (int*)calloc((size_t)s_pJoyAxisMax[i] * 2, sizeof(int));
-			s_pJoyHatRepeat[i] = (int*)calloc((size_t)s_pJoyHatMax[i] * 4, sizeof(int));
-			s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
-		}
-	}
 
 	/* テクスチャ領域の初期化 */
 	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
@@ -594,7 +594,7 @@ bool YGS2kHalt()
 				break;
 			case SDL_WINDOWEVENT:
 				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-					s_fScreenSubpixelOffset = GetScreenSubpixelOffset();
+					s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
 				}
 				break;
 

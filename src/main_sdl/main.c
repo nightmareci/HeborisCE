@@ -1,8 +1,5 @@
 #include "main_sdl/include.h"
 #include "script/config.h"
-#ifndef USE_PHYSFS_SETSANECONFIG
-#include "paths.h"
-#endif
 #include "gamestart.h"
 #include "physfs.h"
 #include <assert.h>

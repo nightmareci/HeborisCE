@@ -1,3 +1,5 @@
+set(FRAMEWORK_VER "MACOS-SDL2")
+
 # Builds Mac application bundle, packaged into a DMG with CPack by default.
 
 if(${PACKAGE_TYPE} STREQUAL "Portable Mac App")
@@ -6,7 +8,7 @@ if(${PACKAGE_TYPE} STREQUAL "Portable Mac App")
 	set(BASE_PATH "SDL_GetBasePath()")
 	set(BASE_PATH_APPEND "\"\"")
 	set(PREF_PATH "SDL_GetBasePath()")
-	configure_file("${SRC}/src/main_sdl/platform.h.in" "${BIN}/src/main_sdl/platform.h" @ONLY)
+	configure_file("${SRC}/src/main_sdl/defs.h.in" "${BIN}/src/main_sdl/defs.h" @ONLY)
 	set_source_files_properties("${SRC}/pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 	set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
 	set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
@@ -18,7 +20,7 @@ elseif(${PACKAGE_TYPE} STREQUAL "Installable Mac App")
 	set(BASE_PATH "SDL_GetBasePath()")
 	set(BASE_PATH_APPEND "\"\"")
 	set(PREF_PATH "SDL_GetPrefPath(\"nightmareci\", \"HeborisC7EX SDL2\")")
-	configure_file("${SRC}/src/main_sdl/platform.h.in" "${BIN}/src/main_sdl/platform.h" @ONLY)
+	configure_file("${SRC}/src/main_sdl/defs.h.in" "${BIN}/src/main_sdl/defs.h" @ONLY)
 	set_source_files_properties("${SRC}/pkg/macos/${EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 	set(MACOSX_BUNDLE_BUNDLE_NAME ${EXE})
 	set(MACOSX_BUNDLE_GUI_IDENTIFIER ${BUNDLE_IDENTIFIER})
@@ -31,7 +33,7 @@ endif()
 set_target_properties(${EXE} PROPERTIES
 	MACOSX_BUNDLE_INFO_PLIST "${SRC}/pkg/macos/MacOSXBundleInfo.plist.in"
 	INSTALL_RPATH @executable_path
-	RUNTIME_OUTPUT_DIRECTORY ${BIN}
+	RUNTIME_OUTPUT_DIRECTORY "${BIN}"
 )
 
 if(${PACKAGE_TYPE} MATCHES Portable)
@@ -48,7 +50,7 @@ elseif(${PACKAGE_TYPE} MATCHES Installable)
 	install(DIRECTORY "${SRC}/res" DESTINATION "${EXE}.app/Contents/Resources")
 endif()
 
-include(${SRC}/cmake/unix/AddLibrariesPkgConfig.cmake REQUIRED)
+include("${SRC}/cmake/unix/AddLibrariesPkgConfig.cmake" REQUIRED)
 AddLibrariesPkgConfig(${EXE})
 
 set(APPLE_CERT_NAME - CACHE STRING "The name of the Apple supplied code signing certificate to use. Defaults to adhoc signing (\"-\")")

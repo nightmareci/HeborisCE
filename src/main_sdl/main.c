@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 		}
 	}
 #ifdef USE_PHYSFS_SETSANECONFIG
-	else if ( !PHYSFS_setSaneConfig("nightmareci", "HeborisC7EX SDL2", NULL, 0, 0) ) {
+	else if ( !PHYSFS_setSaneConfig("nightmareci", "HeborisC7EX SDL2", "ZIP", 0, 0) ) {
 		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		return quit(EXIT_FAILURE);
 	}

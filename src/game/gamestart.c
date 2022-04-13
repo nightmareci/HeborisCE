@@ -1390,7 +1390,7 @@ int32_t fade_seed = 20;	// BGMフェードアウト用
 int32_t se_play[50];
 
 // 文字列定数
-cstr		version = "C7V4EX 07/11/23 " FRAMEWORK_VER " V" HEBORISC7EXSDL2_VERSION;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
+cstr		version = "C7V4EX 07/11/23 " FRAMEWORK_VER " V" PROJECT_VER;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 cstr		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */
@@ -1856,7 +1856,7 @@ void title(void) {
 		// バージョン表示
 		printFont(27, 13, "VERSION 1.60", 4);
 		printFont(27, 14, "(2002/03/31)", 6);
-		sprintf(string[0], "%20s", version);
+		sprintf(string[0], "%s", version);
 		printFont(20 - StrLen(version) / 2, 16, string[0], 1); // #1.60c7f4
 
 		// モード0: ボタン入力待ち

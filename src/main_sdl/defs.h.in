@@ -1,0 +1,26 @@
+#pragma once
+
+#define PROJECT_VER "@PROJECT_VER@"
+
+#cmakedefine BASE_PATH @BASE_PATH@
+#cmakedefine BASE_PATH_APPEND @BASE_PATH_APPEND@
+#cmakedefine PREF_PATH @PREF_PATH@
+
+#cmakedefine USE_PHYSFS_SETSANECONFIG
+
+#cmakedefine LINUX_GPIO
+
+#define DEFAULT_JOYKEY_ASSIGN @DEFAULT_JOYKEY_ASSIGN@
+#define DEFAULT_SCREEN_MODE @DEFAULT_SCREEN_MODE@
+
+#define SCREEN_SUBPIXEL_OFFSET @SCREEN_SUBPIXEL_OFFSET@
+
+#define FRAMEWORK_VER "@FRAMEWORK_VER@"
+
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+#define SWAP16(X)    (X)
+#define SWAP32(X)    (X)
+#else
+#define SWAP16(X)    SDL_Swap16(X)
+#define SWAP32(X)    SDL_Swap32(X)
+#endif

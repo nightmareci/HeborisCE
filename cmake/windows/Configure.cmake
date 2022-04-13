@@ -1,3 +1,5 @@
+set(FRAMEWORK_VER "WINDOWS-SDL2")
+
 find_package(SDL2 REQUIRED)
 find_package(sdl2-image REQUIRED)
 find_package(sdl2-mixer REQUIRED)
@@ -54,4 +56,4 @@ else()
 	install(FILES "${SRC}/changelog.txt" "${SRC}/heboris.txt" "${SRC}/README.md" DESTINATION ".")
 	include("${SRC}/cmake/windows/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
 endif()
-configure_file("${SRC}/src/main_sdl/platform.h.in" "src/main_sdl/platform.h" @ONLY)
+configure_file("${SRC}/src/main_sdl/defs.h.in" "src/main_sdl/defs.h" @ONLY)

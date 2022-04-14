@@ -7,7 +7,6 @@
 
 #include "ygs2kfunc.h"
 #include "prototypes.h"
-#include "gamedef.h"
 
 #define		STRING_MAX		200
 #define		cstr			const char*

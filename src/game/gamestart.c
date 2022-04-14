@@ -1430,7 +1430,6 @@ void gameMain(void) {
 
 		initialize();
 
-
 		loop {
 			StopAllWaves();
 			StopAllBGM();
@@ -15288,6 +15287,27 @@ void testmenu(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void initialize(void) {
 	int32_t i, j;
+	int32_t oldScreenMode;
+	int32_t oldScreenIndex;
+
+	if(LoadConfig()) {	//CONFIG.SAVより設定をロード
+		SetDefaultConfig();
+		LoadConfig();
+	}
+
+	oldScreenMode = screenMode;
+	oldScreenIndex = screenIndex;
+	if ( !SetScreen(&screenMode, &screenIndex) )
+	{
+		loopFlag = 0;
+		restart = 0;
+		return;
+	}
+	if ( screenMode != oldScreenMode || screenIndex != oldScreenIndex )
+	{
+		SaveConfig();
+	}
+
 	BltAlways(true);
 	SetFillColor(0);
 	ClearSecondary();
@@ -15314,20 +15334,6 @@ void initialize(void) {
 	//TextLayerOn(2, 10, 75);
 	//TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
 	//halt;
-
-
-	TextLayerOn(3, 10, 10);
-	TextOut(3, "Config Loading");
-	for ( int i = 1 ; i <= 5 ; i ++ )
-	{
-		TextBlt(i);
-	}
-	halt;
-
-	if(LoadConfig()) {	//CONFIG.SAVより設定をロード
-		SetDefaultConfig();
-		LoadConfig();
-	}
 
 	hnext[0] = dispnext;	// #1.60c7o8
 	hnext[1] = dispnext;	// #1.60c7o8

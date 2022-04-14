@@ -6,19 +6,9 @@ else()
 	include("${VITASDK}/share/vita.cmake" REQUIRED)
 endif()
 
-set(VITA_APP_NAME ${EXE})
-
-set(VITA_TITLEID  "NMCI00000")
-
-set(VITA_VERSION  "01.00")
-
-set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=12")
-
 add_executable(${EXE} ${EXE_SOURCES})
 
 set(USE_PHYSFS_SETSANECONFIG TRUE)
-
-set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default, the current platform is the build target. Can be explicitly set to \"Vita\", to force building for PlayStation Vita.")
 
 set(DEFAULT_JOYKEY_ASSIGN [[
 \
@@ -157,6 +147,11 @@ file(ARCHIVE_CREATE OUTPUT "${BIN}/assets.zip"
 	PATHS "${SRC}/res" "${SRC}/config/mission" "${SRC}/config/stage"
 	FORMAT zip
 )
+
+set(VITA_APP_NAME ${EXE})
+set(VITA_TITLEID  "NMCI00000")
+set(VITA_VERSION  "01.00")
+set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=12")
 
 vita_create_self(${EXE}.self ${EXE} UNSAFE)
 vita_create_vpk(${EXE}.vpk ${VITA_TITLEID} ${EXE}.self

@@ -49,4 +49,5 @@ extern int32_t smooth;
 extern int32_t nextblock;
 extern int32_t displayIndex;
 extern int32_t screenMode;
+extern int32_t screenIndex;
 extern int32_t segacheat;

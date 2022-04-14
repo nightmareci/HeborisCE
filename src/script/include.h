@@ -5,7 +5,6 @@
 
 #include "game/init.h"
 #include "game/prototypes.h"
-#include "game/gamedef.h"
 #include "game/speed.h"			// レベル調整
 #include "game/gamestart.h"
 

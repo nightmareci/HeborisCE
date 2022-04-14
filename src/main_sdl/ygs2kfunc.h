@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SDL.h"
+#include <stdint.h>
 
 #ifdef		TextOut
 #undef		TextOut
@@ -18,6 +19,32 @@ bool YGS2kHalt();
 void YGS2kTextOut(int x, int y, const char* text, int r, int g, int b, int size);
 
 int IsPlayMIDI();
+
+typedef enum EScreenModeFlag {
+	SCREENMODE_WINDOW,
+	SCREENMODE_WINDOW_MAXIMIZED,
+	SCREENMODE_FULLSCREEN_DESKTOP,
+	SCREENMODE_FULLSCREEN,
+	SCREENMODE_NUMWINDOWTYPES,
+	SCREENMODE_WINDOWTYPE = 0x3,
+	SCREENMODE_DETAILLEVEL = 0x4,
+	SCREENMODE_VSYNC = 0x8,
+	SCREENMODE_SCALEMODE = 0x10,
+	SCREENMODE_RENDERLEVEL = 0x20
+} EScreenModeFlag;
+
+typedef enum EScreenIndexMask {
+	SCREENINDEX_DISPLAY = 0x0000FFFF,
+	SCREENINDEX_MODE = 0xFFFF0000
+} EScreenIndexMask;
+
+#define SCREENINDEX_DISPLAY_TOVALUE(setting) (((int)(setting)) & 0xFFFF)
+#define SCREENINDEX_DISPLAY_TOSETTING(value) (((int32_t)(value)) & SCREENINDEX_DISPLAY)
+
+#define SCREENINDEX_MODE_TOVALUE(setting) ((int)((((uint32_t)(setting)) & SCREENINDEX_MODE) >> 16))
+#define SCREENINDEX_MODE_TOSETTING(setting) ((int32_t)((((uint32_t)(setting)) << 16) & SCREENINDEX_MODE))
+
+#define SCREENINDEX_TOSETTING(display, mode) (((int32_t)((mode) & 0xFFFF) << 16) | (int32_t)((display) & 0xFFFF))
 
 typedef struct {
 	int32_t data[4];
@@ -61,6 +88,7 @@ int GetMaxJoyAxis( int device );
 int GetMaxJoyHat( int device );
 int GetMaxJoyButton( int device );
 
+int SetScreen(int32_t *screenMode, int32_t *screenIndex);
 int GetMaxDisplayIndex();
 int GetMaxDisplayMode( int displayIndex );
 int RenderLevelLowSupported();

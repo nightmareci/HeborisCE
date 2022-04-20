@@ -7,7 +7,7 @@ find_package(PhysFS REQUIRED)
 
 add_executable(${EXE}
 	${EXE_SOURCES}
-	"${SRC}/pkg/windows/Icon.rc"
+	"${SRC}/pkg/windows/icon.rc"
 )
 target_link_libraries(${EXE}
 	PUBLIC
@@ -18,7 +18,7 @@ target_link_libraries(${EXE}
 		${PHYSFS_LIBRARY}
 )
 target_include_directories(${EXE} SYSTEM PRIVATE
-	${PHYSFS_INCLUDE_DIR}
+	"${PHYSFS_INCLUDE_DIR}"
 )
 
 option(HIDE_WINDOWS_CONSOLE "Hide the Windows console.")
@@ -32,20 +32,13 @@ target_link_options(${EXE}
 
 if(${PACKAGE_TYPE} STREQUAL "WorkingDir")
 	message(STATUS "Configuring working directory version; CMake installation is not supported")
-	set(BASE_PATH "SDL_strdup(\"./\")")
-	set(BASE_PATH_APPEND "\"\"")
-	set(PREF_PATH "SDL_strdup(\"./\")")
 else()
 	if(${PACKAGE_TYPE} STREQUAL "Portable")
 		message(STATUS "Configuring portable package")
-		set(BASE_PATH "SDL_GetBasePath()")
-		set(BASE_PATH_APPEND "\"\"")
-		set(PREF_PATH "SDL_GetBasePath()")
+		set(FILESYSTEM_TYPE FILESYSTEM_PORTABLE)
 	elseif(${PACKAGE_TYPE} STREQUAL "Installable")
 		message(STATUS "Configuring installable package")
-		set(BASE_PATH "SDL_GetBasePath()")
-		set(BASE_PATH_APPEND "\"\"")
-		set(PREF_PATH "SDL_GetPrefPath(\"nightmareci\", \"HeborisC7EX SDL2\")")
+		set(FILESYSTEM_TYPE FILESYSTEM_INSTALLABLE)
 	else()
 		message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
 	endif()

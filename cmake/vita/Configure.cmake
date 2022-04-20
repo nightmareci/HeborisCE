@@ -8,7 +8,7 @@ endif()
 
 add_executable(${EXE} ${EXE_SOURCES})
 
-set(USE_PHYSFS_SETSANECONFIG TRUE)
+set(FILESYSTEM_TYPE FILESYSTEM_PHYSFS)
 
 set(DEFAULT_JOYKEY_ASSIGN [[
 \
@@ -149,11 +149,11 @@ file(ARCHIVE_CREATE OUTPUT "${BIN}/assets.zip"
 )
 
 set(VITA_APP_NAME ${EXE})
-set(VITA_TITLEID  "NMCI00000")
-set(VITA_VERSION  "01.00")
+set(VITA_TITLEID "NMCI00000")
+set(VITA_VERSION "01.00")
 set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=12")
 
-vita_create_self(${EXE}.self ${EXE} UNSAFE)
+vita_create_self(${EXE}.self ${EXE})
 vita_create_vpk(${EXE}.vpk ${VITA_TITLEID} ${EXE}.self
 	VERSION ${VITA_VERSION}
 	NAME "${VITA_APP_NAME}"

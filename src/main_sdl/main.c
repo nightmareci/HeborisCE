@@ -95,42 +95,73 @@ int main(int argc, char* argv[])
 			return quit(EXIT_FAILURE);
 		}
 	}
-#ifdef USE_PHYSFS_SETSANECONFIG
-	else if ( !PHYSFS_setSaneConfig("nightmareci", "HeborisC7EX SDL2", "ZIP", 0, 0) ) {
-		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return quit(EXIT_FAILURE);
-	}
-#else
-	else {
-		char *basePath;
-		if ( !(basePath = BASE_PATH) )
+#if FILESYSTEM_TYPE == FILESYSTEM_WORKINGDIR
+	else
+	{
+		if ( !PHYSFS_mount("./", NULL, 0) )
 		{
-			fprintf(stderr, "Failed getting base path.\n");
+			fprintf(stderr, "Error mounting working directory: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			return quit(EXIT_FAILURE);
 		}
-		char* basePathAppended;
-		if ( !(basePathAppended = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1)) )
+		if ( !PHYSFS_setWriteDir("./") )
 		{
-			fprintf(stderr, "Failed creating base path.\n");
+			fprintf(stderr, "Error setting working directory for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			return quit(EXIT_FAILURE);
+		}
+	}
+#elif FILESYSTEM_TYPE == FILESYSTEM_PORTABLE
+	else
+	{
+		char *basePath = SDL_GetBasePath();
+		if ( !basePath )
+		{
+			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
+			return quit(EXIT_FAILURE);
+		}
+		if ( !PHYSFS_mount(basePath, NULL, 0) )
+		{
+			fprintf(stderr, "Error mounting base path \"%s\": %s\n", basePath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			free(basePath);
+			return quit(EXIT_FAILURE);
+		}
+		if ( !PHYSFS_setWriteDir(basePath) )
+		{
+			fprintf(stderr, "Error setting working directory for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 			SDL_free(basePath);
 			return quit(EXIT_FAILURE);
 		}
-		sprintf(basePathAppended, "%s%s", basePath, BASE_PATH_APPEND);
 		SDL_free(basePath);
-		basePath = NULL;
-		if ( !PHYSFS_mount(basePathAppended, NULL, 0) )
+	}
+#elif FILESYSTEM_TYPE == FILESYSTEM_INSTALLABLE
+	else
+	{
+		char *basePath = SDL_GetBasePath();
+		if ( !basePath )
 		{
-			fprintf(stderr, "Error mounting base path \"%s\": %s\n", basePathAppended, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			free(basePathAppended);
+			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
 			return quit(EXIT_FAILURE);
 		}
-		free(basePathAppended);
-		basePathAppended = NULL;
-
-		char *prefPath;
-		if ( !(prefPath = PREF_PATH) )
+		char* fullBasePath;
+		if ( !(fullBasePath = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1)) )
 		{
-			fprintf(stderr, "Failed getting pref path.\n");
+			fprintf(stderr, "Failed creating full base path.\n");
+			SDL_free(basePath);
+			return quit(EXIT_FAILURE);
+		}
+		sprintf(fullBasePath, "%s%s", basePath, BASE_PATH_APPEND);
+		SDL_free(basePath);
+		if ( !PHYSFS_mount(fullBasePath, NULL, 0) )
+		{
+			fprintf(stderr, "Error mounting full base path \"%s\": %s\n", fullBasePath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			free(fullBasePath);
+			return quit(EXIT_FAILURE);
+		}
+		free(fullBasePath);
+
+		char *prefPath = SDL_GetPrefPath(PROJECT_ORG, PROJECT_APP);
+		if ( !prefPath )
+		{
+			fprintf(stderr, "Failed getting pref path: %s\n", SDL_GetError());
 			return quit(EXIT_FAILURE);
 		}
 		if ( !PHYSFS_setWriteDir(prefPath) )
@@ -146,8 +177,15 @@ int main(int argc, char* argv[])
 			return quit(EXIT_FAILURE);
 		}
 		SDL_free(prefPath);
-		prefPath = NULL;
 	}
+#elif FILESYSTEM_TYPE == FILESYSTEM_PHYSFS
+	else if ( !PHYSFS_setSaneConfig(PROJECT_ORG, PROJECT_APP, "ZIP", 0, 0) )
+	{
+		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+		return quit(EXIT_FAILURE);
+	}
+#else
+	#error FILESYSTEM_TYPE must be defined as FILESYSTEM_WORKINGDIR, FILESYSTEM_PORTABLE, FILESYSTEM_INSTALLABLE, or FILESYSTEM_PHYSFS.
 #endif
 
 	if (

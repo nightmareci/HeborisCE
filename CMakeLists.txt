@@ -5,16 +5,18 @@ project(HeborisC7EX-SDL2
 )
 
 set(PROJECT_VER "${CMAKE_PROJECT_VERSION}")
+set(PROJECT_ORG "nightmareci")
+set(PROJECT_APP "HeborisC7EX SDL2")
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
 # NOTE: All strings containing these must be quoted; if not quoted, and the
 # path(s) happen to contain spaces, the build will fail.
-set(SRC ${CMAKE_CURRENT_SOURCE_DIR})
-set(BIN ${CMAKE_CURRENT_BINARY_DIR})
+set(SRC "${CMAKE_SOURCE_DIR}")
+set(BIN "${CMAKE_BINARY_DIR}")
 
-set(EXE HeborisC7EX-SDL2)
+set(EXE ${CMAKE_PROJECT_NAME})
 set(EXE_SOURCES
 	"${SRC}/src/game/gamestart.c"
 	"${SRC}/src/game/speed.c"
@@ -63,7 +65,8 @@ set(DEFAULT_JOYKEY_ASSIGN "{ 0 }")
 set(DEFAULT_SCREEN_MODE "(SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL)")
 set(SCREEN_SUBPIXEL_OFFSET "GetScreenSubpixelOffset()")
 
-option(USE_PHYSFS_SETSANECONFIG "If TRUE, PHYSFS_setSaneConfig is used for paths setup; FALSE uses SDL_filesystem APIs instead. Some platforms always set this TRUE for technical reasons." FALSE)
+set(FILESYSTEM_TYPE FILESYSTEM_WORKINGDIR)
+set(BASE_PATH_APPEND "")
 
 if(${BUILD_TARGET} STREQUAL Vita)
 	include("${SRC}/cmake/vita/Configure.cmake")

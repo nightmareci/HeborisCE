@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=@EXE@
+Icon=@LINUX_DESKTOP_ICON@
+Comment=@COMMENT@
+Exec=@EXE@
+GenericName=@EXE@
+Categories=Game
+Terminal=false

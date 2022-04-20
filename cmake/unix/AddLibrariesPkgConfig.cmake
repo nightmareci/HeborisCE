@@ -31,5 +31,5 @@ function(AddLibrariesPkgConfig EXE)
 	# hard to do) can always provide PhysicsFS this way.
 	find_package(PhysFS REQUIRED)
 	target_link_libraries(${EXE} PRIVATE ${PHYSFS_LIBRARY})
-	target_include_directories(${EXE} SYSTEM PRIVATE ${PHYSFS_INCLUDE_DIR})
+	target_include_directories(${EXE} SYSTEM PRIVATE "${PHYSFS_INCLUDE_DIR}")
 endfunction()

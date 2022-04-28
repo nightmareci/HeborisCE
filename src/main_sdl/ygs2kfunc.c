@@ -344,6 +344,61 @@ void YGS2kExit()
 	}
 }
 
+static inline void FrameDelay() {
+	/*
+	 * Here, we insert a delay to produce accurate frame timing, using "hybrid
+	 * wait" and "fixed timestep". The first stage is to loop over delays of 1
+	 * millisecond, where it's assumed that delays are roughly 1 millisecond,
+	 * generally a bit above. But, during that first stage of delays, the max
+	 * delay duration is kept track of, and that stage of the delay loop is
+	 * broken out of when the time remaining to delay is less than or equal to
+	 * the max of the 1-millisecond delays. Then, the same delay loop is done
+	 * with 0-millisecond delay requests; requesting a delay of no time just
+	 * yields the game's running process, allowing the system to run other
+	 * tasks, without eating a bunch of CPU time. Once that loop stage is done,
+	 * a final, as-small-as-possible pure busyloop is run to finish out the
+	 * delay; it's critical to delay as much as possible via SDL_Delay first,
+	 * so as to minimize wasted CPU time. This scheme appears to be "optimal",
+	 * in that it produces correct timing, but with a minimum of wasted CPU
+	 * time. Mufunyo ( https://github.com/mufunyo ) showed me the "hybrid wait"
+	 * algorithm, where most of the delay is done via actual delays, and
+	 * completed with a busyloop, but that algorithm has been adapted to fit
+	 * into this game's "fixed timestep" variant ( https://www.gafferongames.com/post/fix_your_timestep/ ).
+	 * -Brandon McGriff <nightmareci@gmail.com>
+	 */
+
+	/*
+	 * Changing the ">= 0" to ">= 1" removes the SDL_Delay(0) delay, and
+	 * increases CPU usage on my Linux system from 2.8-3.0% in-game up to
+	 * 3.5-3.8%. And having it ">= 0" doesn't worsen frame timing, it's
+	 * basically a free optimization. The plain busyloop is still required to
+	 * get very precise timing, but with this setup the amount of spinning in
+	 * the busyloop is minimized. Though CPU usage doesn't reduce when using
+	 * SDL_Delay(0) on Windows.
+	 * -Brandon McGriff <nightmareci@gmail.com>
+	 */
+	const Uint64 frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
+	for (int milliseconds = 1; milliseconds >= 0; milliseconds--) {
+		Uint64 delayStartTimeCount;
+		Uint64 maxDelayCount = 0u;
+		while (
+			maxDelayCount < frameTimeCount &&
+			(delayStartTimeCount = SDL_GetPerformanceCounter()) - s_uTimeCount < frameTimeCount - maxDelayCount
+		) {
+			SDL_Delay(milliseconds);
+			Uint64 lastDelay;
+			if ((lastDelay = SDL_GetPerformanceCounter() - delayStartTimeCount) > maxDelayCount) {
+				maxDelayCount = lastDelay;
+			}
+		}
+	}
+	while (SDL_GetPerformanceCounter() - s_uTimeCount < frameTimeCount);
+
+	Uint64 nextTimeCount;
+	s_uTimeAccumulatorCount += (nextTimeCount = SDL_GetPerformanceCounter()) - s_uTimeCount;
+	s_uTimeCount = nextTimeCount;
+}
+
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
@@ -370,10 +425,7 @@ bool YGS2kHalt()
 			}
 
 			/* フレームレート待ち */
-			while ( s_uTimeCount + frameTimeCount >= SDL_GetPerformanceCounter() )
-			{
-				SDL_Delay( 1 );
-			}
+			FrameDelay();
 
 			s_uTimeAccumulatorCount = 0;
 
@@ -399,12 +451,7 @@ bool YGS2kHalt()
 				}
 
 				/* フレームレート待ち */
-				while ( s_uTimeCount + frameTimeCount >= SDL_GetPerformanceCounter() )
-				{
-					SDL_Delay( 1 );
-				}
-
-				s_uTimeAccumulatorCount += SDL_GetPerformanceCounter() - s_uTimeCount;
+				FrameDelay();
 
 				/* 画面塗りつぶし */
 				SDL_RenderClear( s_pScreenRenderer );
@@ -417,14 +464,12 @@ bool YGS2kHalt()
 	s_uFPSCnting ++;
 	s_uNowFrame ++;
 
-	if ( s_uFPSCount + SDL_GetPerformanceFrequency() <= SDL_GetPerformanceCounter() )
+	if ( s_uFPSCount + SDL_GetPerformanceFrequency() <= s_uTimeCount )
 	{
 		s_uFPS = s_uFPSCnting;
 		s_uFPSCnting = 0;
-		s_uFPSCount = SDL_GetPerformanceCounter();
+		s_uFPSCount = s_uTimeCount;
 	}
-
-	s_uTimeCount = SDL_GetPerformanceCounter();
 
 	/* イベント処理 */
 	SDL_PumpEvents();

@@ -21,10 +21,11 @@ set(EXE_SOURCES
 	"${SRC}/src/game/gamestart.c"
 	"${SRC}/src/game/speed.c"
 
-	"${SRC}/src/main_sdl/main.c"
-	"${SRC}/src/main_sdl/ygs2kfunc.c"
-	"${SRC}/src/main_sdl/SDL_kanji.c"
-	"${SRC}/src/main_sdl/physfsrwops.c"
+	${SRC}/src/main_sdl/main.c
+	${SRC}/src/main_sdl/delay.c
+	${SRC}/src/main_sdl/ygs2kfunc.c
+	${SRC}/src/main_sdl/SDL_kanji.c
+	${SRC}/src/main_sdl/physfsrwops.c
 
 	"${SRC}/src/script/mission_info.c"
 	"${SRC}/src/script/flexdraw.c"

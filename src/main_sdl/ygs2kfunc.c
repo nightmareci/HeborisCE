@@ -1,6 +1,7 @@
 #include "main_sdl/include.h"
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
+#include "delay.h"
 
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
@@ -450,8 +451,8 @@ bool YGS2kHalt()
 					SDL_RenderPresent(s_pScreenRenderer);
 				}
 
-				/* フレームレート待ち */
-				FrameDelay();
+			/* フレームレート待ち */
+			FrameDelay();
 
 				/* 画面塗りつぶし */
 				SDL_RenderClear( s_pScreenRenderer );

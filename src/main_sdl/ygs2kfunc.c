@@ -1,6 +1,7 @@
 #include "main_sdl/include.h"
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
+#include "delay.h"
 
 #define		YGS_TEXTURE_MAX		100
 #define		YGS_SOUND_MAX		100
@@ -357,10 +358,10 @@ static inline void FrameDelay() {
 	 * yields the game's running process, allowing the system to run other
 	 * tasks, without eating a bunch of CPU time. Once that loop stage is done,
 	 * a final, as-small-as-possible pure busyloop is run to finish out the
-	 * delay; it's critical to delay as much as possible via SDL_Delay first,
-	 * so as to minimize wasted CPU time. This scheme appears to be "optimal",
-	 * in that it produces correct timing, but with a minimum of wasted CPU
-	 * time. Mufunyo ( https://github.com/mufunyo ) showed me the "hybrid wait"
+	 * delay; it's critical to delay as much as possible via Delay first, so as
+	 * to minimize wasted CPU time. This scheme appears to be "optimal", in
+	 * that it produces correct timing, but with a minimum of wasted CPU time.
+	 * Mufunyo ( https://github.com/mufunyo ) showed me the "hybrid wait"
 	 * algorithm, where most of the delay is done via actual delays, and
 	 * completed with a busyloop, but that algorithm has been adapted to fit
 	 * into this game's "fixed timestep" variant ( https://www.gafferongames.com/post/fix_your_timestep/ ).
@@ -368,13 +369,13 @@ static inline void FrameDelay() {
 	 */
 
 	/*
-	 * Changing the ">= 0" to ">= 1" removes the SDL_Delay(0) delay, and
-	 * increases CPU usage on my Linux system from 2.8-3.0% in-game up to
-	 * 3.5-3.8%. And having it ">= 0" doesn't worsen frame timing, it's
-	 * basically a free optimization. The plain busyloop is still required to
-	 * get very precise timing, but with this setup the amount of spinning in
-	 * the busyloop is minimized. Though CPU usage doesn't reduce when using
-	 * SDL_Delay(0) on Windows.
+	 * Changing the ">= 0" to ">= 1" removes the Delay(0) delay, and increases
+	 * CPU usage on my Linux system from 2.8-3.0% in-game up to 3.5-3.8%. And
+	 * having it ">= 0" doesn't worsen frame timing, it's basically a free
+	 * optimization. The plain busyloop is still required to get very precise
+	 * timing, but with this setup the amount of spinning in the busyloop is
+	 * minimized. Though CPU usage doesn't reduce when using Delay(0) on
+	 * Windows.
 	 * -Brandon McGriff <nightmareci@gmail.com>
 	 */
 	const Uint64 frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
@@ -385,7 +386,7 @@ static inline void FrameDelay() {
 			maxDelayCount < frameTimeCount &&
 			(delayStartTimeCount = SDL_GetPerformanceCounter()) - s_uTimeCount < frameTimeCount - maxDelayCount
 		) {
-			SDL_Delay(milliseconds);
+			Delay(milliseconds);
 			Uint64 lastDelay;
 			if ((lastDelay = SDL_GetPerformanceCounter() - delayStartTimeCount) > maxDelayCount) {
 				maxDelayCount = lastDelay;
@@ -450,8 +451,8 @@ bool YGS2kHalt()
 					SDL_RenderPresent(s_pScreenRenderer);
 				}
 
-				/* フレームレート待ち */
-				FrameDelay();
+			/* フレームレート待ち */
+			FrameDelay();
 
 				/* 画面塗りつぶし */
 				SDL_RenderClear( s_pScreenRenderer );

@@ -1433,12 +1433,12 @@ void ConfigMenu() {
 					if(m > 0) {
 						nextChoice +=  nextChoice ==  6 && !RenderLevelLowSupported();
 						nextChoice +=  nextChoice ==  7 && !showScreenModeSetting;
-						nextChoice +=  nextChoice ==  9 && !((ncfg[44] >> 23) & 0x1);
+						nextChoice +=  nextChoice == 10 && !((ncfg[44] >> 23) & 0x1);
 						nextChoice += (nextChoice == 12 && !((ncfg[44] >> 15) & 0x1)) * 2;
 					}
 					else if(m < 0) {
 						nextChoice -= (nextChoice == 13 && !((ncfg[44] >> 15) & 0x1)) * 2;
-						nextChoice -=  nextChoice ==  9 && !((ncfg[44] >> 23) & 0x1);
+						nextChoice -=  nextChoice == 10 && !((ncfg[44] >> 23) & 0x1);
 						nextChoice -=  nextChoice ==  7 && !showScreenModeSetting;
 						nextChoice -=  nextChoice ==  6 && !RenderLevelLowSupported();
 					}

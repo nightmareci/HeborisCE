@@ -1,4 +1,4 @@
-![Application Icon](/pkg/HeborisC7EX-SDL2.png)
+![Application Icon](/pkg/icon.png)
 # Heboris C7-EX SDL2 - unofficial version (YGS2K EX)
 
 This version contains the source code for Heboris C7-EX. It requires a C

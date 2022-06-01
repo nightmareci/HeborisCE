@@ -26,6 +26,10 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		return quit(EXIT_FAILURE);
 	}
+
+	/* If this fails, it doesn't matter, the game will still work. But it's called because if it works, the game might perform better. */
+	SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+
 	quitLevel++;
 	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
 

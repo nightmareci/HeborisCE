@@ -70,6 +70,7 @@ int IsPushMenu(EMenuInput input)
 		case MENUINPUT_OK: return IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
 		case MENUINPUT_CANCEL: return IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
 		case MENUINPUT_RETRY: return IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case MENUINPUT_QUIT: return IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 		case MENUINPUT_UP: return IsPushKey(SDL_GetScancodeFromKey(SDLK_UP));
 		case MENUINPUT_DOWN: return IsPushKey(SDL_GetScancodeFromKey(SDLK_DOWN));
 		case MENUINPUT_LEFT: return IsPushKey(SDL_GetScancodeFromKey(SDLK_LEFT));

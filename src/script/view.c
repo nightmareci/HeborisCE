@@ -2024,6 +2024,41 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 			ExBltRect(2, 104 + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 672, 184, 112, 184);
 }
 
+void printInputPrompt(int32_t fontX, int32_t fontY, EMenuInput input, int32_t fontColor) {
+	EControllerType type = GetLastControllerType();
+
+	switch (type) {
+	#ifdef ENABLE_KEYBOARD
+	#ifdef ENABLE_JOYSTICK
+	case CONTROLLER_JOYSTICK:
+		// TODO: Something better for joysticks than requiring a keyboard.
+	#endif
+	case CONTROLLER_KEYBOARD:
+		const char* s;
+		switch (input) {
+		case MENUINPUT_OK: s = "ENTER"; break;
+		case MENUINPUT_CANCEL: s = "BS"; break;
+		case MENUINPUT_RETRY: s = "DEL"; break;
+		default: s = "???"; break;
+		}
+		printFont(fontX, fontY, s, fontColor);
+		break;
+	#endif
+
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_XBOX:
+	case CONTROLLER_PLAYSTATION:
+	case CONTROLLER_NINTENDO:
+		ExBltRect(23, fontX * 8, fontY * 8, input * 8, (type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8);
+		break;
+	#endif
+
+	default:
+		printFont(fontX, fontY, "???", fontColor);
+		break;
+	}
+}
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  フォントを表示する
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲

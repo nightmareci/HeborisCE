@@ -9,7 +9,6 @@ void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type);
 int32_t RankingLoad3();
 void RankingSave3();
 void getTime(int32_t time);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void getModeNameEx3(int32_t mode,int32_t number);
 void getRuleNameEx3(int32_t rule,int32_t number);
 void PlaySE(int32_t no);

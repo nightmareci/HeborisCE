@@ -35,6 +35,7 @@ void printTinyFont(int32_t fontX,int32_t fontY,const char *fontStr);
 void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type);
 void viewbesttimes(int32_t player);
 void viewbestSTtimes(int32_t player);
+void printInputPrompt(int32_t fontX, int32_t fontY, EMenuInput input, int32_t fontColor);
 void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewScoreSmall(void);

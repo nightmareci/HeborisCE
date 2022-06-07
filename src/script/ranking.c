@@ -146,7 +146,7 @@ void RankingProc2_1(void) {
 
 		spriteTime();
 
-		if(getPushState(0, 4) || getPushState(1, 4) || getPushState(0, 5) || getPushState(1, 5) || IsPushEscKey()) {
+		if(getPushState(0, 4) || getPushState(1, 4) || getPushState(0, 5) || getPushState(1, 5) || IsPushMenu(MENUINPUT_QUIT)) {
 			flag = -1;
 		}
 
@@ -190,7 +190,7 @@ void RankingCreate(int32_t cat, int32_t mode) {
 int32_t RankingView(void) {
 	int32_t		i, xxx, col;
 
-	KeyInput();
+	Input();
 
 	domirror = 0;	// 鏡像を無効化
 

@@ -21,11 +21,13 @@ set(EXE_SOURCES
 	"${SRC}/src/game/gamestart.c"
 	"${SRC}/src/game/speed.c"
 
-	${SRC}/src/main_sdl/main.c
-	${SRC}/src/main_sdl/delay.c
-	${SRC}/src/main_sdl/ygs2kfunc.c
-	${SRC}/src/main_sdl/SDL_kanji.c
-	${SRC}/src/main_sdl/physfsrwops.c
+	"${SRC}/src/main_sdl/main.c"
+	"${SRC}/src/main_sdl/delay.c"
+	"${SRC}/src/main_sdl/ygs2kfunc.c"
+	"${SRC}/src/main_sdl/ygs2kinput.c"
+	"${SRC}/src/main_sdl/ygs2kprivate.c"
+	"${SRC}/src/main_sdl/SDL_kanji.c"
+	"${SRC}/src/main_sdl/physfsrwops.c"
 
 	"${SRC}/src/script/mission_info.c"
 	"${SRC}/src/script/flexdraw.c"
@@ -59,12 +61,18 @@ set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default
 
 message(STATUS "Build target: ${BUILD_TARGET}")
 
-# Override these defaults for platforms as required. These defaults are
-# intended for "desktop" platforms, where keyboard input is guaranteed, with
-# the game created in a window, in the high detail 640x480 screen mode.
+set(DEFAULT_INPUT Desktop CACHE STRING "The default input type; this should be set to the type of input guaranteed available on a platform. Some platforms are hard set to override this option, so this setting can't be changed for them. Can be set to \"Desktop\" or \"Game Controller\" on configurable platforms.")
+
+# Override these defaults for platforms as required. These defaults work on a
+# lot of platforms, but some platforms, like game consoles, have to completely
+# override these settings.
+option(ENABLE_KEYBOARD "Enable input via keyboard" TRUE)
+option(ENABLE_GAME_CONTROLLER "Enable input via game controllers (not the same as classic joystick input)" TRUE)
+option(ENABLE_JOYSTICK "Enable input via any joystick device" TRUE)
+
 set(DEFAULT_JOYKEY_ASSIGN "{ 0 }")
-set(DEFAULT_SCREEN_MODE "(SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL)")
 set(SCREEN_SUBPIXEL_OFFSET "GetScreenSubpixelOffset()")
+set(DEFAULT_SCREEN_MODE "(SCREENMODE_WINDOW | SCREENMODE_DETAILLEVEL)")
 
 set(FILESYSTEM_TYPE FILESYSTEM_WORKINGDIR)
 set(BASE_PATH_APPEND "")

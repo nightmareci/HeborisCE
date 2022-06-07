@@ -2,11 +2,11 @@
 
 #include "script/include.h"
 
-#define CFG_LENGTH 240
+#define CFG_LENGTH 290
 
 // 設定ファイルフォーマットのバージョン番号です。
 // フォーマットの変更により互換性が失われた場合、1つ増加します。
-#define CFG_VERSION 1u
+#define CFG_VERSION 2u
 
 void GameOption();
 void ConfigMenu();
@@ -14,8 +14,16 @@ int32_t LoadConfig(void);
 int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
-extern SJoyKey joykeyAssign[10 *2];
+#ifdef ENABLE_JOYSTICK
+extern SJoyKey joyKeyAssign[10 *2];
+#endif
+#ifdef ENABLE_GAME_CONTROLLER
+extern int32_t playerCons[2];
+extern SConKey conKeyAssign[8 * 2];
+#endif
+#ifdef ENABLE_KEYBOARD
 extern int32_t keyAssign[10 *2];
+#endif
 extern int32_t lvupbonus;
 extern int32_t downtype;
 extern int32_t w_reverse;
@@ -32,10 +40,9 @@ extern int32_t wavebgm;
 extern int32_t wavebgm_supported[WAVEBGM_MAX + 1];
 extern int32_t fldtr;
 extern int32_t dtc;
+#ifdef ENABLE_KEYBOARD
 extern int32_t dispnextkey[2];
-extern int32_t pausekey[2];
-extern int32_t ssKey;
-extern int32_t giveupKey;
+#endif
 extern int32_t digitc[12];
 extern int32_t fontc[12];
 extern int32_t lvup[2];

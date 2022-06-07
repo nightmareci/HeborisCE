@@ -399,9 +399,9 @@ void ST_RankingView() {
 		getTime(tmp);
 		printFont(12, 25, string[0], 2);
 
-		KeyInput();
+		Input();
 
-		if(getPushState(0, 4) || getPushState(0, 5) || IsPushEscKey()) {
+		if(getPushState(0, 4) || getPushState(0, 5) || IsPushMenu(MENUINPUT_QUIT)) {
 			// AかBで戻る
 			return;
 		}

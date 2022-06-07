@@ -1,19 +1,8 @@
 #include "main_sdl/include.h"
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
+#include "ygs2kprivate.h"
 #include "delay.h"
-
-#define		YGS_TEXTURE_MAX		100
-#define		YGS_SOUND_MAX		100
-#define		YGS_MUSIC_MAX		100
-#define		YGS_KEY_MAX		10
-#define		YGS_KEYREPEAT_MAX	SDL_NUM_SCANCODES
-#define		YGS_TEXTLAYER_MAX	16
-
-#define 	YGS_VOLUME_MAX		MIX_MAX_VOLUME
-
-#define		YGS_WIDE_SCREEN (4.0f / 3.0f)
-#define		YGS_NARROW_SCREEN (3.0f / 4.0f)
 
 #define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
@@ -41,20 +30,6 @@ static float			s_fScreenSubpixelOffset = 0.0f;
 
 static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
 
-#ifdef LINUX_GPIO
-static int			s_iGPIORepeat[10];
-static struct gpiod_chip	*s_pGPIOChip;
-static struct gpiod_line	*s_pGPIOLines[10];
-#endif
-static int			s_iKeyRepeat[YGS_KEYREPEAT_MAX];
-static int			s_iJoyPadMax;
-static SDL_Joystick		**s_pJoyPads;
-static int			*s_pJoyAxisMax;
-static int			*s_pJoyHatMax;
-static int			*s_pJoyButtonMax;
-static int			**s_pJoyAxisRepeat;
-static int			**s_pJoyHatRepeat;
-static int			**s_pJoyButtonRepeat;
 static int			s_iYGSSoundType[YGS_SOUND_MAX];
 static Mix_Chunk		*s_pYGSSound[YGS_SOUND_MAX];
 static int			s_iYGSSoundVolume[YGS_SOUND_MAX];
@@ -132,88 +107,7 @@ bool YGS2kInit()
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
 
-#ifdef LINUX_GPIO
-	const char* chipName = "gpiochip0";
-
-	s_pGPIOChip = gpiod_chip_open_by_name(chipName);
-	if ( !s_pGPIOChip )
-	{
-		fprintf(stderr, "Failed opening GPIO chip \"%s\". Continuing without GPIO input support.\n", chipName);
-	}
-	else {
-		memset(s_iGPIORepeat, 0, sizeof(s_iGPIORepeat));
-		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
-		if (
-			!(s_pGPIOLines[0] = gpiod_chip_get_line(s_pGPIOChip,  5)) ||
-			!(s_pGPIOLines[1] = gpiod_chip_get_line(s_pGPIOChip, 13)) ||
-			!(s_pGPIOLines[2] = gpiod_chip_get_line(s_pGPIOChip,  6)) ||
-			!(s_pGPIOLines[3] = gpiod_chip_get_line(s_pGPIOChip, 12)) ||
-			!(s_pGPIOLines[4] = gpiod_chip_get_line(s_pGPIOChip, 19)) ||
-			!(s_pGPIOLines[5] = gpiod_chip_get_line(s_pGPIOChip, 16)) ||
-			!(s_pGPIOLines[6] = gpiod_chip_get_line(s_pGPIOChip, 26)) ||
-			!(s_pGPIOLines[7] = gpiod_chip_get_line(s_pGPIOChip, 20)) ||
-			!(s_pGPIOLines[8] = gpiod_chip_get_line(s_pGPIOChip, 21)) ||
-			!(s_pGPIOLines[9] = gpiod_chip_get_line(s_pGPIOChip,  4))
-		)
-		{
-			for ( int i = 0 ; i < 10 ; i ++ )
-			{
-				if (s_pGPIOLines[i]) {
-					gpiod_line_release(s_pGPIOLines[i]);
-					s_pGPIOLines[i] = NULL;
-				}
-			}
-			gpiod_chip_close(s_pGPIOChip);
-			s_pGPIOChip = NULL;
-			fprintf(stderr, "Failed opening GPIO lines. Continuing without GPIO input support.\n");
-		}
-		else
-		{
-			for ( int i = 0 ; i < 10 ; i ++ )
-			{
-				if (gpiod_line_request_input(s_pGPIOLines[i], "input") < 0)
-				{
-					for ( int j = 0 ; j < 10 ; i ++ )
-					{
-						gpiod_line_release(s_pGPIOLines[j]);
-						s_pGPIOLines[i] = NULL;
-					}
-					gpiod_chip_close(s_pGPIOChip);
-					s_pGPIOChip = NULL;
-					fprintf(stderr, "Failed setting GPIO lines for input. Continuing without GPIO input support.\n");
-					break;
-				}
-			}
-		}
-	}
-#endif
-
-	/* キーリピートバッファ初期化 */
-	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
-
-	/* パッドの初期化 */
-	if ((s_iJoyPadMax = SDL_NumJoysticks()))
-	{
-		s_pJoyPads = (SDL_Joystick**)malloc(sizeof(SDL_Joystick*) * s_iJoyPadMax);
-		s_pJoyAxisMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-		s_pJoyHatMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-		s_pJoyButtonMax = (int*)malloc(sizeof(int) * s_iJoyPadMax);
-
-		s_pJoyAxisRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-		s_pJoyHatRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-		s_pJoyButtonRepeat = (int**)malloc(sizeof(int*) * s_iJoyPadMax);
-		for (int i = 0; i < s_iJoyPadMax; i++) {
-			s_pJoyPads[i] = SDL_JoystickOpen(i);
-
-			s_pJoyAxisMax[i] = SDL_JoystickNumAxes(s_pJoyPads[i]);
-			s_pJoyHatMax[i] = SDL_JoystickNumHats(s_pJoyPads[i]);
-			s_pJoyButtonMax[i] = SDL_JoystickNumButtons(s_pJoyPads[i]);
-
-			s_pJoyAxisRepeat[i] = (int*)calloc((size_t)s_pJoyAxisMax[i] * 2, sizeof(int));
-			s_pJoyHatRepeat[i] = (int*)calloc((size_t)s_pJoyHatMax[i] * 4, sizeof(int));
-			s_pJoyButtonRepeat[i] = (int*)calloc(s_pJoyButtonMax[i], sizeof(int));
-		}
-	}
+	InputOpen();
 
 	/* テクスチャ領域の初期化 */
 	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
@@ -254,46 +148,8 @@ bool YGS2kInit()
 
 void YGS2kExit()
 {
-#ifdef LINUX_GPIO
-	if ( s_pGPIOChip )
-	{
-		for ( int i = 0 ; i < 10 ; i ++ )
-		{
-			gpiod_line_release(s_pGPIOLines[i]);
-		}
-		gpiod_chip_close(s_pGPIOChip);
+	InputClose();
 
-		s_pGPIOChip = NULL;
-		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
-	}
-#endif
-
-	/* パッドのクローズ */
-	if ( s_iJoyPadMax )
-	{
-		for ( int i = 0 ; i < s_iJoyPadMax ; i ++)
-		{
-			SDL_JoystickClose(s_pJoyPads[i]);
-			free(s_pJoyAxisRepeat[i]);
-			free(s_pJoyHatRepeat[i]);
-			free(s_pJoyButtonRepeat[i]);
-		}
-		free(s_pJoyPads);
-		s_pJoyPads = NULL;
-		free(s_pJoyAxisMax);
-		free(s_pJoyHatMax);
-		free(s_pJoyButtonMax);
-		s_pJoyAxisMax = NULL;
-		s_pJoyHatMax = NULL;
-		s_pJoyButtonMax = NULL;
-		free(s_pJoyAxisRepeat);
-		free(s_pJoyHatRepeat);
-		free(s_pJoyButtonRepeat);
-		s_pJoyAxisRepeat = NULL;
-		s_pJoyHatRepeat = NULL;
-		s_pJoyButtonRepeat = NULL;
-	}
-	
 	/* テクスチャ領域の解放 */
 	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
 	{
@@ -451,8 +307,8 @@ bool YGS2kHalt()
 					SDL_RenderPresent(s_pScreenRenderer);
 				}
 
-			/* フレームレート待ち */
-			FrameDelay();
+				/* フレームレート待ち */
+				FrameDelay();
 
 				/* 画面塗りつぶし */
 				SDL_RenderClear( s_pScreenRenderer );
@@ -474,31 +330,58 @@ bool YGS2kHalt()
 
 	/* イベント処理 */
 	SDL_PumpEvents();
+	#ifdef ENABLE_JOYSTICK
+	bool joyChanged = false;
+	#endif
+	#ifdef ENABLE_GAME_CONTROLLER
+	bool conChanged = false;
+	#endif
 	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_LASTEVENT) == 1)
 	{
 		switch(ev.type){
 			case SDL_QUIT:						// ウィンドウの×ボタンが押された時など
 				return false;
 				break;
-			case SDL_KEYDOWN:					// キーボードからの入力があった時
-				{
-					SDL_Keycode	key = ev.key.keysym.sym; // どのキーが押されたかを取得
-					if ( key == SDLK_ESCAPE )
-					{
-						return false;
-					}
-				}
-				break;
+
 			case SDL_WINDOWEVENT:
 				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 					s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
 				}
 				break;
 
+			#ifdef ENABLE_JOYSTICK
+			case SDL_JOYDEVICEADDED:
+			case SDL_JOYDEVICEREMOVED:
+				joyChanged = true;
+			#endif
+
+			#ifdef ENABLE_GAME_CONTROLLER
+			case SDL_CONTROLLERDEVICEADDED:
+			case SDL_CONTROLLERDEVICEREMOVED:
+				conChanged = true;
+				break;
+			#endif
+
 			default:
 				break;
 		}
 	}
+
+	#ifdef ENABLE_JOYSTICK
+	if (joyChanged)
+	{
+		JoyClose();
+		JoyOpen();
+	}
+	#endif
+		
+	#ifdef ENABLE_GAME_CONTROLLER
+	if (conChanged)
+	{
+		ConClose();
+		ConOpen();
+	}
+	#endif
 
 	/* 画面ずらし量の反映 */
 	s_iOffsetX = s_iNewOffsetX;
@@ -515,162 +398,6 @@ void YGS2kTextOut(int x, int y, const char* text, int r, int g, int b, int size)
 int IsPlayMIDI()
 {
 	return Mix_PlayingMusic();
-}
-
-#ifdef LINUX_GPIO
-int IsPushGPIO ( int key )
-{
-	return s_iGPIORepeat[key] == 1 ? 1 : 0;
-}
-
-int IsPressGPIO ( int key )
-{
-	return s_iGPIORepeat[key] != 0 ? 1 : 0;
-}
-#endif
-
-int IsPushKey ( int key )
-{
-	return s_iKeyRepeat[key] == 1 ? 1 : 0;
-}
-
-int IsPressKey ( int key )
-{
-	return s_iKeyRepeat[key] != 0 ? 1 : 0;
-}
-
-int IsPushJoyKey ( const SJoyKey* const key )
-{
-	if (!s_iJoyPadMax || key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
-
-	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
-	SJoyPadGUID zeroGUID = { 0 };
-	if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
-		switch (key->type) {
-		case JOYKEY_AXIS:
-			if (key->setting.value == -YGS_DEADZONE_MAX) {
-				return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 0] == 1 ? 1 : 0;
-			}
-			else if (key->setting.value == +YGS_DEADZONE_MAX) {
-				return s_pJoyAxisRepeat[key->device][key->setting.index * 2 + 1] == 1 ? 1 : 0;
-			}
-			break;
-		case JOYKEY_HAT:
-			switch (key->setting.value) {
-			case SDL_HAT_LEFT:
-				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 0] == 1 ? 1 : 0;
-			case SDL_HAT_RIGHT:
-				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 1] == 1 ? 1 : 0;
-			case SDL_HAT_UP:
-				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 2] == 1 ? 1 : 0;
-			case SDL_HAT_DOWN:
-				return s_pJoyHatRepeat[key->device][key->setting.index * 4 + 3] == 1 ? 1 : 0;
-			default:
-				break;
-			}
-			break;
-		case JOYKEY_BUTTON:
-			return s_pJoyButtonRepeat[key->device][key->setting.button] == 1 ? 1 : 0;
-		default:
-			break;
-		}
-	}
-	return 0;
-}
-
-int IsPressJoyKey ( const SJoyKey* const key )
-{
-	if (!s_iJoyPadMax || key == NULL || key->device < 0 || key->device >= s_iJoyPadMax) return 0;
-
-	SJoyPadGUID checkGUID = GetJoyPadGUID(key->device);
-	SJoyPadGUID zeroGUID = { 0 };
-	if (memcmp(&checkGUID, &zeroGUID, sizeof(SJoyPadGUID)) != 0 && memcmp(&key->guid, &checkGUID, sizeof(SJoyPadGUID)) == 0) {
-		SDL_Joystick* const joy = s_pJoyPads[key->device];
-		if (SDL_JoystickGetAttached(joy)) {
-			switch (key->type) {
-			case JOYKEY_AXIS:
-				return
-					key->setting.value != 0 && SDL_JoystickNumAxes(joy) > key->setting.index &&
-					(
-						(key->setting.value > 0 && SDL_JoystickGetAxis(joy, key->setting.index) > key->setting.value) ||
-						(key->setting.value < 0 && SDL_JoystickGetAxis(joy, key->setting.index) < key->setting.value)
-					);
-			case JOYKEY_HAT:
-				return
-					key->setting.value != SDL_HAT_CENTERED &&
-					SDL_JoystickNumHats(joy) > key->setting.index &&
-					SDL_JoystickGetHat(joy, key->setting.index) == key->setting.value;
-			case JOYKEY_BUTTON:
-				return SDL_JoystickGetButton(joy, key->setting.button);
-			default:
-				break;
-			}
-		}
-	}
-
-	return 0;
-}
-
-int IsPushReturnKey()
-{
-	return IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-}
-
-int IsPushDeleteKey()
-{
-	return IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
-}
-
-int IsPushBSKey()
-{
-	return IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-}
-
-int IsPushEscKey()
-{
-	return IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
-}
-
-int IsPushEndKey()
-{
-	return IsPushKey(SDL_GetScancodeFromKey(SDLK_END));
-}
-
-SJoyPadGUID GetJoyPadGUID( int device ) {
-	SJoyPadGUID zeroGUID = { 0 };
-	if (device >= s_iJoyPadMax) return zeroGUID;
-	SJoyPadGUID joyPadGUID = { 0 };
-	SDL_JoystickGUID sdlGUID = SDL_JoystickGetGUID( s_pJoyPads[device] );
-	for (int32_t i = 0; i < 4; i++) {
-		joyPadGUID.data[i] = 0;
-		for (int32_t j = 0; j < 4; j++) {
-			joyPadGUID.data[i] |= (int32_t)((uint32_t)sdlGUID.data[i * 4 + j] << (j * 8));
-		}
-	}
-	return joyPadGUID;
-}
-
-int GetMaxKey()
-{
-	return YGS_KEYREPEAT_MAX;
-}
-
-int GetMaxJoyPad()
-{
-	return s_iJoyPadMax;
-}
-
-int GetMaxJoyAxis( int device ) {
-	return s_pJoyAxisMax[device];
-}
-
-int GetMaxJoyHat( int device ) {
-	return s_pJoyHatMax[device];
-}
-
-int GetMaxJoyButton( int device )
-{
-	return s_pJoyButtonMax[device];
 }
 
 int SetScreen(int32_t *screenMode, int32_t *screenIndex)
@@ -942,131 +669,6 @@ int RenderLevelLowSupported()
 void SetConstParam ( const char *param, int value )
 {
 
-}
-
-void KeyInput()
-{
-#ifdef LINUX_GPIO
-	for ( int i = 0 ; i < 10 ; i ++ )
-	{
-		if ( gpiod_line_get_value(s_pGPIOLines[i]) == 1 )
-		{
-			s_iGPIORepeat[i] ++;
-		}
-		else
-		{
-			s_iGPIORepeat[i] = 0;
-		}
-	}
-#endif
-
-	int		keynum = 0;
-	const Uint8	*KeyInp = SDL_GetKeyboardState(&keynum);
-
-	for ( int i = 0 ; i < YGS_KEYREPEAT_MAX ; i ++ )
-	{
-		if ( i < keynum && KeyInp[i] == SDL_PRESSED )
-		{
-			s_iKeyRepeat[i] ++;
-		}
-		else
-		{
-			s_iKeyRepeat[i] = 0;
-		}
-	}
-
-	SJoyKey key = { 0 };
-	for ( int i = 0 ; i < s_iJoyPadMax ; i ++ )
-	{
-		key.device = i;
-		key.guid = GetJoyPadGUID(i);
-
-		key.type = JOYKEY_AXIS;
-		for ( int j = 0 ; j < s_pJoyAxisMax[i] ; j ++ )
-		{
-			key.setting.index = j;
-
-			key.setting.value = -YGS_DEADZONE_MAX;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyAxisRepeat[i][j*2+0] ++;
-			}
-			else
-			{
-				s_pJoyAxisRepeat[i][j*2+0] = 0;
-			}
-
-			key.setting.value = +YGS_DEADZONE_MAX;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyAxisRepeat[i][j*2+1] ++;
-			}
-			else
-			{
-				s_pJoyAxisRepeat[i][j*2+1] = 0;
-			}
-		}
-
-		key.type = JOYKEY_HAT;
-		for ( int j = 0 ; j < s_pJoyHatMax[i] ; j ++ )
-		{
-			key.setting.index = j;
-
-			key.setting.value = SDL_HAT_LEFT;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyHatRepeat[i][j*4+0] ++;
-			}
-			else
-			{
-				s_pJoyHatRepeat[i][j*4+0] = 0;
-			}
-
-			key.setting.value = SDL_HAT_RIGHT;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyHatRepeat[i][j*4+1] ++;
-			}
-			else
-			{
-				s_pJoyHatRepeat[i][j*4+1] = 0;
-			}
-
-			key.setting.value = SDL_HAT_UP;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyHatRepeat[i][j*4+2] ++;
-			}
-			else
-			{
-				s_pJoyHatRepeat[i][j*4+2] = 0;
-			}
-
-			key.setting.value = SDL_HAT_DOWN;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyHatRepeat[i][j*4+3] ++;
-			}
-			else
-			{
-				s_pJoyHatRepeat[i][j*4+3] = 0;
-			}
-		}
-
-		key.type = JOYKEY_BUTTON;
-		for ( int j = 0 ; j < s_pJoyButtonMax[i] ; j ++ )
-		{
-			key.setting.button = j;
-			if ( IsPressJoyKey(&key) )
-			{
-				s_pJoyButtonRepeat[i][j] ++;
-			}
-			else
-			{
-				s_pJoyButtonRepeat[i][j] = 0;
-			}
-		}
-	}
 }
 
 int Rand ( int max )

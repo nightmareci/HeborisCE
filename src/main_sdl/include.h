@@ -9,7 +9,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <ctype.h>
-#if defined(LINUX_GPIO)
+#ifdef ENABLE_LINUX_GPIO
 #include <gpiod.h>
 #endif
 #include "defs.h"

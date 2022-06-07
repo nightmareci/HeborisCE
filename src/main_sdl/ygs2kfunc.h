@@ -1,7 +1,9 @@
 #pragma once
 
+#include "ygs2kinput.h"
 #include "SDL.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifdef		TextOut
 #undef		TextOut
@@ -46,55 +48,13 @@ typedef enum EScreenIndexMask {
 
 #define SCREENINDEX_TOSETTING(display, mode) (((int32_t)((mode) & 0xFFFF) << 16) | (int32_t)((display) & 0xFFFF))
 
-typedef struct {
-	int32_t data[4];
-} SJoyPadGUID;
-
-typedef enum {
-	JOYKEY_AXIS,
-	JOYKEY_HAT,
-	JOYKEY_BUTTON
-} EJoyKeyType;
-
-typedef union {
-	struct { int index, value; };
-	int button;
-} SJoyKeySetting;
-
-typedef struct {
-	int device;
-	SJoyPadGUID guid;
-	EJoyKeyType type;
-	SJoyKeySetting setting;
-} SJoyKey;
-
-#ifdef LINUX_GPIO
-int IsPushGPIO ( int key );
-int IsPressGPIO ( int key );
-#endif
-int IsPushKey ( int key );
-int IsPressKey ( int key );
-int IsPushJoyKey ( const SJoyKey* const key );
-int IsPressJoyKey ( const SJoyKey* const key );
-int IsPushReturnKey();
-int IsPushDeleteKey();
-int IsPushBSKey();
-int IsPushEscKey();
-int IsPushEndKey();
-int GetMaxKey();
-int GetMaxJoyPad();
-SJoyPadGUID GetJoyPadGUID( int device );
-int GetMaxJoyAxis( int device );
-int GetMaxJoyHat( int device );
-int GetMaxJoyButton( int device );
-
 int SetScreen(int32_t *screenMode, int32_t *screenIndex);
 int GetMaxDisplayIndex();
 int GetMaxDisplayMode( int displayIndex );
 int RenderLevelLowSupported();
 
 void SetConstParam ( const char *param, int value );
-void KeyInput();
+
 int Rand ( int max );
 void PauseMIDI();
 void ReplayMIDI();

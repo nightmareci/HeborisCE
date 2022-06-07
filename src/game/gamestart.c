@@ -495,7 +495,6 @@ int32_t		syutugen[25] = { 3,  5, -1,  3,  5,  6, 26},	// ブロックが固定�
 		yokotame[25] = { 7,  7, -1,  7,  7,  7, 12},	// 横溜めに必要な時間
 		hiddenlv[25] = {-1, -1, -1, -1, -1, -1, -1},	// HIDDEN LV(8まで)
 		fps[25]      = {60, 60, 60, 60, 60, 60, 60},	// FPS
-		waitkey[25]  = {0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08},	// ショートカットキー
 		blind[25]    = {-1, -1, -1, -1, -1, -1, -1},
 		p_bgmload[25]    = {-1, -1, -1, -1, -1, -1, -1};//BGM
 // ここまで
@@ -778,7 +777,9 @@ int32_t		dummy;	// 設定ファイルが空だと23行目で発生する謎の�
 
 // #1.60c7l8追加変数
 int32_t		start_stage[2] = {0,0};		// スタート時のステージ番号
+#ifdef ENABLE_KEYBOARD
 int32_t		skipKey = 0x3F;				// ステージスキップキー
+#endif
 
 // #1.60c7l9追加変数
 int32_t		start_nextc[2] = {0,0};		// スタート時のNEXTC
@@ -1390,7 +1391,7 @@ int32_t fade_seed = 20;	// BGMフェードアウト用
 int32_t se_play[50];
 
 // 文字列定数
-cstr		version = "C7V4EX 07/11/23 " FRAMEWORK_VER " V" PROJECT_VER;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
+cstr		version = FRAMEWORK_VER " V" PROJECT_VER;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 cstr		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */
@@ -1444,7 +1445,7 @@ void gameMain(void) {
 			flag = 0;
 			loop {
 				spriteTime();
-				KeyInput();
+				Input();
 
 				// リプレイ中の早送り
 				noredraw = 0;
@@ -1651,7 +1652,7 @@ void lastProc(void) {
 		mpc4[0] = 0;
 	}
 
-	if((IsPushKey(pausekey[0]) || (mpc4[0] == 1))) {
+	if(getPushState(0, 9) || mpc4[0] == 1) {
 		if( ((status[0] >= 3) && (status[0] <= 8) && (status[0] != 7)) || (status[0] == 13) || (status[0] == 15) ||
 			(status[0] == 22) || ((status[0] >= 25) && (status[0] != 30) && (status[0] != 36)) || (debug) ) {
 			if(pause[0]) {
@@ -1684,7 +1685,7 @@ void lastProc(void) {
 		mpc4[0] = 0;
 	}
 
-	if((IsPushKey(pausekey[1]) || (mpc4[1] == 1))) {
+	if(getPushState(1, 9) || mpc4[1] == 1) {
 		if( ((status[1] >= 3) && (status[1] <= 8) && (status[1] != 7)) || (status[1] == 13) || (status[1] == 15) || (debug) ) {
 			if(pause[1]) {
 				// ポーズ解除
@@ -1762,6 +1763,7 @@ void lastProc(void) {
 		printTinyFont(130, 233, string[0]);
 	}
 
+	#ifdef ENABLE_KEYBOARD
 	// NEXT隠し
 	if(IsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
 		// next表示個数は0〜6 #1.60c7q3
@@ -1774,6 +1776,7 @@ void lastProc(void) {
 		if(hnext[1] > 6) hnext[1] = 0;
 		if((hnext[1] > max_hnext[1]) && onRecord[1]) max_hnext[1] = hnext[1];
 	}
+	#endif
 
 	if(flag || demo) {
 		pause[0] = 0;
@@ -1822,7 +1825,7 @@ void title(void) {
 		democ++;
 
 		// ｷｰ入力
-		KeyInput();
+		Input();
 
 		// 背景を描く
 		if(!title_mov_f){
@@ -3333,12 +3336,15 @@ void playerExecute(void) {
 	}
 
 
+	// TODO: Add "skip stage" player input.
+	#ifdef ENABLE_KEYBOARD
 	// ステージスキップキー長押し
 	if( IsPressKey(skipKey) ){
 			stage_skip_mpc[0]++;
 			}else{
 			stage_skip_mpc[0]=0;
 	}
+	#endif
 	// 長押しされたら実行
 	if( (gameMode[0] == 6) && (timeOn[0]) && (ltime[0] > 1800) && (stage[0] < 19 )
 	 && (stage_skip_mpc[0] >= 60)) {
@@ -3726,7 +3732,7 @@ int32_t doGiveup() {
 	// いつでも捨てゲーできるようにした#1.60cd
 	// リプレイが再生できないので修正#1.60c7h1
 	// デモ画面では捨てゲーできないように変更 #1.60c7o8
-	if((!playback) && (!demo) && (IsPushKey (giveupKey) || (mpc3[0] == 1) || (mpc3[1] == 1))) {// Qキー捨てゲー #1.60c
+	if((!playback) && (!demo) && ((mpc3[0] == 1) || (mpc3[1] == 1))) {// Qキー捨てゲー #1.60c
 		// 効果音停止
 		StopAllWaves();
 		StopAllBGM();
@@ -4472,10 +4478,6 @@ void statSelectMode(int32_t player) {
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "ROT.", 7);
 					printFont(26 + 6 * player - 12 * maxPlay, 19, "RELAY", 7);
 				}
-			}
-			if(dispnextkey[player] == 0x3D){
-				printFont(24 + 9 * player - 12 * maxPlay, 0, "F3:", 0);
-				printFont(27 + 8 * player - 12 * maxPlay, 0, "NEXT", 0);
 			}
 		}
 
@@ -14765,11 +14767,16 @@ void padRepeat2(int32_t player) { // hoge 上下入力バージョン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // ジョイスティック周りを変更 #1.60c7
 int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
+	#ifdef ENABLE_LINUX_GPIO
+	int32_t gtmp;	// GPIO入力
+	#endif
+	#ifdef ENABLE_JOYSTICK
 	int32_t jtmp;	// ジョイスティック入力
-	int32_t ktmp;	// キーボード入力
-#ifdef LINUX_GPIO
-	int32_t gtmp;
-#endif
+	#endif
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t ctmp;
+	#endif
+	int32_t ktmp = 0;	// キーボード入力
 	int32_t pl;
 
 	// シングルモードでは2P側の入力を常にカット
@@ -14794,37 +14801,75 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 	}
 	// 通常プレイ中
 	else {
-		// ジョイスティックの入力を読み取る
-		jtmp = IsPressJoyKey(&joykeyAssign[key + pl * 10]);
-
-		// キーボードの入力を読み取る
-		ktmp = IsPressKey(keyAssign[key + pl * 10]);
-
-#ifdef LINUX_GPIO
+		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 )
 			gtmp = IsPressGPIO(key);
 		else
 			gtmp = 0;
-#endif
+		#endif
+
+		#ifdef ENABLE_KEYBOARD
+		// キーボードの入力を読み取る
+		ktmp = IsPressKey(keyAssign[key + pl * 10]);
+		#endif
+
+		#ifdef ENABLE_JOYSTICK
+		// ジョイスティックの入力を読み取る
+		jtmp = IsPressJoyKey(&joyKeyAssign[key + pl * 10]);
+		#endif
+
+		#ifdef ENABLE_GAME_CONTROLLER
+		SConKey conkey;
+		switch (key) {
+		case 8:
+			// GIVEUP
+			conkey.type = CONKEY_BUTTON;
+			conkey.setting.button = SDL_CONTROLLER_BUTTON_BACK;
+			ctmp = IsPressConKey(playerCons[pl], &conkey);
+			break;
+
+		case 9:
+			// PAUSE
+			conkey.type = CONKEY_BUTTON;
+			conkey.setting.button = SDL_CONTROLLER_BUTTON_START;
+			ctmp = IsPressConKey(playerCons[pl], &conkey);
+			break;
+		
+		default:
+			ctmp = IsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+			break;
+		}
+		#endif
 
 		if(cpu_flag[pl])
 			return cp_input[key + pl * 10];
-#ifdef LINUX_GPIO
 		else
-			return (jtmp | ktmp | gtmp);
-#else
-		else
-			return (jtmp | ktmp);
-#endif
+			return
+				ktmp
+				#ifdef ENABLE_JOYSTICK
+				| jtmp
+				#endif
+				#ifdef ENABLE_GAME_CONTROLLER
+				| ctmp
+				#endif
+				#ifdef ENABLE_LINUX_GPIO
+				| gtmp
+				#endif
+				;
 	}
 }
 
 int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
-	int32_t jtmp;	// ジョイスティック入力
-	int32_t ktmp;	// キーボード入力
-#ifdef LINUX_GPIO
-	int32_t gtmp;
-#endif
+	#ifdef ENABLE_LINUX_GPIO
+	int32_t gtmp;		// GPIO入力
+	#endif
+	#ifdef ENABLE_JOYSTICK
+	int32_t jtmp;		// ジョイスティック入力
+	#endif
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t ctmp;
+	#endif
+	int32_t ktmp = 0;	// キーボード入力
 	int32_t pl;
 
 	// シングルモードでは2P側の入力を常にカット
@@ -14847,28 +14892,61 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 	}
 	// 通常プレイ中
 	else {
-		// ジョイスティックの入力を読み取る
-		jtmp = IsPushJoyKey(&joykeyAssign[key + 10 * pl]);
-
-		// キーボードの入力を読み取る
-		ktmp = IsPushKey(keyAssign[key + pl * 10]);
-
-#ifdef LINUX_GPIO
+		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 )
 			gtmp = IsPushGPIO(key);
 		else
 			gtmp = 0;
-#endif
+		#endif
+
+		#ifdef ENABLE_KEYBOARD
+		// キーボードの入力を読み取る
+		ktmp = IsPushKey(keyAssign[key + pl * 10]);
+		#endif
+
+		#ifdef ENABLE_JOYSTICK
+		// ジョイスティックの入力を読み取る
+		jtmp = IsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
+		#endif
+
+		#ifdef ENABLE_GAME_CONTROLLER
+		SConKey conkey;
+		switch (key) {
+		case 8:
+			// GIVEUP
+			conkey.type = CONKEY_BUTTON;
+			conkey.setting.button = SDL_CONTROLLER_BUTTON_BACK;
+			ctmp = IsPushConKey(playerCons[pl], &conkey);
+			break;
+
+		case 9:
+			// PAUSE
+			conkey.type = CONKEY_BUTTON;
+			conkey.setting.button = SDL_CONTROLLER_BUTTON_START;
+			ctmp = IsPushConKey(playerCons[pl], &conkey);
+			break;
+		
+		default:
+			ctmp = IsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+			break;
+		}
+		#endif
 
 		if(cpu_flag[pl])
 			return cp_input[key + pl * 10];
-#ifdef LINUX_GPIO
 		else
-			return (jtmp | ktmp | gtmp);
-#else
-		else
-			return (jtmp | ktmp);
-#endif
+			return
+				ktmp
+				#ifdef ENABLE_JOYSTICK
+				| jtmp
+				#endif
+				#ifdef ENABLE_GAME_CONTROLLER
+				| ctmp
+				#endif
+				#ifdef ENABLE_LINUX_GPIO
+				| gtmp
+				#endif
+				;
 	}
 }
 
@@ -15133,7 +15211,7 @@ void testmenu(void) {
 			printFont(2, 5, "[RESET SEEDS]",        (cursor == 2) * fontc[rots[0]]);
 
 			// キー入力
-			KeyInput();
+			Input();
 
 			padRepeat2(0);
 			// ↑
@@ -15167,7 +15245,7 @@ void testmenu(void) {
 			ExBltFast(param, 0, 0);
 
 			// キー入力
-			KeyInput();
+			Input();
 
 			padRepeat(0);
 			// ←
@@ -15227,7 +15305,7 @@ void testmenu(void) {
 			}
 
 			// キー入力
-			KeyInput();
+			Input();
 
 			// A+Cで決定
 			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
@@ -15259,7 +15337,7 @@ void testmenu(void) {
 				
 			}
 			// キー入力
-			KeyInput();
+			Input();
 
 			// A+Cで決定 
 			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
@@ -15533,6 +15611,9 @@ void loadGraphics(int32_t players) {
 //	/* プレーン8にタイトル背景を読み込み */
 	LoadTitle();
 //	LoadGraphics("title.png", 8, 0);
+
+	/* Glyphs for showing game controller buttons */
+	LoadGraphics("hebobtn.png", 23, 0);
 
 	/* プレーン22に小文字大文字フォントを読み込み #1.60c7o4 */
 	LoadGraphics("hebofont4.png", 22, 0);
@@ -16027,26 +16108,6 @@ void restoreSetups() {
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
-//  キーボード入力関連
-//▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#if		0
-int32_t GetMaxKey()
-{
-	return 256;
-}
-
-int32_t IsPushDeleteKey()
-{
-	return IsPushKey(0xD3);
-}
-
-int32_t IsPushBSKey()
-{
-	return IsPushKey(0x0E);
-}
-#endif
-
-//▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  halt;
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void spriteTime() {
@@ -16104,7 +16165,7 @@ void spriteTime() {
 	}
 
 	// ESCキーが押されたら即刻終了
-	if(IsPushEscKey()) {
+	if(IsPushQuit()) {
 		//RankingSave();
 		//ST_RankingSave();
 		maxPlay = tmp_maxPlay;
@@ -16124,7 +16185,7 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	if ( !YGS2kHalt() )
+	if ( !YGS2kHalt() || IsPushMenu(MENUINPUT_QUIT) )
 	{
 		maxPlay = tmp_maxPlay;
 		if(playback){

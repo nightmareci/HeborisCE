@@ -10,7 +10,6 @@ void ST_RankingView();
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewbestSTtimes(int32_t player);
 void getTime(int32_t time);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewbestSTtime(int32_t player);
 int32_t ST_RankingLoad(void);
 void ST_RankingSave(void);

@@ -201,8 +201,6 @@ void loadBGM(void);
 void backupSetups();
 void restoreSetups();
 int32_t getMaxKey();
-int32_t IsPushDeleteKey();
-int32_t IsPushBSKey();
 void spriteTime();
 
 // grade.c
@@ -366,6 +364,7 @@ void viewField(void);
 void viewPreview(void);
 void viewFldBackground(void);
 void viewFldFrame(int32_t uponly,int32_t i);
+void printInputPrompt(int32_t fontX, int32_t fontY, EMenuInput input, int32_t fontColor);
 void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor);
 void printFontEx(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor);
 void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor);

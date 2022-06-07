@@ -21,7 +21,12 @@ static int quit(int status) {
 int main(int argc, char* argv[])
 {
 	/* SDLの初期化 */
-	if ( SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0 )
+	if ( SDL_Init(
+		SDL_INIT_AUDIO |
+		SDL_INIT_VIDEO |
+		SDL_INIT_JOYSTICK |
+		SDL_INIT_GAMECONTROLLER
+	) < 0 )
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		return quit(EXIT_FAILURE);

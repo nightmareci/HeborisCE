@@ -5,7 +5,6 @@
 void objectComboClearPl(int32_t player);
 void objectClearPl(int32_t player);
 void objectClear(void);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 int32_t getBigBlock_add(int32_t player);
 int32_t getBlockPlaneNo(int32_t player,int32_t color);
 void objectplatina_erase(int32_t no);

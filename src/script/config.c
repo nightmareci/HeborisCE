@@ -15,10 +15,9 @@ int32_t rots[2];		// 回転規則
 int32_t lvup[2];		// レベルアップ方式
 int32_t fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 int32_t digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
-int32_t giveupKey = SDL_SCANCODE_Q;	// 捨てゲーキー (デフォルトはQ)
-int32_t ssKey = SDL_SCANCODE_HOME;	// スナップショットキー (デフォルトはHome)
-int32_t pausekey[2] = { SDL_SCANCODE_F1, SDL_SCANCODE_F2 };	// ポーズキー(デフォルトはF1, F2)		#1.60c7g7
+#ifdef ENABLE_KEYBOARD
 int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
+#endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
 int32_t wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
@@ -41,12 +40,21 @@ int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
 int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-int32_t keyAssign[10 * 2]; // キーボード設定 (↑↓←→ABCD)
+#ifdef ENABLE_KEYBOARD
+int32_t keyAssign[10 * 2]; // キーボード設定 (0:↑, 1:↓, 2:←, 3:→, 4:A, 5:B, 6:C, 7:D, 8:GIVEUP, 9:PAUSE)
+#endif
 
 int32_t segacheat; // allow CW and/or 180 rotation in old schoo.
 
+#ifdef ENABLE_JOYSTICK
 // →pauseとgiveupを追加 1.60c7g7
-SJoyKey joykeyAssign[10 * 2];	// ジョイスティックボタン割り当て
+SJoyKey joyKeyAssign[10 * 2];	// ジョイスティックボタン割り当て
+#endif
+
+#ifdef ENABLE_GAME_CONTROLLER
+int32_t playerCons[2];
+SConKey conKeyAssign[8 * 2];
+#endif
 
 int32_t restart;		// 再起動フラグ
 
@@ -71,12 +79,11 @@ int32_t SaveConfig(void) {
 	cfgbuf[12] = fastlrmove;
 	cfgbuf[13] = background;
 
+	#ifdef ENABLE_KEYBOARD
 	for(i = 0; i < 20; i++) {
 		cfgbuf[14 + i] = keyAssign[i];
 	}
-
-	cfgbuf[38] = giveupKey;
-	cfgbuf[39] = ssKey;
+	#endif
 
 	cfgbuf[40] = rots[0];
 	cfgbuf[41] = rots[1];
@@ -99,10 +106,6 @@ int32_t SaveConfig(void) {
 	cfgbuf[65] = w_reverse;
 	cfgbuf[66] = downtype;
 	cfgbuf[67] = lvupbonus;
-	cfgbuf[68] = pausekey[0];
-	cfgbuf[69] = pausekey[1];
-	cfgbuf[70] = dispnextkey[0];
-	cfgbuf[71] = dispnextkey[1];
 
 	/* 72〜74はジョイスティック用 */
 	cfgbuf[74] = fontc[0] + fontc[1] * 0x100 + fontc[2] * 0x10000 + fontc[3] * 0x1000000;
@@ -112,12 +115,13 @@ int32_t SaveConfig(void) {
 	cfgbuf[78] = fontc[8] + fontc[9] * 0x100 + fontc[10] * 0x10000 + fontc[11] * 0x1000000;
 	cfgbuf[79] = digitc[8] + digitc[9] * 0x100 + digitc[10] * 0x10000 + digitc[11] * 0x1000000;
 
+	#ifdef ENABLE_JOYSTICK
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
-			SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
-			plbuf[0] = pljoy->device;
+			SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
+			plbuf[0] = pljoy->index;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
 			}
@@ -135,6 +139,32 @@ int32_t SaveConfig(void) {
 			}
 		}
 	}
+	#endif
+	
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t *conkeybuf = &cfgbuf[240];
+	for (int32_t pl = 0; pl < 2; pl++) {
+		conkeybuf[pl * (1 + 3 * 8)] = playerCons[pl];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		for (int32_t key = 0; key < 8; key++) {
+			const SConKey *plcon = &conKeyAssign[pl * 8 + key];
+			plbuf[key * 3 + 0] = plcon->type;
+			switch (plcon->type) {
+			case CONKEY_AXIS:
+				plbuf[key * 3 + 1] = plcon->setting.axis;
+				plbuf[key * 3 + 2] = plcon->setting.value;
+				break;
+
+			case CONKEY_BUTTON:
+				plbuf[key * 3 + 1] = plcon->setting.button;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	#endif
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
@@ -167,11 +197,11 @@ int32_t LoadConfig(void) {
 	fastlrmove = cfgbuf[12];
 	background = cfgbuf[13];
 
+	#ifdef ENABLE_KEYBOARD
 	for(i = 0; i < 20; i++) {
 		keyAssign[i] = cfgbuf[14 + i];
 	}
-	giveupKey = cfgbuf[38];
-	ssKey = cfgbuf[39];
+	#endif
 
 	rots[0] = cfgbuf[40];
 	rots[1] = cfgbuf[41];
@@ -204,10 +234,6 @@ int32_t LoadConfig(void) {
 
 	downtype = cfgbuf[66];
 	lvupbonus = cfgbuf[67];
-	pausekey[0] = cfgbuf[68];
-	pausekey[1] = cfgbuf[69];
-	dispnextkey[0] = cfgbuf[70];
-	dispnextkey[1] = cfgbuf[71];
 
 	/* 72〜74はジョイスティック用 */
 
@@ -224,12 +250,13 @@ int32_t LoadConfig(void) {
 		digitc[i + 8] = (cfgbuf[79] >> (i * 8)) & 0xff;
 	}
 
+	#ifdef ENABLE_JOYSTICK
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
-			SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
+			SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
-			pljoy->device = plbuf[0];
+			pljoy->index = plbuf[0];
 			for (int32_t i = 0; i < 4; i++) {
 				pljoy->guid.data[i] = plbuf[1 + i];
 			}
@@ -247,6 +274,32 @@ int32_t LoadConfig(void) {
 			}
 		}
 	}
+	#endif
+	
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t *conkeybuf = &cfgbuf[240];
+	for (int32_t pl = 0; pl < 2; pl++) {
+		playerCons[pl] = conkeybuf[pl * (1 + 3 * 8)];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		for (int32_t key = 0; key < 8; key++) {
+			SConKey *plcon = &conKeyAssign[pl * 8 + key];
+			plcon->type = (EConKeyType)plbuf[key * 3 + 0];
+			switch (plcon->type) {
+			case CONKEY_AXIS:
+				plcon->setting.axis = plbuf[key * 3 + 1];
+				plcon->setting.value = plbuf[key * 3 + 2];
+				break;
+
+			case CONKEY_BUTTON:
+				plcon->setting.button = plbuf[key * 3 + 1];
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	#endif
 
 	return (0);
 }
@@ -282,10 +335,10 @@ void ConfigMenu() {
 	ncfg[9]  = background;
 	last_BG = background;
 
+	#ifdef ENABLE_KEYBOARD
 	for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
+	#endif
 
-	ncfg[34] = giveupKey;
-	ncfg[35] = ssKey;
 	ncfg[36] = dtc;
 	ncfg[42] = segacheat;
 	ncfg[43] = fldtr;
@@ -308,10 +361,6 @@ void ConfigMenu() {
 
 	ncfg[53] = downtype;
 	ncfg[54] = lvupbonus;
-	ncfg[55] = pausekey[0];
-	ncfg[56] = pausekey[1];
-	ncfg[57] = dispnextkey[0];
-	ncfg[58] = dispnextkey[1];
 
 	/* 59〜61はジョイスティック用 */
 	ncfg[62] = fontc[0];
@@ -333,11 +382,12 @@ void ConfigMenu() {
 	ncfg[78] = fontc[8];
 	ncfg[79] = digitc[8];
 
+	#ifdef ENABLE_JOYSTICK
 	int32_t *joykeybuf = &ncfg[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		int32_t *plbuf = &joykeybuf[pl * 10 * 8];
-		SJoyKey *pljoy = &joykeyAssign[pl * 10];
-		plbuf[0] = pljoy->device;
+		SJoyKey *pljoy = &joyKeyAssign[pl * 10];
+		plbuf[0] = pljoy->index;
 		for (int32_t i = 0; i < 4; i++) {
 			plbuf[1 + i] = pljoy->guid.data[i];
 		}
@@ -354,6 +404,32 @@ void ConfigMenu() {
 			break;
 		}
 	}
+	#endif
+	
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t *conkeybuf = &ncfg[240];
+	for (int32_t pl = 0; pl < 2; pl++) {
+		conkeybuf[pl * (1 + 3 * 8)] = playerCons[pl];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		for (int32_t key = 0; key < 8; key++) {
+			const SConKey *plcon = &conKeyAssign[pl * 8 + key];
+			plbuf[key * 3 + 0] = plcon->type;
+			switch (plcon->type) {
+			case CONKEY_AXIS:
+				plbuf[key * 3 + 1] = plcon->setting.axis;
+				plbuf[key * 3 + 2] = plcon->setting.value;
+				break;
+
+			case CONKEY_BUTTON:
+				plbuf[key * 3 + 1] = plcon->setting.button;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	#endif
 
 	for(i = 0; i < 10; i++) statusc[i] = 0;
 
@@ -369,7 +445,7 @@ void ConfigMenu() {
 
 	loop {
 		count++;
-		KeyInput();
+		Input();
 
 		// 背景描画
 		if(background == 0) {
@@ -551,7 +627,7 @@ void ConfigMenu() {
 					background = ncfg[9];
 
 //					for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];	// keyAssignは変更後すぐに反映
-//					for(i = 0; i < 4; i++) joykeyAssign[i + 4] = ncfg[30 + i];
+//					for(i = 0; i < 4; i++) joyKeyAssign[i + 4] = ncfg[30 + i];
 //					giveupKey = ncfg[34];
 //					ssKey = ncfg[35];
 					dtc = ncfg[36];
@@ -791,14 +867,18 @@ void ConfigMenu() {
 			if(statusc[2] == 0) {
 				printFont(23, 1, "- INPUT SETTING", fontc[rots[0]]);
 				printFont(2,  3, "<< DESIGN <<               >> A/V >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+				#ifdef ENABLE_KEYBOARD
 				printFont(2,  6, "[KEYBOARD 1P]", fontc[rots[0]] * (statusc[0] == 1));
 				printFont(2,  8, "[KEYBOARD 2P]", fontc[rots[0]] * (statusc[0] == 2));
+				#endif
+				#ifdef ENABLE_JOYSTICK
 				printFont(2, 10, "[JOYSTICK 1P]", fontc[rots[0]] * (statusc[0] == 3));
 				printFont(2, 12, "[JOYSTICK 2P]", fontc[rots[0]] * (statusc[0] == 4));
-				printFont(2, 14, "[FUNCTION KEY]", fontc[rots[0]] * (statusc[0] == 5));
-				printFont(2, 16, "[INPUT TEST]", fontc[rots[0]] * (statusc[0] == 6));
-				printFont(2, 18, "[DISP ASSIGN]", fontc[rots[0]] * (statusc[0] == 7));
-				printFont(2, 28, "A:DO ASSIGN  B:RETURN", 9);
+				#endif
+				// TODO: Game controller
+				printFont(2, 14, "[INPUT TEST]", fontc[rots[0]] * (statusc[0] == 5));
+				printFont(2, 16, "[DISP ASSIGN]", fontc[rots[0]] * (statusc[0] == 6));
+				printFont(2, 28, "A:SELECT  B:RETURN", 9);
 
 				if(statusc[0] != 0) printFont(1, 4+statusc[0]*2, "b", fontc[rots[0]]);
 				else printFont(1, 3, "b", fontc[rots[0]]);
@@ -816,7 +896,34 @@ void ConfigMenu() {
 						if(getPressState(pl, 1)) m++;
 					if(m) {
 						PlaySE(5);
-						statusc[0] = (statusc[0] + m + 8) % 8;
+						int32_t oldstatus = statusc[0];
+						#if defined(ENABLE_KEYBOARD) && defined(ENABLE_JOYSTICK)
+						statusc[0] = (statusc[0] + m + 7) % 7;
+						#elif !defined(ENABLE_KEYBOARD) && defined(ENABLE_JOYSTICK)
+						statusc[0] = (statusc[0] + m + 7) % 7;
+						if (oldstatus == 0 && statusc[0] == 1) {
+							statusc[0] = 3;
+						}
+						else if (oldstatus == 3 && statusc[0] == 2) {
+							statusc[0] = 0;
+						}
+						#elif defined(ENABLE_KEYBOARD) && !defined(ENABLE_JOYSTICK)
+						statusc[0] = (statusc[0] + m + 7) % 7;
+						if (oldstatus == 2 && statusc[0] == 3) {
+							statusc[0] = 5;
+						}
+						else if (oldstatus == 5 && statusc[0] == 4) {
+							statusc[0] = 2;
+						}
+						#else
+						statusc[0] = (statusc[0] + m + 7) % 7;
+						if (oldstatus == 0 && statusc[0] == 1) {
+							statusc[0] = 5;
+						}
+						else if (oldstatus == 5 && statusc[0] == 4) {
+							statusc[0] = 0;
+						}
+						#endif
 					}
 					// HOLDボタンでページ切り替え #1.60c7k8
 					if(getPushState(pl, 7)) {
@@ -849,358 +956,309 @@ void ConfigMenu() {
 						statusc[1] = 1;
 					}
 				}
-			} else if((statusc[2] == 1) || (statusc[2] == 2)) {
+			}
+			#ifdef ENABLE_KEYBOARD
+			else if((statusc[2] == 1) || (statusc[2] == 2)) {
 				// keyboard 1p&2p
-				sprintf(string[0], "KEYBOARD %dP SETTING", statusc[2]);
-				printFont(2, 3, string[0], digitc[rots[0]]);
-
-				printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
-				printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
-				printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
-				printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
-				printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
-				printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
-				printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
-				printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
-				printFont(3, 14, "GIVEUP  :", fontc[rots[0]] * (statusc[0] == 8));
-				printFont(3, 15, "PAUSE   :", fontc[rots[0]] * (statusc[0] == 9));
-
-				for(i = 0; i < statusc[0]; i++) {
-					sprintf(string[0], "%2X", ncfg[10 + i + (statusc[2] - 1) * 10]);
-					printFont(13, 6 + i, string[0], digitc[rots[0]]);
+				bool cancel = false;
+				switch (GetLastControllerType()) {
+				#ifdef ENABLE_GAME_CONTROLLER
+				case CONTROLLER_XBOX:
+				case CONTROLLER_PLAYSTATION:
+				case CONTROLLER_NINTENDO:
+				#endif
+				#ifdef ENABLE_LINUX_GPIO
+				case CONTROLLER_LINUXGPIO:
+				#endif
+					if (statusc[0] < 10 && IsPushMenu(MENUINPUT_CANCEL)) {
+						PlaySE(5);
+						statusc[0] = 0;
+						statusc[2] = 0;
+						cancel = true;
+					}
+					break;
 				}
+				if (!cancel) {
+					sprintf(string[0], "KEYBOARD %dP SETTING", statusc[2]);
+					printFont(2, 3, string[0], digitc[rots[0]]);
 
-				if(statusc[0] < 10) {
-					printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
-					for(i = 0; i < GetMaxKey(); i++) {
-						if(!IsPushEscKey() && IsPushKey(i)) {
+					printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
+					printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
+					printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
+					printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
+					printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
+					printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
+					printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
+					printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
+					printFont(3, 14, "GIVEUP  :", fontc[rots[0]] * (statusc[0] == 8));
+					printFont(3, 15, "PAUSE   :", fontc[rots[0]] * (statusc[0] == 9));
+
+					for(i = 0; i < statusc[0]; i++) {
+						sprintf(string[0], "%2X", ncfg[10 + i + (statusc[2] - 1) * 10]);
+						printFont(13, 6 + i, string[0], digitc[rots[0]]);
+					}
+
+					if(statusc[0] < 10) {
+						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+						for(i = 0; i < GetMaxKey(); i++) {
+							if(!IsPushMenu(MENUINPUT_QUIT) && IsPushKey(i)) {
+								PlaySE(5);
+								ncfg[10 + statusc[0] + (statusc[2] - 1) * 10] = i;
+								statusc[0]++;
+								break;
+							}
+						}
+					} else {
+						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
+						printInputPrompt(3 + 3, 17, MENUINPUT_OK, digitc[rots[0]] * (count % 2));
+						printInputPrompt(3 + 18, 17, MENUINPUT_RETRY, digitc[rots[0]] * (count % 2));
+						printInputPrompt(3 + 32, 17, MENUINPUT_CANCEL, digitc[rots[0]] * (count % 2));
+
+						if(IsPushMenu(MENUINPUT_OK)) {
+							PlaySE(10);
+							for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];
+							statusc[0] = 0;
+							statusc[2] = 0;
+						}
+						if(IsPushMenu(MENUINPUT_RETRY)) {
 							PlaySE(5);
-							ncfg[10 + statusc[0] + (statusc[2] - 1) * 10] = i;
-							statusc[0]++;
-							break;
+							for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
+							statusc[0] = 0;
+						}
+						if(IsPushMenu(MENUINPUT_CANCEL)) {
+							PlaySE(5);
+							for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
+							statusc[0] = 0;
+							statusc[2] = 0;
 						}
 					}
-				} else {
-					printFont(3, 17, "OK[ENTER] / RETRY[DEL] / CANCEL[BS]", digitc[rots[0]] * (count % 2));
-					if(IsPushReturnKey()) {
-						PlaySE(10);
-						for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];
-						statusc[0] = 0;
-						statusc[2] = 0;
-					}
-					if(IsPushDeleteKey()) {
-						PlaySE(5);
-						for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
-						statusc[0] = 0;
-					}
-					if(IsPushBSKey()) {
-						PlaySE(5);
-						for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
-						statusc[0] = 0;
-						statusc[2] = 0;
-					}
 				}
-			} else if((statusc[2] == 3) || (statusc[2] == 4)) {
+			}
+			#endif
+			#ifdef ENABLE_JOYSTICK
+			else if((statusc[2] == 3) || (statusc[2] == 4)) {
 				// joystick setting
-				pl = statusc[2] - 3;
-				sprintf(string[0], "JOYSTICK %dP SETTING",statusc[2] - 2);
-				printFont(2, 3, string[0], digitc[rots[0]]);
-
-				printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
-				printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
-				printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
-				printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
-				printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
-				printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
-				printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
-				printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
-				printFont(3, 14, "GIVEUP  :", fontc[rots[0]] * (statusc[0] == 8));
-				printFont(3, 15, "PAUSE   :", fontc[rots[0]] * (statusc[0] == 9));
-
-				printFont(2, 28, "END(KEYBOARD): CANCEL", 9);
-
-				j = 80 + pl * 10 * 8;
-				for(i = 0; i < statusc[0]; i++) {
-					switch((EJoyKeyType)ncfg[j+5+i*8])
-					{
-					case JOYKEY_AXIS:
-						snprintf(string[0], 512u, "JOY %2d: AXIS %2d %c", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
-						break;
-					case JOYKEY_HAT:
-						snprintf(string[0], 512u, "JOY %2d: HAT %2d %2d", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8]);
-						break;
-					case JOYKEY_BUTTON:
-						snprintf(string[0], 512u, "JOY %2d: BUTTON %2d", ncfg[j+0+i*8], ncfg[j+6+i*8]);
-						break;
-					}
-					printFont(13, 6 + i, string[0], digitc[rots[0]]);
-				}
-
-				if(statusc[0] < 10) {
-					printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
-					SJoyKey pushKey;
-					bool pushed = false;
-					for (int32_t i = 0; i < GetMaxJoyPad(); i++)
-					{
-						pushKey.device = i;
-						pushKey.guid = GetJoyPadGUID(i);
-
-						pushKey.type = JOYKEY_AXIS;
-						for (int32_t j = 0; j < GetMaxJoyAxis(i); j++)
-						{
-							pushKey.setting.index = j;
-
-							pushKey.setting.value = -YGS_DEADZONE_MAX;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-							pushKey.setting.value = +YGS_DEADZONE_MAX;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-						}
-						if (pushed) break;
-
-						pushKey.type = JOYKEY_HAT;
-						for (int32_t j = 0; j < GetMaxJoyHat(i); j++)
-						{
-							pushKey.setting.index = j;
-
-							pushKey.setting.value = SDL_HAT_LEFT;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-							pushKey.setting.value = SDL_HAT_RIGHT;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-							pushKey.setting.value = SDL_HAT_UP;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-							pushKey.setting.value = SDL_HAT_DOWN;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-						}
-						if (pushed) break;
-
-						pushKey.type = JOYKEY_BUTTON;
-						for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
-						{
-							pushKey.setting.button = j;
-							if (IsPushJoyKey(&pushKey))
-							{
-								pushed = true;
-								break;
-							}
-						}
-						if (pushed) break;
-					}
-					if(pushed)
-					{
-						PlaySE(5);
-						ncfg[j+0+statusc[0]*8] = pushKey.device;
-						for (int32_t i = 0; i < 4; i++) {
-							ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
-						}
-						ncfg[j+5+statusc[0]*8] = pushKey.type;
-						switch(pushKey.type) {
-						case JOYKEY_AXIS:
-						case JOYKEY_HAT:
-							ncfg[j+6+statusc[0]*8] = pushKey.setting.index;
-							ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
-							break;
-						case JOYKEY_BUTTON:
-							ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
-							break;
-						default:
-							break;
-						}
-						statusc[0]++;
-					}
-				} else {
-					printFont(3, 17, "OK[ENTER] / RETRY[DEL] / CANCEL[BS]", digitc[rots[0]] * (count % 2));
-					if(IsPushReturnKey()) {
-						PlaySE(10);
-						for (int32_t key = 0; key < 10; key++) {
-							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
-							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-							pljoy->device = plcfg[0];
-							for (int32_t i = 0; i < 4; i++) {
-								pljoy->guid.data[i] = plcfg[1 + i];
-							}
-							pljoy->type = (EJoyKeyType)plcfg[5];
-							switch (pljoy->type) {
-							case JOYKEY_AXIS:
-							case JOYKEY_HAT:
-								pljoy->setting.index = plcfg[6];
-								pljoy->setting.value = plcfg[7];
-								break;
-
-							case JOYKEY_BUTTON:
-								pljoy->setting.button = plcfg[6];
-								break;
-							}
-						}
-
-						statusc[0] = 0;
-						statusc[2] = 0;
-					}
-					else if(IsPushDeleteKey()) {
-						PlaySE(5);
-						for (int32_t key = 0; key < 10; key++) {
-							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
-							plcfg[0] = pljoy->device;
-							for (int32_t i = 0; i < 4; i++) {
-								plcfg[1 + i] = pljoy->guid.data[i];
-							}
-							plcfg[5] = pljoy->type;
-							switch (pljoy->type) {
-							case JOYKEY_AXIS:
-							case JOYKEY_HAT:
-								plcfg[6] = pljoy->setting.index;
-								plcfg[7] = pljoy->setting.value;
-								break;
-
-							case JOYKEY_BUTTON:
-								plcfg[6] = pljoy->setting.button;
-								break;
-							}
-						}
-						statusc[0] = 0;
-					}
-					else if(IsPushBSKey()) {
-						PlaySE(5);
-						for (int32_t key = 0; key < 10; key++) {
-							int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-							SJoyKey *pljoy = &joykeyAssign[pl * 10 + key];
-							plcfg[0] = pljoy->device;
-							for (int32_t i = 0; i < 4; i++) {
-								plcfg[1 + i] = pljoy->guid.data[i];
-							}
-							plcfg[5] = pljoy->type;
-							switch (pljoy->type) {
-							case JOYKEY_AXIS:
-							case JOYKEY_HAT:
-								plcfg[6] = pljoy->setting.index;
-								plcfg[7] = pljoy->setting.value;
-								break;
-
-							case JOYKEY_BUTTON:
-								plcfg[6] = pljoy->setting.button;
-								break;
-							}
-						}
-						statusc[0] = 0;
-						statusc[2] = 0;
-					}
-				}
-
-				// キーボードのENDで脱出 #1.60c7n4
-				if( IsPushEndKey()) {
-					PlaySE(5);
-					int32_t *plcfg = &ncfg[80 + pl * 10 * 8];
-					SJoyKey *pljoy = &joykeyAssign[pl * 10];
-					plcfg[0] = pljoy->device;
-					for (int32_t i = 0; i < 4; i++) {
-						plcfg[1 + i] = pljoy->guid.data[i];
-					}
-					plcfg[5] = pljoy->type;
-					switch (pljoy->type) {
-					case JOYKEY_AXIS:
-					case JOYKEY_HAT:
-						plcfg[6] = pljoy->setting.index;
-						plcfg[7] = pljoy->setting.value;
-						break;
-
-					case JOYKEY_BUTTON:
-						plcfg[6] = pljoy->setting.button;
-						break;
-					}
+				if (GetNumJoys() == 0) {
 					statusc[0] = 0;
 					statusc[2] = 0;
 				}
-			} else if(statusc[2] == 5) {
-				// その他
-				printFont(2,  3, "FUNCTION KEY SETTING", digitc[rots[0]]);
-				printFont(3,  6, "GIVEUP KEY     :", fontc[rots[0]] * (statusc[0] == 0));
-				printFont(3,  8, "SNAPSHOT KEY   :", fontc[rots[0]] * (statusc[0] == 1));
-				printFont(3, 10, "PAUSE KEY 1P   :", fontc[rots[0]] * (statusc[0] == 2));
-				printFont(3, 12, "PAUSE KEY 2P   :", fontc[rots[0]] * (statusc[0] == 3));
-				printFont(3, 14, "DISPNEXT KEY 1P:", fontc[rots[0]] * (statusc[0] == 4));
-				printFont(3, 16, "DISPNEXT KEY 2P:", fontc[rots[0]] * (statusc[0] == 5));
+				else {
+					pl = statusc[2] - 3;
+					sprintf(string[0], "JOYSTICK %dP SETTING",statusc[2] - 2);
+					printFont(2, 3, string[0], digitc[rots[0]]);
 
-				j = 34;
-				for(i = 0; i < statusc[0]; i++) {
-					sprintf(string[0], "%2X", ncfg[j]);
-					printFont(20, 6 + i * 2, string[0], digitc[rots[0]]);
-					if(i == 1) j = 55;
-					else j++;
-				}
+					printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
+					printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
+					printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
+					printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
+					printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
+					printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
+					printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
+					printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
+					printFont(3, 14, "GIVEUP  :", fontc[rots[0]] * (statusc[0] == 8));
+					printFont(3, 15, "PAUSE   :", fontc[rots[0]] * (statusc[0] == 9));
 
-				if(statusc[0] < 6) {
-					printFont(20, 6 + statusc[0] * 2, "_", digitc[rots[0]] * (count % 2));
-					for(i = 0; i < GetMaxKey(); i++) {
-						if(IsPushKey(i)) {
-							PlaySE(5);
-							ncfg[j] = i;
-							statusc[0]++;
+					j = 80 + pl * 10 * 8;
+					for(i = 0; i < statusc[0]; i++) {
+						switch((EJoyKeyType)ncfg[j+5+i*8])
+						{
+						case JOYKEY_AXIS:
+							snprintf(string[0], 512u, "JOY %2d: AXIS %2d %c", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
+							break;
+						case JOYKEY_HAT:
+							snprintf(string[0], 512u, "JOY %2d: HAT %2d %2d", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8]);
+							break;
+						case JOYKEY_BUTTON:
+							snprintf(string[0], 512u, "JOY %2d: BUTTON %2d", ncfg[j+0+i*8], ncfg[j+6+i*8]);
 							break;
 						}
+						printFont(13, 6 + i, string[0], digitc[rots[0]]);
 					}
-				} else {
-					printFont(3, 18, "OK[ENTER] / RETRY[DEL] / CANCEL[BS]", digitc[rots[0]] * (count % 2));
-					if(IsPushReturnKey()) {
-						PlaySE(10);
-						giveupKey = ncfg[34];
-						ssKey = ncfg[35];
-						pausekey[0] = ncfg[55];
-						pausekey[1] = ncfg[56];
-						dispnextkey[0] = ncfg[57];
-						dispnextkey[1] = ncfg[58];
-						statusc[0] = 0;
-						statusc[2] = 0;
-					}
-					if(IsPushDeleteKey()) {
-						PlaySE(5);
-						ncfg[34] = giveupKey;
-						ncfg[35] = ssKey;
-						ncfg[55] = pausekey[0];
-						ncfg[56] = pausekey[1];
-						ncfg[57] = dispnextkey[0];
-						ncfg[58] = dispnextkey[1];
-						statusc[0] = 0;
-					}
-					if(IsPushBSKey()) {
-						PlaySE(5);
-						ncfg[34] = giveupKey;
-						ncfg[35] = ssKey;
-						ncfg[55] = pausekey[0];
-						ncfg[56] = pausekey[1];
-						ncfg[57] = dispnextkey[0];
-						ncfg[58] = dispnextkey[1];
-						statusc[0] = 0;
-						statusc[2] = 0;
+
+					if(statusc[0] < 10) {
+						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+						SJoyKey pushKey;
+						bool pushed = false;
+						for (int32_t i = 0; i < GetMaxJoys(); i++)
+						{
+							pushKey.index = i;
+							pushKey.guid = GetJoyGUID(i);
+
+							pushKey.type = JOYKEY_AXIS;
+							for (int32_t j = 0; j < GetMaxJoyAxis(i); j++)
+							{
+								pushKey.setting.index = j;
+
+								pushKey.setting.value = -YGS_DEADZONE_MAX;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+								pushKey.setting.value = +YGS_DEADZONE_MAX;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+							}
+							if (pushed) break;
+
+							pushKey.type = JOYKEY_HAT;
+							for (int32_t j = 0; j < GetMaxJoyHat(i); j++)
+							{
+								pushKey.setting.index = j;
+
+								pushKey.setting.value = SDL_HAT_LEFT;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+								pushKey.setting.value = SDL_HAT_RIGHT;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+								pushKey.setting.value = SDL_HAT_UP;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+								pushKey.setting.value = SDL_HAT_DOWN;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+							}
+							if (pushed) break;
+
+							pushKey.type = JOYKEY_BUTTON;
+							for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
+							{
+								pushKey.setting.button = j;
+								if (IsPushJoyKey(&pushKey))
+								{
+									pushed = true;
+									break;
+								}
+							}
+							if (pushed) break;
+						}
+						if(pushed)
+						{
+							PlaySE(5);
+							ncfg[j+0+statusc[0]*8] = pushKey.index;
+							for (int32_t i = 0; i < 4; i++) {
+								ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
+							}
+							ncfg[j+5+statusc[0]*8] = pushKey.type;
+							switch(pushKey.type) {
+							case JOYKEY_AXIS:
+							case JOYKEY_HAT:
+								ncfg[j+6+statusc[0]*8] = pushKey.setting.index;
+								ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
+								break;
+							case JOYKEY_BUTTON:
+								ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
+								break;
+							default:
+								break;
+							}
+							statusc[0]++;
+						}
+					} else {
+						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
+						printInputPrompt(3 + 3, 17, MENUINPUT_OK, digitc[rots[0]] * (count % 2));
+						printInputPrompt(3 + 18, 17, MENUINPUT_RETRY, digitc[rots[0]] * (count % 2));
+						printInputPrompt(3 + 32, 17, MENUINPUT_CANCEL, digitc[rots[0]] * (count % 2));
+						if(IsPushMenu(MENUINPUT_OK)) {
+							PlaySE(10);
+							for (int32_t key = 0; key < 10; key++) {
+								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
+								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
+								pljoy->index = plcfg[0];
+								for (int32_t i = 0; i < 4; i++) {
+									pljoy->guid.data[i] = plcfg[1 + i];
+								}
+								pljoy->type = (EJoyKeyType)plcfg[5];
+								switch (pljoy->type) {
+								case JOYKEY_AXIS:
+								case JOYKEY_HAT:
+									pljoy->setting.index = plcfg[6];
+									pljoy->setting.value = plcfg[7];
+									break;
+
+								case JOYKEY_BUTTON:
+									pljoy->setting.button = plcfg[6];
+									break;
+								}
+							}
+
+							statusc[0] = 0;
+							statusc[2] = 0;
+						}
+						else if(IsPushMenu(MENUINPUT_RETRY)) {
+							PlaySE(5);
+							for (int32_t key = 0; key < 10; key++) {
+								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
+								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
+								plcfg[0] = pljoy->index;
+								for (int32_t i = 0; i < 4; i++) {
+									plcfg[1 + i] = pljoy->guid.data[i];
+								}
+								plcfg[5] = pljoy->type;
+								switch (pljoy->type) {
+								case JOYKEY_AXIS:
+								case JOYKEY_HAT:
+									plcfg[6] = pljoy->setting.index;
+									plcfg[7] = pljoy->setting.value;
+									break;
+
+								case JOYKEY_BUTTON:
+									plcfg[6] = pljoy->setting.button;
+									break;
+								}
+							}
+							statusc[0] = 0;
+						}
+						else if(IsPushMenu(MENUINPUT_CANCEL)) {
+							PlaySE(5);
+							for (int32_t key = 0; key < 10; key++) {
+								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
+								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
+								plcfg[0] = pljoy->index;
+								for (int32_t i = 0; i < 4; i++) {
+									plcfg[1 + i] = pljoy->guid.data[i];
+								}
+								plcfg[5] = pljoy->type;
+								switch (pljoy->type) {
+								case JOYKEY_AXIS:
+								case JOYKEY_HAT:
+									plcfg[6] = pljoy->setting.index;
+									plcfg[7] = pljoy->setting.value;
+									break;
+
+								case JOYKEY_BUTTON:
+									plcfg[6] = pljoy->setting.button;
+									break;
+								}
+							}
+							statusc[0] = 0;
+							statusc[2] = 0;
+						}
 					}
 				}
-			} else if(statusc[2] == 6) {
+			}
+			#endif
+			else if(statusc[2] == 5) {
 				// INPUT TEST #1.60c7n3
 				printFont(2,  3, "INPUT TEST", digitc[rots[0]]);
-				printFont(2, 28, "ENTER(KEYBOARD): EXIT", 9);
+				printFont(2, 28, "EXIT[  ]", 9);
+				printInputPrompt(7, 28, MENUINPUT_CANCEL, 9);
 
 				for(pl=0; pl<2; pl++) {
 					sprintf(string[0],"%dP", pl + 1);
@@ -1215,25 +1273,36 @@ void ConfigMenu() {
 						else if(i == 5) printFont(3, 7 + i + pl * 10, "B(R/L     ROT):", 0);
 						else if(i == 6) printFont(3, 7 + i + pl * 10, "C(L/R/180 ROT):", 0);
 						else if(i == 7) printFont(3, 7 + i + pl * 10, "D(HOLD)       :", 0);
-						j = (IsPressKey(keyAssign[i + 10 * pl]) || IsPressJoyKey(&joykeyAssign[i + 10 * pl]));	// キー入力状態取得
+						j =
+							0
+							#ifdef ENABLE_KEYBOARD
+							|| IsPressKey(keyAssign[i + 10 * pl])
+							#endif
+							#ifdef ENABLE_JOYSTICK
+							|| IsPressJoyKey(&joyKeyAssign[i + 10 * pl])	// キー入力状態取得
+							#endif
+							#ifdef ENABLE_GAME_CONTROLLER
+							|| IsPressConKey(playerCons[pl], &conKeyAssign[i + 8 * pl])
+							#endif
+							;
 						if(j) sprintf(string[0],"d");
 						else  sprintf(string[0],"c");
 						printFont(19, 7 + i + pl * 10, string[0], j+1);
 					}
 				}
 
-				// キーボードのENTERで終了
-				if( IsPushReturnKey() ) {
+				if( IsPushMenu(MENUINPUT_CANCEL) ) {
 					PlaySE(5);
 					statusc[0] = 0;
 					statusc[2] = 0;
 				}
-			} else if(statusc[2] == 7) {
+			} else if(statusc[2] == 6) {
 				// DISP ASSIGN #1.60c7n4
 				printFont(2,  3, "DISP ASSIGN", digitc[rots[0]]);
 				printFont(2, 28, "A/B: EXIT", 9);
 
 				for(pl=0; pl<2; pl++) {
+					string[0][0] = '\0';
 					sprintf(string[0],"%dP", pl + 1);
 					printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
@@ -1247,36 +1316,42 @@ void ConfigMenu() {
 						else if(i == 6) printFont(3, 7 + i + pl * 10, "C(L/R/180 ROT):", 0);
 						else if(i == 7) printFont(3, 7 + i + pl * 10, "D(HOLD)       :", 0);
 
+						sprintf(string[0], "NO ASSIGN");
+
+						#ifdef ENABLE_KEYBOARD
 						if (keyAssign[i + pl * 10] != SDL_SCANCODE_UNKNOWN)
 						{
-							sprintf(string[0],"%2X", keyAssign[i + pl * 10]);
+							sprintf(string[0],"%2X", (unsigned)keyAssign[i + pl * 10]);
 						}
 						else
 						{
 							sprintf(string[0],"??");
 						}
-						SJoyKey* const key = &joykeyAssign[i + pl * 10];
-						SJoyPadGUID zeroGUID = { 0 };
-						if (memcmp(&key->guid, &zeroGUID, sizeof(SJoyPadGUID)) != 0)
+						#endif
+
+						#ifdef ENABLE_JOYSTICK
+						SJoyKey* const key = &joyKeyAssign[i + pl * 10];
+						SJoyGUID zeroGUID = { 0 };
+						if (memcmp(key->guid.data, zeroGUID.data, sizeof(key->guid.data)) != 0)
 						{
 							switch(key->type) {
 							case JOYKEY_AXIS:
 								sprintf(string[0] + strlen(string[0]), "(JOY%2d: AXIS %2d %c)",
-									key->device,
+									key->index,
 									key->setting.index,
 									key->setting.value >= 0 ? '+' : '-'
 								);
 								break;
 							case JOYKEY_HAT:
 								sprintf(string[0] + strlen(string[0]), "(JOY%2d: HAT %2d %2d)",
-									key->device,
+									key->index,
 									key->setting.index,
 									key->setting.value
 								);
 								break;
 							case JOYKEY_BUTTON:
 								sprintf(string[0] + strlen(string[0]), "(JOY%2d: BUTTON %2d)",
-									key->device,
+									key->index,
 									key->setting.button
 								);
 								break;
@@ -1285,6 +1360,8 @@ void ConfigMenu() {
 						else {
 							sprintf(string[0] + strlen(string[0]), "(NO JOY ASSIGN)");
 						}
+						#endif
+
 						printFont(19, 7 + i + pl * 10, string[0], 0);
 					}
 				}
@@ -1772,7 +1849,7 @@ void GameOption() {
 			else sprintf(string[0], "ON");
 		printFont(22, 29, string[0], (cursor == 26) * fontc[rots[0]]);
 		// キー入力
-		KeyInput();
+		Input();
 
 		padRepeat2(0);
 		// ↑

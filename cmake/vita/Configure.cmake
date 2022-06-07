@@ -8,91 +8,92 @@ endif()
 
 add_executable(${EXE} ${EXE_SOURCES})
 
+set(ENABLE_KEYBOARD FALSE)
 set(FILESYSTEM_TYPE FILESYSTEM_PHYSFS)
 
 set(DEFAULT_JOYKEY_ASSIGN [[
 \
 	{\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 8\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 6\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 7\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 9\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 2\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 1\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 3\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 5\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 10\
-	        }\
-	    },\
-	    {\
-	        .device = 0,\
-	        .guid = GetJoyPadGUID(0),\
-	        .type = JOYKEY_BUTTON,\
-	        .setting = {\
-	            .button = 11\
-	        }\
-	    }\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 8\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 6\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 7\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 9\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 2\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 1\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 3\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 5\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 10\
+			}\
+		},\
+		{\
+			.index = 0,\
+			.guid = GetJoyGUID(0),\
+			.type = JOYKEY_BUTTON,\
+			.setting = {\
+				.button = 11\
+			}\
+		}\
 	}
 ]])
 

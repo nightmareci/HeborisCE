@@ -26,6 +26,5 @@ void missionSetStatus();
 void StopAllBGM(void);
 void loadMissionData(int32_t number);
 void getRoadName(int32_t no);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void PlaySE(int32_t no);
 void statMissionSelect(int32_t player);

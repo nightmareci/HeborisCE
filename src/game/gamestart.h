@@ -519,7 +519,9 @@ extern int32_t clearnum[2];
 extern int32_t randommode[2];
 extern int32_t stage_nextc[2];
 extern int32_t start_nextc[2];
+#ifdef ENABLE_KEYBOARD
 extern int32_t skipKey;
+#endif
 extern int32_t start_stage[2];
 extern int32_t dummy;
 extern int32_t s_go_end;

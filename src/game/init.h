@@ -33,7 +33,9 @@ extern int32_t ti_s_ready_start;
 extern int32_t ti_s_ready_end;
 extern int32_t ti_s_go_start;
 extern int32_t ti_s_go_end;
+#ifdef ENABLE_KEYBOARD
 extern int32_t skipKey;
+#endif
 extern int32_t vsmodesl;
 extern int32_t winpoint;
 extern int32_t def_vs_goal;
@@ -162,7 +164,6 @@ extern int32_t yokotame[25];
 extern int32_t speed[25];
 extern int32_t fps[25];
 extern int32_t hiddenlv[25];
-extern int32_t waitkey[25];
 extern int32_t blind[25];
 extern int32_t p_bgmload[25];
 extern int32_t debug;

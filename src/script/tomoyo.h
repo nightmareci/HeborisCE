@@ -19,7 +19,6 @@ void getTime(int32_t time);
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void objectCreate2(int32_t p,int32_t s,int32_t x,int32_t y,int32_t v,int32_t w,int32_t j,int32_t c);
 void PlaySE(int32_t no);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 int32_t Stage_RankingCheck(int32_t player,int32_t rmode);
 void StopAllBGM(void);
 void StopSE(int32_t no);

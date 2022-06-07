@@ -31,9 +31,14 @@ typedef struct {
 
 	int32_t	fontsize;
 
-	SJoyKey	joykeyAssign[10 * 2];
-
-	SDL_Scancode	holdkey[2];
+	#ifdef ENABLE_JOYSTICK
+	SJoyKey	joyKeyAssign[10 * 2];
+	#endif
+	
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t playerCons[2];
+	SConKey conKeyAssign[8 * 2];
+	#endif
 
 	int32_t rots[2];
 	int32_t lvup[2];
@@ -54,6 +59,7 @@ typedef struct {
 int32_t SetDefaultConfig()
 {
 	const SConfig DefaultConfig = {
+		#ifdef ENABLE_KEYBOARD
 		.keyAssign =
 		{
 			SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
@@ -64,6 +70,7 @@ int32_t SetDefaultConfig()
 			SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
 			SDL_SCANCODE_PAGEUP, SDL_SCANCODE_PAGEDOWN,
 		},
+		#endif
 		.fontc = {9,1,2,3,8,4,3,6,7},	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 		.digitc = {5,5,7,7,5,5,7,7,5},	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
 		.giveupKey = SDL_SCANCODE_Q,		//捨てゲーキー (デフォルトはQ)
@@ -93,10 +100,82 @@ int32_t SetDefaultConfig()
 
 		.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
 
-		.joykeyAssign = DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
+		#ifdef ENABLE_JOYSTICK
+		.joyKeyAssign = DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
+		#endif
+		
+		#ifdef ENABLE_GAME_CONTROLLER
+		.playerCons = { 0, 1 },
+		.conKeyAssign = {
+			// Player 1
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_UP }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_DOWN }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_LEFT }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_RIGHT }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_A }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_B }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_X }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER }
+			},
 
-		//Holdボタン(キーボード)割り当て
-		.holdkey = { SDL_SCANCODE_V, SDL_SCANCODE_KP_0 },	//default 1p側:V 2p側:テンキー0
+			// Player 2
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_UP }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_DOWN }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_LEFT }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_RIGHT }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_A }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_B }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_X }
+			},
+			{
+				.type = CONKEY_BUTTON,
+				.setting = { .button = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER }
+			},
+		},
+		#endif
 
 		.rots = {2, 1},
 		.lvup = {1, 1},
@@ -114,9 +193,6 @@ int32_t SetDefaultConfig()
 	};
 
 	int32_t i,j, cfgbuf[CFG_LENGTH];
-
-	keyAssign[7] = DefaultConfig.holdkey[0];
-	keyAssign[17] = DefaultConfig.holdkey[1];
 
 	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
 	cfgbuf[0] = 0x4F424550;
@@ -174,12 +250,13 @@ int32_t SetDefaultConfig()
 	cfgbuf[78] = DefaultConfig.fontc[8] + DefaultConfig.fontc[9] * 0x100 + DefaultConfig.fontc[10] * 0x10000 + DefaultConfig.fontc[11] * 0x1000000 ;
 	cfgbuf[79] = DefaultConfig.digitc[8] + DefaultConfig.digitc[9] * 0x100 + DefaultConfig.digitc[10] * 0x10000 + DefaultConfig.digitc[11] * 0x1000000 ;
 
+	#ifdef ENABLE_JOYSTICK
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
-			const SJoyKey *pljoy = &DefaultConfig.joykeyAssign[pl * 10 + key];
-			plbuf[0] = pljoy->device;
+			const SJoyKey *pljoy = &DefaultConfig.joyKeyAssign[pl * 10 + key];
+			plbuf[0] = pljoy->index;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
 			}
@@ -197,6 +274,32 @@ int32_t SetDefaultConfig()
 			}
 		}
 	}
+	#endif
+	
+	#ifdef ENABLE_GAME_CONTROLLER
+	int32_t *conkeybuf = &cfgbuf[240];
+	for (int32_t pl = 0; pl < 2; pl++) {
+		conkeybuf[pl * (1 + 3 * 8)] = DefaultConfig.playerCons[pl];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		for (int32_t key = 0; key < 8; key++) {
+			const SConKey *plcon = &DefaultConfig.conKeyAssign[pl * 8 + key];
+			plbuf[key * 3 + 0] = plcon->type;
+			switch (plcon->type) {
+			case CONKEY_AXIS:
+				plbuf[key * 3 + 1] = plcon->setting.axis;
+				plbuf[key * 3 + 2] = plcon->setting.value;
+				break;
+
+			case CONKEY_BUTTON:
+				plbuf[key * 3 + 1] = plcon->setting.button;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+	#endif
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 

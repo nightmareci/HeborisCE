@@ -11,10 +11,15 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 
 	if((time2[player] <= 72000) && !playback && replay_save[player]) {
 		for(i = 0; i < 10; i++) {
+			// TODO: Change how replay saving is selected, away
+			// from hard-coded to the keyboard number keys to
+			// something using the configured inputs.
+			#ifdef ENABLE_KEYBOARD
 			if(IsPushKey(2 + i + player * 14)) {
 				saveReplayData(player, i + player * 10 + 1);
 				statusc[player * 10 + statnumber] = i + player * 10 + 1;
 			}
+			#endif
 		}
 	}
 }
@@ -740,7 +745,7 @@ int32_t ReplaySelectProc(void) {
 	while(!flag) {
 		count++;
 		ReplaySelect();
-		if(IsPushEscKey()) restoreSetups();
+		if(IsPushMenu(MENUINPUT_QUIT)) restoreSetups();
 		spriteTime();
 	}
 
@@ -904,7 +909,7 @@ void ReplaySelectInitial(void) {
 void ReplaySelect(void) {
 	int32_t		i,start,end;
 
-	KeyInput();
+	Input();
 
 	// 背景描画
 	if(background == 0) {
@@ -923,7 +928,7 @@ void ReplaySelect(void) {
 	}
 
 	// Bで戻る
-	if(getPushState(0, 5) || IsPushEscKey()) {
+	if(getPushState(0, 5) || IsPushMenu(MENUINPUT_QUIT)) {
 		restoreSetups();
 		if(gameMode[0] == 8) gameMode[0] = 0;
 		if(gameMode[0] == 4){
@@ -1408,13 +1413,13 @@ void ReplayDetail(int32_t number) {
 		else printFont(33, 14, "19/20", 0);
 
 		// AorBで戻る
-		KeyInput();
+		Input();
 
 		if(getPushState(0, 4) || getPushState(0, 5)) {
 			PlaySE(5);
 			return;
 		}
-		if(IsPushEscKey()) restoreSetups();
+		if(IsPushMenu(MENUINPUT_QUIT)) restoreSetups();
 		spriteTime();
 	}
 }

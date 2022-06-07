@@ -127,8 +127,10 @@ ti_s_ready_end = 155;		// TOMOYO ready終了
 ti_s_go_start = 160;		// TOMOYO go開始
 ti_s_go_end = 225;		// TOMOYO go終了
 
+#ifdef ENABLE_KEYBOARD
 // TOMOYOモードでのステージスキップキー #1.60c7l8
 skipKey = SDL_SCANCODE_F5;
+#endif
 
 // VERSUSモードの対戦ルール
 // 0=NORMAL	通常
@@ -910,10 +912,6 @@ fps[0] = 60;
 //hidden (1-7,8=M,9=UM)
 hiddenlv[0] = -1;
 
-//ショートカットキー。このキーを押せば、すぐさま設定を読み込めます。デフォルトではキー最上段の1〜6にしてあります。
-//キーに対応する数値は、ygs2000のスクリプトマニュアルまたはlist.txtを参照してください。
-waitkey[0]  = 0x02;
-
 //BLINDの有無 変更する場合は0か1を指定してください
 blind[0]    = 0;
 
@@ -932,7 +930,6 @@ settyaku[1] = 28;
 yokotame[1] = 15;
 fps[1]      = 60;
 hiddenlv[1] = 0;
-waitkey[1]  = 0x03;
 speed[1]    = 120;
 blind[1]    = 0;
 p_bgmload[1]= 0;
@@ -944,7 +941,6 @@ settyaku[2] = 28;
 yokotame[2] = 15;
 fps[2]      = 60;
 hiddenlv[2] = 0;
-waitkey[2]  = 0x04;
 speed[2]    = 300;
 blind[2]    = 0;
 p_bgmload[2]= 0;
@@ -956,7 +952,6 @@ settyaku[3] = 27;
 yokotame[3] = 11;
 fps[3]      = 60;
 hiddenlv[3] = 0;
-waitkey[3]  = 0x05;
 speed[3]    = 1200;
 blind[3]    = 0;
 p_bgmload[3]= 1;
@@ -968,7 +963,6 @@ settyaku[4] = 18;
 yokotame[4] = 9;
 fps[4]      = 60;
 hiddenlv[4] = 0;
-waitkey[4]  = 0x06;
 speed[4]    = 1200;
 blind[4]    = 0;
 
@@ -979,7 +973,6 @@ settyaku[5] = 15;
 yokotame[5] = 8;
 fps[5]      = 60;
 hiddenlv[5] = 0;
-waitkey[5]  = 0x07;
 speed[5]    = 1200;
 blind[5]    = 0;
 p_bgmload[5]= 2;
@@ -991,7 +984,6 @@ settyaku[6] = 15;
 yokotame[6] = 8;
 fps[6]      = 60;
 hiddenlv[6] = 0;
-waitkey[6]  = 0x08;
 speed[6]    = 1200;
 blind[6]    = 0;
 
@@ -1002,7 +994,6 @@ settyaku[7] = 15;
 yokotame[7] = 7;
 fps[7]      = 60;
 hiddenlv[7] = 0;
-waitkey[7]  = 0x09;
 speed[7]    = 1200;
 blind[7]    = 0;
 
@@ -1013,7 +1004,6 @@ settyaku[8] = 22;
 yokotame[8] = 11;
 fps[8]      = 60;
 hiddenlv[8] = 0;
-waitkey[8]  = 0x0A;
 speed[8]    = 1200;
 
 strcpy(waitname[9], "DEVIL");//9
@@ -1023,7 +1013,6 @@ settyaku[9] = 16;
 yokotame[9] = 7;
 fps[9]      = 60;
 hiddenlv[9] = 0;
-waitkey[9]  = 0x0B;
 speed[9]    = 1200;
 blind[9]    = 0;
 
@@ -1034,7 +1023,6 @@ settyaku[10] = 11;
 yokotame[10] = 5;
 hiddenlv[10] = 0;
 fps[10]      = 60;
-waitkey[10]  = 0x10;
 speed[10]    = 1200;
 blind[10]    = 0;
 p_bgmload[10]= 3;
@@ -1046,7 +1034,6 @@ settyaku[11] = 9;
 yokotame[11] = 5;
 hiddenlv[11] = 0;
 fps[11]      = 60;
-waitkey[11]  = 0x11;
 speed[11]    = 1200;
 blind[11]    = 0;
 p_bgmload[11]= 5;
@@ -1058,7 +1045,6 @@ settyaku[12] = 14;
 yokotame[12] = 7;
 fps[12]      = 60;
 hiddenlv[12] = 0;
-waitkey[12]  = 0x12;
 speed[12]    = 1200;
 blind[12]    = 0;
 
@@ -1069,7 +1055,6 @@ settyaku[13] = 5;
 yokotame[13] = 6;
 fps[13]      = 60;
 hiddenlv[13] = 8;
-waitkey[13]  = 0x13;
 speed[13]    = 1200;
 blind[13]    = 1;
 
@@ -1080,7 +1065,6 @@ settyaku[14] = 17;
 yokotame[14] = 10;
 fps[14]      = 60;
 hiddenlv[14] = 0;
-waitkey[14]  = 0x14;
 speed[14]    = 1200;
 blind[14]    = 0;
 
@@ -1091,7 +1075,6 @@ settyaku[15] = 14;
 yokotame[15] = 8;
 fps[15]      = 60;
 hiddenlv[15] = 0;
-waitkey[15]  = 0x15;
 speed[15]    = 1200;
 blind[15]    = 0;
 
@@ -1102,7 +1085,6 @@ settyaku[16] = 14;
 yokotame[16] = 8;
 fps[16]      = 60;
 hiddenlv[16] = 0;
-waitkey[16]  = 0x16;
 speed[16]    = 1200;
 blind[16]    = 0;
 
@@ -1114,7 +1096,6 @@ settyaku[17] = 6;
 yokotame[17] = 2;
 hiddenlv[17] = 0;
 fps[17]      = 60;
-waitkey[17]  = 0x17;
 speed[17]    = 1200;
 blind[17]    = 1;
 
@@ -1126,7 +1107,6 @@ settyaku[18] = 8;
 yokotame[18] = 2;
 fps[18]      = 60;
 hiddenlv[18] = 0;
-waitkey[18]  = 0x18;
 speed[18]    = 1200;
 blind[18]    = 1;
 
@@ -1138,7 +1118,6 @@ settyaku[19] = 2;
 yokotame[19] = 1;
 fps[19]      = 60;
 hiddenlv[19] = 0;
-waitkey[19]  = 0x19;
 speed[19]    = 1200;
 blind[19]    = 1;
 
@@ -1157,7 +1136,6 @@ syoukyo[20]  = -1;
 settyaku[20] = -1;
 yokotame[20] = -1;
 fps[20]      = -1;
-waitkey[20]  = -1;
 speed[20]    = -1;
 */
 //=============================================================

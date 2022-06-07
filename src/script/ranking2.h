@@ -9,7 +9,6 @@ int32_t RankingGet2(int32_t rmode,int32_t rtype,int32_t rrots,int32_t player);
 int32_t RankingLoad2();
 void RankingSave2();
 void getTime(int32_t time);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void getModeNameEx(int32_t mode,int32_t number);
 void getRuleNameEx(int32_t rule,int32_t number);
 void RankingProc2_2();

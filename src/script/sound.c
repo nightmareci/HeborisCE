@@ -346,7 +346,7 @@ void SoundTestProc(void) {
 
 	loop {
 		count++;
-		KeyInput();
+		Input();
 
 		// 背景描画 #1.60c7o5
 		if(background == 0) {

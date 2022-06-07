@@ -5,7 +5,6 @@
 int32_t RankingLoad(void);
 int32_t RankingSave(void);
 void printBIGFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void getTime(int32_t time);
 void RankingProc2_1(void);
 int32_t RankingView(void);

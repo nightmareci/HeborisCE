@@ -2,7 +2,6 @@
 
 #include "script/include.h"
 
-void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void SoundTestProc(void);
 void changeBGM(int32_t player);
 void checkMasterFadeout(int32_t player);

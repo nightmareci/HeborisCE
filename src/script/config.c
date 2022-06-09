@@ -134,7 +134,7 @@ int32_t SaveConfig(void) {
 				break;
 
 			case JOYKEY_BUTTON:
-				plbuf[6] = pljoy->setting.button;
+				plbuf[6] = pljoy->index;
 				break;
 			}
 		}
@@ -144,24 +144,12 @@ int32_t SaveConfig(void) {
 	#ifdef ENABLE_GAME_CONTROLLER
 	int32_t *conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
-		conkeybuf[pl * (1 + 3 * 8)] = playerCons[pl];
-		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		conkeybuf[pl * (1 + 2 * 8)] = playerCons[pl];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
 			const SConKey *plcon = &conKeyAssign[pl * 8 + key];
-			plbuf[key * 3 + 0] = plcon->type;
-			switch (plcon->type) {
-			case CONKEY_AXIS:
-				plbuf[key * 3 + 1] = plcon->setting.axis;
-				plbuf[key * 3 + 2] = plcon->setting.value;
-				break;
-
-			case CONKEY_BUTTON:
-				plbuf[key * 3 + 1] = plcon->setting.button;
-				break;
-
-			default:
-				break;
-			}
+			plbuf[key * 2 + 0] = plcon->type;
+			plbuf[key * 2 + 1] = plcon->index;
 		}
 	}
 	#endif
@@ -269,7 +257,7 @@ int32_t LoadConfig(void) {
 				break;
 
 			case JOYKEY_BUTTON:
-				pljoy->setting.button = plbuf[6];
+				pljoy->index = plbuf[6];
 				break;
 			}
 		}
@@ -279,24 +267,12 @@ int32_t LoadConfig(void) {
 	#ifdef ENABLE_GAME_CONTROLLER
 	int32_t *conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
-		playerCons[pl] = conkeybuf[pl * (1 + 3 * 8)];
-		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		playerCons[pl] = conkeybuf[pl * (1 + 2 * 8)];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
 			SConKey *plcon = &conKeyAssign[pl * 8 + key];
-			plcon->type = (EConKeyType)plbuf[key * 3 + 0];
-			switch (plcon->type) {
-			case CONKEY_AXIS:
-				plcon->setting.axis = plbuf[key * 3 + 1];
-				plcon->setting.value = plbuf[key * 3 + 2];
-				break;
-
-			case CONKEY_BUTTON:
-				plcon->setting.button = plbuf[key * 3 + 1];
-				break;
-
-			default:
-				break;
-			}
+			plcon->type = (EConKeyType)plbuf[key * 2 + 0];
+			plcon->index = plbuf[key * 2 + 1];
 		}
 	}
 	#endif
@@ -400,7 +376,7 @@ void ConfigMenu() {
 			break;
 
 		case JOYKEY_BUTTON:
-			plbuf[6] = pljoy->setting.button;
+			plbuf[6] = pljoy->index;
 			break;
 		}
 	}
@@ -409,24 +385,12 @@ void ConfigMenu() {
 	#ifdef ENABLE_GAME_CONTROLLER
 	int32_t *conkeybuf = &ncfg[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
-		conkeybuf[pl * (1 + 3 * 8)] = playerCons[pl];
-		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		conkeybuf[pl * (1 + 2 * 8)] = playerCons[pl];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
 			const SConKey *plcon = &conKeyAssign[pl * 8 + key];
-			plbuf[key * 3 + 0] = plcon->type;
-			switch (plcon->type) {
-			case CONKEY_AXIS:
-				plbuf[key * 3 + 1] = plcon->setting.axis;
-				plbuf[key * 3 + 2] = plcon->setting.value;
-				break;
-
-			case CONKEY_BUTTON:
-				plbuf[key * 3 + 1] = plcon->setting.button;
-				break;
-
-			default:
-				break;
-			}
+			plbuf[key * 2 + 0] = plcon->type;
+			plbuf[key * 2 + 1] = plcon->index;
 		}
 	}
 	#endif
@@ -485,7 +449,9 @@ void ConfigMenu() {
 			printFont(2, 14, "DOWN TYPE   :", (statusc[0] == 9) * fontc[rots[0]]);
 			printFont(2, 15, "LVUP BONUS  :", (statusc[0] == 10) * fontc[rots[0]]);
 			printFont(2, 16, "OLDSTYLE ARS:", (statusc[0] == 11) * fontc[rots[0]]); // allow CW and 180 i oldschool ARS
-			printFont(2, 28, "A:SAVE&RETURN  B:CANCEL", 9);
+			printGameButton(2, 28, BTN_A, 0, true);
+			printGameButton(17, 28, BTN_B, 0, true);
+			printFont(2, 28, " :SAVE&RETURN   :CANCEL", 9);
 
 			i = statusc[0];
 			switch(i)
@@ -723,7 +689,9 @@ void ConfigMenu() {
 			printFont( 2, 22, "SHOW COMBOS    :", fontc[rots[0]] * (statusc[0] == 25));
 			printFont( 2, 23, "TOP FRAME      :", fontc[rots[0]] * (statusc[0] == 26));
 
-			printFont(2, 28, "A/B:RETURN", 9);
+			printGameButton(2, 28, BTN_A, 0, true);
+			printGameButton(4, 28, BTN_B, 0, true);
+			printFont(2, 28, " / :RETURN", 9);
 
 			i = statusc[0];
 			if((i >= 13) && (i <= 21)) {
@@ -878,7 +846,9 @@ void ConfigMenu() {
 				// TODO: Game controller
 				printFont(2, 14, "[INPUT TEST]", fontc[rots[0]] * (statusc[0] == 5));
 				printFont(2, 16, "[DISP ASSIGN]", fontc[rots[0]] * (statusc[0] == 6));
-				printFont(2, 28, "A:SELECT  B:RETURN", 9);
+				printGameButton(2, 28, BTN_A, 0, true);
+				printGameButton(12, 28, BTN_B, 0, true);
+				printFont(2, 28, " :SELECT   :RETURN", 9);
 
 				if(statusc[0] != 0) printFont(1, 4+statusc[0]*2, "b", fontc[rots[0]]);
 				else printFont(1, 3, "b", fontc[rots[0]]);
@@ -970,7 +940,7 @@ void ConfigMenu() {
 				#ifdef ENABLE_LINUX_GPIO
 				case CONTROLLER_LINUXGPIO:
 				#endif
-					if (statusc[0] < 10 && IsPushMenu(MENUINPUT_CANCEL)) {
+					if (statusc[0] < 10 && IsPushPrompt(PROMPT_CANCEL)) {
 						PlaySE(5);
 						statusc[0] = 0;
 						statusc[2] = 0;
@@ -1001,7 +971,7 @@ void ConfigMenu() {
 					if(statusc[0] < 10) {
 						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
 						for(i = 0; i < GetMaxKey(); i++) {
-							if(!IsPushMenu(MENUINPUT_QUIT) && IsPushKey(i)) {
+							if(!quitNow() && IsPushKey(i)) {
 								PlaySE(5);
 								ncfg[10 + statusc[0] + (statusc[2] - 1) * 10] = i;
 								statusc[0]++;
@@ -1010,22 +980,22 @@ void ConfigMenu() {
 						}
 					} else {
 						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-						printInputPrompt(3 + 3, 17, MENUINPUT_OK, digitc[rots[0]] * (count % 2));
-						printInputPrompt(3 + 18, 17, MENUINPUT_RETRY, digitc[rots[0]] * (count % 2));
-						printInputPrompt(3 + 32, 17, MENUINPUT_CANCEL, digitc[rots[0]] * (count % 2));
+						printPrompt(3 + 3, 17, PROMPT_OK, digitc[rots[0]] * (count % 2));
+						printPrompt(3 + 18, 17, PROMPT_RETRY, digitc[rots[0]] * (count % 2));
+						printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
 
-						if(IsPushMenu(MENUINPUT_OK)) {
+						if(IsPushPrompt(PROMPT_OK)) {
 							PlaySE(10);
 							for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];
 							statusc[0] = 0;
 							statusc[2] = 0;
 						}
-						if(IsPushMenu(MENUINPUT_RETRY)) {
+						if(IsPushPrompt(PROMPT_RETRY)) {
 							PlaySE(5);
 							for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
 							statusc[0] = 0;
 						}
-						if(IsPushMenu(MENUINPUT_CANCEL)) {
+						if(IsPushPrompt(PROMPT_CANCEL)) {
 							PlaySE(5);
 							for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
 							statusc[0] = 0;
@@ -1139,7 +1109,7 @@ void ConfigMenu() {
 							pushKey.type = JOYKEY_BUTTON;
 							for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
 							{
-								pushKey.setting.button = j;
+								pushKey.index = j;
 								if (IsPushJoyKey(&pushKey))
 								{
 									pushed = true;
@@ -1163,7 +1133,7 @@ void ConfigMenu() {
 								ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
 								break;
 							case JOYKEY_BUTTON:
-								ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
+								ncfg[j+6+statusc[0]*8] = pushKey.index;
 								break;
 							default:
 								break;
@@ -1172,10 +1142,10 @@ void ConfigMenu() {
 						}
 					} else {
 						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-						printInputPrompt(3 + 3, 17, MENUINPUT_OK, digitc[rots[0]] * (count % 2));
-						printInputPrompt(3 + 18, 17, MENUINPUT_RETRY, digitc[rots[0]] * (count % 2));
-						printInputPrompt(3 + 32, 17, MENUINPUT_CANCEL, digitc[rots[0]] * (count % 2));
-						if(IsPushMenu(MENUINPUT_OK)) {
+						printPrompt(3 + 3, 17, PROMPT_OK, digitc[rots[0]] * (count % 2));
+						printPrompt(3 + 18, 17, PROMPT_RETRY, digitc[rots[0]] * (count % 2));
+						printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
+						if(IsPushPrompt(PROMPT_OK)) {
 							PlaySE(10);
 							for (int32_t key = 0; key < 10; key++) {
 								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
@@ -1193,7 +1163,7 @@ void ConfigMenu() {
 									break;
 
 								case JOYKEY_BUTTON:
-									pljoy->setting.button = plcfg[6];
+									pljoy->index = plcfg[6];
 									break;
 								}
 							}
@@ -1201,7 +1171,7 @@ void ConfigMenu() {
 							statusc[0] = 0;
 							statusc[2] = 0;
 						}
-						else if(IsPushMenu(MENUINPUT_RETRY)) {
+						else if(IsPushPrompt(PROMPT_RETRY)) {
 							PlaySE(5);
 							for (int32_t key = 0; key < 10; key++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
@@ -1219,13 +1189,13 @@ void ConfigMenu() {
 									break;
 
 								case JOYKEY_BUTTON:
-									plcfg[6] = pljoy->setting.button;
+									plcfg[6] = pljoy->index;
 									break;
 								}
 							}
 							statusc[0] = 0;
 						}
-						else if(IsPushMenu(MENUINPUT_CANCEL)) {
+						else if(IsPushPrompt(PROMPT_CANCEL)) {
 							PlaySE(5);
 							for (int32_t key = 0; key < 10; key++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
@@ -1243,7 +1213,7 @@ void ConfigMenu() {
 									break;
 
 								case JOYKEY_BUTTON:
-									plcfg[6] = pljoy->setting.button;
+									plcfg[6] = pljoy->index;
 									break;
 								}
 							}
@@ -1258,7 +1228,7 @@ void ConfigMenu() {
 				// INPUT TEST #1.60c7n3
 				printFont(2,  3, "INPUT TEST", digitc[rots[0]]);
 				printFont(2, 28, "EXIT[  ]", 9);
-				printInputPrompt(7, 28, MENUINPUT_CANCEL, 9);
+				printPrompt(7, 28, PROMPT_CANCEL, 9);
 
 				for(pl=0; pl<2; pl++) {
 					sprintf(string[0],"%dP", pl + 1);
@@ -1291,7 +1261,7 @@ void ConfigMenu() {
 					}
 				}
 
-				if( IsPushMenu(MENUINPUT_CANCEL) ) {
+				if( IsPushPrompt(PROMPT_CANCEL) ) {
 					PlaySE(5);
 					statusc[0] = 0;
 					statusc[2] = 0;
@@ -1299,7 +1269,9 @@ void ConfigMenu() {
 			} else if(statusc[2] == 6) {
 				// DISP ASSIGN #1.60c7n4
 				printFont(2,  3, "DISP ASSIGN", digitc[rots[0]]);
-				printFont(2, 28, "A/B: EXIT", 9);
+				printGameButton(2, 28, BTN_A, -1, true);
+				printGameButton(4, 28, BTN_B, -1, true);
+				printFont(2, 28, " / : EXIT", 9);
 
 				for(pl=0; pl<2; pl++) {
 					string[0][0] = '\0';
@@ -1352,7 +1324,7 @@ void ConfigMenu() {
 							case JOYKEY_BUTTON:
 								sprintf(string[0] + strlen(string[0]), "(JOY%2d: BUTTON %2d)",
 									key->index,
-									key->setting.button
+									key->index
 								);
 								break;
 							}
@@ -1391,7 +1363,9 @@ void ConfigMenu() {
 			printFont(2, 16, "PLAY BGM    :", (statusc[0] == 11) * fontc[rots[0]]);
 			if((ncfg[44] >> 15) & 0x1) printFont(2, 17, "BGM VOLUME  :", (statusc[0] == 12) * fontc[rots[0]]);
 			if((ncfg[44] >> 15) & 0x1) printFont(2, 18, "BGM TYPE    :", (statusc[0] == 13) * fontc[rots[0]]);
-			printFont(2, 28, "A/B:RETURN", 9);
+			printGameButton(2, 28, BTN_A, 0, true);
+			printGameButton(4, 28, BTN_B, 0, true);
+			printFont(2, 28, " / :RETURN", 9);
 
 			switch(statusc[0]) {
 			case 0:

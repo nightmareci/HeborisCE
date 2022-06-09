@@ -401,7 +401,7 @@ void ST_RankingView() {
 
 		Input();
 
-		if(getPushState(0, 4) || getPushState(0, 5) || IsPushMenu(MENUINPUT_QUIT)) {
+		if(getPushState(0, 4) || getPushState(0, 5) || quitNow()) {
 			// AかBで戻る
 			return;
 		}

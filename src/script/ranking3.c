@@ -153,7 +153,7 @@ void RankingProc_3(int32_t cat,int32_t pages2) {
 
 		RankingView3();//3位まで表示
 		// AかBで戻る
-		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || IsPushMenu(MENUINPUT_QUIT) ) {
+		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || quitNow() ) {
 			flag = 1;
 		}
 
@@ -195,7 +195,7 @@ void RankingProc2_3() {
 		}
 
 		// AかBで戻る
-		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || IsPushMenu(MENUINPUT_QUIT) ) {
+		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || quitNow() ) {
 			return;
 		}
 

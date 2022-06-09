@@ -2,7 +2,7 @@
 
 #include "script/include.h"
 
-#define CFG_LENGTH 290
+#define CFG_LENGTH 274
 
 // 設定ファイルフォーマットのバージョン番号です。
 // フォーマットの変更により互換性が失われた場合、1つ増加します。

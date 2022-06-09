@@ -876,7 +876,7 @@ int32_t		cp_rot_c[2];
 
 // #1.60c7o5追加変数
 int32_t		tmp_maxPlay;		// プレイ人数のバックアップ シングル台で対戦するときに使用
-int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示
+int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示getPressState(int
 
 // 以下hogeパッチより
 int32_t		sevolume = 100;		//効果音のボリューム。100が標準、0で無音。
@@ -1408,6 +1408,11 @@ uint32_t    SegaSeed[2]={711800410,711800410};     // generates sega's poweron p
 uint32_t	BloxeedSeed[2]={711800411,711800411};   // generated Bloxeed's poweron pattern. on ehigher. but see later.
 uint32_t	SavedSeed[2]={0,0};							// needed to save randomizer states
 uint32_t	PieceSeed=0;							// needed to generate pieces without loosing saved seed.
+
+bool inmenu = true;
+EControllerType playerControllerType[2] = { CONTROLLER_NULL, CONTROLLER_NULL };
+EControllerType lastControllerType = CONTROLLER_NULL;
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -3733,6 +3738,7 @@ int32_t doGiveup() {
 	// リプレイが再生できないので修正#1.60c7h1
 	// デモ画面では捨てゲーできないように変更 #1.60c7o8
 	if((!playback) && (!demo) && ((mpc3[0] == 1) || (mpc3[1] == 1))) {// Qキー捨てゲー #1.60c
+		inmenu = true;
 		// 効果音停止
 		StopAllWaves();
 		StopAllBGM();
@@ -4444,21 +4450,25 @@ void statSelectMode(int32_t player) {
 		if(textguide){
 			printFont(15+24 * player - 12 * maxPlay, 26, "<L R>:TYPE", count % 9);
 			if(gameMode[player] == 6){
-				printFont(26 + 10 * player - 12 * maxPlay, 15, "C:", 0);
+				printGameButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player, true);
+				printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 				printFont(26 + 6 * player - 12 * maxPlay, 16, "RANDOM", 7);
 			}else{
-				printFont(26 + 10 * player - 12 * maxPlay, 15, "C:", 0);
+				printGameButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player, true);
+				printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 				printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 			}
 			if(gameMode[player] == 3){
-				printFont(26 + 7 * player - 12 * maxPlay, 17,"HOLD:", 0);
+				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player, true);
+				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!death_plus[player])
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "DEATH+", 2);
 				if(!item_mode[player])
 					printFont(26 + 8 * player - 12 * maxPlay, 19-(death_plus[player]),"ITEM", 5);
 			}
 			if((gameMode[player] == 1) || (gameMode[player] == 2)){
-				printFont(26 + 7 * player - 12 * maxPlay, 17,"HOLD:", 0);
+				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player, true);
+				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!item_mode[player])
 					printFont(26 + 8 * player - 12 * maxPlay, 18,"ITEM", 5);
 				if(!hebo_plus[player])
@@ -4466,14 +4476,16 @@ void statSelectMode(int32_t player) {
 			}
 
 			if((gameMode[player] == 6)&&(tomoyo_opt[player]==4)){
-				printFont(26 + 7 * player - 12 * maxPlay, 17,"HOLD:", 0);
+				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player, true);
+				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!fpbas_mode[player])
 					printFont(26 + 7 * player - 12 * maxPlay, 18,"BASIC", 3);
 				else
 					printFont(26 + 7 * player - 12 * maxPlay, 18,"18MIN", 3);
 			}
 			if((gameMode[player] == 9) && (std_opt[player] < 2)){
-				printFont(26 + 7 * player - 12 * maxPlay, 17,"HOLD:", 0);
+				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player, true);
+				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!relaymode[player]){
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "ROT.", 7);
 					printFont(26 + 6 * player - 12 * maxPlay, 19, "RELAY", 7);
@@ -4732,7 +4744,8 @@ void statSelectMode(int32_t player) {
 	// Cボタン
 	// Cボタン
 	if (statusc[player * 10 + 2] == 2 && gameMode[player] != 6) {
-		printFont(26 + 10 * player - 12 * maxPlay, 15, "C:", 0);
+		printGameButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player, true);
+		printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 	}	
 	if( getPressState(player, 6) ) {
@@ -5153,10 +5166,14 @@ void statSelectStandardSp(int32_t player) {
 	sprintf(string[0], "BGM: %d",  p_bgmlv);
 	printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], count % 9 * (statusc[player * 10 ]==6));
 
-	if(statusc[player * 10] > 0)
-		printFont(15 + 24 * player - 12 * maxPlay, 22, "A:START", count % 9);
-	else
-		printFont(15 + 24 * player - 12 * maxPlay, 22, "A:LOAD", count % 9);
+	if(statusc[player * 10] > 0) {
+		printGameButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player, true);
+		printFont(16 + 24 * player - 12 * maxPlay, 22, ":START", count % 9);
+	}
+	else {
+		printGameButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player, true);
+		printFont(16 + 24 * player - 12 * maxPlay, 22, ":LOAD", count % 9);
+	}
 
 	if(std_opt[player])
 	printFont(15 + 24 * player - 12 * maxPlay, 24, "ULTRA2MIN", 9);
@@ -5720,8 +5737,10 @@ void statReady(int32_t player) {
 
 	/* コンピュータ操作 #1.60c7o3 */
 	if(playback) {
+		inmenu = true;
 		cpu_flag[player] = 0;	// リプレイ時はCPU解除 #1.60c7o6
 	} else {
+		inmenu = false;
 		if( (!player && cp_player_1p) || (player && cp_player_2p) ) cpu_flag[player] = 1;
 	}
 	if((!playback) || (repversw < 37)){
@@ -9198,6 +9217,8 @@ void recFaultTime(int32_t player) {
 void statGameOver(int32_t player) {
 	int32_t		i, j, block, c;
 
+	inmenu = true;
+
 	// 下入れ制限強制解除#1.60c7f9
 	down_flag[player] = 0;
 	up_flag[player] = 0;
@@ -11829,7 +11850,8 @@ void statReplaySave(int32_t player) {
 		if(repdata[9 + player * 20]) ExBltRect(85, 136 + 192 * player - 96 * maxPlay, 96, 154, 112, 14, 7);
 	}
 	if(statusc[player * 10 + 2] == 0){
-		printFont(16+24 * player - 12 * maxPlay, 25, "B:NO SAVE", 0);
+		printGameButton(16+24 * player - 12 * maxPlay, 25, BTN_B, player, true);
+		printFont(16+24 * player - 12 * maxPlay, 25, " :NO SAVE", 0);
 
 		// キー入力
 		padRepeat(player);
@@ -11927,10 +11949,14 @@ void statVersusSelect(int32_t player) {
 	printFont(3 + 24 * player, 7, "ROT. ", 6);
 	ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
 
-	if(vslevel[player] == 2)
-		printFont(3 + 24 * player, 6, "A:LOAD SP", 7);
-	else
-		printFont(3 + 24 * player, 6, "A:READY", 7);
+	if(vslevel[player] == 2) {
+		printGameButton(3 + 24 * player, 6, BTN_A, player, true);
+		printFont(4 + 24 * player, 6, ":LOAD SP", 7);
+	}
+	else {
+		printGameButton(3 + 24 * player, 6, BTN_A, player, true);
+		printFont(4 + 24 * player, 6, ":READY SP", 7);
+	}
 
 	// 回転法則
 	if(versus_rot[player] == 0)
@@ -14762,6 +14788,10 @@ void padRepeat2(int32_t player) { // hoge 上下入力バージョン
 	}
 }
 
+EControllerType getControllerType(int32_t player) {
+	
+}
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  キー状態の取得
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -14802,8 +14832,10 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 	// 通常プレイ中
 	else {
 		#ifdef ENABLE_LINUX_GPIO
-		if ( player == 0 )
+		if ( player == 0 ) {
 			gtmp = IsPressGPIO(key);
+			if (gtmp) lastControllerType = playerControllerType[0] = CONTROLLER_LINUXGPIO;
+		}
 		else
 			gtmp = 0;
 		#endif
@@ -14811,11 +14843,13 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 		#ifdef ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
 		ktmp = IsPressKey(keyAssign[key + pl * 10]);
+		if (ktmp) lastControllerType = playerControllerType[pl] = CONTROLLER_KEYBOARD;
 		#endif
 
 		#ifdef ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
 		jtmp = IsPressJoyKey(&joyKeyAssign[key + pl * 10]);
+		if (jtmp) lastControllerType = playerControllerType[pl] = CONTROLLER_JOYSTICK;
 		#endif
 
 		#ifdef ENABLE_GAME_CONTROLLER
@@ -14824,21 +14858,24 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 		case 8:
 			// GIVEUP
 			conkey.type = CONKEY_BUTTON;
-			conkey.setting.button = SDL_CONTROLLER_BUTTON_BACK;
+			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
 			ctmp = IsPressConKey(playerCons[pl], &conkey);
 			break;
 
 		case 9:
 			// PAUSE
 			conkey.type = CONKEY_BUTTON;
-			conkey.setting.button = SDL_CONTROLLER_BUTTON_START;
+			conkey.index = SDL_CONTROLLER_BUTTON_START;
 			ctmp = IsPressConKey(playerCons[pl], &conkey);
 			break;
 		
 		default:
-			ctmp = IsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+			ctmp = inmenu ?
+				IsPressMenu(pl, key, GetConType(playerCons[pl])) :
+				IsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
+		if (ctmp) lastControllerType = playerControllerType[pl] = CONTROLLER_GAMECONTROLLER;
 		#endif
 
 		if(cpu_flag[pl])
@@ -14895,6 +14932,7 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 )
 			gtmp = IsPushGPIO(key);
+			if (gtmp) lastControllerType = playerControllerType[0] = CONTROLLER_LINUXGPIO;
 		else
 			gtmp = 0;
 		#endif
@@ -14902,11 +14940,13 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		#ifdef ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
 		ktmp = IsPushKey(keyAssign[key + pl * 10]);
+		if (ktmp) lastControllerType = playerControllerType[pl] = CONTROLLER_KEYBOARD;
 		#endif
 
 		#ifdef ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
 		jtmp = IsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
+		if (jtmp) lastControllerType = playerControllerType[pl] = CONTROLLER_JOYSTICK;
 		#endif
 
 		#ifdef ENABLE_GAME_CONTROLLER
@@ -14915,21 +14955,24 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		case 8:
 			// GIVEUP
 			conkey.type = CONKEY_BUTTON;
-			conkey.setting.button = SDL_CONTROLLER_BUTTON_BACK;
+			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
 			ctmp = IsPushConKey(playerCons[pl], &conkey);
 			break;
 
 		case 9:
 			// PAUSE
 			conkey.type = CONKEY_BUTTON;
-			conkey.setting.button = SDL_CONTROLLER_BUTTON_START;
+			conkey.index = SDL_CONTROLLER_BUTTON_START;
 			ctmp = IsPushConKey(playerCons[pl], &conkey);
 			break;
 		
 		default:
-			ctmp = IsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+			ctmp = inmenu ?
+				IsPushMenu(pl, key, GetConType(playerCons[pl])) :
+				IsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
+		if (ctmp) lastControllerType = playerControllerType[pl] = CONTROLLER_GAMECONTROLLER;
 		#endif
 
 		if(cpu_flag[pl])
@@ -14948,6 +14991,362 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 				#endif
 				;
 	}
+}
+
+int IsPressMenu(int32_t player, EButton button, EControllerType type)
+{
+	#ifdef ENABLE_GAME_CONTROLLER
+	SConKey key;
+	int pushed;
+	#endif
+	switch (type)
+	{
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_XBOX:
+	case CONTROLLER_PLAYSTATION:
+		switch (button)
+		{
+		case BTN_UP:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_DOWN:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_LEFT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_RIGHT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPressConKey(playerCons[player], &key);
+		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPressConKey(playerCons[player], &key);
+		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPressConKey(playerCons[player], &key);
+		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPressConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPressConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPressConKey(playerCons[player], &key);
+		default: return 0;
+		}
+		break;
+
+	case CONTROLLER_NINTENDO:
+		switch (button)
+		{
+		case BTN_UP:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_DOWN:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_LEFT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_RIGHT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
+			pushed = IsPressConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || IsPressConKey(playerCons[player], &key);
+		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPressConKey(playerCons[player], &key);
+		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPressConKey(playerCons[player], &key);
+		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPressConKey(playerCons[player], &key);
+		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPressConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPressConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPressConKey(playerCons[player], &key);
+		default: return 0;
+		}
+		break;
+	#endif
+
+	default:
+		return 0;
+	}
+}
+
+int IsPushMenu(int32_t player, EButton button, EControllerType type)
+{
+	#ifdef ENABLE_GAME_CONTROLLER
+	SConKey key;
+	int pushed;
+	#endif
+	switch (type)
+	{
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_XBOX:
+	case CONTROLLER_PLAYSTATION:
+		switch (button)
+		{
+		case BTN_UP:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_DOWN:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_LEFT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_RIGHT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPushConKey(playerCons[player], &key);
+		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPushConKey(playerCons[player], &key);
+		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPushConKey(playerCons[player], &key);
+		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPushConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPushConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPushConKey(playerCons[player], &key);
+		default: return 0;
+		}
+		break;
+
+	case CONTROLLER_NINTENDO:
+		switch (button)
+		{
+		case BTN_UP:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_DOWN:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_LEFT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_RIGHT:
+			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
+			pushed = IsPushConKey(playerCons[player], &key);
+			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || IsPushConKey(playerCons[player], &key);
+		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPushConKey(playerCons[player], &key);
+		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPushConKey(playerCons[player], &key);
+		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPushConKey(playerCons[player], &key);
+		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPushConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPushConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPushConKey(playerCons[player], &key);
+		default: return 0;
+		}
+		break;
+	#endif
+
+	default:
+		return 0;
+	}
+}
+
+#ifdef ENABLE_GAME_CONTROLLER
+int IsPressConTypeKey(EControllerType type, SConKey* key)
+{
+	switch (type) {
+	case CONTROLLER_XBOX:
+	case CONTROLLER_PLAYSTATION:
+	case CONTROLLER_NINTENDO:
+		break;
+
+	default:
+		return 0;
+	}
+
+	for (int index = 0; index < GetNumCons(); index++) {
+		if (GetConType(index) == type && IsPressConKey(index, key)) return 1;
+	}
+	return 0;
+}
+
+int IsPushConTypeKey(EControllerType type, SConKey* key)
+{
+	switch (type) {
+	case CONTROLLER_XBOX:
+	case CONTROLLER_PLAYSTATION:
+	case CONTROLLER_NINTENDO:
+		break;
+
+	default:
+		return 0;
+	}
+
+	for (int index = 0; index < GetNumCons(); index++) {
+		if (GetConType(index) == type && IsPushConKey(index, key)) return 1;
+	}
+	return 0;
+}
+#endif
+
+int IsPressPrompt(EPrompt prompt)
+{
+	switch (GetLastControllerType())
+	{
+	#ifdef ENABLE_LINUXGPIO
+	case CONTROLLER_LINUXGPIO:
+		switch (input)
+		{
+		case PROMPT_OK: return IsPressGPIO(4);
+		case PROMPT_CANCEL: return IsPressGPIO(5);
+		case PROMPT_RETRY: return IsPressGPIO(6);
+		default: return 0;
+		}
+	#endif
+
+	#ifdef ENABLE_KEYBOARD
+	#ifdef ENABLE_JOYSTICK
+	case CONTROLLER_JOYSTICK:
+		// TODO: Something better for joysticks than requiring a keyboard.
+	#endif
+	case CONTROLLER_KEYBOARD:
+		switch (prompt)
+		{
+		case PROMPT_OK: return IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+		case PROMPT_CANCEL: return IsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
+		case PROMPT_RETRY: return IsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		default: return 0;
+		}
+	#endif
+
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_XBOX: {
+		SConKey key;
+		switch (prompt)
+		{
+		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		default: return 0;
+		}
+		return IsPressConTypeKey(CONTROLLER_XBOX, &key);
+	}
+
+	case CONTROLLER_PLAYSTATION: {
+		SConKey key;
+		switch (prompt)
+		{
+		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		default: return 0;
+		}
+		return IsPressConTypeKey(CONTROLLER_PLAYSTATION, &key);
+	}
+
+	case CONTROLLER_NINTENDO: {
+		SConKey key;
+		switch (prompt)
+		{
+		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		default: break;
+		}
+		return IsPressConKey(CONTROLLER_NINTENDO, &key);
+	}
+	#endif
+
+	default:
+		return 0;
+	}
+}
+
+int IsPushPrompt(EPrompt prompt)
+{
+	switch (GetLastControllerType())
+	{
+	#ifdef ENABLE_LINUXGPIO
+	case CONTROLLER_LINUXGPIO:
+		switch (input)
+		{
+		case PROMPT_OK: return IsPushGPIO(4);
+		case PROMPT_CANCEL: return IsPushGPIO(5);
+		case PROMPT_RETRY: return IsPushGPIO(6);
+		default: return 0;
+		}
+	#endif
+
+	#ifdef ENABLE_KEYBOARD
+	#ifdef ENABLE_JOYSTICK
+	case CONTROLLER_JOYSTICK:
+		// TODO: Something better for joysticks than requiring a keyboard.
+	#endif
+	case CONTROLLER_KEYBOARD:
+		switch (prompt)
+		{
+		case PROMPT_OK: return IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+		case PROMPT_CANCEL: return IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
+		case PROMPT_RETRY: return IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		default: return 0;
+		}
+	#endif
+
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_XBOX: {
+		SConKey key;
+		switch (prompt)
+		{
+		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		default: return 0;
+		}
+		return IsPushConTypeKey(CONTROLLER_XBOX, &key);
+	}
+
+	case CONTROLLER_PLAYSTATION: {
+		SConKey key;
+		switch (prompt)
+		{
+		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		default: return 0;
+		}
+		return IsPushConTypeKey(CONTROLLER_PLAYSTATION, &key);
+	}
+
+	case CONTROLLER_NINTENDO: {
+		SConKey key;
+		switch (prompt)
+		{
+		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		default: break;
+		}
+		return IsPushConKey(CONTROLLER_NINTENDO, &key);
+	}
+	#endif
+
+	default:
+		return 0;
+	}
+}
+
+int quitNow() {
+	#ifdef ENABLE_KEYBOARD
+	return IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+	#else
+	return 0;
+	#endif
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -15280,7 +15679,10 @@ void testmenu(void) {
 			}
 
 			if( !getPressState(0, 7) ) {
-				sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
+				printGameButton(6, 29, BTN_B, 0, true);
+				printGameButton(13, 29, BTN_D, 0, true);
+				sprintf(string[0],"NO.%02d  :EXIT  :HIDE",param);
+				//sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
 				printFont(0, 29, string[0], 0);
 			}
 
@@ -16185,7 +16587,7 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	if ( !YGS2kHalt() || IsPushMenu(MENUINPUT_QUIT) )
+	if ( !YGS2kHalt() || quitNow() )
 	{
 		maxPlay = tmp_maxPlay;
 		if(playback){

@@ -1449,16 +1449,19 @@ void viewTime(void) {
 	if((playback) && (!demo) && (gameMode[0] != 6) && (gameMode[0] != 8) && (gameMode[0] != 4)){
 		if((onRecord[0]) || (ending[0]) || (status[0] == 7) || (status[0] == 14)){
 			if(dispLinfo){
-				printFont(27 + (1 * (!maxPlay)), 26, "k HOLD:HIDE", 0);
+				printGameButton(29 + (1 * (!maxPlay)), 26, BTN_D, 0, true);
+				printFont(27 + (1 * (!maxPlay)), 26, "k  :HIDE", 0);
 				printFont(27 + (3 * (!maxPlay)), 5, "iLINE INFO ", 3);
 				viewLineInfo();
 			}else{
-				printFont(27 + (1 * (!maxPlay)), 26, "k HOLD:SHOW", 0);
+				printGameButton(29 + (1 * (!maxPlay)), 26, BTN_D, 0, true);
+				printFont(27 + (1 * (!maxPlay)), 26, "k  :SHOW", 0);
 				printFont(27 + (1 * (!maxPlay)), 27, "   LINE INFO", 0);
 			}
 		}else{
 			printFont(27 + (3 * (!maxPlay)), 14, "LINE INFO:", 0);
-			printFont(27 + (3 * (!maxPlay)), 16, "PUSH HOLD", 0);
+			printGameButton(32 + (3 * (!maxPlay)), 16, BTN_D, 0, true);
+			printFont(27 + (3 * (!maxPlay)), 16, "PUSH", 0);
 			if(dispLinfo)
 				printFont(27 + (3 * (!maxPlay)), 15, "   ON", 0);
 			else
@@ -2024,7 +2027,7 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 			ExBltRect(2, 104 + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 672, 184, 112, 184);
 }
 
-void printInputPrompt(int32_t fontX, int32_t fontY, EMenuInput input, int32_t fontColor) {
+void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor) {
 	EControllerType type = GetLastControllerType();
 
 	switch (type) {
@@ -2035,11 +2038,11 @@ void printInputPrompt(int32_t fontX, int32_t fontY, EMenuInput input, int32_t fo
 	#endif
 	case CONTROLLER_KEYBOARD:
 		const char* s;
-		switch (input) {
-		case MENUINPUT_OK: s = "ENTER"; break;
-		case MENUINPUT_CANCEL: s = "BS"; break;
-		case MENUINPUT_RETRY: s = "DEL"; break;
-		default: s = "???"; break;
+		switch (prompt) {
+		case PROMPT_OK: s = "ENTER"; break;
+		case PROMPT_CANCEL: s = "BS"; break;
+		case PROMPT_RETRY: s = "DEL"; break;
+		default: s = "?"; break;
 		}
 		printFont(fontX, fontY, s, fontColor);
 		break;
@@ -2048,13 +2051,84 @@ void printInputPrompt(int32_t fontX, int32_t fontY, EMenuInput input, int32_t fo
 	#ifdef ENABLE_GAME_CONTROLLER
 	case CONTROLLER_XBOX:
 	case CONTROLLER_PLAYSTATION:
+		switch (prompt) {
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		default: printFont(fontX, fontY, "?", fontColor); break;
+		}
+		break;
+
 	case CONTROLLER_NINTENDO:
-		ExBltRect(23, fontX * 8, fontY * 8, input * 8, (type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8);
+		switch (prompt) {
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		default: printFont(fontX, fontY, "?", fontColor); break;
+		}
 		break;
 	#endif
 
 	default:
-		printFont(fontX, fontY, "???", fontColor);
+		printFont(fontX, fontY, "?", fontColor);
+		break;
+	}
+}
+
+void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t player, bool menuAB) {
+	if (button < 0 || button >= NUMGAMEBTNS) return;
+
+	switch (player >= 0 ? playerControllerType[player] : lastControllerType) {
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_GAMECONTROLLER:
+		switch (GetConType(playerCons[player])) {
+		case CONTROLLER_XBOX:
+			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons())
+				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
+			else
+				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
+			break;
+
+		case CONTROLLER_PLAYSTATION:
+			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons())
+				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
+			else
+				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
+			break;
+
+		case CONTROLLER_NINTENDO:
+			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons()) {
+				if (menuAB) {
+					switch (button) {
+					case BTN_A:
+						ExBltRect(23, fontX * 8, fontY * 8, 5 * 8, 3 * 8, 8, 8);
+
+					case BTN_B:
+						ExBltRect(23, fontX * 8, fontY * 8, 4 * 8, 3 * 8, 8, 8);
+						break;
+
+					default:
+						ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
+						break;
+					}
+				}
+				else {
+					ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
+				}
+			}
+			else
+				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
+			break;
+
+		default:
+			ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
+			break;
+		}
+		break;
+	#endif
+
+	default:
+		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
 		break;
 	}
 }

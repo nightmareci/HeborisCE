@@ -110,70 +110,70 @@ int32_t SetDefaultConfig()
 			// Player 1
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_UP }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_UP
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_DOWN }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_LEFT }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_RIGHT }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_A }
+				.index = SDL_CONTROLLER_BUTTON_A
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_B }
+				.index = SDL_CONTROLLER_BUTTON_B
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_X }
+				.index = SDL_CONTROLLER_BUTTON_X
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER }
+				.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
 			},
 
 			// Player 2
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_UP }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_UP
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_DOWN }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_LEFT }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_DPAD_RIGHT }
+				.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_A }
+				.index = SDL_CONTROLLER_BUTTON_A
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_B }
+				.index = SDL_CONTROLLER_BUTTON_B
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_X }
+				.index = SDL_CONTROLLER_BUTTON_X
 			},
 			{
 				.type = CONKEY_BUTTON,
-				.setting = { .button = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER }
-			},
+				.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+			}
 		},
 		#endif
 
@@ -279,24 +279,12 @@ int32_t SetDefaultConfig()
 	#ifdef ENABLE_GAME_CONTROLLER
 	int32_t *conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
-		conkeybuf[pl * (1 + 3 * 8)] = DefaultConfig.playerCons[pl];
-		int32_t *plbuf = &conkeybuf[pl * (1 + 3 * 8) + 1];
+		conkeybuf[pl * (1 + 2 * 8)] = DefaultConfig.playerCons[pl];
+		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
 			const SConKey *plcon = &DefaultConfig.conKeyAssign[pl * 8 + key];
-			plbuf[key * 3 + 0] = plcon->type;
-			switch (plcon->type) {
-			case CONKEY_AXIS:
-				plbuf[key * 3 + 1] = plcon->setting.axis;
-				plbuf[key * 3 + 2] = plcon->setting.value;
-				break;
-
-			case CONKEY_BUTTON:
-				plbuf[key * 3 + 1] = plcon->setting.button;
-				break;
-
-			default:
-				break;
-			}
+			plbuf[key * 2 + 0] = plcon->type;
+			plbuf[key * 2 + 1] = plcon->index;
 		}
 	}
 	#endif

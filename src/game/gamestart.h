@@ -134,8 +134,44 @@ void testmenu(void);
 void lastProc(void);
 void playerExecute(void);
 void restoreSetups();
+
 int32_t getPressState(int32_t player,int32_t key);
 int32_t getPushState(int32_t player,int32_t key);
+
+typedef enum EButton
+{
+	BTN_UP,
+	BTN_DOWN,
+	BTN_LEFT,
+	BTN_RIGHT,
+	BTN_A,
+	BTN_B,
+	BTN_C,
+	BTN_D,
+	NUMGAMEBTNS,
+	BTN_GIVEUP = NUMGAMEBTNS,
+	BTN_PAUSE,
+	NUMBTNS
+} EButton;
+int IsPressMenu(int32_t player, EButton button, EControllerType type);
+int IsPushMenu(int32_t player, EButton button, EControllerType type);
+
+typedef enum EPrompt
+{
+	PROMPT_OK,
+	PROMPT_CANCEL,
+	PROMPT_RETRY
+} EPrompt;
+int IsPressPrompt(EPrompt prompt);
+int IsPushPrompt(EPrompt prompt);
+
+#ifdef ENABLE_GAME_CONTROLLER
+int IsPressConTypeKey(EControllerType type, SConKey* key);
+int IsPushConTypeKey(EControllerType type, SConKey* key);
+#endif
+
+int quitNow();
+
 void title(void);
 void backupSetups();
 void initialize(void);
@@ -144,6 +180,9 @@ extern uint32_t SegaSeed[2];
 extern uint32_t BloxeedSeed[2];
 extern uint32_t SavedSeed[2];
 extern uint32_t PieceSeed;
+extern bool inmenu;
+extern EControllerType playerControllerType[2];
+extern EControllerType lastControllerType;
 extern char *string[STRING_MAX];
 extern int32_t fldihardno;
 extern int32_t fldigsno;

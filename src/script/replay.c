@@ -745,7 +745,7 @@ int32_t ReplaySelectProc(void) {
 	while(!flag) {
 		count++;
 		ReplaySelect();
-		if(IsPushMenu(MENUINPUT_QUIT)) restoreSetups();
+		if(quitNow()) restoreSetups();
 		spriteTime();
 	}
 
@@ -928,7 +928,7 @@ void ReplaySelect(void) {
 	}
 
 	// Bで戻る
-	if(getPushState(0, 5) || IsPushMenu(MENUINPUT_QUIT)) {
+	if(getPushState(0, 5) || quitNow()) {
 		restoreSetups();
 		if(gameMode[0] == 8) gameMode[0] = 0;
 		if(gameMode[0] == 4){
@@ -950,7 +950,8 @@ void ReplaySelect(void) {
 	ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 
 	printFont(9, 2, "- SELECT REPLAY DATA -", 4);
-	printFont(6, 3, "PRESS C BUTTON TO VIEW DETAIL", 5);
+	printGameButton(12, 3, BTN_C, -1, true);
+	printFont(6, 3, "PRESS   BUTTON TO VIEW DETAIL", 5);
 
 	// ↑↓カーソルリピード #1.60c7o6
 	padRepeat2(0);
@@ -1419,7 +1420,7 @@ void ReplayDetail(int32_t number) {
 			PlaySE(5);
 			return;
 		}
-		if(IsPushMenu(MENUINPUT_QUIT)) restoreSetups();
+		if(quitNow()) restoreSetups();
 		spriteTime();
 	}
 }

@@ -134,7 +134,7 @@ int32_t SaveConfig(void) {
 				break;
 
 			case JOYKEY_BUTTON:
-				plbuf[6] = pljoy->index;
+				plbuf[6] = pljoy->setting.button;
 				break;
 			}
 		}
@@ -257,7 +257,7 @@ int32_t LoadConfig(void) {
 				break;
 
 			case JOYKEY_BUTTON:
-				pljoy->index = plbuf[6];
+				pljoy->setting.button = plbuf[6];
 				break;
 			}
 		}
@@ -376,7 +376,7 @@ void ConfigMenu() {
 			break;
 
 		case JOYKEY_BUTTON:
-			plbuf[6] = pljoy->index;
+			plbuf[6] = pljoy->setting.button;
 			break;
 		}
 	}
@@ -1109,7 +1109,7 @@ void ConfigMenu() {
 							pushKey.type = JOYKEY_BUTTON;
 							for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
 							{
-								pushKey.index = j;
+								pushKey.setting.button = j;
 								if (IsPushJoyKey(&pushKey))
 								{
 									pushed = true;
@@ -1133,7 +1133,7 @@ void ConfigMenu() {
 								ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
 								break;
 							case JOYKEY_BUTTON:
-								ncfg[j+6+statusc[0]*8] = pushKey.index;
+								ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
 								break;
 							default:
 								break;
@@ -1163,7 +1163,7 @@ void ConfigMenu() {
 									break;
 
 								case JOYKEY_BUTTON:
-									pljoy->index = plcfg[6];
+									pljoy->setting.button = plcfg[6];
 									break;
 								}
 							}
@@ -1189,7 +1189,7 @@ void ConfigMenu() {
 									break;
 
 								case JOYKEY_BUTTON:
-									plcfg[6] = pljoy->index;
+									plcfg[6] = pljoy->setting.button;
 									break;
 								}
 							}
@@ -1213,7 +1213,7 @@ void ConfigMenu() {
 									break;
 
 								case JOYKEY_BUTTON:
-									plcfg[6] = pljoy->index;
+									plcfg[6] = pljoy->setting.button;
 									break;
 								}
 							}
@@ -1324,7 +1324,7 @@ void ConfigMenu() {
 							case JOYKEY_BUTTON:
 								sprintf(string[0] + strlen(string[0]), "(JOY%2d: BUTTON %2d)",
 									key->index,
-									key->index
+									key->setting.button
 								);
 								break;
 							}

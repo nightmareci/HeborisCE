@@ -104,7 +104,7 @@ int JoyOpen()
 		for (int index = 0; index < s_iNumJoysticks; index++)
 		{
 			#ifdef ENABLE_GAME_CONTROLLER
-			if (!SDL_IsGameController(index))
+			if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
 			{
 			#endif
 				bool fail = false;
@@ -144,7 +144,7 @@ void JoyInput()
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (SDL_IsGameController(index)) continue;
+		if (SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) continue;
 		#endif
 		if (!SDL_JoystickGetAttached(s_aJoysticks[index].device))
 		{
@@ -318,7 +318,7 @@ int GetNumJoys()
 	int numJoys = 0;
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
-		if (!SDL_IsGameController(index)) numJoys++;
+		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN) numJoys++;
 	}
 	return numJoys;
 }
@@ -327,7 +327,7 @@ SJoyGUID GetJoyGUID(int index)
 {
 	if (s_iNumJoysticks <= 0 || index >= s_iNumJoysticks
 	#ifdef ENABLE_GAME_CONTROLLER
-		|| SDL_IsGameController(index)
+		|| (SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN)
 	#endif
 	) return (SJoyGUID) { 0 };
 
@@ -351,7 +351,7 @@ int GetMaxJoyAxis(int index)
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!SDL_IsGameController(index))
+		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
 		{
 			return s_aJoysticks[index].numAxes;
 		}
@@ -374,7 +374,7 @@ int GetMaxJoyHat(int index)
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!SDL_IsGameController(index))
+		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
 		{
 			return s_aJoysticks[index].numHats;
 		}
@@ -397,7 +397,7 @@ int GetMaxJoyButton(int index)
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!SDL_IsGameController(index))
+		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
 		{
 			return s_aJoysticks[index].numButtons;
 		}
@@ -443,7 +443,7 @@ int ConOpen()
 	s_iNumGameControllers = 0;
 	for (int joystick_index = 0; joystick_index < numJoysticks; joystick_index++)
 	{
-		if (SDL_IsGameController(joystick_index)) s_iNumGameControllers++;
+		if (SDL_IsGameController(joystick_index) && SDL_GameControllerTypeForIndex(joystick_index) != SDL_CONTROLLER_TYPE_UNKNOWN) s_iNumGameControllers++;
 	}
 	if (s_iNumGameControllers == 0) return 1;
 
@@ -455,7 +455,7 @@ int ConOpen()
 
 	for (int joystick_index = 0, controller_index = 0; joystick_index < numJoysticks; joystick_index++)
 	{
-		if (SDL_IsGameController(joystick_index))
+		if (SDL_IsGameController(joystick_index) && SDL_GameControllerTypeForIndex(joystick_index) != SDL_CONTROLLER_TYPE_UNKNOWN)
 		{
 			if (!(s_aGameControllers[controller_index].device = SDL_GameControllerOpen(joystick_index)))
 			{

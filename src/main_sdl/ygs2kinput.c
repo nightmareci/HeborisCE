@@ -73,6 +73,15 @@ int GetMaxKey()
 }
 #endif
 
+#if defined(ENABLE_GAME_CONTROLLER)
+static bool IsGameController(int index)
+{
+	return
+		(SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
+		SDL_GameControllerMappingForGUID(SDL_JoystickGetDeviceGUID(index)) != NULL;
+}
+#endif
+
 #ifdef ENABLE_JOYSTICK
 void JoyClose()
 {
@@ -104,7 +113,7 @@ int JoyOpen()
 		for (int index = 0; index < s_iNumJoysticks; index++)
 		{
 			#ifdef ENABLE_GAME_CONTROLLER
-			if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
+			if (!IsGameController(index))
 			{
 			#endif
 				bool fail = false;
@@ -144,7 +153,7 @@ void JoyInput()
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) continue;
+		if (IsGameController(index)) continue;
 		#endif
 		if (!SDL_JoystickGetAttached(s_aJoysticks[index].device))
 		{
@@ -315,19 +324,23 @@ int GetMaxJoys()
 
 int GetNumJoys()
 {
+	#ifdef ENABLE_GAME_CONTROLLER
 	int numJoys = 0;
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
-		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN) numJoys++;
+		if (!IsGameController(index)) numJoys++;
 	}
 	return numJoys;
+	#else
+	return s_iNumJoysticks;
+	#endif
 }
 
 SJoyGUID GetJoyGUID(int index)
 {
 	if (s_iNumJoysticks <= 0 || index >= s_iNumJoysticks
 	#ifdef ENABLE_GAME_CONTROLLER
-		|| (SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN)
+		|| IsGameController(index)
 	#endif
 	) return (SJoyGUID) { 0 };
 
@@ -351,7 +364,7 @@ int GetMaxJoyAxis(int index)
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
+		if (!IsGameController(index))
 		{
 			return s_aJoysticks[index].numAxes;
 		}
@@ -374,7 +387,7 @@ int GetMaxJoyHat(int index)
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
+		if (!IsGameController(index))
 		{
 			return s_aJoysticks[index].numHats;
 		}
@@ -397,7 +410,7 @@ int GetMaxJoyButton(int index)
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!SDL_IsGameController(index) || SDL_GameControllerTypeForIndex(index) == SDL_CONTROLLER_TYPE_UNKNOWN)
+		if (!IsGameController(index))
 		{
 			return s_aJoysticks[index].numButtons;
 		}
@@ -443,7 +456,7 @@ int ConOpen()
 	s_iNumGameControllers = 0;
 	for (int joystick_index = 0; joystick_index < numJoysticks; joystick_index++)
 	{
-		if (SDL_IsGameController(joystick_index) && SDL_GameControllerTypeForIndex(joystick_index) != SDL_CONTROLLER_TYPE_UNKNOWN) s_iNumGameControllers++;
+		if (IsGameController(joystick_index)) s_iNumGameControllers++;
 	}
 	if (s_iNumGameControllers == 0) return 1;
 
@@ -455,7 +468,7 @@ int ConOpen()
 
 	for (int joystick_index = 0, controller_index = 0; joystick_index < numJoysticks; joystick_index++)
 	{
-		if (SDL_IsGameController(joystick_index) && SDL_GameControllerTypeForIndex(joystick_index) != SDL_CONTROLLER_TYPE_UNKNOWN)
+		if (IsGameController(joystick_index))
 		{
 			if (!(s_aGameControllers[controller_index].device = SDL_GameControllerOpen(joystick_index)))
 			{
@@ -484,6 +497,7 @@ void ConInput()
 		EControllerType controllerType;
 		switch (SDL_GameControllerGetType(s_aGameControllers[index].device))
 		{
+		default:
 		case SDL_CONTROLLER_TYPE_XBOX360:
 		case SDL_CONTROLLER_TYPE_XBOXONE:
 		case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
@@ -500,9 +514,6 @@ void ConInput()
 		case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
 			controllerType = CONTROLLER_NINTENDO;
 			break;
-
-		default:
-			continue;
 		}
 		Sint16 axisValue;
 
@@ -698,6 +709,7 @@ EControllerType GetConType(const int index)
 
 	switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
 	{
+	default:
 	case SDL_CONTROLLER_TYPE_XBOX360:
 	case SDL_CONTROLLER_TYPE_XBOXONE:
 	case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
@@ -711,9 +723,6 @@ EControllerType GetConType(const int index)
 
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
 		return CONTROLLER_NINTENDO;
-
-	default:
-		return CONTROLLER_NULL;
 	}
 }
 #endif

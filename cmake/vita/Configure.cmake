@@ -6,6 +6,10 @@ else()
 	include("${VITASDK}/share/vita.cmake" REQUIRED)
 endif()
 
+if(ENABLE_GAME_CONTROLLER)
+	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller_vita.c")
+endif()
+
 add_executable(${EXE} ${EXE_SOURCES})
 
 set(ENABLE_KEYBOARD FALSE)
@@ -145,7 +149,7 @@ target_include_directories(${EXE} PRIVATE
 )
 
 file(ARCHIVE_CREATE OUTPUT "${BIN}/assets.zip"
-	PATHS "${SRC}/res" "${SRC}/config/mission" "${SRC}/config/stage"
+	PATHS "${SRC}/res/bg" "${SRC}/res/bgm" "${SRC}/res/font" "${SRC}/res/graphics" "${SRC}/res/se" "${SRC}/config/mission" "${SRC}/config/stage"
 	FORMAT zip
 )
 

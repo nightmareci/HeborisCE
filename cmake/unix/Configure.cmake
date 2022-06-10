@@ -6,6 +6,10 @@ endif()
 
 # Builds commandline program for some Unix-type platforms. The "Portable" package type supports creating distributable packages with CPack.
 
+if(ENABLE_GAME_CONTROLLER)
+	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller.c")
+endif()
+
 option(ENABLE_LINUX_GPIO_INPUT "Enable input via GPIO (Linux only)" OFF)
 if(${ENABLE_LINUX_GPIO_INPUT})
 	if(${BUILD_TARGET} STREQUAL Linux)

@@ -5,6 +5,10 @@ find_package(sdl2-image REQUIRED)
 find_package(sdl2-mixer REQUIRED)
 find_package(PhysFS REQUIRED)
 
+if(ENABLE_GAME_CONTROLLER)
+	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller.c")
+endif()
+
 add_executable(${EXE}
 	${EXE_SOURCES}
 	"${SRC}/pkg/windows/icon.rc"

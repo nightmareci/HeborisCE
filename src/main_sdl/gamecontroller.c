@@ -1,0 +1,22 @@
+#include "main_sdl/gamecontroller.h"
+#include "main_sdl/physfsrwops.h"
+
+void OpenGameControllers() {
+	// The game will just go without the database if it's missing or fails to load.
+
+	SDL_RWops* db = PHYSFSRWOPS_openRead("res/gamecontrollerdb.txt");
+	if (!db) {
+		return;
+	}
+
+	Sint64 size = SDL_RWsize(db);
+	if (size < 0) {
+		SDL_RWclose(db);
+		return;
+	}
+	if (size == 0) {
+		return;
+	}
+
+	SDL_GameControllerAddMappingsFromRW(db, 1);
+}

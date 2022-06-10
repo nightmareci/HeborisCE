@@ -2,6 +2,10 @@ set(FRAMEWORK_VER "MACOS-SDL2")
 
 # Builds Mac application bundle, packaged into a DMG with CPack by default.
 
+if(ENABLE_GAME_CONTROLLER)
+	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller.c")
+endif()
+
 if(${PACKAGE_TYPE} STREQUAL "Portable Mac App")
 	message(STATUS "Configuring portable Mac app package")
 	add_executable(${EXE} MACOSX_BUNDLE "${SRC}/pkg/macos/${EXE}.icns" ${EXE_SOURCES})

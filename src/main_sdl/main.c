@@ -2,6 +2,9 @@
 #include "script/config.h"
 #include "gamestart.h"
 #include "physfs.h"
+#ifdef ENABLE_GAME_CONTROLLER
+#include "main_sdl/gamecontroller.h"
+#endif
 #include <assert.h>
 
 static int quitLevel = 0;
@@ -207,6 +210,11 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "Error creating save data directories: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		return quit(EXIT_FAILURE);
 	}
+
+#ifdef ENABLE_GAME_CONTROLLER
+	/* Must be called after PhysicsFS setup, as it reads gamecontrollerdb.txt in the res directory on some platforms. */
+	OpenGameControllers();
+#endif
 
 	gameMain();
 

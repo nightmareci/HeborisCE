@@ -5735,14 +5735,13 @@ void statReady(int32_t player) {
 //	int32_t r_start, r_end, g_start, g_end;
 	int32_t tmp;
 
+	inmenu = playback || demo;
+
 	/* コンピュータ操作 #1.60c7o3 */
-	if(playback) {
-		inmenu = true;
+	if(playback)
 		cpu_flag[player] = 0;	// リプレイ時はCPU解除 #1.60c7o6
-	} else {
-		inmenu = false;
+	else
 		if( (!player && cp_player_1p) || (player && cp_player_2p) ) cpu_flag[player] = 1;
-	}
 	if((!playback) || (repversw < 37)){
 		if(ready_go_style == 0){	// HEBORIS式
 			if( ((gameMode[player] == 6) && (stage[player] < 100)) || ((gameMode[player] == 5) && (p_nextpass)) ) {

@@ -17,7 +17,6 @@ void statDMove(int32_t player);
 int32_t SaveConfig(void);
 int32_t LoadConfig(void);
 void ConfigMenu();
-void GameOption();
 
 // cpu.c
 int32_t cpu_judgeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int32_t rotate);

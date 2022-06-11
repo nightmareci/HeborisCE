@@ -297,7 +297,9 @@ void ConfigMenu() {
 	int32_t need_reloadBG;
 	int32_t last_BG;
 
-	pages = 4;
+	pages = 5;
+
+	// TODO: Save settings moved here from the old "OPTION" menu in the config file.
 
 	ncfg[0]  = screenMode;
 	ncfg[1]  = screenIndex;
@@ -434,21 +436,29 @@ void ConfigMenu() {
 
 		printFont(1, 1, "HEBORIS SETTING MENU", fontc[rots[0]]);
 
-		if(status[0] == 0){
-			// main setting
-			printFont(23, 1, "- GAME", fontc[rots[0]]);
-			printFont(2,  3, "<< A/V <<               >> DESIGN >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
-			printFont(2, 6, "NEXT PATTERN:", (statusc[0] == 1) * fontc[rots[0]]);
-			printFont(2, 7, "NEXT DISPLAY:", (statusc[0] == 2) * fontc[rots[0]]);
-			printFont(2, 8, "8WAY INPUT  :", (statusc[0] == 3) * fontc[rots[0]]);
-			printFont(2, 9, "SONIC DROP  :", (statusc[0] == 4) * fontc[rots[0]]);
-			printFont(2, 10, "INIT LR MOVE:", (statusc[0] == 5) * fontc[rots[0]]);
-			printFont(2, 11, "BLOCK FALL  :", (statusc[0] == 6) * fontc[rots[0]]);
-			printFont(2, 12, "SHOW LEVEL  :", (statusc[0] == 7) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
-			printFont(2, 13, "WORLDREVERSE:", (statusc[0] == 8) * fontc[rots[0]]);
-			printFont(2, 14, "DOWN TYPE   :", (statusc[0] == 9) * fontc[rots[0]]);
-			printFont(2, 15, "LVUP BONUS  :", (statusc[0] == 10) * fontc[rots[0]]);
-			printFont(2, 16, "OLDSTYLE ARS:", (statusc[0] == 11) * fontc[rots[0]]); // allow CW and 180 i oldschool ARS
+		if(status[0] == 0) {
+			// game page 1
+			printFont(23, 1, "- GAME P.1", fontc[rots[0]]);
+			printFont(2,  3, "<< A/V <<             >> GAME P.2 >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(2,  6, "NEXT PATTERN     :", (statusc[0] == 1) * fontc[rots[0]]);
+			printFont(2,  7, "NEXT DISPLAY     :", (statusc[0] == 2) * fontc[rots[0]]);
+			printFont(2,  8, "8WAY INPUT       :", (statusc[0] == 3) * fontc[rots[0]]);
+			printFont(2,  9, "SONIC DROP       :", (statusc[0] == 4) * fontc[rots[0]]);
+			printFont(2, 10, "INIT LR MOVE     :", (statusc[0] == 5) * fontc[rots[0]]);
+			printFont(2, 11, "BLOCK FALL       :", (statusc[0] == 6) * fontc[rots[0]]);
+			printFont(2, 12, "SHOW LEVEL       :", (statusc[0] == 7) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
+			printFont(2, 13, "WORLDREVERSE     :", (statusc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 14, "DOWN TYPE        :", (statusc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 15, "LVUP BONUS       :", (statusc[0] == 10) * fontc[rots[0]]);
+			printFont(2, 16, "OLDSTYLE ARS     :", (statusc[0] == 11) * fontc[rots[0]]); // allow CW and 180 i oldschool ARS
+			printFont(2, 17, "SPAWN Y TYPE     :", (statusc[0] == 12) * fontc[rots[0]]);
+			printFont(2, 18, "HIDE INFO(TOMOYO):", (statusc[0] == 13) * fontc[rots[0]]);
+			printFont(2, 19, "T-SPIN TYPE      :", (statusc[0] == 14) * fontc[rots[0]]);
+			printFont(2, 20, "BLOCK SPECTRUM   :", (statusc[0] == 15) * fontc[rots[0]]);
+			printFont(2, 21, "NEXT ADJUST      :", (statusc[0] == 16) * fontc[rots[0]]);
+			printFont(2, 22, "VIEW BEST TIME   :", (statusc[0] == 17) * fontc[rots[0]]);
+			printFont(2, 23, "BACK TO BACK     :", (statusc[0] == 18) * fontc[rots[0]]);
+
 			printGameButton(2, 28, BTN_A, 0, true);
 			printGameButton(17, 28, BTN_B, 0, true);
 			printFont(2, 28, " :SAVE&RETURN   :CANCEL", 9);
@@ -462,6 +472,7 @@ void ConfigMenu() {
 				printFont(1, 5 + i, "b", fontc[rots[0]]); break;
 			}
 
+			// next pattern
 			if((ncfg[2] > 1)&&(ncfg[2] < 8))
 			sprintf(string[0], "HEBO%d", ncfg[2]);
 			else if(ncfg[2] == 0)
@@ -484,51 +495,95 @@ void ConfigMenu() {
 			sprintf(string[0], "BLOXEED");
 			else if(ncfg[2] == 15)
 			sprintf(string[0], "EH-MEMORY6");
-			printFont(15, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
+			// next display
 			sprintf(string[0], "%d", ncfg[45]);
-			printFont(15, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
+			// 8way input
 			if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
 			else sprintf(string[0], "c");		// ○
-			printFont(15, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
 
+			// sonic drop
 			if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
 			else sprintf(string[0], "c");		// ○
-			printFont(15, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
 
+			// init lr move
 			if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
 			else sprintf(string[0], "c");		// ○
-			printFont(15, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
+			// block fall
 			if(ncfg[4]) sprintf(string[0], "SMOOTH");
 			else sprintf(string[0], "NORMAL");
-			printFont(15, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
 
+			// show level
 			if(ncfg[36]) sprintf(string[0], "ON");
 			else sprintf(string[0], "OFF");
-			printFont(15, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
 			// WORLDREVERSE
 			if(ncfg[52]) sprintf(string[0], "ON");
 			else sprintf(string[0], "OFF");
-			printFont(15, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 			// downtype
 			if(ncfg[53]) sprintf(string[0], "DOWN RESET");
 			else sprintf(string[0], "NO RESET(HEBORIS)");
-			printFont(15, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
 
 			// lvupbonus
 			if(ncfg[54]==0) sprintf(string[0], "ON");
 			else if(ncfg[54] ==1)sprintf(string[0], "OFF");
 			else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
-			printFont(15, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
+			printFont(20, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
+
 			// segacheat
 			if (ncfg[42]==0) sprintf(string[0], "CCW ONLY");
 			else if (ncfg[42] == 1)sprintf(string[0], "CW AND 180 ALLOW");
-			else if (ncfg[42] == 2)sprintf(string[0], "D.R.S. 3 STATE+CW+180");
-			printFont(15, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
+			else if (ncfg[42] == 2)sprintf(string[0], "D.R.S. 3STATE+CW+180");
+			printFont(20, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
+
+			// spawn y type
+			if(spawn_y_type == 0) sprintf(string[0], "FIELD IN");
+			else sprintf(string[0], "FIELD OUT");
+			printFont(20, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
+
+			// hide info (tomoyo)
+			if(hide_tomoyoinf == 0) sprintf(string[0], "NOT HIDE");
+			else sprintf(string[0], "HIDE");
+			printFont(20, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
+
+			// t-spin type
+			     if(tspin_type == 0) sprintf(string[0], "NO CHECK");
+			else if(tspin_type == 1) sprintf(string[0], "ERASE(NO BONUS)");
+			else if(tspin_type == 2) sprintf(string[0], "3-C(BONUS)");
+			else if(tspin_type == 3) sprintf(string[0], "BOTH(BONUS:3-C)");
+			printFont(20, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
+
+			// block spectrum
+			if(block_spectrum == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(20, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
+
+			// next adjust
+			if(next_adjust == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON(NOT FIRST OSZ)");
+			printFont(20, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
+
+			// view best time
+			if(Isbesttime == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(20, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
+
+			// back to back
+			if(b2bcheck == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(20, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
 
 			statusc[1] = 0;
 
@@ -546,7 +601,7 @@ void ConfigMenu() {
 				padRepeat(pl);
 				if(m) {
 					PlaySE(5);
-					statusc[0] = (statusc[0] + m + 12) % 12;
+					statusc[0] = (statusc[0] + m + 19) % 19;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, 7)) {
@@ -558,17 +613,24 @@ void ConfigMenu() {
 					m = getPushState(pl, 3) - getPushState(pl, 2);
 
 					if(m) {
-						     if(statusc[0] == 1) ncfg[2] = (ncfg[2] + 16 + m) % 16;	// nextbloc 8を追加#1.60c7h4
-						else if(statusc[0] == 2) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
-						else if(statusc[0] == 3) ncfg[5] = !ncfg[5];			// nanameallow
-						else if(statusc[0] == 4) ncfg[6] = !ncfg[6];			// sonicdrop
-						else if(statusc[0] == 5) ncfg[7] = !ncfg[7];			// fastlrmove
-						else if(statusc[0] == 6) ncfg[4] = !ncfg[4];			// smooth
-						else if(statusc[0] == 7) ncfg[36] = !ncfg[36];			// tgmlv
-						else if(statusc[0] == 8) ncfg[52] = !ncfg[52];			// w_reverse
-						else if (statusc[0] == 9) ncfg[53] = !ncfg[53];			// downtype
+						     if(statusc[0] ==  1) ncfg[2] = (ncfg[2] + 16 + m) % 16;	// nextbloc 8を追加#1.60c7h4
+						else if(statusc[0] ==  2) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
+						else if(statusc[0] ==  3) ncfg[5] = !ncfg[5];			// nanameallow
+						else if(statusc[0] ==  4) ncfg[6] = !ncfg[6];			// sonicdrop
+						else if(statusc[0] ==  5) ncfg[7] = !ncfg[7];			// fastlrmove
+						else if(statusc[0] ==  6) ncfg[4] = !ncfg[4];			// smooth
+						else if(statusc[0] ==  7) ncfg[36] = !ncfg[36];			// tgmlv
+						else if(statusc[0] ==  8) ncfg[52] = !ncfg[52];			// w_reverse
+						else if(statusc[0] ==  9) ncfg[53] = !ncfg[53];			// downtype
 						else if(statusc[0] == 10) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
-						else if (statusc[0] == 11) ncfg[42] = (ncfg[42]+ 3 + m)%3;			// segacheat
+						else if(statusc[0] == 11) ncfg[42] = (ncfg[42]+ 3 + m)%3;	// segacheat
+						else if(statusc[0] == 12) spawn_y_type = !spawn_y_type;		// spawn y type
+						else if(statusc[0] == 13) hide_tomoyoinf = !hide_tomoyoinf;	// hide info (tomoyo)
+						else if(statusc[0] == 14) tspin_type = (tspin_type + 4 + m) % 4;// t-spin type
+						else if(statusc[0] == 15) block_spectrum = !block_spectrum;	// block spectrum
+						else if(statusc[0] == 16) next_adjust = !next_adjust;		// next adjust
+						else if(statusc[0] == 17) Isbesttime = !Isbesttime;		// view best time
+						else if(statusc[0] == 18) b2bcheck = !b2bcheck;			// back to back
 
 						else if(statusc[0] == 0) {	// page
 							PlaySE(3);
@@ -655,9 +717,211 @@ void ConfigMenu() {
 				}
 			}
 		} else if(status[0] == 1) {
+			// game page 2
+			printFont(23, 1, "- GAME P.2", fontc[rots[0]]);
+			printFont(2,  3, "<< GAME P.1 <<          >> DESIGN >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(2,  6, "DEBUG MODE        :", (statusc[0] == 1) * fontc[rots[0]]);
+			printFont(2,  7, "GRADE TYPE        :", (statusc[0] == 2) * fontc[rots[0]]);
+			printFont(2,  8, "IRS TYPE          :", (statusc[0] == 3) * fontc[rots[0]]);
+			printFont(2,  9, "LANGUAGE          :", (statusc[0] == 4) * fontc[rots[0]]);
+			printFont(2, 10, "MINI SELECT       :", (statusc[0] == 5) * fontc[rots[0]]);
+			printFont(2, 11, "BIG MOVE TYPE     :", (statusc[0] == 6) * fontc[rots[0]]);
+			printFont(2, 12, "ITEM INTERVAL     :", (statusc[0] == 7) * fontc[rots[0]]);
+			printFont(2, 13, "HIDE WAITS        :", (statusc[0] == 8) * fontc[rots[0]]);
+			printFont(2, 14, "VS LIMIT TIME(SEC):", (statusc[0] == 9) * fontc[rots[0]]);
+			printFont(2, 15, "MEDAL GRAPHICS    :", (statusc[0] == 10) * fontc[rots[0]]);
+			printFont(2, 16, "DEVIL RISE STARTLV:", (statusc[0] == 11) * fontc[rots[0]]);
+			printFont(2, 17, "RISE TYPE         :", (statusc[0] == 12) * fontc[rots[0]]);
+			printFont(2, 18, "HOLD              :", (statusc[0] == 13) * fontc[rots[0]]);
+			printFont(2, 19, "IRS               :", (statusc[0] == 14) * fontc[rots[0]]);
+			printFont(2, 20, "USE CPU(1P)       :", (statusc[0] == 15) * fontc[rots[0]]);
+			printFont(2, 21, "USE CPU(2P)       :", (statusc[0] == 16) * fontc[rots[0]]);
+			printFont(2, 22, "CPU TYPE          :", (statusc[0] == 17) * fontc[rots[0]]);
+			printFont(2, 23, "BLOCK ROTATE FRAME:", (statusc[0] == 18) * fontc[rots[0]]);
+			printFont(2, 24, "WALL KICK         :", (statusc[0] == 19) * fontc[rots[0]]);
+			printFont(2, 25, "SHOW 1P CONTROL   :", (statusc[0] == 20) * fontc[rots[0]]);
+
+			printGameButton(2, 28, BTN_A, 0, true);
+			printGameButton(4, 28, BTN_B, 0, true);
+			printFont(2, 28, " / :RETURN", 9);
+
+			i = statusc[0];
+			switch(i)
+			{
+			case 0:
+				printFont(1, 3, "b", fontc[rots[0]]); break;
+			default:
+				printFont(1, 5 + i, "b", fontc[rots[0]]); break;
+			}
+
+			// debug mode
+			if(debug == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(21, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
+
+			// grade type
+			sprintf(string[0], "%d", enable_grade[0]);
+			printFont(21, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
+
+			// irs type
+			if(ace_irs == 0) sprintf(string[0], "CLASSIC");
+			else if(ace_irs == 1)sprintf(string[0], "ACE");
+			else sprintf(string[0], "ACE+");
+			printFont(21, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
+
+			// language
+			if(english == 0) sprintf(string[0], "JAPANESE");
+			else sprintf(string[0], "ENGLISH");
+			printFont(21, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
+			
+			// mini select
+			if(mini_select == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(21, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
+			
+			// big move type
+			if(bigtype == 0) sprintf(string[0], "1CELL");
+			else if(bigtype == 1)sprintf(string[0], "2CELL");
+			else sprintf(string[0], "TOMOYO:1/OTHER:2");
+			printFont(21, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
+			
+			// item interval
+			sprintf(string[0], "%d", item_interval);
+			printFont(21, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
+			
+			// hide waits
+			if(hide_wait == 0) sprintf(string[0], "NOT HIDE");
+			else sprintf(string[0], "HIDE");
+			printFont(21, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+
+			// versus limit time (seconds)
+			sprintf(string[0], "%d", vs_time / 60);
+			printFont(21, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+			
+			// medal graphics
+			if(medaltype == 0) sprintf(string[0], "f");	//□
+			else if(medaltype == 1) sprintf(string[0], "c");//○
+			else sprintf(string[0], "OFF");
+			printFont(21, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
+			
+			// devil rise start level
+			sprintf(string[0], "%d", p_shirase_start_level);
+			printFont(21, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
+			
+			// rise type
+			if(uplinetype == 0) sprintf(string[0], "COPY");
+			else if(uplinetype == 1)sprintf(string[0], "PATTERN");
+			else if(uplinetype == 2)sprintf(string[0], "RANDOM");
+			else sprintf(string[0], "REVERSE ERASE FIELD");
+			printFont(21, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
+			
+			// hold
+			if(disable_hold == 0) sprintf(string[0], "ENABLE");
+			else sprintf(string[0], "DISABLE");
+			printFont(21, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
+			
+			// irs
+			if(disable_irs == 0) sprintf(string[0], "ENABLE");
+			else sprintf(string[0], "DISABLE");
+			printFont(21, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
+			
+			// use cpu (1p)
+			if(cp_player_1p == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(21, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
+			
+			// use cpu (2p)
+			if(cp_player_2p == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(21, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
+			
+			// cpu type
+			if(cp_type == 0) sprintf(string[0], "ERASE SOON");
+			else sprintf(string[0], "ERASE STORE");
+			printFont(21, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
+			
+			// block rotate frame
+			if(block_rframe == 0) sprintf(string[0], "OFF");
+			else sprintf(string[0], "ON");
+			printFont(21, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
+			
+			// wall kick
+			if(disable_wallkick == 0) sprintf(string[0], "ENABLE");
+			else sprintf(string[0], "DISABLE");
+			printFont(21, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
+			
+			// show 1p control
+			if(showctrl == 0) sprintf(string[0], "REPLAY ONLY");
+			else if(showctrl == 1) sprintf(string[0], "ALWAYS ON");
+			else sprintf(string[0], "ALWAYS OFF");
+			printFont(21, 25, string[0], (statusc[0] == 20) * (count % 2) * digitc[rots[0]]);
+
+			for(pl = 0; pl < 2; pl++) {
+				padRepeat(pl);
+				m=0;
+				padRepeat2(pl);
+				// ↑
+				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
+					if(getPressState(pl, 0)) m--;
+
+				// ↓
+				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
+					if(getPressState(pl, 1)) m++;
+				if(m) {
+					PlaySE(5);
+					statusc[0] = (statusc[0] + m + 21) % 21;
+				}
+
+				// HOLDボタンでページ切り替え #1.60c7k8
+				if(getPushState(pl, 7)) {
+					PlaySE(3);
+					status[0] = (status[0] + 1 + pages)%pages;
+					statusc[0] = 0;
+					statusc[1] = 1;
+				} else {
+					m = getPushState(pl, 3) - getPushState(pl, 2);
+					if(m) {
+						     if(statusc[0] ==   1) debug = !debug;
+						else if(statusc[0] ==   2) enable_grade[0] = (enable_grade[0] + 5 + m) % 5;
+						else if(statusc[0] ==   3) ace_irs = (ace_irs + 3 + m) % 3;
+						else if(statusc[0] ==   4) english = !english;
+						else if(statusc[0] ==   5) mini_select = !mini_select;
+						else if(statusc[0] ==   6) bigtype = (bigtype + 3 + m) % 3;
+						else if(statusc[0] ==   7) item_interval = (item_interval + 51 + m) % 51;
+						else if(statusc[0] ==   8) hide_wait = !hide_wait;
+						else if(statusc[0] ==   9) vs_time = (vs_time + 37800 + m * 1800) % 37800;
+						else if(statusc[0] ==  10) medaltype = (medaltype + 3 + m) % 3;
+						else if(statusc[0] ==  11) p_shirase_start_level = (p_shirase_start_level + 1050 + m * 50) % 1050;
+						else if(statusc[0] ==  12) uplinetype = (uplinetype + 3 + m) % 3;
+						else if(statusc[0] ==  13) disable_hold = !disable_hold;
+						else if(statusc[0] ==  14) disable_irs = !disable_irs;
+						else if(statusc[0] ==  15) cp_player_1p = !cp_player_1p;
+						else if(statusc[0] ==  16) cp_player_2p = !cp_player_2p;
+						else if(statusc[0] ==  17) cp_type = !cp_type;
+						else if(statusc[0] ==  18) block_rframe = !block_rframe;
+						else if(statusc[0] ==  19) disable_wallkick = !disable_wallkick;
+						else if(statusc[0] ==  20) showctrl = (showctrl + 3 + m) % 3;
+
+						else if(statusc[0] == 0) {
+							PlaySE(3);
+							status[0] = (status[0] + m + pages)%pages;
+							statusc[0] = 0;
+						}
+						statusc[1] = 1;
+					}
+				}
+
+				if(getPushState(pl, 4) || getPushState(pl, 5)) {	// A&B:mainに戻る
+					PlaySE(3);
+					status[0] = 0;
+					statusc[0] = 0;
+					statusc[1] = 1;
+				}
+			}
+		} else if(status[0] == 2) {
 			// design setting
 			printFont(23, 1, "- DESIGN SETTING", fontc[rots[0]]);
-			printFont(2, 3, "<< GAME <<               >> INPUT >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(2, 3, "<< GAME P.2 <<           >> INPUT >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
 
 			printFont( 2,  6, "BLOCK FRAME    :", fontc[rots[0]] * (statusc[0] == 1));
 			printFont( 2,  7, "FIELD BG       :", fontc[rots[0]] * (statusc[0] == 2));
@@ -829,7 +1093,7 @@ void ConfigMenu() {
 					statusc[1] = 1;
 				}
 			}
-		} else if(status[0] == 2) {
+		} else if(status[0] == 3) {
 			// input setting
 			// menu
 			if(statusc[2] == 0) {
@@ -1345,11 +1609,11 @@ void ConfigMenu() {
 					statusc[2] = 0;
 				}
 			}
-		} else if(status[0] == 3) {
+		} else if(status[0] == 4) {
 			// video setting
 			bool showScreenModeSetting = (ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_FULLSCREEN || (ncfg[0] & SCREENMODE_WINDOWTYPE) == SCREENMODE_WINDOW;
 			printFont(23, 1, "- A/V SETTING", fontc[rots[0]]);
-			printFont(2,  3, "<< INPUT <<               >> GAME >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(2,  3, "<< INPUT <<           >> GAME P.1 >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
 			printFont(2,  6, "WINDOW TYPE :", (statusc[0] == 1) * fontc[rots[0]]);
 			printFont(2,  7, "SCREEN INDEX:", (statusc[0] == 2) * fontc[rots[0]]);
 			printFont(2,  8, "DETAIL LEVEL:", (statusc[0] == 3) * fontc[rots[0]]);
@@ -1632,472 +1896,5 @@ void ConfigMenu() {
 			break;
 		}
 		spriteTime ();
-	}
-}
-
-/* オプション #1.60c7n4 */
-void GameOption() {
-	int32_t i, j, cursor;
-	cursor = 0;
-
-	loop {
-		// 背景描画
-		count++;
-		if(background == 0) {
-			for(i = 0; i <= 4; i++) {
-				if(getDrawRate() == 1)
-					BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
-				else
-					BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
-			}
-		} else if(background == 1) {
-			for(i = 0; i <= 4; i++) {
-				ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
-			}
-		} else {
-			ExBltFast(30, 0, 0);
-		}
-		ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
-		ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
-
-		// メニュー描画
-		printFont(1, 1, "OPTION", 4);
-
-		printFont(1, 3 + cursor, "b", fontc[rots[0]]);
-
-		sprintf(string[0],"DEBUG MODE        :");
-		printFont(2, 3, string[0], (cursor == 0) * fontc[rots[0]]);
-		if(debug == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 3, string[0], (cursor == 0) * fontc[rots[0]]);
-
-		sprintf(string[0],"GRADE TYPE        : %d",enable_grade[0]);
-		printFont(2, 4, string[0], (cursor == 1) * fontc[rots[0]]);
-
-		sprintf(string[0],"IRS TYPE          :");
-		printFont(2, 5, string[0], (cursor == 2) * fontc[rots[0]]);
-		if(ace_irs == 0) sprintf(string[0], "CLASSIC");
-		else if(ace_irs == 1)sprintf(string[0], "ACE");
-			else sprintf(string[0], "ACE+");
-		printFont(22, 5, string[0], (cursor == 2) * fontc[rots[0]]);
-
-		sprintf(string[0],"LANGUAGE          :");
-		printFont(2, 6, string[0], (cursor == 3) * fontc[rots[0]]);
-		if(english == 0) sprintf(string[0], "JAPANESE");
-			else sprintf(string[0], "ENGLISH");
-		printFont(22, 6, string[0], (cursor == 3) * fontc[rots[0]]);
-
-		sprintf(string[0],"MINI SELECT       :");
-		printFont(2, 7, string[0], (cursor == 4) * fontc[rots[0]]);
-		if(mini_select == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 7, string[0], (cursor == 4) * fontc[rots[0]]);
-
-		sprintf(string[0],"BIG MOVE TYPE     :");
-		printFont(2, 8, string[0], (cursor == 5) * fontc[rots[0]]);
-		if(bigtype == 0) sprintf(string[0], "1CELL");
-		else if(bigtype == 1)sprintf(string[0], "2CELL");
-			else sprintf(string[0], "TOMOYO:1/OTHER:2");
-		printFont(22, 8, string[0], (cursor == 5) * fontc[rots[0]]);
-
-		sprintf(string[0],"ITEM INTERVAL     : %d",item_interval);
-		printFont(2, 9, string[0], (cursor == 6) * fontc[rots[0]]);
-
-		sprintf(string[0],"HIDE WAITS        :");
-		printFont(2, 10,string[0], (cursor == 7) * fontc[rots[0]]);
-		if(hide_wait == 0) sprintf(string[0], "NOT HIDE");
-			else sprintf(string[0], "HIDE");
-		printFont(22, 10, string[0], (cursor == 7) * fontc[rots[0]]);
-
-		sprintf(string[0],"VS LIMIT TIME(SEC): %d",vs_time / 60);
-		printFont(2, 11,string[0], (cursor == 8) * fontc[rots[0]]);
-
-		sprintf(string[0],"MEDAL GRAPHICS    :");
-		printFont(2, 12,string[0], (cursor == 9) * fontc[rots[0]]);
-		if(medaltype == 0) sprintf(string[0], "f");//□
-		else if(medaltype == 1) sprintf(string[0], "c");//○
-			else sprintf(string[0], "OFF");
-		printFont(22, 12, string[0], (cursor == 9) * fontc[rots[0]]);
-
-		sprintf(string[0],"DEVIL RISE STARTLV: %d",p_shirase_start_level);
-		printFont(2, 13,string[0], (cursor == 10) * fontc[rots[0]]);
-
-		sprintf(string[0],"RISE TYPE         :");
-		printFont(2, 14,string[0], (cursor == 11) * fontc[rots[0]]);
-		if(uplinetype == 0) sprintf(string[0], "COPY");
-		else if(uplinetype == 1)sprintf(string[0], "PATTERN");
-		else if(uplinetype == 2)sprintf(string[0], "RANDOM");
-			else sprintf(string[0], "REVERSE ERASE FIELD");
-		printFont(22, 14, string[0], (cursor == 11) * fontc[rots[0]]);
-
-		sprintf(string[0],"HOLD              :");
-		printFont(2, 15,string[0], (cursor == 12) * fontc[rots[0]]);
-		if(disable_hold == 0) sprintf(string[0], "ENABLE");
-			else sprintf(string[0], "DISABLE");
-		printFont(22, 15, string[0], (cursor == 12) * fontc[rots[0]]);
-
-		sprintf(string[0],"IRS               :");
-		printFont(2, 16,string[0], (cursor == 13) * fontc[rots[0]]);
-		if(disable_irs == 0) sprintf(string[0], "ENABLE");
-			else sprintf(string[0], "DISABLE");
-		printFont(22, 16, string[0], (cursor == 13) * fontc[rots[0]]);
-
-		sprintf(string[0],"USE CPU(1P)       :");
-		printFont(2, 17,string[0], (cursor == 14) * fontc[rots[0]]);
-		if(cp_player_1p == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 17, string[0], (cursor == 14) * fontc[rots[0]]);
-
-		sprintf(string[0],"USE CPU(2P)       :");
-		printFont(2, 18,string[0], (cursor == 15) * fontc[rots[0]]);
-		if(cp_player_2p == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 18, string[0], (cursor == 15) * fontc[rots[0]]);
-
-		sprintf(string[0],"CPU TYPE          :");
-		printFont(2, 19,string[0], (cursor == 16) * fontc[rots[0]]);
-		if(cp_type == 0) sprintf(string[0], "ERASE SOON");
-			else sprintf(string[0], "ERASE STORE");
-		printFont(22, 19, string[0], (cursor == 16) * fontc[rots[0]]);
-
-		sprintf(string[0],"BLOCK ROTATE FRAME:");
-		printFont(2, 20,string[0], (cursor == 17) * fontc[rots[0]]);
-		if(block_rframe == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 20, string[0], (cursor == 17) * fontc[rots[0]]);
-
-		sprintf(string[0],"WALL KICK         :");
-		printFont(2, 21,string[0], (cursor == 18) * fontc[rots[0]]);
-		if(disable_wallkick == 0) sprintf(string[0], "ENABLE");
-			else sprintf(string[0], "DISABLE");
-		printFont(22, 21, string[0], (cursor == 18) * fontc[rots[0]]);
-
-		sprintf(string[0],"SHOW 1P CONTROL   :");
-		printFont(2, 22,string[0], (cursor == 19) * fontc[rots[0]]);
-		if(showctrl == 0) sprintf(string[0], "REPLAY ONLY");
-		else if(showctrl == 1) sprintf(string[0], "ALWAYS ON");
-		else sprintf(string[0], "ALWAYS OFF");
-		printFont(22, 22, string[0], (cursor == 19) * fontc[rots[0]]);
-
-		sprintf(string[0],"SPAWN Y TYPE      :");
-		printFont(2, 23,string[0], (cursor == 20) * fontc[rots[0]]);
-		if(spawn_y_type == 0) sprintf(string[0], "FIELD IN");
-			else sprintf(string[0], "FIELD OUT");
-		printFont(22, 23, string[0], (cursor == 20) * fontc[rots[0]]);
-
-		sprintf(string[0],"HIDE INFO(TOMOYO) :");
-		printFont(2, 24,string[0], (cursor == 21) * fontc[rots[0]]);
-		if(hide_tomoyoinf == 0) sprintf(string[0], "NOT HIDE");
-			else sprintf(string[0], "HIDE");
-		printFont(22, 24, string[0], (cursor == 21) * fontc[rots[0]]);
-
-		sprintf(string[0],"T-SPIN TYPE       :");
-		printFont(2, 25,string[0], (cursor == 22) * fontc[rots[0]]);
-		if(tspin_type == 0) sprintf(string[0], "NO CHECK");
-		else if(tspin_type == 1) sprintf(string[0], "ERASE(NO BOUNS)");
-		else if(tspin_type == 2)	sprintf(string[0], "3-C(BOUNS)");
-		else if(tspin_type == 3)	sprintf(string[0], "BOTH(BONUS:3-C)");
-		printFont(22, 25, string[0], (cursor == 22) * fontc[rots[0]]);
-
-		sprintf(string[0],"BLOCK SPECTRUM    :");
-		printFont(2, 26,string[0], (cursor == 23) * fontc[rots[0]]);
-		if(block_spectrum == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 26, string[0], (cursor == 23) * fontc[rots[0]]);
-
-		sprintf(string[0],"NEXT ADJUST       :");
-		printFont(2, 27,string[0], (cursor == 24) * fontc[rots[0]]);
-		if(next_adjust == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON(NOT FIRST OSZ)");
-		printFont(22, 27, string[0], (cursor == 24) * fontc[rots[0]]);
-
-		sprintf(string[0],"VIEW BEST TIME    :");
-		printFont(2, 28,string[0], (cursor == 25) * fontc[rots[0]]);
-		if(Isbesttime == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 28, string[0], (cursor == 25) * fontc[rots[0]]);
-
-		sprintf(string[0],"BACK TO BACK      :");
-		printFont(2, 29,string[0], (cursor == 26) * fontc[rots[0]]);
-		if(b2bcheck == 0) sprintf(string[0], "OFF");
-			else sprintf(string[0], "ON");
-		printFont(22, 29, string[0], (cursor == 26) * fontc[rots[0]]);
-		// キー入力
-		Input();
-
-		padRepeat2(0);
-		// ↑
-		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-		if( getPressState(0, 0) ) {
-			PlaySE(5);
-			cursor--;
-			if(cursor < 0) cursor = 26;
-		}
-		// ↓
-		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-		if( getPressState(0, 1) ) {
-			PlaySE(5);
-			cursor++;
-			if(cursor > 26) cursor = 0;
-		}
-
-		padRepeat(0);
-		// ←
-		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
-		if( getPressState(0, 2) ) {
-			PlaySE(3);
-
-			// デバッグモード
-			if(cursor == 0) {
-				debug = !debug;
-			}
-			// 段位タイプ
-			if(cursor == 1) {
-				enable_grade[0]--;
-				if(enable_grade[0] < 0) enable_grade[0] = 4;
-			}
-			//IRS
-			if(cursor == 2) {
-				ace_irs--;
-				if(ace_irs < 0) ace_irs = 2;
-			}
-			// 英語版
-			if(cursor == 3) {
-				english = !english;
-			}
-			// 簡易セレクト
-			if(cursor == 4) {
-				mini_select = !mini_select;
-			}
-			// BIG移動単位
-			if(cursor == 5) {
-				bigtype--;
-				if(bigtype < 0) bigtype = 2;
-			}
-			// アイテム間隔
-			if(cursor == 6) {
-				item_interval--;
-				if(item_interval < 1) item_interval = 50;
-			}
-			// WAIT値表示
-			if(cursor == 7) {
-				hide_wait =!hide_wait;
-			}
-			// VS制限時間
-			if(cursor == 8) {
-				vs_time = vs_time - 1800;
-				if(vs_time < 0) vs_time = 36000;
-			}
-			// メダルタイプ
-			if(cursor == 9) {
-				medaltype--;
-				if(medaltype < 0) medaltype = 2;
-			}
-			// せり上がり開始Lv
-			if(cursor == 10) {
-				p_shirase_start_level = p_shirase_start_level - 50;
-				if(p_shirase_start_level < 0) p_shirase_start_level = 1000;
-			}
-			// せり上げタイプ
-			if(cursor == 11) {
-				uplinetype--;
-				if(uplinetype < 0) uplinetype = 2;
-			}
-			// HOLD封印
-			if(cursor == 12) {
-				disable_hold = !disable_hold;
-			}
-			// IRS封印
-			if(cursor == 13) {
-				disable_irs = !disable_irs;
-			}
-			// CPU 1P
-			if(cursor == 14) {
-				cp_player_1p = !cp_player_1p;
-			}
-			// CPU 2P
-			if(cursor == 15) {
-				cp_player_2p = !cp_player_2p;
-			}
-			// CPUの性格
-			if(cursor == 16) {
-				cp_type = !cp_type;
-			}
-			// ブロックの周りの四角い枠
-			if(cursor == 17) {
-				block_rframe = !block_rframe;
-			}
-			// 壁蹴り封印
-			if(cursor == 18) {
-				disable_wallkick = !disable_wallkick;
-			}
-			// 操作状況表示
-			if(cursor == 19) {
-				showctrl--;
-				if(showctrl < 0) showctrl = 2;
-			}
-			// 出現位置
-			if(cursor == 20) {
-				spawn_y_type = !spawn_y_type;
-			}
-			// TOMOYO詳細
-			if(cursor == 21) {
-				hide_tomoyoinf = !hide_tomoyoinf;
-			}
-			// T-SPIN判定方法
-			if(cursor == 22) {
-				tspin_type--;
-				if(tspin_type < 0) tspin_type = 3;
-			}
-			// ブロックの残像
-			if(cursor == 23) {
-				block_spectrum = !block_spectrum;
-			}
-			//第一ブロック調整
-			if(cursor == 24) {
-				next_adjust = !next_adjust;
-			}
-			// ベストタイムを見せるか
-			if(cursor == 25) {
-				Isbesttime = !Isbesttime;
-			}
-			// Back to Back
-			if(cursor == 26) {
-				b2bcheck = !b2bcheck;
-			}
-		}
-
-		// →
-		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
-		if( getPressState(0, 3) ) {
-			PlaySE(3);
-
-			// デバッグ
-			if(cursor == 0) {
-				debug = !debug;
-			}
-			// 段位
-			if(cursor == 1) {
-				enable_grade[0]++;
-				if(enable_grade[0] > 4) enable_grade[0] = 0;
-			}
-			// IRS
-			if(cursor == 2) {
-				ace_irs++;
-				if(ace_irs > 2) ace_irs = 0;
-			}
-			// 英語版
-			if(cursor == 3) {
-				english = !english;
-			}
-			// 簡易セレクト
-			if(cursor == 4) {
-				mini_select = !mini_select;
-			}
-			// BIG移動単位
-			if(cursor == 5) {
-				bigtype++;
-				if(bigtype > 2) bigtype = 0;
-			}
-			// アイテム間隔
-			if(cursor == 6) {
-				item_interval++;
-				if(item_interval > 50) item_interval = 1;
-			}
-			// WAIT値表示
-			if(cursor == 7) {
-				hide_wait =!hide_wait;
-			}
-			// VS制限時間
-			if(cursor == 8) {
-				vs_time = vs_time + 1800; //30秒
-				if(vs_time > 36000) vs_time = 0;
-			}
-			// 操作状況表示
-			if(cursor == 9) {
-				medaltype++;
-				if(medaltype > 2) medaltype = 0;
-			}
-			// せり上がり開始Lv
-			if(cursor == 10) {
-				p_shirase_start_level = p_shirase_start_level + 50;
-				if(p_shirase_start_level > 1000) p_shirase_start_level = 0;
-			}
-			// せり上げタイプ
-			if(cursor == 11) {
-				uplinetype++;
-				if(uplinetype > 2) uplinetype = 0;
-			}
-			// HOLD封印
-			if(cursor == 12) {
-				disable_hold = !disable_hold;
-			}
-			// IRS封印
-			if(cursor == 13) {
-				disable_irs = !disable_irs;
-			}
-			// CPU 1P
-			if(cursor == 14) {
-				cp_player_1p = !cp_player_1p;
-			}
-			// CPU 2P
-			if(cursor == 15) {
-				cp_player_2p = !cp_player_2p;
-			}
-			// CPUの性格
-			if(cursor == 16) {
-				cp_type = !cp_type;
-			}
-			// ブロックの周りの四角い枠
-			if(cursor == 17) {
-				block_rframe = !block_rframe;
-			}
-			// 壁蹴り封印
-			if(cursor == 18) {
-				disable_wallkick = !disable_wallkick;
-			}
-			// 操作状況表示
-			if(cursor == 19) {
-				showctrl++;
-				if(showctrl > 2) showctrl = 0;
-			}
-			// 出現位置
-			if(cursor == 20) {
-				spawn_y_type = !spawn_y_type;
-			}
-			// ともよ詳細
-			if(cursor == 21) {
-				hide_tomoyoinf = !hide_tomoyoinf;
-			}
-			// T-SPIN判定方法
-			if(cursor == 22) {
-				tspin_type++;
-				if(tspin_type > 3) tspin_type= 0;
-			}
-			// ブロックの残像
-			if(cursor == 23) {
-				block_spectrum = !block_spectrum;
-			}
-			//第一ブロック調整
-			if(cursor == 24) {
-				next_adjust = !next_adjust;
-			}
-			// ベストタイムを見せるか
-			if(cursor == 25) {
-				Isbesttime = !Isbesttime;
-			}
-			// Back to Back
-			if(cursor == 26) {
-				b2bcheck = !b2bcheck;
-			}
-		}
-
-		// AかBで戻る
-		if( getPushState(0, 4) || getPushState(0, 5) ) {
-			backupSetups();
-			return;
-		}
-
-		spriteTime();
 	}
 }

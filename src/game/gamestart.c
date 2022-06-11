@@ -1401,6 +1401,7 @@ int32_t		fldigsno = 45;		//fldiにおいてGOLDENスクウェア用の画像が�
 int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像がある場所
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
+bool	quitNowFlag = false;
 char	*string[STRING_MAX];
 
 // globals for new randomizers
@@ -1914,7 +1915,7 @@ void title(void) {
 			printFont(15, 23, "NORMAL RANKING",       (fontc[rots[0]]) * (game == 5));
 			printFont(15, 24, "SECTION TIME RANKING", (fontc[rots[0]]) * (game == 6));
 			printFont(15, 25, "SETTING",              (fontc[rots[0]]) * (game == 7));
-			printFont(15, 26, "OPTION",               (fontc[rots[0]]) * (game == 8));
+			printFont(15, 26, "QUIT",                 (fontc[rots[0]]) * (game == 8));
 
 			// どちらかのジョイスティックでモードセレクト
 			for(player = 0; player < 1+maxPlay; player++) {
@@ -2014,12 +2015,11 @@ void title(void) {
 						ofs = 0;
 						if(restart) mode = 2;
 						else mode = 0;
-					// オプション #1.60c7n4
 					} else if(game == 8) {
-						GameOption();	// config.c
 						game = 0;
-						mode = 0;
+						mode = 2;
 						ofs = 0;
+						quitNowFlag = true;
 					}
 				}
 			}
@@ -15342,7 +15342,7 @@ int IsPushPrompt(EPrompt prompt)
 
 int quitNow() {
 	#ifdef ENABLE_KEYBOARD
-	return IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+	return quitNowFlag || IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 	#else
 	return 0;
 	#endif

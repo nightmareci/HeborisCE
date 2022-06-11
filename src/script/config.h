@@ -8,7 +8,6 @@
 // フォーマットの変更により互換性が失われた場合、1つ増加します。
 #define CFG_VERSION 2u
 
-void GameOption();
 void ConfigMenu();
 int32_t LoadConfig(void);
 int32_t SaveConfig(void);

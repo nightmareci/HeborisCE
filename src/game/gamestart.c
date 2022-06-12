@@ -15341,11 +15341,12 @@ int IsPushPrompt(EPrompt prompt)
 }
 
 int quitNow() {
-	#ifdef ENABLE_KEYBOARD
-	return quitNowFlag || IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
-	#else
-	return 0;
-	#endif
+	return
+		quitNowFlag
+		#ifdef ENABLE_KEYBOARD
+		|| IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE))
+		#endif
+		;
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

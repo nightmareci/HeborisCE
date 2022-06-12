@@ -53,10 +53,6 @@ set(EXE_SOURCES
 	"${SRC}/src/script/ranking3.c"
 )
 
-if(CMAKE_C_COMPILER_ID MATCHES Clang)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-invalid-source-encoding -Wno-logical-op-parentheses")
-endif()
-
 set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default, the current platform is the build target. Can be explicitly set to \"Vita\", to force building for PlayStation Vita.")
 
 message(STATUS "Build target: ${BUILD_TARGET}")

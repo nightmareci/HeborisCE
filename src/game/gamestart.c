@@ -14787,10 +14787,6 @@ void padRepeat2(int32_t player) { // hoge 上下入力バージョン
 	}
 }
 
-EControllerType getControllerType(int32_t player) {
-	
-}
-
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  キー状態の取得
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲

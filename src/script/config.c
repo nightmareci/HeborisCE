@@ -1211,6 +1211,9 @@ void ConfigMenu() {
 						cancel = true;
 					}
 					break;
+
+				default:
+					break;
 				}
 				if (!cancel) {
 					sprintf(string[0], "KEYBOARD %dP SETTING", statusc[2]);

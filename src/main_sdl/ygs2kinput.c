@@ -163,7 +163,7 @@ void JoyInput()
 		key.index = index;
 		key.guid = GetJoyGUID(index);
 		const SJoyGUID zeroGUID = { 0 };
-		if (memcmp(key.guid.data, zeroGUID.data, sizeof(key.guid.data) == 0)) continue;
+		if (memcmp(key.guid.data, zeroGUID.data, sizeof(key.guid.data)) == 0) continue;
 
 		key.type = JOYKEY_AXIS;
 		for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)

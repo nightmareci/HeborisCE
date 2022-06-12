@@ -2036,7 +2036,7 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 	case CONTROLLER_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case CONTROLLER_KEYBOARD:
+	case CONTROLLER_KEYBOARD: {
 		const char* s;
 		switch (prompt) {
 		case PROMPT_OK: s = "ENTER"; break;
@@ -2046,6 +2046,7 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 		}
 		printFont(fontX, fontY, s, fontColor);
 		break;
+	}
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER

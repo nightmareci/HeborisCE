@@ -2084,21 +2084,21 @@ void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 	case CONTROLLER_GAMECONTROLLER:
 		switch (GetConType(playerCons[player])) {
 		case CONTROLLER_XBOX:
-			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons())
+			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons() > 0)
 				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
 			else
 				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
 			break;
 
 		case CONTROLLER_PLAYSTATION:
-			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons())
+			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons() > 0)
 				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
 			else
 				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
 			break;
 
 		case CONTROLLER_NINTENDO:
-			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons()) {
+			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons() > 0) {
 				if (menuAB) {
 					switch (button) {
 					case BTN_A:
@@ -2133,6 +2133,25 @@ void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 		break;
 	}
 }
+
+#ifdef ENABLE_GAME_CONTROLLER
+void printConKey(int32_t fontX, int32_t fontY, int32_t index, SConKey* key, int32_t fontColor) {
+	if (GetNumCons() <= 0 || index < 0 || index >= GetNumCons() || key == NULL) return;
+	const char* text;
+	EButton button;
+	if (GetConKeyDesc(index, key, &text, &button)) {
+		if (text != NULL) {
+			printFont(fontX, fontY, text, fontColor);
+			if (button != BTN_NULL) {
+				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (GetConType(index) - CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+			}
+		}
+		else if (button != BTN_NULL) {
+			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (GetConType(index) - CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+		}
+	}
+}
+#endif
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  フォントを表示する

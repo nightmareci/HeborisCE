@@ -4,6 +4,7 @@
 #include "SDL_image.h"
 #include "SDL_mixer.h"
 #include "physfsrwops.h"
+#include "defs.h"
 #include <time.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -12,4 +13,3 @@
 #ifdef ENABLE_LINUX_GPIO
 #include <gpiod.h>
 #endif
-#include "defs.h"

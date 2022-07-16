@@ -31,12 +31,12 @@ static int s_iNumJoysticks = -1;
 typedef struct SGameController
 {
 	SDL_GameController* device;
-	int axesRepeat[10]; // Two for each stick, one for each trigger.
-	int hatRepeat[4];
-	int buttonsRepeat[SDL_CONTROLLER_BUTTON_MAX];
+	int axesRepeat[CONAXIS_MAX];
+	int buttonsRepeat[CONBUTTON_MAX];
 } SGameController;
 static SGameController* s_aGameControllers = NULL;
 static int s_iNumGameControllers = -1;
+static int s_iLastGameControllerIndex = -1;
 #endif
 
 EControllerType GetLastControllerType()
@@ -73,7 +73,7 @@ int GetMaxKey()
 }
 #endif
 
-#if defined(ENABLE_GAME_CONTROLLER)
+#ifdef ENABLE_GAME_CONTROLLER
 static bool IsGameController(int index)
 {
 	return
@@ -149,7 +149,6 @@ void JoyInput()
 {
 	if (!s_aJoysticks) return;
 
-	SJoyKey key = { 0 };
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
@@ -160,37 +159,36 @@ void JoyInput()
 			continue;
 		}
 
-		key.index = index;
-		key.guid = GetJoyGUID(index);
+		const SJoyGUID checkGUID = GetJoyGUID(index);
 		const SJoyGUID zeroGUID = { 0 };
-		if (memcmp(key.guid.data, zeroGUID.data, sizeof(key.guid.data)) == 0) continue;
+		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) == 0) continue;
 
-		key.type = JOYKEY_AXIS;
 		for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
 		{
-			key.setting.index = axis;
+			const int value = SDL_JoystickGetAxis(s_aJoysticks[index].device, axis);
 
-			const int axisValues[2] = {-YGS_DEADZONE_MAX, +YGS_DEADZONE_MAX};
-			for (int valueIndex = 0; valueIndex < 2; valueIndex++)
+			if (value < -YGS_DEADZONE_MAX)
 			{
-				key.setting.value = axisValues[valueIndex];
-				if (IsPressJoyKey(&key))
-				{
-					s_aJoysticks[index].axesRepeat[axis*2 + valueIndex]++;
-					LastControllerType = CONTROLLER_JOYSTICK;
-				}
-				else
-				{
-					s_aJoysticks[index].axesRepeat[axis*2 + valueIndex] = 0;
-				}
+				if (++s_aJoysticks[index].axesRepeat[axis*2 + 0] == 1) LastControllerType = CONTROLLER_JOYSTICK;
+			}
+			else
+			{
+				s_aJoysticks[index].axesRepeat[axis*2 + 0] = 0;
+			}
+
+			if (value > +YGS_DEADZONE_MAX)
+			{
+				if (++s_aJoysticks[index].axesRepeat[axis*2 + 1] == 1) LastControllerType = CONTROLLER_JOYSTICK;
+			}
+			else
+			{
+				s_aJoysticks[index].axesRepeat[axis*2 + 1] = 0;
 			}
 		}
 
-		key.type = JOYKEY_HAT;
 		for (int hat = 0; hat < s_aJoysticks[index].numHats; hat++)
 		{
-			key.setting.index = hat;
-
+			Uint8 value = SDL_JoystickGetHat(s_aJoysticks[index].device, hat);
 			const Uint8 hatValues[4] =
 			{
 				SDL_HAT_LEFT,
@@ -198,14 +196,10 @@ void JoyInput()
 				SDL_HAT_UP,
 				SDL_HAT_DOWN
 			};
-
-			for (int valueIndex = 0; valueIndex < 4; valueIndex++)
-			{
-				key.setting.value = hatValues[valueIndex];
-				if (IsPressJoyKey(&key))
+			for (int valueIndex = 0; valueIndex < 4; valueIndex++) {
+				if (value & hatValues[valueIndex])
 				{
-					s_aJoysticks[index].hatsRepeat[hat*4 + valueIndex]++;
-					LastControllerType = CONTROLLER_JOYSTICK;
+					if (++s_aJoysticks[index].hatsRepeat[hat*4 + valueIndex] == 1) LastControllerType = CONTROLLER_JOYSTICK;
 				}
 				else
 				{
@@ -214,14 +208,11 @@ void JoyInput()
 			}
 		}
 
-		key.type = JOYKEY_BUTTON;
 		for (int button = 0; button < s_aJoysticks[index].numButtons; button++)
 		{
-			key.setting.button = button;
-			if (IsPressJoyKey(&key))
+			if (SDL_JoystickGetButton(s_aJoysticks[index].device, button))
 			{
-				s_aJoysticks[index].buttonsRepeat[button]++;
-				LastControllerType = CONTROLLER_JOYSTICK;
+				if (++s_aJoysticks[index].buttonsRepeat[button] == 1) LastControllerType = CONTROLLER_JOYSTICK;
 			}
 			else
 			{
@@ -241,6 +232,18 @@ int IsPushJoyKey ( const SJoyKey* const key )
 	{
 		switch (key->type)
 		{
+		case JOYKEY_ANY:
+			for (int button = 0; button < s_aJoysticks[key->index].numButtons; button++) {
+				if (s_aJoysticks[key->index].buttonsRepeat[button] == 1) return 1;
+			}
+			for (int hat = 0; hat < s_aJoysticks[key->index].numHats; hat++) {
+				if (s_aJoysticks[key->index].hatsRepeat[hat] == 1) return 1;
+			}
+			for (int axis = 0; axis < s_aJoysticks[key->index].numAxes; axis++) {
+				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 0] == 1) return 1;
+				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 1] == 1) return 1;
+			}
+			break;
 		case JOYKEY_AXIS:
 			if (key->setting.index < s_aJoysticks[key->index].numAxes)
 			{
@@ -290,28 +293,56 @@ int IsPressJoyKey ( const SJoyKey* const key )
 	SJoyGUID zeroGUID = { 0 };
 	if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 	{
-		SDL_Joystick* const joy = s_aJoysticks[key->index].device;
-		if (SDL_JoystickGetAttached(joy))
+		switch (key->type)
 		{
-			switch (key->type)
-			{
-			case JOYKEY_AXIS:
-				return
-					key->setting.value != 0 && key->setting.index < SDL_JoystickNumAxes(joy) &&
-					(
-						(key->setting.value > 0 && SDL_JoystickGetAxis(joy, key->setting.index) > key->setting.value) ||
-						(key->setting.value < 0 && SDL_JoystickGetAxis(joy, key->setting.index) < key->setting.value)
-					);
-			case JOYKEY_HAT:
-				return
-					key->setting.value != SDL_HAT_CENTERED &&
-					key->setting.index < SDL_JoystickNumHats(joy) &&
-					SDL_JoystickGetHat(joy, key->setting.index) == key->setting.value;
-			case JOYKEY_BUTTON:
-				return key->setting.button < SDL_JoystickNumButtons(joy) && SDL_JoystickGetButton(joy, key->setting.button);
-			default:
-				break;
+		case JOYKEY_ANY:
+			for (int button = 0; button < s_aJoysticks[key->index].numButtons; button++) {
+				if (s_aJoysticks[key->index].buttonsRepeat[button] != 0) return 1;
 			}
+			for (int hat = 0; hat < s_aJoysticks[key->index].numHats; hat++) {
+				if (s_aJoysticks[key->index].hatsRepeat[hat] != 0) return 1;
+			}
+			for (int axis = 0; axis < s_aJoysticks[key->index].numAxes; axis++) {
+				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 0] != 0) return 1;
+				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 1] != 0) return 1;
+			}
+			break;
+		case JOYKEY_AXIS:
+			if (key->setting.index < s_aJoysticks[key->index].numAxes)
+			{
+				if (key->setting.value == -YGS_DEADZONE_MAX)
+				{
+					return s_aJoysticks[key->index].axesRepeat[key->setting.index * 2 + 0] != 0 ? 1 : 0;
+				}
+				else if (key->setting.value == +YGS_DEADZONE_MAX)
+				{
+					return s_aJoysticks[key->index].axesRepeat[key->setting.index * 2 + 1] != 0 ? 1 : 0;
+				}
+			}
+			break;
+		case JOYKEY_HAT:
+			if (key->setting.index < s_aJoysticks[key->index].numHats)
+			{
+				switch (key->setting.value)
+				{
+				case SDL_HAT_LEFT:
+					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 0] != 0 ? 1 : 0;
+				case SDL_HAT_RIGHT:
+					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 1] != 0 ? 1 : 0;
+				case SDL_HAT_UP:
+					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 2] != 0 ? 1 : 0;
+				case SDL_HAT_DOWN:
+					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 3] != 0 ? 1 : 0;
+				default:
+					break;
+				}
+			}
+			break;
+		case JOYKEY_BUTTON:
+			if (key->setting.button < s_aJoysticks[key->index].numButtons) return s_aJoysticks[key->index].buttonsRepeat[key->setting.button] != 0 ? 1 : 0;
+			break;
+		default:
+			break;
 		}
 	}
 	return 0;
@@ -520,15 +551,21 @@ void ConInput()
 		axisValue = SDL_GameControllerGetAxis(s_aGameControllers[index].device, SDL_CONTROLLER_AXIS_LEFTX);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			s_aGameControllers[index].axesRepeat[0]++;
+			if (++s_aGameControllers[index].axesRepeat[0] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 			s_aGameControllers[index].axesRepeat[1] = 0;
-			LastControllerType = controllerType;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
 			s_aGameControllers[index].axesRepeat[0] = 0;
-			s_aGameControllers[index].axesRepeat[1]++;
-			LastControllerType = controllerType;
+			if (++s_aGameControllers[index].axesRepeat[1] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 		}
 		else
 		{
@@ -539,15 +576,21 @@ void ConInput()
 		axisValue = SDL_GameControllerGetAxis(s_aGameControllers[index].device, SDL_CONTROLLER_AXIS_LEFTY);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			s_aGameControllers[index].axesRepeat[2]++;
+			if (++s_aGameControllers[index].axesRepeat[2] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 			s_aGameControllers[index].axesRepeat[3] = 0;
-			LastControllerType = controllerType;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
 			s_aGameControllers[index].axesRepeat[2] = 0;
-			s_aGameControllers[index].axesRepeat[3]++;
-			LastControllerType = controllerType;
+			if (++s_aGameControllers[index].axesRepeat[3] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 		}
 		else
 		{
@@ -558,15 +601,21 @@ void ConInput()
 		axisValue = SDL_GameControllerGetAxis(s_aGameControllers[index].device, SDL_CONTROLLER_AXIS_RIGHTX);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			s_aGameControllers[index].axesRepeat[4]++;
+			if (++s_aGameControllers[index].axesRepeat[4] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 			s_aGameControllers[index].axesRepeat[5] = 0;
-			LastControllerType = controllerType;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
 			s_aGameControllers[index].axesRepeat[4] = 0;
-			s_aGameControllers[index].axesRepeat[5]++;
-			LastControllerType = controllerType;
+			if (++s_aGameControllers[index].axesRepeat[5] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 		}
 		else
 		{
@@ -577,15 +626,21 @@ void ConInput()
 		axisValue = SDL_GameControllerGetAxis(s_aGameControllers[index].device, SDL_CONTROLLER_AXIS_RIGHTY);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			s_aGameControllers[index].axesRepeat[6]++;
+			if (++s_aGameControllers[index].axesRepeat[6] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 			s_aGameControllers[index].axesRepeat[7] = 0;
-			LastControllerType = controllerType;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
 			s_aGameControllers[index].axesRepeat[6] = 0;
-			s_aGameControllers[index].axesRepeat[7]++;
-			LastControllerType = controllerType;
+			if (++s_aGameControllers[index].axesRepeat[7] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 		}
 		else
 		{
@@ -597,8 +652,11 @@ void ConInput()
 		axisValue = SDL_GameControllerGetAxis(s_aGameControllers[index].device, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
 		if (axisValue > YGS_DEADZONE_MAX)
 		{
-			s_aGameControllers[index].axesRepeat[8]++;
-			LastControllerType = controllerType;
+			if (++s_aGameControllers[index].axesRepeat[8] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 		}
 		else
 		{
@@ -608,8 +666,11 @@ void ConInput()
 		axisValue = SDL_GameControllerGetAxis(s_aGameControllers[index].device, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 		if (axisValue > YGS_DEADZONE_MAX)
 		{
-			s_aGameControllers[index].axesRepeat[9]++;
-			LastControllerType = controllerType;
+			if (++s_aGameControllers[index].axesRepeat[9] == 1)
+			{
+				LastControllerType = controllerType;
+				s_iLastGameControllerIndex = index;
+			}
 		}
 		else
 		{
@@ -620,8 +681,11 @@ void ConInput()
 		{
 			if (SDL_GameControllerGetButton(s_aGameControllers[index].device, button))
 			{
-				s_aGameControllers[index].buttonsRepeat[button]++;
-				LastControllerType = controllerType;
+				if (++s_aGameControllers[index].buttonsRepeat[button] == 1)
+				{
+					LastControllerType = controllerType;
+					s_iLastGameControllerIndex = index;
+				}
 			}
 			else {
 				s_aGameControllers[index].buttonsRepeat[button] = 0;
@@ -638,6 +702,16 @@ int IsPushConKey ( const int index, const SConKey* const key )
 	{
 		switch (key->type)
 		{
+		case CONKEY_ANY:
+			for (int button = 0; button < SDL_CONTROLLER_BUTTON_MAX; button++)
+			{
+				if (s_aGameControllers[index].buttonsRepeat[button] == 1) return 1;
+			}
+			for (int axis = 0; axis < 10; axis++)
+			{
+				if (s_aGameControllers[index].axesRepeat[axis] == 1) return 1;
+			}
+			break;
 		case CONKEY_AXIS:
 			return s_aGameControllers[index].axesRepeat[key->index] == 1 ? 1 : 0;
 		case CONKEY_BUTTON:
@@ -652,6 +726,16 @@ int IsPushConKey ( const int index, const SConKey* const key )
 		{
 			switch (key->type)
 			{
+			case CONKEY_ANY:
+				for (int button = 0; button < SDL_CONTROLLER_BUTTON_MAX; button++)
+				{
+					if (s_aGameControllers[i].buttonsRepeat[button] == 1) return 1;
+				}
+				for (int axis = 0; axis < 10; axis++)
+				{
+					if (s_aGameControllers[i].axesRepeat[axis] == 1) return 1;
+				}
+				break;
 			case CONKEY_AXIS:
 				if (s_aGameControllers[i].axesRepeat[key->index] == 1) return 1;
 			case CONKEY_BUTTON:
@@ -698,6 +782,14 @@ int IsPressConKey ( const int index, const SConKey* const key )
 	return 0;
 }
 
+void ResetLastConIndex() {
+	s_iLastGameControllerIndex = -1;
+}
+
+int GetLastConIndex() {
+	return s_iLastGameControllerIndex;
+}
+
 int GetNumCons()
 {
 	return s_iNumGameControllers;
@@ -724,6 +816,241 @@ EControllerType GetConType(const int index)
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
 		return CONTROLLER_NINTENDO;
 	}
+}
+
+bool GetConKeyDesc(const int index, const SConKey* const key, const char** text, EButton* button)
+{
+	if (GetNumCons() <= 0 || index < 0 || index >= GetNumCons() || key == NULL || text == NULL || button == NULL) return false;
+
+	*text = NULL;
+	*button = BTN_NULL;
+	switch (key->type)
+	{
+	case CONKEY_AXIS:
+		switch (key->index) {
+		case 0:
+			*text = "LS";
+			*button = BTN_RIGHT;
+			break;
+		case 1:
+			*text = "LS";
+			*button = BTN_LEFT;
+			break;
+		case 2:
+			*text = "LS";
+			*button = BTN_DOWN;
+			break;
+		case 3:
+			*text = "LS";
+			*button = BTN_UP;
+			break;
+		case 4:
+			*text = "RS";
+			*button = BTN_RIGHT;
+			break;
+		case 5:
+			*text = "RS";
+			*button = BTN_LEFT;
+			break;
+		case 6:
+			*text = "RS";
+			*button = BTN_DOWN;
+			break;
+		case 7:
+			*text = "RS";
+			*button = BTN_UP;
+			break;
+		case 8:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			default:
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+				*text = "LT";
+				break;
+
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			case SDL_CONTROLLER_TYPE_PS3:
+			case SDL_CONTROLLER_TYPE_PS4:
+			case SDL_CONTROLLER_TYPE_PS5:
+				*text = "L2";
+				break;
+
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "ZL";
+				break;
+			}
+			break;
+		case 9:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			default:
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+				*text = "RT";
+				break;
+
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			case SDL_CONTROLLER_TYPE_PS3:
+			case SDL_CONTROLLER_TYPE_PS4:
+			case SDL_CONTROLLER_TYPE_PS5:
+				*text = "R2";
+				break;
+
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "ZR";
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+		break;
+	case CONKEY_BUTTON:
+		switch (key->index)
+		{
+		case SDL_CONTROLLER_BUTTON_BACK:
+		case SDL_CONTROLLER_BUTTON_START:
+			// "Start" and "Back" are reserved for "Pause" and "Give Up", and may not be remapped.
+			break;
+		case SDL_CONTROLLER_BUTTON_GUIDE:
+			*text = "LOGO";
+			break;
+		case SDL_CONTROLLER_BUTTON_A:
+		case SDL_CONTROLLER_BUTTON_B:
+		case SDL_CONTROLLER_BUTTON_X:
+		case SDL_CONTROLLER_BUTTON_Y:
+			*button = BTN_A + key->index;
+			break;
+		case SDL_CONTROLLER_BUTTON_DPAD_UP:
+		case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+		case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+			*text = "DPAD";
+			*button = BTN_UP + key->index - SDL_CONTROLLER_BUTTON_DPAD_UP;
+			break;
+		case SDL_CONTROLLER_BUTTON_MISC1:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+				*text = "SHARE";
+				break;
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "CAPTURE";
+				break;
+			case SDL_CONTROLLER_TYPE_PS5:
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+				*text = "MICROPHONE";
+				break;
+			default:
+				*text = "MISC1";
+				break;
+			}
+			break;
+		case SDL_CONTROLLER_BUTTON_PADDLE1:
+			*text = "P1";
+			break;
+		case SDL_CONTROLLER_BUTTON_PADDLE2:
+			*text = "P2";
+			break;
+		case SDL_CONTROLLER_BUTTON_PADDLE3:
+			*text = "P3";
+			break;
+		case SDL_CONTROLLER_BUTTON_PADDLE4:
+			*text = "P4";
+			break;
+		case SDL_CONTROLLER_BUTTON_TOUCHPAD:
+			*text = "TOUCHPAD";
+			break;
+		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			default:
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "LS";
+				break;
+
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			case SDL_CONTROLLER_TYPE_PS3:
+			case SDL_CONTROLLER_TYPE_PS4:
+			case SDL_CONTROLLER_TYPE_PS5:
+				*text = "L3";
+				break;
+			}
+			break;
+		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			default:
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "RS";
+				break;
+
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			case SDL_CONTROLLER_TYPE_PS3:
+			case SDL_CONTROLLER_TYPE_PS4:
+			case SDL_CONTROLLER_TYPE_PS5:
+				*text = "R3";
+				break;
+			}
+			break;
+		case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			default:
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+				*text = "LB";
+				break;
+
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			case SDL_CONTROLLER_TYPE_PS3:
+			case SDL_CONTROLLER_TYPE_PS4:
+			case SDL_CONTROLLER_TYPE_PS5:
+				*text = "L1";
+				break;
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "L";
+				break;
+			}
+			break;
+		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			{
+			default:
+			case SDL_CONTROLLER_TYPE_XBOX360:
+			case SDL_CONTROLLER_TYPE_XBOXONE:
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+				*text = "RB";
+				break;
+
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			case SDL_CONTROLLER_TYPE_PS3:
+			case SDL_CONTROLLER_TYPE_PS4:
+			case SDL_CONTROLLER_TYPE_PS5:
+				*text = "R1";
+				break;
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+				*text = "R";
+				break;
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	return *text != NULL || *button != BTN_NULL;
 }
 #endif
 
@@ -806,7 +1133,7 @@ int InputOpen()
 
 void InputClose()
 {
-#ifdef ENABLE_LINUX_GPIO
+	#ifdef ENABLE_LINUX_GPIO
 	if ( s_pGPIOChip )
 	{
 		for ( int i = 0 ; i < 10 ; i ++ )
@@ -818,7 +1145,7 @@ void InputClose()
 		s_pGPIOChip = NULL;
 		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
 	}
-#endif
+	#endif
 
 	#ifdef ENABLE_KEYBOARD
 	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
@@ -840,8 +1167,7 @@ void Input()
 	{
 		if (gpiod_line_get_value(s_pGPIOLines[line]) == 1)
 		{
-			s_iGPIORepeat[line]++;
-			LastControllerType = CONTROLLER_LINUXGPIO;
+			if (++s_iGPIORepeat[line] == 1) LastControllerType = CONTROLLER_LINUXGPIO;
 		}
 		else
 		{
@@ -858,8 +1184,7 @@ void Input()
 	{
 		if (i < numKeys && keyStates[i] == SDL_PRESSED)
 		{
-			s_iKeyRepeat[i]++;
-			LastControllerType = CONTROLLER_KEYBOARD;
+			if (++s_iKeyRepeat[i] == 1) LastControllerType = CONTROLLER_KEYBOARD;
 		}
 		else
 		{

@@ -6,6 +6,7 @@
 #include "main_sdl/include.h"
 
 #include "ygs2kfunc.h"
+#include "button.h"
 #include "prototypes.h"
 
 #define		STRING_MAX		200
@@ -138,21 +139,6 @@ void restoreSetups();
 int32_t getPressState(int32_t player,int32_t key);
 int32_t getPushState(int32_t player,int32_t key);
 
-typedef enum EButton
-{
-	BTN_UP,
-	BTN_DOWN,
-	BTN_LEFT,
-	BTN_RIGHT,
-	BTN_A,
-	BTN_B,
-	BTN_C,
-	BTN_D,
-	NUMGAMEBTNS,
-	BTN_GIVEUP = NUMGAMEBTNS,
-	BTN_PAUSE,
-	NUMBTNS
-} EButton;
 int IsPressMenu(int32_t player, EButton button, EControllerType type);
 int IsPushMenu(int32_t player, EButton button, EControllerType type);
 

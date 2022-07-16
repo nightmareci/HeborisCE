@@ -1,5 +1,10 @@
 #pragma once
 
+#include "defs.h"
+#include "game/button.h"
+#include <stdint.h>
+#include <stdbool.h>
+
 typedef enum EControllerType
 {
 	// NULL must be zero.
@@ -43,6 +48,7 @@ typedef struct {
 } SJoyGUID;
 
 typedef enum {
+	JOYKEY_ANY,
 	JOYKEY_AXIS,
 	JOYKEY_HAT,
 	JOYKEY_BUTTON
@@ -82,6 +88,7 @@ int GetMaxJoyButton(int index);
 
 #ifdef ENABLE_GAME_CONTROLLER
 typedef enum {
+	CONKEY_ANY,
 	CONKEY_AXIS,
 	CONKEY_BUTTON // The dpad is considered to be four buttons.
 } EConKeyType;
@@ -91,9 +98,25 @@ typedef struct {
 	int index;
 } SConKey;
 
+ /* Two for each stick, one for each trigger:
+0,1: Left stick right,left
+2,3: Left stick down,up
+4,5: Right stick right,left
+6,7: Right stick down,up
+8: Left trigger (LT, L2, ZL)
+9: Right trigger (RT, R2, ZR)
+*/
+#define CONAXIS_MAX 10
+
+// Button numbers are the same as the SDL_CONTROLLER_BUTTON_* constants.
+#define CONBUTTON_MAX SDL_CONTROLLER_BUTTON_MAX
+
 int IsPushConKey(const int index, const SConKey* const key);
 int IsPressConKey(const int index, const SConKey* const key);
 
+void ResetLastConIndex();
+int GetLastConIndex();
 int GetNumCons();
 EControllerType GetConType(const int index);
+bool GetConKeyDesc(const int index, const SConKey* const key, const char** text, EButton* button);
 #endif

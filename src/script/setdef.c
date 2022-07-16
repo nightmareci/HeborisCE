@@ -271,6 +271,8 @@ int32_t SetDefaultConfig()
 			case JOYKEY_BUTTON:
 				plbuf[6] = pljoy->setting.button;
 				break;
+			default:
+				break;
 			}
 		}
 	}

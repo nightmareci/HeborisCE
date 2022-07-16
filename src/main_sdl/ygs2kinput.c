@@ -1049,6 +1049,9 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 		default:
 			break;
 		}
+		break;
+	default:
+		break;
 	}
 	return *text != NULL || *button != BTN_NULL;
 }

@@ -7,8 +7,8 @@ SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
 ## Default Keyboard Controls
 The keyboard controls can be reset to defaults at any time by holding the
-Escape key for at least one second, then releasing; a screen with instructions
-will then be displayed.
+Escape key for at least one second; a screen with instructions will then be
+displayed.
 
 Player 1:
 * Up: Arrow up

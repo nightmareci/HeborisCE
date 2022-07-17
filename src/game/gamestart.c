@@ -1402,9 +1402,14 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 bool	quitNowFlag = false;
+#ifdef ENABLE_KEYBOARD
+bool	enterResetKeys = false;
 bool	resetKeysFlag = false;
+bool	lastEnterPressed = false;
+bool	lastEscapePressed = false;
 int32_t lastEscapeFrames = 0;
 int32_t	escapeFrames = 0;
+#endif
 char	*string[STRING_MAX];
 
 // globals for new randomizers
@@ -1541,28 +1546,46 @@ void gameMain(void) {
 			Input();
 
 			const char* const lines[] = {
-				"RESET KEYBOARD?",
-				"ENTER TO RESET",
-				"ESCAPE TO CANCEL"
+				"RESET KEYBOARD INPUT SETTING?",
+				"ENTER  : YES",
+				"ESCAPE : NO "
+			};
+			const int32_t colors[] = {
+				4,
+				2,
+				1
 			};
 			for (int32_t i = 0; i < sizeof(lines) / sizeof(*lines); i++) {
-				printFont((40 - strlen(lines[i])) / 2, (30 - (sizeof(lines) / sizeof(*lines)) * 2) / 2 + i * 2, lines[i], 0);
+				printFont((40 - strlen(lines[i])) / 2, (30 - (sizeof(lines) / sizeof(*lines)) * 2) / 2 + i * 2, lines[i], colors[i]);
 			}
 
-			updateEscapeFrames();
 			if (
-				IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN)) ||
-				(lastEscapeFrames > 0 && escapeFrames == 0)
+				!enterResetKeys &&
+				(
+					(lastEnterPressed && !IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) ||
+					(lastEscapePressed && !IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)))
+				)
 			) {
-				if (IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
+				if (lastEnterPressed) {
 					SetDefaultKeyboardConfig(keyAssign);
 				}
 				shutDown();
+				lastEscapeFrames = 0;
+				escapeFrames = 0;
 				quitNowFlag = false;
 				resetKeysFlag = false;
 				lastEscapeFrames = 0;
 				loopFlag = true;
 				restart = 1;
+			}
+			if (enterResetKeys) {
+				if (!IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)) && !IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
+					enterResetKeys = false;
+				}
+			}
+			else {
+				lastEnterPressed = IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+				lastEscapePressed = IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 			}
 		}
 		#endif
@@ -15385,7 +15408,8 @@ void updateEscapeFrames() {
 int quitNow() {
 	#ifdef ENABLE_KEYBOARD
 	updateEscapeFrames();
-	if (lastEscapeFrames >= 60 && escapeFrames == 0) {
+	if (lastEscapeFrames >= 60) {
+		enterResetKeys = true;
 		resetKeysFlag = true;
 		loopFlag = 0;
 	}

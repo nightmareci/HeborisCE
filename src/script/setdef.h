@@ -2,4 +2,5 @@
 
 #include "script/include.h"
 
-int32_t SetDefaultConfig();
+void SetDefaultKeyboardConfig(SDL_Scancode* keys);
+void SetDefaultConfig();

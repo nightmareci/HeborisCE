@@ -1402,6 +1402,9 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 bool	quitNowFlag = false;
+bool	resetKeysFlag = false;
+int32_t lastEscapeFrames = 0;
+int32_t	escapeFrames = 0;
 char	*string[STRING_MAX];
 
 // globals for new randomizers
@@ -1527,6 +1530,42 @@ void gameMain(void) {
 				}
 			}
 		}
+		#ifdef ENABLE_KEYBOARD
+		while (resetKeysFlag) {
+			if ( !YGS2kHalt() )
+			{
+				shutDown();
+				resetKeysFlag = false;
+				restart = 0;
+			}
+			Input();
+
+			const char* const lines[] = {
+				"RESET KEYBOARD?",
+				"ENTER TO RESET",
+				"ESCAPE TO CANCEL"
+			};
+			for (int32_t i = 0; i < sizeof(lines) / sizeof(*lines); i++) {
+				printFont((40 - strlen(lines[i])) / 2, (30 - (sizeof(lines) / sizeof(*lines)) * 2) / 2 + i * 2, lines[i], 0);
+			}
+
+			updateEscapeFrames();
+			if (
+				IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN)) ||
+				(lastEscapeFrames > 0 && escapeFrames == 0)
+			) {
+				if (IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
+					SetDefaultKeyboardConfig(keyAssign);
+				}
+				shutDown();
+				quitNowFlag = false;
+				resetKeysFlag = false;
+				lastEscapeFrames = 0;
+				loopFlag = true;
+				restart = 1;
+			}
+		}
+		#endif
 		YGS2kExit();
 	} while ( restart );
 	for ( i = 0 ; i < STRING_MAX ; i ++ )
@@ -15336,13 +15375,24 @@ int IsPushPrompt(EPrompt prompt)
 	}
 }
 
+#ifdef ENABLE_KEYBOARD
+void updateEscapeFrames() {
+	lastEscapeFrames = escapeFrames;
+	escapeFrames = GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+}
+#endif
+
 int quitNow() {
-	return
-		quitNowFlag
-		#ifdef ENABLE_KEYBOARD
-		|| IsPushKey(SDL_GetScancodeFromKey(SDLK_ESCAPE))
-		#endif
-		;
+	#ifdef ENABLE_KEYBOARD
+	updateEscapeFrames();
+	if (lastEscapeFrames >= 60 && escapeFrames == 0) {
+		resetKeysFlag = true;
+		loopFlag = 0;
+	}
+	return quitNowFlag || (lastEscapeFrames > 0 && lastEscapeFrames < 60 && escapeFrames == 0);
+	#else
+	return quitNowFlag;
+	#endif
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -16505,6 +16555,16 @@ void restoreSetups() {
 	use_item[1]   = 0;
 }
 
+void shutDown() {
+	maxPlay = tmp_maxPlay;
+	if(playback){
+		restoreSetups();
+		if(!tmp_maxPlay)
+			maxPlay = 0;
+	}
+	SaveConfig();
+}
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  halt;
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -16585,13 +16645,7 @@ void spriteTime() {
 
 	if ( !YGS2kHalt() || quitNow() )
 	{
-		maxPlay = tmp_maxPlay;
-		if(playback){
-			restoreSetups();
-			if(!tmp_maxPlay)
-				maxPlay = 0;
-		}
-		SaveConfig();
+		shutDown();
 		loopFlag = false;
 	}
 

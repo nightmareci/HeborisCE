@@ -55,143 +55,150 @@ typedef struct {
 	int32_t		background;
 } SConfig;
 
+static const SConfig DefaultConfig = {
+	#ifdef ENABLE_KEYBOARD
+	.keyAssign =
+	{
+		SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
+		SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V,
+		SDL_SCANCODE_Q, SDL_SCANCODE_W,
 
-int32_t SetDefaultConfig()
-{
-	const SConfig DefaultConfig = {
-		#ifdef ENABLE_KEYBOARD
-		.keyAssign =
+		SDL_SCANCODE_KP_8, SDL_SCANCODE_KP_5, SDL_SCANCODE_KP_4, SDL_SCANCODE_KP_6,
+		SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
+		SDL_SCANCODE_PAGEUP, SDL_SCANCODE_PAGEDOWN,
+	},
+	#endif
+	.fontc = {9,1,2,3,8,4,3,6,7},	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
+	.digitc = {5,5,7,7,5,5,7,7,5},	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
+	.giveupKey = SDL_SCANCODE_Q,		//捨てゲーキー (デフォルトはQ)
+	.ssKey = SDL_SCANCODE_HOME,		//スナップショットキー (デフォルトはHome)
+	.pausekey = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 },	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
+	.dispnextkey = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 },	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
+	.dtc = 1,				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
+	.fldtr = 96,				//フィールド背景非表示時のフィールド透過度(0-256)
+	.dispnext = 3,			//ネクストブロック表示数の選択（０〜３）
+	.movesound = 1,			//ブロック移動音の選択	0:OFF 1:ON
+	.se = 1,
+	.sevolume = 100,
+	.bgm = 0,
+	.bgmvolume = 100,
+	.wavebgm = 0,			//BGMの選択
+	.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
+
+	.breakeffect = 1,	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
+	.showcombo = 0,		//コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
+	.top_frame = 0,		//ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
+
+	.w_reverse = 1,		//ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
+
+	.downtype = 1,		//下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
+
+	.lvupbonus = 0,		//レベルアップボーナス 0:TI 1:TGM/TAP #1.60c7g3
+
+	.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
+
+	#ifdef ENABLE_JOYSTICK
+	.joyKeyAssign = DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
+	#endif
+	
+	#ifdef ENABLE_GAME_CONTROLLER
+	.playerCons = { 0, 1 },
+	.conKeyAssign = {
+		// Player 1
 		{
-			SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
-			SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V,
-			SDL_SCANCODE_Q, SDL_SCANCODE_W,
-
-			SDL_SCANCODE_KP_8, SDL_SCANCODE_KP_5, SDL_SCANCODE_KP_4, SDL_SCANCODE_KP_6,
-			SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
-			SDL_SCANCODE_PAGEUP, SDL_SCANCODE_PAGEDOWN,
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
 		},
-		#endif
-		.fontc = {9,1,2,3,8,4,3,6,7},	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
-		.digitc = {5,5,7,7,5,5,7,7,5},	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
-		.giveupKey = SDL_SCANCODE_Q,		//捨てゲーキー (デフォルトはQ)
-		.ssKey = SDL_SCANCODE_HOME,		//スナップショットキー (デフォルトはHome)
-		.pausekey = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 },	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
-		.dispnextkey = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 },	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
-		.dtc = 1,				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
-		.fldtr = 96,				//フィールド背景非表示時のフィールド透過度(0-256)
-		.dispnext = 3,			//ネクストブロック表示数の選択（０〜３）
-		.movesound = 1,			//ブロック移動音の選択	0:OFF 1:ON
-		.se = 1,
-		.sevolume = 100,
-		.bgm = 0,
-		.bgmvolume = 100,
-		.wavebgm = 0,			//BGMの選択
-		.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
-
-		.breakeffect = 1,	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
-		.showcombo = 0,		//コンボの表示(SINGLEとかHEBORISとか) 0:off 1:on
-		.top_frame = 0,		//ブロックの高速消去 0:ブロックを左から右へ消す 1:同時に消す
-
-		.w_reverse = 1,		//ワールドルールで回転方法を逆転させる 0:off 1:on #1.60c7f8
-
-		.downtype = 1,		//下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
-
-		.lvupbonus = 0,		//レベルアップボーナス 0:TI 1:TGM/TAP #1.60c7g3
-
-		.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
-
-		#ifdef ENABLE_JOYSTICK
-		.joyKeyAssign = DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
-		#endif
-		
-		#ifdef ENABLE_GAME_CONTROLLER
-		.playerCons = { 0, 1 },
-		.conKeyAssign = {
-			// Player 1
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_UP
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_A
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_B
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_X
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
-			},
-
-			// Player 2
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_UP
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_A
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_B
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_X
-			},
-			{
-				.type = CONKEY_BUTTON,
-				.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
-			}
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
 		},
-		#endif
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_A
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_B
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_X
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+		},
 
-		.rots = {2, 1},
-		.lvup = {1, 1},
+		// Player 2
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_A
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_B
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_X
+		},
+		{
+			.type = CONKEY_BUTTON,
+			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+		}
+	},
+	#endif
 
-		.screenMode =DEFAULT_SCREEN_MODE,
-		.screenIndex =0,
-		.nextblock =8,
-		.cfgversion =CFG_VERSION,
-		.smooth =0,
-		.nanameallow =1,
-		.sonicdrop =0,
-		.blockflash =3,
-		.fastlrmove =1,
-		.background =2,
-	};
+	.rots = {2, 1},
+	.lvup = {1, 1},
 
+	.screenMode =DEFAULT_SCREEN_MODE,
+	.screenIndex =0,
+	.nextblock =8,
+	.cfgversion =CFG_VERSION,
+	.smooth =0,
+	.nanameallow =1,
+	.sonicdrop =0,
+	.blockflash =3,
+	.fastlrmove =1,
+	.background =2,
+};
+
+
+void SetDefaultKeyboardConfig(SDL_Scancode* keys)
+{
+	for (int32_t i = 0; i < 20; i++) {
+		keys[i] = DefaultConfig.keyAssign[i];
+	}
+}
+
+void SetDefaultConfig()
+{
 	int32_t i,j, cfgbuf[CFG_LENGTH];
 
 	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
@@ -294,6 +301,4 @@ int32_t SetDefaultConfig()
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
 	SaveFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
-
-	return (0);
 }

@@ -41,7 +41,7 @@ int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
 #ifdef ENABLE_KEYBOARD
-int32_t keyAssign[10 * 2]; // キーボード設定 (0:↑, 1:↓, 2:←, 3:→, 4:A, 5:B, 6:C, 7:D, 8:GIVEUP, 9:PAUSE)
+SDL_Scancode keyAssign[10 * 2]; // キーボード設定 (0:↑, 1:↓, 2:←, 3:→, 4:A, 5:B, 6:C, 7:D, 8:GIVEUP, 9:PAUSE)
 #endif
 
 int32_t segacheat; // allow CW and/or 180 rotation in old schoo.
@@ -189,7 +189,8 @@ int32_t LoadConfig(void) {
 
 	#ifdef ENABLE_KEYBOARD
 	for(i = 0; i < 20; i++) {
-		keyAssign[i] = cfgbuf[14 + i];
+		if (cfgbuf[14 + i] == SDL_GetScancodeFromKey(SDLK_ESCAPE)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
+		else keyAssign[i] = cfgbuf[14 + i];
 	}
 	#endif
 
@@ -1225,7 +1226,7 @@ void ConfigMenu() {
 					if(statusc[0] < 10) {
 						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
 						for(i = 0; i < GetMaxKey(); i++) {
-							if(!quitNow() && IsPushKey(i)) {
+							if(!quitNow() && i != SDL_GetScancodeFromKey(SDLK_ESCAPE) && IsPushKey(i)) {
 								PlaySE(5);
 								ncfg[10 + statusc[0] + (statusc[2] - 1) * 10] = i;
 								statusc[0]++;

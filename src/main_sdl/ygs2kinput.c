@@ -9,7 +9,7 @@ static struct gpiod_line	*s_pGPIOLines[10];
 #endif
 
 #ifdef ENABLE_KEYBOARD
-static int			s_iKeyRepeat[YGS_KEYREPEAT_MAX];
+static int			s_iKeyRepeat[YGS_KEY_MAX];
 #endif
 
 #ifdef ENABLE_JOYSTICK
@@ -39,7 +39,7 @@ static int s_iNumGameControllers = -1;
 static int s_iLastGameControllerIndex = -1;
 #endif
 
-EControllerType GetLastControllerType()
+EControllerType GetLastControllerType ()
 {
 	return LastControllerType;
 }
@@ -47,34 +47,44 @@ EControllerType GetLastControllerType()
 #ifdef ENABLE_LINUX_GPIO
 int IsPushGPIO ( int key )
 {
-	return s_iGPIORepeat[key] == 1 ? 1 : 0;
+	return key >= 0 && key < NUMBTNS && s_iGPIORepeat[key] == 1 ? 1 : 0;
 }
 
 int IsPressGPIO ( int key )
 {
-	return s_iGPIORepeat[key] != 0 ? 1 : 0;
+	return key >= 0 && key < NUMBTNS && s_iGPIORepeat[key] != 0 ? 1 : 0;
+}
+
+int GetGPIORepeat( int key )
+{
+	return key >= 0 && key < NUMBTNS ? s_iGPIORepeat[key] : -1;
 }
 #endif
 
 #ifdef ENABLE_KEYBOARD
 int IsPushKey (int key)
 {
-	return s_iKeyRepeat[key] == 1 ? 1 : 0;
+	return key >= 0 && key < YGS_KEY_MAX && s_iKeyRepeat[key] == 1 ? 1 : 0;
 }
 
 int IsPressKey (int key)
 {
-	return s_iKeyRepeat[key] != 0 ? 1 : 0;
+	return key >= 0 && key < YGS_KEY_MAX && s_iKeyRepeat[key] != 0 ? 1 : 0;
 }
 
-int GetMaxKey()
+int GetKeyRepeat( int key )
 {
-	return YGS_KEYREPEAT_MAX;
+	return key >= 0 && key < YGS_KEY_MAX ? s_iKeyRepeat[key] : 0;
+}
+
+int GetMaxKey ()
+{
+	return YGS_KEY_MAX;
 }
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-static bool IsGameController(int index)
+static bool IsGameController ( int index )
 {
 	return
 		(SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
@@ -83,7 +93,7 @@ static bool IsGameController(int index)
 #endif
 
 #ifdef ENABLE_JOYSTICK
-void JoyClose()
+void JoyClose ()
 {
 	if (s_aJoysticks)
 	{
@@ -100,7 +110,7 @@ void JoyClose()
 	s_iNumJoysticks = -1;
 }
 
-int JoyOpen()
+int JoyOpen ()
 {
 	if ((s_iNumJoysticks = SDL_NumJoysticks()) > 0)
 	{
@@ -145,7 +155,7 @@ int JoyOpen()
 	else return 0;
 }
 
-void JoyInput()
+void JoyInput ()
 {
 	if (!s_aJoysticks) return;
 
@@ -196,7 +206,8 @@ void JoyInput()
 				SDL_HAT_UP,
 				SDL_HAT_DOWN
 			};
-			for (int valueIndex = 0; valueIndex < 4; valueIndex++) {
+			for (int valueIndex = 0; valueIndex < 4; valueIndex++)
+			{
 				if (value & hatValues[valueIndex])
 				{
 					if (++s_aJoysticks[index].hatsRepeat[hat*4 + valueIndex] == 1) LastControllerType = CONTROLLER_JOYSTICK;
@@ -224,59 +235,77 @@ void JoyInput()
 
 int IsPushJoyKey ( const SJoyKey* const key )
 {
-	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index < 0 || key->index >= s_iNumJoysticks) return 0;
+	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index >= s_iNumJoysticks) return 0;
 
-	SJoyGUID checkGUID = GetJoyGUID(key->index);
-	SJoyGUID zeroGUID = { 0 };
-	if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
+	int index = 0;
+	int indexMax = 0;
+	if (key->index >= 0)
+	{
+		SJoyGUID checkGUID = GetJoyGUID(key->index);
+		SJoyGUID zeroGUID = { 0 };
+		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
+		{
+			index = key->index;
+			indexMax = key->index + 1;
+		}
+	}
+	else
+	{
+		index = 0;
+		indexMax = s_iNumJoysticks;
+	}
+	for (; index < indexMax; index++)
 	{
 		switch (key->type)
 		{
 		case JOYKEY_ANY:
-			for (int button = 0; button < s_aJoysticks[key->index].numButtons; button++) {
-				if (s_aJoysticks[key->index].buttonsRepeat[button] == 1) return 1;
+			for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
+			{
+				if (s_aJoysticks[index].axesRepeat[axis*2 + 0] == 1) return 1;
+				if (s_aJoysticks[index].axesRepeat[axis*2 + 1] == 1) return 1;
 			}
-			for (int hat = 0; hat < s_aJoysticks[key->index].numHats; hat++) {
-				if (s_aJoysticks[key->index].hatsRepeat[hat] == 1) return 1;
+			for (int hat = 0; hat < s_aJoysticks[index].numHats; hat++)
+			{
+				if (s_aJoysticks[index].hatsRepeat[hat] == 1) return 1;
 			}
-			for (int axis = 0; axis < s_aJoysticks[key->index].numAxes; axis++) {
-				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 0] == 1) return 1;
-				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 1] == 1) return 1;
+			for (int button = 0; button < s_aJoysticks[index].numButtons; button++)
+			{
+				if (s_aJoysticks[index].buttonsRepeat[button] == 1) return 1;
 			}
 			break;
 		case JOYKEY_AXIS:
-			if (key->setting.index < s_aJoysticks[key->index].numAxes)
+			if (key->setting.index < s_aJoysticks[index].numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
 				{
-					return s_aJoysticks[key->index].axesRepeat[key->setting.index * 2 + 0] == 1 ? 1 : 0;
+					return s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 0] == 1 ? 1 : 0;
 				}
 				else if (key->setting.value == +YGS_DEADZONE_MAX)
 				{
-					return s_aJoysticks[key->index].axesRepeat[key->setting.index * 2 + 1] == 1 ? 1 : 0;
+					return s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 1] == 1 ? 1 : 0;
 				}
 			}
 			break;
 		case JOYKEY_HAT:
-			if (key->setting.index < s_aJoysticks[key->index].numHats)
+			if (key->setting.index < s_aJoysticks[index].numHats)
 			{
 				switch (key->setting.value)
 				{
 				case SDL_HAT_LEFT:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 0] == 1 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 0] == 1 ? 1 : 0;
 				case SDL_HAT_RIGHT:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 1] == 1 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 1] == 1 ? 1 : 0;
 				case SDL_HAT_UP:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 2] == 1 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 2] == 1 ? 1 : 0;
 				case SDL_HAT_DOWN:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 3] == 1 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 3] == 1 ? 1 : 0;
 				default:
 					break;
 				}
 			}
 			break;
 		case JOYKEY_BUTTON:
-			if (key->setting.button < s_aJoysticks[key->index].numButtons) return s_aJoysticks[key->index].buttonsRepeat[key->setting.button] == 1 ? 1 : 0;
+			if (key->setting.button < s_aJoysticks[index].numButtons) return s_aJoysticks[index].buttonsRepeat[key->setting.button] == 1 ? 1 : 0;
 			break;
 		default:
 			break;
@@ -287,65 +316,199 @@ int IsPushJoyKey ( const SJoyKey* const key )
 
 int IsPressJoyKey ( const SJoyKey* const key )
 {
-	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index < 0 || key->index >= s_iNumJoysticks) return 0;
+	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index >= s_iNumJoysticks) return 0;
 
-	SJoyGUID checkGUID = GetJoyGUID(key->index);
-	SJoyGUID zeroGUID = { 0 };
-	if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
+	int index = 0;
+	int indexMax = 0;
+	if (key->index >= 0)
+	{
+		SJoyGUID checkGUID = GetJoyGUID(key->index);
+		SJoyGUID zeroGUID = { 0 };
+		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
+		{
+			index = key->index;
+			indexMax = key->index + 1;
+		}
+	}
+	else
+	{
+		index = 0;
+		indexMax = s_iNumJoysticks;
+	}
+	for (; index < indexMax; index++)
 	{
 		switch (key->type)
 		{
 		case JOYKEY_ANY:
-			for (int button = 0; button < s_aJoysticks[key->index].numButtons; button++) {
-				if (s_aJoysticks[key->index].buttonsRepeat[button] != 0) return 1;
+			for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
+			{
+				if (s_aJoysticks[index].axesRepeat[axis*2 + 0] != 0) return 1;
+				if (s_aJoysticks[index].axesRepeat[axis*2 + 1] != 0) return 1;
 			}
-			for (int hat = 0; hat < s_aJoysticks[key->index].numHats; hat++) {
-				if (s_aJoysticks[key->index].hatsRepeat[hat] != 0) return 1;
+			for (int hat = 0; hat < s_aJoysticks[index].numHats; hat++)
+			{
+				if (s_aJoysticks[index].hatsRepeat[hat] != 0) return 1;
 			}
-			for (int axis = 0; axis < s_aJoysticks[key->index].numAxes; axis++) {
-				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 0] != 0) return 1;
-				if (s_aJoysticks[key->index].axesRepeat[axis*2 + 1] != 0) return 1;
+			for (int button = 0; button < s_aJoysticks[index].numButtons; button++)
+			{
+				if (s_aJoysticks[index].buttonsRepeat[button] != 0) return 1;
 			}
 			break;
 		case JOYKEY_AXIS:
-			if (key->setting.index < s_aJoysticks[key->index].numAxes)
+			if (key->setting.index < s_aJoysticks[index].numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
 				{
-					return s_aJoysticks[key->index].axesRepeat[key->setting.index * 2 + 0] != 0 ? 1 : 0;
+					return s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 0] != 0 ? 1 : 0;
 				}
 				else if (key->setting.value == +YGS_DEADZONE_MAX)
 				{
-					return s_aJoysticks[key->index].axesRepeat[key->setting.index * 2 + 1] != 0 ? 1 : 0;
+					return s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 1] != 0 ? 1 : 0;
 				}
 			}
 			break;
 		case JOYKEY_HAT:
-			if (key->setting.index < s_aJoysticks[key->index].numHats)
+			if (key->setting.index < s_aJoysticks[index].numHats)
 			{
 				switch (key->setting.value)
 				{
 				case SDL_HAT_LEFT:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 0] != 0 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 0] != 0 ? 1 : 0;
 				case SDL_HAT_RIGHT:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 1] != 0 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 1] != 0 ? 1 : 0;
 				case SDL_HAT_UP:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 2] != 0 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 2] != 0 ? 1 : 0;
 				case SDL_HAT_DOWN:
-					return s_aJoysticks[key->index].hatsRepeat[key->setting.index * 4 + 3] != 0 ? 1 : 0;
+					return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 3] != 0 ? 1 : 0;
 				default:
 					break;
 				}
 			}
 			break;
 		case JOYKEY_BUTTON:
-			if (key->setting.button < s_aJoysticks[key->index].numButtons) return s_aJoysticks[key->index].buttonsRepeat[key->setting.button] != 0 ? 1 : 0;
+			if (key->setting.button < s_aJoysticks[index].numButtons) return s_aJoysticks[index].buttonsRepeat[key->setting.button] != 0 ? 1 : 0;
 			break;
 		default:
 			break;
 		}
 	}
 	return 0;
+}
+
+int GetJoyKeyRepeat ( const SJoyKey* const key )
+{
+	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index >= s_iNumJoysticks) return 0;
+
+	bool multi;
+	int index = 0;
+	int indexMax = 0;
+	int maxRepeat = 0;
+	if (key->index >= 0)
+	{
+		SJoyGUID checkGUID = GetJoyGUID(key->index);
+		SJoyGUID zeroGUID = { 0 };
+		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
+		{
+			index = key->index;
+			indexMax = key->index + 1;
+			multi = false;
+		}
+	}
+	else
+	{
+		index = 0;
+		indexMax = s_iNumJoysticks;
+		multi = true;
+	}
+	for (; index < indexMax; index++)
+	{
+		switch (key->type)
+		{
+		case JOYKEY_ANY:
+			for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
+			{
+				if (s_aJoysticks[index].axesRepeat[axis*2 + 0] > maxRepeat) maxRepeat = s_aJoysticks[index].axesRepeat[axis*2 + 0];
+				if (s_aJoysticks[index].axesRepeat[axis*2 + 1] > maxRepeat) maxRepeat = s_aJoysticks[index].axesRepeat[axis*2 + 1];
+			}
+			for (int hat = 0; hat < s_aJoysticks[index].numHats; hat++)
+			{
+				if (s_aJoysticks[index].hatsRepeat[hat] > maxRepeat) maxRepeat = s_aJoysticks[index].hatsRepeat[hat];
+			}
+			for (int button = 0; button < s_aJoysticks[index].numButtons; button++)
+			{
+				if (s_aJoysticks[index].buttonsRepeat[button] > maxRepeat) maxRepeat = s_aJoysticks[index].buttonsRepeat[button];
+			}
+			break;
+		case JOYKEY_AXIS:
+			if (key->setting.index < s_aJoysticks[index].numAxes)
+			{
+				if (key->setting.value == -YGS_DEADZONE_MAX)
+				{
+					if (multi)
+					{
+						if (s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 0] > maxRepeat) maxRepeat = s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 0];
+					}
+					else return s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 0];
+				}
+				else if (key->setting.value == +YGS_DEADZONE_MAX)
+				{
+					if (multi)
+					{
+						if (s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 1] > maxRepeat) maxRepeat = s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 1];
+					}
+					else return s_aJoysticks[index].axesRepeat[key->setting.index * 2 + 1];
+				}
+			}
+			break;
+		case JOYKEY_HAT:
+			if (key->setting.index < s_aJoysticks[index].numHats)
+			{
+				switch (key->setting.value)
+				{
+				case SDL_HAT_LEFT:
+					if (multi)
+					{
+						if (s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 0] > maxRepeat) maxRepeat = s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 0];
+					}
+					else return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 0];
+				case SDL_HAT_RIGHT:
+					if (multi)
+					{
+						if (s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 1] > maxRepeat) maxRepeat = s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 1];
+					}
+					else return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 1];
+				case SDL_HAT_UP:
+					if (multi)
+					{
+						if (s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 2] > maxRepeat) maxRepeat = s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 2];
+					}
+					else return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 2];
+				case SDL_HAT_DOWN:
+					if (multi)
+					{
+						if (s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 3] > maxRepeat) maxRepeat = s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 3];
+					}
+					else return s_aJoysticks[index].hatsRepeat[key->setting.index * 4 + 3];
+				default:
+					break;
+				}
+			}
+			break;
+		case JOYKEY_BUTTON:
+			if (key->setting.button < s_aJoysticks[index].numButtons)
+			{
+				if (multi)
+				{
+					if (s_aJoysticks[index].buttonsRepeat[key->setting.button] > maxRepeat) maxRepeat = s_aJoysticks[index].buttonsRepeat[key->setting.button];
+				}
+				else return s_aJoysticks[index].buttonsRepeat[key->setting.button];
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	return maxRepeat;
 }
 
 int GetMaxJoys()
@@ -687,106 +850,180 @@ void ConInput()
 					s_iLastGameControllerIndex = index;
 				}
 			}
-			else {
+			else
+			{
 				s_aGameControllers[index].buttonsRepeat[button] = 0;
 			}
 		}
 	}
 }
 
-int IsPushConKey ( const int index, const SConKey* const key )
+int IsPushConKey ( const int conIndex, const SConKey* const key )
 {
-	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || index >= s_iNumGameControllers) return 0;
+	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || conIndex >= s_iNumGameControllers) return 0;
 
-	if (index >= 0)
+	int index = 0;
+	int indexMax = 0;
+	if (conIndex >= 0)
+	{
+		index = conIndex;
+		indexMax = conIndex + 1;
+	}
+	else
+	{
+		index = 0;
+		indexMax = s_iNumGameControllers;
+	}
+	for (; index < indexMax; index++)
 	{
 		switch (key->type)
 		{
 		case CONKEY_ANY:
-			for (int button = 0; button < SDL_CONTROLLER_BUTTON_MAX; button++)
-			{
-				if (s_aGameControllers[index].buttonsRepeat[button] == 1) return 1;
-			}
-			for (int axis = 0; axis < 10; axis++)
+			for (int axis = 0; axis < CONAXIS_MAX; axis++)
 			{
 				if (s_aGameControllers[index].axesRepeat[axis] == 1) return 1;
 			}
+			for (int button = 0; button < CONBUTTON_MAX; button++)
+			{
+				if (s_aGameControllers[index].buttonsRepeat[button] == 1) return 1;
+			}
 			break;
 		case CONKEY_AXIS:
-			return s_aGameControllers[index].axesRepeat[key->index] == 1 ? 1 : 0;
+			if (key->index < CONAXIS_MAX)
+			{
+				if (s_aGameControllers[index].axesRepeat[key->index] == 1) return 1;
+			}
+			break;
 		case CONKEY_BUTTON:
-			return s_aGameControllers[index].buttonsRepeat[key->index] == 1 ? 1 : 0;
+			if (key->index < CONBUTTON_MAX)
+			{
+				if (s_aGameControllers[index].buttonsRepeat[key->index] == 1) return 1;
+			}
+			break;
 		default:
 			break;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < s_iNumGameControllers; i++)
-		{
-			switch (key->type)
-			{
-			case CONKEY_ANY:
-				for (int button = 0; button < SDL_CONTROLLER_BUTTON_MAX; button++)
-				{
-					if (s_aGameControllers[i].buttonsRepeat[button] == 1) return 1;
-				}
-				for (int axis = 0; axis < 10; axis++)
-				{
-					if (s_aGameControllers[i].axesRepeat[axis] == 1) return 1;
-				}
-				break;
-			case CONKEY_AXIS:
-				if (s_aGameControllers[i].axesRepeat[key->index] == 1) return 1;
-			case CONKEY_BUTTON:
-				if (s_aGameControllers[i].buttonsRepeat[key->index] == 1) return 1;
-			default:
-				break;
-			}
 		}
 	}
 	return 0;
 }
 
-int IsPressConKey ( const int index, const SConKey* const key )
+int IsPressConKey ( const int conIndex, const SConKey* const key )
 {
-	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || index >= s_iNumGameControllers) return 0;
+	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || conIndex >= s_iNumGameControllers) return 0;
 
-	if (index >= 0)
+	int index = 0;
+	int indexMax = 0;
+	if (conIndex >= 0)
+	{
+		index = conIndex;
+		indexMax = conIndex + 1;
+	}
+	else
+	{
+		index = 0;
+		indexMax = s_iNumGameControllers;
+	}
+	for (; index < indexMax; index++)
 	{
 		switch (key->type)
 		{
+		case CONKEY_ANY:
+			for (int axis = 0; axis < CONAXIS_MAX; axis++)
+			{
+				if (s_aGameControllers[index].axesRepeat[axis] != 0) return 1;
+			}
+			for (int button = 0; button < CONBUTTON_MAX; button++)
+			{
+				if (s_aGameControllers[index].buttonsRepeat[button] != 0) return 1;
+			}
+			break;
 		case CONKEY_AXIS:
-			return s_aGameControllers[index].axesRepeat[key->index] != 0 ? 1 : 0;
+			if (key->index < CONAXIS_MAX)
+			{
+				if (s_aGameControllers[index].axesRepeat[key->index] != 0) return 1;
+			}
+			break;
 		case CONKEY_BUTTON:
-			return s_aGameControllers[index].buttonsRepeat[key->index] != 0 ? 1 : 0;
+			if (key->index < CONBUTTON_MAX)
+			{
+				if (s_aGameControllers[index].buttonsRepeat[key->index] != 0) return 1;
+			}
+			break;
 		default:
 			break;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < s_iNumGameControllers; i++)
-		{
-			switch (key->type)
-			{
-			case CONKEY_AXIS:
-				if (s_aGameControllers[i].axesRepeat[key->index] != 0) return 1;
-			case CONKEY_BUTTON:
-				if (s_aGameControllers[i].buttonsRepeat[key->index] != 0) return 1;
-			default:
-				break;
-			}
 		}
 	}
 	return 0;
 }
 
-void ResetLastConIndex() {
+int GetConKeyRepeat ( const int conIndex, SConKey* const key )
+{
+	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || key->index >= s_iNumGameControllers) return 0;
+
+	bool multi;
+	int index = 0;
+	int indexMax = 0;
+	int maxRepeat = 0;
+	if (conIndex >= 0)
+	{
+		index = conIndex;
+		indexMax = conIndex + 1;
+		multi = false;
+	}
+	else
+	{
+		index = 0;
+		indexMax = s_iNumGameControllers;
+		multi = true;
+	}
+	for (; index < indexMax; index++)
+	{
+		switch (key->type)
+		{
+		case CONKEY_ANY:
+			for (int axis = 0; axis < CONAXIS_MAX; axis++)
+			{
+				if (s_aGameControllers[index].axesRepeat[axis] > maxRepeat) maxRepeat = s_aGameControllers[index].axesRepeat[axis];
+			}
+			for (int button = 0; button < CONBUTTON_MAX; button++)
+			{
+				if (s_aGameControllers[index].buttonsRepeat[button] > maxRepeat) maxRepeat = s_aGameControllers[index].buttonsRepeat[button];
+			}
+			break;
+		case CONKEY_AXIS:
+			if (key->index < CONAXIS_MAX)
+			{
+					if (multi)
+					{
+						if (s_aGameControllers[index].axesRepeat[key->index] > maxRepeat) maxRepeat = s_aGameControllers[index].axesRepeat[key->index];
+					}
+					else return s_aGameControllers[index].axesRepeat[key->index];
+			}
+			break;
+		case CONKEY_BUTTON:
+			if (key->index < CONBUTTON_MAX)
+			{
+				if (multi)
+				{
+					if (s_aGameControllers[index].buttonsRepeat[key->index] > maxRepeat) maxRepeat = s_aGameControllers[index].buttonsRepeat[key->index];
+				}
+				else return s_aGameControllers[index].buttonsRepeat[key->index];
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	return maxRepeat;
+}
+
+void ResetLastConIndex()
+{
 	s_iLastGameControllerIndex = -1;
 }
 
-int GetLastConIndex() {
+int GetLastConIndex()
+{
 	return s_iLastGameControllerIndex;
 }
 
@@ -827,7 +1064,8 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 	switch (key->type)
 	{
 	case CONKEY_AXIS:
-		switch (key->index) {
+		switch (key->index)
+		{
 		case 0:
 			*text = "LS";
 			*button = BTN_RIGHT;
@@ -1067,7 +1305,8 @@ int InputOpen()
 	{
 		fprintf(stderr, "Failed opening GPIO chip \"%s\". Continuing without GPIO input support.\n", chipName);
 	}
-	else {
+	else
+	{
 		memset(s_iGPIORepeat, 0, sizeof(s_iGPIORepeat));
 		memset(s_pGPIOLines, 0, sizeof(s_pGPIOLines));
 		if (
@@ -1183,7 +1422,7 @@ void Input()
 	int numKeys = 0;
 	const Uint8* keyStates = SDL_GetKeyboardState(&numKeys);
 
-	for (int i = 0; i < YGS_KEYREPEAT_MAX; i++)
+	for (int i = 0; i < YGS_KEY_MAX; i++)
 	{
 		if (i < numKeys && keyStates[i] == SDL_PRESSED)
 		{

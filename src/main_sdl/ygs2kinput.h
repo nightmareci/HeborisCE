@@ -3,6 +3,7 @@
 #include "defs.h"
 #include "game/button.h"
 #include <stdint.h>
+#include <limits.h>
 #include <stdbool.h>
 
 typedef enum EControllerType
@@ -31,14 +32,20 @@ EControllerType GetLastControllerType();
 
 void Input();
 
+#define YGS_INPUTREPEAT_MAX INT_MAX
+
 #ifdef ENABLE_LINUX_GPIO
 int IsPushGPIO(int key);
 int IsPressGPIO(int key);
+int GetGPIORepeat(int key);
 #endif
 
 #ifdef ENABLE_KEYBOARD
+#define YGS_KEY_MAX SDL_NUM_SCANCODES
+
 int IsPushKey(int key);
 int IsPressKey(int key);
+int GetKeyRepeat(int key);
 int GetMaxKey();
 #endif
 
@@ -71,6 +78,7 @@ typedef struct {
 
 int IsPushJoyKey(const SJoyKey* const key);
 int IsPressJoyKey(const SJoyKey* const key);
+int GetJoyKeyRepeat(const SJoyKey* const key); // If key->type == JOYKEY_ANY, checks all inputs of the key's joystick and returns the max repeat value.
 
 int GetMaxJoys();
 int GetNumJoys();
@@ -113,6 +121,7 @@ typedef struct {
 
 int IsPushConKey(const int index, const SConKey* const key);
 int IsPressConKey(const int index, const SConKey* const key);
+int GetConKeyRepeat(const int index, SConKey* const key);
 
 void ResetLastConIndex();
 int GetLastConIndex();

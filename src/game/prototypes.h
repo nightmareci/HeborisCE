@@ -200,6 +200,7 @@ void loadBGM(void);
 void backupSetups();
 void restoreSetups();
 int32_t getMaxKey();
+void shutDown();
 void spriteTime();
 
 // grade.c
@@ -279,7 +280,7 @@ void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type);
 int32_t viewgrade(int32_t player);
 
 // setdef.c
-int32_t SetDefaultConfig();
+void SetDefaultConfig();
 
 // replay.c
 void ReplaySaveCheck(int32_t player, int32_t statnumber);

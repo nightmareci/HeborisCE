@@ -156,6 +156,9 @@ int IsPressConTypeKey(EControllerType type, SConKey* key);
 int IsPushConTypeKey(EControllerType type, SConKey* key);
 #endif
 
+#ifdef ENABLE_KEYBOARD
+void updateEscapeFrames();
+#endif
 int quitNow();
 
 void title(void);
@@ -767,5 +770,6 @@ extern int32_t wait1[2],wait2[2];
 extern int32_t stime[2];
 extern int32_t ctime[2];
 extern int32_t time[2],timeOn[2];
+void shutDown();
 void spriteTime();
 extern bool loopFlag;

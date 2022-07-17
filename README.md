@@ -5,6 +5,35 @@ This version contains the source code for Heboris C7-EX. It requires a C
 compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0,
 SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
+## Default Keyboard Controls
+The keyboard controls can be reset to defaults at any time by holding the
+Escape key for at least one second, then releasing; a screen with instructions
+will then be displayed.
+
+Player 1:
+* Up: Arrow up
+* Down: Arrow down
+* Left: Arrow left
+* Right: Arrow right
+* A: Z
+* B: X
+* C: C
+* D: V
+* Give up: Q
+* Pause: W
+
+Player 2:
+* Up: Numpad/Keypad 8
+* Down: Numpad/Keypad 5
+* Left: Numpad/Keypad 4
+* Right: Numpad/Keypad 6
+* A: Numpad/Keypad 1
+* B: Numpad/Keypad 2
+* C: Numpad/Keypad 3
+* D: Numpad/Keypad 0
+* Give up: Page up
+* Pause: Page down
+
 ## Installing Flatpak Version on Linux
 The benefit of using the Flatpak release package over building it yourself is
 it's built with a recent compiler (improved optimizations) and bundled with

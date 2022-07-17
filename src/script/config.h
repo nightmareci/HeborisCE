@@ -21,7 +21,7 @@ extern int32_t playerCons[2];
 extern SConKey conKeyAssign[8 * 2];
 #endif
 #ifdef ENABLE_KEYBOARD
-extern int32_t keyAssign[10 *2];
+extern SDL_Scancode keyAssign[10 *2];
 #endif
 extern int32_t lvupbonus;
 extern int32_t downtype;

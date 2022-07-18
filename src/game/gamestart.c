@@ -15056,7 +15056,11 @@ int IsPressMenu(int32_t player, EButton button, EControllerType type)
 	SConKey key;
 	int pushed;
 	#endif
+	#ifdef ONLY_CONTROLLER_TYPE
+	switch (ONLY_CONTROLLER_TYPE)
+	#else
 	switch (type)
+	#endif
 	{
 	#ifdef ENABLE_GAME_CONTROLLER
 	case CONTROLLER_XBOX:
@@ -15138,7 +15142,11 @@ int IsPushMenu(int32_t player, EButton button, EControllerType type)
 	SConKey key;
 	int pushed;
 	#endif
+	#ifdef ONLY_CONTROLLER_TYPE
+	switch (ONLY_CONTROLLER_TYPE)
+	#else
 	switch (type)
+	#endif
 	{
 	#ifdef ENABLE_GAME_CONTROLLER
 	case CONTROLLER_XBOX:
@@ -15217,7 +15225,12 @@ int IsPushMenu(int32_t player, EButton button, EControllerType type)
 #ifdef ENABLE_GAME_CONTROLLER
 int IsPressConTypeKey(EControllerType type, SConKey* key)
 {
-	switch (type) {
+	#ifdef ONLY_CONTROLLER_TYPE
+	switch (ONLY_CONTROLLER_TYPE)
+	#else
+	switch (type)
+	#endif
+	{
 	case CONTROLLER_XBOX:
 	case CONTROLLER_PLAYSTATION:
 	case CONTROLLER_NINTENDO:

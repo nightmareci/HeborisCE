@@ -13,93 +13,11 @@ endif()
 add_executable(${EXE} ${EXE_SOURCES})
 
 set(ENABLE_KEYBOARD FALSE)
-set(FILESYSTEM_TYPE FILESYSTEM_PHYSFS)
+set(ENABLE_JOYSTICK FALSE)
+set(ONLY_CONTROLLER_TYPE CONTROLLER_PLAYSTATION)
+set(ONLY_SDL_CONTROLLER_TYPE SDL_CONTROLLER_TYPE_PS4)
 
-set(DEFAULT_JOYKEY_ASSIGN [[
-\
-	{\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 8\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 6\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 7\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 9\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 2\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 1\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 3\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 5\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 10\
-			}\
-		},\
-		{\
-			.index = 0,\
-			.guid = GetJoyGUID(0),\
-			.type = JOYKEY_BUTTON,\
-			.setting = {\
-				.button = 11\
-			}\
-		}\
-	}
-]])
+set(FILESYSTEM_TYPE FILESYSTEM_PHYSFS)
 
 set(DEFAULT_SCREEN_MODE "(SCREENMODE_FULLSCREEN | SCREENMODE_DETAILLEVEL | SCREENMODE_VSYNC)")
 
@@ -121,6 +39,7 @@ target_link_libraries(${EXE}
 	webp
 
 	mikmod
+	modplug
 	mpg123
 	vorbisfile
 	vorbis
@@ -130,6 +49,7 @@ target_link_libraries(${EXE}
 	pthread
 	z
 	m
+	stdc++
 
 	SceDisplay_stub
 	SceCtrl_stub

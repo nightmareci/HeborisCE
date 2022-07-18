@@ -41,7 +41,11 @@ static int s_iLastGameControllerIndex = -1;
 
 EControllerType GetLastControllerType ()
 {
+	#ifdef ONLY_CONTROLLER_TYPE
+	return ONLY_CONTROLLER_TYPE;
+	#else
 	return LastControllerType;
+	#endif
 }
 
 #ifdef ENABLE_LINUX_GPIO
@@ -680,6 +684,15 @@ int ConOpen()
 	return 1;
 }
 
+static SDL_GameControllerType GetSDLConType(SDL_GameController* const device)
+{
+	#ifdef ONLY_SDL_CONTROLLER_TYPE
+	return ONLY_SDL_CONTROLLER_TYPE;
+	#else
+	return SDL_GameControllerGetType(device);
+	#endif
+}
+
 void ConInput()
 {
 	if (!s_aGameControllers) return;
@@ -689,7 +702,7 @@ void ConInput()
 		if (!SDL_GameControllerGetAttached(s_aGameControllers[index].device)) continue;
 
 		EControllerType controllerType;
-		switch (SDL_GameControllerGetType(s_aGameControllers[index].device))
+		switch (GetSDLConType(s_aGameControllers[index].device))
 		{
 		default:
 		case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1036,7 +1049,10 @@ EControllerType GetConType(const int index)
 {
 	if (!s_aGameControllers || s_iNumGameControllers <= 0 || index < 0 || index >= s_iNumGameControllers) return CONTROLLER_NULL;
 
-	switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+	#ifdef ONLY_CONTROLLER_TYPE
+	return ONLY_CONTROLLER_TYPE;
+	#else
+	switch(GetSDLConType(s_aGameControllers[index].device))
 	{
 	default:
 	case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1053,6 +1069,7 @@ EControllerType GetConType(const int index)
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
 		return CONTROLLER_NINTENDO;
 	}
+	#endif
 }
 
 bool GetConKeyDesc(const int index, const SConKey* const key, const char** text, EButton* button)
@@ -1099,7 +1116,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			*button = BTN_UP;
 			break;
 		case 8:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1121,7 +1138,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case 9:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1170,7 +1187,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			*button = BTN_UP + key->index - SDL_CONTROLLER_BUTTON_DPAD_UP;
 			break;
 		case SDL_CONTROLLER_BUTTON_MISC1:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
@@ -1205,7 +1222,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			*text = "TOUCHPAD";
 			break;
 		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1224,7 +1241,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1243,7 +1260,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1264,7 +1281,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-			switch(SDL_GameControllerGetType(s_aGameControllers[index].device))
+			switch(GetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:

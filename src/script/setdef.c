@@ -53,6 +53,33 @@ typedef struct {
 	int32_t		blockflash;
 	int32_t		fastlrmove;
 	int32_t		background;
+	int32_t		spawn_y_type;
+	int32_t		hide_tomoyoinf;
+	int32_t		tspin_type;
+	int32_t		block_spectrum;
+	int32_t		next_adjust;
+	int32_t		Isbesttime;
+	int32_t		b2bcheck;
+	int32_t		debug;
+	int32_t		enable_grade[2];
+	int32_t		ace_irs;
+	int32_t		english;
+	int32_t		mini_select;
+	int32_t		bigtype;
+	int32_t		item_interval;
+	int32_t		hide_wait;
+	int32_t		vs_time;
+	int32_t		medaltype;
+	int32_t		p_shirase_start_level;
+	int32_t		uplinetype;
+	int32_t		disable_hold;
+	int32_t		disable_irs;
+	int32_t		cp_player_1p;
+	int32_t		cp_player_2p;
+	int32_t		cp_type;
+	int32_t		block_rframe;
+	int32_t		disable_wallkick;
+	int32_t		showctrl;
 } SConfig;
 
 static const SConfig DefaultConfig = {
@@ -187,6 +214,112 @@ static const SConfig DefaultConfig = {
 	.blockflash =3,
 	.fastlrmove =1,
 	.background =2,
+
+	// ブロックの出現位置
+	// 0=枠の下 1=枠の上
+	.spawn_y_type = 0,
+
+	// TOMOYO詳細情報表示の有無#C7T9.6EX (0=あり 1=なし)
+	.hide_tomoyoinf = 1,
+
+	// T-SPINの判定方法
+	// 0=一切チェックしない
+	// 1=接地した状態で回転させて左右に動かさずにラインを消す(Back to Back は途切れる)
+	// 2=四隅のうち、3つ以上がブロックか壁で埋まっている(Back to Back 可能)
+	// 3=1と2の両方を判定する(Back to Back は3コーナーのみ)
+	.tspin_type = 2,
+
+	//2G以上または即落下使用時にブロックの残像を見せる（0=なし　1=あり）
+	.block_spectrum = 1,
+
+	// ゲーム開始直後のブロックに黄色、紫、緑が出現#1.60c7f5
+	// 0=する 1=しない
+	.next_adjust = 1,
+
+	//それぞれのモードのベストタイムを見せる #C7U2.5EX
+	//0=off 1=on
+	.Isbesttime = 1,
+
+	// BACK to BACKの有無
+	// 0=なし
+	// 1=あり　連続でヘボリスまたは3コーナーT-SPIN消しを行うと得点が1.5倍
+	.b2bcheck = 1,
+
+	// デバッグフラグ。いろいろ画面に情報を出します。
+	// また、SOLO MODEで開始レベルを選べるようになります。
+	// 0=無効 1=有効
+	.debug = 0,
+
+	// 段位認定の有無#1.60c7i1　#C7T5EX
+	// 0=なし 1=あり(1) 2=あり(2) 3=あり(2-20) 4=あり(3)
+	.enable_grade = { 4, 1 },
+
+	// IRSの種類
+	// 0=クラシック（ヘボリス）　1=ACE　　2=ACE-カスタム
+	// 0以外はブロック出現までの間に何度でもブロックを回転出来ます。
+	// ACE-カスタムはIHS時に向きをリセットしないのと、
+	// HOLD（非IHS）時に通常のIRSが使用可能な点でACEと異なります。
+	.ace_irs = 0,
+
+	// English mode (Hide japanese text in game)
+	// 0=OFF, 1=ON
+	.english = 1,
+
+	// 1にするとSOLO MODEでOTHERS画面が出てこなくなります
+	// 0=使用しない 1=使用する
+	.mini_select = 1,
+
+	// BIGモードの横移動単位 #1.60c7m6
+	// 0=1マス 1=2マス 2=モードによって変える
+	.bigtype = 2,
+
+	// VERSUSモードのアイテムの出現間隔デフォルト値
+	// ATTACKは2倍、ITEMは半分になる
+	.item_interval = 20,
+
+	// WAIT表示の有無#1.60c7e (0=あり 1=なし)
+	.hide_wait = 1,
+
+	// VERSUSモードの制限時間
+	// 0=無制限
+	.vs_time = 180 * 60,
+
+	// メダルの絵の種類(0〜1）2にすると非表示になります #1.60c7m9
+	.medaltype = 0,
+
+	// せり上がり開始レベル#1.60c6.2g(デフォルトは500)
+	.p_shirase_start_level = 500,
+
+	//せり上がりタイプ(0=COPY(デフォルト),1=PATTERN)
+	.uplinetype = 0,
+
+	// HOLDの有無
+	// 0=あり 1=なし
+	.disable_hold = 0,
+
+	// IRS（先行回転）の有無
+	// 0=あり 1=なし
+	.disable_irs = 0,
+
+	// 1にすると人間の代わりにコンピュータが操作するようになります。
+	.cp_player_1p = 0,	// 1P
+	.cp_player_2p = 1,	// 2P
+
+	// コンピュータの性格
+	// 0=ひたすらライン消し 1=2ライン以上消えるときだけ消す
+	// 0は一人用向き、1は対戦向きです。
+	.cp_type = 1,
+
+	// ブロックの周りに白い四角形を表示
+	// 0=なし 1=あり
+	.block_rframe = 0,
+
+	// 壁蹴りの有無
+	// 0=あり 1=なし
+	.disable_wallkick = 0,
+
+	// 操作状況の表示#1.60c7f6 (0=リプレイのみ 1=常に表示 2=常に非表示)
+	.showctrl = 0
 };
 
 
@@ -297,6 +430,35 @@ void SetDefaultConfig()
 		}
 	}
 	#endif
+
+	cfgbuf[274] = DefaultConfig.spawn_y_type;
+	cfgbuf[275] = DefaultConfig.hide_tomoyoinf;
+	cfgbuf[276] = DefaultConfig.tspin_type;
+	cfgbuf[277] = DefaultConfig.block_spectrum;
+	cfgbuf[278] = DefaultConfig.next_adjust;
+	cfgbuf[279] = DefaultConfig.Isbesttime;
+	cfgbuf[280] = DefaultConfig.b2bcheck;
+	cfgbuf[281] = DefaultConfig.debug;
+	cfgbuf[282] = DefaultConfig.enable_grade[0];
+	cfgbuf[283] = DefaultConfig.enable_grade[1];
+	cfgbuf[284] = DefaultConfig.ace_irs;
+	cfgbuf[285] = DefaultConfig.english;
+	cfgbuf[286] = DefaultConfig.mini_select;
+	cfgbuf[287] = DefaultConfig.bigtype;
+	cfgbuf[288] = DefaultConfig.item_interval;
+	cfgbuf[289] = DefaultConfig.hide_wait;
+	cfgbuf[290] = DefaultConfig.vs_time;
+	cfgbuf[291] = DefaultConfig.medaltype;
+	cfgbuf[292] = DefaultConfig.p_shirase_start_level;
+	cfgbuf[293] = DefaultConfig.uplinetype;
+	cfgbuf[294] = DefaultConfig.disable_hold;
+	cfgbuf[295] = DefaultConfig.disable_irs;
+	cfgbuf[296] = DefaultConfig.cp_player_1p;
+	cfgbuf[297] = DefaultConfig.cp_player_2p;
+	cfgbuf[298] = DefaultConfig.cp_type;
+	cfgbuf[299] = DefaultConfig.block_rframe;
+	cfgbuf[300] = DefaultConfig.disable_wallkick;
+	cfgbuf[301] = DefaultConfig.showctrl;
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 

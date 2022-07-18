@@ -2,11 +2,11 @@
 
 #include "script/include.h"
 
-#define CFG_LENGTH 274
+#define CFG_LENGTH 302
 
 // 設定ファイルフォーマットのバージョン番号です。
 // フォーマットの変更により互換性が失われた場合、1つ増加します。
-#define CFG_VERSION 2u
+#define CFG_VERSION 3u
 
 void ConfigMenu();
 int32_t LoadConfig(void);

@@ -41,10 +41,10 @@ int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
 #ifdef ENABLE_KEYBOARD
-SDL_Scancode keyAssign[10 * 2]; // キーボード設定 (0:↑, 1:↓, 2:←, 3:→, 4:A, 5:B, 6:C, 7:D, 8:GIVEUP, 9:PAUSE)
+SDL_Scancode keyAssign[10 * 2];	// キーボード設定 (0:↑, 1:↓, 2:←, 3:→, 4:A, 5:B, 6:C, 7:D, 8:GIVEUP, 9:PAUSE)
 #endif
 
-int32_t segacheat; // allow CW and/or 180 rotation in old schoo.
+int32_t segacheat;		// allow CW and/or 180 rotation in old schoo.
 
 #ifdef ENABLE_JOYSTICK
 // →pauseとgiveupを追加 1.60c7g7
@@ -155,6 +155,36 @@ int32_t SaveConfig(void) {
 		}
 	}
 	#endif
+
+	cfgbuf[274] = spawn_y_type;
+	cfgbuf[275] = hide_tomoyoinf;
+	cfgbuf[276] = tspin_type;
+	cfgbuf[277] = block_spectrum;
+	cfgbuf[278] = next_adjust;
+	cfgbuf[279] = Isbesttime;
+	cfgbuf[280] = b2bcheck;
+
+	cfgbuf[281] = debug;
+	cfgbuf[282] = enable_grade[0];
+	cfgbuf[283] = enable_grade[1];
+	cfgbuf[284] = ace_irs;
+	cfgbuf[285] = english;
+	cfgbuf[286] = mini_select;
+	cfgbuf[287] = bigtype;
+	cfgbuf[288] = item_interval;
+	cfgbuf[289] = hide_wait;
+	cfgbuf[290] = vs_time;
+	cfgbuf[291] = medaltype;
+	cfgbuf[292] = p_shirase_start_level;
+	cfgbuf[293] = uplinetype;
+	cfgbuf[294] = disable_hold;
+	cfgbuf[295] = disable_irs;
+	cfgbuf[296] = cp_player_1p;
+	cfgbuf[297] = cp_player_2p;
+	cfgbuf[298] = cp_type;
+	cfgbuf[299] = block_rframe;
+	cfgbuf[300] = disable_wallkick;
+	cfgbuf[301] = showctrl;
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
@@ -282,6 +312,35 @@ int32_t LoadConfig(void) {
 	}
 	#endif
 
+	spawn_y_type = cfgbuf[274];
+	hide_tomoyoinf = cfgbuf[275];
+	tspin_type = cfgbuf[276];
+	block_spectrum = cfgbuf[277];
+	next_adjust = cfgbuf[278];
+	Isbesttime = cfgbuf[279];
+	b2bcheck = cfgbuf[280];
+	debug = cfgbuf[281];
+	enable_grade[0] = cfgbuf[282];
+	enable_grade[1] = cfgbuf[283];
+	ace_irs = cfgbuf[284];
+	english = cfgbuf[285];
+	mini_select = cfgbuf[286];
+	bigtype = cfgbuf[287];
+	item_interval = cfgbuf[288];
+	hide_wait = cfgbuf[289];
+	vs_time = cfgbuf[290];
+	medaltype = cfgbuf[291];
+	p_shirase_start_level = cfgbuf[292];
+	uplinetype = cfgbuf[293];
+	disable_hold = cfgbuf[294];
+	disable_irs = cfgbuf[295];
+	cp_player_1p = cfgbuf[296];
+	cp_player_2p = cfgbuf[297];
+	cp_type = cfgbuf[298];
+	block_rframe = cfgbuf[299];
+	disable_wallkick = cfgbuf[300];
+	showctrl = cfgbuf[301];
+
 	return (0);
 }
 
@@ -304,7 +363,7 @@ void ConfigMenu() {
 
 	pages = 5;
 
-	// TODO: Save settings moved here from the old "OPTION" menu in the config file.
+	// TODO: Add all settings in init.inc to the settings menu.
 
 	ncfg[0]  = screenMode;
 	ncfg[1]  = screenIndex;
@@ -403,6 +462,35 @@ void ConfigMenu() {
 		}
 	}
 	#endif
+
+	ncfg[274] = spawn_y_type;
+	ncfg[275] = hide_tomoyoinf;
+	ncfg[276] = tspin_type;
+	ncfg[277] = block_spectrum;
+	ncfg[278] = next_adjust;
+	ncfg[279] = Isbesttime;
+	ncfg[280] = b2bcheck;
+	ncfg[281] = debug;
+	ncfg[282] = enable_grade[0];
+	ncfg[283] = enable_grade[1];
+	ncfg[284] = ace_irs;
+	ncfg[285] = english;
+	ncfg[286] = mini_select;
+	ncfg[287] = bigtype;
+	ncfg[288] = item_interval;
+	ncfg[289] = hide_wait;
+	ncfg[290] = vs_time;
+	ncfg[291] = medaltype;
+	ncfg[292] = p_shirase_start_level;
+	ncfg[293] = uplinetype;
+	ncfg[294] = disable_hold;
+	ncfg[295] = disable_irs;
+	ncfg[296] = cp_player_1p;
+	ncfg[297] = cp_player_2p;
+	ncfg[298] = cp_type;
+	ncfg[299] = block_rframe;
+	ncfg[300] = disable_wallkick;
+	ncfg[301] = showctrl;
 
 	for(i = 0; i < 10; i++) statusc[i] = 0;
 
@@ -556,39 +644,39 @@ void ConfigMenu() {
 			printFont(20, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
 			// spawn y type
-			if(spawn_y_type == 0) sprintf(string[0], "FIELD IN");
+			if(ncfg[274] == 0) sprintf(string[0], "FIELD IN");
 			else sprintf(string[0], "FIELD OUT");
 			printFont(20, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
 
 			// hide info (tomoyo)
-			if(hide_tomoyoinf == 0) sprintf(string[0], "NOT HIDE");
+			if(ncfg[275] == 0) sprintf(string[0], "NOT HIDE");
 			else sprintf(string[0], "HIDE");
 			printFont(20, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
 
 			// t-spin type
-			     if(tspin_type == 0) sprintf(string[0], "NO CHECK");
-			else if(tspin_type == 1) sprintf(string[0], "ERASE(NO BONUS)");
-			else if(tspin_type == 2) sprintf(string[0], "3-C(BONUS)");
-			else if(tspin_type == 3) sprintf(string[0], "BOTH(BONUS:3-C)");
+			     if(ncfg[276] == 0) sprintf(string[0], "NO CHECK");
+			else if(ncfg[276] == 1) sprintf(string[0], "ERASE(NO BONUS)");
+			else if(ncfg[276] == 2) sprintf(string[0], "3-C(BONUS)");
+			else if(ncfg[276] == 3) sprintf(string[0], "BOTH(BONUS:3-C)");
 			printFont(20, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
 
 			// block spectrum
-			if(block_spectrum == 0) sprintf(string[0], "OFF");
+			if(ncfg[277] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(20, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
 
 			// next adjust
-			if(next_adjust == 0) sprintf(string[0], "OFF");
+			if(ncfg[278] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON(NOT FIRST OSZ)");
 			printFont(20, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
 
 			// view best time
-			if(Isbesttime == 0) sprintf(string[0], "OFF");
+			if(ncfg[279] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(20, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
 
 			// back to back
-			if(b2bcheck == 0) sprintf(string[0], "OFF");
+			if(ncfg[280] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(20, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
 
@@ -630,14 +718,14 @@ void ConfigMenu() {
 						else if(statusc[0] ==  8) ncfg[52] = !ncfg[52];			// w_reverse
 						else if(statusc[0] ==  9) ncfg[53] = !ncfg[53];			// downtype
 						else if(statusc[0] == 10) ncfg[54] = (ncfg[54] + 3 + m)%3;	// lvupbonus
-						else if(statusc[0] == 11) ncfg[42] = (ncfg[42]+ 3 + m)%3;	// segacheat
-						else if(statusc[0] == 12) spawn_y_type = !spawn_y_type;		// spawn y type
-						else if(statusc[0] == 13) hide_tomoyoinf = !hide_tomoyoinf;	// hide info (tomoyo)
-						else if(statusc[0] == 14) tspin_type = (tspin_type + 4 + m) % 4;// t-spin type
-						else if(statusc[0] == 15) block_spectrum = !block_spectrum;	// block spectrum
-						else if(statusc[0] == 16) next_adjust = !next_adjust;		// next adjust
-						else if(statusc[0] == 17) Isbesttime = !Isbesttime;		// view best time
-						else if(statusc[0] == 18) b2bcheck = !b2bcheck;			// back to back
+						else if(statusc[0] == 11) ncfg[42] = (ncfg[42] + 3 + m)%3;	// segacheat
+						else if(statusc[0] == 12) ncfg[274] = !ncfg[274];		// spawn y type
+						else if(statusc[0] == 13) ncfg[275] = !ncfg[275];		// hide info (tomoyo)
+						else if(statusc[0] == 14) ncfg[276] = (ncfg[276] + 4 + m) % 4;	// t-spin type
+						else if(statusc[0] == 15) ncfg[277] = !ncfg[277];		// block spectrum
+						else if(statusc[0] == 16) ncfg[278] = !ncfg[278];		// next adjust
+						else if(statusc[0] == 17) ncfg[279] = !ncfg[279];		// view best time
+						else if(statusc[0] == 18) ncfg[280] = !ncfg[280];			// back to back
 
 						else if(statusc[0] == 0) {	// page
 							PlaySE(3);
@@ -702,6 +790,35 @@ void ConfigMenu() {
 					digitc[7] = ncfg[77];
 					fontc[8] = ncfg[78];
 					digitc[8] = ncfg[79];
+
+					spawn_y_type = ncfg[274];
+					hide_tomoyoinf = ncfg[275];
+					tspin_type = ncfg[276];
+					block_spectrum = ncfg[277];
+					next_adjust = ncfg[278];
+					Isbesttime = ncfg[279];
+					b2bcheck = ncfg[280];
+					debug = ncfg[281];
+					enable_grade[0] = ncfg[282];
+					enable_grade[1] = ncfg[283];
+					ace_irs = ncfg[284];
+					english = ncfg[285];
+					mini_select = ncfg[286];
+					bigtype = ncfg[287];
+					item_interval = ncfg[288];
+					hide_wait = ncfg[289];
+					vs_time = ncfg[290];
+					medaltype = ncfg[291];
+					p_shirase_start_level = ncfg[292];
+					uplinetype = ncfg[293];
+					disable_hold = ncfg[294];
+					disable_irs = ncfg[295];
+					cp_player_1p = ncfg[296];
+					cp_player_2p = ncfg[297];
+					cp_type = ncfg[298];
+					block_rframe = ncfg[299];
+					disable_wallkick = ncfg[300];
+					showctrl = ncfg[301];
 					SaveConfig();
 					if((maxPlay == lastmaxPlay) && (top_frame == lasttopframe) && (((last_BG <= 1) && (background <= 1)) || (last_BG == 2) && (background == 2)))
 						need_reloadBG = 0;
@@ -762,104 +879,104 @@ void ConfigMenu() {
 			}
 
 			// debug mode
-			if(debug == 0) sprintf(string[0], "OFF");
+			if(ncfg[281] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(21, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
 			// grade type
-			sprintf(string[0], "%"PRId32, enable_grade[0]);
+			sprintf(string[0], "%"PRId32, ncfg[282]);
 			printFont(21, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
 			// irs type
-			if(ace_irs == 0) sprintf(string[0], "CLASSIC");
-			else if(ace_irs == 1)sprintf(string[0], "ACE");
+			if(ncfg[284] == 0) sprintf(string[0], "CLASSIC");
+			else if(ncfg[284] == 1)sprintf(string[0], "ACE");
 			else sprintf(string[0], "ACE+");
 			printFont(21, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
 
 			// language
-			if(english == 0) sprintf(string[0], "JAPANESE");
+			if(ncfg[285] == 0) sprintf(string[0], "JAPANESE");
 			else sprintf(string[0], "ENGLISH");
 			printFont(21, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
 			
 			// mini select
-			if(mini_select == 0) sprintf(string[0], "OFF");
+			if(ncfg[286] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(21, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
 			
 			// big move type
-			if(bigtype == 0) sprintf(string[0], "1CELL");
-			else if(bigtype == 1)sprintf(string[0], "2CELL");
+			if(ncfg[287] == 0) sprintf(string[0], "1CELL");
+			else if(ncfg[287] == 1)sprintf(string[0], "2CELL");
 			else sprintf(string[0], "TOMOYO:1/OTHER:2");
 			printFont(21, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
 			
 			// item interval
-			sprintf(string[0], "%"PRId32, item_interval);
+			sprintf(string[0], "%"PRId32, ncfg[288]);
 			printFont(21, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 			
 			// hide waits
-			if(hide_wait == 0) sprintf(string[0], "NOT HIDE");
+			if(ncfg[289] == 0) sprintf(string[0], "NOT HIDE");
 			else sprintf(string[0], "HIDE");
 			printFont(21, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 			// versus limit time (seconds)
-			sprintf(string[0], "%"PRId32, vs_time / 60);
+			sprintf(string[0], "%"PRId32, ncfg[290] / 60);
 			printFont(21, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
 			
 			// medal graphics
-			if(medaltype == 0) sprintf(string[0], "f");	//□
-			else if(medaltype == 1) sprintf(string[0], "c");//○
+			if(ncfg[291] == 0) sprintf(string[0], "f");	//□
+			else if(ncfg[291] == 1) sprintf(string[0], "c");//○
 			else sprintf(string[0], "OFF");
 			printFont(21, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
 			
 			// devil rise start level
-			sprintf(string[0], "%"PRId32, p_shirase_start_level);
+			sprintf(string[0], "%"PRId32, ncfg[292]);
 			printFont(21, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
 			
 			// rise type
-			if(uplinetype == 0) sprintf(string[0], "COPY");
-			else if(uplinetype == 1)sprintf(string[0], "PATTERN");
-			else if(uplinetype == 2)sprintf(string[0], "RANDOM");
+			if(ncfg[293] == 0) sprintf(string[0], "COPY");
+			else if(ncfg[293] == 1)sprintf(string[0], "PATTERN");
+			else if(ncfg[293] == 2)sprintf(string[0], "RANDOM");
 			else sprintf(string[0], "REVERSE ERASE FIELD");
 			printFont(21, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
 			
 			// hold
-			if(disable_hold == 0) sprintf(string[0], "ENABLE");
+			if(ncfg[294] == 0) sprintf(string[0], "ENABLE");
 			else sprintf(string[0], "DISABLE");
 			printFont(21, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
 			
 			// irs
-			if(disable_irs == 0) sprintf(string[0], "ENABLE");
+			if(ncfg[295] == 0) sprintf(string[0], "ENABLE");
 			else sprintf(string[0], "DISABLE");
 			printFont(21, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
 			
 			// use cpu (1p)
-			if(cp_player_1p == 0) sprintf(string[0], "OFF");
+			if(ncfg[296] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(21, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
 			
 			// use cpu (2p)
-			if(cp_player_2p == 0) sprintf(string[0], "OFF");
+			if(ncfg[297] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(21, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
 			
 			// cpu type
-			if(cp_type == 0) sprintf(string[0], "ERASE SOON");
+			if(ncfg[298] == 0) sprintf(string[0], "ERASE SOON");
 			else sprintf(string[0], "ERASE STORE");
 			printFont(21, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
 			
 			// block rotate frame
-			if(block_rframe == 0) sprintf(string[0], "OFF");
+			if(ncfg[299] == 0) sprintf(string[0], "OFF");
 			else sprintf(string[0], "ON");
 			printFont(21, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
 			
 			// wall kick
-			if(disable_wallkick == 0) sprintf(string[0], "ENABLE");
+			if(ncfg[300] == 0) sprintf(string[0], "ENABLE");
 			else sprintf(string[0], "DISABLE");
 			printFont(21, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
 			
 			// show 1p control
-			if(showctrl == 0) sprintf(string[0], "REPLAY ONLY");
-			else if(showctrl == 1) sprintf(string[0], "ALWAYS ON");
+			if(ncfg[301] == 0) sprintf(string[0], "REPLAY ONLY");
+			else if(ncfg[301] == 1) sprintf(string[0], "ALWAYS ON");
 			else sprintf(string[0], "ALWAYS OFF");
 			printFont(21, 25, string[0], (statusc[0] == 20) * (count % 2) * digitc[rots[0]]);
 
@@ -888,26 +1005,26 @@ void ConfigMenu() {
 				} else {
 					m = getPushState(pl, 3) - getPushState(pl, 2);
 					if(m) {
-						     if(statusc[0] ==   1) debug = !debug;
-						else if(statusc[0] ==   2) enable_grade[0] = (enable_grade[0] + 5 + m) % 5;
-						else if(statusc[0] ==   3) ace_irs = (ace_irs + 3 + m) % 3;
-						else if(statusc[0] ==   4) english = !english;
-						else if(statusc[0] ==   5) mini_select = !mini_select;
-						else if(statusc[0] ==   6) bigtype = (bigtype + 3 + m) % 3;
-						else if(statusc[0] ==   7) item_interval = (item_interval + 51 + m) % 51;
-						else if(statusc[0] ==   8) hide_wait = !hide_wait;
-						else if(statusc[0] ==   9) vs_time = (vs_time + 37800 + m * 1800) % 37800;
-						else if(statusc[0] ==  10) medaltype = (medaltype + 3 + m) % 3;
-						else if(statusc[0] ==  11) p_shirase_start_level = (p_shirase_start_level + 1050 + m * 50) % 1050;
-						else if(statusc[0] ==  12) uplinetype = (uplinetype + 3 + m) % 3;
-						else if(statusc[0] ==  13) disable_hold = !disable_hold;
-						else if(statusc[0] ==  14) disable_irs = !disable_irs;
-						else if(statusc[0] ==  15) cp_player_1p = !cp_player_1p;
-						else if(statusc[0] ==  16) cp_player_2p = !cp_player_2p;
-						else if(statusc[0] ==  17) cp_type = !cp_type;
-						else if(statusc[0] ==  18) block_rframe = !block_rframe;
-						else if(statusc[0] ==  19) disable_wallkick = !disable_wallkick;
-						else if(statusc[0] ==  20) showctrl = (showctrl + 3 + m) % 3;
+						     if(statusc[0] ==   1) ncfg[281] = !ncfg[281];
+						else if(statusc[0] ==   2) ncfg[282] = (ncfg[282] + 5 + m) % 5;
+						else if(statusc[0] ==   3) ncfg[284] = (ncfg[284] + 3 + m) % 3;
+						else if(statusc[0] ==   4) ncfg[285] = !ncfg[285];
+						else if(statusc[0] ==   5) ncfg[286] = !ncfg[286];
+						else if(statusc[0] ==   6) ncfg[287] = (ncfg[287] + 3 + m) % 3;
+						else if(statusc[0] ==   7) ncfg[288] = (ncfg[288] + 51 + m) % 51;
+						else if(statusc[0] ==   8) ncfg[289] = !ncfg[289];
+						else if(statusc[0] ==   9) ncfg[290] = (ncfg[290] + 37800 + m * 1800) % 37800;
+						else if(statusc[0] ==  10) ncfg[291] = (ncfg[291] + 3 + m) % 3;
+						else if(statusc[0] ==  11) ncfg[292] = (ncfg[292] + 1050 + m * 50) % 1050;
+						else if(statusc[0] ==  12) ncfg[293] = (ncfg[293] + 3 + m) % 3;
+						else if(statusc[0] ==  13) ncfg[294] = !ncfg[294];
+						else if(statusc[0] ==  14) ncfg[295] = !ncfg[295];
+						else if(statusc[0] ==  15) ncfg[296] = !ncfg[296];
+						else if(statusc[0] ==  16) ncfg[297] = !ncfg[297];
+						else if(statusc[0] ==  17) ncfg[298] = !ncfg[298];
+						else if(statusc[0] ==  18) ncfg[299] = !ncfg[299];
+						else if(statusc[0] ==  19) ncfg[300] = !ncfg[300];
+						else if(statusc[0] ==  20) ncfg[301] = (ncfg[301] + 3 + m) % 3;
 
 						else if(statusc[0] == 0) {
 							PlaySE(3);

@@ -2028,9 +2028,7 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 }
 
 void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor) {
-	EControllerType type = GetLastControllerType();
-
-	switch (type) {
+	switch (lastControllerType) {
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
 	case CONTROLLER_JOYSTICK:
@@ -2053,18 +2051,18 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 	case CONTROLLER_XBOX:
 	case CONTROLLER_PLAYSTATION:
 		switch (prompt) {
-		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
 
 	case CONTROLLER_NINTENDO:
 		switch (prompt) {
-		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + type - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
@@ -2079,51 +2077,33 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t player, bool menuAB) {
 	if (button < 0 || button >= NUMGAMEBTNS) return;
 
-	switch (player >= 0 ? playerControllerType[player] : lastControllerType) {
+	switch (player >= 0 ? lastPlayerControllerType[player] : lastControllerType) {
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_GAMECONTROLLER:
-		switch (GetConType(playerCons[player])) {
-		case CONTROLLER_XBOX:
-			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons() > 0)
-				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
-			else
-				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
-			break;
+	case CONTROLLER_XBOX:
+		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
+		break;
 
-		case CONTROLLER_PLAYSTATION:
-			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons() > 0)
-				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
-			else
-				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
-			break;
+	case CONTROLLER_PLAYSTATION:
+		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
+		break;
 
-		case CONTROLLER_NINTENDO:
-			if (player >= 0 ? GetNumCons() > playerCons[player] : GetNumCons() > 0) {
-				if (menuAB) {
-					switch (button) {
-					case BTN_A:
-						ExBltRect(23, fontX * 8, fontY * 8, 5 * 8, 3 * 8, 8, 8);
+	case CONTROLLER_NINTENDO:
+		if (menuAB) {
+			switch (button) {
+			case BTN_A:
+				ExBltRect(23, fontX * 8, fontY * 8, 5 * 8, 3 * 8, 8, 8);
 
-					case BTN_B:
-						ExBltRect(23, fontX * 8, fontY * 8, 4 * 8, 3 * 8, 8, 8);
-						break;
+			case BTN_B:
+				ExBltRect(23, fontX * 8, fontY * 8, 4 * 8, 3 * 8, 8, 8);
+				break;
 
-					default:
-						ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
-						break;
-					}
-				}
-				else {
-					ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
-				}
+			default:
+				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
+				break;
 			}
-			else
-				ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
-			break;
-
-		default:
-			ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
-			break;
+		}
+		else {
+			ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
 		}
 		break;
 	#endif

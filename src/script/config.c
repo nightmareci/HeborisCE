@@ -1298,55 +1298,83 @@ void ConfigMenu() {
 			else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 				// keyboard 1p&2p
 				bool cancel = false;
-				#if defined(ENABLE_GAME_CONTROLLER) || defined(ENABLE_LINUX_GPIO)
+				#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER) || defined(ENABLE_LINUX_GPIO)
 				switch (GetLastControllerType()) {
-				#ifdef ENABLE_GAME_CONTROLLER
-				case CONTROLLER_XBOX:
-				case CONTROLLER_PLAYSTATION:
-				case CONTROLLER_NINTENDO:
-				#endif
-				#ifdef ENABLE_LINUX_GPIO
-				case CONTROLLER_LINUXGPIO:
-				#endif
-					if (statusc[0] < 10 && IsPushPrompt(PROMPT_CANCEL)) {
+				#ifdef ENABLE_JOYSTICK
+				case CONTROLLER_JOYSTICK:
+					if (statusc[0] < 10 && IsPushJoyKey(&joyKeyAssign[BTN_B])) {
 						PlaySE(5);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
 					}
 					break;
+				#endif
+				#ifdef ENABLE_LINUX_GPIO
+				case CONTROLLER_LINUXGPIO:
+					if (statusc[0] < 10 && IsPushGPIO(BTN_B)) {
+						PlaySE(5);
+						statusc[0] = 0;
+						statusc[2] = 0;
+						cancel = true;
+					}
+					break;
+				#endif
+				#ifdef ENABLE_GAME_CONTROLLER
+				case CONTROLLER_XBOX:
+				case CONTROLLER_PLAYSTATION:
+				case CONTROLLER_NINTENDO:
+					if (statusc[0] < 10 && IsPushMenu(0, BTN_B, GetLastControllerType())) {
+						PlaySE(5);
+						statusc[0] = 0;
+						statusc[2] = 0;
+						cancel = true;
+					}
+					break;
+				#endif
 
 				default:
 					break;
 				}
 				#endif
 				if (!cancel) {
-					sprintf(string[0], "KEYBOARD %"PRId32"P SETTING", statusc[2] == optionIndex - 2 ? 1 : 2);
+					pl = statusc[2] - optionIndex + 2;
+					sprintf(string[0], "KEYBOARD %"PRId32"P SETTING", pl + 1);
 					printFont(2, 3, string[0], digitc[rots[0]]);
 
-					printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
-					printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
-					printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
-					printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
-					printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
-					printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
-					printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
-					printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
-					printFont(3, 14, "GIVEUP  :", fontc[rots[0]] * (statusc[0] == 8));
-					printFont(3, 15, "PAUSE   :", fontc[rots[0]] * (statusc[0] == 9));
+					printGameButton(3, 6, BTN_UP, pl, false); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
+					printGameButton(3, 7, BTN_DOWN, pl, false); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
+					printGameButton(3, 8, BTN_LEFT, pl, false); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
+					printGameButton(3, 9, BTN_RIGHT, pl, false); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
+					printFont(3, 10, "A     :", fontc[rots[0]] * (statusc[0] == 4));
+					printFont(3, 11, "B     :", fontc[rots[0]] * (statusc[0] == 5));
+					printFont(3, 12, "C     :", fontc[rots[0]] * (statusc[0] == 6));
+					printFont(3, 13, "D     :", fontc[rots[0]] * (statusc[0] == 7));
+					printFont(3, 14, "GIVEUP:", fontc[rots[0]] * (statusc[0] == 8));
+					printFont(3, 15, "PAUSE :", fontc[rots[0]] * (statusc[0] == 9));
 
 					for(i = 0; i < statusc[0]; i++) {
-						sprintf(string[0], "%2X", ncfg[10 + i + (statusc[2] - 1) * 10]);
-						printFont(13, 6 + i, string[0], digitc[rots[0]]);
+						sprintf(string[0], "%03X", (unsigned)ncfg[10 + i + pl * 10]);
+						printFont(10, 6 + i, string[0], digitc[rots[0]]);
 					}
 
 					if(statusc[0] < 10) {
-						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+						bool mapped = false;
+						printFont(10, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
 						for(i = 0; i < GetMaxKey(); i++) {
 							if(!quitNow() && i != SDL_GetScancodeFromKey(SDLK_ESCAPE) && IsPushKey(i)) {
-								PlaySE(5);
-								ncfg[10 + statusc[0] + (statusc[2] - 1) * 10] = i;
-								statusc[0]++;
+								bool unmapped = true;
+								for (EButton button = 0; button < statusc[0]; button++) {
+									if (ncfg[10 + button + pl * 10] == i) {
+										unmapped = false;
+										break;
+									}
+								}
+								if (unmapped) {
+									PlaySE(5);
+									ncfg[10 + statusc[0] + pl * 10] = i;
+									statusc[0]++;
+								}
 								break;
 							}
 						}
@@ -1358,18 +1386,18 @@ void ConfigMenu() {
 
 						if(IsPushPrompt(PROMPT_OK)) {
 							PlaySE(10);
-							for(i = 0; i < 20; i++) keyAssign[i] = ncfg[10 + i];
+							for(i = 0; i < NUMBTNS * 2; i++) keyAssign[i] = ncfg[10 + i];
 							statusc[0] = 0;
 							statusc[2] = 0;
 						}
 						if(IsPushPrompt(PROMPT_RETRY)) {
 							PlaySE(5);
-							for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
+							for(i = 0; i < NUMBTNS * 2; i++) ncfg[10 + i] = keyAssign[i];
 							statusc[0] = 0;
 						}
 						if(IsPushPrompt(PROMPT_CANCEL)) {
 							PlaySE(5);
-							for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
+							for(i = 0; i < NUMBTNS * 2; i++) ncfg[10 + i] = keyAssign[i];
 							statusc[0] = 0;
 							statusc[2] = 0;
 						}
@@ -1385,221 +1413,278 @@ void ConfigMenu() {
 					statusc[2] = 0;
 				}
 				else {
-					pl = statusc[2] - 3;
-					sprintf(string[0], "JOYSTICK %"PRId32"P SETTING", pl + 1);
-					printFont(2, 3, string[0], digitc[rots[0]]);
-
-					printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
-					printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
-					printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
-					printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
-					printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
-					printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
-					printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
-					printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
-					printFont(3, 14, "GIVEUP  :", fontc[rots[0]] * (statusc[0] == 8));
-					printFont(3, 15, "PAUSE   :", fontc[rots[0]] * (statusc[0] == 9));
-
-					j = 80 + pl * 10 * 8;
-					for(i = 0; i < statusc[0]; i++) {
-						switch((EJoyKeyType)ncfg[j+5+i*8])
-						{
-						case JOYKEY_AXIS:
-							snprintf(string[0], 512u, "JOY %2d: AXIS %2d %c", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
-							break;
-						case JOYKEY_HAT:
-							snprintf(string[0], 512u, "JOY %2d: HAT %2d %2d", ncfg[j+0+i*8], ncfg[j+6+i*8], ncfg[j+7+i*8]);
-							break;
-						case JOYKEY_BUTTON:
-							snprintf(string[0], 512u, "JOY %2d: BUTTON %2d", ncfg[j+0+i*8], ncfg[j+6+i*8]);
-							break;
-						default:
-							sprintf(string[0], "???");
-							break;
-						}
-						printFont(13, 6 + i, string[0], digitc[rots[0]]);
-					}
-
-					if(statusc[0] < 10) {
-						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
-						SJoyKey pushKey;
-						bool pushed = false;
-						for (int32_t i = 0; i < GetMaxJoys(); i++)
-						{
-							pushKey.index = i;
-							pushKey.guid = GetJoyGUID(i);
-
-							pushKey.type = JOYKEY_AXIS;
-							for (int32_t j = 0; j < GetMaxJoyAxis(i); j++)
-							{
-								pushKey.setting.index = j;
-
-								pushKey.setting.value = -YGS_DEADZONE_MAX;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-								pushKey.setting.value = +YGS_DEADZONE_MAX;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-							}
-							if (pushed) break;
-
-							pushKey.type = JOYKEY_HAT;
-							for (int32_t j = 0; j < GetMaxJoyHat(i); j++)
-							{
-								pushKey.setting.index = j;
-
-								pushKey.setting.value = SDL_HAT_LEFT;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-								pushKey.setting.value = SDL_HAT_RIGHT;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-								pushKey.setting.value = SDL_HAT_UP;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-								pushKey.setting.value = SDL_HAT_DOWN;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-							}
-							if (pushed) break;
-
-							pushKey.type = JOYKEY_BUTTON;
-							for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
-							{
-								pushKey.setting.button = j;
-								if (IsPushJoyKey(&pushKey))
-								{
-									pushed = true;
-									break;
-								}
-							}
-							if (pushed) break;
-						}
-						if(pushed)
-						{
+					bool cancel = false;
+					#if defined(ENABLE_GAME_CONTROLLER) || defined(ENABLE_LINUX_GPIO) || defined(ENABLE_KEYBOARD)
+					switch (GetLastControllerType()) {
+					#ifdef ENABLE_GAME_CONTROLLER
+					case CONTROLLER_XBOX:
+					case CONTROLLER_PLAYSTATION:
+					case CONTROLLER_NINTENDO:
+						if (statusc[0] < 10 && IsPushMenu(0, BTN_B, GetLastControllerType())) {
 							PlaySE(5);
-							ncfg[j+0+statusc[0]*8] = pushKey.index;
-							for (int32_t i = 0; i < 4; i++) {
-								ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
-							}
-							ncfg[j+5+statusc[0]*8] = pushKey.type;
-							switch(pushKey.type) {
+							statusc[0] = 0;
+							statusc[2] = 0;
+							cancel = true;
+						}
+						break;
+					#endif
+					#ifdef ENABLE_LINUX_GPIO
+					case CONTROLLER_LINUXGPIO:
+					#endif
+					#ifdef ENABLE_KEYBOARD
+					case CONTROLLER_KEYBOARD:
+						if (statusc[0] < 10 && IsPushKey(keyAssign[BTN_B])) {
+							PlaySE(5);
+							statusc[0] = 0;
+							statusc[2] = 0;
+							cancel = true;
+						}
+						break;
+					#endif
+
+					default:
+						break;
+					}
+					#endif
+					if (!cancel) {
+						pl = statusc[2] - optionIndex + 2;
+						sprintf(string[0], "JOYSTICK %"PRId32"P SETTING", pl + 1);
+						printFont(2, 3, string[0], digitc[rots[0]]);
+
+						printGameButton(3, 6, BTN_UP, pl, false); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
+						printGameButton(3, 7, BTN_DOWN, pl, false); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
+						printGameButton(3, 8, BTN_LEFT, pl, false); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
+						printGameButton(3, 9, BTN_RIGHT, pl, false); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
+						printFont(3, 10, "A     :", fontc[rots[0]] * (statusc[0] == 4));
+						printFont(3, 11, "B     :", fontc[rots[0]] * (statusc[0] == 5));
+						printFont(3, 12, "C     :", fontc[rots[0]] * (statusc[0] == 6));
+						printFont(3, 13, "D     :", fontc[rots[0]] * (statusc[0] == 7));
+						printFont(3, 14, "GIVEUP:", fontc[rots[0]] * (statusc[0] == 8));
+						printFont(3, 15, "PAUSE :", fontc[rots[0]] * (statusc[0] == 9));
+
+						j = 80 + pl * 10 * 8;
+						for(i = 0; i < statusc[0]; i++) {
+							switch((EJoyKeyType)ncfg[j+5+i*8]) {
 							case JOYKEY_AXIS:
+								sprintf(string[0], "J%d:A%d%c", (int)ncfg[j+0+i*8], (int)ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
+								break;
 							case JOYKEY_HAT:
-								ncfg[j+6+statusc[0]*8] = pushKey.setting.index;
-								ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
+								sprintf(string[0], "J%d:H%d,%d", (int)ncfg[j+0+i*8], (int)ncfg[j+6+i*8], (int)ncfg[j+7+i*8]);
 								break;
 							case JOYKEY_BUTTON:
-								ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
+								sprintf(string[0], "J%d:B%d", (int)ncfg[j+0+i*8], (int)ncfg[j+6+i*8]);
 								break;
 							default:
+								sprintf(string[0], "???");
 								break;
 							}
-							statusc[0]++;
+							printFont(10, 6 + i, string[0], digitc[rots[0]]);
 						}
-					} else {
-						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 3, 17, PROMPT_OK, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 18, 17, PROMPT_RETRY, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
-						if(IsPushPrompt(PROMPT_OK)) {
-							PlaySE(10);
-							for (int32_t key = 0; key < 10; key++) {
-								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
-								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-								pljoy->index = plcfg[0];
-								for (int32_t i = 0; i < 4; i++) {
-									pljoy->guid.data[i] = plcfg[1 + i];
-								}
-								pljoy->type = (EJoyKeyType)plcfg[5];
-								switch (pljoy->type) {
-								case JOYKEY_AXIS:
-								case JOYKEY_HAT:
-									pljoy->setting.index = plcfg[6];
-									pljoy->setting.value = plcfg[7];
-									break;
 
-								case JOYKEY_BUTTON:
-									pljoy->setting.button = plcfg[6];
-									break;
-								default:
-									break;
+						if(statusc[0] < 10) {
+							printFont(10, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+							SJoyKey pushKey;
+							bool pushed = false;
+							for (int32_t i = 0; i < GetMaxJoys(); i++)
+							{
+								pushKey.index = i;
+								pushKey.guid = GetJoyGUID(i);
+
+								pushKey.type = JOYKEY_AXIS;
+								for (int32_t j = 0; j < GetMaxJoyAxis(i); j++)
+								{
+									pushKey.setting.index = j;
+
+									pushKey.setting.value = -YGS_DEADZONE_MAX;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+									pushKey.setting.value = +YGS_DEADZONE_MAX;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+								}
+								if (pushed) break;
+
+								pushKey.type = JOYKEY_HAT;
+								for (int32_t j = 0; j < GetMaxJoyHat(i); j++)
+								{
+									pushKey.setting.index = j;
+
+									pushKey.setting.value = SDL_HAT_LEFT;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+									pushKey.setting.value = SDL_HAT_RIGHT;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+									pushKey.setting.value = SDL_HAT_UP;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+									pushKey.setting.value = SDL_HAT_DOWN;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+								}
+								if (pushed) break;
+
+								pushKey.type = JOYKEY_BUTTON;
+								for (int32_t j = 0; j < GetMaxJoyButton(i); j++)
+								{
+									pushKey.setting.button = j;
+									if (IsPushJoyKey(&pushKey))
+									{
+										pushed = true;
+										break;
+									}
+								}
+								if (pushed) break;
+							}
+							if(pushed)
+							{
+								bool unmapped = true;
+								for (EButton button = 0; button < statusc[0]; button++) {
+									if (
+										ncfg[j+0+button*8] == pushKey.index &&
+										memcmp(&ncfg[j+1+button*8], pushKey.guid.data, sizeof(int32_t) * 4) == 0 &&
+										ncfg[j+5+button*8] == pushKey.type
+									) {
+										switch (pushKey.type) {
+										case JOYKEY_AXIS:
+										case JOYKEY_HAT:
+											unmapped = (ncfg[j+6+button*8] != pushKey.setting.index || ncfg[j+7+button*8] != pushKey.setting.value);
+											break;
+										case JOYKEY_BUTTON:
+											unmapped = (ncfg[j+6+button*8] != pushKey.setting.button);
+											break;
+										default:
+											break;
+										}
+									}
+									if (!unmapped) break;
+								}
+								if (unmapped) {
+									PlaySE(5);
+									ncfg[j+0+statusc[0]*8] = pushKey.index;
+									for (int32_t i = 0; i < 4; i++) {
+										ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
+									}
+									ncfg[j+5+statusc[0]*8] = pushKey.type;
+									switch(pushKey.type) {
+									case JOYKEY_AXIS:
+									case JOYKEY_HAT:
+										ncfg[j+6+statusc[0]*8] = pushKey.setting.index;
+										ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
+										break;
+									case JOYKEY_BUTTON:
+										ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
+										break;
+									default:
+										break;
+									}
+									statusc[0]++;
 								}
 							}
+						} else {
+							printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
+							printPrompt(3 + 3, 17, PROMPT_OK, digitc[rots[0]] * (count % 2));
+							printPrompt(3 + 18, 17, PROMPT_RETRY, digitc[rots[0]] * (count % 2));
+							printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
+							if(IsPushPrompt(PROMPT_OK)) {
+								PlaySE(10);
+								for (EButton button = 0; button < NUMBTNS; button++) {
+									SJoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
+									int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
+									pljoy->index = plcfg[0];
+									for (int32_t i = 0; i < 4; i++) {
+										pljoy->guid.data[i] = plcfg[1 + i];
+									}
+									pljoy->type = (EJoyKeyType)plcfg[5];
+									switch (pljoy->type) {
+									case JOYKEY_AXIS:
+									case JOYKEY_HAT:
+										pljoy->setting.index = plcfg[6];
+										pljoy->setting.value = plcfg[7];
+										break;
 
-							statusc[0] = 0;
-							statusc[2] = 0;
-						}
-						else if(IsPushPrompt(PROMPT_RETRY)) {
-							PlaySE(5);
-							for (int32_t key = 0; key < 10; key++) {
-								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
-								plcfg[0] = pljoy->index;
-								for (int32_t i = 0; i < 4; i++) {
-									plcfg[1 + i] = pljoy->guid.data[i];
+									case JOYKEY_BUTTON:
+										pljoy->setting.button = plcfg[6];
+										break;
+									default:
+										break;
+									}
 								}
-								plcfg[5] = pljoy->type;
-								switch (pljoy->type) {
-								case JOYKEY_AXIS:
-								case JOYKEY_HAT:
-									plcfg[6] = pljoy->setting.index;
-									plcfg[7] = pljoy->setting.value;
-									break;
 
-								case JOYKEY_BUTTON:
-									plcfg[6] = pljoy->setting.button;
-									break;
-								default:
-									break;
-								}
+								statusc[0] = 0;
+								statusc[2] = 0;
 							}
-							statusc[0] = 0;
-						}
-						else if(IsPushPrompt(PROMPT_CANCEL)) {
-							PlaySE(5);
-							for (int32_t key = 0; key < 10; key++) {
-								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + key * 8];
-								SJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
-								plcfg[0] = pljoy->index;
-								for (int32_t i = 0; i < 4; i++) {
-									plcfg[1 + i] = pljoy->guid.data[i];
-								}
-								plcfg[5] = pljoy->type;
-								switch (pljoy->type) {
-								case JOYKEY_AXIS:
-								case JOYKEY_HAT:
-									plcfg[6] = pljoy->setting.index;
-									plcfg[7] = pljoy->setting.value;
-									break;
+							else if(IsPushPrompt(PROMPT_RETRY)) {
+								PlaySE(5);
+								for (EButton button = 0; button < NUMBTNS; button++) {
+									int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
+									SJoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
+									plcfg[0] = pljoy->index;
+									for (int32_t i = 0; i < 4; i++) {
+										plcfg[1 + i] = pljoy->guid.data[i];
+									}
+									plcfg[5] = pljoy->type;
+									switch (pljoy->type) {
+									case JOYKEY_AXIS:
+									case JOYKEY_HAT:
+										plcfg[6] = pljoy->setting.index;
+										plcfg[7] = pljoy->setting.value;
+										break;
 
-								case JOYKEY_BUTTON:
-									plcfg[6] = pljoy->setting.button;
-									break;
-								default:
-									break;
+									case JOYKEY_BUTTON:
+										plcfg[6] = pljoy->setting.button;
+										break;
+									default:
+										break;
+									}
 								}
+								statusc[0] = 0;
 							}
-							statusc[0] = 0;
-							statusc[2] = 0;
+							else if(IsPushPrompt(PROMPT_CANCEL)) {
+								PlaySE(5);
+								for (EButton button = 0; button < 10; button++) {
+									int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
+									SJoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
+									plcfg[0] = pljoy->index;
+									for (int32_t i = 0; i < 4; i++) {
+										plcfg[1 + i] = pljoy->guid.data[i];
+									}
+									plcfg[5] = pljoy->type;
+									switch (pljoy->type) {
+									case JOYKEY_AXIS:
+									case JOYKEY_HAT:
+										plcfg[6] = pljoy->setting.index;
+										plcfg[7] = pljoy->setting.value;
+										break;
+
+									case JOYKEY_BUTTON:
+										plcfg[6] = pljoy->setting.button;
+										break;
+									default:
+										break;
+									}
+								}
+								statusc[0] = 0;
+								statusc[2] = 0;
+							}
 						}
 					}
 				}
@@ -1613,104 +1698,157 @@ void ConfigMenu() {
 					statusc[2] = 0;
 				}
 				else {
-					pl = statusc[2] - optionIndex + 2;
-					sprintf(string[0], "CONTROLLER %"PRId32"P SETTING", pl + 1);
-					printFont(2, 3, string[0], digitc[rots[0]]);
-
-					printFont(3,  6, "UP      :", fontc[rots[0]] * (statusc[0] == 0));
-					printFont(3,  7, "DOWN    :", fontc[rots[0]] * (statusc[0] == 1));
-					printFont(3,  8, "LEFT    :", fontc[rots[0]] * (statusc[0] == 2));
-					printFont(3,  9, "RIGHT   :", fontc[rots[0]] * (statusc[0] == 3));
-					printFont(3, 10, "A(L-ROT):", fontc[rots[0]] * (statusc[0] == 4));
-					printFont(3, 11, "B(R-ROT):", fontc[rots[0]] * (statusc[0] == 5));
-					printFont(3, 12, "C(L-ROT):", fontc[rots[0]] * (statusc[0] == 6));
-					printFont(3, 13, "D(HOLD) :", fontc[rots[0]] * (statusc[0] == 7));
-
-					SConKey key;
-					key.type = CONKEY_ANY;
-					if (conIndex == -1 && !IsPressConKey(-1, &key)) {
-						ResetLastConIndex();
-						conIndex = -2;
-					}
-					else if (conIndex == -2 && GetLastConIndex() >= 0) {
-						conIndex = GetLastConIndex();
-					}
-
-					if (conIndex >= 0) {
-						for(i = 0; i < statusc[0]; i++) {
-							SConKey key = {
-								.type  = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0],
-								.index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1]
-							};
-							printConKey(13, 6 + i, conIndex, &key, digitc[rots[0]]);
+					bool cancel = false;
+					#if defined(ENABLE_JOYSTICK) || defined(ENABLE_LINUX_GPIO) || defined(ENABLE_KEYBOARD)
+					switch (GetLastControllerType()) {
+					#ifdef ENABLE_JOYSTICK
+					case CONTROLLER_JOYSTICK:
+						if (statusc[0] < 8 && IsPushJoyKey(&joyKeyAssign[BTN_B])) {
+							PlaySE(5);
+							statusc[0] = 0;
+							statusc[2] = 0;
+							cancel = true;
 						}
-					}
-					if(statusc[0] < 8) {
-						printFont(13, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
-						bool pushed = false;
-						SConKey pushKey;
+						break;
+					#endif
+					#ifdef ENABLE_LINUX_GPIO
+					case CONTROLLER_LINUXGPIO:
+						if (statusc[0] < 8 && IsPushGPIO(BTN_B)) {
+							PlaySE(5);
+							statusc[0] = 0;
+							statusc[2] = 0;
+							cancel = true;
+						}
+						break;
+					#endif
+					#ifdef ENABLE_KEYBOARD
+					case CONTROLLER_KEYBOARD:
+						if (statusc[0] < 8 && IsPushKey(keyAssign[BTN_B])) {
+							PlaySE(5);
+							statusc[0] = 0;
+							statusc[2] = 0;
+							cancel = true;
+						}
+						break;
+					#endif
 
-						pushKey.type = CONKEY_BUTTON;
-						for (pushKey.index = 0; pushKey.index < CONBUTTON_MAX; pushKey.index++) {
-							if (IsPushConKey(conIndex, &pushKey)) {
-								pushed = true;
-								break;
+					default:
+						break;
+					}
+					#endif
+					if (!cancel) {
+						pl = statusc[2] - optionIndex + 2;
+						sprintf(string[0], "CONTROLLER %"PRId32"P SETTING", pl + 1);
+						printFont(2, 3, string[0], digitc[rots[0]]);
+
+						printGameButton(3, 6, BTN_UP, pl, false); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 4));
+						printGameButton(3, 7, BTN_DOWN, pl, false); printFont(4, 7, ":", fontc[rots[0]] * (statusc[0] == 4));
+						printGameButton(3, 8, BTN_LEFT, pl, false); printFont(4, 8, ":", fontc[rots[0]] * (statusc[0] == 4));
+						printGameButton(3, 9, BTN_RIGHT, pl, false); printFont(4, 9, ":", fontc[rots[0]] * (statusc[0] == 4));
+						printFont(3, 10, "A:", fontc[rots[0]] * (statusc[0] == 4));
+						printFont(3, 11, "B:", fontc[rots[0]] * (statusc[0] == 5));
+						printFont(3, 12, "C:", fontc[rots[0]] * (statusc[0] == 6));
+						printFont(3, 13, "D:", fontc[rots[0]] * (statusc[0] == 7));
+
+						SConKey key;
+						key.type = CONKEY_ANY;
+						if (conIndex == -1 && !IsPressConKey(-1, &key)) {
+							ResetLastConIndex();
+							conIndex = -2;
+						}
+						else if (conIndex == -2 && GetLastConIndex() >= 0) {
+							conIndex = GetLastConIndex();
+						}
+
+						if (conIndex >= 0) {
+							for(i = 0; i < statusc[0]; i++) {
+								SConKey key = {
+									.type  = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0],
+									.index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1]
+								};
+								sprintf(string[0], "C%d:", playerCons[pl]);
+								printFont(5, 6 + i, string[0], digitc[rots[0]]);
+								printConKey(5 + strlen(string[0]), 6 + i, conIndex, &key, digitc[rots[0]]);
 							}
 						}
+						if(statusc[0] < NUMGAMEBTNS) {
+							printFont(5, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+							bool pushed = false;
+							SConKey pushKey;
 
-						if (!pushed) {
-							pushKey.type = CONKEY_AXIS;
-							for (pushKey.index = 0; pushKey.index < CONAXIS_MAX; pushKey.index++) {
+							pushKey.type = CONKEY_BUTTON;
+							for (pushKey.index = 0; pushKey.index < CONBUTTON_MAX; pushKey.index++) {
 								if (IsPushConKey(conIndex, &pushKey)) {
 									pushed = true;
 									break;
 								}
 							}
-						}
 
-						if (pushed) {
-							PlaySE(5);
-							ncfg[240 + pl * (1 + 2 * 8)] = conIndex;
-							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 0] = pushKey.type;
-							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 1] = pushKey.index;
-							statusc[0]++;
-						}
-					} else {
-						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 3, 17, PROMPT_OK, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 18, 17, PROMPT_RETRY, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
-						if(IsPushPrompt(PROMPT_OK)) {
-							PlaySE(10);
-							for(i = 0; i < 8; i++) {
-								playerCons[pl] = ncfg[240 + pl * (1 + 2 * 8)];
-								SConKey* key = &conKeyAssign[pl * 8 + i];
-								key->type = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0];
-								key->index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1];
+							if (!pushed) {
+								pushKey.type = CONKEY_AXIS;
+								for (pushKey.index = 0; pushKey.index < CONAXIS_MAX; pushKey.index++) {
+									if (IsPushConKey(conIndex, &pushKey)) {
+										pushed = true;
+										break;
+									}
+								}
 							}
-							statusc[0] = 0;
-							statusc[2] = 0;
-						}
-						else if(IsPushPrompt(PROMPT_RETRY)) {
-							PlaySE(5);
-							for (i = 0; i < 8; i++) {
-								ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
-								SConKey* key = &conKeyAssign[pl * 8 + i];
-								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
-								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
+
+							if (pushed) {
+								bool unmapped = true;
+								for (EButton button = 0; button < statusc[0]; button++) {
+									unmapped = (
+										ncfg[240 + pl * (1 + 2 * 8)] != conIndex ||
+										ncfg[240 + pl * (1 + 2 * 8) + 1 + button * 2 + 0] != pushKey.type ||
+										ncfg[240 + pl * (1 + 2 * 8) + 1 + button * 2 + 1] != pushKey.index
+									);
+									if (!unmapped) break;
+								}
+								if (unmapped) {
+									PlaySE(5);
+									ncfg[240 + pl * (1 + 2 * 8)] = conIndex;
+									ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 0] = pushKey.type;
+									ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 1] = pushKey.index;
+									statusc[0]++;
+								}
 							}
-							statusc[0] = 0;
-						}
-						else if(IsPushPrompt(PROMPT_CANCEL)) {
-							PlaySE(5);
-							for (i = 0; i < 8; i++) {
-								ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
-								SConKey* key = &conKeyAssign[pl * 8 + i];
-								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
-								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
+						} else {
+							printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
+							printPrompt(3 + 3, 17, PROMPT_OK, digitc[rots[0]] * (count % 2));
+							printPrompt(3 + 18, 17, PROMPT_RETRY, digitc[rots[0]] * (count % 2));
+							printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
+							if(IsPushPrompt(PROMPT_OK)) {
+								PlaySE(10);
+								for(i = 0; i < 8; i++) {
+									playerCons[pl] = ncfg[240 + pl * (1 + 2 * 8)];
+									SConKey* key = &conKeyAssign[pl * 8 + i];
+									key->type = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0];
+									key->index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1];
+								}
+								statusc[0] = 0;
+								statusc[2] = 0;
 							}
-							statusc[0] = 0;
-							statusc[2] = 0;
+							else if(IsPushPrompt(PROMPT_RETRY)) {
+								PlaySE(5);
+								for (i = 0; i < 8; i++) {
+									ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
+									SConKey* key = &conKeyAssign[pl * 8 + i];
+									ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
+									ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
+								}
+								statusc[0] = 0;
+							}
+							else if(IsPushPrompt(PROMPT_CANCEL)) {
+								PlaySE(5);
+								for (i = 0; i < 8; i++) {
+									ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
+									SConKey* key = &conKeyAssign[pl * 8 + i];
+									ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
+									ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
+								}
+								statusc[0] = 0;
+								statusc[2] = 0;
+							}
 						}
 					}
 				}
@@ -1719,22 +1857,23 @@ void ConfigMenu() {
 			else if(statusc[2] == optionIndex++) {
 				// INPUT TEST #1.60c7n3
 				printFont(2,  3, "INPUT TEST", digitc[rots[0]]);
-				printFont(2, 28, "EXIT[  ]", 9);
-				printPrompt(7, 28, PROMPT_CANCEL, 9);
+				printFont(2, 28, "EXIT[ & ]", 9);
+				printGameButton(7, 28, BTN_RIGHT, 0, true);
+				printGameButton(9, 28, BTN_A, 0, true);
 
 				for(pl=0; pl<2; pl++) {
 					sprintf(string[0],"%"PRId32"P", pl + 1);
 					printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
 					for(i=0; i<=7; i++) {
-						if(i == 0)      printFont(3, 7 + i + pl * 10, "UP            :", 0);
-						else if(i == 1) printFont(3, 7 + i + pl * 10, "DOWN          :", 0);
-						else if(i == 2) printFont(3, 7 + i + pl * 10, "LEFT          :", 0);
-						else if(i == 3) printFont(3, 7 + i + pl * 10, "RIGHT         :", 0);
-						else if(i == 4) printFont(3, 7 + i + pl * 10, "A(L/R     ROT):", 0);
-						else if(i == 5) printFont(3, 7 + i + pl * 10, "B(R/L     ROT):", 0);
-						else if(i == 6) printFont(3, 7 + i + pl * 10, "C(L/R/180 ROT):", 0);
-						else if(i == 7) printFont(3, 7 + i + pl * 10, "D(HOLD)       :", 0);
+						if(i == 0)      { printGameButton(3, 7 + i + pl * 10, BTN_UP, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 1) { printGameButton(3, 7 + i + pl * 10, BTN_DOWN, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 2) { printGameButton(3, 7 + i + pl * 10, BTN_LEFT, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 3) { printGameButton(3, 7 + i + pl * 10, BTN_RIGHT, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 4) { printFont(3, 7 + i + pl * 10, "A:", 0); }
+						else if(i == 5) { printFont(3, 7 + i + pl * 10, "B:", 0); }
+						else if(i == 6) { printFont(3, 7 + i + pl * 10, "C:", 0); }
+						else if(i == 7) { printFont(3, 7 + i + pl * 10, "D:", 0); }
 						j =
 							0
 							#ifdef ENABLE_KEYBOARD
@@ -1749,11 +1888,11 @@ void ConfigMenu() {
 							;
 						if(j) sprintf(string[0],"d");
 						else  sprintf(string[0],"c");
-						printFont(19, 7 + i + pl * 10, string[0], j+1);
+						printFont(5, 7 + i + pl * 10, string[0], j+1);
 					}
 				}
 
-				if( IsPushPrompt(PROMPT_CANCEL) ) {
+				if( getPressState(0, BTN_RIGHT) && getPressState(0, BTN_A) ) {
 					PlaySE(5);
 					statusc[0] = 0;
 					statusc[2] = 0;
@@ -1761,8 +1900,8 @@ void ConfigMenu() {
 			} else if(statusc[2] == optionIndex++) {
 				// DISP ASSIGN #1.60c7n4
 				printFont(2,  3, "DISP ASSIGN", digitc[rots[0]]);
-				printGameButton(2, 28, BTN_A, -1, true);
-				printGameButton(4, 28, BTN_B, -1, true);
+				printGameButton(2, 28, BTN_A, 0, true);
+				printGameButton(4, 28, BTN_B, 0, true);
 				printFont(2, 28, " / : EXIT", 9);
 
 				for(pl=0; pl<2; pl++) {
@@ -1771,65 +1910,91 @@ void ConfigMenu() {
 					printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
 					for(i=0; i<=7; i++) {
-						if(i == 0)      printFont(3, 7 + i + pl * 10, "UP            :", 0);
-						else if(i == 1) printFont(3, 7 + i + pl * 10, "DOWN          :", 0);
-						else if(i == 2) printFont(3, 7 + i + pl * 10, "LEFT          :", 0);
-						else if(i == 3) printFont(3, 7 + i + pl * 10, "RIGHT         :", 0);
-						else if(i == 4) printFont(3, 7 + i + pl * 10, "A(L/R     ROT):", 0);
-						else if(i == 5) printFont(3, 7 + i + pl * 10, "B(R/L     ROT):", 0);
-						else if(i == 6) printFont(3, 7 + i + pl * 10, "C(L/R/180 ROT):", 0);
-						else if(i == 7) printFont(3, 7 + i + pl * 10, "D(HOLD)       :", 0);
+						if(i == 0)      { printGameButton(3, 7 + i + pl * 10, BTN_UP, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 1) { printGameButton(3, 7 + i + pl * 10, BTN_DOWN, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 2) { printGameButton(3, 7 + i + pl * 10, BTN_LEFT, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 3) { printGameButton(3, 7 + i + pl * 10, BTN_RIGHT, pl, false); printFont(4, 7 + i + pl * 10, ":", 0); }
+						else if(i == 4) printFont(3, 7 + i + pl * 10, "A:", 0);
+						else if(i == 5) printFont(3, 7 + i + pl * 10, "B:", 0);
+						else if(i == 6) printFont(3, 7 + i + pl * 10, "C:", 0);
+						else if(i == 7) printFont(3, 7 + i + pl * 10, "D:", 0);
 
-						sprintf(string[0], "NO ASSIGN");
+						string[0][0] = '\0';
+
+						size_t stringPos = 0u;
 
 						#ifdef ENABLE_KEYBOARD
 						if (keyAssign[i + pl * 10] != SDL_SCANCODE_UNKNOWN)
 						{
-							sprintf(string[0],"%2X", (unsigned)keyAssign[i + pl * 10]);
-						}
-						else
-						{
-							sprintf(string[0],"??");
+							sprintf(string[1],"K:%03X", (unsigned)keyAssign[i + pl * 10]);
+							if (string[0][0] != '\0') strcat(string[0], " ");
+							strcat(string[0], string[1]);
 						}
 						#endif
 
 						#ifdef ENABLE_JOYSTICK
 						SJoyKey* const key = &joyKeyAssign[i + pl * 10];
+						SJoyGUID getGUID = GetJoyGUID(key->index);
 						SJoyGUID zeroGUID = { 0 };
-						if (memcmp(key->guid.data, zeroGUID.data, sizeof(key->guid.data)) != 0)
-						{
+						if (
+							GetNumJoys() > 0 && key->index < GetMaxJoys() &&
+							#ifdef ENABLE_GAME_CONTROLLER
+							!IsGameController(key->index) &&
+							#endif
+							memcmp(key->guid.data, zeroGUID.data, sizeof(key->guid.data)) != 0 &&
+							memcmp(getGUID.data, zeroGUID.data, sizeof(getGUID.data)) != 0 &&
+							memcmp(key->guid.data, getGUID.data, sizeof(key->guid.data)) == 0
+						) {
 							switch(key->type) {
 							case JOYKEY_AXIS:
-								sprintf(string[0] + strlen(string[0]), "(JOY%2d: AXIS %2d %c)",
+								sprintf(string[1], "J%d:A%d%c",
 									key->index,
 									key->setting.index,
 									key->setting.value >= 0 ? '+' : '-'
 								);
 								break;
 							case JOYKEY_HAT:
-								sprintf(string[0] + strlen(string[0]), "(JOY%2d: HAT %2d %2d)",
+								sprintf(string[1], "J%d:H%d,%d",
 									key->index,
 									key->setting.index,
 									key->setting.value
 								);
 								break;
 							case JOYKEY_BUTTON:
-								sprintf(string[0] + strlen(string[0]), "(JOY%2d: BUTTON %2d)",
+								sprintf(string[1], "J%d:B%d",
 									key->index,
 									key->setting.button
 								);
 								break;
 							default:
-								sprintf(string[0] + strlen(string[0]), "(???"")");
+								string[1][0] = '\0';
 								break;
 							}
-						}
-						else {
-							sprintf(string[0] + strlen(string[0]), "(NO JOY ASSIGN)");
+							if (string[1][0] != '\0') {
+								if (string[0][0] != '\0') strcat(string[0], " ");
+								strcat(string[0], string[1]);
+							}
+
 						}
 						#endif
-
-						printFont(19, 7 + i + pl * 10, string[0], 0);
+						
+						#ifdef ENABLE_GAME_CONTROLLER
+						SConKey conKey = conKeyAssign[i + pl * 8];
+						if (GetConType(playerCons[pl]) != CONTROLLER_NULL && (conKey.type == CONKEY_AXIS || conKey.type == CONKEY_BUTTON)) {
+							if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);
+							sprintf(string[1], "C%d:", playerCons[pl]);
+							int32_t x = 5 + strlen(string[0]) + (string[0][0] != '\0' ? 1 : 0);
+							printFont(x, 7 + i + pl * 10, string[1], 0);
+							printConKey(x + strlen(string[1]), 7 + i + pl * 10, playerCons[pl], &conKey, 0);
+						}
+						else {
+							if (string[0][0] == '\0') sprintf(string[0], "NO ASSIGN");
+							printFont(5, 7 + i + pl * 10, string[0], 0);
+						}
+						#else
+						if (string[0][0] == '\0') sprintf(string[0], "NO ASSIGN");
+						printFont(5, 7 + i + pl * 10, string[0], 0);
+						#endif
 					}
 				}
 
@@ -1892,7 +2057,7 @@ void ConfigMenu() {
 					Uint32 Rmask, Gmask, Bmask, Amask;
 					if(SDL_PixelFormatEnumToMasks(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))
 					{
-						sprintf(string[1], "%"PRId32"X%"PRId32" %"PRId32"dHZ %"PRId32"dBPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
+						sprintf(string[1], "%"PRId32"X%"PRId32" %"PRId32"HZ %"PRId32"BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
 					}
 					else
 					{

@@ -1419,8 +1419,8 @@ uint32_t	SavedSeed[2]={0,0};							// needed to save randomizer states
 uint32_t	PieceSeed=0;							// needed to generate pieces without loosing saved seed.
 
 bool inmenu = true;
-EControllerType playerControllerType[2] = { CONTROLLER_NULL, CONTROLLER_NULL };
 EControllerType lastControllerType = CONTROLLER_NULL;
+EControllerType lastPlayerControllerType[2] = { CONTROLLER_NULL, CONTROLLER_NULL };
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
@@ -14891,7 +14891,6 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 ) {
 			gtmp = IsPressGPIO(key);
-			if (gtmp) lastControllerType = playerControllerType[0] = CONTROLLER_LINUXGPIO;
 		}
 		else
 			gtmp = 0;
@@ -14900,13 +14899,11 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 		#ifdef ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
 		ktmp = IsPressKey(keyAssign[key + pl * 10]);
-		if (ktmp) lastControllerType = playerControllerType[pl] = CONTROLLER_KEYBOARD;
 		#endif
 
 		#ifdef ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
 		jtmp = IsPressJoyKey(&joyKeyAssign[key + pl * 10]);
-		if (jtmp) lastControllerType = playerControllerType[pl] = CONTROLLER_JOYSTICK;
 		#endif
 
 		#ifdef ENABLE_GAME_CONTROLLER
@@ -14932,7 +14929,6 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 				IsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
-		if (ctmp) lastControllerType = playerControllerType[pl] = CONTROLLER_GAMECONTROLLER;
 		#endif
 
 		if(cpu_flag[pl])
@@ -14989,7 +14985,6 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 )
 			gtmp = IsPushGPIO(key);
-			if (gtmp) lastControllerType = playerControllerType[0] = CONTROLLER_LINUXGPIO;
 		else
 			gtmp = 0;
 		#endif
@@ -14997,13 +14992,11 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		#ifdef ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
 		ktmp = IsPushKey(keyAssign[key + pl * 10]);
-		if (ktmp) lastControllerType = playerControllerType[pl] = CONTROLLER_KEYBOARD;
 		#endif
 
 		#ifdef ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
 		jtmp = IsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
-		if (jtmp) lastControllerType = playerControllerType[pl] = CONTROLLER_JOYSTICK;
 		#endif
 
 		#ifdef ENABLE_GAME_CONTROLLER
@@ -15029,7 +15022,6 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 				IsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
-		if (ctmp) lastControllerType = playerControllerType[pl] = CONTROLLER_GAMECONTROLLER;
 		#endif
 
 		if(cpu_flag[pl])
@@ -16680,6 +16672,68 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
+	switch (lastControllerType = GetLastControllerType()) {
+	#ifdef ENABLE_LINUX_GPIO
+	case CONTROLLER_LINUXGPIO: {
+		int pushed = 0;
+		for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
+			pushed = IsPushGPIO(button);
+		}
+		if (pushed) {
+			lastPlayerControllerType[0] = lastControllerType;
+		}
+		break;
+	}
+	#endif
+	#ifdef ENABLE_KEYBOARD
+	case CONTROLLER_KEYBOARD: {
+		int pushed = 0;
+		int32_t pl;
+		for (pl = 0; pl < 2; pl++) {
+			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
+				pushed = IsPushKey(keyAssign[button + 10 * pl]);
+			}
+			if (pushed) break;
+		}
+		if (pushed) {
+			lastPlayerControllerType[pl] = lastControllerType;
+		}
+		break;
+	}
+	#endif
+	#ifdef ENABLE_JOYSTICK
+	case CONTROLLER_JOYSTICK: {
+		int pushed = 0;
+		int32_t pl;
+		for (pl = 0; pl < 2; pl++) {
+			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
+				pushed = IsPushJoyKey(&joyKeyAssign[button + 10 * pl]);
+			}
+			if (pushed) break;
+		}
+		if (pushed) {
+			lastPlayerControllerType[pl] = lastControllerType;
+		}
+		break;
+	}
+	#endif
+	#ifdef ENABLE_GAME_CONTROLLER
+	case CONTROLLER_XBOX:
+	case CONTROLLER_PLAYSTATION:
+	case CONTROLLER_NINTENDO: {
+		int index = GetLastConIndex();
+		if (index == playerCons[0]) {
+			lastPlayerControllerType[0] = lastControllerType;
+		}
+		else if (index == playerCons[1]) {
+			lastPlayerControllerType[1] = lastControllerType;
+		}
+		break;
+	}
+	#endif
+	default:
+		break;
+	}
 	if ( !YGS2kHalt() || quitNow() )
 	{
 		shutDown();

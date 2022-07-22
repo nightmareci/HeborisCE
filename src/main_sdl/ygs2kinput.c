@@ -87,15 +87,6 @@ int GetMaxKey ()
 }
 #endif
 
-#ifdef ENABLE_GAME_CONTROLLER
-static bool IsGameController ( int index )
-{
-	return
-		(SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
-		SDL_GameControllerMappingForGUID(SDL_JoystickGetDeviceGUID(index)) != NULL;
-}
-#endif
-
 #ifdef ENABLE_JOYSTICK
 void JoyClose ()
 {
@@ -1028,6 +1019,13 @@ int GetConKeyRepeat ( const int conIndex, SConKey* const key )
 		}
 	}
 	return maxRepeat;
+}
+
+bool IsGameController ( int index )
+{
+	return
+		(SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
+		SDL_GameControllerMappingForGUID(SDL_JoystickGetDeviceGUID(index)) != NULL;
 }
 
 void ResetLastConIndex()

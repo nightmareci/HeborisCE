@@ -123,6 +123,7 @@ int IsPushConKey(const int index, const SConKey* const key);
 int IsPressConKey(const int index, const SConKey* const key);
 int GetConKeyRepeat(const int index, SConKey* const key);
 
+bool IsGameController(int index);
 void ResetLastConIndex();
 int GetLastConIndex();
 int GetNumCons();

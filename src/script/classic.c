@@ -85,7 +85,7 @@ void statCMove(int32_t player) {
 					rolling = 1;
 			} else if( (gameMode[player] >= 4) || (item_mode[player]) ) {
 				/* VERSUS / PRACTICE / MISSION */
-				if( time[player] % p_rollroll_timer  == 0 )
+				if( gametime[player] % p_rollroll_timer  == 0 )
 					rolling = 1;
 			}
 		}
@@ -94,7 +94,7 @@ void statCMove(int32_t player) {
 		if((statusc[player * 10 + 6] != 0) && (repversw >= 59))
 			move = 0;
 		else
-			move = (getPushState(player, 5) || rolling) - (getPushState(player, 4) || getPushState(player, 6));
+			move = (getPushState(player, BTN_B) || rolling) - (getPushState(player, BTN_A) || getPushState(player, BTN_C));
 				    // for old style, force negative
 		if (repversw > 65 && (heboGB[player] == 2) && !segacheat) // sega rotation
 			move = abs(move)*-1;
@@ -243,7 +243,7 @@ void statCMove(int32_t player) {
 		}
 
 		// 左右に移動
-		move = getPressState(player, 3) - getPressState(player, 2);
+		move = getPressState(player, BTN_RIGHT) - getPressState(player, BTN_LEFT);
 		if(isLRreverse[player]) move = 0 - move;
 		if(move && (statusc[player * 10 + 4])) {
 			if((block_spectrum) && (heboGB[player]==0))
@@ -332,7 +332,7 @@ void statCMove(int32_t player) {
 				statusc[player * 10 + 2]++;
 				drawCBlock(player, 0, 0, 0, 10, 0);
 				// 下入れ制限#1.60c7f9
-				if((getPressState(player, 1)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
+				if((getPressState(player, BTN_DOWN)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
 				if(repversw >= 57) goto lockflash;	// SUPERなSKIP
 				return;
 			}

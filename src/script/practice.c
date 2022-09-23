@@ -11,7 +11,7 @@ void statSelectLevel(int32_t player) {
 	color = 1 + p_shirase[0]; // SHIRASEモードで赤くする#1.60c6.2c
 
 	// HOLDボタンでページ切り替え #1.60c7a
-	if(getPushState(player, 7)) {
+	if(getPushState(player, BTN_D)) {
 		PlayWave(5);
 		if(vslevel[0] < 14)
 			vslevel[0] = 14;
@@ -383,7 +383,7 @@ void statSelectLevel(int32_t player) {
 	padRepeat2(0);
 	// ↑
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
-		if(getPressState(player, 0)) {
+		if(getPressState(player, BTN_UP)) {
 			PlaySE(5);
 
 			vslevel[0]--;
@@ -394,7 +394,7 @@ void statSelectLevel(int32_t player) {
 
 	// ↓
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
-		if(getPressState(player, 1)) {
+		if(getPressState(player, BTN_DOWN)) {
 			PlaySE(5);
 
 			vslevel[0]++;
@@ -404,8 +404,8 @@ void statSelectLevel(int32_t player) {
 	padRepeat(0);
 
 	// ← (Cボタンを押しながらだと高速に数値を変更します)
-	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, 6))){
-	if(getPressState(player, 2)) {
+	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, BTN_C))){
+	if(getPressState(player, BTN_LEFT)) {
 		PlaySE(3);
 		// 数値変更(手抜き)
 
@@ -666,8 +666,8 @@ void statSelectLevel(int32_t player) {
 	}
 
 	// → (Cボタンを押しながらだと高速に数値を変更します)
-	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, 6))){
-		if(getPressState(player, 3)) {
+	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, BTN_C))){
+		if(getPressState(player, BTN_RIGHT)) {
 			PlaySE(3);
 			// 数値変更(これも手抜き)
 
@@ -925,14 +925,14 @@ void statSelectLevel(int32_t player) {
 	}
 
 	// Bボタンでタイトル
-	if(getPushState(player, 5)) {
+	if(getPushState(player, BTN_B)) {
 		gameMode[0] = 0;
 		gameMode[1] = 0;
 		flag = 1;
 	}
 
 	// Aボタン
-	if(getPushState(player, 4)) {
+	if(getPushState(player, BTN_A)) {
 		if(vslevel[0] == 10) {
 			// FAVORITES関連
 			loadWait(0, p_setting); // 対応した設定を読み込む。
@@ -1114,7 +1114,7 @@ void PracticeDeath() {
 	}
 	printGameButton(22 - 12 * maxPlay, 25, BTN_C, -1, true);
 	printFont(16 - 12 * maxPlay, 25, "PRESS", fontc[rots[0]]);
-	if(getPushState(0, 6)) {
+	if(getPushState(0, BTN_C)) {
 		PracticeOver();
 	}
 }
@@ -1151,7 +1151,7 @@ void PracticeOver(void) {
 		medal_ac[1] = medal_ac[0];	// AC #1.60c7k4
 		medal_co[1] = medal_co[0];	// CO
 
-		time[1] = time[0];			// Time
+		gametime[1] = gametime[0];			// Time
 		wait1[1] = wait1[0];		//
 		wait2[1] = wait2[0];		//
 		wait3[1] = wait3[0];		//
@@ -1198,4 +1198,6 @@ void PracticeOver(void) {
 	// ブロックの色を設定 #1.60c7m9
 	setNextBlockColors(0, 1);
 	setNextBlockColors(1, 1);
+
+	freeReplayData();
 }

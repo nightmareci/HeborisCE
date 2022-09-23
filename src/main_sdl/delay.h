@@ -1,14 +1,12 @@
 #pragma once
 
-#ifdef _WIN32
+#include "include.h"
 
-#include <stdint.h>
+#ifdef _WIN32
 
 void Delay(uint32_t milliseconds);
 
 #else
-
-#include "SDL_timer.h"
 
 #define Delay(milliseconds) SDL_Delay((Uint32)(milliseconds))
 

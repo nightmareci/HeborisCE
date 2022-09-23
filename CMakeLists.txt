@@ -53,6 +53,47 @@ set(EXE_SOURCES
 	"${SRC}/src/script/ranking3.c"
 )
 
+set(EXE_HEADERS
+	"${SRC}/src/game/button.h"
+	"${SRC}/src/game/gamestart.h"
+	"${SRC}/src/game/init.h"
+	"${SRC}/src/game/speed.h"
+
+	"${SRC}/src/main_sdl/delay.h"
+	"${SRC}/src/main_sdl/gamecontroller.h"
+	"${SRC}/src/main_sdl/include.h"
+	"${SRC}/src/main_sdl/main.h"
+	"${SRC}/src/main_sdl/physfsrwops.h"
+	"${SRC}/src/main_sdl/SDL_kanji.h"
+	"${SRC}/src/main_sdl/ygs2kfunc.h"
+	"${SRC}/src/main_sdl/ygs2kinput.h"
+	"${SRC}/src/main_sdl/ygs2kprivate.h"
+
+	"${SRC}/src/script/ars.h"
+	"${SRC}/src/script/classic_D.h"
+	"${SRC}/src/script/classic.h"
+	"${SRC}/src/script/config.h"
+	"${SRC}/src/script/cpu.h"
+	"${SRC}/src/script/effect.h"
+	"${SRC}/src/script/flexdraw.h"
+	"${SRC}/src/script/grade.h"
+	"${SRC}/src/script/include.h"
+	"${SRC}/src/script/mission.h"
+	"${SRC}/src/script/mission_info.h"
+	"${SRC}/src/script/practice.h"
+	"${SRC}/src/script/ranking2.h"
+	"${SRC}/src/script/ranking3.h"
+	"${SRC}/src/script/ranking.h"
+	"${SRC}/src/script/replay.h"
+	"${SRC}/src/script/sectime.h"
+	"${SRC}/src/script/setdef.h"
+	"${SRC}/src/script/sound.h"
+	"${SRC}/src/script/staffroll.h"
+	"${SRC}/src/script/tomoyo.h"
+	"${SRC}/src/script/view.h"
+	"${SRC}/src/script/world.h"
+)
+
 set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default, the current platform is the build target. Can be explicitly set to \"Vita\", to force building for PlayStation Vita.")
 
 message(STATUS "Build target: ${BUILD_TARGET}")
@@ -102,3 +143,5 @@ target_include_directories(${EXE} PRIVATE
 	"${SRC}/src" "${SRC}/src/game" "${SRC}/src/main_sdl"
 	"${BIN}/src" "${BIN}/src/game" "${BIN}/src/main_sdl"
 )
+
+target_precompile_headers(${EXE} PRIVATE ${EXE_HEADERS})

@@ -41,14 +41,24 @@ int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
 #ifdef ENABLE_KEYBOARD
-SDL_Scancode keyAssign[10 * 2];	// キーボード設定 (0:↑, 1:↓, 2:←, 3:→, 4:A, 5:B, 6:C, 7:D, 8:GIVEUP, 9:PAUSE)
+// キーボード設定
+SDL_Scancode keyAssign[NUMBTNS * 2] =
+{
+	SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
+	SDL_SCANCODE_Z, SDL_SCANCODE_X, SDL_SCANCODE_C, SDL_SCANCODE_V,
+	SDL_SCANCODE_Q, SDL_SCANCODE_W,
+
+	SDL_SCANCODE_KP_8, SDL_SCANCODE_KP_5, SDL_SCANCODE_KP_4, SDL_SCANCODE_KP_6,
+	SDL_SCANCODE_KP_1, SDL_SCANCODE_KP_2, SDL_SCANCODE_KP_3, SDL_SCANCODE_KP_0,
+	SDL_SCANCODE_PAGEUP, SDL_SCANCODE_PAGEDOWN,
+};
 #endif
 
-int32_t segacheat;		// allow CW and/or 180 rotation in old schoo.
+int32_t segacheat;		// Allow CW and/or 180 rotation in old style.
 
 #ifdef ENABLE_JOYSTICK
 // →pauseとgiveupを追加 1.60c7g7
-SJoyKey joyKeyAssign[10 * 2];	// ジョイスティックボタン割り当て
+SJoyKey joyKeyAssign[NUMBTNS * 2];	// ジョイスティックボタン割り当て
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
@@ -62,7 +72,7 @@ int32_t restart;		// 再起動フラグ
 int32_t SaveConfig(void) {
 	int32_t i, j, cfgbuf[CFG_LENGTH];
 
-	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
+	FillMemory(cfgbuf, sizeof(cfgbuf), 0);
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -188,7 +198,7 @@ int32_t SaveConfig(void) {
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
-	SaveFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
+	SaveFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 
 	return (0);
 }
@@ -197,8 +207,8 @@ int32_t SaveConfig(void) {
 int32_t LoadConfig(void) {
 	int32_t i, j, cfgbuf[CFG_LENGTH];
 
-	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
-	LoadFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
+	FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	LoadFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
 	if(cfgbuf[2] != 0x464E4F44) return (1);
@@ -688,24 +698,24 @@ void ConfigMenu() {
 				padRepeat2(pl);
 				// ↑
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-					if(getPressState(pl, 0)) m--;
+					if(getPressState(pl, BTN_UP)) m--;
 
 				// ↓
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-					if(getPressState(pl, 1)) m++;
+					if(getPressState(pl, BTN_DOWN)) m++;
 				padRepeat(pl);
 				if(m) {
 					PlaySE(5);
 					statusc[0] = (statusc[0] + m + 19) % 19;
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
-				if(getPushState(pl, 7)) {
+				if(getPushState(pl, BTN_D)) {
 					PlaySE(3);
 					status[0] = (status[0] + 1 + pages)%pages;
 					statusc[0] = 0;
 					statusc[1] = 1;
 				} else {
-					m = getPushState(pl, 3) - getPushState(pl, 2);
+					m = getPushState(pl, BTN_RIGHT) - getPushState(pl, BTN_LEFT);
 
 					if(m) {
 						     if(statusc[0] ==  1) ncfg[2] = (ncfg[2] + 16 + m) % 16;	// nextbloc 8を追加#1.60c7h4
@@ -736,7 +746,7 @@ void ConfigMenu() {
 						statusc[1] = 1;
 					}
 				}
-				if(getPushState(pl, 4)) {	// A:保存&再起動
+				if(getPushState(pl, BTN_A)) {	// A:保存&再起動
 					PlayWave(10);
 					screenMode = ncfg[0];
 					screenIndex = ncfg[1];
@@ -833,7 +843,7 @@ void ConfigMenu() {
 					status[0] = -1;
 				}
 
-				if(getPushState(pl, 5)) {	// B:設定破棄&タイトル画面に戻る
+				if(getPushState(pl, BTN_B)) {	// B:設定破棄&タイトル画面に戻る
 					SetVolumeAllWaves(sevolume);
 					SetVolumeAllBGM(bgmvolume);
 					SetVolumeMIDI(bgmvolume);
@@ -986,24 +996,24 @@ void ConfigMenu() {
 				padRepeat2(pl);
 				// ↑
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-					if(getPressState(pl, 0)) m--;
+					if(getPressState(pl, BTN_UP)) m--;
 
 				// ↓
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-					if(getPressState(pl, 1)) m++;
+					if(getPressState(pl, BTN_DOWN)) m++;
 				if(m) {
 					PlaySE(5);
 					statusc[0] = (statusc[0] + m + 21) % 21;
 				}
 
 				// HOLDボタンでページ切り替え #1.60c7k8
-				if(getPushState(pl, 7)) {
+				if(getPushState(pl, BTN_D)) {
 					PlaySE(3);
 					status[0] = (status[0] + 1 + pages)%pages;
 					statusc[0] = 0;
 					statusc[1] = 1;
 				} else {
-					m = getPushState(pl, 3) - getPushState(pl, 2);
+					m = getPushState(pl, BTN_RIGHT) - getPushState(pl, BTN_LEFT);
 					if(m) {
 						     if(statusc[0] ==   1) ncfg[281] = !ncfg[281];
 						else if(statusc[0] ==   2) ncfg[282] = (ncfg[282] + 5 + m) % 5;
@@ -1035,7 +1045,7 @@ void ConfigMenu() {
 					}
 				}
 
-				if(getPushState(pl, 4) || getPushState(pl, 5)) {	// A&B:mainに戻る
+				if(getPushState(pl, BTN_A) || getPushState(pl, BTN_B)) {	// A&B:mainに戻る
 					PlaySE(3);
 					status[0] = 0;
 					statusc[0] = 0;
@@ -1146,24 +1156,24 @@ void ConfigMenu() {
 				padRepeat2(pl);
 				// ↑
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-					if(getPressState(pl, 0)) m--;
+					if(getPressState(pl, BTN_UP)) m--;
 
 				// ↓
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-					if(getPressState(pl, 1)) m++;
+					if(getPressState(pl, BTN_DOWN)) m++;
 				if(m) {
 					PlaySE(5);
 					statusc[0] = (statusc[0] + m + 27) % 27;
 				}
 
 				// HOLDボタンでページ切り替え #1.60c7k8
-				if(getPushState(pl, 7)) {
+				if(getPushState(pl, BTN_D)) {
 					PlaySE(3);
 					status[0] = (status[0] + 1 + pages)%pages;
 					statusc[0] = 0;
 					statusc[1] = 1;
 				} else {
-					m = getPushState(pl, 3) - getPushState(pl, 2);
+					m = getPushState(pl, BTN_RIGHT) - getPushState(pl, BTN_LEFT);
 					if(m) {
 						if(statusc[0] == 1) ncfg[8] = (ncfg[8] + 4 + m) % 4;	// blockflash
 						if(statusc[0] == 2) ncfg[9] = (ncfg[9] + 3 + m) % 3;	// background
@@ -1210,7 +1220,7 @@ void ConfigMenu() {
 					statusc[1] = 1;
 				}
 
-				if(getPushState(pl, 4) || getPushState(pl, 5)) {	// A&B:mainに戻る
+				if(getPushState(pl, BTN_A) || getPushState(pl, BTN_B)) {	// A&B:mainに戻る
 					PlaySE(3);
 					status[0] = 0;
 					statusc[0] = 0;
@@ -1252,23 +1262,23 @@ void ConfigMenu() {
 					padRepeat2(pl);
 					// ↑
 					if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-						if(getPressState(pl, 0)) m--;
+						if(getPressState(pl, BTN_UP)) m--;
 
 					// ↓
 					if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
-						if(getPressState(pl, 1)) m++;
+						if(getPressState(pl, BTN_DOWN)) m++;
 					if(m) {
 						PlaySE(5);
 						statusc[0] = (statusc[0] + m + numOptions + 1) % (numOptions + 1);
 					}
 					// HOLDボタンでページ切り替え #1.60c7k8
-					if(getPushState(pl, 7)) {
+					if(getPushState(pl, BTN_D)) {
 						PlaySE(3);
 						status[0] = (status[0] + 1 + pages)%pages;
 						statusc[0] = 0;
 						statusc[1] = 1;
 					} else {
-						m = getPushState(pl, 3) - getPushState(pl, 2);
+						m = getPushState(pl, BTN_RIGHT) - getPushState(pl, BTN_LEFT);
 						if(m) {
 							if(statusc[0] == 0){
 								PlaySE(3);
@@ -1279,14 +1289,14 @@ void ConfigMenu() {
 						}
 					}
 
-					if(getPushState(pl, 4) && (statusc[0] != 0)) {
+					if(getPushState(pl, BTN_A) && (statusc[0] != 0)) {
 						PlaySE(19);
 						statusc[2] = statusc[0];
 						statusc[0] = 0;
 						conIndex = -1;
 					}
 
-					if(getPushState(pl, 5)) {
+					if(getPushState(pl, BTN_B)) {
 						PlaySE(3);
 						status[0] = 0;
 						statusc[0] = 0;
@@ -1999,7 +2009,7 @@ void ConfigMenu() {
 				}
 
 				// A/B:戻る
-				if(getPushState(0, 4) || getPushState(0, 5) || getPushState(1, 4) || getPushState(1, 5)) {
+				if(getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B)) {
 					PlaySE(5);
 					statusc[0] = 0;
 					statusc[2] = 0;
@@ -2132,12 +2142,12 @@ void ConfigMenu() {
 			}
 
 			for(pl = 0; pl < 2; pl++) {
-				if(getPushState(pl, 4) || getPushState(pl, 5)) {
+				if(getPushState(pl, BTN_A) || getPushState(pl, BTN_B)) {
 					PlaySE(3);
 					status[0] = 0;
 					statusc[0] = 0;
 					statusc[1] = 1;
-				} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, 1) - getPressState(pl, 0))) {
+				} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, BTN_DOWN) - getPressState(pl, BTN_UP))) {
 					PlaySE(5);
 					const int32_t numSettings = 14;
 					int32_t nextChoice = (statusc[0] + m + numSettings) % numSettings;
@@ -2156,7 +2166,7 @@ void ConfigMenu() {
 					statusc[0] = (nextChoice + numSettings) % numSettings;
 				} else {
 					padRepeat(pl);
-					m = getPushState(pl, 3) - getPushState(pl, 2);
+					m = getPushState(pl, BTN_RIGHT) - getPushState(pl, BTN_LEFT);
 					if(m && ((statusc[0] >= 0 && statusc[0] <= 9) || statusc[0] == 11 || statusc[0] == 13)) {
 						if(statusc[0] == 0) {
 							PlaySE(3);

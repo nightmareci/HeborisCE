@@ -1,9 +1,7 @@
 #pragma once
 
+#include "include.h"
 #include "ygs2kinput.h"
-#include "SDL.h"
-#include <stdint.h>
-#include <stdbool.h>
 
 #ifdef		TextOut
 #undef		TextOut
@@ -77,8 +75,10 @@ void EnableBlendColorKey(int plane, int key);
 void CreateSurface(int surf, int w, int h);
 void ClearSecondary();
 void SetFillColor(int col);
-void LoadFile( const char* filename, void* buf, int size );
-void SaveFile( const char* filename, void* buf, int size );
+void LoadFile( const char* filename, void* buf, size_t size );
+void ReadFile( const char* filename, void* buf, size_t size, size_t offset );
+void SaveFile( const char* filename, void* buf, size_t size );
+void AppendFile( const char* filename, void* buf, size_t size );
 void TextLayerOn ( int layer, int x, int y );
 void TextMove ( int layer, int x, int y );
 void TextColor ( int layer, int r, int g, int b );

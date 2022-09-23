@@ -43,7 +43,7 @@ static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
 static int			s_iLogicalWidth;
 static int			s_iLogicalHeight;
 
-static int			s_bBltAlways;
+static int			s_bNoFrameskip;
 static Uint64			s_uTimeCount;
 static Uint64			s_uTimeAccumulatorCount;
 static Uint64			s_uFPSCount;
@@ -139,7 +139,7 @@ bool YGS2kInit()
 	s_uNowFrame		= 0;
 	s_uFPSCnting		= 0;
 	s_uFPS			= 0;
-	s_bBltAlways		= false;
+	s_bNoFrameskip		= false;
 
 	srand((unsigned)time(NULL));
 
@@ -265,7 +265,10 @@ bool YGS2kHalt()
 	{
 		SDL_RenderFlush( s_pScreenRenderer );
 
-		if ( s_bBltAlways )
+		#ifndef NDEBUG
+		s_bNoFrameskip = 1;
+		#endif
+		if ( s_bNoFrameskip )
 		{
 			/* バックサーフェスをフロントに転送 */
 			if ( s_pScreenRenderTarget )
@@ -340,6 +343,7 @@ bool YGS2kHalt()
 	{
 		switch(ev.type){
 			case SDL_QUIT:						// ウィンドウの×ボタンが押された時など
+				quitNowFlag = true;
 				return false;
 				break;
 
@@ -919,7 +923,7 @@ void SetFillColor(int col)
 	// sets the color that ClearSecondary uses to fill the render target. since ClearSecondary is a no-op, so is this.
 }
 
-void LoadFile( const char* filename, void* buf, int size )
+void LoadFile( const char* filename, void* buf, size_t size )
 {
 	SDL_RWops	*src = PHYSFSRWOPS_openRead(filename);
 
@@ -928,24 +932,40 @@ void LoadFile( const char* filename, void* buf, int size )
 		SDL_RWread(src, buf, size, 1);
 		SDL_RWclose(src);
 
-		int32_t		i, *buf2;
-
 		/* エンディアン変換 */
-		buf2 = (int32_t*)buf;
-		for ( i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+		int32_t* buf2 = (int32_t*)buf;
+		for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
 		{
 			buf2[i] = SWAP32(buf2[i]);
 		}
 	}
 }
 
-void SaveFile( const char* filename, void* buf, int size )
+void ReadFile( const char* filename, void* buf, size_t size, size_t offset )
 {
-	int32_t		i, *buf2;
+	SDL_RWops	*src = PHYSFSRWOPS_openRead(filename);
 
+	if ( src )
+	{
+		if (SDL_RWseek(src, offset, RW_SEEK_SET) < 0) return;
+		SDL_RWread(src, buf, size, 1);
+		SDL_RWclose(src);
+
+		/* エンディアン変換 */
+		int32_t* buf2 = (int32_t*)buf;
+		for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+		{
+			buf2[i] = SWAP32(buf2[i]);
+		}
+	}
+}
+
+
+void SaveFile( const char* filename, void* buf, size_t size )
+{
 	/* エンディアン変換 */
-	buf2 = (int32_t*)buf;
-	for ( i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+	int32_t* buf2 = (int32_t*)buf;
+	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
 	{
 		buf2[i] = SWAP32(buf2[i]);
 	}
@@ -959,7 +979,30 @@ void SaveFile( const char* filename, void* buf, int size )
 	}
 
 	/* もどす */
-	for ( i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+	{
+		buf2[i] = SWAP32(buf2[i]);
+	}
+}
+
+void AppendFile( const char* filename, void* buf, size_t size ) {
+	/* エンディアン変換 */
+	int32_t* buf2 = (int32_t*)buf;
+	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+	{
+		buf2[i] = SWAP32(buf2[i]);
+	}
+
+	SDL_RWops	*dst = PHYSFSRWOPS_openAppend(filename);
+
+	if ( dst )
+	{
+		SDL_RWwrite(dst, buf, size, 1);
+		SDL_RWclose(dst);
+	}
+
+	/* もどす */
+	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
 	{
 		buf2[i] = SWAP32(buf2[i]);
 	}
@@ -1020,7 +1063,7 @@ void TextLayerOff ( int layer )
 
 void BltAlways(bool always)
 {
-	s_bBltAlways = always;
+	s_bNoFrameskip = always;
 }
 
 void Blt(int pno, int dx, int dy)

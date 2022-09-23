@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "main_sdl/include.h"
 
 extern int32_t waitt_HeboGB_tbl[15];
 extern int32_t waitt_HeboGB_tbl[15];

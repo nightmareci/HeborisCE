@@ -402,7 +402,7 @@ void RankingView2() {//5位まで
 void RankingSave2() {
 	int32_t i;
 
-	FillMemory(&saveBuf, 5000 * 4, 0);
+	FillMemory(saveBuf, 5000 * 4, 0);
 
 	// ヘッダ
 	saveBuf[0] = 0x4F424549;
@@ -441,7 +441,7 @@ void RankingSave2() {
 		saveBuf[4 + i + (5 * 15 * 2) * 10] = rkrots[i];//11
 	}
 
-	SaveFile("config/data/RANKING2.SAV", &saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
+	SaveFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
 }
 
 // ランキングを読み込み
@@ -449,8 +449,8 @@ int32_t RankingLoad2() {
 	int32_t i;
 
 	// ヘッダだけ読み込み
-	FillMemory(&saveBuf, 5000 * 4, 0);
-	LoadFile("config/data/RANKING2.SAV", &saveBuf, 16);
+	FillMemory(saveBuf, 5000 * 4, 0);
+	LoadFile("config/data/RANKING2.SAV", saveBuf, 16);
 
 	// バージョン違いなら初期化
 	if(saveBuf[0] != 0x4F424549) return 1;
@@ -459,7 +459,7 @@ int32_t RankingLoad2() {
 	if(saveBuf[3] != 0x34764354) return 1;
 
 	// 全部読み込み
-	LoadFile("config/data/RANKING2.SAV", &saveBuf, 1654 * 4);
+	LoadFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前

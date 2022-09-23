@@ -383,33 +383,33 @@ void SoundTestProc(void) {
 
 		// ←
 		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
-		if(getPressState(0, 2)) {
+		if(getPressState(0, BTN_LEFT)) {
 			snd--;
 			if(snd < 0) snd = 69;
 		}
 
 		// →
 		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
-		if(getPressState(0, 3)) {
+		if(getPressState(0, BTN_RIGHT)) {
 			snd++;
 			if(snd > 69) snd = 0;
 		}
 
 		// Aボタンで再生
-		if(getPushState(0, 4)) {
+		if(getPushState(0, BTN_A)) {
 			StopAllWaves();
 			StopAllBGM();
 			PlayWave(snd);
 		}
 
 		// Cボタンで停止
-		if(getPushState(0, 6)) {
+		if(getPushState(0, BTN_C)) {
 			StopAllWaves();
 			StopAllBGM();
 		}
 
 		// Bボタンでタイトル
-		if(getPushState(0, 5)) {
+		if(getPushState(0, BTN_B)) {
 			StopAllWaves();
 			StopAllBGM();
 			if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2

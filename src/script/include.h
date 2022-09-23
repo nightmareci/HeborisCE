@@ -4,7 +4,6 @@
 #include "main_sdl/ygs2kfunc.h"
 
 #include "game/init.h"
-#include "game/prototypes.h"
 #include "game/speed.h"			// レベル調整
 #include "game/gamestart.h"
 

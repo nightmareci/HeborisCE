@@ -195,7 +195,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 					rolling = 1;
 			} else if( (gameMode[player] >= 4) || (item_mode[player]) ) {
 				/* VERSUS / PRACTICE / MISSION */
-				if( time[player] % p_rollroll_timer  == 0 )
+				if( gametime[player] % p_rollroll_timer  == 0 )
 					rolling = 1;
 			}
 		}

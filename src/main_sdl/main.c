@@ -5,7 +5,6 @@
 #ifdef ENABLE_GAME_CONTROLLER
 #include "main_sdl/gamecontroller.h"
 #endif
-#include <assert.h>
 
 static int quitLevel = 0;
 static int quit(int status) {

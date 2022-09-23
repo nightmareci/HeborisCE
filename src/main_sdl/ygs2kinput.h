@@ -1,10 +1,7 @@
 #pragma once
 
-#include "defs.h"
+#include "include.h"
 #include "game/button.h"
-#include <stdint.h>
-#include <limits.h>
-#include <stdbool.h>
 
 typedef enum EControllerType
 {

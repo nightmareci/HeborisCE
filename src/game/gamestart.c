@@ -368,7 +368,7 @@ int32_t		backno;					//1〜12 通常	61 対戦用
 
 int32_t		status[2], statusc[10 * 2];	// 現在のステータスとパラメータ no + pl * 5
 int32_t		sc[2], lv[2], li[2];	// スコア、レベル、ライン数
-int32_t		time[2], timeOn[2];		// ゲーム開始からの経過時間 (1/60秒単位)、有効?
+int32_t		gametime[2], timeOn[2];		// ゲーム開始からの経過時間 (1/60秒単位)、有効?
 int32_t		next[2 * 3];			// nextの部分に入っているブロック #1.60i
 int32_t		fld[10 * 22 * 2];		// フィールドの状態  x + y * 10 + pl * 210
 int32_t		blk[2];					// 今落ちてくるブロック
@@ -550,16 +550,17 @@ int32_t		rksc[40], rkbl[40], rktime[40], rklv[40], rkfl[40];	// ランキング�
 int32_t		noredraw, fast;
 int32_t		csr, cnt, enable[80], category, rankingmode;
 
-int32_t		replayData[60 * 60 * 20 * 2];	// リプレイ保存用データ (最大20分まで)
-int32_t		saveBuf[50000];			// セーブ用バッファ
-int32_t		playback = 0;			// リプレイ中か?
-int32_t		demo = 0;				// デモモードか?
-int32_t		demotime = -1;			// デモ表示回数(-1設定なのは最初のデモでビギナーモードを表示するため)
-int32_t		setupBak[27];			// セッティング内容のバックアップ用
+int32_t**	replayData = NULL;	// Array of 20-minute data chunks for replays. Save to a backup variable and set to NULL to preserve replay data across calls of freeReplayData().
+int32_t		replayChunkCnt = 0;	// The number of replay data chunks. Each chunk can record 20 minutes.
+int32_t		saveBuf[50000];		// セーブ用バッファ
+int32_t		playback = 0;		// リプレイ中か?
+int32_t		demo = 0;		// デモモードか?
+int32_t		demotime = -1;		// デモ表示回数(-1設定なのは最初のデモでビギナーモードを表示するため)
+int32_t		setupBak[27];		// セッティング内容のバックアップ用
 
-int32_t		pause[2], hnext[2];		// ポーズしてるかーい!?　hnextはnextで今見えてる数
+int32_t		pause[2], hnext[2];	// ポーズしてるかーい!?　hnextはnextで今見えてる数
 
-int32_t		gameMode[2];			// 現在のゲームモード 0:BEGINNER 1:MASTER 2:20G 3:DEVIL 4:VERSUS 5:PRACTICE 6:TOMOYO 7:ACE 8:MISSION
+int32_t		gameMode[2];		// 現在のゲームモード 0:BEGINNER 1:MASTER 2:20G 3:DEVIL 4:VERSUS 5:PRACTICE 6:TOMOYO 7:ACE 8:MISSION
 
 int32_t		limit[8] = {0, 20, 30, 30, 40, 40, 50, 1400};	// ツモ生成用
 
@@ -1465,11 +1466,11 @@ void gameMain(void) {
 				noredraw = 0;
 				if(playback && !demo) {
 					playback = 0;
-					if(getPushState(0, 4) || getPushState(1, 4)) fast = 5;
-					if(!(getPressState(0, 4) || getPressState(1, 4))) fast = 0;
-					if(!fast && (getPressState(0, 0) || getPressState(1, 0))) fast = 3;
-					if(!fast && (getPressState(0, 1) || getPressState(1, 1))) fast = 1;
-					if(getPushState(0, 5) || getPushState(1, 5)) {
+					if(getPushState(0, BTN_A) || getPushState(1, BTN_A)) fast = 5;
+					if(!(getPressState(0, BTN_A) || getPressState(1, BTN_A))) fast = 0;
+					if(!fast && (getPressState(0, BTN_UP) || getPressState(1, BTN_UP))) fast = 3;
+					if(!fast && (getPressState(0, BTN_DOWN) || getPressState(1, BTN_DOWN))) fast = 1;
+					if(getPushState(0, BTN_B) || getPushState(1, BTN_B)) {
 						if(!tmp_maxPlay)
 							maxPlay = 0;
 						restoreSetups();
@@ -1479,9 +1480,10 @@ void gameMain(void) {
 							gameMode[1] = 0;
 						}
 						flag = 1;
+						freeReplayData();
 						break;
 					}
-					if(getPushState(0, 7))
+					if(getPushState(0, BTN_D))
 						dispLinfo = !dispLinfo;
 					playback = 1;
 				}
@@ -1663,7 +1665,7 @@ void lastProc(void) {
 		cpu_flag[0] = 0;
 		cpu_flag[1] = 0;
 
-		if(getPushState(0, 4) || getPushState(1, 4)) {
+		if(getPushState(0, BTN_A) || getPushState(1, BTN_A)) {
 			StopAllBGM();
 			StopSE(40);
 			cpu_flag[0] = 0;
@@ -1679,7 +1681,7 @@ void lastProc(void) {
 			flag = 1;
 		}
 
-		if( (time[0] > 5400) || (time[1] > 5400) || (status[0] == 14) || (status[1] == 14)) {
+		if( (gametime[0] > 5400) || (gametime[1] > 5400) || (status[0] == 14) || (status[1] == 14)) {
 			StopAllBGM();
 			StopSE(40);
 			cpu_flag[0] = 0;
@@ -1714,13 +1716,13 @@ void lastProc(void) {
 
 	// ポーズキーをjoypadに割り当て 1.60c7g7
 	if(!playback) {
-		if(getPressState(0, 9)) mpc4[0]++;
+		if(getPressState(0, BTN_PAUSE)) mpc4[0]++;
 		else mpc4[0] = 0;
 	} else {
 		mpc4[0] = 0;
 	}
 
-	if(getPushState(0, 9) || mpc4[0] == 1) {
+	if(getPushState(0, BTN_PAUSE) || mpc4[0] == 1) {
 		if( ((status[0] >= 3) && (status[0] <= 8) && (status[0] != 7)) || (status[0] == 13) || (status[0] == 15) ||
 			(status[0] == 22) || ((status[0] >= 25) && (status[0] != 30) && (status[0] != 36)) || (debug) ) {
 			if(pause[0]) {
@@ -1747,13 +1749,13 @@ void lastProc(void) {
 	}
 
 	if(!playback) {
-		if(getPressState(1, 9)) mpc4[1]++;
+		if(getPressState(1, BTN_PAUSE)) mpc4[1]++;
 		else mpc4[1] = 0;
 	} else {
 		mpc4[0] = 0;
 	}
 
-	if(getPushState(1, 9) || mpc4[1] == 1) {
+	if(getPushState(1, BTN_PAUSE) || mpc4[1] == 1) {
 		if( ((status[1] >= 3) && (status[1] <= 8) && (status[1] != 7)) || (status[1] == 13) || (status[1] == 15) || (debug) ) {
 			if(pause[1]) {
 				// ポーズ解除
@@ -1940,7 +1942,7 @@ void title(void) {
 
 			// どちらかのスタートボタンが押されたらモード1へ
 			for(player = 0; player < 2; player++) {
-				if(getPushState(player, 4)) {
+				if(getPushState(player, BTN_A)) {
 					democ = 0;
 					PlaySE(10);
 					mode = 1;
@@ -1948,11 +1950,11 @@ void title(void) {
 			}
 
 			// HOLDボタンでサウンドテスト#1.60c7c
-			if(getPushState(0, 7))
+			if(getPushState(0, BTN_D))
 				SoundTestProc();
 
 			// Cボタンでテストメニュー#1.60c7i4
-			if(getPushState(0, 6)) {
+			if(getPushState(0, BTN_C)) {
 				testmenu();
 				if(restart) mode = 2;
 			}
@@ -1986,7 +1988,7 @@ void title(void) {
 
 				// 上へ
 				if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-				if(getPressState(player, 0)) {
+				if(getPressState(player, BTN_UP)) {
 					PlaySE(5);
 					game--;
 					if(game < 0) game = 8; // 対戦モード追加に従い修正 #1.60c7g1
@@ -1994,21 +1996,21 @@ void title(void) {
 
 				// 下へ
 				if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-				if(getPressState(player, 1)) {
+				if(getPressState(player, BTN_DOWN)) {
 					PlaySE(5);
 					game++;
 					if(game > 8) game = 0; // 対戦モード追加に従い修正 #1.60c7g1
 				}
 
 				// キャンセル
-				if(getPushState(player, 5)) {
+				if(getPushState(player, BTN_B)) {
 					democ = 0;
 					mode = 0;
 					domirror = 0;
 				}
 
 				// 決定
-				if(getPushState(player, 4)) {
+				if(getPushState(player, BTN_A)) {
 					PlayWave(10);
 					mode = 2;
 					domirror = 0;	//鏡像は最初は無効、必要に応じて1にする
@@ -2325,7 +2327,7 @@ void playerInitial(int32_t player) {
 	li[player] = 0;
 	lc[player] = 0;
 	sp[player] = 1;
-	time[player] = 0;
+	gametime[player] = 0;
 	timeOn[player] = 0;
 
 	skill[player] = 0;	// 961追加
@@ -2528,6 +2530,7 @@ void playerInitial(int32_t player) {
 	// #1.60c7n8
 	replay_save[player] = 1;
 	time2[player] = 0;
+	freeReplayData();
 
 	// #1.60c7o1
 	sgrade[player] = -1;
@@ -3440,14 +3443,14 @@ void playerExecute(void) {
 				}
 				if((item_mode[i])||(novice_mode[i])){
 					printFont(14 - 12 * maxPlay, 16, "C+<L R>:ITEM", count % 9);
-					if(getPressState(i, 6)){
-						if(getPushState(i, 2)){
+					if(getPressState(i, BTN_C)){
+						if(getPushState(i, BTN_LEFT)){
 							PlaySE(5);
 							item_nblk[0 + i * 6]--;
 							if(item_nblk[0 + i * 6] < 0) item_nblk[0 + i * 6] = item_num;
 							item_name[i] = item_nblk[0 + i * 6];
 						}
-						if(getPushState(i, 3)){
+						if(getPushState(i, BTN_RIGHT)){
 							PlaySE(5);
 							item_nblk[0 + i * 6]++;
 							if(item_nblk[0 + i * 6] > item_num) item_nblk[0 + i * 6] = 0;
@@ -3571,7 +3574,7 @@ void playerExecute(void) {
 		// speed.defで速度を変えられる #1.60c7l2
 		// ミッションでは無効 C7T6.6
 		if((gameMode[i] <= 4) || (gameMode[i] == 10)) {
-			if((time[i] > 54000) && (limit15)) {
+			if((gametime[i] > 54000) && (limit15)) {
 				sp[i]    = speed_limit15;
 				wait1[i] = wait1_limit15;
 				wait2[i] = wait2_limit15;
@@ -3790,17 +3793,19 @@ int32_t doGiveup() {
 	}
 
 	// 捨てゲーキーをjoypadに割り当て 1.60c7g7
-	if(getPressState(0, 8)) mpc3[0]++;
+	if(getPressState(0, BTN_GIVEUP)) mpc3[0]++;
 	else mpc3[0] = 0;
 
-	if(getPressState(1, 8)) mpc3[1]++;
+	if(getPressState(1, BTN_GIVEUP)) mpc3[1]++;
 	else mpc3[1] = 0;
 
 	// いつでも捨てゲーできるようにした#1.60cd
 	// リプレイが再生できないので修正#1.60c7h1
 	// デモ画面では捨てゲーできないように変更 #1.60c7o8
-	if((!playback) && (!demo) && ((mpc3[0] == 1) || (mpc3[1] == 1))) {// Qキー捨てゲー #1.60c
+	if((!playback) && (!demo) && ((mpc3[0] == 1) || (mpc3[1] == 1))) {// GIVEUPキー捨てゲー #1.60c
 		inmenu = true;
+		freeReplayData();
+
 		// 効果音停止
 		StopAllWaves();
 		StopAllBGM();
@@ -3972,7 +3977,7 @@ void increment_time(int32_t player) {
 				gflash[player]=120;
 			}else if(!devil_minus[player]){
 				// CLASSIC系列は5:00以内、WORLD系列は5:20以内でGOD昇格
-				if( ((!isWRule(player)) && (time[player] <= 18000)) || ((isWRule(player)) && (time[player] <= 19200)) ) {
+				if( ((!isWRule(player)) && (gametime[player] <= 18000)) || ((isWRule(player)) && (gametime[player] <= 19200)) ) {
 					grade[player] = 16;
 					PlaySE(30);	// rankup.wav
 					gflash[player]=120;
@@ -4022,20 +4027,47 @@ void increment_time(int32_t player) {
 
 	// リプレイ用データを記録
 	if(onRecord[player] != 0) {
-		if( (!playback) && (!demo) && (replay_save[player]) && (time2[player] < 60 * 60 * 20) && (!fpbas_mode[player])) {
-			temp = 0;
-			for(j = 0; j < 8; j++)
-				temp = temp | (getPressState(player, j) << j) | (getPushState(player, j) << (j + 8));
+		if( (!playback) && (!demo) && (replay_save[player]) && (time2[player] < REPLAY_TIME_MAX) && (!fpbas_mode[player])) {
+			// Extend the replay data by one 20 minute chunk when needed.
+			// A chunk is allocated when the current frame is one frame beyond the end of the last allocated chunk.
+			if (
+				((gameMode[0] != 4 || gameMode[1] != 4) && time2[player] == replayChunkCnt * REPLAY_PLAYER_CHUNK) ||
+				(gameMode[0] == 4 && gameMode[1] == 4 && time2[0] == time2[1] && time2[0] == replayChunkCnt * REPLAY_PLAYER_CHUNK)
+			) {
+				int32_t** oldReplayData = replayData;
+				if (!(replayData = malloc(sizeof(int32_t*) * (replayChunkCnt + 1)))) {
+					abort();
+				}
+				if (oldReplayData) {
+					memcpy(replayData, oldReplayData, sizeof(int32_t*) * replayChunkCnt);
+					free(oldReplayData);
+				}
+				if (!(replayData[replayChunkCnt] = calloc(REPLAY_CHUNK_SIZE, 1u))) {
+					abort();
+				}
+				replayChunkCnt++;
+			}
 
-			replayData[time2[player] + player * 60 * 60 * 20] = temp;
+			temp = 0;
+			for(j = 0; j < NUMGAMEBTNS; j++)
+				temp = temp | (getPressState(player, j) << j) | (getPushState(player, j) << (j + NUMGAMEBTNS));
+
+			printf("replayData before: 0x%"PRIXPTR"\n", (intptr_t)replayData);
+			fflush(stdout);
+			replayData[time2[player] / REPLAY_PLAYER_CHUNK][time2[player] % REPLAY_PLAYER_CHUNK + player * REPLAY_PLAYER_CHUNK] = temp;
+			printf("replayData after : 0x%"PRIXPTR"\n", (intptr_t)replayData);
+			fflush(stdout);
 		}
 
-		time2[player]++;	// リプレイ用プレイ時間に1/60秒プラス #1.60c7n8
+		// リプレイ用プレイ時間に1/60秒プラス #1.60c7n8
+		if (++time2[player] > REPLAY_TIME_MAX) {
+			replay_save[player] = 0;
+		}
 	}
 
 	// タイマーが動作していれば
 	if(timeOn[player]) {
-		time[player]++;		// 時間に1/60秒プラス
+		gametime[player]++;		// 時間に1/60秒プラス
 		if((gameMode[player] == 6) && (stage[player] == 44))
 			tomoyo_ehfinal_c[player]++;
 			if(tomoyo_ehfinal_c[player] > 480)
@@ -4237,10 +4269,10 @@ void increment_time(int32_t player) {
 	if( (gflash[player] > 0) && ((!tspin_c[player]) || (enable_grade[player] != 4) || (gameMode[player] >= 3)) ) {
 		gflash[player]--;
 	}
-	if((gflash[player] > 0)&&(gameMode[player] == 0)&&(novice_mode[player])&&(time[player] < 18000)){
+	if((gflash[player] > 0)&&(gameMode[player] == 0)&&(novice_mode[player])&&(gametime[player] < 18000)){
 			printFont(18 + 24 * player - 12 * maxPlay, 11, "TIME", (count % 4 / 2) * digitc[rots[player]]);
 			printFont(17 + 24 * player - 12 * maxPlay, 12, "BONUS!", (count % 4 / 2) * digitc[rots[player]]);
-			sprintf(string[0],"%6d PTS",1253 * (300 - (time[player] / 60)));
+			sprintf(string[0],"%6d PTS",1253 * (300 - (gametime[player] / 60)));
 			printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], (count % 4 / 2) * digitc[rots[player]]);
 	}
 	if(hnext_flag[player]){
@@ -4252,7 +4284,9 @@ void increment_time(int32_t player) {
 			ishidenext[player] = 0;
 	}
 	if(onRecord[player] == 2){//2なら現フレームのリプレイデータを記録後、記録を終了する
-		time2[player]++;
+		if (++time2[player] > REPLAY_TIME_MAX) {
+			replay_save[player] = 0;
+		}
 		onRecord[player] = 0;
 	}
 }
@@ -4275,7 +4309,7 @@ void statJoinwait(int32_t player) {
 	}
 
 	// ボタンが利きにくいのを修正#1.60cf
-	if((getPushState(player, 4)) && (tomoyo_domirror[1-player] == 0) && !((player == 1) && ((domirror) && (mirror)) ) && (!bgfadesw)) {
+	if((getPushState(player, BTN_A)) && (tomoyo_domirror[1-player] == 0) && !((player == 1) && ((domirror) && (mirror)) ) && (!bgfadesw)) {
 		StopSE(8);
 		PlaySE(10);
 
@@ -4629,7 +4663,7 @@ void statSelectMode(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, 0) ) {
+	if( getPressState(player, BTN_UP) ) {
 		PlaySE(5);
 
 		// モードセレクト
@@ -4659,7 +4693,7 @@ void statSelectMode(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, 1) ) {
+	if( getPressState(player, BTN_DOWN) ) {
 		PlaySE(5);
 
 		// モードセレクト
@@ -4689,7 +4723,7 @@ void statSelectMode(int32_t player) {
 
 	// ←
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
-	if( getPressState(player, 2) ) {
+	if( getPressState(player, BTN_LEFT) ) {
 		PlaySE(3);
 		// ルールセレクト
 		if(statusc[player * 10 + 2] == 0) {
@@ -4747,7 +4781,7 @@ void statSelectMode(int32_t player) {
 
 	// →
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
-	if( getPressState(player, 3) ) {
+	if( getPressState(player, BTN_RIGHT) ) {
 		PlaySE(3);
 		// ルールセレクト
 		if(statusc[player * 10 + 2] == 0) {
@@ -4810,7 +4844,7 @@ void statSelectMode(int32_t player) {
 		printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 	}	
-	if( getPressState(player, 6) ) {
+	if( getPressState(player, BTN_C) ) {
 		if(statusc[player * 10 + 2] == 1){
 			if(gameMode[player] == 6)//RANDOM
 				ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 70, 7*6, 33, 7);
@@ -4865,7 +4899,7 @@ void statSelectMode(int32_t player) {
 	}
 
 	// Bボタン
-	if( getPushState(player, 5) ) {
+	if( getPushState(player, BTN_B) ) {
 		PlaySE(5);
 		death_plus[player] = 0;
 		item_mode[player] = 0;
@@ -4896,7 +4930,7 @@ void statSelectMode(int32_t player) {
 	}
 
 	// Aボタン
-	if( getPushState(player, 4) ) {
+	if( getPushState(player, BTN_A) ) {
 		PlaySE(10);
 		statusc[player * 10 + 1] = 0;
 		statusc[player * 10 + 4] = 0;
@@ -4947,7 +4981,7 @@ void statSelectMode(int32_t player) {
 			fpbas_mode[player] = 0;
 			}
 
-			if( getPressState(player, 6) ) {
+			if( getPressState(player, BTN_C) ) {
 				if(gameMode[player] == 6) {
 					// ランダムモード
 					randommode[player] = 1;
@@ -5139,7 +5173,7 @@ int32_t Admitgradecheck(int32_t player){
 		//昇格
 		temp2[player]=5-grade_pasttime[player];
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
-		if((sort_grade[0] == sort_grade[1])&&((sort_grade[0]- admit_grade[player]) >= temp2[player])){  // if best two grades are identical, and enough time has passed 
+		if((sort_grade[0] == sort_grade[1])&&((sort_grade[0]- admit_grade[player]) >= temp2[player])){  // if best two grades are identical, and enough gametime has passed 
 			exam_grade[player]= sort_grade[0];                                                          // give exam for best grade in history. sooner if it's much better
 			return 1;
 		}
@@ -5252,7 +5286,7 @@ void statSelectStandardSp(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, 0)) {
+		if(getPressState(player, BTN_UP)) {
 			PlaySE(5);
 			statusc[player * 10]--;
 			if(statusc[player * 10] < 0) statusc[player * 10] = 6;
@@ -5263,7 +5297,7 @@ void statSelectStandardSp(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, 1)) {
+		if(getPressState(player, BTN_DOWN)) {
 			PlaySE(5);
 			statusc[player * 10]++;
 			if(statusc[player * 10] > 6) statusc[player * 10] = 0;
@@ -5272,8 +5306,8 @@ void statSelectStandardSp(int32_t player) {
 		}
 	}
 	// ← (Cボタンを押しながらだと高速に数値を変更します)
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-		if(getPressState(player, 2)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+		if(getPressState(player, BTN_LEFT)) {
 			PlaySE(3);
 					// FAVORITES
 			if(statusc[player * 10] == 0) {
@@ -5314,8 +5348,8 @@ void statSelectStandardSp(int32_t player) {
 		}
 
 		// → (Cボタンを押しながらだと高速に数値を変更します)
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-		if(getPressState(player, 3)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+		if(getPressState(player, BTN_RIGHT)) {
 			PlaySE(3);
 			// FAVORITES
 			if(statusc[player * 10] == 0) {
@@ -5357,7 +5391,7 @@ void statSelectStandardSp(int32_t player) {
 
 
 
-	if(getPushState(player, 5)) {		// Bボタンでモード選択画面に戻る
+	if(getPushState(player, BTN_B)) {		// Bボタンでモード選択画面に戻る
 		sp[player] = 1;
 		PlaySE(5);
 		status[player] = 1;				// ブロックシャッター実行
@@ -5366,7 +5400,7 @@ void statSelectStandardSp(int32_t player) {
 		relaymode[player] = 0;
 	}
 
-	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, 4))) {
+	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, BTN_A))) {
 		if(statusc[player * 10] == 0) {
 			// FAVORITES関連
 			loadWait(player, statusc[player * 10 + 1]); // 対応した設定を読み込む。
@@ -5431,7 +5465,7 @@ void statSelectStartLv(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, 0)) {
+	if(getPressState(player, BTN_UP)) {
 		PlaySE(5);
 		statusc[player * 10]--;
 		if(statusc[player * 10] < 0) statusc[player * 10] = 13;
@@ -5441,7 +5475,7 @@ void statSelectStartLv(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, 1)) {
+	if(getPressState(player, BTN_DOWN)) {
 		PlaySE(5);
 		statusc[player * 10]++;
 		if(statusc[player * 10] > 13) statusc[player * 10] = 0;
@@ -5457,7 +5491,7 @@ void statSelectStartLv(int32_t player) {
 	}
 
 
-	if(getPushState(player, 5)) {		// Bボタンでモード選択画面に戻る
+	if(getPushState(player, BTN_B)) {		// Bボタンでモード選択画面に戻る
 		PlaySE(5);
 		status[player] = 2;					// ステータスカウンタを0に
 		statusc[player * 10] = 0;
@@ -5465,7 +5499,7 @@ void statSelectStartLv(int32_t player) {
 		statusc[player * 10 + 2] = 0;
 	}
 
-	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, 4))) {
+	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, BTN_A))) {
 		PlaySE(10);
 		upLines[player] = 0;
 
@@ -6101,16 +6135,16 @@ void statReady(int32_t player) {
 				ExBltRect(25,120 + 192 * player - 96 * maxPlay, 136, 240, 168, 80, 56);
 				if(noitem)	//ITEMに×マーク
 					ExBltRect(3,127 + 192 * player - 96 * maxPlay, 166, 274, 384, 12, 12);
-				if(getPushState(player, 1)){
+				if(getPushState(player, BTN_DOWN)){
 					PlaySE(5);
 					vs_style[player] = 0;	//NORMAL
-				}else if(getPushState(player, 0)){
+				}else if(getPushState(player, BTN_UP)){
 					PlaySE(5);
 					vs_style[player] = 1;	//ATTACK
-				}else if(getPushState(player, 3)){
+				}else if(getPushState(player, BTN_RIGHT)){
 					PlaySE(5);
 					vs_style[player] = 2;	//DEFENCE
-				}else if((getPushState(player, 2)) && (!noitem)){
+				}else if((getPushState(player, BTN_LEFT)) && (!noitem)){
 					PlaySE(5);
 					vs_style[player] = 3;	//ITEM
 				}
@@ -6143,7 +6177,7 @@ void statReady(int32_t player) {
 		}
 		// ツモ送り機能 #1.60c7j5
 		if( (gameMode[player] == 6) || ((gameMode[0] == 5) && (p_nextpass)) ) {
-			if((!pass_flg[player]) && (getPressState(player, 7))) {
+			if((!pass_flg[player]) && (getPressState(player, BTN_D))) {
 				PlaySE(6);	// hold.wav
 				// if not in FP-Basic
 				if(!fpbas_mode[player])
@@ -6171,7 +6205,7 @@ void statReady(int32_t player) {
 				dhold2[player] = 0;
 				}
 			}
-			pass_flg[player] = getPressState(player, 7);
+			pass_flg[player] = getPressState(player, BTN_D);
 		}
 	}
 	statusc[player * 10]++;	// ブロック落下開始へ
@@ -6760,11 +6794,11 @@ void doIRS(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	if(repversw >= 43){	//新Ver
-	if( getPressState(player, 4) || getPressState(player, 5) || getPressState(player, 6) ) {
+	if( getPressState(player, BTN_A) || getPressState(player, BTN_B) || getPressState(player, BTN_C) ) {
 		PlaySE(0);
 
 		// 回転する方向を決める
-		if( !getPressState(player, 5) ) {
+		if( !getPressState(player, BTN_B) ) {
 			// AまたはC
 			if(isWRule(player) && w_reverse)
 				bak = 1;	// WORLD 右回転
@@ -6779,7 +6813,7 @@ void doIRS(int32_t player) {
 		}
 
 		// 180度回転
-		if( ((rots[player] == 7) || (rots[player] == 8)) && getPressState(player, 6) ) {
+		if( ((rots[player] == 7) || (rots[player] == 8)) && getPressState(player, BTN_C) ) {
 			bak = 2;
 		}
 
@@ -6799,24 +6833,24 @@ void doIRS(int32_t player) {
 	}
 	}else{	//旧Ver
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
-	if(getPressState(player, 4) || getPressState(player, 6)) {
+	if(getPressState(player, BTN_A) || getPressState(player, BTN_C)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) )
 			rt[player] = (judgeBlock(player, bx[player], by[player], blk[player], 1 +
-			(1*((rots[player] == 7) && getPressState(player, 6)))) == 0) +(1*((rots[player] == 7) && getPressState(player, 6)));
+			(1*((rots[player] == 7) && getPressState(player, BTN_C)))) == 0) +(1*((rots[player] == 7) && getPressState(player, BTN_C)));
 		else
 			rt[player] = (judgeBlock(player, bx[player], by[player], blk[player], 3 -
-			(1*((rots[player] == 8) && getPressState(player, 6)))) == 0) * 3 - (1*((rots[player] == 8) && getPressState(player, 6)));
+			(1*((rots[player] == 8) && getPressState(player, BTN_C)))) == 0) * 3 - (1*((rots[player] == 8) && getPressState(player, BTN_C)));
 
 		// 赤色ブロックで回転しなかったとき
 		if(!rt[player] && !blk[player] && !r_irs) {
 			// 回転逆転 #1.60c7f8
 			if( (isWRule(player)) && (w_reverse) )
 				rt[player] = (judgeBlock(player, bx[player], by[player] - 1, blk[player], 1 +(1
-				*((rots[player] == 7) && getPressState(player, 6)))) == 0) +(1*((rots[player] == 7) && getPressState(player, 6)));
+				*((rots[player] == 7) && getPressState(player, BTN_C)))) == 0) +(1*((rots[player] == 7) && getPressState(player, BTN_C)));
 			else
 				rt[player] = (judgeBlock(player, bx[player], by[player] - 1, blk[player], 3) == 0) * 3;
 
@@ -6824,7 +6858,7 @@ void doIRS(int32_t player) {
 				by[player]--;
 		}
 	}
-	if(getPressState(player, 5)) {
+	if(getPressState(player, BTN_B)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -6853,7 +6887,7 @@ void doIRS2(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
-	if(getPushState(player, 4) || getPushState(player, 6)) {
+	if(getPushState(player, BTN_A) || getPushState(player, BTN_C)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -6870,7 +6904,7 @@ void doIRS2(int32_t player) {
 		if(rt_nblk[0 + 6 * player] > 3) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] - 4;
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
-	if(getPushState(player, 5)) {
+	if(getPushState(player, BTN_B)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -6889,7 +6923,7 @@ void doIRS2plus(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
-	if(getPressState(player, 4) || getPressState(player, 6)) {
+	if(getPressState(player, BTN_A) || getPressState(player, BTN_C)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -6906,7 +6940,7 @@ void doIRS2plus(int32_t player) {
 		if(rt_nblk[0 + 6 * player] > 3) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] - 4;
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
-	if(getPressState(player, 5)) {
+	if(getPressState(player, BTN_B)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -6957,12 +6991,12 @@ void setBlockSpawnPosition(int32_t player) {
 	}
 	// D.R.Sの先行移動
 	if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
-		if(getPressState(player, 2) && (judgeBlock(player, bx[player] - 1 - (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
+		if(getPressState(player, BTN_LEFT) && (judgeBlock(player, bx[player] - 1 - (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] - 1 - (1 * (IsBig[player] && BigMove[player]));
 			if(movesound) PlaySE(5);
 		}
 		if((blk[player] != 0) || (!IsBig[player]))
-		if(getPressState(player, 3) && (judgeBlock(player, bx[player] + 1 + (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
+		if(getPressState(player, BTN_RIGHT) && (judgeBlock(player, bx[player] + 1 + (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] + 1 + (1 * (IsBig[player] && BigMove[player]));
 			if(movesound) PlaySE(5);
 		}
@@ -7045,7 +7079,7 @@ void doHold(int32_t player, int32_t ihs) {
 	first = 0;
 	if((disable_hold) || (isholdlock[player] == 1) || (death_plus[player])||(hebo_plus[player])||(heboGB[player])) return;
 
-	if(getPressState(player, 7) && !dhold[player]) {
+	if(getPressState(player, BTN_D) && !dhold[player]) {
 		if( (hold_snd != 0) && (((hold_snd == 1) && (ihs)) || (hold_snd == 2)) )
 		PlaySE(6);	// hold.wav #1.60c7f7
 
@@ -7573,9 +7607,9 @@ void statRelayselect(int32_t player) {
 				}
 			if(std_opt[player] == 0){
 				if(statusc[player * 10 + 3] == 0)
-					relaydata[player * 9 + rots[player]] = time[player];
+					relaydata[player * 9 + rots[player]] = gametime[player];
 				else
-					relaydata[player * 9 + rots[player]] = time[player] + (40-li[player]) * 240;
+					relaydata[player * 9 + rots[player]] = gametime[player] + (40-li[player]) * 240;
 			}else{
 				if(statusc[player * 10 + 3] == 0)
 					relaydata[player * 9 + rots[player]] = li[player];
@@ -7583,7 +7617,7 @@ void statRelayselect(int32_t player) {
 					relaydata[player * 9 + rots[player]] = li[player] - li[player] / 2;
 				ltime[player] = 60 * 120;
 			}
-			time[player] = 0;
+			gametime[player] = 0;
 			li[player] = 0;
 			relayround[player]++;
 			bdowncnt[player] = 0;
@@ -7595,7 +7629,7 @@ void statRelayselect(int32_t player) {
 				c = 0;
 				for(i = 0;i < 9;i++)
 					c = c + relaydata[player * 9 + i];
-				if(std_opt[player] == 0) time[player] = c;
+				if(std_opt[player] == 0) gametime[player] = c;
 				else li[player] = c;
 				ending[player] = 1;
 				status[player] = 13;
@@ -7648,7 +7682,7 @@ void statRelayselect(int32_t player) {
 
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, 0)) {
+		if(getPressState(player, BTN_UP)) {
 			PlaySE(5);
 			do {
 				rots[player]--;
@@ -7660,7 +7694,7 @@ void statRelayselect(int32_t player) {
 
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, 1)) {
+		if(getPressState(player, BTN_DOWN)) {
 			PlaySE(5);
 			do {
 				rots[player]++;
@@ -7673,7 +7707,7 @@ void statRelayselect(int32_t player) {
 
 		statusc[player * 10]++;
 
-		if((getPushState(player, 4)) || (statusc[player * 10] > 600)){
+		if((getPushState(player, BTN_A)) || (statusc[player * 10] > 600)){
 			PlaySE(10);
 			setNextBlockColors(player, 1);
 			status[player] = 3;					// Ready
@@ -8307,15 +8341,15 @@ void statErase(int32_t player) {
 
 	//D.R.SのAREスキップ
 	if( ((rots[player] == 8) && (harddrop[player])) &&
-	((getPushState(player, 0)) || (getPushState(player, 1)) || (getPushState(player, 2)) ||
-	 (getPushState(player, 3)) || (getPushState(player, 4)) || (getPushState(player, 5)) ||
-	 (getPushState(player, 6)) || (getPushState(player, 7))) )
+	((getPushState(player, BTN_UP)) || (getPushState(player, BTN_DOWN)) || (getPushState(player, BTN_LEFT)) ||
+	 (getPushState(player, BTN_RIGHT)) || (getPushState(player, BTN_A)) || (getPushState(player, BTN_B)) ||
+	 (getPushState(player, BTN_C)) || (getPushState(player, BTN_D))) )
 		statusc[player * 10] = -1;
 
 	if( ((rots[player] == 8) && (are_skipflag[player])) &&
-	((getPressState(player, 0)) || (getPressState(player, 1)) || (getPressState(player, 2)) ||
-	 (getPressState(player, 3)) || (getPressState(player, 4)) || (getPressState(player, 5)) ||
-	 (getPressState(player, 6)) || (getPressState(player, 7))) ){
+	((getPressState(player, BTN_UP)) || (getPressState(player, BTN_DOWN)) || (getPressState(player, BTN_LEFT)) ||
+	 (getPressState(player, BTN_RIGHT)) || (getPressState(player, BTN_A)) || (getPressState(player, BTN_B)) ||
+	 (getPressState(player, BTN_C)) || (getPressState(player, BTN_D))) ){
 	 	are_skipflag[player] = 0;
 		statusc[player * 10] = -1;
 	}
@@ -9189,7 +9223,7 @@ void recSectionTime(int32_t player) {
 	// TGM
  	if(gameMode[player] !=6) {
 		if((tr[player] % st_record_interval_tgm == 0) && (tr[player] <= 200) && (tc[player] != 0)) {
-			split_time[tr[player] / st_record_interval_tgm - 1 + player * 100] = time[player];
+			split_time[tr[player] / st_record_interval_tgm - 1 + player * 100] = gametime[player];
 			if(tr[player] / st_record_interval_tgm - 2 < 0) {
 				lap_time[tr[player]/st_record_interval_tgm -1 +player*100] = split_time[tr[player]/st_record_interval_tgm -1 +player*100];
 			} else {
@@ -9785,9 +9819,9 @@ void statEraseBlock(int32_t player) {
 	} else {
 		//D.R.SのAREスキップ
 		if( ((rots[player] == 8) && (harddrop[player])) &&
-		((getPushState(player, 0)) || (getPushState(player, 1)) || (getPushState(player, 2)) ||
-		 (getPushState(player, 3)) || (getPushState(player, 4)) || (getPushState(player, 5)) ||
-		 (getPushState(player, 6)) || (getPushState(player, 7))) ){
+		((getPushState(player, BTN_UP)) || (getPushState(player, BTN_DOWN)) || (getPushState(player, BTN_LEFT)) ||
+		 (getPushState(player, BTN_RIGHT)) || (getPushState(player, BTN_A)) || (getPushState(player, BTN_B)) ||
+		 (getPushState(player, BTN_C)) || (getPushState(player, BTN_D))) ){
 		 	statusc[player * 10] = wait2[player];
 		 	are_skipflag[player] = 1;
 	 	}
@@ -10356,21 +10390,21 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		// 段位認定#1.60c7g5
 		// gm条件が成立するとシャドウロールになる		#1.60c7i2
 		if(enable_grade[player] == 1) {
-			if((sc[player] > gscore[17]) && (time[player] <= 810 * 60) && (gmflag1[player]) && (gmflag2[player])) {
+			if((sc[player] > gscore[17]) && (gametime[player] <= 810 * 60) && (gmflag1[player]) && (gmflag2[player])) {
 				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		} else if(enable_grade[player] == 2) {
 		//M以上で8分45秒以内
-			if((grade[player] >= 27) && (time[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
+			if((grade[player] >= 27) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
 				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		}  else if(enable_grade[player] == 3) {
 		//M以上で8分45秒以内
-			if((grade2[player] >= 29) && (time[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
+			if((grade2[player] >= 29) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
 				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
@@ -10378,7 +10412,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		} else if(enable_grade[player] == 4) {
 		//m5以上で6分30秒以内
 		//skillcoolが6個以上、regretが一回も出ていない
-			if((grade[player] >= 22) && (time[player] <= 390 * 60) && (gup3rank[player] == 2) && (gmflag1[player]) && (!gmflag2[player])) {
+			if((grade[player] >= 22) && (gametime[player] <= 390 * 60) && (gup3rank[player] == 2) && (gmflag1[player]) && (!gmflag2[player])) {
 				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
@@ -10457,8 +10491,8 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		//PlayWave(28);
 
 		// タイムボーナス
-		if((novice_mode[player])&&(time[player] < 18000)) {
-			sc[player] = sc[player] + (1253 * (300 - (time[player] / 60)));
+		if((novice_mode[player])&&(gametime[player] < 18000)) {
+			sc[player] = sc[player] + (1253 * (300 - (gametime[player] / 60)));
 		}
 		tc[player] = 300;
 		lv[player] = tc[player];
@@ -10497,7 +10531,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		}
 	// DEVILなら1300で終了させる#1.60c7f3
 	} else if((gameMode[player] == 3) && (tc[player] >= 1300)) {
-		if(( ((!isWRule(player)) && (time[player] <= 19200)) || ((isWRule(player)) && (time[player] <= 21000)) )&&(GetRealFPS()>40)) {
+		if(( ((!isWRule(player)) && (gametime[player] <= 19200)) || ((isWRule(player)) && (gametime[player] <= 21000)) )&&(GetRealFPS()>40)) {
 			grade[player] = 16;
 			objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 			PlayWave(43);
@@ -10549,8 +10583,8 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		}
 		// DEVIL-の500で終了させる#1.60c7v0
 	} else if(  (devil_minus[player])&&(gameMode[player] == 3)&&(repversw >= 52) && (tc[player] >= 500) && (tcbuf < 500) &&
-			( ((time[player] > timelimitm[player]) && (timelimitm[player] > 0) && ( !isWRule(player) )) ||	// TGM,Ti
-			  ((time[player] > timelimitmw[player]) && (timelimitmw[player] > 0) && (isWRule(player) )) )  ) {
+			( ((gametime[player] > timelimitm[player]) && (timelimitm[player] > 0) && ( !isWRule(player) )) ||	// TGM,Ti
+			  ((gametime[player] > timelimitmw[player]) && (timelimitmw[player] > 0) && (isWRule(player) )) )  ) {
 
 		//PlayWave(28);
 		tc[player] = 500;
@@ -10567,7 +10601,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 	// 500で足きり#1.60c7g7
 	} else if(((gameMode[player] == 1) || (gameMode[player] == 2)) && //マスター20G
 				(tc[player] >= 500) && (tcbuf < 500) &&
-				(time[player] > timelimit[player]) && (timelimit[player] > 0)) {
+				(gametime[player] > timelimit[player]) && (timelimit[player] > 0)) {
 		//PlayWave(28);
 		tc[player] = 500;
 		bgfadesw = 1;
@@ -10578,8 +10612,8 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 	// devilは二つ足切り#1.60c7r2b
 	} else if(  ((gameMode[player] == 3) && (!devil_minus[player]) &&//devil
 				(tc[player] >= 500) && (tcbuf < 500)) &&
-				 ( ( (time[player] > timelimit[player]) && (timelimit[player] > 0) && (!isWRule(player)) )||	// TGM,Ti
-				 ( (time[player] > timelimitw[player]) && (timelimitw[player] > 0) && (isWRule(player)) ) )	// ワールド系
+				 ( ( (gametime[player] > timelimit[player]) && (timelimit[player] > 0) && (!isWRule(player)) )||	// TGM,Ti
+				 ( (gametime[player] > timelimitw[player]) && (timelimitw[player] > 0) && (isWRule(player)) ) )	// ワールド系
 				) {
 		//PlayWave(28);
 		tc[player] = 500;
@@ -10593,7 +10627,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 	// LV1000で足切り #1.60c7q8
 	} else if((gameMode[player] == 3) && (!devil_minus[player]) &&
 				(tc[player] >= 1000) && (tcbuf < 1000) &&
-				(time[player] > timelimit2[player]) && (timelimit2[player] > 0)) {
+				(gametime[player] > timelimit2[player]) && (timelimit2[player] > 0)) {
 		tc[player] = 1000;
 		bgfadesw = 1;
 		grade[player]++;	//S10になる
@@ -10757,7 +10791,7 @@ void statNameEntry(int32_t player) {
 	}
 	// 順位を取得する
 	if(ranking_type==0){
-		rank = RankingCheck(gameMode[player],0,sc[player],time[player],lv[player],(ending[player]==3));
+		rank = RankingCheck(gameMode[player],0,sc[player],gametime[player],lv[player],(ending[player]==3));
 	}else if(ranking_type==1){
 	//モードと設定からカテゴリ設定
 		if(gameMode[player]==0){
@@ -10799,7 +10833,7 @@ void statNameEntry(int32_t player) {
 			cat[player] = 13;
 			}
 		}
-		rank = RankingCheck2(cat[player], rots[player], temp[player], time[player], end_f[player]);
+		rank = RankingCheck2(cat[player], rots[player], temp[player], gametime[player], end_f[player]);
 	}else{
 		//モードと設定からカテゴリ設定
 		if(gameMode[player]==0){
@@ -10890,7 +10924,7 @@ void statNameEntry(int32_t player) {
 		}
 
 		if(!norank){
-			rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], time[player], end_f[player]);
+			rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], gametime[player], end_f[player]);
 		}else{
 			rank = -1;
 		}
@@ -10899,7 +10933,7 @@ void statNameEntry(int32_t player) {
 		if((gameMode[player]==10)&&(rank==-1)){//oriでは4位以下も調べる
 			cat[player] = 9;
 			ex[player] = 1;
-			rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], time[player], end_f[player]);
+			rank = RankingCheck3(cat[player],ex[player], rots[player], temp[player], gametime[player], end_f[player]);
 		}
 		// TOMOYOモードで1面以外から始めた場合は記録に残さない
 		if(gameMode[player]==6){
@@ -11035,7 +11069,7 @@ void statNameEntry(int32_t player) {
 	if(statusc[player * 10 + 1] < 45 * 60){
 		padRepeat(player);
 
-		move = getPressState(player, 3) - getPressState(player, 2);
+		move = getPressState(player, BTN_RIGHT) - getPressState(player, BTN_LEFT);
 		if(move)
 			if((mpc[player] == 1) || (mpc[player] >= 15)) {
 				if(mpc[player] >= 15) mpc[player] = 12;
@@ -11067,7 +11101,7 @@ void statNameEntry(int32_t player) {
 				printFont(15 + k + 24 * player - 12 * maxPlay, 13-add, "n", count % 9);
 			} else printFont(15 + k + 24 * player - 12 * maxPlay, 12-add, string[0], 0);
 		}
-		if(getPushState(player, 4)) {
+		if(getPushState(player, BTN_A)) {
 			PlaySE(10);
 			if(statusc[player * 10 + 2] == 53) {
 				if(len) {
@@ -11092,14 +11126,14 @@ void statNameEntry(int32_t player) {
 			LeftStr(string[player + 2], 3, string[player + 2]);
 
 			if(ranking_type==0){
-				RankingRegist(gameMode[player], 0, sc[player], li[player], lv[player], time[player], (ending[player]==3), string[player + 2]);
+				RankingRegist(gameMode[player], 0, sc[player], li[player], lv[player], gametime[player], (ending[player]==3), string[player + 2]);
 				RankingSave();
 
 			}else if(ranking_type==1){
-				RankingRegist2(cat[player], rots[player], temp[player], time[player],  end_f[player], temp2[player], string[player + 2], rank, medal_ac[player], medal_st[player], medal_sk[player], medal_co[player],medal_re[player]);
+				RankingRegist2(cat[player], rots[player], temp[player], gametime[player],  end_f[player], temp2[player], string[player + 2], rank, medal_ac[player], medal_st[player], medal_sk[player], medal_co[player],medal_re[player]);
 				RankingSave2();
 			}else {
-				RankingRegist3(cat[player], ex[player],rots[player], temp[player], time[player],  end_f[player], temp2[player], string[player + 2], rank, medal_ac[player], medal_st[player], medal_sk[player], medal_co[player],medal_re[player]);
+				RankingRegist3(cat[player], ex[player],rots[player], temp[player], gametime[player],  end_f[player], temp2[player], string[player + 2], rank, medal_ac[player], medal_st[player], medal_sk[player], medal_co[player],medal_re[player]);
 				RankingSave3();
 			}
 
@@ -11419,7 +11453,7 @@ fadelv[player] = 0;
 			printFont(16 + 24 * player - 12 * maxPlay, 17, "2 LINES", 0);
 			}
 			// ボタンでスキップ
-			if(getPushState(player, 4)) {
+			if(getPushState(player, BTN_A)) {
 				statusc[player * 10] = 420;
 			}
 			if(statusc[player * 10] >= 420) {
@@ -11596,7 +11630,7 @@ void statResult(int32_t player) {
 		worst = 0;
 
 		for(i = 0;i < 9;i++){
-			if(std_opt[player] == 0){	//time
+			if(std_opt[player] == 0){	//gametime
 				if(relaydata[player * 9 + best] > relaydata[player * 9 + i]){
 					bestT = relaydata[player * 9 + i];
 					best = i;
@@ -11631,7 +11665,7 @@ void statResult(int32_t player) {
 		}
 		if(std_opt[player] == 0){
 			printFont(15 + 24 * player - 12 * maxPlay, 23, "TOTAL TIME",   4);
-			getTime(time[player]);
+			getTime(gametime[player]);
 		}else{
 			printFont(15 + 24 * player - 12 * maxPlay, 23, "TOTAL LINES",   4);
 			sprintf(string[0],"%3dLINES" , li[player]);
@@ -11647,7 +11681,7 @@ void statResult(int32_t player) {
 		printSMALLFont(176 + 192 * player - 96 * maxPlay, 65, string[0], 0);
 		//TIME
 		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 85, 180, 119, 19, 7);
-		getTime(time[player]);
+		getTime(gametime[player]);
 		printSMALLFont(152 + 192 * player - 96 * maxPlay, 85, string[0], 0);
 	} else {
 		if((gameMode[player] == 7)||(gameMode[player] == 9)) {
@@ -11667,7 +11701,7 @@ void statResult(int32_t player) {
 
 		// TIME
 		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 105, 180, 119, 19, 7);
-		getTime(time[player]);
+		getTime(gametime[player]);
 		printSMALLFont(152 + 192 * player - 96 * maxPlay, 105, string[0], 0);
 
 
@@ -11759,7 +11793,7 @@ void statResult(int32_t player) {
 	}
 
 	// ボタンでスキップ
-	if(getPushState(player, 4)) {
+	if(getPushState(player, BTN_A)) {
 		statusc[player * 10 + 1] = 1000;
 	}
 
@@ -11801,12 +11835,11 @@ void statReplaySave(int32_t player) {
 	printFont(16 + 24 * player - 12 * maxPlay, 6, " REPLAY?", 4);
 
 
-	if((time2[player] > 72000 - 36000 * (gameMode[player] == 4)) || (!replay_save[player])){	//リプレイ記録不可
+	if((time2[player] > REPLAY_TIME_MAX) || (!replay_save[player])){	//リプレイ記録不可
 		printFont(15 + 24 * player - 12 * maxPlay, 12, "THIS PLAY", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 13, "  CAN'T BE", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 14, "     SAVED", 2);
-		if((time2[player] > 72000) && (gameMode[player] != 4)) printFont(15 + 24 * player - 12 * maxPlay, 16, "OVER 20MIN", 2);
-		if((time2[player] > 36000) && (gameMode[player] == 4)) printFont(15 + 24 * player - 12 * maxPlay, 16, "OVER 10MIN", 2);
+		if(time2[player] > REPLAY_TIME_MAX) printFont(15 + 24 * player - 12 * maxPlay, 16, "OVER LIMIT", 2);
 	}else if(statusc[player * 10 + 1] != 0){	//空
 		if(statusc[player * 10 + 2] == 0) printFont(15 + 24 * player - 12 * maxPlay, 8, " <      >", count % 9);
 		sprintf(string[0],"   NO.%d",statusc[player * 10 + 0]);
@@ -11917,36 +11950,38 @@ void statReplaySave(int32_t player) {
 		// キー入力
 		padRepeat(player);
 		// ←
-		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, 6) )
-		if( getPressState(player, 2) ) {
+		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, BTN_C) )
+		if( getPressState(player, BTN_LEFT) ) {
 			PlaySE(3);
 			statusc[player * 10 + 0]--;
 			if(statusc[player * 10 + 0] < 1) statusc[player * 10 + 0] = 40;
 			statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
 		}
 		// →
-		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, 6) )
-		if( getPressState(player, 3) ) {
+		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, BTN_C) )
+		if( getPressState(player, BTN_RIGHT) ) {
 			PlaySE(3);
 			statusc[player * 10 + 0]++;
 			if(statusc[player * 10 + 0] > 40) statusc[player * 10 + 0] = 1;
 			statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
 		}
 		// A (SAVE)
-		if( getPushState(player, 4) ) {
-			if((time2[player] > 72000 - 36000 * (gameMode[player] == 4)) || (!replay_save[player])){
+		if( getPushState(player, BTN_A) ) {
+			if((time2[player] > REPLAY_TIME_MAX) || (!replay_save[player])){
 				statusc[player * 10 + 2] = 120;
 			}else{
 				if(abs_YGS2K(GetRealFPS() - max_fps_2) < 10){
 					PlaySE(10);
 					saveReplayData(player, statusc[player * 10 + 0]);
+					freeReplayData();
 					statusc[player * 10 + 2]++;
 					statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
 				}
 			}
 		}
 		// B (NO SAVE)
-		if( getPushState(player, 5) ) {
+		if( getPushState(player, BTN_B) ) {
+			freeReplayData();
 			statusc[player * 10 + 2] = 120;
 		}
 	}else{
@@ -12194,10 +12229,10 @@ void statVersusSelect(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, 0)) {
+	if(getPressState(player, BTN_UP)) {
 		PlaySE(5);
 
-		if(getPressState(player, 7)){
+		if(getPressState(player, BTN_D)){
 			winpoint--;
 			if(winpoint <= 0) winpoint = 10;
 		}else{
@@ -12208,10 +12243,10 @@ void statVersusSelect(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, 1)) {
+	if(getPressState(player, BTN_DOWN)) {
 		PlaySE(5);
 
-		if(getPressState(player, 7)){
+		if(getPressState(player, BTN_D)){
 			winpoint++;
 			if(winpoint > 10) winpoint = 1;
 		}else{
@@ -12223,8 +12258,8 @@ void statVersusSelect(int32_t player) {
 	padRepeat(player);
 
 	// ←
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-	if(getPressState(player, 2)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+	if(getPressState(player, BTN_LEFT)) {
 		PlaySE(3);
 
 		// 回転法則
@@ -12297,8 +12332,8 @@ void statVersusSelect(int32_t player) {
 	}
 
 	// →
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-	if(getPressState(player, 3)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+	if(getPressState(player, BTN_RIGHT)) {
 		PlaySE(3);
 		// 回転法則
 		if(vslevel[player] == 0) {
@@ -12390,7 +12425,7 @@ void statVersusSelect(int32_t player) {
 	}
 
 	// Bボタン
-	if(getPushState(player, 5)) {
+	if(getPushState(player, BTN_B)) {
 		upLineT[0] = uplinetype;
 		use_item[0] = 0;
 		upLineT[1] = uplinetype;
@@ -12408,7 +12443,7 @@ void statVersusSelect(int32_t player) {
 	}
 
 	// Aボタン
-	if(getPushState(player, 4)) {
+	if(getPushState(player, BTN_A)) {
 		if(vslevel[player] == 2) {
 			PlaySE(3);
 			if(sptmp[player] == -10){
@@ -12464,7 +12499,7 @@ void winner() {
 	timeOn[1] = 0;
 	onRecord[0] = 0;
 	onRecord[1] = 0;
-//	time[1] = time[0];
+//	gametime[1] = gametime[0];
 
 	winc++;
 	wink++;
@@ -12506,7 +12541,7 @@ void winner() {
 			if(wintype == 1){
 				if(li[player] == vs_goal/10) {
 					printFont(15 + 24 * player - 12 * maxPlay, 23, "GOAL  TIME", 7);
-					getTime(time[1]);
+					getTime(gametime[1]);
 					printFont(16 + 24 * player - 12 * maxPlay, 24, string[0], 0);
 				} else if( ltime[player] <= 0 ) {
 					printFont(16 + 24 * player - 12 * maxPlay, 22, "BY LINES", 7);
@@ -12518,7 +12553,7 @@ void winner() {
 			}else{
 				if(tc[player] == vs_goal) {
 					printFont(15 + 24 * player - 12 * maxPlay, 23, "GOAL  TIME", 7);
-					getTime(time[1]);
+					getTime(gametime[1]);
 					printFont(16 + 24 * player - 12 * maxPlay, 24, string[0], 0);
 				} else if( ltime[player] <= 0 ) {
 					printFont(16 + 24 * player - 12 * maxPlay, 22, "BY LEVEL", 7);
@@ -12530,7 +12565,7 @@ void winner() {
 			}
 		}
 		// Aボタンで設定画面に戻る
-		if((getPushState(player, 4) && (winr > 22) && (!playback)) || (demo) && (winr > 19) || (winr > 80)) {
+		if((getPushState(player, BTN_A) && (winr > 22) && (!playback)) || (demo) && (winr > 19) || (winr > 80)) {
 			if((playback) || (demo)){
 				if(!tmp_maxPlay)
 					maxPlay = 0;
@@ -12628,7 +12663,7 @@ void winner2() {
 
 	timeOn[0] = 0;
 	timeOn[1] = 0;
-//	time[1] = time[0];
+//	gametime[1] = gametime[0];
 
 	winc++;
 	wink++;
@@ -12668,7 +12703,7 @@ void winner2() {
 			if(wintype == 1){
 				if(li[player] == vs_goal/10) {
 					printFont(15 + 24 * player - 12 * maxPlay, 23, "GOAL  TIME", 7);
-					getTime(time[1]);
+					getTime(gametime[1]);
 					printFont(16 + 24 * player - 12 * maxPlay, 24, string[0], 0);
 				} else if( ltime[player] <= 0 ) {
 					printFont(16 + 24 * player - 12 * maxPlay, 22, "BY LINES", 7);
@@ -12680,7 +12715,7 @@ void winner2() {
 			}else{
 				if(tc[player] == vs_goal) {
 					printFont(15 + 24 * player - 12 * maxPlay, 23, "GOAL  TIME", 7);
-					getTime(time[1]);
+					getTime(gametime[1]);
 					printFont(16 + 24 * player - 12 * maxPlay, 24, string[0], 0);
 				} else if( ltime[player] <= 0 ) {
 					printFont(16 + 24 * player - 12 * maxPlay, 22, "BY LEVEL", 7);
@@ -12721,8 +12756,11 @@ void winner2() {
 		sbak[16] = waitt[player];	//
 		sbak[17] = vs_round;
 		sbak[18] = first_rot[player];
-		sbak[19] = time[player];
+		sbak[19] = gametime[player];
 		sbak[20] = vs_points[player];
+		sbak[21] = replayChunkCnt;
+		int32_t** sbakReplayData = replayData;
+		replayData = NULL;
 
 		playerInitial(player);
 
@@ -12745,8 +12783,11 @@ void winner2() {
 		waitt[player]      = sbak[16];	//
 		vs_round           = sbak[17];
 		first_rot[player]  = sbak[18];
-		if(!player) time[player]       = sbak[19];
+		if(!player)
+		gametime[player]   = sbak[19];
 		vs_points[player]  = sbak[20];
+		replayChunkCnt     = sbak[21];
+		replayData         = sbakReplayData;
 
 		b_wait1[player] = wait1[player];
 		b_wait2[player] = wait2[player];
@@ -13264,7 +13305,7 @@ void statGameOver2(int32_t player) {
 	}
 
 	// ボタンでスキップ
-	if(getPushState(player, 4)) {
+	if(getPushState(player, BTN_A)) {
 		statusc[player * 10] = 480;
 	}
 
@@ -13291,6 +13332,8 @@ void statGameOver2(int32_t player) {
 		for(i=0; i<10; i++) statusc[player * 10 + i] = 0;
 
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) bgfadesw = 1;
+
+		freeReplayData();
 	}
 }
 
@@ -13474,7 +13517,7 @@ void statLaser(int32_t player) {
 			if(statusc[player * 10 + 0] < waitA){	//レーザー発射前
 				if(statusc[player * 10 + 0] % 5 == 0)
 					PlaySE(3);
-				if( ( getPushState(player, 4)) || ( getPushState(player, 5)) || ( getPushState(player, 6)) )
+				if( ( getPushState(player, BTN_A)) || ( getPushState(player, BTN_B)) || ( getPushState(player, BTN_C)) )
 					rapid_c[player]++;
 				if((rapid_c[player] > 4) && (lasernum[player] < 4)){	//レーザーを増やす（最大4本）
 					lasernum[player]++;
@@ -13483,13 +13526,13 @@ void statLaser(int32_t player) {
 				}
 				//照準を移動
 				// →	照準は動かしにくくする
-				if((getPushState(player, 3)) && (statusc[player * 10 + 0] % 10 < 2)){
+				if((getPushState(player, BTN_RIGHT)) && (statusc[player * 10 + 0] % 10 < 2)){
 					for(i = 0; i < lasernum[player]; i++){
 						if(laserpos[i + 4 * player] < fldsizew[player] - 1) laserpos[i + 4 * player]++;
 					}
 				}
 				// ←	移動入力の受付は一定間隔で
-				if((getPushState(player, 2)) && (statusc[player * 10 + 0] % 10 < 2)){
+				if((getPushState(player, BTN_LEFT)) && (statusc[player * 10 + 0] % 10 < 2)){
 					for(i = 0; i < lasernum[player]; i++){
 						if(laserpos[i + 4 * player] > 0) laserpos[i + 4 * player]--;
 					}
@@ -13533,11 +13576,11 @@ void statLaser(int32_t player) {
 				laserpos[2 + 4 * player ] = laserpos[0 + 4 * player ] + 2;//左から3番目
 				//照準を移動
 				// →	照準は動かしにくくする
-				if(getPushState(player, 3)){
+				if(getPushState(player, BTN_RIGHT)){
 						if(laserpos[0 + 4 * player] < fldsizew[player] - 3) laserpos[0 + 4 * player]++;
 				}
 				// ←	移動入力の受付は一定間隔で
-				if(getPushState(player, 2)){
+				if(getPushState(player, BTN_LEFT)){
 						if(laserpos[0 + 4 * player] > 0) laserpos[0 + 4 * player]--;
 				}
 				// 錘を描画
@@ -14807,16 +14850,16 @@ void scanItem(int32_t player) {
 //  パッドリピート入力処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void padRepeat(int32_t player) {
-	if(getPressState(player, 2) && getPressState(player, 3)) {
+	if(getPressState(player, BTN_LEFT) && getPressState(player, BTN_RIGHT)) {
 		mp[player] = 0;
 		mpc[player] = 0;
-	} else if(getPressState(player, 2)) {
+	} else if(getPressState(player, BTN_LEFT)) {
 		if(mp[player] != 2) {
 			mp[player] = 2;
 			mpc[player] = 0;
 		}
 		mpc[player]++;
-	} else if(getPressState(player, 3)) {
+	} else if(getPressState(player, BTN_RIGHT)) {
 		if(mp[player] != 3) {
 			mp[player] = 3;
 			mpc[player] = 0;
@@ -14828,16 +14871,16 @@ void padRepeat(int32_t player) {
 	}
 }
 void padRepeat2(int32_t player) { // hoge 上下入力バージョン
-	if(getPressState(player, 0) && getPressState(player, 1)) {
+	if(getPressState(player, BTN_UP) && getPressState(player, BTN_DOWN)) {
 		mp2[player] = 0;
 		mpc2[player] = 0;
-	} else if(getPressState(player, 0)) {
+	} else if(getPressState(player, BTN_UP)) {
 		if(mp2[player] != 1) {
 			mp2[player] = 1;
 			mpc2[player] = 0;
 		}
 		mpc2[player]++;
-	} else if(getPressState(player, 1)) {
+	} else if(getPressState(player, BTN_DOWN)) {
 		if(mp2[player] != 2) {
 			mp2[player] = 2;
 			mpc2[player] = 0;
@@ -14877,9 +14920,9 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 
 
 	// リプレイ
-	if(playback) {
+	if(playback && replayData) {
 		// 入力をリプレイデータから読み取る
-		ktmp = (replayData[time2[pl] + pl* 60 * 60 * 20] & (1 << key)) / (1 << key);
+		ktmp = (replayData[time2[pl] / REPLAY_PLAYER_CHUNK][(time2[pl] % REPLAY_PLAYER_CHUNK) + pl * REPLAY_PLAYER_CHUNK] & (1 << key)) / (1 << key);
 
 		if((!pl) || (gameMode[0] == 4))
 			return ktmp;
@@ -14909,15 +14952,13 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 		#ifdef ENABLE_GAME_CONTROLLER
 		SConKey conkey;
 		switch (key) {
-		case 8:
-			// GIVEUP
+		case BTN_GIVEUP:
 			conkey.type = CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
 			ctmp = IsPressConKey(playerCons[pl], &conkey);
 			break;
 
-		case 9:
-			// PAUSE
+		case BTN_PAUSE:
 			conkey.type = CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
 			ctmp = IsPressConKey(playerCons[pl], &conkey);
@@ -14971,9 +15012,9 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		pl = player;	// 通常
 	}
 	// リプレイ
-	if(playback) {
+	if(playback && replayData) {
 		// 入力をリプレイデータから読み取る
-		ktmp = (replayData[time2[pl] + pl* 60 * 60 * 20] & (1 << (key + 8))) / (1 << (key + 8));
+		ktmp = (replayData[time2[pl] / REPLAY_PLAYER_CHUNK][(time2[pl] % REPLAY_PLAYER_CHUNK) + pl * REPLAY_PLAYER_CHUNK] & (1 << (key + NUMGAMEBTNS))) / (1 << (key + NUMGAMEBTNS));
 
 		if((!pl) || (gameMode[0] == 4))
 			return ktmp;
@@ -15002,15 +15043,13 @@ int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り�
 		#ifdef ENABLE_GAME_CONTROLLER
 		SConKey conkey;
 		switch (key) {
-		case 8:
-			// GIVEUP
+		case BTN_GIVEUP:
 			conkey.type = CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
 			ctmp = IsPushConKey(playerCons[pl], &conkey);
 			break;
 
-		case 9:
-			// PAUSE
+		case BTN_PAUSE:
 			conkey.type = CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
 			ctmp = IsPushConKey(playerCons[pl], &conkey);
@@ -15690,27 +15729,27 @@ void testmenu(void) {
 			padRepeat2(0);
 			// ↑
 			if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-			if( getPressState(0, 0) ) {
+			if( getPressState(0, BTN_UP) ) {
 				PlaySE(5);
 				cursor--;
 				if(cursor < 0) cursor = 2;
 			}
 			// ↓
 			if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-			if( getPressState(0, 1) ) {
+			if( getPressState(0, BTN_DOWN) ) {
 				PlaySE(5);
 				cursor++;
 				if(cursor > 2) cursor = 0;
 			}
 
 			// Aで決定
-			if( getPushState(0, 4) ) {
+			if( getPushState(0, BTN_A) ) {
 				PlaySE(10);
 				mode = cursor + 1;
 			}
 
 			// Bで戻る
-			if( getPushState(0, 5) ) {
+			if( getPushState(0, BTN_B) ) {
 				return;
 			}
 		}
@@ -15723,8 +15762,8 @@ void testmenu(void) {
 
 			padRepeat(0);
 			// ←
-			if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
-			if( getPressState(0, 2) ) {
+			if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, BTN_C)))
+			if( getPressState(0, BTN_LEFT) ) {
 				param--;
 
 				// 一時バッファを描画しない
@@ -15738,8 +15777,8 @@ void testmenu(void) {
 				if( param < 0 ) param = 89;
 			}
 			// →
-			if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, 6)))
-			if( getPressState(0, 3) ) {
+			if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, BTN_C)))
+			if( getPressState(0, BTN_RIGHT) ) {
 				param++;
 
 				// 未使用プレーンを描画しない
@@ -15753,7 +15792,7 @@ void testmenu(void) {
 				if( param > 89 ) param = 0;
 			}
 
-			if( !getPressState(0, 7) ) {
+			if( !getPressState(0, BTN_D) ) {
 				printGameButton(6, 29, BTN_B, 0, true);
 				printGameButton(13, 29, BTN_D, 0, true);
 				sprintf(string[0],"NO.%02d  :EXIT  :HIDE",param);
@@ -15762,7 +15801,7 @@ void testmenu(void) {
 			}
 
 			// Bで戻る
-			if( getPushState(0, 5) ) {
+			if( getPushState(0, BTN_B) ) {
 				mode = 0;
 			}
 		}
@@ -15785,7 +15824,7 @@ void testmenu(void) {
 			Input();
 
 			// A+Cで決定
-			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
+			if( (!param) && (getPressState(0, BTN_A)) && (getPressState(0, BTN_C)) ) {
 				PlaySE(10);
 				RankingInit();
 				RankingInit2();
@@ -15794,7 +15833,7 @@ void testmenu(void) {
 			}
 
 			// Bで戻る
-			if( getPushState(0, 5) ) {
+			if( getPushState(0, BTN_B) ) {
 				mode = 0;
 			}
 		}
@@ -15817,7 +15856,7 @@ void testmenu(void) {
 			Input();
 
 			// A+Cで決定 
-			if( (!param) && (getPressState(0, 4)) && (getPressState(0, 6)) ) {
+			if( (!param) && (getPressState(0, BTN_A)) && (getPressState(0, BTN_C)) ) {
 				PlaySE(10);
 				SegaSeed[0]=711800410;     // generates sega's poweron pattern
                 BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
@@ -15827,7 +15866,7 @@ void testmenu(void) {
 			}
 
 			// Bで戻る
-			if( getPushState(0, 5) ) {
+			if( getPushState(0, BTN_B) ) {
 				mode = 0;
 				if (param==1) return;
 			}

@@ -1,5 +1,7 @@
 #include "script/include.h"
 
+static int32_t chunkBuf[REPLAY_PLAYER_CHUNK / 2];
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  キーが押されてたらリプレイを保存する#1.60c7i9
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -9,7 +11,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 	//速度制限（テスト）
 	if(abs_YGS2K(GetRealFPS() - max_fps_2) >= 10) return;
 
-	if((time2[player] <= 72000) && !playback && replay_save[player]) {
+	if((time2[player] <= REPLAY_TIME_MAX) && !playback && replay_save[player]) {
 		for(i = 0; i < 10; i++) {
 			// TODO: Change how replay saving is selected, away
 			// from hard-coded to the keyboard number keys to
@@ -17,6 +19,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 			#ifdef ENABLE_KEYBOARD
 			if(IsPushKey(2 + i + player * 14)) {
 				saveReplayData(player, i + player * 10 + 1);
+				freeReplayData();
 				statusc[player * 10 + statnumber] = i + player * 10 + 1;
 			}
 			#endif
@@ -34,7 +37,8 @@ void saveReplayData(int32_t pl, int32_t number) {
 		saveReplay_VS(number);
 		return;
 	}
-	FillMemory(&saveBuf, 50000 * 4, 0);
+
+	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	// ファイルフォーマット (4byte単位)
 	//   0〜    3 ヘッダ
@@ -56,7 +60,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 	// 292        高速落下モード
 	// 293        横方向先行入力
 	// 294        赤棒床蹴り
-	// 300〜44299 リプレイデータ
+	// 300...     リプレイデータ
 
 	saveBuf[0] = 0x4F424548;
 	saveBuf[1] = 0x20534952;
@@ -71,7 +75,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 		saveBuf[i + 5] = temp1;
 	}
 
-	saveBuf[200] = time[pl];
+	saveBuf[200] = gametime[pl];
 	saveBuf[201] = gameMode[pl];
 	saveBuf[202] = sc[pl];
 	saveBuf[203] = lv[pl];
@@ -171,23 +175,35 @@ void saveReplayData(int32_t pl, int32_t number) {
 		saveBuf[202] = stage[pl] + 1;
 	}
 
-	temp1 = pl * 60 * 60 * 20;
+	max = time2[pl];
 
-	max = time2[pl] / 2;
-
-	if(max > 60 * 60 * 20 / 2) max = 60 * 60 * 20 / 2;
-	for(i = 0; i < max; i++) {
-		saveBuf[i + 300] = replayData[(i << 1) + temp1] | (replayData[(i << 1) + 1 + temp1] << 16);
-	}
-
-	saveBuf[4] = (max + 300) * 4;
+	if(max > REPLAY_TIME_MAX) max = REPLAY_TIME_MAX;
+	saveBuf[4] = REPLAY_SIZE_1P(max);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	SaveFile(string[0], &saveBuf, saveBuf[4]);
+	printf("%s description:\n", string[0]);
+	for (i = 0; i < 300; i++) {
+		printf("%d\n", saveBuf[i]);
+	}
+	printf("\n");
+	fflush(stdout);
+
+	SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
+
+	temp1 = pl * REPLAY_PLAYER_CHUNK;
+	for (j = 0; j < replayChunkCnt; j++) {
+		FillMemory(saveBuf, (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t), 0);
+		for (i = 0; i < REPLAY_PLAYER_CHUNK / 2 && j * REPLAY_PLAYER_CHUNK + (i << 1) < max; i++) {
+			saveBuf[i] =
+				(replayData[j][(i << 1) + 0 + temp1] <<  0) |
+				(replayData[j][(i << 1) + 1 + temp1] << 16);
+		}
+		AppendFile(string[0], saveBuf, i * sizeof(int32_t));
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -197,10 +213,9 @@ void saveReplay_VS(int32_t number) {
 	int32_t i, j, temp1, temp2, max, pl;
 	pl = 0;
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
-	// 300〜22299 　1Pリプレイデータ
-	// 22300〜44299 2Pリプレイデータ
+	// 300... 　1P&2Pリプレイデータ
 
 	saveBuf[0] = 0x4F424548;
 	saveBuf[1] = 0x20534952;
@@ -215,7 +230,7 @@ void saveReplay_VS(int32_t number) {
 		saveBuf[i + 5] = temp1;
 	}
 
-	saveBuf[200] = time[0];
+	saveBuf[200] = gametime[0];
 	saveBuf[201] = gameMode[0];
 	saveBuf[204] = time2[0];	// リプレイ時間　プレイヤー毎
 	saveBuf[205] = time2[1];	//
@@ -304,26 +319,42 @@ void saveReplay_VS(int32_t number) {
 	saveBuf[227] = disrise;
 	saveBuf[228] = winpoint;
 
+	max = time2[0] > time2[1] ?
+		time2[0] :
+		time2[1];
+	if(max > REPLAY_TIME_MAX) max = REPLAY_TIME_MAX;
 
-	for(pl = 0; pl <= 1; pl++){
-		temp1 = pl * 60 * 60 * 20;
-
-		max = time2[pl] / 2;
-
-		if(max > 60 * 60 * 10 / 2) max = 60 * 60 * 10 / 2;
-		for(i = 0; i < max; i++) {
-			saveBuf[i + 300 + (22000 * pl)] = replayData[(i << 1) + temp1] | (replayData[(i << 1) + 1 + temp1] << 16);
-		}
-	}
-
-	saveBuf[4] = (300 + 22000 + (time2[1] / 2)) * 4;
+	saveBuf[4] = REPLAY_SIZE_2P(max);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	SaveFile(string[0], &saveBuf, saveBuf[4]);
+	SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
+
+	if (replayData) {
+		for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
+			FillMemory(saveBuf, SAVEBUF_2P_CHUNK * 2 * sizeof(int32_t), 0);
+			for (pl = 0; pl < 2; pl++) {
+				temp1 = pl * REPLAY_PLAYER_CHUNK;
+				temp2 = pl * SAVEBUF_2P_CHUNK;
+
+				int32_t replayIndex = j * SAVEBUF_2P_CHUNK * 2;
+
+				for (i = 0; i < SAVEBUF_2P_CHUNK && (j * SAVEBUF_2P_CHUNK + i) * 2 < max; i++, replayIndex += 2) {
+					saveBuf[i + temp2] =
+						(replayData[(replayIndex + 0) / REPLAY_PLAYER_CHUNK][(replayIndex + 0) % REPLAY_PLAYER_CHUNK + temp1] <<  0) |
+						(
+						((j * SAVEBUF_2P_CHUNK + i) * 2 + 1 < max) ?
+						(replayData[(replayIndex + 1) / REPLAY_PLAYER_CHUNK][(replayIndex + 1) % REPLAY_PLAYER_CHUNK + temp1] << 16) :
+						0
+						);
+				}
+			}
+			AppendFile(string[0], saveBuf, (SAVEBUF_2P_CHUNK + i) * sizeof(int32_t));
+		}
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -332,23 +363,21 @@ void saveReplay_VS(int32_t number) {
 int32_t loadReplayData(int32_t pl, int32_t number) {
 	int32_t i, j, temp1, temp2, max,k,sptemp[4];
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	LoadFile(string[0], &saveBuf, 820);
+	LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	if(saveBuf[201] == 4)	// VSはフォーマットが一部異なる
 		return(loadReplay_VS(number));
 
-	if(saveBuf[4] > 200000) saveBuf[4] = 200000;
-	if(saveBuf[4] < 800) return (1);
+	if(saveBuf[4] > REPLAY_SIZE_1P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_1P(REPLAY_TIME_MAX);
+	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
-
-	LoadFile(string[0], &saveBuf, saveBuf[4]);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -362,7 +391,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	}
 
 //	max = (saveBuf[200] + 3730) / 2 + 1;
-	max = saveBuf[4] /2 + 1;
+	max = saveBuf[4] / sizeof(int16_t) + 1;
 	gameMode[pl] = saveBuf[201];
 	start[pl] = saveBuf[205];		// 開始レベルのロード #1.60c3
 
@@ -538,10 +567,32 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 
 	temp1 = pl * 60 * 60 * 20;
 
-	if(max > 60 * 60 * 20 / 2) max = 60 * 60 * 20 / 2;
-	for(i = 0; i < max; i++) {
-		replayData[(i << 1) + temp1    ] =  saveBuf[i + 300] & 0xFFFF;
-		replayData[(i << 1) + temp1 + 1] = (saveBuf[i + 300] & 0xFFFF0000) >> 16;
+	replayChunkCnt = ((saveBuf[4] / sizeof(int32_t) - 300) * 2 / REPLAY_PLAYER_CHUNK) + 1;
+	if (!(replayData = malloc(replayChunkCnt * sizeof(int32_t*)))) {
+		abort();
+	}
+	for (j = 0; j < replayChunkCnt; j++) {
+		size_t chunkSize;
+		if (j < replayChunkCnt - 1) {
+			chunkSize = (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t);
+		}
+		else {
+			chunkSize = ((saveBuf[4] / sizeof(int32_t) - 300) % ((REPLAY_PLAYER_CHUNK / 2))) * sizeof(int32_t);
+		}
+		ReadFile(
+			string[0],
+			chunkBuf,
+			chunkSize,
+			(300 + j * (REPLAY_PLAYER_CHUNK / 2)) * sizeof(int32_t)
+		);
+		if (!(replayData[j] = calloc(REPLAY_CHUNK_SIZE, 1u))) {
+			abort();
+		}
+
+		for(i = 0; i < chunkSize / sizeof(int32_t); i++) {
+			replayData[j][(i << 1) + temp1    ] =  chunkBuf[i] & 0xFFFF;
+			replayData[j][(i << 1) + temp1 + 1] = (chunkBuf[i] & 0xFFFF0000) >> 16;
+		}
 	}
 
 	next[pl] = nextb[nextc[pl] + pl * 1400];	// #1.60c7n7
@@ -551,27 +602,28 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 
 	return (0);
 }
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  VSのリプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplay_VS(int32_t number) {
-	int32_t i, j, temp1, temp2, max[2],k,sptemp[4],pl;
+	int32_t i, j, length, temp1, temp2, max,k,sptemp[4],pl;
 	pl = 0;
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	LoadFile(string[0], &saveBuf, 820);
+	LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
-	if(saveBuf[4] > 200000) saveBuf[4] = 200000;
-	if(saveBuf[4] < 800) return (1);
+	if(saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
+	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
-	LoadFile(string[0], &saveBuf, saveBuf[4]);
+	LoadFile(string[0], saveBuf, saveBuf[4]);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -589,7 +641,6 @@ int32_t loadReplay_VS(int32_t number) {
 	}
 
 //	max = (saveBuf[200] + 3730) / 2 + 1;
-	max[0] = saveBuf[4] /2 + 1;
 	gameMode[0] = saveBuf[201];
 	gameMode[1] = saveBuf[201];
 	start[0] = 0;
@@ -712,6 +763,8 @@ int32_t loadReplay_VS(int32_t number) {
 	if(IsBigStart[1]) {
 		IsBig[1] = 1;
 	}
+	#if 0
+
 	for(pl = 0; pl <= 1; pl++){
 		temp1 = pl * 60 * 60 * 20;
 
@@ -719,18 +772,65 @@ int32_t loadReplay_VS(int32_t number) {
 
 		if(max[pl] > 60 * 60 * 10 / 2) max[pl] = 60 * 60 * 10 / 2;
 		for(i = 0; i < max[pl]; i++) {
-			replayData[(i << 1) + temp1    ] =  saveBuf[i + 300 + (22000 * pl)] & 0xFFFF;
-			replayData[(i << 1) + temp1 + 1] = (saveBuf[i + 300 + (22000 * pl)] & 0xFFFF0000) >> 16;
+			replayData[(i << 1) + temp1    ] =  saveBuf[i + 300 + (SAVEBUF_2P_CHUNK * pl)] & 0xFFFF;
+			replayData[(i << 1) + temp1 + 1] = (saveBuf[i + 300 + (SAVEBUF_2P_CHUNK * pl)] & 0xFFFF0000) >> 16;
 		}
 
 		next[pl] = nextb[nextc[pl] + pl * 1400];	// #1.60c7n7
 		setNextBlockColors(pl, 1);	// #1.60c7n2
 	}
+
+	#else
+	
+	length = (saveBuf[4] / sizeof(int32_t) - 300);
+	max = ((length % SAVEBUF_2P_CHUNK) + (length / (SAVEBUF_2P_CHUNK * 2)) * SAVEBUF_2P_CHUNK) * 2;
+
+	replayChunkCnt = ((max - 1) / REPLAY_PLAYER_CHUNK) + 1;
+	if (!(replayData = malloc(replayChunkCnt * sizeof(int32_t*)))) {
+		abort();
+	}
+	for (i = 0; i < replayChunkCnt; i++) {
+		if (!(replayData[i] = calloc(REPLAY_CHUNK_SIZE, 1u))) {
+			abort();
+		}
+	}
+
+	for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
+		for(pl = 0; pl <= 1; pl++){
+			temp1 = pl * REPLAY_PLAYER_CHUNK;
+			temp2 = pl * SAVEBUF_2P_CHUNK;
+
+			int32_t replayIndex = j * SAVEBUF_2P_CHUNK * 2;
+
+			for(i = 0; i < SAVEBUF_2P_CHUNK && (j * SAVEBUF_2P_CHUNK + i) * 2 < max; i++, replayIndex += 2) {
+				replayData[(replayIndex + 0) / REPLAY_PLAYER_CHUNK][(replayIndex + 0) % REPLAY_PLAYER_CHUNK + temp1] =  saveBuf[i + 300 + (SAVEBUF_2P_CHUNK * pl)] & 0xFFFF;
+				if ((j * SAVEBUF_2P_CHUNK + i) * 2 + 1 < max) {
+					replayData[(replayIndex + 1) / REPLAY_PLAYER_CHUNK][(replayIndex + 1) % REPLAY_PLAYER_CHUNK + temp1] = (saveBuf[i + 300 + (SAVEBUF_2P_CHUNK * pl)] & 0xFFFF0000) >> 16;
+				}
+			}
+
+			next[pl] = nextb[nextc[pl] + pl * 1400];	// #1.60c7n7
+			setNextBlockColors(pl, 1);	// #1.60c7n2
+		}
+	}
+	
+	#endif
 	SavedSeed[0]= saveBuf[269]; // harmless if it's zero anyway
 	SavedSeed[1]= saveBuf[270]; // harmless if it's zero anyway
 
 
 	return (0);
+}
+
+void freeReplayData() {
+	if (replayData) {
+		for (int32_t i = 0u; i < replayChunkCnt; i++) {
+			free(replayData[i]);
+		}
+		free(replayData);
+		replayData = NULL;
+		replayChunkCnt = 0;
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -896,6 +996,7 @@ void ReplaySelectInitial(void) {
 			enable[i] = -1;
 			StrCpy(string[10 + i], "");
 		}
+		freeReplayData();
 	}
 
 	if(cnt) {
@@ -928,7 +1029,7 @@ void ReplaySelect(void) {
 	}
 
 	// Bで戻る
-	if(getPushState(0, 5) || quitNow()) {
+	if(getPushState(0, BTN_B) || quitNow()) {
 		restoreSetups();
 		if(gameMode[0] == 8) gameMode[0] = 0;
 		if(gameMode[0] == 4){
@@ -958,7 +1059,7 @@ void ReplaySelect(void) {
 
 	// ↑
 	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-	if(getPressState(0, 0)) {
+	if(getPressState(0, BTN_UP)) {
 		PlaySE(5);
 		do {
 			csr--;
@@ -968,7 +1069,7 @@ void ReplaySelect(void) {
 
 	// ↓
 	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-	if(getPressState(0, 1)) {
+	if(getPressState(0, BTN_DOWN)) {
 		PlaySE(5);
 		do {
 			csr++;
@@ -977,7 +1078,7 @@ void ReplaySelect(void) {
 	}
 
 	// Aで開始
-	if(getPushState(0, 4)) {
+	if(getPushState(0, BTN_A)) {
 		PlaySE(10);
 		flag = csr + 1;
 	}
@@ -1008,7 +1109,7 @@ void ReplaySelect(void) {
 	}
 
 	// Cで詳細
-	if(getPushState(0, 6)) {
+	if(getPushState(0, BTN_C)) {
 		PlaySE(10);
 		ReplayDetail(csr + 1);
 	}
@@ -1350,7 +1451,7 @@ void ReplayDetail(int32_t number) {
 		printFont(15, 25, string[0], 0);
 
 		printFont(1, 26, "LENGTH      :", 0);
-		sprintf(string[0],"%d",saveBuf[4] /2 + 1);
+		sprintf(string[0], "%d", saveBuf[4] / sizeof(int16_t) + 1);
 		printFont(15, 26, string[0], 0);
 
 		/* バージョン */
@@ -1416,28 +1517,32 @@ void ReplayDetail(int32_t number) {
 		// AorBで戻る
 		Input();
 
-		if(getPushState(0, 4) || getPushState(0, 5)) {
+		if(getPushState(0, BTN_A) || getPushState(0, BTN_B)) {
 			PlaySE(5);
+			freeReplayData();
 			return;
 		}
 		if(quitNow()) restoreSetups();
 		spriteTime();
 	}
+	
+	freeReplayData();
 }
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイデータをロード（保存メニュー用）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplayData2(int32_t pl, int32_t number) {
 	int32_t i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
 
-	FillMemory(&tmpBuf, 300 * 4, 0);
+	FillMemory(tmpBuf, 300 * 4, 0);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 20);
 
-	LoadFile(string[0], &tmpBuf, 1200);
+	LoadFile(string[0], tmpBuf, 1200);
 
 	if(tmpBuf[0] != 0x4F424548) return (1);
 	if(tmpBuf[1] != 0x20534952) return (1);
@@ -1453,33 +1558,33 @@ int32_t loadReplayData2(int32_t pl, int32_t number) {
 //TOMOYO
 	if(repdata[0 + pl * 20] == 6){
 		repdata[4 + pl * 20] = tmpBuf[202];// stage
-		repdata[5 + pl * 20] = tmpBuf[200];// time
+		repdata[5 + pl * 20] = tmpBuf[200];// gametime
 //VERSUS
 	}else if(repdata[0 + pl * 20] == 4){
 		repdata[2 + pl * 20] = tmpBuf[218];// 1P_rots
 		repdata[4 + pl * 20] = tmpBuf[219];// 2P_rots
 		repdata[5 + pl * 20] = tmpBuf[228];// winpoint
-		repdata[6 + pl * 20] = tmpBuf[200];// time
+		repdata[6 + pl * 20] = tmpBuf[200];// gametime
 		repdata[9 + pl * 20] = 0;
 //ACE
 	}else if(repdata[0 + pl * 20] == 7){
 		repdata[4 + pl * 20] = tmpBuf[203];// level
 		repdata[5 + pl * 20] = tmpBuf[204];// lines
-		repdata[6 + pl * 20] = tmpBuf[200];// time
+		repdata[6 + pl * 20] = tmpBuf[200];// gametime
 //MISSION
 	}else if(repdata[0 + pl * 20] == 8){
 		repdata[4 + pl * 20] = tmpBuf[234];// mission_file
-		repdata[5 + pl * 20] = tmpBuf[200];// time
+		repdata[5 + pl * 20] = tmpBuf[200];// gametime
 //SIMPLE
 	}else if(repdata[0 + pl * 20] == 9){
 		repdata[4 + pl * 20] = tmpBuf[260];// std_opt
 		repdata[5 + pl * 20] = tmpBuf[202];// score
 		repdata[6 + pl * 20] = tmpBuf[204];// lines
-		repdata[7 + pl * 20] = tmpBuf[200];// time
+		repdata[7 + pl * 20] = tmpBuf[200];// gametime
 //通常
 	}else{
 		repdata[4 + pl * 20] = tmpBuf[203];// level
-		repdata[5 + pl * 20] = tmpBuf[200];// time
+		repdata[5 + pl * 20] = tmpBuf[200];// gametime
 		repdata[6 + pl * 20] = tmpBuf[202];// score
 		repdata[7 + pl * 20] = tmpBuf[204];// lines
 	}

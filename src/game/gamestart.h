@@ -7,13 +7,11 @@
 
 #include "ygs2kfunc.h"
 #include "button.h"
-#include "prototypes.h"
 
 #define		STRING_MAX		200
 #define		cstr			const char*
 #define		loop			while ( loopFlag )
 #define		halt			spriteTime()
-#define		time			gametime
 #define		ctime			cgametime
 #define		stime			sgametime
 #define		wait1			gamewait1
@@ -676,7 +674,8 @@ extern int32_t demotime;
 extern int32_t demo;
 extern int32_t playback;
 extern int32_t saveBuf[50000];
-extern int32_t replayData[60 *60 *20 *2];
+extern int32_t** replayData;
+extern int32_t replayChunkCnt;
 extern int32_t csr,cnt,enable[80],category,rankingmode;
 extern int32_t noredraw,fast;
 extern int32_t rksc[40],rkbl[40],rktime[40],rklv[40],rkfl[40];
@@ -769,7 +768,8 @@ extern int32_t wait3[2],waitt[2];
 extern int32_t wait1[2],wait2[2];
 extern int32_t stime[2];
 extern int32_t ctime[2];
-extern int32_t time[2],timeOn[2];
+extern int32_t gametime[2],timeOn[2];
 void shutDown();
 void spriteTime();
 extern bool loopFlag;
+extern bool quitNowFlag;

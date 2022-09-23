@@ -2,12 +2,6 @@
 
 #ifdef _WIN32
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <inttypes.h>
-#include <stdlib.h>
-#include <stdbool.h>
-
 extern bool loopFlag;
 extern int32_t restart;
 

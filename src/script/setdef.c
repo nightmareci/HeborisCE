@@ -334,7 +334,7 @@ void SetDefaultConfig()
 {
 	int32_t i,j, cfgbuf[CFG_LENGTH];
 
-	FillMemory(&cfgbuf, sizeof(cfgbuf), 0);
+	FillMemory(cfgbuf, sizeof(cfgbuf), 0);
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -462,5 +462,5 @@ void SetDefaultConfig()
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
-	SaveFile("config/data/CONFIG.SAV", &cfgbuf, sizeof(cfgbuf));
+	SaveFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 }

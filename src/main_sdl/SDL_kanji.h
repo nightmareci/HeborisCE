@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SDL.h"
+#include "include.h"
 
 typedef enum { KANJI_SJIS, KANJI_EUC, KANJI_JIS } Kanji_CodingSystem;
 

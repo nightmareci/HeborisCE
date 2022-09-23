@@ -22,7 +22,7 @@ void RankingInit(void) {
 void RankingConvert(void) {
 	int32_t	i, j, temp;
 
-	LoadFile("config/data/RANKING.SAV", &saveBuf, 1312);
+	LoadFile("config/data/RANKING.SAV", saveBuf, 1312);
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;
 		rksc[i] = saveBuf[temp + 0];
@@ -146,24 +146,24 @@ void RankingProc2_1(void) {
 
 		spriteTime();
 
-		if(getPushState(0, 4) || getPushState(1, 4) || getPushState(0, 5) || getPushState(1, 5) || quitNow()) {
+		if(getPushState(0, BTN_A) || getPushState(1, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_B) || quitNow()) {
 			flag = -1;
 		}
 
 
-		if(getPushState(0, 0) || getPushState(1, 0) || getPushState(0, 1) || getPushState(1, 1)) {
+		if(getPushState(0, BTN_UP) || getPushState(1, BTN_UP) || getPushState(0, BTN_DOWN) || getPushState(1, BTN_DOWN)) {
 			rankingmode = 1 - rankingmode;
 			RankingCreate(category, rankingmode);
 			count = 0;
 		}
 
-		if(getPushState(0, 2) || getPushState(1, 2)) {
+		if(getPushState(0, BTN_LEFT) || getPushState(1, BTN_LEFT)) {
 			category = (category - 1);
 			if(category < 0) category = 3;
 			RankingCreate(category, rankingmode);
 			count = 0;
 		}
-		if(getPushState(0, 3) || getPushState(1, 3)) {
+		if(getPushState(0, BTN_RIGHT) || getPushState(1, BTN_RIGHT)) {
 			category = (category + 1) % 4;
 			RankingCreate(category, rankingmode);
 			count = 0;
@@ -280,7 +280,7 @@ int32_t RankingView(void) {
 		printFont(xxx + 24, 4 * i + 9, string[0], col);
 	}
 
-	if(getPushState(0, 4) || getPushState(0, 5) || getPushState(1, 4) || getPushState(1, 5)) {
+	if(getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B)) {
 		return (-1);
 	}
 
@@ -290,7 +290,7 @@ int32_t RankingView(void) {
 int32_t RankingSave(void) {
 	int32_t i, temp;
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 50000 * 4, 0);
 
 	// ファイルフォーマット (4byte単位)
 	//   0〜    3 ヘッダ
@@ -316,7 +316,7 @@ int32_t RankingSave(void) {
 		saveBuf[temp + 5] = rkfl[i];
 	}
 
-	SaveFile("config/data/RANKING.SAV", &saveBuf, 1312);
+	SaveFile("config/data/RANKING.SAV", saveBuf, 1312);
 
 	return (0);
 }
@@ -324,9 +324,9 @@ int32_t RankingSave(void) {
 int32_t RankingLoad(void) {
 	int32_t i, temp;
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 50000 * 4, 0);
 
-	LoadFile("config/data/RANKING.SAV", &saveBuf, 16);
+	LoadFile("config/data/RANKING.SAV", saveBuf, 16);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -335,7 +335,7 @@ int32_t RankingLoad(void) {
 	if(saveBuf[3] == 0x31764353) return (2);
 	else if(saveBuf[3] != 0x32764353) return (1);
 
-	LoadFile("config/data/RANKING.SAV", &saveBuf, 1312);
+	LoadFile("config/data/RANKING.SAV", saveBuf, 1312);
 
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;

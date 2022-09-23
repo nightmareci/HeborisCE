@@ -1,9 +1,5 @@
 #include "SDL_kanji.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-
 #define BUF 256
 
 static void InitFont(Kanji_Font* font) {

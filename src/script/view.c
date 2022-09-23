@@ -7,16 +7,16 @@
 void showControl(void) {
 	int32_t		zx, zy, bai;
 	if(!onRecord[0]) return;
-	zx = - getPressState(0, 2) + getPressState(0, 3);
-	zy = - getPressState(0, 0) + getPressState(0, 1);
+	zx = - getPressState(0, BTN_LEFT) + getPressState(0, BTN_RIGHT);
+	zy = - getPressState(0, BTN_UP) + getPressState(0, BTN_DOWN);
 	bai = 10 + ((!zx) || (!zy)) * 4;
 
 	ExBltRect(3, 20 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 198, 38, 20, 20);				// レバーのカバー部分
 
-	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 224 + getPressState(0, 4) * 32, 0, 32, 32);	// Aボタン
-	ExBltRect(3, 64 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 132, 224 + getPressState(0, 5) * 32, 0, 32, 32);	// Bボタン
-	ExBltRect(3, 84 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 138, 224 + getPressState(0, 6) * 32, 0, 32, 32);	// Cボタン
-	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 144, 224 + getPressState(0, 7) * 32, 0, 32, 32); 	// Holdボタンの操作状況 #1.60c
+	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 224 + getPressState(0, BTN_A) * 32, 0, 32, 32);	// Aボタン
+	ExBltRect(3, 64 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 132, 224 + getPressState(0, BTN_B) * 32, 0, 32, 32);	// Bボタン
+	ExBltRect(3, 84 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 138, 224 + getPressState(0, BTN_C) * 32, 0, 32, 32);	// Cボタン
+	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 144, 224 + getPressState(0, BTN_D) * 32, 0, 32, 32); 	// Holdボタンの操作状況 #1.60c
 
 	ExBltRect(3, 14 + zx * bai + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 120 + zy * bai, 192, 0, 32, 32);	// レバー
 }
@@ -673,7 +673,7 @@ void viewScoreSmall(void) {
 					//TOTAL TIME
 					ExBltRect(85, 208+add + 54 * i - 96 * maxPlay, 50, 35, 13*7, 25, 7);
 					ExBltRect(85, 231+add + 54 * i - 96 * maxPlay, 50, 35, 12*7, 19, 7);
-					getTime(time[i]);
+					getTime(gametime[i]);
 					printSMALLFont((26 + 6 * i - 12 * maxPlay)*8+add, 58, string[0], color);
 					// BEST TIME
 					if(ranking_type==1){
@@ -697,7 +697,7 @@ void viewScoreSmall(void) {
 			if(gameMode[i] == 8){
 				ExBltRect(85, 208+add + 54 * i - 96 * maxPlay, 50, 35, 13*7, 25, 7);
 				ExBltRect(85, 231+add + 54 * i - 96 * maxPlay, 50, 35, 12*7, 19, 7);
-				getTime(time[i]);
+				getTime(gametime[i]);
 				printSMALLFont((26 + 6 * i - 12 * maxPlay)*8+add, 58, string[0], color);
 			}
 // SIMPLE (STANDARD)
@@ -709,7 +709,7 @@ void viewScoreSmall(void) {
 						else sprintf(string[0], "%d", relayround[i] + (1 * (relayround[i] < 9)));
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 						if(status[i] != 2){
-							ExBltRect(87,208 + 48 * i - 96 * maxPlay, 102, (time[i]%6)*48 ,(time[i]%30/6)*48,48,48);
+							ExBltRect(87,208 + 48 * i - 96 * maxPlay, 102, (gametime[i]%6)*48 ,(gametime[i]%30/6)*48,48,48);
 							ExBltRect(85,208 + 70 * i - 96 * maxPlay, 105, 35, 7*6, 22, 7);
 							ExBltRect(55,201 + 48 * i - 96 * maxPlay, 121 - (3 * (getDrawRate() == 1)), 64*rots[i] ,
 									32*fontc[rots[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
@@ -730,8 +730,8 @@ void viewScoreSmall(void) {
 						ExBltRect(85, 238+add + 45* i - 96 * maxPlay, 50, 70, 0,7, 7);
 						ExBltRect(85, 244+add + 45 * i - 96 * maxPlay, 50, 70, 7*9,35, 7);
 					}
-					if(time[i]>120){//開始二秒は表示させない
-						bps[i] = (li[i] * 100 *60*60) / (time[i]);
+					if(gametime[i]>120){//開始二秒は表示させない
+						bps[i] = (li[i] * 100 *60*60) / (gametime[i]);
 						bps1[i] = bps[i] / 100;//整数
 						bps2[i] = bps[i] % 100;//下三桁
 						if(i) {sprintf(string[0], "%3d?", bps1[i]);
@@ -765,8 +765,8 @@ void viewScoreSmall(void) {
 						ExBltRect(85, 240+add + 50 * i - 96 * maxPlay, 70, 0, 7*12,35, 7);
 					}
 
-					if(time[i]>120){
-						bps[i] = (bdowncnt[i] * 10000*60) / (time[i]);
+					if(gametime[i]>120){
+						bps[i] = (bdowncnt[i] * 10000*60) / (gametime[i]);
 						bps1[i] = bps[i] / 10000;//整数
 						bps2[i] = bps[i] % 10000;//下三桁
 						if(i) {
@@ -822,7 +822,7 @@ void viewScoreSmall(void) {
 					}
 					//SCORE/ライン
 
-					if((time[i]>120)&&(li[i]>0)){
+					if((gametime[i]>120)&&(li[i]>0)){
 						bps1[i] = sc[i] / li[i];//整数
 						bps2[i] = sc[i] % li[i];//下三桁
 						if(i) {sprintf(string[0], "%2d?", bps1[i]);
@@ -1262,7 +1262,7 @@ void viewTime(void) {
 		}
 
 		/* タイム表示 */
-		if(time[i] > 359999) time[i] = 359999;
+		if(gametime[i] > 359999) gametime[i] = 359999;
 
 		// 持久モード
 		if( gameMode[i] != 6 ) {
@@ -1271,7 +1271,7 @@ void viewTime(void) {
 			} else if( ((gameMode[i] == 7)&(anothermode[i]!=3)) || (gameMode[i] == 8) ||((gameMode[i]==9)&&(std_opt[i]==1))||((gameMode[i]==5)&&(p_goaltype==4))) {
 				getTime(ltime[i]);			// ACEモード制限時間
 			} else {
-				getTime(time[i]);			// 経過時間
+				getTime(gametime[i]);			// 経過時間
 			}
 
 			if( (gameMode[i] == 4) && (i == 0) ) {
@@ -1285,7 +1285,7 @@ void viewTime(void) {
 					printBIGFont(112, 216, string[0], color2);
 				}
 				ExBltRect(85, 150, 190, 35, 12*7, 19, 7);
-				getTime(time[i]);
+				getTime(gametime[i]);
 				printSMALLFont(136, 199, string[0], 0);
 				if((vsmodesl>0)&&(!demo)){
 					ExBltRect(85, 135, 100, 0, 7*16+vsmodesl*7, 100, 7);
@@ -1334,7 +1334,7 @@ void viewTime(void) {
 				getTime(ltime[i]);
 				printBIGFont(112 + 192 * i - 96 * maxPlay, 216, string[0], color2);
 			}else {
-				getTime(time[i]);			// 経過時間
+				getTime(gametime[i]);			// 経過時間
 				printBIGFont(112 + 192 * i - 96 * maxPlay, 216, string[0], color);
 			}
 		}

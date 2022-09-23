@@ -66,7 +66,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 					rolling = 1;
 			} else if( (gameMode[player] >= 4) || (item_mode[player]) ) {
 				/* VERSUS / PRACTICE / MISSION */
-				if( time[player] % p_rollroll_timer  == 0 )
+				if( gametime[player] % p_rollroll_timer  == 0 )
 					rolling = 1;
 			}
 		}
@@ -75,7 +75,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 		if((statusc[player * 10 + 6] != 0) && (repversw >= 59))
 			move = 0;
 		else
-			move = (getPushState(player, 5) || rolling) - (getPushState(player, 4) || getPushState(player, 6));
+			move = (getPushState(player, BTN_B) || rolling) - (getPushState(player, BTN_A) || getPushState(player, BTN_C));
 		// for old style, force negative
 		if (repversw > 65 && (heboGB[player] == 2)&& !segacheat) // sega rotation
 			move = abs(move)*-1;

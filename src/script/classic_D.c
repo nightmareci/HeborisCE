@@ -126,7 +126,7 @@ void statDMove(int32_t player) {
 					rolling = 1;
 			} else if( (gameMode[player] >= 4) || (item_mode[player]) ) {
 				/* VERSUS / PRACTICE / MISSION */
-				if( time[player] % p_rollroll_timer  == 0 )
+				if( gametime[player] % p_rollroll_timer  == 0 )
 					rolling = 1;
 			}
 		}
@@ -135,10 +135,10 @@ void statDMove(int32_t player) {
 		if((statusc[player * 10 + 6] != 0) && (repversw >= 59))
 			move = 0;
 		else
-			move = (getPushState(player, 5) || rolling) - (getPushState(player, 4));
+			move = (getPushState(player, BTN_B) || rolling) - (getPushState(player, BTN_A));
 				    // for old style, force negative
 
-		if((getPushState(player, 6) != 0) && (statusc[player * 10 + 6] == 0)) move = 2;
+		if((getPushState(player, BTN_C) != 0) && (statusc[player * 10 + 6] == 0)) move = 2;
 		// different for DRS
 		if (repversw > 65 && (heboGB[player] == 2) && (move!=0) && ((!segacheat) || (heboGB[player] != 2)) ) // sega rotation
 			move = -1;                // safe because roll roll can't happen in old style
@@ -182,8 +182,8 @@ void statDMove(int32_t player) {
 				// 回転できないときは、下左右に動かしてみよう
 
 				//補正タイプを決める　反対のボタンを押していればタイプ逆転
-				if((move==1)||(move==2)) hosei_type=1 - 0*(getPressState(player, 4));	// R
-				else if(move==-1) hosei_type=0 + 1*(getPressState(player, 5));			// L
+				if((move==1)||(move==2)) hosei_type=1 - 0*(getPressState(player, BTN_A));	// R
+				else if(move==-1) hosei_type=0 + 1*(getPressState(player, BTN_B));			// L
 
 				move = 0;
 
@@ -344,7 +344,7 @@ void statDMove(int32_t player) {
 		}
 
 		// 左右に移動
-		move = getPressState(player, 3) - getPressState(player, 2);
+		move = getPressState(player, BTN_RIGHT) - getPressState(player, BTN_LEFT);
 		if(isLRreverse[player]) move = 0 - move;
 		if(move && (statusc[player * 10 + 4])) {
 			/* スムーズ時の表示異常を修正 via C++ Port */
@@ -449,7 +449,7 @@ void statDMove(int32_t player) {
 				statusc[player * 10 + 2]++;
 				drawCBlock(player, 0, 0, 0, 10, 0);
 				// 下入れ制限#1.60c7f9
-				if((getPressState(player, 1)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
+				if((getPressState(player, BTN_DOWN)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
 				if((repversw >= 57) && (!harddrop[player])) goto lockflash;	// SUPERなSKIP
 				return;
 			}

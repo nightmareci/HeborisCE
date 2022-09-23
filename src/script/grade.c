@@ -15,7 +15,7 @@ void GradeUp(int32_t player){
 
 		// gmflag1成立判定#1.60c7g5
 		if((tc[player] >= 300) && (!gmflag1_e[player])) {
-			if((grade[player] >= 6) && (time[player] <= 255 * 60)){
+			if((grade[player] >= 6) && (gametime[player] <= 255 * 60)){
 					gmflag1[player] = 1;
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				}
@@ -24,7 +24,7 @@ void GradeUp(int32_t player){
 
 		// gmflag2成立判定#1.60c7g5
 		if((tc[player] >= 500) && (!gmflag2_e[player])) {
-			if((grade[player] >= 9) && (time[player] <= 450 * 60)){
+			if((grade[player] >= 9) && (gametime[player] <= 450 * 60)){
 					gmflag2[player] = 1;
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				}
@@ -253,7 +253,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			}
 					// gmflag1成立判定#C7T5EX
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
-				if((grade[player] >= 11) && (time[player] <= 300 * 60)){
+				if((grade[player] >= 11) && (gametime[player] <= 300 * 60)){
 					gmflag1[player] = 1;
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				}
@@ -262,7 +262,7 @@ void GradeUp2(int32_t player, int32_t lines){
 
 			// gmflag2成立判定#C7T5EX
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
-				if((grade[player] >= 19) && (time[player] <= 390*60)){
+				if((grade[player] >= 19) && (gametime[player] <= 390*60)){
 					gmflag2[player] = 1;
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				}
@@ -324,11 +324,11 @@ void GradeUp2(int32_t player, int32_t lines){
 			if(grade2[player]>=30)//MM
 				grade[player]=17;//S9
 
-		//grade3つづき
+			//grade3つづき
 
 			// gmflag1成立判定#C7T5EX
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
-				if((grade2[player] >= 11) && (time[player] <= 300 * 60)){
+				if((grade2[player] >= 11) && (gametime[player] <= 300 * 60)){
 					gmflag1[player] = 1;
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				}
@@ -337,7 +337,7 @@ void GradeUp2(int32_t player, int32_t lines){
 
 			// gmflag2成立判定#C7T5EX
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
-				if((grade2[player] >= 19) && (time[player] <= 390*60)){
+				if((grade2[player] >= 19) && (gametime[player] <= 390*60)){
 					gmflag2[player] = 1;
 					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
 				}

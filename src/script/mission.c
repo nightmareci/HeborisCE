@@ -60,7 +60,7 @@ void statMissionSelect(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, 0) ) {
+	if( getPressState(player, BTN_UP) ) {
 		PlaySE(5);
 		vslevel[0]--;
 		if(vslevel[0] < 0) vslevel[0] = 4 - (2 * ((mission_file < 25) && (!debug)));
@@ -68,15 +68,15 @@ void statMissionSelect(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, 1) ) {
+	if( getPressState(player, BTN_DOWN) ) {
 		PlaySE(5);
 		vslevel[0]++;
 		if(vslevel[0] > 4 - (2 * ((mission_file < 25) && (!debug)))) vslevel[0] = 0;
 	}
 
 	// ←
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-	if( getPressState(player, 2) ) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+	if( getPressState(player, BTN_LEFT) ) {
 		PlaySE(3);
 
 		if(vslevel[0] == 0) {
@@ -98,8 +98,8 @@ void statMissionSelect(int32_t player) {
 	}
 
 	// →
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-	if( getPressState(player, 3) ) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+	if( getPressState(player, BTN_RIGHT) ) {
 		PlaySE(3);
 
 		if(vslevel[0] == 0) {
@@ -120,14 +120,14 @@ void statMissionSelect(int32_t player) {
 	}
 
 	// Bボタン
-	if( getPushState(player, 5) ) {
+	if( getPushState(player, BTN_B) ) {
 		gameMode[0] = 0;
 		vslevel[0] = 0;
 		flag = 1;	// タイトルへ
 	}
 
 	// Aボタン
-	if( getPushState(player, 4) ) {
+	if( getPushState(player, BTN_A) ) {
 		PlaySE(10);
 
 		if(vslevel[0] <= 1) {
@@ -374,7 +374,7 @@ void statMissionEditor(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, 0) ) {
+	if( getPressState(player, BTN_UP) ) {
 		PlaySE(5);
 		statusc[0 + player * 10]--;
 		if(statusc[0 + player * 10] < 0) statusc[0 + player * 10] = 9;
@@ -382,15 +382,15 @@ void statMissionEditor(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, 1) ) {
+	if( getPressState(player, BTN_DOWN) ) {
 		PlaySE(5);
 		statusc[0 + player * 10]++;
 		if(statusc[0 + player * 10] > 9) statusc[0 + player * 10] = 0;
 	}
 
 	// ←
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-	if( getPressState(player, 2) ) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+	if( getPressState(player, BTN_LEFT) ) {
 		PlaySE(3);
 
 		// TYPE
@@ -406,7 +406,7 @@ void statMissionEditor(int32_t player) {
 		// TIME
 		if(statusc[0 + player * 10] == 2) {
 			mission_time[c_mission] = mission_time[c_mission] - 60;
-			if(mission_time[c_mission] < 0) mission_time[c_mission] = 60 * 60 * 20;
+			if(mission_time[c_mission] < 0) mission_time[c_mission] = REPLAY_PLAYER_CHUNK;
 		}
 		// LEVEL
 		if(statusc[0 + player * 10] == 3) {
@@ -443,8 +443,8 @@ void statMissionEditor(int32_t player) {
 	}
 
 	// →
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, 6)))
-	if( getPressState(player, 3) ) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
+	if( getPressState(player, BTN_RIGHT) ) {
 		PlaySE(3);
 
 		// TYPE
@@ -460,7 +460,7 @@ void statMissionEditor(int32_t player) {
 		// TIME
 		if(statusc[0 + player * 10] == 2) {
 			mission_time[c_mission] = mission_time[c_mission] + 60;
-			if(mission_time[c_mission] > 60 * 60 * 20) mission_time[c_mission] = 0;
+			if(mission_time[c_mission] > REPLAY_PLAYER_CHUNK) mission_time[c_mission] = 0;
 		}
 		// LEVEL
 		if(statusc[0 + player * 10] == 3) {
@@ -497,7 +497,7 @@ void statMissionEditor(int32_t player) {
 	}
 
 	// AまたはBボタン
-	if( getPushState(player, 4) || getPushState(player, 5) ) {
+	if( getPushState(player, BTN_A) || getPushState(player, BTN_B) ) {
 		status[player] = 23;	// セレクト画面に戻る
 		statusc[0 + player * 10] = 0;
 	}
@@ -1536,11 +1536,11 @@ statusc[0 * 10 + 6] = mission_opt_3[c_mission];
 void loadMissionData(int32_t number) {
 	int32_t i;
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 50000 * 4, 0);
 
 	sprintf(string[0], "config/mission/mission%02d.sav", number);
 
-	LoadFile(string[0], &saveBuf, 930 * 4);
+	LoadFile(string[0], saveBuf, 930 * 4);
 
 	// 問題データを読み込み
 	for(i = 0; i < 30; i++) {
@@ -1561,7 +1561,7 @@ void loadMissionData(int32_t number) {
 void saveMissionData(int32_t number) {
 	int32_t i;
 
-	FillMemory(&saveBuf, 50000 * 4, 0);
+	FillMemory(saveBuf, 50000 * 4, 0);
 
 	// ヘッダ
 	saveBuf[0] = 1;
@@ -1581,5 +1581,5 @@ void saveMissionData(int32_t number) {
 	}
 
 	sprintf(string[0], "config/mission/mission%02d.sav", number);
-	SaveFile(string[0], &saveBuf, 930 * 4);
+	SaveFile(string[0], saveBuf, 930 * 4);
 }

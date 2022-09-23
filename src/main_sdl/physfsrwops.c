@@ -21,7 +21,6 @@
  *  This file was written by Ryan C. Gordon. (icculus@icculus.org).
  */
 
-#include <stdio.h>  /* used for SEEK_SET, SEEK_CUR, SEEK_END ... */
 #include "physfsrwops.h"
 
 /* SDL's RWOPS interface changed a little in SDL 2.0... */

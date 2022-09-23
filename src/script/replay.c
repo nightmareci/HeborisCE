@@ -185,13 +185,6 @@ void saveReplayData(int32_t pl, int32_t number) {
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	printf("%s description:\n", string[0]);
-	for (i = 0; i < 300; i++) {
-		printf("%d\n", saveBuf[i]);
-	}
-	printf("\n");
-	fflush(stdout);
-
 	SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	temp1 = pl * REPLAY_PLAYER_CHUNK;

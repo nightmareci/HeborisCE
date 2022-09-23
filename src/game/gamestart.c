@@ -4052,11 +4052,7 @@ void increment_time(int32_t player) {
 			for(j = 0; j < NUMGAMEBTNS; j++)
 				temp = temp | (getPressState(player, j) << j) | (getPushState(player, j) << (j + NUMGAMEBTNS));
 
-			printf("replayData before: 0x%"PRIXPTR"\n", (intptr_t)replayData);
-			fflush(stdout);
 			replayData[time2[player] / REPLAY_PLAYER_CHUNK][time2[player] % REPLAY_PLAYER_CHUNK + player * REPLAY_PLAYER_CHUNK] = temp;
-			printf("replayData after : 0x%"PRIXPTR"\n", (intptr_t)replayData);
-			fflush(stdout);
 		}
 
 		// リプレイ用プレイ時間に1/60秒プラス #1.60c7n8

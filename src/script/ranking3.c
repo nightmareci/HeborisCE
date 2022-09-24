@@ -153,7 +153,7 @@ void RankingProc_3(int32_t cat,int32_t pages2) {
 
 		RankingView3();//3位まで表示
 		// AかBで戻る
-		if( (count > 448) || getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || quitNow() ) {
+		if( (count > 448) || getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B) || quitNow() ) {
 			flag = 1;
 		}
 
@@ -169,33 +169,33 @@ void RankingProc2_3() {
 
 		RankingView3();
 		// ←
-		if( getPushState(0,2) ) {
+		if( getPushState(0, BTN_LEFT) ) {
 			PlaySE( 5 );
 			rkpage--;//ゲームモード
 			if(rkpage < 0) rkpage = 11;
 		}
 
 		// →
-		if( getPushState(0,3) ) {
+		if( getPushState(0, BTN_RIGHT) ) {
 			PlaySE( 5 );
 			rkpage++;
 			if(rkpage > 11) rkpage = 0;
 		}
 
 		// ↑
-		if( getPushState(0,0) ) {
+		if( getPushState(0, BTN_UP) ) {
 			PlaySE( 5 );
 			rankingrule = !(rankingrule);//回転ルール
 		}
 
 		// ↓
-		if( getPushState(0,1) ) {
+		if( getPushState(0, BTN_DOWN) ) {
 			PlaySE( 5 );
 			rankingrule  = !(rankingrule);
 		}
 
 		// AかBで戻る
-		if( getPushState(0,4) || getPushState(0,5) || getPushState(1,4) || getPushState(1,5) || quitNow() ) {
+		if( getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B) || quitNow() ) {
 			return;
 		}
 

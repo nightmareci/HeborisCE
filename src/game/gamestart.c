@@ -4679,6 +4679,7 @@ void statSelectMode(int32_t player) {
 				gameMode[player] = 3;
 			if(gameMode[player] == 8)
 				gameMode[player] = 7;
+			versusInit(player);
 		}
 		// その他
 		if(statusc[player * 10 + 2] == 2) {
@@ -4709,6 +4710,7 @@ void statSelectMode(int32_t player) {
 				gameMode[player] = 6;
 			if(gameMode[player] == 8)
 				gameMode[player] = 9;
+			versusInit(player);
 		}
 		// その他
 		if(statusc[player * 10 + 2] == 2) {
@@ -4758,6 +4760,7 @@ void statSelectMode(int32_t player) {
 			ori_opt[player]--;
 			if(ori_opt[player] < 0)
 				ori_opt[player] = 3;
+			versusInit(player);
 		}
 		if(statusc[player * 10 + 2] == 2) {
 			if(statusc[player * 10 + 3] == 0) {
@@ -4815,6 +4818,7 @@ void statSelectMode(int32_t player) {
 			ori_opt[player]++;
 			if(ori_opt[player] > 3)
 				ori_opt[player] = 0;
+			versusInit(player);
 		}
 		if(statusc[player * 10 + 2] == 2) {
 			if(statusc[player * 10 + 3] == 0) {
@@ -4856,7 +4860,7 @@ void statSelectMode(int32_t player) {
 	}
 	// HOLDボタン
 	// アイテムモードとか、DEATH+とか
-	if(getPushState(player,7) && (statusc[player * 10 + 2] == 1)) {
+	if(getPushState(player, BTN_D) && (statusc[player * 10 + 2] == 1)) {
 		PlaySE(5);
 		if((gameMode[player] == 6)&&(tomoyo_opt[player]==4)){
 			if(!fpbas_mode[player])
@@ -5055,7 +5059,7 @@ void statSelectMode(int32_t player) {
 				stage[player] = start_stage[player];
 			}else
 				if(((gameMode[player] == 1) || (gameMode[player] == 2))){
-					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (Rand(10) < 2)) ||(getPressState(player,7))){
+					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (Rand(10) < 2)) ||(getPressState(player, BTN_D))){
 						item_mode[player] = 0;
 						hebo_plus[player] = 0;
 						examination[player] = Admitgradecheck(player);
@@ -14892,7 +14896,7 @@ void padRepeat2(int32_t player) { // hoge 上下入力バージョン
 //  キー状態の取得
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // ジョイスティック周りを変更 #1.60c7
-int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
+int32_t getPressState(int32_t player, EButton key) { // パッドボタン割り当て対応 #1.60c
 	#ifdef ENABLE_LINUX_GPIO
 	int32_t gtmp;	// GPIO入力
 	#endif
@@ -14986,7 +14990,7 @@ int32_t getPressState(int32_t player, int32_t key) { // パッドボタン割り
 	}
 }
 
-int32_t getPushState(int32_t player, int32_t key) { // パッドボタン割り当て対応 #1.60c
+int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り当て対応 #1.60c
 	#ifdef ENABLE_LINUX_GPIO
 	int32_t gtmp;		// GPIO入力
 	#endif

@@ -134,8 +134,8 @@ void lastProc(void);
 void playerExecute(void);
 void restoreSetups();
 
-int32_t getPressState(int32_t player,int32_t key);
-int32_t getPushState(int32_t player,int32_t key);
+int32_t getPressState(int32_t player, EButton key);
+int32_t getPushState(int32_t player, EButton key);
 
 int IsPressMenu(int32_t player, EButton button, EControllerType type);
 int IsPushMenu(int32_t player, EButton button, EControllerType type);

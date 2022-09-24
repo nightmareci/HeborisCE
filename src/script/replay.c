@@ -1515,7 +1515,11 @@ void ReplayDetail(int32_t number) {
 			freeReplayData();
 			return;
 		}
-		if(quitNow()) restoreSetups();
+		if(quitNow()) {
+			restoreSetups();
+			flag = -1;
+			break;
+		}
 		spriteTime();
 	}
 	

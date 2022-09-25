@@ -12,17 +12,17 @@
 #define		YGS_WIDE_SCREEN (4.0f / 3.0f)
 #define		YGS_NARROW_SCREEN (3.0f / 4.0f)
 
-extern EControllerType LastControllerType;
+extern YGS2kEControllerType YGS2kLastControllerType;
 
 #ifdef ENABLE_JOYSTICK
-void JoyClose();
-int JoyOpen();
+void YGS2kJoyClose();
+int YGS2kJoyOpen();
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-void ConClose();
-int ConOpen();
+void YGS2kConClose();
+int YGS2kConOpen();
 #endif
 
-int InputOpen();
-void InputClose();
+int YGS2kInputOpen();
+void YGS2kInputClose();

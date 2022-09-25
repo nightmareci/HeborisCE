@@ -29,7 +29,7 @@ void RankingInit3() {
 	int32_t i;
 
 	for(i = 0; i < ( 6*14*2); i++) {
-		StrCpy(rkname3[i], "NOP");
+		YGS2kStrCpy(rkname3[i], "NOP");
 		rkdata3[i] = 0;
 		rktime3[i] = 1200*60;
 		rkclear3[i] = 0;
@@ -78,7 +78,7 @@ void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int
 
 	// ランキングをずらす
 	for(i = 2+((rmode==9)*3); i > rank ; i--) {
-		StrCpy(rkname3[j + i], rkname3[j + i - 1]);
+		YGS2kStrCpy(rkname3[j + i], rkname3[j + i - 1]);
 		rkdata3[j + i] = rkdata3[j + i - 1];
 		rktime3[j + i] = rktime3[j + i - 1];
 		rkclear3[j + i] = rkclear3[j + i - 1];
@@ -92,7 +92,7 @@ void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int
 	}
 
 	// 順位のデータを元に新しいデータを登録
-	StrCpy(rkname3[j + rank], rname);
+	YGS2kStrCpy(rkname3[j + rank], rname);
 	rkdata3[j + rank] = rdata;
 	rktime3[j + rank] = rtime;
 	rkclear3[j + rank] = rclear;
@@ -149,7 +149,7 @@ void RankingProc_3(int32_t cat,int32_t pages2) {
 	while(!flag) {
 //		count++;
 
-		Input();
+		YGS2kInput();
 
 		RankingView3();//3位まで表示
 		// AかBで戻る
@@ -165,7 +165,7 @@ void RankingProc2_3() {
 	rkpage = 0;
 
 	while(1) {
-		Input();
+		YGS2kInput();
 
 		RankingView3();
 		// ←
@@ -211,9 +211,9 @@ void RankingView3() {//3位まで
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				YGS2kBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				YGS2kBltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
@@ -230,13 +230,13 @@ void RankingView3() {//3位まで
 
 	// ルール名表示
 	getRuleNameEx3(rankingrule, 0);
-	StrCat(string[0], " TYPE RULE - ");
+	YGS2kStrCat(string[0], " TYPE RULE - ");
 
 	// モード名表示
 	getModeNameEx3(rkpage, 1);
-	StrCat(string[1], " MODE");
+	YGS2kStrCat(string[1], " MODE");
 
-	StrCat(string[0], string[1]);
+	YGS2kStrCat(string[0], string[1]);
 	printFont(1, 1, string[0], modecolor3[rkpage]);
 
 	// ランキング表示
@@ -475,7 +475,7 @@ void RankingView3() {//3位まで
 void RankingSave3() {
 	int32_t i;
 
-	FillMemory(saveBuf, 5000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 5000 * 4, 0);
 
 	// ヘッダ
 	saveBuf[0] = 0x4F424501;
@@ -514,7 +514,7 @@ void RankingSave3() {
 		saveBuf[4 + i + ( 6*14*2) * 10] = rkrots3[i];//11
 	}
 
-	SaveFile("config/data/RANKING3.SAV", saveBuf, ( (6*14*2*11)+4) * 4);//
+	YGS2kSaveFile("config/data/RANKING3.SAV", saveBuf, ( (6*14*2*11)+4) * 4);//
 }
 
 // ランキングを読み込み
@@ -522,8 +522,8 @@ int32_t RankingLoad3() {
 	int32_t i;
 
 	// ヘッダだけ読み込み
-	FillMemory(saveBuf, 5000 * 4, 0);
-	LoadFile("config/data/RANKING3.SAV", saveBuf, 16);
+	YGS2kFillMemory(saveBuf, 5000 * 4, 0);
+	YGS2kLoadFile("config/data/RANKING3.SAV", saveBuf, 16);
 	//
 	if(saveBuf[0] != 0x4F424501) return 1;
 	if(saveBuf[1] != 0x20534901) return 1;
@@ -531,7 +531,7 @@ int32_t RankingLoad3() {
 	if(saveBuf[3] != 0x34764301) return 1;
 
 	// 全部読み込み
-	LoadFile("config/data/RANKING3.SAV", saveBuf, ( 6*14*2*11+4) * 4);
+	YGS2kLoadFile("config/data/RANKING3.SAV", saveBuf, ( 6*14*2*11+4) * 4);
 
 	for(i = 0; i < ( 6*14*2); i++) {
 		// 名前

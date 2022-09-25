@@ -2,7 +2,7 @@ set(FRAMEWORK_VER "WINDOWS-SDL2")
 
 find_package(SDL2 REQUIRED)
 find_package(sdl2-image REQUIRED)
-find_package(sdl2-mixer REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 find_package(PhysFS REQUIRED)
 
 if(ENABLE_GAME_CONTROLLER)
@@ -18,7 +18,7 @@ target_link_libraries(${EXE}
 		SDL2::SDL2
 		SDL2::SDL2main
 		SDL2::SDL2_image
-		SDL2::SDL2_mixer
+		SDL2_mixer::SDL2_mixer
 		${PHYSFS_LIBRARY}
 )
 target_include_directories(${EXE} SYSTEM PRIVATE

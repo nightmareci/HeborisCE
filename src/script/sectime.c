@@ -131,7 +131,7 @@ void ST_RankingUpdate(int32_t player, int32_t rmode, int32_t end,int32_t enable_
 void ST_RankingSave(void) {//12345 6789
 	int32_t i,j, temp2[3];
 
-	FillMemory(saveBuf, 5000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 5000 * 4, 0);
 
 	saveBuf[0] = st_version;
 
@@ -142,24 +142,24 @@ void ST_RankingSave(void) {//12345 6789
 		saveBuf[i + 277] = st_others[i];
 	}
 
-	SaveFile("config/data/STRANKING.SAV", saveBuf, 400 * 4);
+	YGS2kSaveFile("config/data/STRANKING.SAV", saveBuf, 400 * 4);
 }
 
 // ロード
 int32_t ST_RankingLoad(void) {
 	int32_t i,j, temp2[3];
 
-	FillMemory(saveBuf, 5000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 5000 * 4, 0);
 
 	// バージョンを見る
-	LoadFile("config/data/STRANKING.SAV", saveBuf, 4);
+	YGS2kLoadFile("config/data/STRANKING.SAV", saveBuf, 4);
 
 	if(saveBuf[0] != st_version) {
 		return 1;
 	}
 
 	// 全体を読み込む
-	LoadFile("config/data/STRANKING.SAV", saveBuf, 400 * 4);
+	YGS2kLoadFile("config/data/STRANKING.SAV", saveBuf, 400 * 4);
 
 	for(i=0;i<90;i++) {
 		st_time[i] = saveBuf[i + 10];
@@ -399,7 +399,7 @@ void ST_RankingView() {
 		getTime(tmp);
 		printFont(12, 25, string[0], 2);
 
-		Input();
+		YGS2kInput();
 
 		if(getPushState(0, BTN_A) || getPushState(0, BTN_B) || quitNow()) {
 			// AかBで戻る
@@ -434,7 +434,7 @@ void ST_RankingView() {
 void PlayerdataSave(void) {//12345 6789
 	int32_t i,j, temp2[3];
 
-	FillMemory(saveBuf, 500 * 4, 0);
+	YGS2kFillMemory(saveBuf, 500 * 4, 0);
 
 	saveBuf[0] = 0x4F424503;
 
@@ -450,24 +450,24 @@ void PlayerdataSave(void) {//12345 6789
 		saveBuf[1 +17]=BloxeedSeed[1];
 	}
 
-	SaveFile("config/data/PLAYERDATA.SAV", saveBuf, 100 * 4);
+	YGS2kSaveFile("config/data/PLAYERDATA.SAV", saveBuf, 100 * 4);
 }
 
 // プレイヤーデータロード
 int32_t PlayerdataLoad(void) {
 	int32_t i,j, temp2[3];
 
-	FillMemory(saveBuf, 500 * 4, 0);
+	YGS2kFillMemory(saveBuf, 500 * 4, 0);
 
 	// バージョンを見る
-	LoadFile("config/data/PLAYERDATA.SAV", saveBuf, 4);
+	YGS2kLoadFile("config/data/PLAYERDATA.SAV", saveBuf, 4);
 
 	if(saveBuf[0] != 0x4F424503) {
 		return 1;
 	}
 
 	// 全体を読み込む
-	LoadFile("config/data/PLAYERDATA.SAV", saveBuf, 100 * 4);
+	YGS2kLoadFile("config/data/PLAYERDATA.SAV", saveBuf, 100 * 4);
 
 	for( j = 0 ; j < 2 ; j++){
 		for(i=0;i<5;i++) {

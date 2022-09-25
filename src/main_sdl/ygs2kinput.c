@@ -13,7 +13,7 @@ static int			s_iKeyRepeat[YGS_KEY_MAX];
 #endif
 
 #ifdef ENABLE_JOYSTICK
-typedef struct SJoystick
+typedef struct YGS2kSJoystick
 {
 	SDL_Joystick* device;
 	int numAxes;
@@ -22,73 +22,73 @@ typedef struct SJoystick
 	int* axesRepeat;
 	int* hatsRepeat;
 	int* buttonsRepeat;
-} SJoystick;
-static SJoystick* s_aJoysticks = NULL;
+} YGS2kSJoystick;
+static YGS2kSJoystick* s_aJoysticks = NULL;
 static int s_iNumJoysticks = -1;
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-typedef struct SGameController
+typedef struct YGS2kSGameController
 {
 	SDL_GameController* device;
-	int axesRepeat[CONAXIS_MAX];
-	int buttonsRepeat[CONBUTTON_MAX];
-} SGameController;
-static SGameController* s_aGameControllers = NULL;
+	int axesRepeat[YGS_CONAXIS_MAX];
+	int buttonsRepeat[YGS_CONBUTTON_MAX];
+} YGS2kSGameController;
+static YGS2kSGameController* s_aGameControllers = NULL;
 static int s_iNumGameControllers = -1;
 static int s_iLastGameControllerIndex = -1;
 #endif
 
-EControllerType GetLastControllerType ()
+YGS2kEControllerType YGS2kGetLastControllerType ()
 {
 	#ifdef ONLY_CONTROLLER_TYPE
 	return ONLY_CONTROLLER_TYPE;
 	#else
-	return LastControllerType;
+	return YGS2kLastControllerType;
 	#endif
 }
 
 #ifdef ENABLE_LINUX_GPIO
-int IsPushGPIO ( int key )
+int YGS2kIsPushGPIO ( int key )
 {
 	return key >= 0 && key < NUMBTNS && s_iGPIORepeat[key] == 1 ? 1 : 0;
 }
 
-int IsPressGPIO ( int key )
+int YGS2kIsPressGPIO ( int key )
 {
 	return key >= 0 && key < NUMBTNS && s_iGPIORepeat[key] != 0 ? 1 : 0;
 }
 
-int GetGPIORepeat( int key )
+int YGS2kGetGPIORepeat( int key )
 {
 	return key >= 0 && key < NUMBTNS ? s_iGPIORepeat[key] : -1;
 }
 #endif
 
 #ifdef ENABLE_KEYBOARD
-int IsPushKey (int key)
+int YGS2kIsPushKey (int key)
 {
 	return key >= 0 && key < YGS_KEY_MAX && s_iKeyRepeat[key] == 1 ? 1 : 0;
 }
 
-int IsPressKey (int key)
+int YGS2kIsPressKey (int key)
 {
 	return key >= 0 && key < YGS_KEY_MAX && s_iKeyRepeat[key] != 0 ? 1 : 0;
 }
 
-int GetKeyRepeat( int key )
+int YGS2kGetKeyRepeat( int key )
 {
 	return key >= 0 && key < YGS_KEY_MAX ? s_iKeyRepeat[key] : 0;
 }
 
-int GetMaxKey ()
+int YGS2kGetMaxKey ()
 {
 	return YGS_KEY_MAX;
 }
 #endif
 
 #ifdef ENABLE_JOYSTICK
-void JoyClose ()
+void YGS2kJoyClose ()
 {
 	if (s_aJoysticks)
 	{
@@ -105,11 +105,11 @@ void JoyClose ()
 	s_iNumJoysticks = -1;
 }
 
-int JoyOpen ()
+int YGS2kJoyOpen ()
 {
 	if ((s_iNumJoysticks = SDL_NumJoysticks()) > 0)
 	{
-		if (!(s_aJoysticks = (SJoystick*)calloc((size_t)s_iNumJoysticks, sizeof(SJoystick))))
+		if (!(s_aJoysticks = (YGS2kSJoystick*)calloc((size_t)s_iNumJoysticks, sizeof(YGS2kSJoystick))))
 		{
 			s_iNumJoysticks = -1;
 			return 0;
@@ -118,7 +118,7 @@ int JoyOpen ()
 		for (int index = 0; index < s_iNumJoysticks; index++)
 		{
 			#ifdef ENABLE_GAME_CONTROLLER
-			if (!IsGameController(index))
+			if (!YGS2kIsGameController(index))
 			{
 			#endif
 				bool fail = false;
@@ -136,7 +136,7 @@ int JoyOpen ()
 				if (fail)
 				{
 					s_iNumJoysticks = index + !!s_aJoysticks[index].device;
-					JoyClose();
+					YGS2kJoyClose();
 					s_iNumJoysticks = -1;
 					return 0;
 				}
@@ -150,22 +150,22 @@ int JoyOpen ()
 	else return 0;
 }
 
-void JoyInput ()
+void YGS2kJoyInput ()
 {
 	if (!s_aJoysticks) return;
 
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (IsGameController(index)) continue;
+		if (YGS2kIsGameController(index)) continue;
 		#endif
 		if (!SDL_JoystickGetAttached(s_aJoysticks[index].device))
 		{
 			continue;
 		}
 
-		const SJoyGUID checkGUID = GetJoyGUID(index);
-		const SJoyGUID zeroGUID = { 0 };
+		const YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(index);
+		const YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) == 0) continue;
 
 		for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
@@ -174,7 +174,7 @@ void JoyInput ()
 
 			if (value < -YGS_DEADZONE_MAX)
 			{
-				if (++s_aJoysticks[index].axesRepeat[axis*2 + 0] == 1) LastControllerType = CONTROLLER_JOYSTICK;
+				if (++s_aJoysticks[index].axesRepeat[axis*2 + 0] == 1) YGS2kLastControllerType = YGS_CONTROLLER_JOYSTICK;
 			}
 			else
 			{
@@ -183,7 +183,7 @@ void JoyInput ()
 
 			if (value > +YGS_DEADZONE_MAX)
 			{
-				if (++s_aJoysticks[index].axesRepeat[axis*2 + 1] == 1) LastControllerType = CONTROLLER_JOYSTICK;
+				if (++s_aJoysticks[index].axesRepeat[axis*2 + 1] == 1) YGS2kLastControllerType = YGS_CONTROLLER_JOYSTICK;
 			}
 			else
 			{
@@ -205,7 +205,7 @@ void JoyInput ()
 			{
 				if (value & hatValues[valueIndex])
 				{
-					if (++s_aJoysticks[index].hatsRepeat[hat*4 + valueIndex] == 1) LastControllerType = CONTROLLER_JOYSTICK;
+					if (++s_aJoysticks[index].hatsRepeat[hat*4 + valueIndex] == 1) YGS2kLastControllerType = YGS_CONTROLLER_JOYSTICK;
 				}
 				else
 				{
@@ -218,7 +218,7 @@ void JoyInput ()
 		{
 			if (SDL_JoystickGetButton(s_aJoysticks[index].device, button))
 			{
-				if (++s_aJoysticks[index].buttonsRepeat[button] == 1) LastControllerType = CONTROLLER_JOYSTICK;
+				if (++s_aJoysticks[index].buttonsRepeat[button] == 1) YGS2kLastControllerType = YGS_CONTROLLER_JOYSTICK;
 			}
 			else
 			{
@@ -228,7 +228,7 @@ void JoyInput ()
 	}
 }
 
-int IsPushJoyKey ( const SJoyKey* const key )
+int YGS2kIsPushJoyKey ( const YGS2kSJoyKey* const key )
 {
 	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index >= s_iNumJoysticks) return 0;
 
@@ -236,8 +236,8 @@ int IsPushJoyKey ( const SJoyKey* const key )
 	int indexMax = 0;
 	if (key->index >= 0)
 	{
-		SJoyGUID checkGUID = GetJoyGUID(key->index);
-		SJoyGUID zeroGUID = { 0 };
+		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->index);
+		YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 		{
 			index = key->index;
@@ -253,7 +253,7 @@ int IsPushJoyKey ( const SJoyKey* const key )
 	{
 		switch (key->type)
 		{
-		case JOYKEY_ANY:
+		case YGS_JOYKEY_ANY:
 			for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
 			{
 				if (s_aJoysticks[index].axesRepeat[axis*2 + 0] == 1) return 1;
@@ -268,7 +268,7 @@ int IsPushJoyKey ( const SJoyKey* const key )
 				if (s_aJoysticks[index].buttonsRepeat[button] == 1) return 1;
 			}
 			break;
-		case JOYKEY_AXIS:
+		case YGS_JOYKEY_AXIS:
 			if (key->setting.index < s_aJoysticks[index].numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
@@ -281,7 +281,7 @@ int IsPushJoyKey ( const SJoyKey* const key )
 				}
 			}
 			break;
-		case JOYKEY_HAT:
+		case YGS_JOYKEY_HAT:
 			if (key->setting.index < s_aJoysticks[index].numHats)
 			{
 				switch (key->setting.value)
@@ -299,7 +299,7 @@ int IsPushJoyKey ( const SJoyKey* const key )
 				}
 			}
 			break;
-		case JOYKEY_BUTTON:
+		case YGS_JOYKEY_BUTTON:
 			if (key->setting.button < s_aJoysticks[index].numButtons) return s_aJoysticks[index].buttonsRepeat[key->setting.button] == 1 ? 1 : 0;
 			break;
 		default:
@@ -309,7 +309,7 @@ int IsPushJoyKey ( const SJoyKey* const key )
 	return 0;
 }
 
-int IsPressJoyKey ( const SJoyKey* const key )
+int YGS2kIsPressJoyKey ( const YGS2kSJoyKey* const key )
 {
 	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index >= s_iNumJoysticks) return 0;
 
@@ -317,8 +317,8 @@ int IsPressJoyKey ( const SJoyKey* const key )
 	int indexMax = 0;
 	if (key->index >= 0)
 	{
-		SJoyGUID checkGUID = GetJoyGUID(key->index);
-		SJoyGUID zeroGUID = { 0 };
+		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->index);
+		YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 		{
 			index = key->index;
@@ -334,7 +334,7 @@ int IsPressJoyKey ( const SJoyKey* const key )
 	{
 		switch (key->type)
 		{
-		case JOYKEY_ANY:
+		case YGS_JOYKEY_ANY:
 			for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
 			{
 				if (s_aJoysticks[index].axesRepeat[axis*2 + 0] != 0) return 1;
@@ -349,7 +349,7 @@ int IsPressJoyKey ( const SJoyKey* const key )
 				if (s_aJoysticks[index].buttonsRepeat[button] != 0) return 1;
 			}
 			break;
-		case JOYKEY_AXIS:
+		case YGS_JOYKEY_AXIS:
 			if (key->setting.index < s_aJoysticks[index].numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
@@ -362,7 +362,7 @@ int IsPressJoyKey ( const SJoyKey* const key )
 				}
 			}
 			break;
-		case JOYKEY_HAT:
+		case YGS_JOYKEY_HAT:
 			if (key->setting.index < s_aJoysticks[index].numHats)
 			{
 				switch (key->setting.value)
@@ -380,7 +380,7 @@ int IsPressJoyKey ( const SJoyKey* const key )
 				}
 			}
 			break;
-		case JOYKEY_BUTTON:
+		case YGS_JOYKEY_BUTTON:
 			if (key->setting.button < s_aJoysticks[index].numButtons) return s_aJoysticks[index].buttonsRepeat[key->setting.button] != 0 ? 1 : 0;
 			break;
 		default:
@@ -390,7 +390,7 @@ int IsPressJoyKey ( const SJoyKey* const key )
 	return 0;
 }
 
-int GetJoyKeyRepeat ( const SJoyKey* const key )
+int YGS2kGetJoyKeyRepeat ( const YGS2kSJoyKey* const key )
 {
 	if (!s_aJoysticks || s_iNumJoysticks <= 0 || key == NULL || key->index >= s_iNumJoysticks) return 0;
 
@@ -400,8 +400,8 @@ int GetJoyKeyRepeat ( const SJoyKey* const key )
 	int maxRepeat = 0;
 	if (key->index >= 0)
 	{
-		SJoyGUID checkGUID = GetJoyGUID(key->index);
-		SJoyGUID zeroGUID = { 0 };
+		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->index);
+		YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 		{
 			index = key->index;
@@ -419,7 +419,7 @@ int GetJoyKeyRepeat ( const SJoyKey* const key )
 	{
 		switch (key->type)
 		{
-		case JOYKEY_ANY:
+		case YGS_JOYKEY_ANY:
 			for (int axis = 0; axis < s_aJoysticks[index].numAxes; axis++)
 			{
 				if (s_aJoysticks[index].axesRepeat[axis*2 + 0] > maxRepeat) maxRepeat = s_aJoysticks[index].axesRepeat[axis*2 + 0];
@@ -434,7 +434,7 @@ int GetJoyKeyRepeat ( const SJoyKey* const key )
 				if (s_aJoysticks[index].buttonsRepeat[button] > maxRepeat) maxRepeat = s_aJoysticks[index].buttonsRepeat[button];
 			}
 			break;
-		case JOYKEY_AXIS:
+		case YGS_JOYKEY_AXIS:
 			if (key->setting.index < s_aJoysticks[index].numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
@@ -455,7 +455,7 @@ int GetJoyKeyRepeat ( const SJoyKey* const key )
 				}
 			}
 			break;
-		case JOYKEY_HAT:
+		case YGS_JOYKEY_HAT:
 			if (key->setting.index < s_aJoysticks[index].numHats)
 			{
 				switch (key->setting.value)
@@ -489,7 +489,7 @@ int GetJoyKeyRepeat ( const SJoyKey* const key )
 				}
 			}
 			break;
-		case JOYKEY_BUTTON:
+		case YGS_JOYKEY_BUTTON:
 			if (key->setting.button < s_aJoysticks[index].numButtons)
 			{
 				if (multi)
@@ -506,18 +506,18 @@ int GetJoyKeyRepeat ( const SJoyKey* const key )
 	return maxRepeat;
 }
 
-int GetMaxJoys()
+int YGS2kGetMaxJoys()
 {
 	return s_iNumJoysticks;
 }
 
-int GetNumJoys()
+int YGS2kGetNumJoys()
 {
 	#ifdef ENABLE_GAME_CONTROLLER
 	int numJoys = 0;
 	for (int index = 0; index < s_iNumJoysticks; index++)
 	{
-		if (!IsGameController(index)) numJoys++;
+		if (!YGS2kIsGameController(index)) numJoys++;
 	}
 	return numJoys;
 	#else
@@ -525,18 +525,18 @@ int GetNumJoys()
 	#endif
 }
 
-SJoyGUID GetJoyGUID(int index)
+YGS2kSJoyGUID YGS2kGetJoyGUID(int index)
 {
 	if (s_iNumJoysticks <= 0 || index >= s_iNumJoysticks
 	#ifdef ENABLE_GAME_CONTROLLER
-		|| IsGameController(index)
+		|| YGS2kIsGameController(index)
 	#endif
-	) return (SJoyGUID) { 0 };
+	) return (YGS2kSJoyGUID) { 0 };
 
 	SDL_JoystickGUID sdlGUID;
 	sdlGUID = SDL_JoystickGetGUID(s_aJoysticks[index].device);
 
-	SJoyGUID joyGUID = { 0 };
+	YGS2kSJoyGUID joyGUID = { 0 };
 	for (int32_t i = 0; i < 4; i++)
 	{
 		joyGUID.data[i] = 0;
@@ -548,12 +548,12 @@ SJoyGUID GetJoyGUID(int index)
 	return joyGUID;
 }
 
-int GetMaxJoyAxis(int index)
+int YGS2kGetMaxJoyAxis(int index)
 {
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!IsGameController(index))
+		if (!YGS2kIsGameController(index))
 		{
 			return s_aJoysticks[index].numAxes;
 		}
@@ -571,12 +571,12 @@ int GetMaxJoyAxis(int index)
 	}
 }
 
-int GetMaxJoyHat(int index)
+int YGS2kGetMaxJoyHat(int index)
 {
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!IsGameController(index))
+		if (!YGS2kIsGameController(index))
 		{
 			return s_aJoysticks[index].numHats;
 		}
@@ -594,12 +594,12 @@ int GetMaxJoyHat(int index)
 	}
 }
 
-int GetMaxJoyButton(int index)
+int YGS2kGetMaxJoyButton(int index)
 {
 	if (s_iNumJoysticks > 0 && index < s_iNumJoysticks)
 	{
 		#ifdef ENABLE_GAME_CONTROLLER
-		if (!IsGameController(index))
+		if (!YGS2kIsGameController(index))
 		{
 			return s_aJoysticks[index].numButtons;
 		}
@@ -619,7 +619,7 @@ int GetMaxJoyButton(int index)
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-void ConClose()
+void YGS2kConClose()
 {
 	for (int index = 0; index < s_iNumGameControllers; index++)
 	{
@@ -633,7 +633,7 @@ void ConClose()
 	s_iNumGameControllers = -1;
 }
 
-int ConOpen()
+int YGS2kConOpen()
 {
 	const int numJoysticks = SDL_NumJoysticks();
 	if (numJoysticks < 0)
@@ -645,11 +645,11 @@ int ConOpen()
 	s_iNumGameControllers = 0;
 	for (int joystick_index = 0; joystick_index < numJoysticks; joystick_index++)
 	{
-		if (IsGameController(joystick_index)) s_iNumGameControllers++;
+		if (YGS2kIsGameController(joystick_index)) s_iNumGameControllers++;
 	}
 	if (s_iNumGameControllers == 0) return 1;
 
-	if ((s_aGameControllers = calloc((size_t)s_iNumGameControllers, sizeof(SGameController))) == NULL)
+	if ((s_aGameControllers = calloc((size_t)s_iNumGameControllers, sizeof(YGS2kSGameController))) == NULL)
 	{
 		s_iNumGameControllers = -1;
 		return -1;
@@ -657,12 +657,12 @@ int ConOpen()
 
 	for (int joystick_index = 0, controller_index = 0; joystick_index < numJoysticks; joystick_index++)
 	{
-		if (IsGameController(joystick_index))
+		if (YGS2kIsGameController(joystick_index))
 		{
 			if (!(s_aGameControllers[controller_index].device = SDL_GameControllerOpen(joystick_index)))
 			{
 				s_iNumGameControllers = controller_index;
-				ConClose();
+				YGS2kConClose();
 				s_iNumGameControllers = -1;
 				return -1;
 			}
@@ -675,7 +675,7 @@ int ConOpen()
 	return 1;
 }
 
-static SDL_GameControllerType GetSDLConType(SDL_GameController* const device)
+static SDL_GameControllerType YGS2kGetSDLConType(SDL_GameController* const device)
 {
 	#ifdef ONLY_SDL_CONTROLLER_TYPE
 	return ONLY_SDL_CONTROLLER_TYPE;
@@ -684,7 +684,7 @@ static SDL_GameControllerType GetSDLConType(SDL_GameController* const device)
 	#endif
 }
 
-void ConInput()
+void YGS2kConInput()
 {
 	if (!s_aGameControllers) return;
 
@@ -692,25 +692,25 @@ void ConInput()
 	{
 		if (!SDL_GameControllerGetAttached(s_aGameControllers[index].device)) continue;
 
-		EControllerType controllerType;
-		switch (GetSDLConType(s_aGameControllers[index].device))
+		YGS2kEControllerType controllerType;
+		switch (YGS2kGetSDLConType(s_aGameControllers[index].device))
 		{
 		default:
 		case SDL_CONTROLLER_TYPE_XBOX360:
 		case SDL_CONTROLLER_TYPE_XBOXONE:
 		case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
 		case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
-			controllerType = CONTROLLER_XBOX;
+			controllerType = YGS_CONTROLLER_XBOX;
 			break;
 
 		case SDL_CONTROLLER_TYPE_PS3:
 		case SDL_CONTROLLER_TYPE_PS4:
 		case SDL_CONTROLLER_TYPE_PS5:
-			controllerType = CONTROLLER_PLAYSTATION;
+			controllerType = YGS_CONTROLLER_PLAYSTATION;
 			break;
 
 		case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
-			controllerType = CONTROLLER_NINTENDO;
+			controllerType = YGS_CONTROLLER_NINTENDO;
 			break;
 		}
 		Sint16 axisValue;
@@ -720,7 +720,7 @@ void ConInput()
 		{
 			if (++s_aGameControllers[index].axesRepeat[0] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 			s_aGameControllers[index].axesRepeat[1] = 0;
@@ -730,7 +730,7 @@ void ConInput()
 			s_aGameControllers[index].axesRepeat[0] = 0;
 			if (++s_aGameControllers[index].axesRepeat[1] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 		}
@@ -745,7 +745,7 @@ void ConInput()
 		{
 			if (++s_aGameControllers[index].axesRepeat[2] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 			s_aGameControllers[index].axesRepeat[3] = 0;
@@ -755,7 +755,7 @@ void ConInput()
 			s_aGameControllers[index].axesRepeat[2] = 0;
 			if (++s_aGameControllers[index].axesRepeat[3] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 		}
@@ -770,7 +770,7 @@ void ConInput()
 		{
 			if (++s_aGameControllers[index].axesRepeat[4] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 			s_aGameControllers[index].axesRepeat[5] = 0;
@@ -780,7 +780,7 @@ void ConInput()
 			s_aGameControllers[index].axesRepeat[4] = 0;
 			if (++s_aGameControllers[index].axesRepeat[5] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 		}
@@ -795,7 +795,7 @@ void ConInput()
 		{
 			if (++s_aGameControllers[index].axesRepeat[6] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 			s_aGameControllers[index].axesRepeat[7] = 0;
@@ -805,7 +805,7 @@ void ConInput()
 			s_aGameControllers[index].axesRepeat[6] = 0;
 			if (++s_aGameControllers[index].axesRepeat[7] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 		}
@@ -821,7 +821,7 @@ void ConInput()
 		{
 			if (++s_aGameControllers[index].axesRepeat[8] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 		}
@@ -835,7 +835,7 @@ void ConInput()
 		{
 			if (++s_aGameControllers[index].axesRepeat[9] == 1)
 			{
-				LastControllerType = controllerType;
+				YGS2kLastControllerType = controllerType;
 				s_iLastGameControllerIndex = index;
 			}
 		}
@@ -850,7 +850,7 @@ void ConInput()
 			{
 				if (++s_aGameControllers[index].buttonsRepeat[button] == 1)
 				{
-					LastControllerType = controllerType;
+					YGS2kLastControllerType = controllerType;
 					s_iLastGameControllerIndex = index;
 				}
 			}
@@ -862,7 +862,7 @@ void ConInput()
 	}
 }
 
-int IsPushConKey ( const int conIndex, const SConKey* const key )
+int YGS2kIsPushConKey ( const int conIndex, const YGS2kSConKey* const key )
 {
 	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || conIndex >= s_iNumGameControllers) return 0;
 
@@ -882,24 +882,24 @@ int IsPushConKey ( const int conIndex, const SConKey* const key )
 	{
 		switch (key->type)
 		{
-		case CONKEY_ANY:
-			for (int axis = 0; axis < CONAXIS_MAX; axis++)
+		case YGS_CONKEY_ANY:
+			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 			{
 				if (s_aGameControllers[index].axesRepeat[axis] == 1) return 1;
 			}
-			for (int button = 0; button < CONBUTTON_MAX; button++)
+			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
 			{
 				if (s_aGameControllers[index].buttonsRepeat[button] == 1) return 1;
 			}
 			break;
-		case CONKEY_AXIS:
-			if (key->index < CONAXIS_MAX)
+		case YGS_CONKEY_AXIS:
+			if (key->index < YGS_CONAXIS_MAX)
 			{
 				if (s_aGameControllers[index].axesRepeat[key->index] == 1) return 1;
 			}
 			break;
-		case CONKEY_BUTTON:
-			if (key->index < CONBUTTON_MAX)
+		case YGS_CONKEY_BUTTON:
+			if (key->index < YGS_CONBUTTON_MAX)
 			{
 				if (s_aGameControllers[index].buttonsRepeat[key->index] == 1) return 1;
 			}
@@ -911,7 +911,7 @@ int IsPushConKey ( const int conIndex, const SConKey* const key )
 	return 0;
 }
 
-int IsPressConKey ( const int conIndex, const SConKey* const key )
+int YGS2kIsPressConKey ( const int conIndex, const YGS2kSConKey* const key )
 {
 	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || conIndex >= s_iNumGameControllers) return 0;
 
@@ -931,24 +931,24 @@ int IsPressConKey ( const int conIndex, const SConKey* const key )
 	{
 		switch (key->type)
 		{
-		case CONKEY_ANY:
-			for (int axis = 0; axis < CONAXIS_MAX; axis++)
+		case YGS_CONKEY_ANY:
+			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 			{
 				if (s_aGameControllers[index].axesRepeat[axis] != 0) return 1;
 			}
-			for (int button = 0; button < CONBUTTON_MAX; button++)
+			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
 			{
 				if (s_aGameControllers[index].buttonsRepeat[button] != 0) return 1;
 			}
 			break;
-		case CONKEY_AXIS:
-			if (key->index < CONAXIS_MAX)
+		case YGS_CONKEY_AXIS:
+			if (key->index < YGS_CONAXIS_MAX)
 			{
 				if (s_aGameControllers[index].axesRepeat[key->index] != 0) return 1;
 			}
 			break;
-		case CONKEY_BUTTON:
-			if (key->index < CONBUTTON_MAX)
+		case YGS_CONKEY_BUTTON:
+			if (key->index < YGS_CONBUTTON_MAX)
 			{
 				if (s_aGameControllers[index].buttonsRepeat[key->index] != 0) return 1;
 			}
@@ -960,7 +960,7 @@ int IsPressConKey ( const int conIndex, const SConKey* const key )
 	return 0;
 }
 
-int GetConKeyRepeat ( const int conIndex, SConKey* const key )
+int YGS2kGetConKeyRepeat ( const int conIndex, YGS2kSConKey* const key )
 {
 	if (!s_aGameControllers || s_iNumGameControllers <= 0 || key == NULL || key->index >= s_iNumGameControllers) return 0;
 
@@ -984,18 +984,18 @@ int GetConKeyRepeat ( const int conIndex, SConKey* const key )
 	{
 		switch (key->type)
 		{
-		case CONKEY_ANY:
-			for (int axis = 0; axis < CONAXIS_MAX; axis++)
+		case YGS_CONKEY_ANY:
+			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 			{
 				if (s_aGameControllers[index].axesRepeat[axis] > maxRepeat) maxRepeat = s_aGameControllers[index].axesRepeat[axis];
 			}
-			for (int button = 0; button < CONBUTTON_MAX; button++)
+			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
 			{
 				if (s_aGameControllers[index].buttonsRepeat[button] > maxRepeat) maxRepeat = s_aGameControllers[index].buttonsRepeat[button];
 			}
 			break;
-		case CONKEY_AXIS:
-			if (key->index < CONAXIS_MAX)
+		case YGS_CONKEY_AXIS:
+			if (key->index < YGS_CONAXIS_MAX)
 			{
 					if (multi)
 					{
@@ -1004,8 +1004,8 @@ int GetConKeyRepeat ( const int conIndex, SConKey* const key )
 					else return s_aGameControllers[index].axesRepeat[key->index];
 			}
 			break;
-		case CONKEY_BUTTON:
-			if (key->index < CONBUTTON_MAX)
+		case YGS_CONKEY_BUTTON:
+			if (key->index < YGS_CONBUTTON_MAX)
 			{
 				if (multi)
 				{
@@ -1021,64 +1021,64 @@ int GetConKeyRepeat ( const int conIndex, SConKey* const key )
 	return maxRepeat;
 }
 
-bool IsGameController ( int index )
+bool YGS2kIsGameController ( int index )
 {
 	return
 		(SDL_IsGameController(index) && SDL_GameControllerTypeForIndex(index) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
 		SDL_GameControllerMappingForGUID(SDL_JoystickGetDeviceGUID(index)) != NULL;
 }
 
-void ResetLastConIndex()
+void YGS2kResetLastConIndex()
 {
 	s_iLastGameControllerIndex = -1;
 }
 
-int GetLastConIndex()
+int YGS2kGetLastConIndex()
 {
 	return s_iLastGameControllerIndex;
 }
 
-int GetNumCons()
+int YGS2kGetNumCons()
 {
 	return s_iNumGameControllers;
 }
 
-EControllerType GetConType(const int index)
+YGS2kEControllerType YGS2kGetConType(const int index)
 {
-	if (!s_aGameControllers || s_iNumGameControllers <= 0 || index < 0 || index >= s_iNumGameControllers) return CONTROLLER_NULL;
+	if (!s_aGameControllers || s_iNumGameControllers <= 0 || index < 0 || index >= s_iNumGameControllers) return YGS_CONTROLLER_NULL;
 
 	#ifdef ONLY_CONTROLLER_TYPE
 	return ONLY_CONTROLLER_TYPE;
 	#else
-	switch(GetSDLConType(s_aGameControllers[index].device))
+	switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 	{
 	default:
 	case SDL_CONTROLLER_TYPE_XBOX360:
 	case SDL_CONTROLLER_TYPE_XBOXONE:
 	case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
 	case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
-		return CONTROLLER_XBOX;
+		return YGS_CONTROLLER_XBOX;
 
 	case SDL_CONTROLLER_TYPE_PS3:
 	case SDL_CONTROLLER_TYPE_PS4:
 	case SDL_CONTROLLER_TYPE_PS5:
-		return CONTROLLER_PLAYSTATION;
+		return YGS_CONTROLLER_PLAYSTATION;
 
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
-		return CONTROLLER_NINTENDO;
+		return YGS_CONTROLLER_NINTENDO;
 	}
 	#endif
 }
 
-bool GetConKeyDesc(const int index, const SConKey* const key, const char** text, EButton* button)
+bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const char** text, EButton* button)
 {
-	if (GetNumCons() <= 0 || index < 0 || index >= GetNumCons() || key == NULL || text == NULL || button == NULL) return false;
+	if (YGS2kGetNumCons() <= 0 || index < 0 || index >= YGS2kGetNumCons() || key == NULL || text == NULL || button == NULL) return false;
 
 	*text = NULL;
 	*button = BTN_NULL;
 	switch (key->type)
 	{
-	case CONKEY_AXIS:
+	case YGS_CONKEY_AXIS:
 		switch (key->index)
 		{
 		case 0:
@@ -1114,7 +1114,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			*button = BTN_UP;
 			break;
 		case 8:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1136,7 +1136,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case 9:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1161,7 +1161,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			break;
 		}
 		break;
-	case CONKEY_BUTTON:
+	case YGS_CONKEY_BUTTON:
 		switch (key->index)
 		{
 		case SDL_CONTROLLER_BUTTON_BACK:
@@ -1185,7 +1185,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			*button = BTN_UP + key->index - SDL_CONTROLLER_BUTTON_DPAD_UP;
 			break;
 		case SDL_CONTROLLER_BUTTON_MISC1:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
@@ -1220,7 +1220,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			*text = "TOUCHPAD";
 			break;
 		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1239,7 +1239,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1258,7 +1258,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1279,7 +1279,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-			switch(GetSDLConType(s_aGameControllers[index].device))
+			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1310,7 +1310,7 @@ bool GetConKeyDesc(const int index, const SConKey* const key, const char** text,
 }
 #endif
 
-int InputOpen()
+int YGS2kInputOpen()
 {
 	#ifdef ENABLE_LINUXGPIO
 	const char* chipName = "gpiochip0";
@@ -1378,17 +1378,17 @@ int InputOpen()
 	/* パッドの初期化 */
 
 	#ifdef ENABLE_JOYSTICK
-	JoyOpen();
+	YGS2kJoyOpen();
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	ConOpen();
+	YGS2kConOpen();
 	#endif
 
 	return 1;
 }
 
-void InputClose()
+void YGS2kInputClose()
 {
 	#ifdef ENABLE_LINUX_GPIO
 	if ( s_pGPIOChip )
@@ -1409,22 +1409,22 @@ void InputClose()
 	#endif
 
 	#ifdef ENABLE_JOYSTICK
-	JoyClose();
+	YGS2kJoyClose();
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	ConClose();
+	YGS2kConClose();
 	#endif
 }
 
-void Input()
+void YGS2kInput()
 {
 	#ifdef ENABLE_LINUX_GPIO
 	for (int line = 0; line < 10; line++)
 	{
 		if (gpiod_line_get_value(s_pGPIOLines[line]) == 1)
 		{
-			if (++s_iGPIORepeat[line] == 1) LastControllerType = CONTROLLER_LINUXGPIO;
+			if (++s_iGPIORepeat[line] == 1) LastControllerType = YGS_CONTROLLER_LINUXGPIO;
 		}
 		else
 		{
@@ -1441,7 +1441,7 @@ void Input()
 	{
 		if (i < numKeys && keyStates[i] == SDL_PRESSED)
 		{
-			if (++s_iKeyRepeat[i] == 1) LastControllerType = CONTROLLER_KEYBOARD;
+			if (++s_iKeyRepeat[i] == 1) YGS2kLastControllerType = YGS_CONTROLLER_KEYBOARD;
 		}
 		else
 		{
@@ -1451,10 +1451,10 @@ void Input()
 	#endif
 
 	#ifdef ENABLE_JOYSTICK
-	JoyInput();
+	YGS2kJoyInput();
 	#endif
 	
 	#ifdef ENABLE_GAME_CONTROLLER
-	ConInput();
+	YGS2kConInput();
 	#endif
 }

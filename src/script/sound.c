@@ -6,8 +6,8 @@
 void StopAllWaves(void) {
 	int32_t i;
 	for(i = 0; i <= 49; i++) {
-		StopWave(i);
-		SetVolumeWave(i, sevolume);	// #1.60c7o8
+		YGS2kStopWave(i);
+		YGS2kSetVolumeWave(i, sevolume);	// #1.60c7o8
 	}
 }
 
@@ -17,22 +17,22 @@ void StopAllWaves(void) {
 void StopAllBGM(void) {
 	int32_t i;
 	for(i = 50; i <= 69; i++) {
-		StopWave(i);
-		SetVolumeWave(i, bgmvolume);	// #1.60c7o8
+		YGS2kStopWave(i);
+		YGS2kSetVolumeWave(i, bgmvolume);	// #1.60c7o8
 	}
 }
 
 void SetVolumeAllWaves(int32_t vol) {
 	int32_t i;
 	for(i = 0; i <= 49; i++) {
-		SetVolumeWave(i, vol);
+		YGS2kSetVolumeWave(i, vol);
 	}
 }
 
 void SetVolumeAllBGM(int32_t vol) {
 	int32_t i;
 	for(i = 50; i <= 69; i++) {
-		SetVolumeWave(i, vol);
+		YGS2kSetVolumeWave(i, vol);
 	}
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -56,10 +56,10 @@ void PlayAllSE() {
 
 	for(i = 0; i < 50; i++) {
 		if(se_play[i] == 1) {
-			PlayWave(i);
+			YGS2kPlayWave(i);
 			se_play[i] = 0;
 		}else if(se_play[i] == 2){
-			StopWave(i);
+			YGS2kStopWave(i);
 			se_play[i] = 0;
 		}
 	}
@@ -254,7 +254,7 @@ void bgmFadeout(void) {
 		if(fadelv[player] != 0) {
 			fadelv[player] += fade_seed;
 			if(fadelv[player] > 10000) fadelv[player] = 10000;
-			SetVolumeWave(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
+			YGS2kSetVolumeWave(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
 		}
 	}
 }
@@ -327,7 +327,7 @@ void checkMasterFadeout(int32_t player) {
 void changeBGM(int32_t player) {
 	StopAllBGM();
 	if((!isfever[0]) && (!isfever[1]))
-		PlayWave(50 +bgmlv);
+		YGS2kPlayWave(50 +bgmlv);
 	fadelv[player] = 0;
 	//if((wavebgm >= 1) && (gameMode[0] != 8)) bgmlv = 3;
 }
@@ -346,7 +346,7 @@ void SoundTestProc(void) {
 
 	loop {
 		count++;
-		Input();
+		YGS2kInput();
 
 		// 背景描画 #1.60c7o5
 		if(background == 0) {
@@ -399,7 +399,7 @@ void SoundTestProc(void) {
 		if(getPushState(0, BTN_A)) {
 			StopAllWaves();
 			StopAllBGM();
-			PlayWave(snd);
+			YGS2kPlayWave(snd);
 		}
 
 		// Cボタンで停止
@@ -413,8 +413,8 @@ void SoundTestProc(void) {
 			StopAllWaves();
 			StopAllBGM();
 			if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
-				if(IsPlayMIDI()) ReplayMIDI();
-			} else if(wavebgm >= 1) PlayWave(61);//タイトルBGM
+				if(YGS2kIsPlayMIDI()) YGS2kReplayMIDI();
+			} else if(wavebgm >= 1) YGS2kPlayWave(61);//タイトルBGM
 			return;
 		}
 		spriteTime();

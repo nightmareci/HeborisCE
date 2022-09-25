@@ -1420,8 +1420,8 @@ uint32_t	SavedSeed[2]={0,0};							// needed to save randomizer states
 uint32_t	PieceSeed=0;							// needed to generate pieces without loosing saved seed.
 
 bool inmenu = true;
-EControllerType lastControllerType = CONTROLLER_NULL;
-EControllerType lastPlayerControllerType[2] = { CONTROLLER_NULL, CONTROLLER_NULL };
+YGS2kEControllerType lastControllerType = YGS_CONTROLLER_NULL;
+YGS2kEControllerType lastPlayerControllerType[2] = { YGS_CONTROLLER_NULL, YGS_CONTROLLER_NULL };
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  メイン
@@ -1453,14 +1453,14 @@ void gameMain(void) {
 			backupSetups();	// 設定内容をバックアップ #1.60c7o6
 			domirror = 0;	// 鏡像を無効に
 
-			if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
+			if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
 
 			title();
 
 			flag = 0;
 			loop {
 				spriteTime();
-				Input();
+				YGS2kInput();
 
 				// リプレイ中の早送り
 				noredraw = 0;
@@ -1545,7 +1545,7 @@ void gameMain(void) {
 				resetKeysFlag = false;
 				restart = 0;
 			}
-			Input();
+			YGS2kInput();
 
 			const char* const lines[] = {
 				"RESET KEYBOARD INPUT SETTING?",
@@ -1564,8 +1564,8 @@ void gameMain(void) {
 			if (
 				!enterResetKeys &&
 				(
-					(lastEnterPressed && !IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) ||
-					(lastEscapePressed && !IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)))
+					(lastEnterPressed && !YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) ||
+					(lastEscapePressed && !YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)))
 				)
 			) {
 				if (lastEnterPressed) {
@@ -1581,13 +1581,13 @@ void gameMain(void) {
 				restart = 1;
 			}
 			if (enterResetKeys) {
-				if (!IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)) && !IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
+				if (!YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)) && !YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
 					enterResetKeys = false;
 				}
 			}
 			else {
-				lastEnterPressed = IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-				lastEscapePressed = IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+				lastEnterPressed = YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+				lastEscapePressed = YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 			}
 		}
 		#endif
@@ -1730,17 +1730,17 @@ void lastProc(void) {
 				pause[0] = 0;
 
 				if(gameMode[0] == 0)
-					ReplayWave(57);
+					YGS2kReplayWave(57);
 				else
-					ReplayWave(56);
+					YGS2kReplayWave(56);
 			} else {
 				// ポーズ
 				pause[0] = 1;
 
 				if(gameMode[0] == 0)
-					PauseWave(57);
+					YGS2kPauseWave(57);
 				else
-					PauseWave(56);
+					YGS2kPauseWave(56);
 			}
 
 			if(gameMode[0] == 4)
@@ -1762,17 +1762,17 @@ void lastProc(void) {
 				pause[1] = 0;
 
 				if(gameMode[1] == 0)
-					ReplayWave(57);
+					YGS2kReplayWave(57);
 				else
-					ReplayWave(56);
+					YGS2kReplayWave(56);
 			} else {
 				// ポーズ
 				pause[1] = 1;
 
 				if(gameMode[1] == 0)
-					PauseWave(57);
+					YGS2kPauseWave(57);
 				else
-					PauseWave(56);
+					YGS2kPauseWave(56);
 			}
 
 			if(gameMode[1] == 4)
@@ -1782,9 +1782,9 @@ void lastProc(void) {
 	// TOMOYO E-Heart最終面ギミック C7U0
 	for(pl = 0; pl <= maxPlay ; pl++){
 	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){ 
-// 		SwapToSecondary(23);  // does nothing
+// 		YGS2kSwapToSecondary(23);  // does nothing
 //		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);  // does nothing because the previous thing did nothing
-//		SwapToSecondary(23);                               // doe snothing
+//		YGS2kSwapToSecondary(23);                               // doe snothing
 		ExBltFastRect(100, 160*(!pl), 0,160*pl,0,160,240);  // hack to render to rendering texture directly if present.
 		if((ending[pl] != 3) && (status[pl] != 21) && (status[pl] != 20)){
 			if(tomoyo_ehfinal_c[pl] < 220)
@@ -1818,30 +1818,30 @@ void lastProc(void) {
 	}
 	}
 	if(thunder_timer){
-		i = (10 - Rand(20))*getDrawRate();
-		j = (10 - Rand(20))*getDrawRate();
-		SetSecondaryOffset(i-(i/2),j-(j/2));
+		i = (10 - YGS2kRand(20))*getDrawRate();
+		j = (10 - YGS2kRand(20))*getDrawRate();
+		YGS2kSetSecondaryOffset(i-(i/2),j-(j/2));
 		thunder_timer--;
 	}else{
-		SetSecondaryOffset(0,0);
+		YGS2kSetSecondaryOffset(0,0);
 	}
 
 	/* FPS表示 */
 	// heboris.iniの設定でFPSを非表示にできる#1.60c7e
 	if(!hide_fps) {
-		sprintf(string[0], "%3d/%2dFPS", GetRealFPS(), GetFPS() );	// FPSの取得(測定値)
+		sprintf(string[0], "%3d/%2dFPS", YGS2kGetRealFPS(), YGS2kGetFPS() );	// FPSの取得(測定値)
 		printTinyFont(130, 233, string[0]);
 	}
 
 	#ifdef ENABLE_KEYBOARD
 	// NEXT隠し
-	if(IsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
+	if(YGS2kIsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
 		// next表示個数は0〜6 #1.60c7q3
 		hnext[0]++;
 		if(hnext[0] > 6) hnext[0] = 0;
 		if((hnext[0] > max_hnext[0]) && onRecord[0]) max_hnext[0] = hnext[0];
 	}
-	if(IsPushKey(dispnextkey[1]) && (!demo) && (!playback) && (!death_plus[1]) && (!hebo_plus[1])&&(!heboGB[1])&&(!onRecord[1])) {
+	if(YGS2kIsPushKey(dispnextkey[1]) && (!demo) && (!playback) && (!death_plus[1]) && (!hebo_plus[1])&&(!heboGB[1])&&(!onRecord[1])) {
 		hnext[1]++;
 		if(hnext[1] > 6) hnext[1] = 0;
 		if((hnext[1] > max_hnext[1]) && onRecord[1]) max_hnext[1] = hnext[1];
@@ -1877,15 +1877,15 @@ void title(void) {
 	tmp_maxPlay = maxPlay;	// プレイ人数をバックアップ
 
 	// 画面位置修正 via C++ Port
-	SetSecondaryOffset(0,0);
+	YGS2kSetSecondaryOffset(0,0);
 
 	if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
-		if(!IsPlayMIDI()) {
-			PlayMIDI();
-			SetVolumeMIDI(bgmvolume);
+		if(!YGS2kIsPlayMIDI()) {
+			YGS2kPlayMIDI();
+			YGS2kSetVolumeMIDI(bgmvolume);
 		}
 	} else if(wavebgm >= 1) {
-		if(!IsPlayWave(61)) PlayWave(61);
+		if(!YGS2kIsPlayWave(61)) YGS2kPlayWave(61);
 	}
 
 
@@ -1895,7 +1895,7 @@ void title(void) {
 		democ++;
 
 		// ｷｰ入力
-		Input();
+		YGS2kInput();
 
 		// 背景を描く
 		if(!title_mov_f){
@@ -1929,7 +1929,7 @@ void title(void) {
 		printFont(27, 13, "VERSION 1.60", 4);
 		printFont(27, 14, "(2002/03/31)", 6);
 		sprintf(string[0], "%s", version);
-		printFont(20 - StrLen(version) / 2, 16, string[0], 1); // #1.60c7f4
+		printFont(20 - YGS2kStrLen(version) / 2, 16, string[0], 1); // #1.60c7f4
 
 		// モード0: ボタン入力待ち
 		if(mode == 0) {
@@ -2011,7 +2011,7 @@ void title(void) {
 
 				// 決定
 				if(getPushState(player, BTN_A)) {
-					PlayWave(10);
+					YGS2kPlayWave(10);
 					mode = 2;
 					domirror = 0;	//鏡像は最初は無効、必要に応じて1にする
 
@@ -2270,9 +2270,9 @@ void doDemoMode(void) {
 	demo = 1;
 	demotime = (demotime + 1) & 3;
 
-	rots[0] = Rand(9);
-	rots[1] = Rand(9);
-	if(Rand(10) < 6){	//VSデモ
+	rots[0] = YGS2kRand(9);
+	rots[1] = YGS2kRand(9);
+	if(YGS2kRand(10) < 6){	//VSデモ
 		gameMode[0] = 4;
 		gameMode[1] = 4;
 		tmp_maxPlay = maxPlay;	// プレイ人数をバックアップ
@@ -2281,18 +2281,18 @@ void doDemoMode(void) {
 	else{	//通常デモ
 		for(player = 0; player <= maxPlay; player++) {
 			do{
-				tmp = Rand(11);
+				tmp = YGS2kRand(11);
 			}while((tmp == 2) || (tmp == 3) || (tmp == 4) || (tmp == 5) || (tmp == 6) || (tmp == 8) || (tmp > 10));
 			gameMode[player] = tmp;
 			if(gameMode[player] == 9){
-				std_opt[player] = Rand(2);
-				relaymode[player] = Rand(2);
+				std_opt[player] = YGS2kRand(2);
+				relaymode[player] = YGS2kRand(2);
 			}else if(gameMode[player] == 10){
-				ori_opt[player] = Rand(2);
+				ori_opt[player] = YGS2kRand(2);
 			}
-			if(gameMode[player] == 1) item_mode[player] = (Rand(10) < 4);
+			if(gameMode[player] == 1) item_mode[player] = (YGS2kRand(10) < 4);
 		}
-		backno = Rand(12);
+		backno = YGS2kRand(12);
 		bgmlv = 0;
 	}
 
@@ -2305,7 +2305,7 @@ void doDemoMode(void) {
 		bgmlv = 10;
 	}
 	else{
-		backno = Rand(12);
+		backno = YGS2kRand(12);
 
 		bgmlv = setstartBGM(gameMode[0], 0);
 		fadelv[0] = 0;
@@ -2852,23 +2852,23 @@ void versusInit(int32_t player) {
 	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
 			// use sakura bag.
-			len = StrLen(nextb_list);			
+			len = YGS2kStrLen(nextb_list);			
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
-					MidStr(nextb_list, j + 1, 1, string[0]);
-					temp = ValLong(string[0]);
+					YGS2kMidStr(nextb_list, j + 1, 1, string[0]);
+					temp = YGS2kValLong(string[0]);
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
 		}
 			else{							//F-Point stages, use f point pattern.
-			len = StrLen(nextfp_list);
+			len = YGS2kStrLen(nextfp_list);
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
-					MidStr(nextfp_list, j + 1, 1, string[0]);
-					temp = ValLong(string[0]);
+					YGS2kMidStr(nextfp_list, j + 1, 1, string[0]);
+					temp = YGS2kValLong(string[0]);
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
@@ -2884,36 +2884,36 @@ void versusInit(int32_t player) {
 		SakuraNextInit(player);
 	} else if((nextblock == 10)|| ((p_nextblock ==10)&&(gameMode[player] == 5))) {
 		//電源パターンNEXT生成
-		len = StrLen(nextdengen_list);
+		len = YGS2kStrLen(nextdengen_list);
 		//sprintf(string[0], "len=%d", len);
 		if(len > 0) {
 			for(i = 0; i < 1400; i++) {
 				j = i % len;
-				MidStr(nextdengen_list, j + 1, 1, string[0]);
-				temp = ValLong(string[0]);
+				YGS2kMidStr(nextdengen_list, j + 1, 1, string[0]);
+				temp = YGS2kValLong(string[0]);
 				if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			}
 		}
 	} else if((nextblock == 12)|| ((p_nextblock ==12)&&(gameMode[player] == 5))) {
 		//FP電源パターンNEXT生成
-		len = StrLen(nextfp_list);
+		len = YGS2kStrLen(nextfp_list);
 		//sprintf(string[0], "len=%d", len);
 		if(len > 0) {
 			for(i = 0; i < 1400; i++) {
 				j = i % len;
-				MidStr(nextfp_list, j + 1, 1, string[0]);
-				temp = ValLong(string[0]);
+				YGS2kMidStr(nextfp_list, j + 1, 1, string[0]);
+				temp = YGS2kValLong(string[0]);
 				if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			}
 		}
 	}else if((nextblock == 0)|| ((p_nextblock ==0)&&(gameMode[player] == 5))) {
 		//完全ランダム
 		do {
-			nextb[0 + player * 1400] = Rand(7);
+			nextb[0 + player * 1400] = YGS2kRand(7);
 		} while((nextb[0 + player * 1400] != 0) && (nextb[0 + player * 1400] != 1) && (nextb[0 + player * 1400] != 4) && (nextb[0 + player * 1400] != 5));
 
 		for(i = 1; i < 1400; i++) {
-			nextb[i + player * 1400] = Rand(7);
+			nextb[i + player * 1400] = YGS2kRand(7);
 		}
 	}else if((nextblock == 13)|| ((p_nextblock ==13)&&(gameMode[player] == 5))) {
 		//SEGA TETRIS
@@ -3021,7 +3021,7 @@ void versusInit(int32_t player) {
 	nextc[player] = 0;
 	next[player] = nextb[0 + player * 1400];
 
-//	hole[player] = Rand(10);	//擬似乱数のためにブロックシャッターへ移動
+//	hole[player] = YGS2kRand(10);	//擬似乱数のためにブロックシャッターへ移動
 
 	// NEXTブロックの色を設定 #1.60c7m9
 	setNextBlockColors(player, 1);
@@ -3399,7 +3399,7 @@ void playerExecute(void) {
 	// 窒息しそうなら警告音を鳴らす #1.60c7l5
 	// プレイ中のみ #1.60c7l6
 	if( ((pinch[0])&&(onRecord[0])) || ((pinch[1])&&(onRecord[1])) ) {
-		if( !IsPlayWave(40) ) PlaySE(40);
+		if( !YGS2kIsPlayWave(40) ) PlaySE(40);
 	} else {
 		// ピンチから通常状態に戻ったら即止める #1.60c7l6
 		StopSE(40);
@@ -3409,7 +3409,7 @@ void playerExecute(void) {
 	// TODO: Add "skip stage" player input.
 	#ifdef ENABLE_KEYBOARD
 	// ステージスキップキー長押し
-	if( IsPressKey(skipKey) ){
+	if( YGS2kIsPressKey(skipKey) ){
 			stage_skip_mpc[0]++;
 			}else{
 			stage_skip_mpc[0]=0;
@@ -3481,7 +3481,7 @@ void playerExecute(void) {
 			if(hanabi_frame[i] >= 30) {
 				hanabi_waiting[i]--;
 				PlaySE(35);
-				objectCreate2(i, 7, Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, Rand(7)+1, 0);
+				objectCreate2(i, 7, YGS2kRand(80) + 72 + 192 * i - 96 * maxPlay, 16 + YGS2kRand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, YGS2kRand(7)+1, 0);
 				//hanabi_total[i]++;//総数カウント
 				hanabi_frame[i] = 0;
 			}
@@ -3491,7 +3491,7 @@ void playerExecute(void) {
 		if((ending[i] == 2) && (gameMode[i] == 0)&&(endtime[i] % hanabi_int[i] == 0)&&(!novice_mode[i])){//ロール中花火　staffroll.cから移動
 			hanabi_total[i]++;
 			PlaySE(35);
-			objectCreate2(i, 7, Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, Rand(7)+1, 0);
+			objectCreate2(i, 7, YGS2kRand(80) + 72 + 192 * i - 96 * maxPlay, 16 + YGS2kRand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, YGS2kRand(7)+1, 0);
 		}
 
 
@@ -3541,9 +3541,9 @@ void playerExecute(void) {
 			} else if( (isfever[i]) && (item_timer[i] <= 0)) {
 				// フィーバー
 				if(!isfever[1-i])
-					StopWave(65);
-				if((!IsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
-					PlayWave(50 +bgmlv);
+					YGS2kStopWave(65);
+				if((!YGS2kIsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
+					YGS2kPlayWave(50 +bgmlv);
 				isfever[i] = 0;
 				item_timer[i] = 0;
 			} else if( (isUDreverse[i]) && (item_timer[i] <= 0) ) {
@@ -4310,7 +4310,7 @@ void statJoinwait(int32_t player) {
 		PlaySE(10);
 
 		if(wavebgm >= 1) {
-			if(!IsPlayWave(62)) PlayWave(62);
+			if(!YGS2kIsPlayWave(62)) YGS2kPlayWave(62);
 		}
 		playerInitial(player);
 		randommode[player] = 1;
@@ -4390,11 +4390,11 @@ void statSelectMode(int32_t player) {
 	padRepeat2(player);
 
 	// モードセレクト曲
-	if( (!IsPlayMIDI()) && (wavebgm == 0) ) {
-		PlayMIDI();
-		SetVolumeMIDI(bgmvolume);
-	} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(62)) && (wavebgm >= 1) ) {
-		PlayWave(62);
+	if( (!YGS2kIsPlayMIDI()) && (wavebgm == 0) ) {
+		YGS2kPlayMIDI();
+		YGS2kSetVolumeMIDI(bgmvolume);
+	} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(62)) && (wavebgm >= 1) ) {
+		YGS2kPlayWave(62);
 	}
 
 
@@ -5059,7 +5059,7 @@ void statSelectMode(int32_t player) {
 				stage[player] = start_stage[player];
 			}else
 				if(((gameMode[player] == 1) || (gameMode[player] == 2))){
-					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (Rand(10) < 2)) ||(getPressState(player, BTN_D))){
+					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (YGS2kRand(10) < 2)) ||(getPressState(player, BTN_D))){
 						item_mode[player] = 0;
 						hebo_plus[player] = 0;
 						examination[player] = Admitgradecheck(player);
@@ -5112,7 +5112,7 @@ void statSelectMode(int32_t player) {
 
 						//段位認定試験発生
 						do{	//試験段位を設定
-							exam_grade[player] = Rand(32) + 1;
+							exam_grade[player] = YGS2kRand(32) + 1;
 						}while((exam_grade[player] < exam_range[(enable_grade[player] - 1) * 2]) ||
 						(exam_grade[player] > exam_range[((enable_grade[player] - 1) * 2) + 1]));
 					}
@@ -5906,7 +5906,7 @@ void statReady(int32_t player) {
 			else FP_bonus[player] = 10800;
 		}
 		if(wavebgm >= 1) {
-			if( !IsPlayWave(50 +bgmlv) ) PlayWave(50 +bgmlv);
+			if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
 		}
 
 		if((repversw >= 25) && (sp[player] < min_speed[player]) && (enable_minspeed) || (tomoyo_waits[player]))
@@ -6074,7 +6074,7 @@ void statReady(int32_t player) {
 		// PRACTICEでエンディング中の場合#1.60c6.2d
 		if((gameMode[0] == 5) && (ending[0] != 0)) {
 			if(ending[0] == 1){
-				PlayWave(56);						// BGM流れてなかったorz 差し替え#1.60c7i4
+				YGS2kPlayWave(56);						// BGM流れてなかったorz 差し替え#1.60c7i4
 				status[player] = 13;					// エンディング開始
 				statusc[player * 10] = 0;				// あとかたづけ
 				// エンディング突入を高速化#1.60c7i4
@@ -6090,7 +6090,7 @@ void statReady(int32_t player) {
 			}
 		} else {
 			if(wavebgm >= 1) {
-				if( !IsPlayWave(50 +bgmlv) ) PlayWave(50 +bgmlv);
+				if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
 			}
 
 			status[player] = 4;
@@ -6400,15 +6400,15 @@ void statBlock(int32_t player) {
 	{
 		if (nextblock==10) // sega poweron pattern
 		{
-			nextc[player] = (nextc[player]) % StrLen(nextdengen_list); // actual size of it. should be 1000
+			nextc[player] = (nextc[player]) % YGS2kStrLen(nextdengen_list); // actual size of it. should be 1000
 		}
 		if (nextblock==11) // Tomoyo bag
 		{
-			nextc[player] = (nextc[player]) % StrLen(nextb_list); // actual size of it. should be 255
+			nextc[player] = (nextc[player]) % YGS2kStrLen(nextb_list); // actual size of it. should be 255
 		}
 		if (nextblock==12) // flashpoint poweron pattern
 		{
-			nextc[player] = (nextc[player]) % StrLen(nextfp_list); // actual size of it. should be 1000
+			nextc[player] = (nextc[player]) % YGS2kStrLen(nextfp_list); // actual size of it. should be 1000
 		}
 		if (nextblock==13) // actual sega randomizer. 
 		{
@@ -6736,7 +6736,7 @@ void setGameOver(int32_t player) {
 			if(wavebgm) {
 				StopAllBGM();
 			} else {
-				if(IsPlayMIDI()) StopMIDI();
+				if(YGS2kIsPlayMIDI()) YGS2kStopMIDI();
 			}
 		}
 	}
@@ -7521,7 +7521,7 @@ void statRelayselect(int32_t player) {
 					for(i = 0; i < fldsizew[player]; i++) {
 						// ライン消しエフェクトで消える #1.60c7n5
 						if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-							objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+							objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 						}
 
 						fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -8069,7 +8069,7 @@ void statErase(int32_t player) {
 		UpLineBlockJudge(player);
 
 	if(ismiss[player]){
-		y = Rand(8);
+		y = YGS2kRand(8);
 		ofs_x[player] = y - (8 / 2);
 		ofs_x2[player] = ofs_x[player];
 		if(statusc[player * 10] == wait1[player])
@@ -8483,7 +8483,7 @@ int32_t fldMirrorProc(int32_t player) {
 		if( (((gameMode[player] == 4) || (item_mode[player]))&&(bdowncnt[player] % 1 == 0)) || (bdowncnt[player] % p_fmirror_interval == 0) || (gameMode[player] == 8) ) {
 			if(fmirror_cnt[player] <= p_fmirror_timer) {
 				if(((repversw >= 18) && (fmirror_cnt[player] == -20)) || ((repversw <= 17) && (fmirror_cnt[player] == 0))) {
-//					PlayWave(20);
+//					YGS2kPlayWave(20);
 					// フィールドをバッファに確保
 					for(i = 0; i <= fldsizeh[player]; i++) {
 						for(j = 0; j < fldsizew[player]; j++) {
@@ -9195,7 +9195,7 @@ void LevelUp(int32_t player) {
 							bgmlv++;
 							changeBGM(player);
 						}
-//					PlayWave(30);	// rankup.wav
+//					YGS2kPlayWave(30);	// rankup.wav
 				}
 			}
 		}
@@ -9340,9 +9340,9 @@ void statGameOver(int32_t player) {
 		winc = 0;
 		winu = - 24;
 		wink = 0;
-		if(IsPlayWave(65)){
-			StopWave(65);
-			PlayWave(50 +bgmlv);
+		if(YGS2kIsPlayWave(65)){
+			YGS2kStopWave(65);
+			YGS2kPlayWave(50 +bgmlv);
 		}
 		if(status[1 - player] != 7){
 			vs_points[1 - player]++;
@@ -9370,13 +9370,13 @@ void statGameOver(int32_t player) {
 
 	if( statusc[player * 10] > 22 ) {
 		if(statusc[player * 10 + 1] == 141) {
-			//PlayWave(8);
+			//YGS2kPlayWave(8);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
 				if(wavebgm) {
 					StopAllBGM();
 				} else {
-					if(IsPlayMIDI()) StopMIDI();
+					if(YGS2kIsPlayMIDI()) YGS2kStopMIDI();
 				}
 				statusc[player * 10 + 2] = 0;
 			} else {
@@ -9507,7 +9507,7 @@ void statEraseBlock(int32_t player) {
 					x = statusc[player * 10];
 
 					if(breakeffect) {
-						objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+						objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 					}
 					fld[x + i * 10 + player * 220] = 0;
 					fldt[x + i * 10 + player * 220] = 0;	// #1.60c7j5
@@ -9525,14 +9525,14 @@ void statEraseBlock(int32_t player) {
 								if( (fld[x + i * fldsizew[player] + player * 220] >= 11) || (super_breakeffect == 1) ||
 									( ((breaktype == 0)||((breaktype == 3)&&(gameMode[player] == 0))) && (super_breakeffect == 2) ) ||
 									((heboGB[player] != 0) && (super_breakeffect == 2)) ) {
-									objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 								} else if(lines & 1) {
 									if((x & 1) == 1) {
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									}
 								} else {
 									if((x & 1) == 0) {
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									}
 								}
 								if(fldi[x + i * fldsizew[player] + player * 220])//アイテムが消えるときの白いエフェクト
@@ -9826,7 +9826,7 @@ void statEraseBlock(int32_t player) {
 		 	are_skipflag[player] = 1;
 	 	}
 		if(ismiss[player]){
-			y = Rand(6);
+			y = YGS2kRand(6);
 			ofs_x[player] = y - (6 / 2);
 			ofs_x2[player] = ofs_x[player];
 		}
@@ -10009,7 +10009,7 @@ void calcScore(int32_t player, int32_t lines) {
 			if(bravo) {
 				for(i = -3; i <= 3; i++)
 					for(j = 0; j < 5; j++)
-						objectCreate(player, 5, 62 + player * 196, 64 + j * 30 + (i % 2) * 15, 180 * i, - 2000 + j * 200, Rand(7) + 1, 1);
+						objectCreate(player, 5, 62 + player * 196, 64 + j * 30 + (i % 2) * 15, 180 * i, - 2000 + j * 200, YGS2kRand(7) + 1, 1);
 			}
 		}
 		if((squaremode[player])&&(tspin_flag[player] == 2)){//本当は部分フリーフォルらしいけどわからないから全部
@@ -10391,21 +10391,21 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		// gm条件が成立するとシャドウロールになる		#1.60c7i2
 		if(enable_grade[player] == 1) {
 			if((sc[player] > gscore[17]) && (gametime[player] <= 810 * 60) && (gmflag1[player]) && (gmflag2[player])) {
-				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		} else if(enable_grade[player] == 2) {
 		//M以上で8分45秒以内
 			if((grade[player] >= 27) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
-				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		}  else if(enable_grade[player] == 3) {
 		//M以上で8分45秒以内
 			if((grade2[player] >= 29) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
-				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
@@ -10413,7 +10413,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		//m5以上で6分30秒以内
 		//skillcoolが6個以上、regretが一回も出ていない
 			if((grade[player] >= 22) && (gametime[player] <= 390 * 60) && (gup3rank[player] == 2) && (gmflag1[player]) && (!gmflag2[player])) {
-				objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
@@ -10463,7 +10463,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		recSectionTime(player);
 	// BEGINNERなら200で終了させる#1.60c7n2
 	} else if((gameMode[player] == 0) && (tc[player] >= 200)&&(!novice_mode[player])) {
-		//PlayWave(28);
+		//YGS2kPlayWave(28);
 		tc[player] = 200;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -10482,13 +10482,13 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
 
-		//PlayWave(19);
+		//YGS2kPlayWave(19);
 		if(backno <= 1) {
 			bgfadesw = 1;
 		}
 	// NOVICEなら300で終了させる
 	} else if((gameMode[player] == 0) && (tc[player] >= 300) && (novice_mode[player])) {
-		//PlayWave(28);
+		//YGS2kPlayWave(28);
 
 		// タイムボーナス
 		if((novice_mode[player])&&(gametime[player] < 18000)) {
@@ -10507,14 +10507,14 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
 
-		//PlayWave(19);
+		//YGS2kPlayWave(19);
 		if(backno <= 1) {
 			bgfadesw = 1;
 		}
 	// DEVIL-なら1000で終了させる#1.60c7u0.9
 	} else if((((enable_grade[player] == 1) && (repversw < 42)) || (devil_minus[player]))&&(gameMode[player] == 3)&&(repversw >= 31) && (tc[player] >= 1000)) {
 
-		//PlayWave(28);
+		//YGS2kPlayWave(28);
 		tc[player] = 1000;
 		grade[player] = 10; // Grade設定 #1.60c7j7
 		gflash[player]=120;
@@ -10531,10 +10531,10 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		}
 	// DEVILなら1300で終了させる#1.60c7f3
 	} else if((gameMode[player] == 3) && (tc[player] >= 1300)) {
-		if(( ((!isWRule(player)) && (gametime[player] <= 19200)) || ((isWRule(player)) && (gametime[player] <= 21000)) )&&(GetRealFPS()>40)) {
+		if(( ((!isWRule(player)) && (gametime[player] <= 19200)) || ((isWRule(player)) && (gametime[player] <= 21000)) )&&(YGS2kGetRealFPS()>40)) {
 			grade[player] = 16;
-			objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
-			PlayWave(43);
+			objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
+			YGS2kPlayWave(43);
 		}//ネ申条件を満たしていたらその時点でS13に
 
 		if(death_plus[player]){
@@ -10586,7 +10586,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 			( ((gametime[player] > timelimitm[player]) && (timelimitm[player] > 0) && ( !isWRule(player) )) ||	// TGM,Ti
 			  ((gametime[player] > timelimitmw[player]) && (timelimitmw[player] > 0) && (isWRule(player) )) )  ) {
 
-		//PlayWave(28);
+		//YGS2kPlayWave(28);
 		tc[player] = 500;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -10602,7 +10602,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 	} else if(((gameMode[player] == 1) || (gameMode[player] == 2)) && //マスター20G
 				(tc[player] >= 500) && (tcbuf < 500) &&
 				(gametime[player] > timelimit[player]) && (timelimit[player] > 0)) {
-		//PlayWave(28);
+		//YGS2kPlayWave(28);
 		tc[player] = 500;
 		bgfadesw = 1;
 		lv[player] = tc[player];
@@ -10615,7 +10615,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 				 ( ( (gametime[player] > timelimit[player]) && (timelimit[player] > 0) && (!isWRule(player)) )||	// TGM,Ti
 				 ( (gametime[player] > timelimitw[player]) && (timelimitw[player] > 0) && (isWRule(player)) ) )	// ワールド系
 				) {
-		//PlayWave(28);
+		//YGS2kPlayWave(28);
 		tc[player] = 500;
 		bgfadesw = 1;
 		grade[player]++;	//S5になる
@@ -10720,7 +10720,7 @@ void statVersusWait(int32_t player) {
 
 		//回転法則のランダムセレクト
 		if((versus_rot[player] == 9) && (status[1 - player] != 38)){
-			rots[player] = Rand(9);
+			rots[player] = YGS2kRand(9);
 			setNextBlockColors(player, 1);
 		}
 
@@ -10979,8 +10979,8 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(63)) && (wavebgm > 0) )
-		PlayWave(63);
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && (wavebgm > 0) )
+		YGS2kPlayWave(63);
 /*
 	// リプレイセーブ#1.60c7i5
 	if((textguide) && (!playback) && (!demo)){
@@ -11043,9 +11043,9 @@ void statNameEntry(int32_t player) {
 		}
 	}
 	if(statusc[player * 10 + 1] == 0)
-		StrCpy(string[player + 2], "");
+		YGS2kStrCpy(string[player + 2], "");
 
-	len = StrLen(string[player + 2]);
+	len = YGS2kStrLen(string[player + 2]);
 
 	// 何位に入ったか表示#1.60c7i5
 	if(rank != -1) {
@@ -11082,7 +11082,7 @@ void statNameEntry(int32_t player) {
 		if(statusc[player * 10 + 2] < (len == 3) * 53)
 			statusc[player * 10 + 2] = 54;
 
-		MidStr(RankString, statusc[player * 10 + 2] + 1, 1, string[4]);
+		YGS2kMidStr(RankString, statusc[player * 10 + 2] + 1, 1, string[4]);
 
 	//	statusc[player * 10 + 1]++;
 
@@ -11095,7 +11095,7 @@ void statNameEntry(int32_t player) {
 		for(k = 0;k <= 9;k++){
 			if(k > statusc[player * 10 + 1] / 2) break;
 			j = statusc[player * 10 + 2]-3-len + k;
-			MidStr(RankString, j + 1 + (55 * (j < 0)) - (55 * (j > 54)), 1, string[0]);
+			YGS2kMidStr(RankString, j + 1 + (55 * (j < 0)) - (55 * (j > 54)), 1, string[0]);
 			if(j==statusc[player * 10 + 2]){
 				printFont(15 + k + 24 * player - 12 * maxPlay, 12-add, string[0], 2 * (count % 20 > 10));
 				printFont(15 + k + 24 * player - 12 * maxPlay, 13-add, "n", count % 9);
@@ -11105,12 +11105,12 @@ void statNameEntry(int32_t player) {
 			PlaySE(10);
 			if(statusc[player * 10 + 2] == 53) {
 				if(len) {
-					MidStr(string[player + 2], 1, len - 1, string[player + 2]);
+					YGS2kMidStr(string[player + 2], 1, len - 1, string[player + 2]);
 				}
 			} else if(statusc[player * 10 + 2] == 54) {
 				statusc[player * 10 + 1] = 45 * 60;
 			} else
-				StrCat(string[player + 2], string[4]);
+				YGS2kStrCat(string[player + 2], string[4]);
 		}
 	} else{
 		printFont(18 + 24 * player - 12 * maxPlay, 14-add, string[player + 2], (count % 4 / 2) * digitc[rots[player]]);
@@ -11118,12 +11118,12 @@ void statNameEntry(int32_t player) {
 
 	if(statusc[player * 10 + 1] >= 45 * 60) {
 		if(statusc[player * 10 + 1] == 45 * 60) {
-			if(!len) StrCpy(string[player + 2], "NOP");
+			if(!len) YGS2kStrCpy(string[player + 2], "NOP");
 			PlaySE(18);
 		}
 		if(statusc[player * 10 + 1] == (46 * 60) + 30){
 			sprintf(string[player + 2], "%s   ", string[player + 2]);
-			LeftStr(string[player + 2], 3, string[player + 2]);
+			YGS2kLeftStr(string[player + 2], 3, string[player + 2]);
 
 			if(ranking_type==0){
 				RankingRegist(gameMode[player], 0, sc[player], li[player], lv[player], gametime[player], (ending[player]==3), string[player + 2]);
@@ -11213,7 +11213,7 @@ bgmteisiflg = 1;
 			for(i = 0; i < fldsizew[player]; i++) {
 				// ライン消しエフェクトで消える #1.60c7n5
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 				}
 
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -11245,7 +11245,7 @@ bgmteisiflg = 1;
 						}
 						ending[player] = 2;
 						// エンディングBGM再生
-						PlayWave(56);
+						YGS2kPlayWave(56);
 fadelv[player] = 0;
 					}
 					else if((gameMode[player] == 8) && (mission_end[c_mission ] < 4))
@@ -11275,7 +11275,7 @@ fadelv[player] = 0;
 							IsBig[player] = 1;
 						}
 						// エンディングBGM再生
-						PlayWave(56);
+						YGS2kPlayWave(56);
 fadelv[player] = 0;
 					}
 				} else {
@@ -11283,7 +11283,7 @@ fadelv[player] = 0;
 					// スタッフロール開始fastroll[player]
 					ending[player] = 2;
 					// エンディングBGM再生
-						PlayWave(56);
+						YGS2kPlayWave(56);
 fadelv[player] = 0;
 //sprintf(string[0],"-3- %2d %2d PLAY56",ending[player],gameMode[player]);
 //printFont(0, 4, string[0], (count % 4 / 2) * digitc[rots[i]]);
@@ -11329,7 +11329,7 @@ fadelv[player] = 0;
 		// 花火
 		if((statusc[player * 10] % 9 == 0)&&(endingcnt[player] < 30)) {//30発上がるとやめる
 			PlaySE(35);
-			objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 16 + Rand(24), 0, 0, Rand(7)+1, 0);
+			objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 16 + YGS2kRand(24), 0, 0, YGS2kRand(7)+1, 0);
 			hanabi_total[player]++;
 			endingcnt[player]++;
 		}
@@ -11432,7 +11432,7 @@ fadelv[player] = 0;
 			}
 			if((statusc[player * 10] % 40 == 0)&&(endingcnt[player] < 4)) {
 				PlaySE(35);
-				objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + Rand(20), 0, 0, Rand(7)+1, 0);
+				objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
 			}
 		} else {
 			if(statusc[player * 10] == 220) objectClearPl(player);	// Tiっぽく花火を消す
@@ -11499,7 +11499,7 @@ fadelv[player] = 0;
 			bgmlv = p_bgmlv;
 			changeBGM(player);
 		}else
-			PlayWave(56);
+			YGS2kPlayWave(56);
 
 		statusc[player * 10]++;
 	}else if (ending[player] == 7){//超短縮
@@ -11519,7 +11519,7 @@ fadelv[player] = 0;
 				for(i = 0; i < fldsizew[player]; i++) {
 				// ライン消しエフェクトで消える #1.60c7n5
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 				}
 
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -11534,7 +11534,7 @@ fadelv[player] = 0;
 			// 花火
 			if((statusc[player * 10] % 9 == 0)&&(endingcnt[player] < 10)) {
 				PlaySE(35);
-				objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + Rand(20), 0, 0, Rand(7)+1, 0);
+				objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
 				hanabi_total[player]++;
 				endingcnt[player]++;
 			}
@@ -11574,8 +11574,8 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!IsPlayWave(63)) && (wavebgm > 0) )
-		PlayWave(63);
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && (wavebgm > 0) )
+		YGS2kPlayWave(63);
 
 	//警告音が鳴っていたら止める
 	StopSE(40);
@@ -11970,7 +11970,7 @@ void statReplaySave(int32_t player) {
 			if((time2[player] > REPLAY_TIME_MAX) || (!replay_save[player])){
 				statusc[player * 10 + 2] = 120;
 			}else{
-				if(abs_YGS2K(GetRealFPS() - max_fps_2) < 10){
+				if(abs_YGS2K(YGS2kGetRealFPS() - max_fps_2) < 10){
 					PlaySE(10);
 					saveReplayData(player, statusc[player * 10 + 0]);
 					freeReplayData();
@@ -12420,7 +12420,7 @@ void statVersusSelect(int32_t player) {
 	}
 	//回転法則のランダムセレクト
 	if(versus_rot[player] == 9){
-		rots[player] = Rand(9);
+		rots[player] = YGS2kRand(9);
 		setNextBlockColors(player, 1);
 	}
 
@@ -12608,7 +12608,7 @@ void winner() {
 		// 花火
 		if( (statusc[0] % 9 == 0) && (endingcnt[player] <= 30) && (obj == 0)) {
 			PlaySE(35);
-			objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + Rand(20), 0, 0, Rand(7)+1, 0);
+			objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
 			endingcnt[player]++;
 		}
 	}
@@ -13077,8 +13077,8 @@ void eraseItem(int32_t player, int32_t type) {
 		misstimer[player] = 0;
 	// 解除ここまで
 		if(!ending[player]){	//ロール中はBGMを変えない
-			StopWave(50 +bgmlv);
-			PlayWave(65);
+			YGS2kStopWave(50 +bgmlv);
+			YGS2kPlayWave(65);
 		}
 		isfever[player] = 1;
 		item_timer[player] = 600;
@@ -13156,7 +13156,7 @@ void eraseItem(int32_t player, int32_t type) {
 					bx2 = (bx[enemy] + blkDataX[blk[enemy] * 16 + rt[enemy] * 4 + i]);
 					by2 = (by[enemy] + blkDataY[blk[enemy] * 16 + rt[enemy] * 4 + i]);
 				}
-				objectCreate(enemy, 6, (bx2 + 15 + 24 * enemy - 12 * maxPlay) * 8, (by2 + 3) * 8, (bx2 - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + 250, c_cblk[enemy]+1, 100);
+				objectCreate(enemy, 6, (bx2 + 15 + 24 * enemy - 12 * maxPlay) * 8, (by2 + 3) * 8, (bx2 - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 250, c_cblk[enemy]+1, 100);
 			}
 			ndelay[enemy] = 1;
 			status[enemy] = 22;
@@ -13548,7 +13548,7 @@ void statLaser(int32_t player) {
 					ExBltRect(78, ((laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) - 1) * 8, (4 - 1) * 8, 0, 0, 24, 24);
 					for(j = 0; j <= fldsizeh[player]; j++){
 						if(fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] != 0){
-							objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
+							objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
 							fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldt[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldi[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
@@ -13593,7 +13593,7 @@ void statLaser(int32_t player) {
 					j = (statusc[player * 10 + 0] - waitA) * 2;
 					if((j - 1 >= 0) && (j - 1 <= fldsizeh[player])){
 						if(fld[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] != 0){
-						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 2) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
+						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 2) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
 							fld[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] = 0;
 							fldt[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] = 0;
 							fldi[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] = 0;
@@ -13604,7 +13604,7 @@ void statLaser(int32_t player) {
 					}
 					if((j >= 0) && (j <= fldsizeh[player])){
 						if(fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] != 0){
-						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
+						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
 							fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldt[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldi[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
@@ -13744,7 +13744,7 @@ void statShotgun(int32_t player) {
 			thunder_timer = 10;
 			for(i = checkFieldTop(player); i < 22; i++){
 				if(fld[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] != 0){
-					objectCreate(player, 1, (shotgunpos[i + 22 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (shotgunpos[i + 22 * player] - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150), fld[shotgunpos[i + 22 * player] + i * 10 + player * 220], 100);
+					objectCreate(player, 1, (shotgunpos[i + 22 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (shotgunpos[i + 22 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[shotgunpos[i + 22 * player] + i * 10 + player * 220], 100);
 					fld[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 					fldt[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 					fldi[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
@@ -13856,7 +13856,7 @@ void statExamination(int32_t player){
 			PlaySE(7);
 			purupuru[player] = 1;
 		} else if((statusc[player * 10 + 0] >= 0) && (statusc[player * 10 + 0] < 110)){
-			ofs_x[player] = Rand(16) - 8;
+			ofs_x[player] = YGS2kRand(16) - 8;
 			ofs_x2[player] = ofs_x[player];
 		} else if(statusc[player * 10 + 0] == 110){//プルプルおわり
 			PlaySE(39);
@@ -13921,7 +13921,7 @@ void statExamination(int32_t player){
 			purupuru[player] = 2;
 			endingcnt[player] = 0;
 		} else if((statusc[player * 10 + 0] >= 0) && (statusc[player * 10 + 0] < 60)){
-			ofs_x[player] = Rand(8) - 4;
+			ofs_x[player] = YGS2kRand(8) - 4;
 			ofs_x2[player] = ofs_x[player];
 		} else if(statusc[player * 10 + 0] == 60){
 			PlaySE(39);
@@ -13991,7 +13991,7 @@ void statExamination(int32_t player){
 				if(exam_grade[player] <= grade[player]){	//合格
 					if((statusc[player * 10] % 10 == 0)&&(endingcnt[player] < 20)) {
 						PlaySE(35);
-						objectCreate2(player, 7, Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + Rand(20), 0, 0, Rand(7)+1, 0);
+						objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
 						endingcnt[player]++;
 					}
 					ExBltRect(81, 125+192 * player -96 * maxPlay , 162 , 215, 200 + 25 * (count % 4 / 2), 70, 25);
@@ -14045,7 +14045,7 @@ void statItemRulet(int32_t player) {
 		if(statusc[player * 10 + 0] <= 119){//シャッフル中
 			if(statusc[player * 10 + 0] % 3 == 0){
 				PlaySE(5);
-				statusc[player * 10 + 2] = Rand(item_num) + 1;
+				statusc[player * 10 + 2] = YGS2kRand(item_num) + 1;
 			}
 		}
 		if(statusc[player * 10 + 0] == 120){//決定
@@ -14078,7 +14078,7 @@ void statItemRulet(int32_t player) {
 			}
 		}
 		if((statusc[player * 10 + 0] > 120) && (statusc[player * 10 + 0] <= 150) && (statusc[player * 10 + 2] == 36)){
-			y = Rand(8);
+			y = YGS2kRand(8);
 			ofs_x[player] = y - (8 / 2);
 			ofs_x2[player] = ofs_x[player];
 		}else{
@@ -14346,14 +14346,14 @@ void statFreefall(int32_t player) {
 							if( (fld[x + i * fldsizew[player] + player * 220] >= 11) || (super_breakeffect == 1) ||
 								( ((breaktype == 0)||((breaktype == 3)&&(gameMode[player] == 0))) && (super_breakeffect == 2) ) ||
 								((heboGB[player]) && (super_breakeffect == 2)) ) {
-								objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
+								objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
 							} else if(Ff_rerise[player] & 1) {
 								if((x & 1) == 1) {
-									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
 								}
 							} else {
 								if((x & 1) == 0) {
-									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
 								}
 							}
 						}
@@ -14655,7 +14655,7 @@ void statDelfromUpper(int32_t player) {
 		if((j >= 0) && (j < 22)) {
 			for(i = 0; i < 10; i++) {
 				if(fld[i + j * 10 + player * 220]) {
-						objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - Rand(40), - 1900 + Rand(150), fld[i + j * 10 + player * 220], 100);
+						objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[i + j * 10 + player * 220], 100);
 
 					fld[i + j * 10 + player * 220] = 0;
 					fldt[i + j * 10 + player * 220] = 0;
@@ -14734,7 +14734,7 @@ void statBanana(int32_t player){
 void GiziSRand(int32_t player){
 	int32_t seed;
 
-	seed = Rand(65536);
+	seed = YGS2kRand(65536);
 	randseed[player] = seed;
 	first_seed[player] = seed;
 }
@@ -14933,7 +14933,7 @@ int32_t getPressState(int32_t player, EButton key) { // パッドボタン割り
 	else {
 		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 ) {
-			gtmp = IsPressGPIO(key);
+			gtmp = YGS2kIsPressGPIO(key);
 		}
 		else
 			gtmp = 0;
@@ -14941,33 +14941,33 @@ int32_t getPressState(int32_t player, EButton key) { // パッドボタン割り
 
 		#ifdef ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
-		ktmp = IsPressKey(keyAssign[key + pl * 10]);
+		ktmp = YGS2kIsPressKey(keyAssign[key + pl * 10]);
 		#endif
 
 		#ifdef ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
-		jtmp = IsPressJoyKey(&joyKeyAssign[key + pl * 10]);
+		jtmp = YGS2kIsPressJoyKey(&joyKeyAssign[key + pl * 10]);
 		#endif
 
 		#ifdef ENABLE_GAME_CONTROLLER
-		SConKey conkey;
+		YGS2kSConKey conkey;
 		switch (key) {
 		case BTN_GIVEUP:
-			conkey.type = CONKEY_BUTTON;
+			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
-			ctmp = IsPressConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPressConKey(playerCons[pl], &conkey);
 			break;
 
 		case BTN_PAUSE:
-			conkey.type = CONKEY_BUTTON;
+			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
-			ctmp = IsPressConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPressConKey(playerCons[pl], &conkey);
 			break;
 		
 		default:
 			ctmp = inmenu ?
-				IsPressMenu(pl, key, GetConType(playerCons[pl])) :
-				IsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+				IsPressMenu(pl, key, YGS2kGetConType(playerCons[pl])) :
+				YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
 		#endif
@@ -15025,40 +15025,40 @@ int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り�
 	else {
 		#ifdef ENABLE_LINUX_GPIO
 		if ( player == 0 )
-			gtmp = IsPushGPIO(key);
+			gtmp = YGS2kIsPushGPIO(key);
 		else
 			gtmp = 0;
 		#endif
 
 		#ifdef ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
-		ktmp = IsPushKey(keyAssign[key + pl * 10]);
+		ktmp = YGS2kIsPushKey(keyAssign[key + pl * 10]);
 		#endif
 
 		#ifdef ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
-		jtmp = IsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
+		jtmp = YGS2kIsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
 		#endif
 
 		#ifdef ENABLE_GAME_CONTROLLER
-		SConKey conkey;
+		YGS2kSConKey conkey;
 		switch (key) {
 		case BTN_GIVEUP:
-			conkey.type = CONKEY_BUTTON;
+			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
-			ctmp = IsPushConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPushConKey(playerCons[pl], &conkey);
 			break;
 
 		case BTN_PAUSE:
-			conkey.type = CONKEY_BUTTON;
+			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
-			ctmp = IsPushConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPushConKey(playerCons[pl], &conkey);
 			break;
 		
 		default:
 			ctmp = inmenu ?
-				IsPushMenu(pl, key, GetConType(playerCons[pl])) :
-				IsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+				IsPushMenu(pl, key, YGS2kGetConType(playerCons[pl])) :
+				YGS2kIsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
 		#endif
@@ -15081,10 +15081,10 @@ int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り�
 	}
 }
 
-int IsPressMenu(int32_t player, EButton button, EControllerType type)
+int IsPressMenu(int32_t player, EButton button, YGS2kEControllerType type)
 {
 	#ifdef ENABLE_GAME_CONTROLLER
-	SConKey key;
+	YGS2kSConKey key;
 	int pushed;
 	#endif
 	#ifdef ONLY_CONTROLLER_TYPE
@@ -15094,69 +15094,69 @@ int IsPressMenu(int32_t player, EButton button, EControllerType type)
 	#endif
 	{
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX:
-	case CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_XBOX:
+	case YGS_CONTROLLER_PLAYSTATION:
 		switch (button)
 		{
 		case BTN_UP:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
 		case BTN_DOWN:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
 		case BTN_LEFT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
 		case BTN_RIGHT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || IsPressConKey(playerCons[player], &key);
-		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPressConKey(playerCons[player], &key);
-		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPressConKey(playerCons[player], &key);
-		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPressConKey(playerCons[player], &key);
-		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPressConKey(playerCons[player], &key);
-		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPressConKey(playerCons[player], &key);
-		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_A: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_B: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPressConKey(playerCons[player], &key);
 		default: return 0;
 		}
 		break;
 
-	case CONTROLLER_NINTENDO:
+	case YGS_CONTROLLER_NINTENDO:
 		switch (button)
 		{
 		case BTN_UP:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
 		case BTN_DOWN:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
 		case BTN_LEFT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
 		case BTN_RIGHT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
-			pushed = IsPressConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || IsPressConKey(playerCons[player], &key);
-		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPressConKey(playerCons[player], &key);
-		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPressConKey(playerCons[player], &key);
-		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPressConKey(playerCons[player], &key);
-		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPressConKey(playerCons[player], &key);
-		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPressConKey(playerCons[player], &key);
-		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
+			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_A: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_B: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPressConKey(playerCons[player], &key);
 		default: return 0;
 		}
 		break;
@@ -15167,10 +15167,10 @@ int IsPressMenu(int32_t player, EButton button, EControllerType type)
 	}
 }
 
-int IsPushMenu(int32_t player, EButton button, EControllerType type)
+int IsPushMenu(int32_t player, EButton button, YGS2kEControllerType type)
 {
 	#ifdef ENABLE_GAME_CONTROLLER
-	SConKey key;
+	YGS2kSConKey key;
 	int pushed;
 	#endif
 	#ifdef ONLY_CONTROLLER_TYPE
@@ -15180,69 +15180,69 @@ int IsPushMenu(int32_t player, EButton button, EControllerType type)
 	#endif
 	{
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX:
-	case CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_XBOX:
+	case YGS_CONTROLLER_PLAYSTATION:
 		switch (button)
 		{
 		case BTN_UP:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
 		case BTN_DOWN:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
 		case BTN_LEFT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
 		case BTN_RIGHT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || IsPushConKey(playerCons[player], &key);
-		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPushConKey(playerCons[player], &key);
-		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPushConKey(playerCons[player], &key);
-		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPushConKey(playerCons[player], &key);
-		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPushConKey(playerCons[player], &key);
-		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPushConKey(playerCons[player], &key);
-		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_A: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_B: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPushConKey(playerCons[player], &key);
 		default: return 0;
 		}
 		break;
 
-	case CONTROLLER_NINTENDO:
+	case YGS_CONTROLLER_NINTENDO:
 		switch (button)
 		{
 		case BTN_UP:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 3 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
 		case BTN_DOWN:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 2 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
 		case BTN_LEFT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 1 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
 		case BTN_RIGHT:
-			key = (SConKey) { .type = CONKEY_AXIS, .index = 0 };
-			pushed = IsPushConKey(playerCons[player], &key);
-			key = (SConKey) { .type = CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || IsPushConKey(playerCons[player], &key);
-		case BTN_A: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return IsPushConKey(playerCons[player], &key);
-		case BTN_B: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return IsPushConKey(playerCons[player], &key);
-		case BTN_C: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return IsPushConKey(playerCons[player], &key);
-		case BTN_D: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return IsPushConKey(playerCons[player], &key);
-		case BTN_GIVEUP: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return IsPushConKey(playerCons[player], &key);
-		case BTN_PAUSE: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return IsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
+			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_A: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_B: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPushConKey(playerCons[player], &key);
 		default: return 0;
 		}
 		break;
@@ -15254,7 +15254,7 @@ int IsPushMenu(int32_t player, EButton button, EControllerType type)
 }
 
 #ifdef ENABLE_GAME_CONTROLLER
-int IsPressConTypeKey(EControllerType type, SConKey* key)
+int IsPressConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key)
 {
 	#ifdef ONLY_CONTROLLER_TYPE
 	switch (ONLY_CONTROLLER_TYPE)
@@ -15262,35 +15262,35 @@ int IsPressConTypeKey(EControllerType type, SConKey* key)
 	switch (type)
 	#endif
 	{
-	case CONTROLLER_XBOX:
-	case CONTROLLER_PLAYSTATION:
-	case CONTROLLER_NINTENDO:
+	case YGS_CONTROLLER_XBOX:
+	case YGS_CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_NINTENDO:
 		break;
 
 	default:
 		return 0;
 	}
 
-	for (int index = 0; index < GetNumCons(); index++) {
-		if (GetConType(index) == type && IsPressConKey(index, key)) return 1;
+	for (int index = 0; index < YGS2kGetNumCons(); index++) {
+		if (YGS2kGetConType(index) == type && YGS2kIsPressConKey(index, key)) return 1;
 	}
 	return 0;
 }
 
-int IsPushConTypeKey(EControllerType type, SConKey* key)
+int IsPushConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key)
 {
 	switch (type) {
-	case CONTROLLER_XBOX:
-	case CONTROLLER_PLAYSTATION:
-	case CONTROLLER_NINTENDO:
+	case YGS_CONTROLLER_XBOX:
+	case YGS_CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_NINTENDO:
 		break;
 
 	default:
 		return 0;
 	}
 
-	for (int index = 0; index < GetNumCons(); index++) {
-		if (GetConType(index) == type && IsPushConKey(index, key)) return 1;
+	for (int index = 0; index < YGS2kGetNumCons(); index++) {
+		if (YGS2kGetConType(index) == type && YGS2kIsPushConKey(index, key)) return 1;
 	}
 	return 0;
 }
@@ -15298,69 +15298,69 @@ int IsPushConTypeKey(EControllerType type, SConKey* key)
 
 int IsPressPrompt(EPrompt prompt)
 {
-	switch (GetLastControllerType())
+	switch (YGS2kGetLastControllerType())
 	{
 	#ifdef ENABLE_LINUXGPIO
-	case CONTROLLER_LINUXGPIO:
+	case YGS_CONTROLLER_LINUXGPIO:
 		switch (input)
 		{
-		case PROMPT_OK: return IsPressGPIO(4);
-		case PROMPT_CANCEL: return IsPressGPIO(5);
-		case PROMPT_RETRY: return IsPressGPIO(6);
+		case PROMPT_OK: return YGS2kIsPressGPIO(4);
+		case PROMPT_CANCEL: return YGS2kIsPressGPIO(5);
+		case PROMPT_RETRY: return YGS2kIsPressGPIO(6);
 		default: return 0;
 		}
 	#endif
 
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
-	case CONTROLLER_JOYSTICK:
+	case YGS_CONTROLLER_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case CONTROLLER_KEYBOARD:
+	case YGS_CONTROLLER_KEYBOARD:
 		switch (prompt)
 		{
-		case PROMPT_OK: return IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-		case PROMPT_CANCEL: return IsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-		case PROMPT_RETRY: return IsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case PROMPT_OK: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+		case PROMPT_CANCEL: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
+		case PROMPT_RETRY: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE));
 		default: return 0;
 		}
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX: {
-		SConKey key;
+	case YGS_CONTROLLER_XBOX: {
+		YGS2kSConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPressConTypeKey(CONTROLLER_XBOX, &key);
+		return IsPressConTypeKey(YGS_CONTROLLER_XBOX, &key);
 	}
 
-	case CONTROLLER_PLAYSTATION: {
-		SConKey key;
+	case YGS_CONTROLLER_PLAYSTATION: {
+		YGS2kSConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPressConTypeKey(CONTROLLER_PLAYSTATION, &key);
+		return IsPressConTypeKey(YGS_CONTROLLER_PLAYSTATION, &key);
 	}
 
-	case CONTROLLER_NINTENDO: {
-		SConKey key;
+	case YGS_CONTROLLER_NINTENDO: {
+		YGS2kSConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: break;
 		}
-		return IsPressConKey(CONTROLLER_NINTENDO, &key);
+		return YGS2kIsPressConKey(YGS_CONTROLLER_NINTENDO, &key);
 	}
 	#endif
 
@@ -15371,69 +15371,69 @@ int IsPressPrompt(EPrompt prompt)
 
 int IsPushPrompt(EPrompt prompt)
 {
-	switch (GetLastControllerType())
+	switch (YGS2kGetLastControllerType())
 	{
 	#ifdef ENABLE_LINUXGPIO
-	case CONTROLLER_LINUXGPIO:
+	case YGS_CONTROLLER_LINUXGPIO:
 		switch (input)
 		{
-		case PROMPT_OK: return IsPushGPIO(4);
-		case PROMPT_CANCEL: return IsPushGPIO(5);
-		case PROMPT_RETRY: return IsPushGPIO(6);
+		case PROMPT_OK: return YGS2kIsPushGPIO(4);
+		case PROMPT_CANCEL: return YGS2kIsPushGPIO(5);
+		case PROMPT_RETRY: return YGS2kIsPushGPIO(6);
 		default: return 0;
 		}
 	#endif
 
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
-	case CONTROLLER_JOYSTICK:
+	case YGS_CONTROLLER_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case CONTROLLER_KEYBOARD:
+	case YGS_CONTROLLER_KEYBOARD:
 		switch (prompt)
 		{
-		case PROMPT_OK: return IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-		case PROMPT_CANCEL: return IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-		case PROMPT_RETRY: return IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case PROMPT_OK: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+		case PROMPT_CANCEL: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
+		case PROMPT_RETRY: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
 		default: return 0;
 		}
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX: {
-		SConKey key;
+	case YGS_CONTROLLER_XBOX: {
+		YGS2kSConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPushConTypeKey(CONTROLLER_XBOX, &key);
+		return IsPushConTypeKey(YGS_CONTROLLER_XBOX, &key);
 	}
 
-	case CONTROLLER_PLAYSTATION: {
-		SConKey key;
+	case YGS_CONTROLLER_PLAYSTATION: {
+		YGS2kSConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPushConTypeKey(CONTROLLER_PLAYSTATION, &key);
+		return IsPushConTypeKey(YGS_CONTROLLER_PLAYSTATION, &key);
 	}
 
-	case CONTROLLER_NINTENDO: {
-		SConKey key;
+	case YGS_CONTROLLER_NINTENDO: {
+		YGS2kSConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_CANCEL: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_RETRY: key.type = CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: break;
 		}
-		return IsPushConKey(CONTROLLER_NINTENDO, &key);
+		return YGS2kIsPushConKey(YGS_CONTROLLER_NINTENDO, &key);
 	}
 	#endif
 
@@ -15445,7 +15445,7 @@ int IsPushPrompt(EPrompt prompt)
 #ifdef ENABLE_KEYBOARD
 void updateEscapeFrames() {
 	lastEscapeFrames = escapeFrames;
-	escapeFrames = GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+	escapeFrames = YGS2kGetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 }
 #endif
 
@@ -15709,7 +15709,7 @@ void testmenu(void) {
 	param = 0;
 
 	loop {
-		ClearSecondary();
+		YGS2kClearSecondary();
 
 		// メインメニュー
 		if( mode == 0 ) {
@@ -15724,7 +15724,7 @@ void testmenu(void) {
 			printFont(2, 5, "[RESET SEEDS]",        (cursor == 2) * fontc[rots[0]]);
 
 			// キー入力
-			Input();
+			YGS2kInput();
 
 			padRepeat2(0);
 			// ↑
@@ -15758,7 +15758,7 @@ void testmenu(void) {
 			ExBltFast(param, 0, 0);
 
 			// キー入力
-			Input();
+			YGS2kInput();
 
 			padRepeat(0);
 			// ←
@@ -15821,7 +15821,7 @@ void testmenu(void) {
 			}
 
 			// キー入力
-			Input();
+			YGS2kInput();
 
 			// A+Cで決定
 			if( (!param) && (getPressState(0, BTN_A)) && (getPressState(0, BTN_C)) ) {
@@ -15853,7 +15853,7 @@ void testmenu(void) {
 				
 			}
 			// キー入力
-			Input();
+			YGS2kInput();
 
 			// A+Cで決定 
 			if( (!param) && (getPressState(0, BTN_A)) && (getPressState(0, BTN_C)) ) {
@@ -15891,7 +15891,7 @@ void initialize(void) {
 
 	oldScreenMode = screenMode;
 	oldScreenIndex = screenIndex;
-	if ( !SetScreen(&screenMode, &screenIndex) )
+	if ( !YGS2kSetScreen(&screenMode, &screenIndex) )
 	{
 		loopFlag = 0;
 		restart = 0;
@@ -15902,31 +15902,31 @@ void initialize(void) {
 		SaveConfig();
 	}
 
-	BltAlways(true);
-	SetFillColor(0);
-	ClearSecondary();
+	YGS2kBltAlways(true);
+	YGS2kSetFillColor(0);
+	YGS2kClearSecondary();
 	halt;
 
-	// SetConstParam("Caption", "Now Loading...");
+	// YGS2kSetConstParam("Caption", "Now Loading...");
 
 	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
 	{
-		TextSize(ii, 12);
-		TextBackColorDisable(ii);
+		YGS2kTextSize(ii, 12);
+		YGS2kTextBackColorDisable(ii);
 	}
 
-	TextLayerOn(1, 10, 220);
-	TextOut(1, version);
+	YGS2kTextLayerOn(1, 10, 220);
+	YGS2kTextOut(1, version);
 	for ( int i = 1 ; i <= 5 ; i ++ )
 	{
-		TextBlt(i);
+		YGS2kTextBlt(i);
 	}
 	halt;
 
 
 	//
-	//TextLayerOn(2, 10, 75);
-	//TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
+	//YGS2kTextLayerOn(2, 10, 75);
+	//YGS2kTextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
 	//halt;
 
 	hnext[0] = dispnext;	// #1.60c7o8
@@ -15935,25 +15935,25 @@ void initialize(void) {
 	versus_rot[1] = rots[1];
 
 	// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-	if ( screenMode & SCREENMODE_DETAILLEVEL ) {
+	if ( screenMode & YGS_SCREENMODE_DETAILLEVEL ) {
 		setDrawRate(2);
 	} else {
 		setDrawRate(1);
 	}
 
 	LoadGraphics("loading.png", 88, 0);		// Loading表示
-		i = Rand(5);
+		i = YGS2kRand(5);
 	if ( getDrawRate() != 1 )
-		j = Rand(2);
+		j = YGS2kRand(2);
 	else
 		j = 0;
 
 	// グラフィック読み込み
-	TextLayerOn(4, 10, 23);
-	TextOut(4, "Graphics Loading");
+	YGS2kTextLayerOn(4, 10, 23);
+	YGS2kTextOut(4, "Graphics Loading");
 	for ( int i = 1 ; i <= 5 ; i ++ )
 	{
-		TextBlt(i);
+		YGS2kTextBlt(i);
 	}
 	ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 	halt;
@@ -15961,11 +15961,11 @@ void initialize(void) {
 
 	// 効果音読み込み
 	if(se) {
-		TextLayerOn(1, 10, 36);
-		TextOut(1, "Sound Effect Loading");
+		YGS2kTextLayerOn(1, 10, 36);
+		YGS2kTextOut(1, "Sound Effect Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
 		{
-			TextBlt(i);
+			YGS2kTextBlt(i);
 		}
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
@@ -15980,11 +15980,11 @@ void initialize(void) {
 		{
 			bgmload[i] = 1;
 		}
-		TextLayerOn(5, 10, 49);
-		TextOut(5, "BGM Loading");
+		YGS2kTextLayerOn(5, 10, 49);
+		YGS2kTextOut(5, "BGM Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
 		{
-			TextBlt(i);
+			YGS2kTextBlt(i);
 		}
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
@@ -15992,9 +15992,9 @@ void initialize(void) {
 		if(wavebgm != 0) {
 			loadBGM();	// #1.60c7s6
 		} else {
-			LoadMIDI("res/bgm/bgm.mid");
-			PlayMIDI();
-			SetVolumeMIDI(bgmvolume);
+			YGS2kLoadMIDI("res/bgm/bgm.mid");
+			YGS2kPlayMIDI();
+			YGS2kSetVolumeMIDI(bgmvolume);
 		}
 	}
 	else {
@@ -16003,7 +16003,7 @@ void initialize(void) {
 
 	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
 	{
-		TextLayerOff(ii);
+		YGS2kTextLayerOff(ii);
 	}
 
 	if(ranking_type==0){
@@ -16036,11 +16036,11 @@ void initialize(void) {
 
 	PlayerdataLoad();
 
-	// SetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
+	// YGS2kSetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
 	/* ここからポーズ有効 #1.60c7p9ex */
-	// SetConstParam("EnablePause", 1);
+	// YGS2kSetConstParam("EnablePause", 1);
 
-	BltAlways(false);
+	YGS2kBltAlways(false);
 }
 
 /* グラフィック読み込み */
@@ -16052,27 +16052,27 @@ void LoadGraphics(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/graphics/highDetail/%s", nameStr);
 
-	LoadBitmap(string[0], p1, p2);
+	YGS2kLoadBitmap(string[0], p1, p2);
 }
 
 void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
 		LoadGraphics("title.png", 8, 0);
 		if ( getDrawRate() == 1 ){
-			LoadBitmap("res/graphics/title/logo_low.png", 7,0);
+			YGS2kLoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
-			LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
+			YGS2kLoadBitmap("res/graphics/title/logo_hi.png", 7,0);
 		}
-		SetColorKeyRGB(7,0,0,0);
+		YGS2kSetColorKeyRGB(7,0,0,0);
 	}else{					//動画
 		if ( getDrawRate() == 1 ){
-			LoadBitmap("res/graphics/title/tmov_low.png", 8,0);
-			LoadBitmap("res/graphics/title/logo_low.png", 7,0);
+			YGS2kLoadBitmap("res/graphics/title/tmov_low.png", 8,0);
+			YGS2kLoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
-			LoadBitmap("res/graphics/title/tmov_hi.png" , 8,0);
-			LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
+			YGS2kLoadBitmap("res/graphics/title/tmov_hi.png" , 8,0);
+			YGS2kLoadBitmap("res/graphics/title/logo_hi.png", 7,0);
 		}
-		SetColorKeyRGB(7,0,0,0);
+		YGS2kSetColorKeyRGB(7,0,0,0);
 	}
 }
 
@@ -16084,7 +16084,7 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/bg/highDetail/%s", nameStr);
 
-	LoadBitmap(string[0], p1, p2);
+	YGS2kLoadBitmap(string[0], p1, p2);
 }
 
 void loadGraphics(int32_t players) {
@@ -16099,17 +16099,17 @@ void loadGraphics(int32_t players) {
 
 	/* プレーン1にフォントを読み込み */
 	LoadGraphics("hebofont.png", 1, 0);
-	SetColorKeyPos(1, 0, 0);
+	YGS2kSetColorKeyPos(1, 0, 0);
 
 	/* プレーン2にフィールドを読み込み */
 	LoadGraphics("hebofld.png", 2, 0);
-	SetColorKeyRGB(2,255,255,255);
+	YGS2kSetColorKeyRGB(2,255,255,255);
 
 	/* プレーン3に各種スプライトを読み込み */
 	LoadGraphics("hebospr.png", 3, 0);
-	SetColorKeyRGB(3,0,0,0);
-//	SetColorKeyPos(3, 0, 0);
-//	EnableBlendColorKey(3, 1);
+	YGS2kSetColorKeyRGB(3,0,0,0);
+//	YGS2kSetColorKeyPos(3, 0, 0);
+//	YGS2kEnableBlendColorKey(3, 1);
 
 	/* プレーン4〜6, 24にフィールド背景を読み込み */
 	LoadGraphics("heboflb1.png", 4, 0);
@@ -16122,7 +16122,7 @@ void loadGraphics(int32_t players) {
 
 	/* プレーン7にタイトルロゴを読み込み */
 //	LoadGraphics("logo.png", 7, 0);
-//	SetColorKeyPos(7, 0, 0);
+//	YGS2kSetColorKeyPos(7, 0, 0);
 
 //	/* プレーン8にタイトル背景を読み込み */
 	LoadTitle();
@@ -16137,27 +16137,27 @@ void loadGraphics(int32_t players) {
 	/* プレーン25にモード選択時のメッセージを読み込み  */
 	LoadGraphics("text.png", 25, 0);
 
-	SetColorKeyRGB(25, 0, 0, 0);
+	YGS2kSetColorKeyRGB(25, 0, 0, 0);
 
 	/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
 	LoadGraphics("grade.png", 26, 0);
-	SetColorKeyRGB(26,255,0,255);
+	YGS2kSetColorKeyRGB(26,255,0,255);
 
 	/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
 	LoadGraphics("mirror_effect_TAP.png", 27, 0);
-	//SetColorKeyRGB(27,255,0,255);
+	//YGS2kSetColorKeyRGB(27,255,0,255);
 
 	/* プレーン28にアイテム名を読み込み #1.60c7o4 */
 	LoadGraphics("item.png", 28, 0);
-	SetColorKeyRGB(28,255,0,255);
+	YGS2kSetColorKeyRGB(28,255,0,255);
 
 	/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
 	LoadGraphics("guide.png", 29, 0);
-	SetColorKeyRGB(29,0,0,0);
+	YGS2kSetColorKeyRGB(29,0,0,0);
 
 	/* プレーン31にフォント(大)を読み込み */
 	LoadGraphics("hebofont3.png", 31, 0);
-	SetColorKeyRGB(31,0,0,0);
+	YGS2kSetColorKeyRGB(31,0,0,0);
 
 	/* ブロック消去エフェクトを読み込み */
 	if(breakti) {
@@ -16169,14 +16169,14 @@ void loadGraphics(int32_t players) {
 		LoadGraphics("break5.png", 37, 0);
 		LoadGraphics("break6.png", 38, 0);
 		LoadGraphics("break7.png", 39, 0);
-	SetColorKeyRGB(32,   0, 0,   0);
-	SetColorKeyRGB(33,   0, 0,   0);
-	SetColorKeyRGB(34,   0, 0,   0);
-	SetColorKeyRGB(35,   0, 0,   0);
-	SetColorKeyRGB(36,   0, 0,   0);
-	SetColorKeyRGB(37,   0, 0,   0);
-	SetColorKeyRGB(38,   0, 0,   0);
-	SetColorKeyRGB(39,   0, 0,   0);
+	YGS2kSetColorKeyRGB(32,   0, 0,   0);
+	YGS2kSetColorKeyRGB(33,   0, 0,   0);
+	YGS2kSetColorKeyRGB(34,   0, 0,   0);
+	YGS2kSetColorKeyRGB(35,   0, 0,   0);
+	YGS2kSetColorKeyRGB(36,   0, 0,   0);
+	YGS2kSetColorKeyRGB(37,   0, 0,   0);
+	YGS2kSetColorKeyRGB(38,   0, 0,   0);
+	YGS2kSetColorKeyRGB(39,   0, 0,   0);
 	} else {
 		LoadGraphics("break0_tap.png", 32, 0); // 黒ブロック追加 #1.60c7i5
 		LoadGraphics("break1_tap.png", 33, 0);
@@ -16186,14 +16186,14 @@ void loadGraphics(int32_t players) {
 		LoadGraphics("break5_tap.png", 37, 0);
 		LoadGraphics("break6_tap.png", 38, 0);
 		LoadGraphics("break7_tap.png", 39, 0);
-	SetColorKeyRGB(32, 255, 0, 255);
-	SetColorKeyRGB(33, 255, 0, 255);
-	SetColorKeyRGB(34, 255, 0, 255);
-	SetColorKeyRGB(35, 255, 0, 255);
-	SetColorKeyRGB(36, 255, 0, 255);
-	SetColorKeyRGB(37, 255, 0, 255);
-	SetColorKeyRGB(38, 255, 0, 255);
-	SetColorKeyRGB(39, 255, 0, 255);
+	YGS2kSetColorKeyRGB(32, 255, 0, 255);
+	YGS2kSetColorKeyRGB(33, 255, 0, 255);
+	YGS2kSetColorKeyRGB(34, 255, 0, 255);
+	YGS2kSetColorKeyRGB(35, 255, 0, 255);
+	YGS2kSetColorKeyRGB(36, 255, 0, 255);
+	YGS2kSetColorKeyRGB(37, 255, 0, 255);
+	YGS2kSetColorKeyRGB(38, 255, 0, 255);
+	YGS2kSetColorKeyRGB(39, 255, 0, 255);
 	}
 
 	/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
@@ -16204,11 +16204,11 @@ void loadGraphics(int32_t players) {
 
 	/* プレーン44にミッションモード用画像を読み込み */
 	LoadGraphics("heboris_road.png", 44, 0);
-	SetColorKeyRGB(44, 0, 0, 0);
+	YGS2kSetColorKeyRGB(44, 0, 0, 0);
 
 	/* プレーン45にライン強制消去用画像を読み込み */
 	LoadGraphics("del_field.png", 45, 0);
-	SetColorKeyRGB(45, 0, 0, 0);
+	YGS2kSetColorKeyRGB(45, 0, 0, 0);
 
 	/* プレーン46にプラチナブロックとアイテム絵を読み込み */
 	LoadGraphics("heboblk_sp.png", 46, 0);
@@ -16221,21 +16221,21 @@ void loadGraphics(int32_t players) {
 	LoadGraphics("hanabi_waterblue.png", 51, 0);
 	LoadGraphics("hanabi_blue.png",      52, 0);
 	LoadGraphics("hanabi_purple.png",    53, 0);
-	SetColorKeyRGB(47, 0, 0, 0);
-	SetColorKeyRGB(48, 0, 0, 0);
-	SetColorKeyRGB(49, 0, 0, 0);
-	SetColorKeyRGB(50, 0, 0, 0);
-	SetColorKeyRGB(51, 0, 0, 0);
-	SetColorKeyRGB(52, 0, 0, 0);
-	SetColorKeyRGB(53, 0, 0, 0);
+	YGS2kSetColorKeyRGB(47, 0, 0, 0);
+	YGS2kSetColorKeyRGB(48, 0, 0, 0);
+	YGS2kSetColorKeyRGB(49, 0, 0, 0);
+	YGS2kSetColorKeyRGB(50, 0, 0, 0);
+	YGS2kSetColorKeyRGB(51, 0, 0, 0);
+	YGS2kSetColorKeyRGB(52, 0, 0, 0);
+	YGS2kSetColorKeyRGB(53, 0, 0, 0);
 
 	/* プレーン54にアイテムゲージを読み込み */
 	LoadGraphics("item_guage.png",       54, 0);
-	SetColorKeyRGB(54, 255, 0, 255);
+	YGS2kSetColorKeyRGB(54, 255, 0, 255);
 
 	/* プレーン55に回転ルール性能指標を読み込み */
 	LoadGraphics("rot.png",              55, 0);
-	SetColorKeyRGB(55, 255, 0, 255);
+	YGS2kSetColorKeyRGB(55, 255, 0, 255);
 
 	/* プラチナブロック消去エフェクトを読み込み */
 	LoadGraphics("perase1.png", 57, 0);
@@ -16246,18 +16246,18 @@ void loadGraphics(int32_t players) {
 	LoadGraphics("perase6.png", 62, 0);
 	LoadGraphics("perase7.png", 63, 0);
 
-	SetColorKeyRGB(57, 0, 0, 0);
-	SetColorKeyRGB(58, 0, 0, 0);
-	SetColorKeyRGB(59, 0, 0, 0);
-	SetColorKeyRGB(60, 0, 0, 0);
-	SetColorKeyRGB(61, 0, 0, 0);
-	SetColorKeyRGB(62, 0, 0, 0);
-	SetColorKeyRGB(63, 0, 0, 0);
+	YGS2kSetColorKeyRGB(57, 0, 0, 0);
+	YGS2kSetColorKeyRGB(58, 0, 0, 0);
+	YGS2kSetColorKeyRGB(59, 0, 0, 0);
+	YGS2kSetColorKeyRGB(60, 0, 0, 0);
+	YGS2kSetColorKeyRGB(61, 0, 0, 0);
+	YGS2kSetColorKeyRGB(62, 0, 0, 0);
+	YGS2kSetColorKeyRGB(63, 0, 0, 0);
 
 	LoadGraphics("heboblk0B.png", 64, 0);
 
 	LoadGraphics("shootingstar.png", 65, 0);
-	SetColorKeyRGB(65, 0, 0, 0);
+	YGS2kSetColorKeyRGB(65, 0, 0, 0);
 
 	/* TI式ミラー演出画像を読み込み */
 	LoadGraphics("fldmirror01.png", 66, 0);
@@ -16265,61 +16265,61 @@ void loadGraphics(int32_t players) {
 	LoadGraphics("fldmirror03.png", 68, 0);
 	LoadGraphics("fldmirror04.png", 69, 0);
 
-	SetColorKeyRGB(66, 0, 0, 0);
-	SetColorKeyRGB(67, 0, 0, 0);
-	SetColorKeyRGB(68, 0, 0, 0);
-	SetColorKeyRGB(69, 0, 0, 0);
+	YGS2kSetColorKeyRGB(66, 0, 0, 0);
+	YGS2kSetColorKeyRGB(67, 0, 0, 0);
+	YGS2kSetColorKeyRGB(68, 0, 0, 0);
+	YGS2kSetColorKeyRGB(69, 0, 0, 0);
 
 	/* スタッフロールの画像を読み込み */
 	LoadGraphics("staffroll.png", 70, 0);
-	SetColorKeyRGB(70, 0, 0, 0);
+	YGS2kSetColorKeyRGB(70, 0, 0, 0);
 
 	LoadGraphics("heboblk4_5.png", 73, 0);
 
 	LoadGraphics("fade.png", 72, 0);
-	SetColorKeyRGB(72, 255, 255, 255);
+	YGS2kSetColorKeyRGB(72, 255, 255, 255);
 
 	LoadGraphics("heboblk_old.png", 74, 0);
 
 	LoadGraphics("tomoyo_eh_fade.png", 75, 0);
-	SetColorKeyRGB(75, 255, 0, 255);
+	YGS2kSetColorKeyRGB(75, 255, 0, 255);
 
 	LoadGraphics("heboblk_big.png", 76, 0);
 	LoadGraphics("line.png", 77, 0);//ランキングのライン
-	SetColorKeyRGB(77, 0, 0, 0);
+	YGS2kSetColorKeyRGB(77, 0, 0, 0);
 
 	LoadGraphics("laser.png", 78, 0);
-	SetColorKeyRGB(78, 255, 0, 255);
+	YGS2kSetColorKeyRGB(78, 255, 0, 255);
 
 	LoadGraphics("shuffle_field_effect.png", 79, 0);
-	SetColorKeyRGB(79, 255, 0, 255);
+	YGS2kSetColorKeyRGB(79, 255, 0, 255);
 
 	LoadGraphics("heboblk6.png", 80, 0);
 
 	LoadGraphics("text2.png", 81, 0);
-	SetColorKeyRGB(81, 0, 0, 0);
+	YGS2kSetColorKeyRGB(81, 0, 0, 0);
 
 	LoadGraphics("itemerase.png", 82, 0);
-	SetColorKeyRGB(82,0,0,0);
+	YGS2kSetColorKeyRGB(82,0,0,0);
 
 	LoadGraphics("heboblk_sp2.png", 83, 0);
 
 	LoadGraphics("rotstext.png", 84, 0);
-	SetColorKeyRGB(84, 0, 0, 0);
+	YGS2kSetColorKeyRGB(84, 0, 0, 0);
 	LoadGraphics("hebofont5.png", 85, 0);
-	SetColorKeyRGB(85, 172, 136, 199);
+	YGS2kSetColorKeyRGB(85, 172, 136, 199);
 
 	LoadGraphics("gamemodefont.png", 86, 0);
-	SetColorKeyRGB(86, 0, 0, 0);
+	YGS2kSetColorKeyRGB(86, 0, 0, 0);
 
 	LoadGraphics("rollmark.png", 87, 0);
-	SetColorKeyRGB(87, 0, 0, 0);
+	YGS2kSetColorKeyRGB(87, 0, 0, 0);
 
 	//プレーン88番使用中…
 
 	LoadGraphics("itemGra.png", 89, 0);
 
-//	EnableBlendColorKey(85, 1);
+//	YGS2kEnableBlendColorKey(85, 1);
 	/* 050825 画面モード拡張改造部分-- ここから */
 	/* x倍拡大用サーフェス*/
 	// snapshot用に、拡大しない場合もダミープレーン作成 #1.60c
@@ -16342,13 +16342,13 @@ void loadGraphics(int32_t players) {
 	// タイトル画像を暗くする #1.60c7o5
 	if(background == 2) {
 		ExCreateSurface(30, 320, 240);
-		SwapToSecondary(30);
+		YGS2kSwapToSecondary(30);
 		ExBltFastRect(8, 0, 0,0,0,320,240);
 
 		for(i = 0; i < 3; i++)
 			BlendExBlt(24, (i % 3) * 120, 0, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 
-		SwapToSecondary(30);
+		YGS2kSwapToSecondary(30);
 	}
 }
 
@@ -16378,7 +16378,7 @@ void loadBG(int32_t players,int32_t vsmode){
 		LoadBackground("back01.png", 71, 0);
 
 	max = 22;
-	EnableBlendColorKey(3, 1);
+	YGS2kEnableBlendColorKey(3, 1);
 
 	/* 背景半透明処理 */
 	if(!skip_viewbg) {
@@ -16402,7 +16402,7 @@ void loadBG(int32_t players,int32_t vsmode){
 					framemax = back_mov_f[12];
 			}
 
-			SwapToSecondary(i);
+			YGS2kSwapToSecondary(i);
 
 			for(movframe = 0; movframe < framemax; movframe++) {
 				tmp1 = ((movframe / 10) * 320);
@@ -16429,128 +16429,128 @@ void loadBG(int32_t players,int32_t vsmode){
 				}
 			}
 
-			SwapToSecondary(i);
+			YGS2kSwapToSecondary(i);
 		}
 	}
-	EnableBlendColorKey(3, 0);
+	YGS2kEnableBlendColorKey(3, 0);
 }
 
 /* 効果音読み込み */
 // initializeから独立 #1.60c7o5
 void loadWaves(void) {
 	/* 効果音を読み込み */
-	LoadWave("res/se/shaki.wav", 0);
-	LoadWave("res/se/kon.wav", 1);
-	LoadWave("res/se/gon.wav", 2);
-	LoadWave("res/se/kachi.wav", 3);
-	LoadWave("res/se/rotate.wav", 4);
-	LoadWave("res/se/move.wav", 5);
-	LoadWave("res/se/hold.wav", 6);
-	LoadWave("res/se/tumagari.wav", 7);
-	LoadWave("res/se/gameover.wav", 8);
-	LoadWave("res/se/lvstop.wav", 9);
-	LoadWave("res/se/kettei.wav", 10);
+	YGS2kLoadWave("res/se/shaki.wav", 0);
+	YGS2kLoadWave("res/se/kon.wav", 1);
+	YGS2kLoadWave("res/se/gon.wav", 2);
+	YGS2kLoadWave("res/se/kachi.wav", 3);
+	YGS2kLoadWave("res/se/rotate.wav", 4);
+	YGS2kLoadWave("res/se/move.wav", 5);
+	YGS2kLoadWave("res/se/hold.wav", 6);
+	YGS2kLoadWave("res/se/tumagari.wav", 7);
+	YGS2kLoadWave("res/se/gameover.wav", 8);
+	YGS2kLoadWave("res/se/lvstop.wav", 9);
+	YGS2kLoadWave("res/se/kettei.wav", 10);
 
-	LoadWave("res/se/erase1.wav", 11);
-	LoadWave("res/se/erase2.wav", 12);
-	LoadWave("res/se/erase3.wav", 13);
-	LoadWave("res/se/erase4.wav", 14);
+	YGS2kLoadWave("res/se/erase1.wav", 11);
+	YGS2kLoadWave("res/se/erase2.wav", 12);
+	YGS2kLoadWave("res/se/erase3.wav", 13);
+	YGS2kLoadWave("res/se/erase4.wav", 14);
 
-	LoadWave("res/se/ready.wav", 15);
-	LoadWave("res/se/go.wav", 16);
+	YGS2kLoadWave("res/se/ready.wav", 15);
+	YGS2kLoadWave("res/se/go.wav", 16);
 
-	LoadWave("res/se/applause.wav", 17);
-	LoadWave("res/se/cheer.wav", 18);
-	LoadWave("res/se/levelup.wav", 19);
+	YGS2kLoadWave("res/se/applause.wav", 17);
+	YGS2kLoadWave("res/se/cheer.wav", 18);
+	YGS2kLoadWave("res/se/levelup.wav", 19);
 
-	LoadWave("res/se/up.wav", 20);
-	LoadWave("res/se/block1.wav", 21);
-	LoadWave("res/se/block2.wav", 22);
-	LoadWave("res/se/block3.wav", 23);
-	LoadWave("res/se/block4.wav", 24);
-	LoadWave("res/se/block5.wav", 25);
-	LoadWave("res/se/block6.wav", 26);
-	LoadWave("res/se/block7.wav", 27);
+	YGS2kLoadWave("res/se/up.wav", 20);
+	YGS2kLoadWave("res/se/block1.wav", 21);
+	YGS2kLoadWave("res/se/block2.wav", 22);
+	YGS2kLoadWave("res/se/block3.wav", 23);
+	YGS2kLoadWave("res/se/block4.wav", 24);
+	YGS2kLoadWave("res/se/block5.wav", 25);
+	YGS2kLoadWave("res/se/block6.wav", 26);
+	YGS2kLoadWave("res/se/block7.wav", 27);
 
-	LoadWave("res/se/ttclear.wav", 28);
-	LoadWave("res/se/gm.wav", 29);
-	LoadWave("res/se/rankup.wav", 30);
-	LoadWave("res/se/stageclear.wav", 31);
-	LoadWave("res/se/hurryup.wav", 32);
-	LoadWave("res/se/timeover.wav", 33);
-	LoadWave("res/se/tspin.wav", 34);
-	LoadWave("res/se/hanabi.wav", 35);
-	LoadWave("res/se/missionclr.wav", 36);
+	YGS2kLoadWave("res/se/ttclear.wav", 28);
+	YGS2kLoadWave("res/se/gm.wav", 29);
+	YGS2kLoadWave("res/se/rankup.wav", 30);
+	YGS2kLoadWave("res/se/stageclear.wav", 31);
+	YGS2kLoadWave("res/se/hurryup.wav", 32);
+	YGS2kLoadWave("res/se/timeover.wav", 33);
+	YGS2kLoadWave("res/se/tspin.wav", 34);
+	YGS2kLoadWave("res/se/hanabi.wav", 35);
+	YGS2kLoadWave("res/se/missionclr.wav", 36);
 
-	LoadWave("res/se/thunder.wav", 37);
+	YGS2kLoadWave("res/se/thunder.wav", 37);
 
-	LoadWave("res/se/warning.wav", 38);
+	YGS2kLoadWave("res/se/warning.wav", 38);
 
-	LoadWave("res/se/medal.wav", 39);
-	LoadWave("res/se/pinch.wav", 40);
+	YGS2kLoadWave("res/se/medal.wav", 39);
+	YGS2kLoadWave("res/se/pinch.wav", 40);
 
-	LoadWave("res/se/platinaerase.wav",41);
-	LoadWave("res/se/timeextend.wav",42);
-	LoadWave("res/se/stgstar.wav",43);
-	LoadWave("res/se/ace_sonic_lock.wav",44);
-	LoadWave("res/se/regret.wav",45);
-	LoadWave("res/se/cool.wav",46);
+	YGS2kLoadWave("res/se/platinaerase.wav",41);
+	YGS2kLoadWave("res/se/timeextend.wav",42);
+	YGS2kLoadWave("res/se/stgstar.wav",43);
+	YGS2kLoadWave("res/se/ace_sonic_lock.wav",44);
+	YGS2kLoadWave("res/se/regret.wav",45);
+	YGS2kLoadWave("res/se/cool.wav",46);
 
-	LoadWave("res/se/timestop.wav",47);
-	LoadWave("res/se/tserase.wav",48);
-	//SetLoopModeWave(40, 1);	//#1.60c7l6
+	YGS2kLoadWave("res/se/timestop.wav",47);
+	YGS2kLoadWave("res/se/tserase.wav",48);
+	//YGS2kSetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
 /* BGM読み込み */
 void loadBGM(void) {
 	int32_t i;
 
-	StrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
-	StrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
-	StrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
-	StrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
-	StrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
-	StrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
-	StrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
-	StrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
-	StrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
-	StrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
-	StrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
-	StrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
-	StrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
-	StrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
-	StrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
-	StrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
-	StrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
-	StrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
-	StrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
-	StrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
+	YGS2kStrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
+	YGS2kStrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
+	YGS2kStrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
+	YGS2kStrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
+	YGS2kStrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
+	YGS2kStrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
+	YGS2kStrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
+	YGS2kStrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
+	YGS2kStrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
+	YGS2kStrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
+	YGS2kStrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
+	YGS2kStrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
+	YGS2kStrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
+	YGS2kStrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
+	YGS2kStrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
+	YGS2kStrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
+	YGS2kStrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
+	YGS2kStrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
+	YGS2kStrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
+	YGS2kStrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 
 	for(i = 0; i <= 19; i++) {
 		if(bgmload[i]){
 			// 拡張子を決める
-			if(wavebgm == 1) StrCat(string[i], ".mid");			// MIDI
-			else if(wavebgm == 3) StrCat(string[i], ".ogg");		// OGG
-			else if(wavebgm == 4) StrCat(string[i], ".mp3");		// MP3
-			else if(wavebgm == 5) StrCat(string[i], ".flac");		// FLAC
-			else if(wavebgm == 6) StrCat(string[i], ".opus");		// OPUS
-			else if(wavebgm == 7) StrCat(string[i], ".mod");		// MOD (.mod)
-			else if(wavebgm == 8) StrCat(string[i], ".it");			// MOD (.it)
-			else if(wavebgm == 9) StrCat(string[i], ".xm");			// MOD (.xm)
-			else if(wavebgm >= WAVEBGM_MAX) StrCat(string[i], ".s3m");	// MOD (.s3m)
-			else StrCat(string[i], ".wav");					// WAV
+			if(wavebgm == 1) YGS2kStrCat(string[i], ".mid");			// MIDI
+			else if(wavebgm == 3) YGS2kStrCat(string[i], ".ogg");		// OGG
+			else if(wavebgm == 4) YGS2kStrCat(string[i], ".mp3");		// MP3
+			else if(wavebgm == 5) YGS2kStrCat(string[i], ".flac");		// FLAC
+			else if(wavebgm == 6) YGS2kStrCat(string[i], ".opus");		// OPUS
+			else if(wavebgm == 7) YGS2kStrCat(string[i], ".mod");		// MOD (.mod)
+			else if(wavebgm == 8) YGS2kStrCat(string[i], ".it");			// MOD (.it)
+			else if(wavebgm == 9) YGS2kStrCat(string[i], ".xm");			// MOD (.xm)
+			else if(wavebgm >= WAVEBGM_MAX) YGS2kStrCat(string[i], ".s3m");	// MOD (.s3m)
+			else YGS2kStrCat(string[i], ".wav");					// WAV
 
 			// 読み込み
-			LoadWave(string[i], 50 + i);
+			YGS2kLoadWave(string[i], 50 + i);
 
 			// ループON
-			SetLoopModeWave(50 + i, 1);
+			YGS2kSetLoopModeWave(50 + i, 1);
 		}
 	}
 
 	// エンディング曲ループか
-	//SetLoopModeWave(56, 0);
-	//SetLoopModeWave(57, 0);
+	//YGS2kSetLoopModeWave(56, 0);
+	//YGS2kSetLoopModeWave(57, 0);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -16711,12 +16711,12 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	switch (lastControllerType = GetLastControllerType()) {
+	switch (lastControllerType = YGS2kGetLastControllerType()) {
 	#ifdef ENABLE_LINUX_GPIO
-	case CONTROLLER_LINUXGPIO: {
+	case YGS_CONTROLLER_LINUXGPIO: {
 		int pushed = 0;
 		for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
-			pushed = IsPushGPIO(button);
+			pushed = YGS2kIsPushGPIO(button);
 		}
 		if (pushed) {
 			lastPlayerControllerType[0] = lastControllerType;
@@ -16725,12 +16725,12 @@ void spriteTime() {
 	}
 	#endif
 	#ifdef ENABLE_KEYBOARD
-	case CONTROLLER_KEYBOARD: {
+	case YGS_CONTROLLER_KEYBOARD: {
 		int pushed = 0;
 		int32_t pl;
 		for (pl = 0; pl < 2; pl++) {
 			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
-				pushed = IsPushKey(keyAssign[button + 10 * pl]);
+				pushed = YGS2kIsPushKey(keyAssign[button + 10 * pl]);
 			}
 			if (pushed) break;
 		}
@@ -16741,12 +16741,12 @@ void spriteTime() {
 	}
 	#endif
 	#ifdef ENABLE_JOYSTICK
-	case CONTROLLER_JOYSTICK: {
+	case YGS_CONTROLLER_JOYSTICK: {
 		int pushed = 0;
 		int32_t pl;
 		for (pl = 0; pl < 2; pl++) {
 			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
-				pushed = IsPushJoyKey(&joyKeyAssign[button + 10 * pl]);
+				pushed = YGS2kIsPushJoyKey(&joyKeyAssign[button + 10 * pl]);
 			}
 			if (pushed) break;
 		}
@@ -16757,10 +16757,10 @@ void spriteTime() {
 	}
 	#endif
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX:
-	case CONTROLLER_PLAYSTATION:
-	case CONTROLLER_NINTENDO: {
-		int index = GetLastConIndex();
+	case YGS_CONTROLLER_XBOX:
+	case YGS_CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_NINTENDO: {
+		int index = YGS2kGetLastConIndex();
 		if (index == playerCons[0]) {
 			lastPlayerControllerType[0] = lastControllerType;
 		}

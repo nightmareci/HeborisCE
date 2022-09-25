@@ -32,12 +32,12 @@ typedef struct {
 	int32_t	fontsize;
 
 	#ifdef ENABLE_JOYSTICK
-	SJoyKey	joyKeyAssign[10 * 2];
+	YGS2kSJoyKey	joyKeyAssign[10 * 2];
 	#endif
 	
 	#ifdef ENABLE_GAME_CONTROLLER
 	int32_t playerCons[2];
-	SConKey conKeyAssign[8 * 2];
+	YGS2kSConKey conKeyAssign[8 * 2];
 	#endif
 
 	int32_t rots[2];
@@ -133,69 +133,69 @@ static const SConfig DefaultConfig = {
 	.conKeyAssign = {
 		// Player 1
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_A
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_B
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_X
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
 		},
 
 		// Player 2
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_A
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_B
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_X
 		},
 		{
-			.type = CONKEY_BUTTON,
+			.type = YGS_CONKEY_BUTTON,
 			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
 		}
 	},
@@ -334,7 +334,7 @@ void SetDefaultConfig()
 {
 	int32_t i,j, cfgbuf[CFG_LENGTH];
 
-	FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	YGS2kFillMemory(cfgbuf, sizeof(cfgbuf), 0);
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -395,20 +395,20 @@ void SetDefaultConfig()
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
-			const SJoyKey *pljoy = &DefaultConfig.joyKeyAssign[pl * 10 + key];
+			const YGS2kSJoyKey *pljoy = &DefaultConfig.joyKeyAssign[pl * 10 + key];
 			plbuf[0] = pljoy->index;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
 			}
 			plbuf[5] = pljoy->type;
 			switch (pljoy->type) {
-			case JOYKEY_AXIS:
-			case JOYKEY_HAT:
+			case YGS_JOYKEY_AXIS:
+			case YGS_JOYKEY_HAT:
 				plbuf[6] = pljoy->setting.index;
 				plbuf[7] = pljoy->setting.value;
 				break;
 
-			case JOYKEY_BUTTON:
+			case YGS_JOYKEY_BUTTON:
 				plbuf[6] = pljoy->setting.button;
 				break;
 			default:
@@ -424,7 +424,7 @@ void SetDefaultConfig()
 		conkeybuf[pl * (1 + 2 * 8)] = DefaultConfig.playerCons[pl];
 		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
-			const SConKey *plcon = &DefaultConfig.conKeyAssign[pl * 8 + key];
+			const YGS2kSConKey *plcon = &DefaultConfig.conKeyAssign[pl * 8 + key];
 			plbuf[key * 2 + 0] = plcon->type;
 			plbuf[key * 2 + 1] = plcon->index;
 		}
@@ -462,5 +462,5 @@ void SetDefaultConfig()
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
-	SaveFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
+	YGS2kSaveFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 }

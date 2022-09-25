@@ -241,7 +241,7 @@ void viewBack(void) {
 			bgfade_cnt++;
 			for(i=0;i<5*getDrawRate();i++){
 				for(j=0;j<5*getDrawRate();j++){
-					BltRect(72,i*64,j*48,0,bgfade_cnt*48,64,48);
+					YGS2kBltRect(72,i*64,j*48,0,bgfade_cnt*48,64,48);
 				}
 			}
 			if(bgfade_cnt == 6) {
@@ -1621,7 +1621,7 @@ void viewField(void) {
 									color = color_tbl_max - ( (((20 - j) + color) * 4 + color_counter[i]) % color_tbl_max );
 									color = (erase[j + i * 22] == 0) * (7 + 10 - color_tbl[color]);
 								} else if(thunder_timer){
-									color = Rand(8)+6;
+									color = YGS2kRand(8)+6;
 								} else if((fldi[k + j * 10 + i * 220] == fldisno) || (fldi[k + j * 10 + i * 220] == fldigsno)) {
 								// 正方形
 									if(flds[k + j * 10 + i * 220] >= -10) {
@@ -1935,11 +1935,11 @@ void viewFldBackground(void) {
 		{
 			if(getDrawRate() == 1)
 			{
-				BlendBltRect(4+pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count%128 / 4, count%256 /8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				YGS2kBlendBltRect(4+pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count%128 / 4, count%256 /8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 			}
 			else
 			{
-				BlendBltRect(4+pinch[i] * 2, 240 + (ofs_x[i]*2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i]*2), count%64 / 2, count%64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				YGS2kBlendBltRect(4+pinch[i] * 2, 240 + (ofs_x[i]*2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i]*2), count%64 / 2, count%64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 			}
 		}
 		else if(background == 1)
@@ -2031,10 +2031,10 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 	switch (lastControllerType) {
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
-	case CONTROLLER_JOYSTICK:
+	case YGS_CONTROLLER_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case CONTROLLER_KEYBOARD: {
+	case YGS_CONTROLLER_KEYBOARD: {
 		const char* s;
 		switch (prompt) {
 		case PROMPT_OK: s = "ENTER"; break;
@@ -2048,21 +2048,21 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX:
-	case CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_XBOX:
+	case YGS_CONTROLLER_PLAYSTATION:
 		switch (prompt) {
-		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
 
-	case CONTROLLER_NINTENDO:
+	case YGS_CONTROLLER_NINTENDO:
 		switch (prompt) {
-		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
@@ -2079,15 +2079,15 @@ void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 
 	switch (player >= 0 ? lastPlayerControllerType[player] : lastControllerType) {
 	#ifdef ENABLE_GAME_CONTROLLER
-	case CONTROLLER_XBOX:
+	case YGS_CONTROLLER_XBOX:
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
 		break;
 
-	case CONTROLLER_PLAYSTATION:
+	case YGS_CONTROLLER_PLAYSTATION:
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
 		break;
 
-	case CONTROLLER_NINTENDO:
+	case YGS_CONTROLLER_NINTENDO:
 		if (menuAB) {
 			switch (button) {
 			case BTN_A:
@@ -2115,19 +2115,19 @@ void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 }
 
 #ifdef ENABLE_GAME_CONTROLLER
-void printConKey(int32_t fontX, int32_t fontY, int32_t index, SConKey* key, int32_t fontColor) {
-	if (GetNumCons() <= 0 || index < 0 || index >= GetNumCons() || key == NULL) return;
+void printConKey(int32_t fontX, int32_t fontY, int32_t index, YGS2kSConKey* key, int32_t fontColor) {
+	if (YGS2kGetNumCons() <= 0 || index < 0 || index >= YGS2kGetNumCons() || key == NULL) return;
 	const char* text;
 	EButton button;
-	if (GetConKeyDesc(index, key, &text, &button)) {
+	if (YGS2kGetConKeyDesc(index, key, &text, &button)) {
 		if (text != NULL) {
 			printFont(fontX, fontY, text, fontColor);
 			if (button != BTN_NULL) {
-				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (GetConType(index) - CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (YGS2kGetConType(index) - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 			}
 		}
 		else if (button != BTN_NULL) {
-			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (GetConType(index) - CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (YGS2kGetConType(index) - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 		}
 	}
 }
@@ -2139,9 +2139,9 @@ void printConKey(int32_t fontX, int32_t fontY, int32_t index, SConKey* key, int3
 void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = StrLen(fontStr);
+	stringLength = YGS2kStrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = CharAt(fontStr, i);
+		stringChar = YGS2kCharAt(fontStr, i);
 		sx = ((stringChar - 32) % 32) * 8;
 		sy = ((stringChar - 32) / 32) * 8 + fontColor * 24;
 		ExBltRect(1, (fontX + i) * 8, fontY * 8, sx, sy, 8, 8);
@@ -2152,9 +2152,9 @@ void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontCo
 void printFontEx(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = StrLen(fontStr);
+	stringLength = YGS2kStrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = CharAt(fontStr, i);
+		stringChar = YGS2kCharAt(fontStr, i);
 		sx = ((stringChar - 32) % 32) * 8;
 		sy = ((stringChar - 32) / 32) * 8 + fontColor * 24;
 		ExBltRect(1, (fontX + i) * 8, fontY, sx, sy, 8, 8);
@@ -2171,9 +2171,9 @@ void printFontEx(int32_t fontX, int32_t fontY, const char *fontStr, int32_t font
 void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = StrLen(fontStr);
+	stringLength = YGS2kStrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = CharAt(fontStr, i);
+		stringChar = YGS2kCharAt(fontStr, i);
 
 		// スペースでない場合
 		if(stringChar != 32) {
@@ -2202,9 +2202,9 @@ void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t f
 void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = StrLen(fontStr);
+	stringLength = YGS2kStrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = CharAt(fontStr, i);
+		stringChar = YGS2kCharAt(fontStr, i);
 
 		// スペースでない場合
 		if(stringChar != 32) {
@@ -2234,9 +2234,9 @@ void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t
 void printBIGFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = StrLen(fontStr);
+	stringLength = YGS2kStrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = CharAt(fontStr, i);
+		stringChar = YGS2kCharAt(fontStr, i);
 		sx = (stringChar -48) * 12;
 		sy = fontColor * 16;
 		if(sx >= 0) ExBltRect(31, fontX + 12 * i, fontY, sx, sy + (160 * fontsize), 12, 16);
@@ -2247,9 +2247,9 @@ void printBIGFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fon
 void printTinyFont(int32_t fontX, int32_t fontY, const char *fontStr) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = StrLen(fontStr);
+	stringLength = YGS2kStrLen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = CharAt(fontStr, i);
+		stringChar = YGS2kCharAt(fontStr, i);
 		sx = ((stringChar - 32) % 32) * 6;
 		sy = ((stringChar - 32) / 32) * 7;
 		ExBltRect(85, fontX + i * 6, fontY, sx, 287 + sy, 6, 7);

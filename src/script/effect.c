@@ -435,7 +435,7 @@ void objectItemWarning(int32_t no){
 		objc[no] = 1;
 		objy[no] = 1;
 	}
-	if((objc[no] == 1) && (abs_YGS2K(GetRealFPS() - GetFPS()) >= 10)) objc[no] = 2;
+	if((objc[no] == 1) && (abs_YGS2K(YGS2kGetRealFPS() - YGS2kGetFPS()) >= 10)) objc[no] = 2;
 
 	if(((objj[no]==2) && (IsBigStart[objp[no]])) || ((objj[no]==36) && (gameMode[objp[no]] != 4)))
 		printFont(15 + 24 * objp[no] - 12 * maxPlay, 15, "NO EFFECT", fontc[rots[objp[no]]]);

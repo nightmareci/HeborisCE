@@ -20,9 +20,9 @@ void staffExecute(int32_t player) {
 
 	// 描画する
 	if ( getDrawRate() != 1 )
-		BltRect(70,240 + 384 * player - 192 * maxPlay,80,0,staffroll_y_ex[player],160,320);
+		YGS2kBltRect(70,240 + 384 * player - 192 * maxPlay,80,0,staffroll_y_ex[player],160,320);
 	else
-		BltRect(70,120 + 192 * player - 96 * maxPlay,40,0,staffroll_y_ex[player] / 2,80,160);
+		YGS2kBltRect(70,120 + 192 * player - 96 * maxPlay,40,0,staffroll_y_ex[player] / 2,80,160);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

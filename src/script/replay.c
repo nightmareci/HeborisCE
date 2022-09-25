@@ -9,7 +9,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 	int32_t i;
 
 	//速度制限（テスト）
-	if(abs_YGS2K(GetRealFPS() - max_fps_2) >= 10) return;
+	if(abs_YGS2K(YGS2kGetRealFPS() - max_fps_2) >= 10) return;
 
 	if((time2[player] <= REPLAY_TIME_MAX) && !playback && replay_save[player]) {
 		for(i = 0; i < 10; i++) {
@@ -17,7 +17,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 			// from hard-coded to the keyboard number keys to
 			// something using the configured inputs.
 			#ifdef ENABLE_KEYBOARD
-			if(IsPushKey(2 + i + player * 14)) {
+			if(YGS2kIsPushKey(2 + i + player * 14)) {
 				saveReplayData(player, i + player * 10 + 1);
 				freeReplayData();
 				statusc[player * 10 + statnumber] = i + player * 10 + 1;
@@ -38,7 +38,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 		return;
 	}
 
-	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	YGS2kFillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	// ファイルフォーマット (4byte単位)
 	//   0〜    3 ヘッダ
@@ -185,17 +185,17 @@ void saveReplayData(int32_t pl, int32_t number) {
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	YGS2kSaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	temp1 = pl * REPLAY_PLAYER_CHUNK;
 	for (j = 0; j < replayChunkCnt; j++) {
-		FillMemory(saveBuf, (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t), 0);
+		YGS2kFillMemory(saveBuf, (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t), 0);
 		for (i = 0; i < REPLAY_PLAYER_CHUNK / 2 && j * REPLAY_PLAYER_CHUNK + (i << 1) < max; i++) {
 			saveBuf[i] =
 				(replayData[j][(i << 1) + 0 + temp1] <<  0) |
 				(replayData[j][(i << 1) + 1 + temp1] << 16);
 		}
-		AppendFile(string[0], saveBuf, i * sizeof(int32_t));
+		YGS2kAppendFile(string[0], saveBuf, i * sizeof(int32_t));
 	}
 }
 
@@ -206,7 +206,7 @@ void saveReplay_VS(int32_t number) {
 	int32_t i, j, temp1, temp2, max, pl;
 	pl = 0;
 
-	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	YGS2kFillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	// 300... 　1P&2Pリプレイデータ
 
@@ -324,11 +324,11 @@ void saveReplay_VS(int32_t number) {
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	YGS2kSaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	if (replayData) {
 		for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
-			FillMemory(saveBuf, SAVEBUF_2P_CHUNK * 2 * sizeof(int32_t), 0);
+			YGS2kFillMemory(saveBuf, SAVEBUF_2P_CHUNK * 2 * sizeof(int32_t), 0);
 			for (pl = 0; pl < 2; pl++) {
 				temp1 = pl * REPLAY_PLAYER_CHUNK;
 				temp2 = pl * SAVEBUF_2P_CHUNK;
@@ -345,7 +345,7 @@ void saveReplay_VS(int32_t number) {
 						);
 				}
 			}
-			AppendFile(string[0], saveBuf, (SAVEBUF_2P_CHUNK + i) * sizeof(int32_t));
+			YGS2kAppendFile(string[0], saveBuf, (SAVEBUF_2P_CHUNK + i) * sizeof(int32_t));
 		}
 	}
 }
@@ -356,14 +356,14 @@ void saveReplay_VS(int32_t number) {
 int32_t loadReplayData(int32_t pl, int32_t number) {
 	int32_t i, j, temp1, temp2, max,k,sptemp[4];
 
-	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	YGS2kFillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	YGS2kLoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	if(saveBuf[201] == 4)	// VSはフォーマットが一部異なる
 		return(loadReplay_VS(number));
@@ -572,7 +572,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 		else {
 			chunkSize = ((saveBuf[4] / sizeof(int32_t) - 300) % ((REPLAY_PLAYER_CHUNK / 2))) * sizeof(int32_t);
 		}
-		ReadFile(
+		YGS2kReadFile(
 			string[0],
 			chunkBuf,
 			chunkSize,
@@ -603,20 +603,20 @@ int32_t loadReplay_VS(int32_t number) {
 	int32_t i, j, length, temp1, temp2, max,k,sptemp[4],pl;
 	pl = 0;
 
-	FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	YGS2kFillMemory(saveBuf, 300 * sizeof(int32_t), 0);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
 
-	LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	YGS2kLoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	if(saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
 	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
-	LoadFile(string[0], saveBuf, saveBuf[4]);
+	YGS2kLoadFile(string[0], saveBuf, saveBuf[4]);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -987,7 +987,7 @@ void ReplaySelectInitial(void) {
 				sprintf(string[10 + i],"%2d                      %s ", i + 1,string[0]);
 		} else {
 			enable[i] = -1;
-			StrCpy(string[10 + i], "");
+			YGS2kStrCpy(string[10 + i], "");
 		}
 		freeReplayData();
 	}
@@ -1003,15 +1003,15 @@ void ReplaySelectInitial(void) {
 void ReplaySelect(void) {
 	int32_t		i,start,end;
 
-	Input();
+	YGS2kInput();
 
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				YGS2kBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				YGS2kBltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
@@ -1121,9 +1121,9 @@ void ReplayDetail(int32_t number) {
 		if(background == 0) {
 			for(i = 0; i <= 4; i++) {
 				if(getDrawRate() == 1)
-					BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+					YGS2kBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 				else
-					BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+					YGS2kBltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 			}
 		} else if(background == 1) {
 			for(i = 0; i <= 4; i++) {
@@ -1444,7 +1444,7 @@ void ReplayDetail(int32_t number) {
 		printFont(15, 25, string[0], 0);
 
 		printFont(1, 26, "LENGTH      :", 0);
-		sprintf(string[0], "%d", saveBuf[4] / sizeof(int16_t) + 1);
+		sprintf(string[0], "%zu", saveBuf[4] / sizeof(int16_t) + 1);
 		printFont(15, 26, string[0], 0);
 
 		/* バージョン */
@@ -1508,7 +1508,7 @@ void ReplayDetail(int32_t number) {
 		else printFont(33, 14, "19/20", 0);
 
 		// AorBで戻る
-		Input();
+		YGS2kInput();
 
 		if(getPushState(0, BTN_A) || getPushState(0, BTN_B)) {
 			PlaySE(5);
@@ -1532,14 +1532,14 @@ void ReplayDetail(int32_t number) {
 int32_t loadReplayData2(int32_t pl, int32_t number) {
 	int32_t i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
 
-	FillMemory(tmpBuf, 300 * 4, 0);
+	YGS2kFillMemory(tmpBuf, 300 * 4, 0);
 
 	if(number <= 40)
 		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
 	else
 		sprintf(string[0], "demo/DEMO%02d.SAV", number - 20);
 
-	LoadFile(string[0], tmpBuf, 1200);
+	YGS2kLoadFile(string[0], tmpBuf, 1200);
 
 	if(tmpBuf[0] != 0x4F424548) return (1);
 	if(tmpBuf[1] != 0x20534952) return (1);

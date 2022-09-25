@@ -4,9 +4,9 @@
 #include "ygs2kprivate.h"
 #include "delay.h"
 
-#define		GAME_CAPTION		"HEBORIS C7-EX SDL2"
+#define		YGS_GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
-typedef struct
+typedef struct YGS2kSTextLayer
 {
 	bool	enable;
 	int	x;
@@ -14,14 +14,14 @@ typedef struct
 	int	r, g, b;
 	int	size;
 	char	string[256];
-} STextLayer;
+} YGS2kSTextLayer;
 
-enum
+typedef enum YGS2kESoundType
 {
 	YGS_SOUNDTYPE_NONE,
 	YGS_SOUNDTYPE_WAV,
 	YGS_SOUNDTYPE_MUS,
-};
+} YGS2kESoundType;
 
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
@@ -52,14 +52,19 @@ static unsigned int		s_uFPSCnting;
 static unsigned int		s_uFPS;
 static unsigned int		s_uNowFPS = 60;
 
-static STextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
+static YGS2kSTextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
 static int32_t			s_iScreenMode;
 static int32_t			s_iScreenIndex;
 
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
-static float GetScreenSubpixelOffset()
+static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, int b, int size);
+static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);
+static void YGS2kPrivateKanjiFontFinalize();
+static void YGS2kPrivateKanjiFontInitialize();
+
+static float YGS2kGetScreenSubpixelOffset()
 {
 	// The returned subpixel offset nudges all draws to have pixel coordinates
 	// that end up centered in the floating point coordinate space. Without
@@ -107,7 +112,7 @@ bool YGS2kInit()
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
 
-	InputOpen();
+	YGS2kInputOpen();
 
 	/* テクスチャ領域の初期化 */
 	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
@@ -127,11 +132,11 @@ bool YGS2kInit()
 	/* テキストレイヤーの初期化 */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
-		memset(&s_TextLayer[i], 0, sizeof(STextLayer));
+		memset(&s_TextLayer[i], 0, sizeof(YGS2kSTextLayer));
 		s_TextLayer[i].r = s_TextLayer[i].g = s_TextLayer[i].b = 255;
 		s_TextLayer[i].size = 16;
 	}
-	YGS2kKanjiFontInitialize();
+	YGS2kPrivateKanjiFontInitialize();
 
 	s_uTimeCount		= SDL_GetPerformanceCounter();
 	s_uTimeAccumulatorCount	= 0;
@@ -148,7 +153,7 @@ bool YGS2kInit()
 
 void YGS2kExit()
 {
-	InputClose();
+	YGS2kInputClose();
 
 	/* テクスチャ領域の解放 */
 	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
@@ -192,7 +197,7 @@ void YGS2kExit()
 		}
 	}
 
-	YGS2kKanjiFontFinalize();
+	YGS2kPrivateKanjiFontFinalize();
 
 	if ( s_pYGSMusic )
 	{
@@ -201,7 +206,7 @@ void YGS2kExit()
 	}
 }
 
-static inline void FrameDelay() {
+static inline void YGS2kFrameDelay() {
 	/*
 	 * Here, we insert a delay to produce accurate frame timing, using "hybrid
 	 * wait" and "fixed timestep". The first stage is to loop over delays of 1
@@ -275,7 +280,7 @@ bool YGS2kHalt()
 			{
 				SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 				SDL_RenderClear( s_pScreenRenderer );
-				const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(s_iScreenMode & SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(s_iScreenMode & SCREENMODE_DETAILLEVEL) + 1) };
+				const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1) };
 				SDL_RenderCopyF(s_pScreenRenderer, s_pScreenRenderTarget, NULL, &dstrect);
 				SDL_RenderPresent(s_pScreenRenderer);
 				SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
@@ -285,7 +290,7 @@ bool YGS2kHalt()
 			}
 
 			/* フレームレート待ち */
-			FrameDelay();
+			YGS2kFrameDelay();
 
 			s_uTimeAccumulatorCount = 0;
 
@@ -301,7 +306,7 @@ bool YGS2kHalt()
 				{
 					SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 					SDL_RenderClear( s_pScreenRenderer );
-					const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(s_iScreenMode & SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(s_iScreenMode & SCREENMODE_DETAILLEVEL) + 1) };
+					const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1) };
 					SDL_RenderCopyF(s_pScreenRenderer, s_pScreenRenderTarget, NULL, &dstrect);
 					SDL_RenderPresent(s_pScreenRenderer);
 					SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
@@ -311,7 +316,7 @@ bool YGS2kHalt()
 				}
 
 				/* フレームレート待ち */
-				FrameDelay();
+				YGS2kFrameDelay();
 
 				/* 画面塗りつぶし */
 				SDL_RenderClear( s_pScreenRenderer );
@@ -374,16 +379,16 @@ bool YGS2kHalt()
 	#ifdef ENABLE_JOYSTICK
 	if (joyChanged)
 	{
-		JoyClose();
-		JoyOpen();
+		YGS2kJoyClose();
+		YGS2kJoyOpen();
 	}
 	#endif
 		
 	#ifdef ENABLE_GAME_CONTROLLER
 	if (conChanged)
 	{
-		ConClose();
-		ConOpen();
+		YGS2kConClose();
+		YGS2kConOpen();
 	}
 	#endif
 
@@ -394,17 +399,17 @@ bool YGS2kHalt()
 	return true;
 }
 
-void YGS2kTextOut(int x, int y, const char* text, int r, int g, int b, int size)
+static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, int b, int size)
 {
-	YGS2kKanjiDraw(x, y, r, g, b, size, text);
+	YGS2kPrivateKanjiDraw(x, y, r, g, b, size, text);
 }
 
-int IsPlayMIDI()
+int YGS2kIsPlayMIDI()
 {
 	return Mix_PlayingMusic();
 }
 
-int SetScreen(int32_t *screenMode, int32_t *screenIndex)
+int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 {
 	Uint32		windowFlags = SDL_WINDOW_HIDDEN;
 	int		windowX, windowY;
@@ -416,9 +421,9 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	}
 
 	/* 画面の設定 */
-	EScreenModeFlag windowType = *screenMode & SCREENMODE_WINDOWTYPE;
-	int displayIndex = SCREENINDEX_DISPLAY_TOVALUE(*screenIndex);
-	int modeIndex = SCREENINDEX_MODE_TOVALUE(*screenIndex);
+	YGS2kEScreenModeFlag windowType = *screenMode & YGS_SCREENMODE_WINDOWTYPE;
+	int displayIndex = YGS_SCREENINDEX_DISPLAY_TOVALUE(*screenIndex);
+	int modeIndex = YGS_SCREENINDEX_MODE_TOVALUE(*screenIndex);
 	int numVideoDisplays = SDL_GetNumVideoDisplays();
 	int numDisplayModes = SDL_GetNumDisplayModes(displayIndex);
 	if (numVideoDisplays < 0 || numDisplayModes < 0) {
@@ -430,7 +435,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 
 	if (
 			displayIndex >= numVideoDisplays ||
-			(windowType == SCREENMODE_FULLSCREEN && modeIndex >= numDisplayModes)
+			(windowType == YGS_SCREENMODE_FULLSCREEN && modeIndex >= numDisplayModes)
 	) {
 		*screenMode = DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
@@ -442,26 +447,26 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	{
 		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
 		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex);
-		switch ( windowType & SCREENMODE_WINDOWTYPE )
+		switch ( windowType & YGS_SCREENMODE_WINDOWTYPE )
 		{
-		case SCREENMODE_WINDOW_MAXIMIZED:
+		case YGS_SCREENMODE_WINDOW_MAXIMIZED:
 			windowFlags |= SDL_WINDOW_MAXIMIZED;
-		case SCREENMODE_WINDOW:
+		case YGS_SCREENMODE_WINDOW:
 			windowFlags |= SDL_WINDOW_RESIZABLE;
 			break;
 
-		case SCREENMODE_FULLSCREEN_DESKTOP:
+		case YGS_SCREENMODE_FULLSCREEN_DESKTOP:
 			windowFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 			break;
 
-		case SCREENMODE_FULLSCREEN: {
+		case YGS_SCREENMODE_FULLSCREEN: {
 			windowFlags |= SDL_WINDOW_FULLSCREEN;
 			break;
 		}
 		}
 	}
 
-	if ( *screenMode & SCREENMODE_DETAILLEVEL )
+	if ( *screenMode & YGS_SCREENMODE_DETAILLEVEL )
 	{
 		logicalWidth  = 640;
 		logicalHeight = 480;
@@ -476,14 +481,14 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	s_iLogicalHeight = logicalHeight;
 
 	/* ウィンドウの作成 */
-	if ( windowType == SCREENMODE_FULLSCREEN )
+	if ( windowType == YGS_SCREENMODE_FULLSCREEN )
 	{
 		SDL_DisplayMode displayMode;
 		if ( SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0 ) {
-			*screenMode &= ~SCREENMODE_WINDOWTYPE;
-			*screenMode |= SCREENMODE_WINDOW;
+			*screenMode &= ~YGS_SCREENMODE_WINDOWTYPE;
+			*screenMode |= YGS_SCREENMODE_WINDOW;
 			*screenIndex = 0;
-			s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
+			s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 			if ( !s_pScreenWindow )
 			{
 				s_pScreenRenderTarget = NULL;
@@ -493,7 +498,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 			}
 		}
 		else {
-			s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
+			s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
 			if ( !s_pScreenWindow )
 			{
 				s_pScreenRenderTarget = NULL;
@@ -511,7 +516,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 			}
 		}
 	}
-	else if ( windowType == SCREENMODE_WINDOW )
+	else if ( windowType == YGS_SCREENMODE_WINDOW )
 	{
 		SDL_DisplayMode displayMode;
 		if ( SDL_GetDesktopDisplayMode(displayIndex, &displayMode) < 0 )
@@ -543,9 +548,9 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 		if ( scale > maxScale) {
 			windowW = logicalWidth;
 			windowH = logicalHeight;
-			*screenIndex = SCREENINDEX_TOSETTING(displayIndex, 0);
+			*screenIndex = YGS_SCREENINDEX_TOSETTING(displayIndex, 0);
 		}
-		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
+		s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
 		if ( !s_pScreenWindow )
 		{
 			s_pScreenRenderTarget = NULL;
@@ -556,7 +561,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	}
 	else
 	{
-		s_pScreenWindow = SDL_CreateWindow(GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
+		s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
 		if ( !s_pScreenWindow )
 		{
 			s_pScreenRenderTarget = NULL;
@@ -567,7 +572,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	}
 
 	// fix to allow rendering to the texture.
-	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, *screenMode & SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
+	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, *screenMode & YGS_SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
 	if ( !s_pScreenRenderer )
 	{
 		SDL_DestroyWindow(s_pScreenWindow);
@@ -585,7 +590,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 		s_pScreenWindow = NULL;
 		return 0;
 	}
-	if ( *screenMode & SCREENMODE_SCALEMODE )
+	if ( *screenMode & YGS_SCREENMODE_SCALEMODE )
 	{
 		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE) < 0 )
 		{
@@ -601,7 +606,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
 	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
-		if ( !(*screenMode & SCREENMODE_RENDERLEVEL) )
+		if ( !(*screenMode & YGS_SCREENMODE_RENDERLEVEL) )
 		{
 			s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
 			if ( !s_pScreenRenderTarget )
@@ -631,7 +636,7 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	}
 	else {
 		s_pScreenRenderTarget = NULL;
-		*screenMode |= SCREENMODE_RENDERLEVEL;
+		*screenMode |= YGS_SCREENMODE_RENDERLEVEL;
 	}
 	SDL_ShowWindow(s_pScreenWindow);
 
@@ -655,42 +660,42 @@ int SetScreen(int32_t *screenMode, int32_t *screenIndex)
 	return 1;
 }
 
-int GetMaxDisplayIndex()
+int YGS2kGetMaxDisplayIndex()
 {
 	return SDL_GetNumVideoDisplays();
 }
 
-int GetMaxDisplayMode( int displayIndex )
+int YGS2kGetMaxDisplayMode( int displayIndex )
 {
 	return SDL_GetNumDisplayModes(displayIndex);
 }
 
-int RenderLevelLowSupported()
+int YGS2kRenderLevelLowSupported()
 {
 	return s_pScreenRenderer ? SDL_RenderTargetSupported(s_pScreenRenderer) : 0;
 }
 
-void SetConstParam ( const char *param, int value )
+void YGS2kSetConstParam ( const char *param, int value )
 {
 
 }
 
-int Rand ( int max )
+int YGS2kRand ( int max )
 {
 	return rand() % max;
 }
 
-void PauseMIDI()
+void YGS2kPauseMIDI()
 {
 	Mix_PauseMusic();
 }
 
-void ReplayMIDI()
+void YGS2kReplayMIDI()
 {
 	Mix_ResumeMusic();
 }
 
-void PlayWave ( int no )
+void YGS2kPlayWave ( int no )
 {
 	switch ( s_iYGSSoundType[no] )
 	{
@@ -713,7 +718,7 @@ void PlayWave ( int no )
 	}
 }
 
-void ReplayWave ( int no )
+void YGS2kReplayWave ( int no )
 {
 	switch ( s_iYGSSoundType[no] )
 	{
@@ -730,7 +735,7 @@ void ReplayWave ( int no )
 	}
 }
 
-void StopWave ( int no )
+void YGS2kStopWave ( int no )
 {
 	switch ( s_iYGSSoundType[no] )
 	{
@@ -747,7 +752,7 @@ void StopWave ( int no )
 	}
 }
 
-void PauseWave ( int no )
+void YGS2kPauseWave ( int no )
 {
 	switch ( s_iYGSSoundType[no] )
 	{
@@ -764,7 +769,7 @@ void PauseWave ( int no )
 	}
 }
 
-void SetVolumeWave( int no, int vol )
+void YGS2kSetVolumeWave( int no, int vol )
 {
 	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
 	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
@@ -786,7 +791,7 @@ void SetVolumeWave( int no, int vol )
 	}
 }
 
-int IsPlayWave( int no )
+int YGS2kIsPlayWave( int no )
 {
 	switch ( s_iYGSSoundType[no] )
 	{
@@ -802,7 +807,7 @@ int IsPlayWave( int no )
 	}
 }
 
-void LoadWave( const char* filename, int no )
+void YGS2kLoadWave( const char* filename, int no )
 {
 	int		len = strlen(filename);
 	if ( len < 4 ) { return; }
@@ -837,12 +842,12 @@ void LoadWave( const char* filename, int no )
 	}
 }
 
-void SetLoopModeWave( int no, int mode )
+void YGS2kSetLoopModeWave( int no, int mode )
 {
    // true=loop, false=no loop.  since this is only used on BGMs, and all BGMs already loop, this is a no-op.
 }
 
-void LoadMIDI( const char* filename )
+void YGS2kLoadMIDI( const char* filename )
 {
 	if ( s_pYGSMusic )
 	{
@@ -856,7 +861,7 @@ void LoadMIDI( const char* filename )
 	s_iYGSMusicVolume = YGS_VOLUME_MAX;
 }
 
-void LoadBitmap( const char* filename, int plane, int val )
+void YGS2kLoadBitmap( const char* filename, int plane, int val )
 {
 	if ( !s_pScreenRenderer )
 	{
@@ -875,7 +880,7 @@ void LoadBitmap( const char* filename, int plane, int val )
 	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
-void PlayMIDI()
+void YGS2kPlayMIDI()
 {
 	if ( s_pYGSMusic )
 	{
@@ -883,12 +888,12 @@ void PlayMIDI()
 	}
 }
 
-void StopMIDI()
+void YGS2kStopMIDI()
 {
 	Mix_HaltMusic();
 }
 
-void SetVolumeMIDI(int vol)
+void YGS2kSetVolumeMIDI(int vol)
 {
 	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
 	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
@@ -897,33 +902,33 @@ void SetVolumeMIDI(int vol)
 	Mix_VolumeMusic(volume);
 }
 
-void SetColorKeyPos(int plane, int x, int y)
+void YGS2kSetColorKeyPos(int plane, int x, int y)
 {
    // sets transparent color to the specified pixel.  Since we use actual alpha channel in our assets, this is a no-oop
 }
 
-void EnableBlendColorKey(int plane, int key)
+void YGS2kEnableBlendColorKey(int plane, int key)
 {
    // alows for parial transparency.   again, because we use real transparency, it's a no-op.
 }
 
-void CreateSurface(int surf, int w, int h)
+void YGS2kCreateSurface(int surf, int w, int h)
 {
     // required for orignal YGS2K engine. not needed at all for SDL2 renderer.
 }
 
-void ClearSecondary()
+void YGS2kClearSecondary()
 {
     // used to write the listed color to all pixels of the rendering area.
 	// with SDL2 renderer, we never need to do this, so it's a no-op
 }
 
-void SetFillColor(int col)
+void YGS2kSetFillColor(int col)
 {
-	// sets the color that ClearSecondary uses to fill the render target. since ClearSecondary is a no-op, so is this.
+	// sets the color that YGS2kClearSecondary uses to fill the render target. since YGS2kClearSecondary is a no-op, so is this.
 }
 
-void LoadFile( const char* filename, void* buf, size_t size )
+void YGS2kLoadFile( const char* filename, void* buf, size_t size )
 {
 	SDL_RWops	*src = PHYSFSRWOPS_openRead(filename);
 
@@ -941,7 +946,7 @@ void LoadFile( const char* filename, void* buf, size_t size )
 	}
 }
 
-void ReadFile( const char* filename, void* buf, size_t size, size_t offset )
+void YGS2kReadFile( const char* filename, void* buf, size_t size, size_t offset )
 {
 	SDL_RWops	*src = PHYSFSRWOPS_openRead(filename);
 
@@ -961,7 +966,7 @@ void ReadFile( const char* filename, void* buf, size_t size, size_t offset )
 }
 
 
-void SaveFile( const char* filename, void* buf, size_t size )
+void YGS2kSaveFile( const char* filename, void* buf, size_t size )
 {
 	/* エンディアン変換 */
 	int32_t* buf2 = (int32_t*)buf;
@@ -985,7 +990,7 @@ void SaveFile( const char* filename, void* buf, size_t size )
 	}
 }
 
-void AppendFile( const char* filename, void* buf, size_t size ) {
+void YGS2kAppendFile( const char* filename, void* buf, size_t size ) {
 	/* エンディアン変換 */
 	int32_t* buf2 = (int32_t*)buf;
 	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
@@ -1008,73 +1013,73 @@ void AppendFile( const char* filename, void* buf, size_t size ) {
 	}
 }
 
-void TextLayerOn ( int layer, int x, int y )
+void YGS2kTextLayerOn ( int layer, int x, int y )
 {
 	s_TextLayer[layer].enable = true;
 	s_TextLayer[layer].x = x;
 	s_TextLayer[layer].y = y;
 }
 
-void TextMove ( int layer, int x, int y )
+void YGS2kTextMove ( int layer, int x, int y )
 {
 	s_TextLayer[layer].x = x;
 	s_TextLayer[layer].y = y;
 }
 
-void TextColor ( int layer, int r, int g, int b )
+void YGS2kTextColor ( int layer, int r, int g, int b )
 {
 	s_TextLayer[layer].r = r;
 	s_TextLayer[layer].g = g;
 	s_TextLayer[layer].b = b;
 }
 
-void TextBackColorDisable ( int layer )
+void YGS2kTextBackColorDisable ( int layer )
 {
 	// turns off the shadow effect for text in the listed layer. since we don't even use said shadow effect to begin with, it's a no-op.
 }
 
-void TextSize ( int layer, int size )
+void YGS2kTextSize ( int layer, int size )
 {
 	s_TextLayer[layer].size = size;
 }
 
-void TextHeight ( int layer, int height )
+void YGS2kTextHeight ( int layer, int height )
 {
 	// only used in flexdraw.c for ExTextHeight. But since ExTextHeight is unused, we don't need to bother implementing it. 
 }
 
-void TextOut ( int layer, const char* text )
+void YGS2kTextOut ( int layer, const char* text )
 {
 	strcpy(s_TextLayer[layer].string, text);
 }
 
-void TextBlt ( int layer )
+void YGS2kTextBlt ( int layer )
 {
 	if ( s_TextLayer[layer].enable )
 	{
-		YGS2kTextOut(s_TextLayer[layer].x + s_iOffsetX, s_TextLayer[layer].y + s_iOffsetY, s_TextLayer[layer].string, s_TextLayer[layer].r, s_TextLayer[layer].g, s_TextLayer[layer].b, s_TextLayer[layer].size);
+		YGS2kPrivateTextBlt(s_TextLayer[layer].x + s_iOffsetX, s_TextLayer[layer].y + s_iOffsetY, s_TextLayer[layer].string, s_TextLayer[layer].r, s_TextLayer[layer].g, s_TextLayer[layer].b, s_TextLayer[layer].size);
 	}
 }
 
-void TextLayerOff ( int layer )
+void YGS2kTextLayerOff ( int layer )
 {
 	s_TextLayer[layer].enable = false;
 }
 
-void BltAlways(bool always)
+void YGS2kBltAlways(bool always)
 {
 	s_bNoFrameskip = always;
 }
 
-void Blt(int pno, int dx, int dy)
+void YGS2kBlt(int pno, int dx, int dy)
 {
 	if ( s_pYGSTexture[pno] == NULL ) { return; }
 	int w, h;
 	SDL_QueryTexture(s_pYGSTexture[pno], NULL, NULL, &w, &h);
-	BltRect(pno, dx, dy, 0, 0, w, h);
+	YGS2kBltRect(pno, dx, dy, 0, 0, w, h);
 }
 
-void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
+void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
 	if ( !s_pScreenRenderer )
 	{
@@ -1123,40 +1128,40 @@ void BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 	}
 }
 
-void BltFast(int pno, int dx, int dy)
+void YGS2kBltFast(int pno, int dx, int dy)
 {
-	Blt(pno, dx, dy);
+	YGS2kBlt(pno, dx, dy);
 }
 
-void BltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
+void YGS2kBltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {
-	BltRect(pno, dx, dy, sx, sy, hx, hy);
+	YGS2kBltRect(pno, dx, dy, sx, sy, hx, hy);
 }
 
-void BlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
-{
-	if ( s_pYGSTexture[pno] == NULL ) return;
-
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
-	Blt(pno, dx, dy);
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
-}
-
-void BlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
+void YGS2kBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
 {
 	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
-	BltRect(pno, dx, dy, sx, sy, hx, hy);
+	YGS2kBlt(pno, dx, dy);
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
-void BltR(int pno, int dx, int dy, int scx, int scy)
+void YGS2kBlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-	BltRectR(pno, dx, dy, 0, 0, s_iLogicalWidth, s_iLogicalHeight, scx, scy);
+	if ( s_pYGSTexture[pno] == NULL ) return;
+
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
+	YGS2kBltRect(pno, dx, dy, sx, sy, hx, hy);
+	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
-void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
+void YGS2kBltR(int pno, int dx, int dy, int scx, int scy)
+{
+	YGS2kBltRectR(pno, dx, dy, 0, 0, s_iLogicalWidth, s_iLogicalHeight, scx, scy);
+}
+
+void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
 {
 	if ( !s_pScreenRenderer )
 	{
@@ -1215,27 +1220,27 @@ void BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, 
 	}
 }
 
-void BltFastR(int pno, int dx, int dy, int scx, int scy)
+void YGS2kBltFastR(int pno, int dx, int dy, int scx, int scy)
 {
-	BltR(pno, dx, dy, scx, scy);
+	YGS2kBltR(pno, dx, dy, scx, scy);
 }
 
-void BltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
+void YGS2kBltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
 {
-	BltRectR(pno, dx, dy, sx, sy, hx, hy, scx, scy);
+	YGS2kBltRectR(pno, dx, dy, sx, sy, hx, hy, scx, scy);
 }
 
-void BltTrans(int pno, int dx, int dy)
+void YGS2kBltTrans(int pno, int dx, int dy)
 {
 	// completely unused.  so we don't need to care what it even does.
 }
 
-void BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
+void YGS2kBlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
 {
-	BlendBltRectR(pno, dx, dy, 0, 0, s_iLogicalWidth, s_iLogicalHeight, ar, ag, ab, br, bg, bb, scx, scy);
+	YGS2kBlendBltRectR(pno, dx, dy, 0, 0, s_iLogicalWidth, s_iLogicalHeight, ar, ag, ab, br, bg, bb, scx, scy);
 }
 
-void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
+void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
 {
 	if ( !s_pScreenRenderer )
 	{
@@ -1299,55 +1304,55 @@ void BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 	}
 }
 
-void SetSecondaryOffset(int x, int y)
+void YGS2kSetSecondaryOffset(int x, int y)
 {
 	s_iNewOffsetX = x;
 	s_iNewOffsetY = y;
 }
 
-void SetColorKeyRGB(int pno, int r, int g, int b)
+void YGS2kSetColorKeyRGB(int pno, int r, int g, int b)
 {
 	//  again because we have actual transparency in our assets, this is a no-op.
 }
 
-void SwapToSecondary(int pno)
+void YGS2kSwapToSecondary(int pno)
 {
      // swaps the rendering target with a layer.  not implemented because no one can figuer out HOW in SDL. 
 	 // Only required for EH-Final gimmick, which currently has a workaround.
 	 // it's also used in the graphic loader, and the backgroud loader, but doesn't seem needed.
 }
 
-void SetFPS(int fps)
+void YGS2kSetFPS(int fps)
 {
 	s_uNowFPS = fps;
 }
 
-int GetFPS()
+int YGS2kGetFPS()
 {
 	return s_uNowFPS;
 }
 
-int GetRealFPS()
+int YGS2kGetRealFPS()
 {
 	return s_uFPS;
 }
 
-void StrCpy(char *dest, const char *src)
+void YGS2kStrCpy(char *dest, const char *src)
 {
 	strcpy(dest, src);
 }
 
-void StrCat(char *str1, const char *str2)
+void YGS2kStrCat(char *str1, const char *str2)
 {
 	strcat(str1, str2);
 }
 
-int StrLen(const char *stri)
+int YGS2kStrLen(const char *stri)
 {
 	return strlen(stri);
 }
 
-void MidStr(const char *src, int start, int len, char *dest)
+void YGS2kMidStr(const char *src, int start, int len, char *dest)
 {
 	int		i;
 	for ( i = 0 ; i < len ; i ++ )
@@ -1357,29 +1362,29 @@ void MidStr(const char *src, int start, int len, char *dest)
 	dest[len] = '\0';
 }
 
-void LeftStr(const char *src, int len, char *dest)
+void YGS2kLeftStr(const char *src, int len, char *dest)
 {
-	MidStr(src, 1, len, dest);
+	YGS2kMidStr(src, 1, len, dest);
 }
 
-char CharAt(const char *stri, int pos)
+char YGS2kCharAt(const char *stri, int pos)
 {
 	return stri[pos];
 }
 
-int ValLong(const char *stri)
+int YGS2kValLong(const char *stri)
 {
 	return atoi(stri);
 }
 
-void FillMemory(void* buf, int size, int val)
+void YGS2kFillMemory(void* buf, int size, int val)
 {
 	memset(buf, val, size);
 }
 
 ////////////////////////////////////////////////////
 
-void YGS2kKanjiFontInitialize()
+static void YGS2kPrivateKanjiFontInitialize()
 {
 	SDL_RWops *src;
 
@@ -1473,14 +1478,14 @@ void YGS2kKanjiFontInitialize()
 	}
 }
 
-void YGS2kKanjiFontFinalize()
+static void YGS2kPrivateKanjiFontFinalize()
 {
 	if ( s_pKanjiFont[0] ) { Kanji_CloseFont(s_pKanjiFont[0]); }
 	if ( s_pKanjiFont[1] ) { Kanji_CloseFont(s_pKanjiFont[1]); }
 	if ( s_pKanjiFont[2] ) { Kanji_CloseFont(s_pKanjiFont[2]); }
 }
 
-void YGS2kKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)
+static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)
 {
 	if ( !s_pScreenRenderer )
 	{

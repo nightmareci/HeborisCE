@@ -13,7 +13,7 @@ void RankingInit(void) {
 			rkbl[i * 5 + j] = 25 - 5* j;
 			rklv[i * 5 + j] = 50 - 10 * j;
 			rktime[i * 5 + j] = 10800 - 1800 * j;
-			StrCpy(string[30 + 5 * i + j], "NOP");
+			YGS2kStrCpy(string[30 + 5 * i + j], "NOP");
 			rkfl[i * 5 + j] = 0;
 		}
 	}
@@ -22,7 +22,7 @@ void RankingInit(void) {
 void RankingConvert(void) {
 	int32_t	i, j, temp;
 
-	LoadFile("config/data/RANKING.SAV", saveBuf, 1312);
+	YGS2kLoadFile("config/data/RANKING.SAV", saveBuf, 1312);
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;
 		rksc[i] = saveBuf[temp + 0];
@@ -42,7 +42,7 @@ void RankingConvert(void) {
 			rklv[i * 10 + j + 5] = 50 - 10 * j;
 			rktime[i * 10 + j + 5] = 10800 - 1800 * j;
 			rkfl[i * 10 + j + 5] = 0;
-			StrCpy(string[30 + 10 * i + j + 5], "NOP");
+			YGS2kStrCpy(string[30 + 10 * i + j + 5], "NOP");
 		}
 	}
 }
@@ -91,7 +91,7 @@ void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t
 		rkbl[temp] = rkbl[temp - 1];
 		rklv[temp] = rklv[temp - 1];
 		rktime[temp] = rktime[temp - 1];
-		StrCpy(string[30 + temp], string[30 + temp - 1]);
+		YGS2kStrCpy(string[30 + temp], string[30 + temp - 1]);
 		rkfl[temp] = rkfl[temp - 1];
 	}
 
@@ -100,7 +100,7 @@ void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t
 	rkbl[temp] = rli;
 	rklv[temp] = rlv;
 	rktime[temp] = rtime;
-	StrCpy(string[30 + temp], rname);
+	YGS2kStrCpy(string[30 + temp], rname);
 	rkfl[temp] = end;
 }
 
@@ -175,10 +175,10 @@ void RankingCreate(int32_t cat, int32_t mode) {
 	int32_t	i, j;
 
 	for(i = 0; i < 5; i++) {
-		StrCpy(string[3], "TH");
-		if(i == 0) StrCpy(string[3], "ST");
-		if(i == 1) StrCpy(string[3], "ND");
-		if(i == 2) StrCpy(string[3], "RD");
+		YGS2kStrCpy(string[3], "TH");
+		if(i == 0) YGS2kStrCpy(string[3], "ST");
+		if(i == 1) YGS2kStrCpy(string[3], "ND");
+		if(i == 2) YGS2kStrCpy(string[3], "RD");
 
 		j = cat* 10 +mode* 5 + i;
 		getTime(rktime[j]);
@@ -190,7 +190,7 @@ void RankingCreate(int32_t cat, int32_t mode) {
 int32_t RankingView(void) {
 	int32_t		i, xxx, col;
 
-	Input();
+	YGS2kInput();
 
 	domirror = 0;	// 鏡像を無効化
 
@@ -290,7 +290,7 @@ int32_t RankingView(void) {
 int32_t RankingSave(void) {
 	int32_t i, temp;
 
-	FillMemory(saveBuf, 50000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 50000 * 4, 0);
 
 	// ファイルフォーマット (4byte単位)
 	//   0〜    3 ヘッダ
@@ -316,7 +316,7 @@ int32_t RankingSave(void) {
 		saveBuf[temp + 5] = rkfl[i];
 	}
 
-	SaveFile("config/data/RANKING.SAV", saveBuf, 1312);
+	YGS2kSaveFile("config/data/RANKING.SAV", saveBuf, 1312);
 
 	return (0);
 }
@@ -324,9 +324,9 @@ int32_t RankingSave(void) {
 int32_t RankingLoad(void) {
 	int32_t i, temp;
 
-	FillMemory(saveBuf, 50000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 50000 * 4, 0);
 
-	LoadFile("config/data/RANKING.SAV", saveBuf, 16);
+	YGS2kLoadFile("config/data/RANKING.SAV", saveBuf, 16);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -335,7 +335,7 @@ int32_t RankingLoad(void) {
 	if(saveBuf[3] == 0x31764353) return (2);
 	else if(saveBuf[3] != 0x32764353) return (1);
 
-	LoadFile("config/data/RANKING.SAV", saveBuf, 1312);
+	YGS2kLoadFile("config/data/RANKING.SAV", saveBuf, 1312);
 
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;

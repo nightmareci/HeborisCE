@@ -27,7 +27,7 @@ void RankingInit2() {
 	int32_t i;
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
-		StrCpy(rkname[i], "NOP");
+		YGS2kStrCpy(rkname[i], "NOP");
 		rkdata[i] = 0;
 		rktime2[i] = 1200*60;
 		rkclear[i] = 0;
@@ -83,7 +83,7 @@ void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, 
 
 	// ランキングをずらす
 	for(i = 4; i > rank ; i--) {
-		StrCpy(rkname[j + i], rkname[j + i - 1]);
+		YGS2kStrCpy(rkname[j + i], rkname[j + i - 1]);
 		rkdata[j + i] = rkdata[j + i - 1];
 		rktime2[j + i] = rktime2[j + i - 1];
 		rkclear[j + i] = rkclear[j + i - 1];
@@ -92,7 +92,7 @@ void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, 
 	}
 
 	// 新しいデータを登録
-	StrCpy(rkname[j + rank], rname);
+	YGS2kStrCpy(rkname[j + rank], rname);
 	rkdata[j + rank] = rdata;
 	rktime2[j + rank] = rtime;
 	rkclear[j + rank] = rclear;
@@ -156,7 +156,7 @@ void RankingProc_2(int32_t cat) {
 	while(!flag) {
 		count++;
 
-		Input();
+		YGS2kInput();
 		RankingView2();
 
 		// AかBで戻る
@@ -172,32 +172,32 @@ void RankingProc2_2() {
 	category = 0;
 
 	while(1) {
-		Input();
+		YGS2kInput();
 
 		RankingView2();
 		// ←
 		if( getPushState(0, BTN_LEFT) ) {
-			PlayWave( 5 );
+			YGS2kPlayWave( 5 );
 			category--;//ゲームモード
 			if(category < 0) category = 14;
 		}
 
 		// →
 		if( getPushState(0, BTN_RIGHT) ) {
-			PlayWave( 5 );
+			YGS2kPlayWave( 5 );
 			category++;
 			if(category > 14) category = 0;
 		}
 
 		// ↑
 		if( getPushState(0, BTN_UP) ) {
-			PlayWave( 5 );
+			YGS2kPlayWave( 5 );
 			rankingrule = !(rankingrule);//回転ルール
 		}
 
 		// ↓
 		if( getPushState(0, BTN_DOWN) ) {
-			PlayWave( 5 );
+			YGS2kPlayWave( 5 );
 			rankingrule  = !(rankingrule);
 		}
 
@@ -218,9 +218,9 @@ void RankingView2() {//5位まで
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				YGS2kBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				YGS2kBltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
@@ -232,13 +232,13 @@ void RankingView2() {//5位まで
 
 	// ルール名表示
 	getRuleNameEx(rankingrule, 0);
-	StrCat(string[0], " TYPE RULE - ");
+	YGS2kStrCat(string[0], " TYPE RULE - ");
 
 	// モード名表示
 	getModeNameEx(category, 1);
-	StrCat(string[1], " MODE");
+	YGS2kStrCat(string[1], " MODE");
 
-	StrCat(string[0], string[1]);
+	YGS2kStrCat(string[0], string[1]);
 	printFont(1, 1, string[0], modecolor[category]);
 
 	// ランキング表示
@@ -402,7 +402,7 @@ void RankingView2() {//5位まで
 void RankingSave2() {
 	int32_t i;
 
-	FillMemory(saveBuf, 5000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 5000 * 4, 0);
 
 	// ヘッダ
 	saveBuf[0] = 0x4F424549;
@@ -441,7 +441,7 @@ void RankingSave2() {
 		saveBuf[4 + i + (5 * 15 * 2) * 10] = rkrots[i];//11
 	}
 
-	SaveFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
+	YGS2kSaveFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
 }
 
 // ランキングを読み込み
@@ -449,8 +449,8 @@ int32_t RankingLoad2() {
 	int32_t i;
 
 	// ヘッダだけ読み込み
-	FillMemory(saveBuf, 5000 * 4, 0);
-	LoadFile("config/data/RANKING2.SAV", saveBuf, 16);
+	YGS2kFillMemory(saveBuf, 5000 * 4, 0);
+	YGS2kLoadFile("config/data/RANKING2.SAV", saveBuf, 16);
 
 	// バージョン違いなら初期化
 	if(saveBuf[0] != 0x4F424549) return 1;
@@ -459,7 +459,7 @@ int32_t RankingLoad2() {
 	if(saveBuf[3] != 0x34764354) return 1;
 
 	// 全部読み込み
-	LoadFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);
+	YGS2kLoadFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前

@@ -12,7 +12,7 @@ void statSelectLevel(int32_t player) {
 
 	// HOLDボタンでページ切り替え #1.60c7a
 	if(getPushState(player, BTN_D)) {
-		PlayWave(5);
+		YGS2kPlayWave(5);
 		if(vslevel[0] < 14)
 			vslevel[0] = 14;
 		else if(vslevel[0] < 29)	// 3ページ目 #1.60c7j5
@@ -566,11 +566,11 @@ void statSelectLevel(int32_t player) {
 			p_next_adjust = !p_next_adjust;
 			if(!p_next_adjust){
 				do {
-					next[0] = Rand(7);
+					next[0] = YGS2kRand(7);
 				} while((next[0] != 2) && (next[0] != 3) && (next[0] != 6));
 			} else {
 				do {
-					next[0] = Rand(7);
+					next[0] = YGS2kRand(7);
 				} while((next[0] == 2) || (next[0] == 3) || (next[0] == 6));
 			}
 			setNextBlockColors(0, 1);
@@ -828,11 +828,11 @@ void statSelectLevel(int32_t player) {
 				p_next_adjust = !p_next_adjust;
 				if(!p_next_adjust){
 					do {
-						next[0] = Rand(7);
+						next[0] = YGS2kRand(7);
 					} while((next[0] != 2) && (next[0] != 3) && (next[0] != 6));
 				} else {
 					do {
-						next[0] = Rand(7);
+						next[0] = YGS2kRand(7);
 					} while((next[0] == 2) || (next[0] == 3) || (next[0] == 6));
 				}
 				setNextBlockColors(0, 1);
@@ -968,7 +968,7 @@ void PracticeStart(void){
 	playerInitial(1); // 2Pを初期化して結果を消去
 	status[1] = 10; // 2Pの動きを停止
 
-	TextLayerOff(0);
+	YGS2kTextLayerOff(0);
 	upLines[0] = 0;
 	shirase[0] = raise_shirase_interval;	// 最初のせり上がりカウントを設定 #1.60c7i2
 
@@ -1042,7 +1042,7 @@ void PracticeStart(void){
 	setNextBlockColors(0, 1);
 
 	// FPSを設定 #1.60c7n7
-	if(max_fps != max_fps_2) SetFPS(max_fps);
+	if(max_fps != max_fps_2) YGS2kSetFPS(max_fps);
 
 	// ステージ読み込み #1.60c7p1
 	if(p_stage != -1) loadTomoyoStage(0,p_stage);
@@ -1082,7 +1082,7 @@ void PracticeDeath() {
 	int32_t i;
 
 	// FPSを戻す #1.60c7n7
-	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
+	if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
 
 	timeOn[0] = 0;
 	onRecord[0] = 0;
@@ -1126,7 +1126,7 @@ void PracticeOver(void) {
 	int32_t i,tmp;
 
 	// FPSを戻す #1.60c7n7
-	if(GetFPS() != max_fps_2) SetFPS(max_fps_2);
+	if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
 
 	// BGM停止#1.60c6.2d
 	if(wavebgm >= 1)

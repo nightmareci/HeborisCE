@@ -38,7 +38,7 @@ void viewbestSTtimes(int32_t player);
 void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor);
 void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t player, bool menuAB);
 #ifdef ENABLE_GAME_CONTROLLER
-void printConKey(int32_t fontX, int32_t fontY, int32_t index, SConKey* key, int32_t fontColor);
+void printConKey(int32_t fontX, int32_t fontY, int32_t index, YGS2kSConKey* key, int32_t fontColor);
 #endif
 void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);

@@ -7,7 +7,7 @@ void GradeUp(int32_t player){
 	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVIL以外
 		// (S8までなら)段位上昇判定 #1.60c7g5
 		if((grade[player] < 17) && (sc[player] >= gscore[grade[player]])) {
-			PlayWave(30);	// rankup.wav #1.60c7i2
+			YGS2kPlayWave(30);	// rankup.wav #1.60c7i2
 			grade[player]++;
 			gflash[player]=120;
 			gup_down[player] = 1;
@@ -17,7 +17,7 @@ void GradeUp(int32_t player){
 		if((tc[player] >= 300) && (!gmflag1_e[player])) {
 			if((grade[player] >= 6) && (gametime[player] <= 255 * 60)){
 					gmflag1[player] = 1;
-					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				}
 			gmflag1_e[player] = 1;
 		}
@@ -26,7 +26,7 @@ void GradeUp(int32_t player){
 		if((tc[player] >= 500) && (!gmflag2_e[player])) {
 			if((grade[player] >= 9) && (gametime[player] <= 450 * 60)){
 					gmflag2[player] = 1;
-					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				}
 			gmflag2_e[player] = 1;
 		}
@@ -255,7 +255,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade[player] >= 11) && (gametime[player] <= 300 * 60)){
 					gmflag1[player] = 1;
-					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				}
 				gmflag1_e[player] = 1;
 			}
@@ -264,7 +264,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
 				if((grade[player] >= 19) && (gametime[player] <= 390*60)){
 					gmflag2[player] = 1;
-					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				}
 				gmflag2_e[player] = 1;
 			}
@@ -330,7 +330,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade2[player] >= 11) && (gametime[player] <= 300 * 60)){
 					gmflag1[player] = 1;
-					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				}
 			gmflag1_e[player] = 1;
 			}
@@ -339,7 +339,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
 				if((grade2[player] >= 19) && (gametime[player] <= 390*60)){
 					gmflag2[player] = 1;
-					objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 				}
 				gmflag2_e[player] = 1;
 			}
@@ -393,7 +393,7 @@ void GradeUp3(int32_t player) {//ブロックを置く度に
 	if((tc[player] >= 400) &&(!gmflag1_e[player])) {
 		if(tr2[player] >= 80){
 			gmflag1[player] = 1;
-			objectCreate2(player, 8, Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+			objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 		}
 		gmflag1_e[player] = 1;
 	}

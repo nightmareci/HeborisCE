@@ -1,3 +1,3 @@
 #include "ygs2kprivate.h"
 
-EControllerType LastControllerType = CONTROLLER_NULL;
+YGS2kEControllerType YGS2kLastControllerType = YGS_CONTROLLER_NULL;

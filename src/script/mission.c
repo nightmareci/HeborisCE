@@ -7,8 +7,8 @@
 void statMissionSelect(int32_t player) {
 	padRepeat(player);
 	padRepeat2(player);
-	if( (!IsPlayWave(62)) && (wavebgm >= 1) ) {
-		PlayWave(62);
+	if( (!YGS2kIsPlayWave(62)) && (wavebgm >= 1) ) {
+		YGS2kPlayWave(62);
 	}
 	if(statusc[player * 10 + 4] > 0){
 		statusc[player * 10 + 4]--;
@@ -511,28 +511,28 @@ void viewMission() {
 	tmp = 0;
 	minus = 0;
 
-	// BltFastRect(プレーンナンバー,dx,dy,sx,sy,hx,hy);
+	// YGS2kBltFastRect(プレーンナンバー,dx,dy,sx,sy,hx,hy);
 
 	// 枠
 	if(getDrawRate() == 1) {
-		if(mission_file <= 24) BltFastRect(44, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
-		BltFastRect(44, 208 * maxPlay, 112, 288, 368, 112, 128);
+		if(mission_file <= 24) YGS2kBltFastRect(44, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
+		YGS2kBltFastRect(44, 208 * maxPlay, 112, 288, 368, 112, 128);
 	} else {
-		if(mission_file <= 24) BltFastRect(44, 8 + maxPlay * 408, 24, 32, (32 * mission_file) + (16 * (english)), 128, 16);
-		BltFastRect(44, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
+		if(mission_file <= 24) YGS2kBltFastRect(44, 8 + maxPlay * 408, 24, 32, (32 * mission_file) + (16 * (english)), 128, 16);
+		YGS2kBltFastRect(44, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
 	}
 
 	// 問題の種類
 	if((ending[0] <= 1) || (ending[0] >= 4)){
 	if(getDrawRate() == 1) {
-		TextLayerOn(0, 6 + 208 * maxPlay, 8 + 112);
-		TextSize(0, 10);
+		YGS2kTextLayerOn(0, 6 + 208 * maxPlay, 8 + 112);
+		YGS2kTextSize(0, 10);
 	} else {
-		TextLayerOn(0, 10 + 16 + maxPlay * 400, 8 + 228);
-		TextSize(0, 16);
+		YGS2kTextLayerOn(0, 10 + 16 + maxPlay * 400, 8 + 228);
+		YGS2kTextSize(0, 16);
 	}
-	TextColor(0, 0, 0, 0);
-	TextBackColorDisable(0);
+	YGS2kTextColor(0, 0, 0, 0);
+	YGS2kTextBackColorDisable(0);
 
 	getMissionName(mission_type[c_mission],c_mission);
 
@@ -548,14 +548,14 @@ void viewMission() {
 	}
 
 	// 描画
-	TextOut(0, string[0]);
-	TextBlt(0);
+	YGS2kTextOut(0, string[0]);
+	YGS2kTextBlt(0);
 
 	// 制限時間
 	if(getDrawRate() == 1) {
-		TextMove(0, 6 + 208 * maxPlay, 30 + 112);
+		YGS2kTextMove(0, 6 + 208 * maxPlay, 30 + 112);
 	} else {
-		TextMove(0, 10 + 16 + maxPlay * 400, 30 + 228);
+		YGS2kTextMove(0, 10 + 16 + maxPlay * 400, 30 + 228);
 	}
 
 	if(!english) strcpy(string[70], "制限時間 ");
@@ -570,14 +570,14 @@ void viewMission() {
 	}
 
 	// 描画
-	TextOut(0, string[70]);
-	TextBlt(0);
+	YGS2kTextOut(0, string[70]);
+	YGS2kTextBlt(0);
 
 	// 指令文
 	if(getDrawRate() == 1) {
-		TextMove(0, 6 + 208 * maxPlay, 52 + 112);
+		YGS2kTextMove(0, 6 + 208 * maxPlay, 52 + 112);
 	} else {
-		TextMove(0, 10 + 16 + maxPlay * 400, 52 + 228);
+		YGS2kTextMove(0, 10 + 16 + maxPlay * 400, 52 + 228);
 	}
 	// LITE版を参考に整理
 	if(!english) {//"\n\nを使って\n%dライン消せ！",
@@ -720,11 +720,11 @@ void viewMission() {
 	}
 
 	// 描画
-	TextOut(0, string[0]);
-	TextBlt(0);
+	YGS2kTextOut(0, string[0]);
+	YGS2kTextBlt(0);
 
 	// 使用終了
-	TextLayerOff(0);
+	YGS2kTextLayerOff(0);
 	while(c_mission - tmp > 4){
 		tmp = tmp + 5;
 	}
@@ -732,25 +732,25 @@ void viewMission() {
 	// ミッション一覧
 	for(i = tmp; i < (tmp+5); i++) {
 		if(getDrawRate() == 1) {
-			BltFastRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
-			TextLayerOn(0, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
-			TextSize(0, 10);
+			YGS2kBltFastRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
+			YGS2kTextLayerOn(0, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
+			YGS2kTextSize(0, 10);
 		} else {
-			BltFastRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
-			TextLayerOn(0, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
-			TextSize(0, 14);
+			YGS2kBltFastRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
+			YGS2kTextLayerOn(0, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
+			YGS2kTextSize(0, 14);
 		}
-		TextColor(0, 0, 0, 0);
-		TextBackColorDisable(0);
+		YGS2kTextColor(0, 0, 0, 0);
+		YGS2kTextBackColorDisable(0);
 
 		getMissionName(mission_type[i],i);
 
 		// 描画
-		TextOut(0, string[0]);
-		TextBlt(0);
+		YGS2kTextOut(0, string[0]);
+		YGS2kTextBlt(0);
 
 		// 使用終了
-		TextLayerOff(0);
+		YGS2kTextLayerOff(0);
 
 		// 終了フラグがある場合はここでループを抜ける
 		if(mission_end[i]) break;
@@ -1110,7 +1110,7 @@ void missionNormUp(int32_t lines) {
 		StopSE(32);
 		if(mission_end[c_mission] == 3)
 			PlaySE(18);
-		objectCreate2(0, 8, Rand(20) + 180 + 192 * 0 - 96 * maxPlay, 20 + Rand(10), 0, 0, 0, 0);
+		objectCreate2(0, 8, YGS2kRand(20) + 180 + 192 * 0 - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
 		timeOn[0] = 0;
 		c_mission++;
 		clear_mission++;
@@ -1498,9 +1498,9 @@ void viewEraserLines() {
 		if(i >= 4) break;	// 最大で4本まで
 
 		if(getDrawRate() == 1)
-			BltRect(44, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
+			YGS2kBltRect(44, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
 		else
-			BltRect(44, (14 - 12 * maxPlay) * 16, (eraser_lines[i] + 3) * 16, 448, 160 - 64 * (mission_type[c_mission] == 39)+ eraser_cleared[i] * 32, 192, 16);
+			YGS2kBltRect(44, (14 - 12 * maxPlay) * 16, (eraser_lines[i] + 3) * 16, 448, 160 - 64 * (mission_type[c_mission] == 39)+ eraser_cleared[i] * 32, 192, 16);
 	}
 }
 
@@ -1536,11 +1536,11 @@ statusc[0 * 10 + 6] = mission_opt_3[c_mission];
 void loadMissionData(int32_t number) {
 	int32_t i;
 
-	FillMemory(saveBuf, 50000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 50000 * 4, 0);
 
 	sprintf(string[0], "config/mission/mission%02d.sav", number);
 
-	LoadFile(string[0], saveBuf, 930 * 4);
+	YGS2kLoadFile(string[0], saveBuf, 930 * 4);
 
 	// 問題データを読み込み
 	for(i = 0; i < 30; i++) {
@@ -1561,7 +1561,7 @@ void loadMissionData(int32_t number) {
 void saveMissionData(int32_t number) {
 	int32_t i;
 
-	FillMemory(saveBuf, 50000 * 4, 0);
+	YGS2kFillMemory(saveBuf, 50000 * 4, 0);
 
 	// ヘッダ
 	saveBuf[0] = 1;
@@ -1581,5 +1581,5 @@ void saveMissionData(int32_t number) {
 	}
 
 	sprintf(string[0], "config/mission/mission%02d.sav", number);
-	SaveFile(string[0], saveBuf, 930 * 4);
+	YGS2kSaveFile(string[0], saveBuf, 930 * 4);
 }

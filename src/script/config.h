@@ -14,11 +14,11 @@ int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
 #ifdef ENABLE_JOYSTICK
-extern SJoyKey joyKeyAssign[10 *2];
+extern YGS2kSJoyKey joyKeyAssign[10 *2];
 #endif
 #ifdef ENABLE_GAME_CONTROLLER
 extern int32_t playerCons[2];
-extern SConKey conKeyAssign[8 * 2];
+extern YGS2kSConKey conKeyAssign[8 * 2];
 #endif
 #ifdef ENABLE_KEYBOARD
 extern SDL_Scancode keyAssign[10 * 2];

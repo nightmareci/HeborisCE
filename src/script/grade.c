@@ -211,7 +211,7 @@ void GradeUp2(int32_t player, int32_t lines){
 		}
 
 		if(enable_grade[player] == 2){
-			gbai[player] = ((tc[player] / 250) + 1) + (skillbai[player + 1]);//倍率(レベルとSK数で決定)
+			gbai[player] = ((tc[player] / 250) + 1) + (skillbai[player] + 1);//倍率(レベルとSK数で決定)
 		}else if(enable_grade[player] == 3){
 			gbai[player] = ((tc[player] / 250) + 1)*2;//
 		}

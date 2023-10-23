@@ -2,6 +2,9 @@
 
 #include "script/include.h"
 
+extern int32_t lastZoomRate;
+extern int32_t zoomRate;
+
 void ExCreateSurface(int32_t pno,int32_t x,int32_t y);
 void ExTextHeight(int32_t n,int32_t size);
 void ExTextSize(int32_t n,int32_t size);
@@ -21,6 +24,7 @@ void ExBltFastRect(int32_t pno,int32_t dx,int32_t dy,int32_t sx,int32_t sy,int32
 void ExBltFast(int32_t pno,int32_t dx,int32_t dy);
 void ExBltRect(int32_t pno,int32_t dx,int32_t dy,int32_t sx,int32_t sy,int32_t hx,int32_t hy);
 void ExBlt(int32_t pno,int32_t dx,int32_t dy);
+
+int32_t getLastDrawRate();
 int32_t getDrawRate();
 void setDrawRate(int32_t size);
-extern int32_t zoomRate;

@@ -104,49 +104,50 @@ void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t
 	rkfl[temp] = end;
 }
 
-void RankingProc_1(int32_t cat) {
-	int32_t i;
+void RankingProc_1() {
+	if (init) {
+		count = 0;
+		flag = 0;
+		rankingmode = 0;
 
-	count = 0;
-	flag = 0;
-	category = cat;
-	rankingmode = 0;
+		RankingCreate(category, rankingmode);
 
-	RankingCreate(category, rankingmode);
+		init = false;
+	}
 
-	while(!flag) {
-		count++;
-		flag = RankingView();
+	count++;
 
-		spriteTime();
-		if(count > 448) {
-			count = 0;
-			if(rankingmode == 0) {
-				rankingmode++;
-				RankingCreate(category, rankingmode);
-			} else
-				flag = 1;
-		}
+	if(count > 448) {
+		count = 0;
+		if(rankingmode == 0) {
+			rankingmode++;
+			RankingCreate(category, rankingmode);
+		} else
+			flag = 1;
+	}
 
+	if (!flag) flag = RankingView();
+	
+	if (flag) {
+		mainLoopState = lastRankingMainLoopState;
+		resumeAfterRanking = 1;
 	}
 }
 
 void RankingProc2_1(void) {
-	int32_t i;
+	if (init) {
+		count = 0;
+		flag = 0;
+		category = 0;
 
-	count = 0;
-	flag = 0;
-	category = 0;
+		RankingCreate(category, 0);
+		init = false;
+	}
 
-	RankingCreate(category, 0);
-
-	while(!flag) {
+	if (flag == 0) {
 		count++;
-		RankingView();
 
-		spriteTime();
-
-		if(getPushState(0, BTN_A) || getPushState(1, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_B) || quitNow()) {
+		if(getPushState(0, BTN_A) || getPushState(1, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_B)) {
 			flag = -1;
 		}
 
@@ -168,6 +169,11 @@ void RankingProc2_1(void) {
 			RankingCreate(category, rankingmode);
 			count = 0;
 		}
+
+		RankingView();
+	} else {
+		mainLoopState = MAIN_TITLE;
+		init = true;
 	}
 }
 
@@ -189,8 +195,6 @@ void RankingCreate(int32_t cat, int32_t mode) {
 
 int32_t RankingView(void) {
 	int32_t		i, xxx, col;
-
-	YGS2kInput();
 
 	domirror = 0;	// 鏡像を無効化
 

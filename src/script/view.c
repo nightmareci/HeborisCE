@@ -211,7 +211,7 @@ void viewBack(void) {
 	}
 
 	// フェード無効時の背景切り替え
-	// if(!enable_bgfade && bgfadesw) {
+	// if(!enable_bgfade && bgfadesw)
 
 	if(bgfadesw) {
 		if((backno >= bg_max) && ((gameMode[0] == 8) &&

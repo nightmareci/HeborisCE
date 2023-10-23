@@ -234,7 +234,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 		}/* if(move) */
 
 		//	左右に移動
-		move = getPressState(player , 3) - getPressState(player , 2);
+		move = getPressState(player, BTN_RIGHT) - getPressState(player, BTN_LEFT);
 		if(isLRreverse[player]) move = 0 - move;
 		if(move && (statusc[player * 10 + 4])) {
 			/* スムーズ時の表示異常を修正 via C++ Port */

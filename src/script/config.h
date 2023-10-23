@@ -35,6 +35,7 @@ extern int32_t fontsize;
 extern int32_t movesound;
 extern int32_t dispnext;
 #define WAVEBGM_MAX 10
+extern int32_t lastWavebgm;
 extern int32_t wavebgm;
 extern int32_t wavebgm_supported[WAVEBGM_MAX + 1];
 extern int32_t fldtr;
@@ -44,13 +45,14 @@ extern int32_t dispnextkey[2];
 #endif
 extern int32_t digitc[12];
 extern int32_t fontc[12];
-extern int32_t lvup[2];
 extern int32_t rots[2];
 extern int32_t background;
 extern int32_t blockflash;
 extern int32_t fastlrmove;
 extern int32_t sonicdrop;
 extern int32_t nanameallow;
+extern int32_t fourwayfilter;
+extern int32_t fourwaypriorityup;
 extern int32_t smooth;
 extern int32_t nextblock;
 extern int32_t displayIndex;

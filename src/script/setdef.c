@@ -4,8 +4,7 @@ typedef struct {
 	SDL_Scancode keyAssign[10 * 2];
 	int32_t	fontc[12];
 	int32_t	digitc[12];
-	SDL_Scancode	giveupKey;
-	SDL_Scancode	ssKey;
+
 	SDL_Scancode	pausekey[2];
 	SDL_Scancode	dispnextkey[2];
 	int32_t	dtc;
@@ -40,8 +39,11 @@ typedef struct {
 	YGS2kSConKey conKeyAssign[8 * 2];
 	#endif
 
+	int32_t fourwayfilter;
+	int32_t fourwaypriorityup;
+	
 	int32_t rots[2];
-	int32_t lvup[2];
+	int32_t segacheat;
 
 	int32_t		screenMode;
 	int32_t		screenIndex;
@@ -97,8 +99,6 @@ static const SConfig DefaultConfig = {
 	#endif
 	.fontc = {9,1,2,3,8,4,3,6,7},	//題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 	.digitc = {5,5,7,7,5,5,7,7,5},	//数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule
-	.giveupKey = SDL_SCANCODE_Q,		//捨てゲーキー (デフォルトはQ)
-	.ssKey = SDL_SCANCODE_HOME,		//スナップショットキー (デフォルトはHome)
 	.pausekey = { SDL_SCANCODE_F1,SDL_SCANCODE_F2 },	//ポーズキー(デフォルトはF1,F2)		#1.60c7g7
 	.dispnextkey = { SDL_SCANCODE_F3,SDL_SCANCODE_F4 },	//NEXT表示キー(デフォルトはF3,F4)	#1.60c7g7
 	.dtc = 1,				//tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
@@ -201,8 +201,11 @@ static const SConfig DefaultConfig = {
 	},
 	#endif
 
+	.fourwayfilter = 0,
+	.fourwaypriorityup = 0,
+	
 	.rots = {2, 1},
-	.lvup = {1, 1},
+	.segacheat = 0,
 
 	.screenMode =DEFAULT_SCREEN_MODE,
 	.screenIndex =0,
@@ -354,13 +357,13 @@ void SetDefaultConfig()
 	for (i = 0; i < 20; i++) {
 		cfgbuf[14 + i] = DefaultConfig.keyAssign[i];
 	}
-	cfgbuf[38] = DefaultConfig.giveupKey;
-	cfgbuf[39] = DefaultConfig.ssKey;
+
+	cfgbuf[35] = DefaultConfig.fourwayfilter;
+	cfgbuf[37] = DefaultConfig.fourwaypriorityup;
 
 	cfgbuf[40] = DefaultConfig.rots[0];
 	cfgbuf[41] = DefaultConfig.rots[1];
-	//cfgbuf[42] = DefaultConfig.lvup[0];
-	//cfgbuf[43] = DefaultConfig.lvup[1];
+	cfgbuf[42] = DefaultConfig.segacheat;
 	cfgbuf[44] = DefaultConfig.dtc;
 	cfgbuf[45] = DefaultConfig.dispnext;
 	cfgbuf[53] = DefaultConfig.fldtr;

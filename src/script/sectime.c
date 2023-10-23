@@ -231,195 +231,197 @@ int32_t ST_rankingGet(int32_t player,int32_t rmode,int32_t enable_grade){
 
 // セクションタイムランキング表示
 void ST_RankingView() {
-	int32_t i, max, mode, tmp, tmp5, bps, bps1,bps2,s;
+	static int32_t mode;
 
-	mode = 1;
+	if (init) {
+		mode = 1;
+		init = false;
+	}
 
-	while(1) {
-		// 背景描画
-		count++;
-		if(background == 0) {
-			for(i = 0; i <= 6; i++) {
-				ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+	// 背景描画
+	count++;
+	if(background == 0) {
+		for(int32_t i = 0; i <= 6; i++) {
+			ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+		}
+	} else if(background == 1) {
+		for(int32_t i = 0; i <= 6; i++) {
+			ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
+		}
+	} else {
+		ExBltFast(30, 0, 0);
+	}
+	ExBltRect(77, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(77, 320 - (count % 320), 208,  0, 20, count % 320, 8);
+
+	ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
+	ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
+
+	//アドレス指定
+	int32_t tmp5 = 0;
+	if(mode == 0){
+		tmp5 = 0;
+	}else if(mode == 1){
+		tmp5 = 4;
+	}else if(mode == 2){
+		tmp5 = 15;
+	}else if(mode == 3){
+		tmp5 = 30;
+	}else if(mode == 4){
+		tmp5 = 40;
+	}else if(mode == 5){
+		tmp5 = 60;
+	}
+
+	// モード名表示
+	if(mode == 0)
+		printFont(11, 1, "- BEGINNER MODE -", 4);
+	else if(mode == 1)
+		printFont(11, 1, "-  MASTER MODE  -", 1);
+	else if(mode == 2)
+		printFont(9, 1, "-  MASTER GRADE4 MODE  -", 1);
+	else if(mode == 3)
+		printFont(11, 1, "-   20G MODE    -", 7);
+	else if(mode == 4)
+		printFont(11, 1, "-  DEVIL MODE   -", 2);
+	else if(mode == 5)
+		printFont(11, 1, "-  TOMOYO MODE   -", 3);
+
+	if(mode == 5){
+		printFont(1,  3, "STAGE",1);
+		printFont(8,  3, "TIME", 1);
+		printFont(15, 3, "USE", 1);
+		printFont(20,  3, "STAGE",1);
+		printFont(28,  3, "TIME", 1);
+		printFont(35, 3, "USE", 1);
+	}else if(mode < 5){
+		printFont(2,  3, "LEVEL",1);
+		printFont(12,  3, "TIME", 1);
+		printFont(21, 3, "LVSTOP", 1);
+		printFont(28, 3, "USE", 1);
+		printFont(32, 3, "BLOCK/S ", 1);
+	}
+
+	// 表示数を決める
+	int32_t max;
+	if(mode == 0)
+		max = 2;
+	else if( (mode == 1) || (mode == 2)|| (mode == 3) )
+		max = 10;
+	else if(mode == 4)
+		max = 13;
+	else if(mode == 5)
+		max =27;
+
+	// ランキング表示
+	for(int32_t i=0; i<max; i++) {
+		int32_t tmp;
+		if(st_end[i + tmp5] == 1)
+			tmp = 4;
+		else if(st_end[i + tmp5] == 2)
+			tmp = 7;
+		else
+			tmp = 0;
+
+		if(mode != 5){//その他
+			if( ((mode == 1) || (mode == 2)|| (mode == 3)) && (i == 9) ){
+				sprintf(string[0], " 900-999");
+			} else if(mode <= 4){
+				sprintf(string[0], "%4d-%3d", i*100, (i+1)*100);
 			}
-		} else if(background == 1) {
-			for(i = 0; i <= 6; i++) {
-				ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
+
+			printFont(1, 4+i, string[0], tmp);
+
+			//タイム
+			getTime(st_time[i + tmp5]);
+			printFont(11, 4+i, string[0], tmp);
+
+			//レベルストップ
+			getSTime(st_lvstop[i + tmp5]);
+			printFont(21, 4+i, string[0], tmp);
+
+			//USEブロック数
+			sprintf(string[0],"%d",st_others[i + tmp5]);
+			printFont(29, 4+i, string[0], tmp);
+
+			//BPS
+			int32_t bps = (st_others[i + tmp5] * 1000) / (st_time[i + tmp5] / 60);
+			int32_t bps1 = bps / 1000;//整数
+			int32_t bps2 = bps % 1000;//下三桁
+			sprintf(string[0],"%d.",bps1);
+			printFont(32, 4+i, string[0], tmp);
+			if(bps2>=100){
+			sprintf(string[0],"%3d",bps2);
+			printFont(34, 4+i, string[0], tmp);
+			}else if(bps2>=10){
+			sprintf(string[0],"0%2d",bps2);
+			printFont(34, 4+i, string[0], tmp);
+			}else{
+			sprintf(string[0],"00%d",bps2);
+			printFont(34, 4+i, string[0], tmp);
 			}
-		} else {
-			ExBltFast(30, 0, 0);
-		}
-		ExBltRect(77, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
-		ExBltRect(77, 320 - (count % 320), 208,  0, 20, count % 320, 8);
-
-		ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
-		ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
-
-		//アドレス指定
-		if(mode == 0){
-			tmp5 = 0;
-		}else if(mode == 1){
-			tmp5 = 4;
-		}else if(mode == 2){
-			tmp5 = 15;
-		}else if(mode == 3){
-			tmp5 = 30;
-		}else if(mode == 4){
-			tmp5 = 40;
-		}else if(mode == 5){
-			tmp5 = 60;
-		}
-
-		// モード名表示
-		if(mode == 0)
-			printFont(11, 1, "- BEGINNER MODE -", 4);
-		else if(mode == 1)
-			printFont(11, 1, "-  MASTER MODE  -", 1);
-		else if(mode == 2)
-			printFont(9, 1, "-  MASTER GRADE4 MODE  -", 1);
-		else if(mode == 3)
-			printFont(11, 1, "-   20G MODE    -", 7);
-		else if(mode == 4)
-			printFont(11, 1, "-  DEVIL MODE   -", 2);
-		else if(mode == 5)
-			printFont(11, 1, "-  TOMOYO MODE   -", 3);
-
-		if(mode == 5){
-			printFont(1,  3, "STAGE",1);
-			printFont(8,  3, "TIME", 1);
-			printFont(15, 3, "USE", 1);
-			printFont(20,  3, "STAGE",1);
-			printFont(28,  3, "TIME", 1);
-			printFont(35, 3, "USE", 1);
-		}else if(mode < 5){
-			printFont(2,  3, "LEVEL",1);
-			printFont(12,  3, "TIME", 1);
-			printFont(21, 3, "LVSTOP", 1);
-			printFont(28, 3, "USE", 1);
-			printFont(32, 3, "BLOCK/S ", 1);
-		}
-
-		// 表示数を決める
-		if(mode == 0)
-			max = 2;
-		else if( (mode == 1) || (mode == 2)|| (mode == 3) )
-			max = 10;
-		else if(mode == 4)
-			max = 13;
-		else if(mode == 5)
-			max =27;
-
-		// ランキング表示
-		for(i=0; i<max; i++) {
-			if(st_end[i + tmp5] == 1)
-				tmp = 4;
-			else if(st_end[i + tmp5] == 2)
-				tmp = 7;
-			else
-				tmp = 0;
-
-			if(mode != 5){//その他
-				if( ((mode == 1) || (mode == 2)|| (mode == 3)) && (i == 9) ){
-					sprintf(string[0], " 900-999");
-				} else if(mode <= 4){
-					sprintf(string[0], "%4d-%3d", i*100, (i+1)*100);
+			if(mode==2){
+				printFont(2, 28, "GRADE HISTORY", 2);
+				for(int32_t s=0;s<5;s++){
+				sprintf(string[0],"%d",grade_his[s]);
+				printFont(3*s, 29, string[0], tmp);
 				}
-
-				printFont(1, 4+i, string[0], tmp);
+			}
+		}else{ //TOMOYO
+			if(i <= 19){
+				sprintf(string[0], "%d",i+1);
+				printFont(2, 4+i, string[0], tmp);
 
 				//タイム
 				getTime(st_time[i + tmp5]);
-				printFont(11, 4+i, string[0], tmp);
+				printFont(6, 4+i, string[0], tmp);
 
-				//レベルストップ
-				getSTime(st_lvstop[i + tmp5]);
-				printFont(21, 4+i, string[0], tmp);
-
-				//USEブロック数
+				//使用ブロック数
 				sprintf(string[0],"%d",st_others[i + tmp5]);
-				printFont(29, 4+i, string[0], tmp);
+				printFont(16, 4+i, string[0], tmp);
 
-				//BPS
-				bps = (st_others[i + tmp5] * 1000) / (st_time[i + tmp5] / 60);
-				bps1 = bps / 1000;//整数
-				bps2 = bps % 1000;//下三桁
-				sprintf(string[0],"%d.",bps1);
-				printFont(32, 4+i, string[0], tmp);
-				if(bps2>=100){
-				sprintf(string[0],"%3d",bps2);
-				printFont(34, 4+i, string[0], tmp);
-				}else if(bps2>=10){
-				sprintf(string[0],"0%2d",bps2);
-				printFont(34, 4+i, string[0], tmp);
-				}else{
-				sprintf(string[0],"00%d",bps2);
-				printFont(34, 4+i, string[0], tmp);
-				}
-				if(mode==2){
-					printFont(2, 28, "GRADE HISTORY", 2);
-					for(s=0;s<5;s++){
-					sprintf(string[0],"%d",grade_his[s]);
-					printFont(3*s, 29, string[0], tmp);
-					}
-				}
-			}else{ //TOMOYO
-				if(i <= 19){
-					sprintf(string[0], "%d",i+1);
-					printFont(2, 4+i, string[0], tmp);
+			}else if(i > 19){
+				sprintf(string[0], "EX%d",i - 19);
+				printFont(20, i - 16, string[0], tmp);
 
-					//タイム
-					getTime(st_time[i + tmp5]);
-					printFont(6, 4+i, string[0], tmp);
+				//タイム
+				getTime(st_time[i + tmp5]);
+				printFont(26, i - 16, string[0], tmp);
 
-					//使用ブロック数
-					sprintf(string[0],"%d",st_others[i + tmp5]);
-					printFont(16, 4+i, string[0], tmp);
-
-				}else if(i > 19){
-					sprintf(string[0], "EX%d",i - 19);
-					printFont(20, i - 16, string[0], tmp);
-
-					//タイム
-					getTime(st_time[i + tmp5]);
-					printFont(26, i - 16, string[0], tmp);
-
-					//使用ブロック数
-					sprintf(string[0],"%d",st_others[i + tmp5]);
-					printFont(36, i-16, string[0], tmp);
-				}
+				//使用ブロック数
+				sprintf(string[0],"%d",st_others[i + tmp5]);
+				printFont(36, i-16, string[0], tmp);
 			}
 		}
+	}
 
-		// 合計数表示
-		tmp = 0;
-		for(i=0; i<max; i++) {
-			tmp = tmp + st_time[i + tmp5];
-		}
-		printFont(1, 25, "TOTAL TIME", 1);
-		getTime(tmp);
-		printFont(12, 25, string[0], 2);
+	// 合計数表示
+	int32_t tmp = 0;
+	for(int32_t i=0; i<max; i++) {
+		tmp = tmp + st_time[i + tmp5];
+	}
+	printFont(1, 25, "TOTAL TIME", 1);
+	getTime(tmp);
+	printFont(12, 25, string[0], 2);
 
-		YGS2kInput();
+	if(getPushState(0, BTN_A) || getPushState(0, BTN_B)) {
+		// AかBで戻る
+		mainLoopState = MAIN_TITLE;
+		init = true;
+		return;
+	}
 
-		if(getPushState(0, BTN_A) || getPushState(0, BTN_B) || quitNow()) {
-			// AかBで戻る
-			return;
-		}
-
-		if(getPushState(0, BTN_LEFT)) {
-			// ←
-			PlaySE(5);
-			mode--;
-			if(mode < 1) mode = 5;
-		}
-		if(getPushState(0, BTN_RIGHT)) {
-			// →
-			PlaySE(5);
-			mode++;
-			if(mode > 5) mode = 1;
-		}
-
-		spriteTime();//halt
+	if(getPushState(0, BTN_LEFT)) {
+		// ←
+		PlaySE(5);
+		mode--;
+		if(mode < 1) mode = 5;
+	}
+	if(getPushState(0, BTN_RIGHT)) {
+		// →
+		PlaySE(5);
+		mode++;
+		if(mode > 5) mode = 1;
 	}
 }
 

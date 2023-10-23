@@ -1,10 +1,16 @@
 #pragma once
 
+#include "main.h"
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#else
 #include "physfs.h"
 #include "physfsrwops.h"
+#endif
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>

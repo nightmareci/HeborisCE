@@ -19,7 +19,7 @@
 
 int32_t getModeAddRep2(int32_t *tmpBuf);
 int32_t loadReplayData2(int32_t pl,int32_t number);
-void ReplayDetail(int32_t number);
+void ReplayDetail();
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void getTime(int32_t time);
 int32_t getModeAddRep(void);
@@ -30,7 +30,7 @@ void loadMissionData(int32_t number);
 int32_t setstartBGM(int32_t mode,int32_t pl);
 void ReplaySelect(void);
 void ReplaySelectInitial(void);
-int32_t ReplaySelectProc(void);
+void ReplaySelectProc(void);
 int32_t loadReplay_VS(int32_t number);
 int32_t loadReplayData(int32_t pl,int32_t number);
 void saveReplay_VS(int32_t number);

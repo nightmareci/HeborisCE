@@ -108,13 +108,12 @@ void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, 
 }
 
 // ランキング表示
-void RankingProc_2(int32_t cat) {
-	count = 0;
-	flag = 0;
-//	category = cat;
-		if(cat==0){	//ビギナー
-		category = 0;
-		}else if(cat==1){	//マスター
+void RankingProc_2() {
+	if (init) {
+		count = 0;
+		flag = 0;
+
+		if(category==1){	//マスター
 			if(enable_grade[0]==1){	//1
 			category = 1;
 			}else if(enable_grade[0]==2){	//2
@@ -124,25 +123,25 @@ void RankingProc_2(int32_t cat) {
 			}else if(enable_grade[0]==4){	//3
 			category = 4;
 			}
-		}else if(cat==2){
+		}else if(category==2){
 			if(enable_grade[0]<=3){
 			category = 5;
 			}else if(enable_grade[0]==4){	//3
 			category = 6;
 			}
-		}else if(cat==3){
+		}else if(category==3){
 			if(devil_minus[0]==0){
 			category = 7;
 			}else if(devil_minus[0]==1){
 			category = 8;
 			}
-		}else if(cat==6){	//ともよ
+		}else if(category==6){	//ともよ
 			if(tomoyo_opt[0]==0){	//Ti
 			category = 9;
 			}else if(tomoyo_opt[0]==1){	//EH
 			category = 10;
 			}
-		}else if(cat==7){
+		}else if(category==7){
 			if(anothermode[0]==0){
 			category = 11;
 			}else if(anothermode[0]==1){
@@ -150,64 +149,62 @@ void RankingProc_2(int32_t cat) {
 			}else if(anothermode[0]==2){
 			category = 13;
 			}
+		}else{
+			category = 0;	//ビギナー
 		}
-
-
-	while(!flag) {
-		count++;
-
-		YGS2kInput();
-		RankingView2();
-
-		// AかBで戻る
-		if( (count > 448) || getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B) || quitNow() ) {
-			flag = 1;
-		}
-
-		spriteTime();
+		init = false;
 	}
+
+	count++;
+
+	// AかBで戻る
+	if( (count > 448) || getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B) ) {
+		mainLoopState = lastRankingMainLoopState;
+		resumeAfterRanking = 1;
+	}
+
+	RankingView2();
 }
 
 void RankingProc2_2() {
-	category = 0;
-
-	while(1) {
-		YGS2kInput();
-
-		RankingView2();
-		// ←
-		if( getPushState(0, BTN_LEFT) ) {
-			YGS2kPlayWave( 5 );
-			category--;//ゲームモード
-			if(category < 0) category = 14;
-		}
-
-		// →
-		if( getPushState(0, BTN_RIGHT) ) {
-			YGS2kPlayWave( 5 );
-			category++;
-			if(category > 14) category = 0;
-		}
-
-		// ↑
-		if( getPushState(0, BTN_UP) ) {
-			YGS2kPlayWave( 5 );
-			rankingrule = !(rankingrule);//回転ルール
-		}
-
-		// ↓
-		if( getPushState(0, BTN_DOWN) ) {
-			YGS2kPlayWave( 5 );
-			rankingrule  = !(rankingrule);
-		}
-
-		// AかBで戻る
-		if( getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B) || quitNow() ) {
-			return;
-		}
-
-		spriteTime();
+	if (init) {
+		category = 0;
+		init = false;
 	}
+
+	// ←
+	if( getPushState(0, BTN_LEFT) ) {
+		YGS2kPlayWave( 5 );
+		category--;//ゲームモード
+		if(category < 0) category = 14;
+	}
+
+	// →
+	if( getPushState(0, BTN_RIGHT) ) {
+		YGS2kPlayWave( 5 );
+		category++;
+		if(category > 14) category = 0;
+	}
+
+	// ↑
+	if( getPushState(0, BTN_UP) ) {
+		YGS2kPlayWave( 5 );
+		rankingrule = !(rankingrule);//回転ルール
+	}
+
+	// ↓
+	if( getPushState(0, BTN_DOWN) ) {
+		YGS2kPlayWave( 5 );
+		rankingrule  = !(rankingrule);
+	}
+
+	// AかBで戻る
+	if( getPushState(0, BTN_A) || getPushState(0, BTN_B) || getPushState(1, BTN_A) || getPushState(1, BTN_B) ) {
+		mainLoopState = MAIN_TITLE;
+		init = true;
+	}
+
+	RankingView2();
 }
 
 void RankingView2() {//5位まで

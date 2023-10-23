@@ -336,87 +336,88 @@ void changeBGM(int32_t player) {
 //  サウンドテスト#1.60c7c
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void SoundTestProc(void) {
-	int32_t i;
-	int32_t snd;
+	static int32_t snd;
 
-	snd = 0;
+        if (init) {
+                snd = 0;
 
-	StopAllWaves();
-	StopAllBGM();
+                StopAllWaves();
+                StopAllBGM();
 
-	loop {
-		count++;
-		YGS2kInput();
+                init = false;
+        }
 
-		// 背景描画 #1.60c7o5
-		if(background == 0) {
-			for(i = 0; i <= 4; i++) {
-				ExBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
-			}
-		} else if(background == 1) {
-			for(i = 0; i <= 4; i++) {
-				ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
-			}
-		} else {
-			ExBltFast(30, 0, 0);
-		}
+        count++;
 
-		printFont(10, 3, "- SOUND TEST MODE -", 4);
-		if(snd < 50){
-		printFont(17, 6, "SE NO.", 1);
-		sprintf(string[0], "%d", snd);
-		printFont(23, 6, string[0], 2);
-		}
-		else{
-		printFont(16, 6, "BGM NO.", 1);
-		sprintf(string[0], "%d", snd-50);
-		printFont(23, 6, string[0], 2);
-		}
+        // 背景描画 #1.60c7o5
+        if(background == 0) {
+                for(int32_t i = 0; i <= 4; i++) {
+                        ExBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+                }
+        } else if(background == 1) {
+                for(int32_t i = 0; i <= 4; i++) {
+                        ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+                }
+        } else {
+                ExBltFast(30, 0, 0);
+        }
 
-		printFont(10, 9,  "LEFT  : SOUND NO.-1", 0);
-		printFont(10, 11, "RIGHT : SOUND NO.+1", 0);
-		printFont(10, 13, "A     : PLAY",        0);
-		printFont(10, 15, "B     : EXIT",        0);
-		printFont(10, 17, "C     : STOP",        0);
+        printFont(10, 3, "- SOUND TEST MODE -", 4);
+        if(snd < 50){
+                printFont(17, 6, "SE NO.", 1);
+                sprintf(string[0], "%d", snd);
+                printFont(23, 6, string[0], 2);
+        }
+        else{
+                printFont(16, 6, "BGM NO.", 1);
+                sprintf(string[0], "%d", snd-50);
+                printFont(23, 6, string[0], 2);
+        }
 
-		padRepeat(0);
+        printFont(10, 9,  "LEFT  : SOUND NO.-1", 0);
+        printFont(10, 11, "RIGHT : SOUND NO.+1", 0);
+        printFont(10, 13, "A     : PLAY",        0);
+        printFont(10, 15, "B     : EXIT",        0);
+        printFont(10, 17, "C     : STOP",        0);
 
-		// ←
-		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
-		if(getPressState(0, BTN_LEFT)) {
-			snd--;
-			if(snd < 0) snd = 69;
-		}
+        padRepeat(0);
 
-		// →
-		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
-		if(getPressState(0, BTN_RIGHT)) {
-			snd++;
-			if(snd > 69) snd = 0;
-		}
+        // ←
+        if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
+        if(getPressState(0, BTN_LEFT)) {
+                snd--;
+                if(snd < 0) snd = 69;
+        }
 
-		// Aボタンで再生
-		if(getPushState(0, BTN_A)) {
-			StopAllWaves();
-			StopAllBGM();
-			YGS2kPlayWave(snd);
-		}
+        // →
+        if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
+        if(getPressState(0, BTN_RIGHT)) {
+                snd++;
+                if(snd > 69) snd = 0;
+        }
 
-		// Cボタンで停止
-		if(getPushState(0, BTN_C)) {
-			StopAllWaves();
-			StopAllBGM();
-		}
+        // Aボタンで再生
+        if(getPushState(0, BTN_A)) {
+                StopAllWaves();
+                StopAllBGM();
+                YGS2kPlayWave(snd);
+        }
 
-		// Bボタンでタイトル
-		if(getPushState(0, BTN_B)) {
-			StopAllWaves();
-			StopAllBGM();
-			if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
-				if(YGS2kIsPlayMIDI()) YGS2kReplayMIDI();
-			} else if(wavebgm >= 1) YGS2kPlayWave(61);//タイトルBGM
-			return;
-		}
-		spriteTime();
-	}
+        // Cボタンで停止
+        if(getPushState(0, BTN_C)) {
+                StopAllWaves();
+                StopAllBGM();
+        }
+
+        // Bボタンでタイトル
+        if(getPushState(0, BTN_B)) {
+                StopAllWaves();
+                StopAllBGM();
+                if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
+                        if(YGS2kIsPlayMIDI()) YGS2kReplayMIDI();
+                } else if(wavebgm >= 1) YGS2kPlayWave(61);//タイトルBGM
+                
+                mainLoopState = MAIN_TITLE;
+                init = true;
+        }
 }

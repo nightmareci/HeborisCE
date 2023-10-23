@@ -23,6 +23,8 @@ typedef enum YGS2kESoundType
 	YGS_SOUNDTYPE_MUS,
 } YGS2kESoundType;
 
+static bool			s_bInitFast = false;
+
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pScreenRenderTarget = NULL;
@@ -50,7 +52,7 @@ static Uint64			s_uFPSCount;
 static unsigned int		s_uNowFrame;
 static unsigned int		s_uFPSCnting;
 static unsigned int		s_uFPS;
-static unsigned int		s_uNowFPS = 60;
+static unsigned int		s_uNowFPS;
 
 static YGS2kSTextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
 static int32_t			s_iScreenMode;
@@ -112,21 +114,23 @@ bool YGS2kInit()
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
 	s_iOffsetX = 0;		s_iOffsetY = 0;
 
-	YGS2kInputOpen();
+	YGS2kSetFPS(60);
 
-	/* テクスチャ領域の初期化 */
-	memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
+	if (!s_bInitFast) YGS2kInputOpen();
+
+    /* テクスチャ領域の初期化 */
+    if (!s_bInitFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
 
 	/* サウンドの初期化 */
 	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
 	{
-		s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
+		if (!s_bInitFast) s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
 		s_iYGSSoundVolume[i] = 0;
-		s_pYGSSound[i] = NULL;
-		s_pYGSExMusic[i] = NULL;
+		if (!s_bInitFast) s_pYGSSound[i] = NULL;
+		if (!s_bInitFast) s_pYGSExMusic[i] = NULL;
 	}
 
-	s_pYGSMusic = NULL;
+	if (!s_bInitFast) s_pYGSMusic = NULL;
 	s_iYGSMusicVolume = 0;
 
 	/* テキストレイヤーの初期化 */
@@ -136,7 +140,8 @@ bool YGS2kInit()
 		s_TextLayer[i].r = s_TextLayer[i].g = s_TextLayer[i].b = 255;
 		s_TextLayer[i].size = 16;
 	}
-	YGS2kPrivateKanjiFontInitialize();
+
+	if (!s_bInitFast) YGS2kPrivateKanjiFontInitialize();
 
 	s_uTimeCount		= SDL_GetPerformanceCounter();
 	s_uTimeAccumulatorCount	= 0;
@@ -148,6 +153,8 @@ bool YGS2kInit()
 
 	srand((unsigned)time(NULL));
 
+	s_bInitFast = true;
+	
 	return true;
 }
 
@@ -175,6 +182,7 @@ void YGS2kExit()
 		SDL_DestroyRenderer( s_pScreenRenderer );
 		s_pScreenRenderer = NULL;
 	}
+
 	if ( s_pScreenWindow ) {
 		SDL_DestroyWindow( s_pScreenWindow );
 		s_pScreenWindow = NULL;
@@ -264,6 +272,7 @@ static inline void YGS2kFrameDelay() {
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
+
 	const Uint64	frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
 
 	if ( s_pScreenRenderer )
@@ -280,8 +289,7 @@ bool YGS2kHalt()
 			{
 				SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 				SDL_RenderClear( s_pScreenRenderer );
-				const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1) };
-				SDL_RenderCopyF(s_pScreenRenderer, s_pScreenRenderTarget, NULL, &dstrect);
+				SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, NULL, NULL);
 				SDL_RenderPresent(s_pScreenRenderer);
 				SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
 			}
@@ -306,8 +314,7 @@ bool YGS2kHalt()
 				{
 					SDL_SetRenderTarget(s_pScreenRenderer, NULL);
 					SDL_RenderClear( s_pScreenRenderer );
-					const SDL_FRect dstrect = { s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, 320 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1), 240 * (!!(s_iScreenMode & YGS_SCREENMODE_DETAILLEVEL) + 1) };
-					SDL_RenderCopyF(s_pScreenRenderer, s_pScreenRenderTarget, NULL, &dstrect);
+					SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, NULL, NULL);
 					SDL_RenderPresent(s_pScreenRenderer);
 					SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
 				}
@@ -409,19 +416,35 @@ int YGS2kIsPlayMIDI()
 	return Mix_PlayingMusic();
 }
 
+#ifdef __EMSCRIPTEN__
+static EM_BOOL YGS2kEmscriptenResizeCallback(int eventType, const EmscriptenUiEvent* uiEvent, void* userData)
+{
+	if (
+		eventType != EMSCRIPTEN_EVENT_RESIZE ||
+		!s_pScreenWindow
+	) {
+		return false;
+	}
+
+	SDL_SetWindowSize(s_pScreenWindow, uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
+	return true;
+}
+#endif
+
 int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 {
-	Uint32		windowFlags = SDL_WINDOW_HIDDEN;
+	Uint32		windowFlags = SDL_WINDOW_SHOWN;
 	int		windowX, windowY;
 	int		logicalWidth, logicalHeight;
-	
-	if ( s_pScreenWindow )
-	{
-		return 0;
-	}
 
 	/* 画面の設定 */
 	YGS2kEScreenModeFlag windowType = *screenMode & YGS_SCREENMODE_WINDOWTYPE;
+	if (windowType < 0 || windowType >= YGS_SCREENMODE_NUMWINDOWTYPES) {
+		s_pScreenRenderTarget = NULL;
+		s_pScreenRenderer = NULL;
+		s_pScreenWindow = NULL;
+		return 0;
+	}
 	int displayIndex = YGS_SCREENINDEX_DISPLAY_TOVALUE(*screenIndex);
 	int modeIndex = YGS_SCREENINDEX_MODE_TOVALUE(*screenIndex);
 	int numVideoDisplays = SDL_GetNumVideoDisplays();
@@ -435,7 +458,7 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 
 	if (
 			displayIndex >= numVideoDisplays ||
-			(windowType == YGS_SCREENMODE_FULLSCREEN && modeIndex >= numDisplayModes)
+			((windowType == YGS_SCREENMODE_FULLSCREEN || windowType == YGS_SCREENMODE_FULLSCREEN_DESKTOP) && modeIndex >= numDisplayModes)
 	) {
 		*screenMode = DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
@@ -481,42 +504,110 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 	s_iLogicalHeight = logicalHeight;
 
 	/* ウィンドウの作成 */
-	if ( windowType == YGS_SCREENMODE_FULLSCREEN )
+	if (
+		windowType == YGS_SCREENMODE_FULLSCREEN ||
+		windowType == YGS_SCREENMODE_FULLSCREEN_DESKTOP
+	)
 	{
 		SDL_DisplayMode displayMode;
-		if ( SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode) < 0 ) {
+		int status;
+		if ( windowType == YGS_SCREENMODE_FULLSCREEN )
+		{
+			status = SDL_GetDisplayMode(displayIndex, modeIndex, &displayMode);
+		}
+		else
+		{
+			status = SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
+		}
+		if ( status < 0)
+		{
 			*screenMode &= ~YGS_SCREENMODE_WINDOWTYPE;
 			*screenMode |= YGS_SCREENMODE_WINDOW;
 			*screenIndex = 0;
-			s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE);
 			if ( !s_pScreenWindow )
 			{
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-				return 0;
+				s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN |
+				SDL_WINDOW_RESIZABLE
+				);
+				if ( !s_pScreenWindow )
+				{
+					s_pScreenRenderTarget = NULL;
+					s_pScreenRenderer = NULL;
+					s_pScreenWindow = NULL;
+					return 0;
+				}
+			}
+			else
+			{
+				SDL_RestoreWindow(s_pScreenWindow);
+				SDL_SetWindowSize(s_pScreenWindow, logicalWidth, logicalHeight);
+				SDL_SetWindowResizable(s_pScreenWindow, SDL_TRUE);
+				SDL_SetWindowPosition(s_pScreenWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex));
+				if (SDL_SetWindowFullscreen(s_pScreenWindow, 0u) < 0)
+				{
+					SDL_DestroyWindow(s_pScreenWindow);
+					s_pScreenRenderTarget = NULL;
+					s_pScreenRenderer = NULL;
+					s_pScreenWindow = NULL;
+					return 0;
+				}
 			}
 		}
 		else {
-			s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
 			if ( !s_pScreenWindow )
 			{
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-				return 0;
+				s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
+				if ( !s_pScreenWindow )
+				{
+					s_pScreenRenderTarget = NULL;
+					s_pScreenRenderer = NULL;
+					s_pScreenWindow = NULL;
+					return 0;
+				}
+			}
+			else
+			{
+				SDL_SetWindowPosition(s_pScreenWindow, windowX, windowY);
+				int fullscreenError = -1;
+				if ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP)
+				{
+					fullscreenError = SDL_SetWindowFullscreen(s_pScreenWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+				}
+				else if ((windowFlags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN)
+				{
+					fullscreenError = SDL_SetWindowFullscreen(s_pScreenWindow, SDL_WINDOW_FULLSCREEN);
+				}
+				if (fullscreenError < 0)
+				{
+					if (s_pScreenRenderTarget) SDL_DestroyTexture(s_pScreenRenderTarget);
+					SDL_DestroyRenderer(s_pScreenRenderer);
+					SDL_DestroyWindow(s_pScreenWindow);
+
+					s_pScreenRenderTarget = NULL;
+					s_pScreenRenderer = NULL;
+					s_pScreenWindow = NULL;
+
+					return 0;
+				}
 			}
 			if ( SDL_SetWindowDisplayMode(s_pScreenWindow, &displayMode) < 0 )
 			{
+				if (s_pScreenRenderTarget) SDL_DestroyTexture(s_pScreenRenderTarget);
+				if (s_pScreenRenderer) SDL_DestroyRenderer(s_pScreenRenderer);
 				SDL_DestroyWindow(s_pScreenWindow);
+
 				s_pScreenRenderTarget = NULL;
 				s_pScreenRenderer = NULL;
 				s_pScreenWindow = NULL;
+
 				return 0;
 			}
 		}
 	}
-	else if ( windowType == YGS_SCREENMODE_WINDOW )
+	else if (
+		windowType == YGS_SCREENMODE_WINDOW ||
+		windowType == YGS_SCREENMODE_WINDOW_MAXIMIZED
+	)
 	{
 		SDL_DisplayMode displayMode;
 		if ( SDL_GetDesktopDisplayMode(displayIndex, &displayMode) < 0 )
@@ -550,9 +641,47 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 			windowH = logicalHeight;
 			*screenIndex = YGS_SCREENINDEX_TOSETTING(displayIndex, 0);
 		}
-		s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
 		if ( !s_pScreenWindow )
 		{
+			s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
+			if ( !s_pScreenWindow )
+			{
+				s_pScreenRenderTarget = NULL;
+				s_pScreenRenderer = NULL;
+				s_pScreenWindow = NULL;
+				return 0;
+			}
+		}
+		else
+		{
+			if (windowFlags & SDL_WINDOW_MAXIMIZED) {
+				SDL_MaximizeWindow(s_pScreenWindow);
+			}
+			else {
+				SDL_RestoreWindow(s_pScreenWindow);
+			}
+			SDL_SetWindowResizable(s_pScreenWindow, SDL_TRUE);
+			int fullscreenError = SDL_SetWindowFullscreen(s_pScreenWindow, 0);
+			if (fullscreenError < 0)
+			{
+				SDL_DestroyWindow(s_pScreenWindow);
+				s_pScreenRenderTarget = NULL;
+				s_pScreenRenderer = NULL;
+				s_pScreenWindow = NULL;
+				return 0;
+			}
+			SDL_SetWindowSize(s_pScreenWindow, windowW, windowH);
+			SDL_SetWindowPosition(s_pScreenWindow, windowX, windowY);
+		}
+	}
+
+	// fix to allow rendering to the texture.
+	if (!s_pScreenRenderer)
+	{
+		s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, *screenMode & YGS_SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
+		if ( !s_pScreenRenderer )
+		{
+			SDL_DestroyWindow(s_pScreenWindow);
 			s_pScreenRenderTarget = NULL;
 			s_pScreenRenderer = NULL;
 			s_pScreenWindow = NULL;
@@ -561,9 +690,8 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 	}
 	else
 	{
-		s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, logicalWidth, logicalHeight, windowFlags);
-		if ( !s_pScreenWindow )
-		{
+		if (SDL_RenderSetVSync(s_pScreenRenderer, !!(*screenMode & YGS_SCREENMODE_VSYNC))) {
+			SDL_DestroyWindow(s_pScreenWindow);
 			s_pScreenRenderTarget = NULL;
 			s_pScreenRenderer = NULL;
 			s_pScreenWindow = NULL;
@@ -571,25 +699,6 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 		}
 	}
 
-	// fix to allow rendering to the texture.
-	s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, *screenMode & YGS_SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
-	if ( !s_pScreenRenderer )
-	{
-		SDL_DestroyWindow(s_pScreenWindow);
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
-	}
-	if ( SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight) < 0 )
-	{
-		SDL_DestroyRenderer(s_pScreenRenderer);
-		SDL_DestroyWindow(s_pScreenWindow);
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
-	}
 	if ( *screenMode & YGS_SCREENMODE_SCALEMODE )
 	{
 		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE) < 0 )
@@ -603,12 +712,47 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 		}
 		SDL_SetWindowMinimumSize(s_pScreenWindow, logicalWidth, logicalHeight);
 	}
+	else {
+		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_FALSE) < 0 )
+		{
+			SDL_DestroyRenderer(s_pScreenRenderer);
+			SDL_DestroyWindow(s_pScreenWindow);
+			s_pScreenRenderTarget = NULL;
+			s_pScreenRenderer = NULL;
+			s_pScreenWindow = NULL;
+			return 0;
+		}
+		SDL_SetWindowMinimumSize(s_pScreenWindow, 1, 1);
+	}
+
+	if ( SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight) < 0 )
+	{
+		if (s_pScreenRenderTarget)
+		{
+			SDL_DestroyTexture(s_pScreenRenderTarget);
+		}
+		SDL_DestroyRenderer(s_pScreenRenderer);
+		SDL_DestroyWindow(s_pScreenWindow);
+		s_pScreenRenderTarget = NULL;
+		s_pScreenRenderer = NULL;
+		s_pScreenWindow = NULL;
+		return 0;
+	}
+
 	s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
+    // TODO: Figure out how to get render targets in Emscripten working with
+	// SDL_BLENDMODE_BLEND textures. This #ifdef is a workaround for now. It's
+	// probably a bug in the Emscripten SDL 2 port.
+    #ifndef __EMSCRIPTEN__
 	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
 		if ( !(*screenMode & YGS_SCREENMODE_RENDERLEVEL) )
 		{
-			s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
+			if (s_pScreenRenderTarget)
+			{
+				SDL_DestroyTexture(s_pScreenRenderTarget);
+			}
+			s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
 			if ( !s_pScreenRenderTarget )
 			{
 				SDL_DestroyRenderer(s_pScreenRenderer);
@@ -633,12 +777,18 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 				return 0;
 			}
 		}
+		else if ( s_pScreenRenderTarget )
+		{
+			SDL_DestroyTexture(s_pScreenRenderTarget);
+			s_pScreenRenderTarget = NULL;
+		}
 	}
-	else {
+	else
+    #endif
+    {
 		s_pScreenRenderTarget = NULL;
 		*screenMode |= YGS_SCREENMODE_RENDERLEVEL;
 	}
-	SDL_ShowWindow(s_pScreenWindow);
 
 	/* マウスカーソルを消す場合は */
 	if ( SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) ) < 0)
@@ -657,6 +807,33 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 	
 	s_iScreenMode = *screenMode;
 	s_iScreenIndex = *screenIndex;
+
+	#ifdef __EMSCRIPTEN__
+	if ( emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, false, YGS2kEmscriptenResizeCallback) < 0 )
+	{
+		if (s_pScreenRenderTarget)
+		{
+			SDL_DestroyTexture(s_pScreenRenderTarget);
+		}
+		SDL_DestroyRenderer(s_pScreenRenderer);
+		SDL_DestroyWindow(s_pScreenWindow);
+		s_pScreenRenderTarget = NULL;
+		s_pScreenRenderer = NULL;
+		s_pScreenWindow = NULL;
+		return 0;
+	}
+
+	{
+		int width = -1, height = -1;
+		width = EM_ASM_INT({ return window.innerWidth; });
+		height = EM_ASM_INT({ return window.innerHeight; });
+		if ( width > 0 && height > 0 )
+		{
+			SDL_SetWindowSize(s_pScreenWindow, width, height);
+		}
+	}
+	#endif
+
 	return 1;
 }
 
@@ -677,7 +854,7 @@ int YGS2kRenderLevelLowSupported()
 
 void YGS2kSetConstParam ( const char *param, int value )
 {
-
+	// TODO
 }
 
 int YGS2kRand ( int max )
@@ -816,7 +993,7 @@ void YGS2kLoadWave( const char* filename, int no )
 
 	// 拡張子、または番号(50番以降がBGM)によって読み込み方法を変える
 	SDL_RWops *src;
-	src = PHYSFSRWOPS_openRead(filename);
+	src = FSOpenRead(filename);
 	if ( !src ) return;
 	if ( SDL_strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
 	{
@@ -856,7 +1033,7 @@ void YGS2kLoadMIDI( const char* filename )
 	}
 
 	SDL_RWops* src;
-	if (!(src = PHYSFSRWOPS_openRead(filename))) return;
+	if (!(src = FSOpenRead(filename))) return;
 	s_pYGSMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
 	s_iYGSMusicVolume = YGS_VOLUME_MAX;
 }
@@ -866,7 +1043,7 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 	if ( !s_pScreenRenderer )
 	{
 		return;
-	}
+    }
 
 	if ( s_pYGSTexture[plane] )
 	{
@@ -875,8 +1052,9 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 	}
 
 	SDL_RWops* src;
-	if (!(src = PHYSFSRWOPS_openRead(filename))) return;
+	if (!(src = FSOpenRead(filename))) return;
 	if (!(s_pYGSTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE))) return;
+
 	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
@@ -904,33 +1082,38 @@ void YGS2kSetVolumeMIDI(int vol)
 
 void YGS2kSetColorKeyPos(int plane, int x, int y)
 {
-   // sets transparent color to the specified pixel.  Since we use actual alpha channel in our assets, this is a no-oop
+	// TODO
+	// sets transparent color to the specified pixel.  Since we use actual alpha channel in our assets, this is a no-oop
 }
 
 void YGS2kEnableBlendColorKey(int plane, int key)
 {
-   // alows for parial transparency.   again, because we use real transparency, it's a no-op.
+	// TODO
+	// alows for parial transparency.   again, because we use real transparency, it's a no-op.
 }
 
 void YGS2kCreateSurface(int surf, int w, int h)
 {
-    // required for orignal YGS2K engine. not needed at all for SDL2 renderer.
+	// TODO
+	// required for orignal YGS2K engine. not needed at all for SDL2 renderer.
 }
 
 void YGS2kClearSecondary()
 {
-    // used to write the listed color to all pixels of the rendering area.
+	// TODO
+	// used to write the listed color to all pixels of the rendering area.
 	// with SDL2 renderer, we never need to do this, so it's a no-op
 }
 
 void YGS2kSetFillColor(int col)
 {
+	// TODO
 	// sets the color that YGS2kClearSecondary uses to fill the render target. since YGS2kClearSecondary is a no-op, so is this.
 }
 
 void YGS2kLoadFile( const char* filename, void* buf, size_t size )
 {
-	SDL_RWops	*src = PHYSFSRWOPS_openRead(filename);
+	SDL_RWops	*src = FSOpenRead(filename);
 
 	if ( src )
 	{
@@ -948,7 +1131,7 @@ void YGS2kLoadFile( const char* filename, void* buf, size_t size )
 
 void YGS2kReadFile( const char* filename, void* buf, size_t size, size_t offset )
 {
-	SDL_RWops	*src = PHYSFSRWOPS_openRead(filename);
+	SDL_RWops	*src = FSOpenRead(filename);
 
 	if ( src )
 	{
@@ -975,12 +1158,23 @@ void YGS2kSaveFile( const char* filename, void* buf, size_t size )
 		buf2[i] = SWAP32(buf2[i]);
 	}
 
-	SDL_RWops	*dst = PHYSFSRWOPS_openWrite(filename);
+	SDL_RWops	*dst = FSOpenWrite(filename);
 
 	if ( dst )
 	{
 		SDL_RWwrite(dst, buf, size, 1);
-		SDL_RWclose(dst);
+		if ( SDL_RWclose(dst) < 0 )
+		{
+			fprintf(stderr, "Error closing: %s\n", SDL_GetError());
+		}
+		// TODO: Create a custom SDL_RWops object type for Emscripten and put this in that.
+		#ifdef __EMSCRIPTEN__
+		EM_ASM({
+			FS.syncfs(function (err) {
+				assert(!err);
+			});
+		});
+		#endif
 	}
 
 	/* もどす */
@@ -998,12 +1192,20 @@ void YGS2kAppendFile( const char* filename, void* buf, size_t size ) {
 		buf2[i] = SWAP32(buf2[i]);
 	}
 
-	SDL_RWops	*dst = PHYSFSRWOPS_openAppend(filename);
+	SDL_RWops	*dst = FSOpenAppend(filename);
 
 	if ( dst )
 	{
 		SDL_RWwrite(dst, buf, size, 1);
+		// TODO: Create a custom SDL_RWops object type for Emscripten and put this in that.
 		SDL_RWclose(dst);
+		#ifdef __EMSCRIPTEN__
+		EM_ASM({
+			FS.syncfs(function (err) {
+				assert(!err);
+			});
+		});
+		#endif
 	}
 
 	/* もどす */
@@ -1035,16 +1237,19 @@ void YGS2kTextColor ( int layer, int r, int g, int b )
 
 void YGS2kTextBackColorDisable ( int layer )
 {
+	// TODO
 	// turns off the shadow effect for text in the listed layer. since we don't even use said shadow effect to begin with, it's a no-op.
 }
 
 void YGS2kTextSize ( int layer, int size )
 {
+	// TODO
 	s_TextLayer[layer].size = size;
 }
 
 void YGS2kTextHeight ( int layer, int height )
 {
+	// TODO
 	// only used in flexdraw.c for ExTextHeight. But since ExTextHeight is unused, we don't need to bother implementing it. 
 }
 
@@ -1073,7 +1278,7 @@ void YGS2kBltAlways(bool always)
 
 void YGS2kBlt(int pno, int dx, int dy)
 {
-	if ( s_pYGSTexture[pno] == NULL ) { return; }
+    if ( s_pYGSTexture[pno] == NULL ) { return; }
 	int w, h;
 	SDL_QueryTexture(s_pYGSTexture[pno], NULL, NULL, &w, &h);
 	YGS2kBltRect(pno, dx, dy, 0, 0, w, h);
@@ -1084,9 +1289,9 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 	if ( !s_pScreenRenderer )
 	{
 		return;
-	}
+    }
 
-	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
+    if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
 	{
 		SDL_Rect	src = { 0 };
 		SDL_Rect	dst = { 0 };
@@ -1099,8 +1304,8 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		return;
 	}
-	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-	if ( s_pYGSTexture[pno] == NULL ) return;
+    if (pno > 99) return; // give up so check below isn't ran if we use the hack.
+    if ( s_pYGSTexture[pno] == NULL ) return;
 
 	if ( s_pScreenRenderTarget )
 	{
@@ -1140,7 +1345,7 @@ void YGS2kBltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 
 void YGS2kBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-	if ( s_pYGSTexture[pno] == NULL ) return;
+    if ( s_pYGSTexture[pno] == NULL ) return;
 
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	YGS2kBlt(pno, dx, dy);
@@ -1149,7 +1354,7 @@ void YGS2kBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int 
 
 void YGS2kBlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-	if ( s_pYGSTexture[pno] == NULL ) return;
+    if ( s_pYGSTexture[pno] == NULL ) return;
 
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	YGS2kBltRect(pno, dx, dy, sx, sy, hx, hy);
@@ -1184,8 +1389,8 @@ void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		return;
 	}
-	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-	if ( s_pYGSTexture[pno] == NULL ) return;
+    if (pno > 99) return; // give up so check below isn't ran if we use the hack.
+    if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
 	if ( s_pScreenRenderTarget )
@@ -1232,6 +1437,7 @@ void YGS2kBltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, 
 
 void YGS2kBltTrans(int pno, int dx, int dy)
 {
+	// TODO
 	// completely unused.  so we don't need to care what it even does.
 }
 
@@ -1264,8 +1470,8 @@ void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy,
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, SDL_ALPHA_OPAQUE);		return;
 	}
-	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-	if ( s_pYGSTexture[pno] == NULL ) return;
+    if (pno > 99) return; // give up so check below isn't ran if we use the hack.
+    if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
 	if ( s_pScreenRenderTarget )
@@ -1312,19 +1518,25 @@ void YGS2kSetSecondaryOffset(int x, int y)
 
 void YGS2kSetColorKeyRGB(int pno, int r, int g, int b)
 {
+	// TODO
 	//  again because we have actual transparency in our assets, this is a no-op.
 }
 
 void YGS2kSwapToSecondary(int pno)
 {
-     // swaps the rendering target with a layer.  not implemented because no one can figuer out HOW in SDL. 
+	 // swaps the rendering target with a layer.  not implemented because no one can figuer out HOW in SDL.
 	 // Only required for EH-Final gimmick, which currently has a workaround.
 	 // it's also used in the graphic loader, and the backgroud loader, but doesn't seem needed.
 }
 
-void YGS2kSetFPS(int fps)
+void YGS2kSetFPS(unsigned fps)
 {
-	s_uNowFPS = fps;
+	if (fps == 0) {
+		s_uNowFPS = 1u;
+	}
+	else {
+		s_uNowFPS = fps;
+	}
 }
 
 int YGS2kGetFPS()
@@ -1389,7 +1601,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	SDL_RWops *src;
 
 	/* 10pxフォント読み込み */
-	src = PHYSFSRWOPS_openRead("res/font/knj10.bdf");
+	src = FSOpenRead("res/font/knj10.bdf");
 	if ( src )
 	{
 		s_pKanjiFont[0] = Kanji_OpenFont(src, 10);
@@ -1401,7 +1613,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 	if ( s_pKanjiFont[0] )
 	{
-		src = PHYSFSRWOPS_openRead("res/font/5x10a.bdf");
+		src = FSOpenRead("res/font/5x10a.bdf");
 		if ( src ) {
 			Kanji_AddFont(s_pKanjiFont[0], src);
 			SDL_RWclose(src);
@@ -1410,7 +1622,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	else
 	{
 		/* フォントがない場合代替を使う */
-		src = PHYSFSRWOPS_openRead("res/font/knj12.bdf");
+		src = FSOpenRead("res/font/knj12.bdf");
 		if ( src )
 		{
 			s_pKanjiFont[0] = Kanji_OpenFont(src, 10);
@@ -1421,7 +1633,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 		}
 		if ( s_pKanjiFont[0] )
 		{
-			src = PHYSFSRWOPS_openRead("res/font/6x12a.bdf");
+			src = FSOpenRead("res/font/6x12a.bdf");
 			if ( src ) {
 				Kanji_AddFont(s_pKanjiFont[0], src);
 				SDL_RWclose(src);
@@ -1435,7 +1647,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 
 	/* 12pxフォント読み込み */
-	src = PHYSFSRWOPS_openRead("res/font/knj12.bdf");
+	src = FSOpenRead("res/font/knj12.bdf");
 	if ( src ) {
 		s_pKanjiFont[1] = Kanji_OpenFont(src, 12);
 		SDL_RWclose(src);
@@ -1446,7 +1658,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 	if ( s_pKanjiFont[1] )
 	{
-		src = PHYSFSRWOPS_openRead("res/font/6x12a.bdf");
+		src = FSOpenRead("res/font/6x12a.bdf");
 		if ( src )
 		{
 			Kanji_AddFont(s_pKanjiFont[1], src);
@@ -1456,7 +1668,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 
 	/* 16pxフォント読み込み */
-	src = PHYSFSRWOPS_openRead("res/font/knj16.bdf");
+	src = FSOpenRead("res/font/knj16.bdf");
 	if ( src )
 	{
 		s_pKanjiFont[2] = Kanji_OpenFont(src, 16);
@@ -1468,7 +1680,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 	if ( s_pKanjiFont[2] )
 	{
-		src = PHYSFSRWOPS_openRead("res/font/8x16a.bdf");
+		src = FSOpenRead("res/font/8x16a.bdf");
 		if ( src )
 		{
 			Kanji_AddFont(s_pKanjiFont[2], src);

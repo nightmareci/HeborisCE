@@ -18,3 +18,5 @@ typedef enum EButton
 	BTN_PAUSE,
 	NUMBTNS
 } EButton;
+
+#define BTN_ISDIR(btn) ((btn) >= BTN_UP && (btn) <= BTN_RIGHT)

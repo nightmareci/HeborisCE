@@ -1,16 +1,17 @@
 #include "main_sdl/include.h"
 #include "script/config.h"
 #include "gamestart.h"
-#include "physfs.h"
+#include "filesystem.h"
 #ifdef ENABLE_GAME_CONTROLLER
 #include "main_sdl/gamecontroller.h"
 #endif
+#include <stdarg.h>
 
 static int quitLevel = 0;
-static int quit(int status) {
+int quit(int status) {
 	switch ( quitLevel )
 	{
-	case 5: if ( !PHYSFS_deinit() ) fprintf(stderr, "Failed closing access to files: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+	case 5: FSDeInit();
 	case 4: Mix_CloseAudio();
 	case 3: Mix_Quit();
 	case 2: IMG_Quit();
@@ -20,14 +21,23 @@ static int quit(int status) {
 	return status;
 }
 
-int main(int argc, char* argv[])
+#ifdef __EMSCRIPTEN__
+void startup() {
+	emscripten_set_main_loop(mainUpdate, 0, true);
+}
+#endif
+
+int main(int argc, char** argv)
 {
 	/* SDLの初期化 */
 	if ( SDL_Init(
-		SDL_INIT_AUDIO |
-		SDL_INIT_VIDEO |
-		SDL_INIT_JOYSTICK |
-		SDL_INIT_GAMECONTROLLER
+		SDL_INIT_AUDIO | SDL_INIT_VIDEO
+		#ifdef ENABLE_JOYSTICK
+		| SDL_INIT_JOYSTICK
+		#endif
+		#ifdef ENABLE_GAME_CONTROLLER
+		| SDL_INIT_GAMECONTROLLER
+		#endif
 	) < 0 )
 	{
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -85,138 +95,48 @@ int main(int argc, char* argv[])
 
 	Mix_AllocateChannels(100);
 
-	if ( !PHYSFS_init(argv[0]) )
-	{
-		fprintf(stderr, "Couldn't initialize file access: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+	if (!FSInit(argc, argv)) {
 		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 
-	if ( argc > 1 && strlen(argv[1]) > 0 )
-	{
-		char *specifiedPath = argv[1];
-		if ( !PHYSFS_mount(specifiedPath, NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting specified path \"%s\": %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_setWriteDir(specifiedPath) )
-		{
-			fprintf(stderr, "Error setting specified path \"%s\" for writing: %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			return quit(EXIT_FAILURE);
-		}
-	}
-#if FILESYSTEM_TYPE == FILESYSTEM_WORKINGDIR
-	else
-	{
-		if ( !PHYSFS_mount("./", NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting working directory: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_setWriteDir("./") )
-		{
-			fprintf(stderr, "Error setting working directory for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			return quit(EXIT_FAILURE);
-		}
-	}
-#elif FILESYSTEM_TYPE == FILESYSTEM_PORTABLE
-	else
-	{
-		char *basePath = SDL_GetBasePath();
-		if ( !basePath )
-		{
-			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_mount(basePath, NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting base path \"%s\": %s\n", basePath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			free(basePath);
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_setWriteDir(basePath) )
-		{
-			fprintf(stderr, "Error setting working directory for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(basePath);
-			return quit(EXIT_FAILURE);
-		}
-		SDL_free(basePath);
-	}
-#elif FILESYSTEM_TYPE == FILESYSTEM_INSTALLABLE
-	else
-	{
-		char *basePath = SDL_GetBasePath();
-		if ( !basePath )
-		{
-			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
-			return quit(EXIT_FAILURE);
-		}
-		char* fullBasePath;
-		if ( !(fullBasePath = malloc(strlen(basePath) + strlen(BASE_PATH_APPEND) + 1)) )
-		{
-			fprintf(stderr, "Failed creating full base path.\n");
-			SDL_free(basePath);
-			return quit(EXIT_FAILURE);
-		}
-		sprintf(fullBasePath, "%s%s", basePath, BASE_PATH_APPEND);
-		SDL_free(basePath);
-		if ( !PHYSFS_mount(fullBasePath, NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting full base path \"%s\": %s\n", fullBasePath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			free(fullBasePath);
-			return quit(EXIT_FAILURE);
-		}
-		free(fullBasePath);
-
-		char *prefPath = SDL_GetPrefPath(PROJECT_ORG, PROJECT_APP);
-		if ( !prefPath )
-		{
-			fprintf(stderr, "Failed getting pref path: %s\n", SDL_GetError());
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_setWriteDir(prefPath) )
-		{
-			fprintf(stderr, "Error setting pref path \"%s\" for writing: %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(prefPath);
-			return quit(EXIT_FAILURE);
-		}
-		if ( !PHYSFS_mount(prefPath, NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting pref path \"%s\": %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(prefPath);
-			return quit(EXIT_FAILURE);
-		}
-		SDL_free(prefPath);
-	}
-#elif FILESYSTEM_TYPE == FILESYSTEM_PHYSFS
-	else if ( !PHYSFS_setSaneConfig(PROJECT_ORG, PROJECT_APP, "ZIP", 0, 0) )
-	{
-		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return quit(EXIT_FAILURE);
-	}
-#else
-	#error FILESYSTEM_TYPE must be defined as FILESYSTEM_WORKINGDIR, FILESYSTEM_PORTABLE, FILESYSTEM_INSTALLABLE, or FILESYSTEM_PHYSFS.
-#endif
-
-	if (
-		!PHYSFS_mkdir("replay") ||
-		!PHYSFS_mkdir("config/data") ||
-		!PHYSFS_mkdir("config/mission") ||
-		!PHYSFS_mkdir("config/stage")
-	)
-	{
-		fprintf(stderr, "Error creating save data directories: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return quit(EXIT_FAILURE);
-	}
-
 #ifdef ENABLE_GAME_CONTROLLER
-	/* Must be called after PhysicsFS setup, as it reads gamecontrollerdb.txt in the res directory on some platforms. */
+	/* Must be called after FSInit, as it reads gamecontrollerdb.txt in the res directory on some platforms. */
 	OpenGameControllers();
 #endif
 
-	gameMain();
+	const char* directories[] = {
+		"replay",
+		"config",
+		"config/data",
+		"config/mission",
+		"config/stage"
+	};
+	for (size_t i = 0u; i < sizeof(directories) / sizeof(*directories); i++) {
+		if (!FSMkdir(directories[i])) {
+			return EXIT_FAILURE;
+		}
+	}
 
-	/* 辞める */
-	return quit(EXIT_SUCCESS);
+	// This EM_ASM block ensures that the filesystem sync completes fully before
+	// the game starts. The pre-startup sync is required, to ensure the writable
+	// directories have been created before the game starts.
+	#ifdef __EMSCRIPTEN__
+	EM_ASM({
+		FS.syncfs(true, function (err) {
+			assert(!err || err.errno == 10);
+			Module.ccall('startup', 'v', 'v')
+		});
+	});
+
+	emscripten_exit_with_live_runtime();
+
+	#else
+	while (true) {
+		mainUpdate();
+	}
+
+	#endif
+
+	return EXIT_SUCCESS;
 }

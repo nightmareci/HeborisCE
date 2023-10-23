@@ -5,6 +5,9 @@ find_package(sdl2-image REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(PhysFS REQUIRED)
 
+list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
+list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
+
 if(ENABLE_GAME_CONTROLLER)
 	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller.c")
 endif()

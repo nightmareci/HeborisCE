@@ -11,23 +11,33 @@ set(PROJECT_APP "HeborisC7EX SDL2")
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
+set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default, the current platform is the build target. Can be explicitly set to \"Vita\", to force building for PlayStation Vita.")
+
+message(STATUS "Build target: ${BUILD_TARGET}")
+
 # NOTE: All strings containing these must be quoted; if not quoted, and the
 # path(s) happen to contain spaces, the build will fail.
 set(SRC "${CMAKE_SOURCE_DIR}")
 set(BIN "${CMAKE_BINARY_DIR}")
 
-set(EXE ${CMAKE_PROJECT_NAME})
+if(BUILD_TARGET STREQUAL Emscripten)
+	set(EXE index)
+else()
+	set(EXE ${CMAKE_PROJECT_NAME})
+endif()
+
 set(EXE_SOURCES
 	"${SRC}/src/game/gamestart.c"
+	"${SRC}/src/game/init.c"
 	"${SRC}/src/game/speed.c"
 
-	"${SRC}/src/main_sdl/main.c"
 	"${SRC}/src/main_sdl/delay.c"
+	"${SRC}/src/main_sdl/filesystem.c"
+	"${SRC}/src/main_sdl/main.c"
+	"${SRC}/src/main_sdl/SDL_kanji.c"
 	"${SRC}/src/main_sdl/ygs2kfunc.c"
 	"${SRC}/src/main_sdl/ygs2kinput.c"
 	"${SRC}/src/main_sdl/ygs2kprivate.c"
-	"${SRC}/src/main_sdl/SDL_kanji.c"
-	"${SRC}/src/main_sdl/physfsrwops.c"
 
 	"${SRC}/src/script/mission_info.c"
 	"${SRC}/src/script/flexdraw.c"
@@ -63,7 +73,7 @@ set(EXE_HEADERS
 	"${SRC}/src/main_sdl/gamecontroller.h"
 	"${SRC}/src/main_sdl/include.h"
 	"${SRC}/src/main_sdl/main.h"
-	"${SRC}/src/main_sdl/physfsrwops.h"
+	"${SRC}/src/main_sdl/filesystem.h"
 	"${SRC}/src/main_sdl/SDL_kanji.h"
 	"${SRC}/src/main_sdl/ygs2kfunc.h"
 	"${SRC}/src/main_sdl/ygs2kinput.h"
@@ -94,10 +104,6 @@ set(EXE_HEADERS
 	"${SRC}/src/script/world.h"
 )
 
-set(BUILD_TARGET ${CMAKE_SYSTEM_NAME} CACHE STRING "The build target. By default, the current platform is the build target. Can be explicitly set to \"Vita\", to force building for PlayStation Vita.")
-
-message(STATUS "Build target: ${BUILD_TARGET}")
-
 set(DEFAULT_INPUT Desktop CACHE STRING "The default input type; this should be set to the type of input guaranteed available on a platform. Some platforms are hard set to override this option, so this setting can't be changed for them. Can be set to \"Desktop\" or \"Game Controller\" on configurable platforms.")
 
 # Override these defaults for platforms as required. These defaults work on a
@@ -106,6 +112,8 @@ set(DEFAULT_INPUT Desktop CACHE STRING "The default input type; this should be s
 option(ENABLE_KEYBOARD "Enable input via keyboard" TRUE)
 option(ENABLE_GAME_CONTROLLER "Enable input via game controllers (not the same as classic joystick input)" TRUE)
 option(ENABLE_JOYSTICK "Enable input via any joystick device" TRUE)
+option(ALL_VIDEO_SETTINGS "Enable all video settings; disabling this option hides some \"unsafe\" options" TRUE)
+option(ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any time or selecting the \"QUIT\" option in the main menu" TRUE)
 
 set(DEFAULT_JOYKEY_ASSIGN "{ 0 }")
 set(SCREEN_SUBPIXEL_OFFSET "YGS2kGetScreenSubpixelOffset()")
@@ -135,6 +143,8 @@ elseif(${BUILD_TARGET} STREQUAL Darwin)
 elseif(${BUILD_TARGET} STREQUAL Linux)
 	set(PACKAGE_TYPE WorkingDir CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
 	include("${SRC}/cmake/unix/Configure.cmake")
+elseif(${BUILD_TARGET} STREQUAL Emscripten)
+	include("${SRC}/cmake/emscripten/Configure.cmake")
 else()
 	message(FATAL_ERROR "Requested build target \"${BUILD_TARGET}\" is unsupported.")
 endif()

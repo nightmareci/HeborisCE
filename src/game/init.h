@@ -1,6 +1,7 @@
 #pragma once
 
 extern int32_t english;
+extern int32_t last_ranking_type;
 extern int32_t ranking_type;
 extern int32_t exam_ranking;
 extern int32_t disable_wallkick;
@@ -169,3 +170,5 @@ extern int32_t p_bgmload[25];
 extern int32_t debug;
 extern int32_t max_fps_2;
 extern int32_t ccol[7];
+
+void gameInit();

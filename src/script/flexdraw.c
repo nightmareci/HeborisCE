@@ -3,14 +3,20 @@
 
 #include "script/include.h"
 
+int32_t lastZoomRate = 1;
 int32_t zoomRate = 1;			/* 描画倍率 */
 
 void setDrawRate(int32_t size) {
+	lastZoomRate = zoomRate;
 	zoomRate = size;
 }
 
 int32_t getDrawRate() {
 	return zoomRate;
+}
+
+int32_t getLastDrawRate() {
+	return lastZoomRate;
 }
 
 void ExBlt(int32_t pno, int32_t dx, int32_t dy)

@@ -162,7 +162,6 @@ void saveReplayData(int32_t pl, int32_t number) {
 		saveBuf[294] = first_rot[pl];			// 回転方式のセーブ #1.60c
 	else
 		saveBuf[294] = rots[pl];
-	//saveBuf[295] = lvup[pl];
 	saveBuf[296] = ori_opt[pl];		// のセーブ #1.60c6
 	saveBuf[297] = IsBigStart[pl];
 	//saveBuf[298] = startnextc[pl];
@@ -426,7 +425,6 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	sonicdrop = saveBuf[292];
 	fastlrmove = saveBuf[293];
 	rots[pl] = saveBuf[294];			// 回転方式のロード #1.60c
-	//lvup[pl] =saveBuf[295];
 	ori_opt[pl] = saveBuf[296];		// ロード #1.60c6
 	IsBigStart[pl] = saveBuf[297];
 	w_reverse = saveBuf[299];			// ワールド時回転方向逆転#1.60c7f8
@@ -829,20 +827,17 @@ void freeReplayData() {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  リプレイ関連
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-int32_t ReplaySelectProc(void) {
-	int32_t i,bgmmode;
-
-	ReplaySelectInitial();
-	flag = 0;
-
-	while(!flag) {
-		count++;
-		ReplaySelect();
-		if(quitNow()) restoreSetups();
-		spriteTime();
+void ReplaySelectProc(void) {
+	if (init) {
+		ReplaySelectInitial();
+		flag = 0;
+		init = false;
 	}
 
-	if(flag > 0) {
+	if (flag == 0) {
+		count++;
+		ReplaySelect();
+	} else if(flag > 0) {
 		demo = 0;
 		playback = 1;
 		domirror = 1;	// 鏡像を有効
@@ -909,10 +904,14 @@ int32_t ReplaySelectProc(void) {
 			PlaySE(18);//歓声
 			gflash[0]=120;
 		}
-		return (2);
-	} else
-		return (0);
+		mainLoopState = MAIN_GAME_EXECUTE;
+		init = true;
+	} else {
+		mainLoopState = MAIN_TITLE;
+		init = true;
+	}
 }
+
 //BGMを決定
 int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg){
 	if(mode==0){
@@ -1003,8 +1002,6 @@ void ReplaySelectInitial(void) {
 void ReplaySelect(void) {
 	int32_t		i,start,end;
 
-	YGS2kInput();
-
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
@@ -1022,7 +1019,7 @@ void ReplaySelect(void) {
 	}
 
 	// Bで戻る
-	if(getPushState(0, BTN_B) || quitNow()) {
+	if(getPushState(0, BTN_B)) {
 		restoreSetups();
 		if(gameMode[0] == 8) gameMode[0] = 0;
 		if(gameMode[0] == 4){
@@ -1104,355 +1101,356 @@ void ReplaySelect(void) {
 	// Cで詳細
 	if(getPushState(0, BTN_C)) {
 		PlaySE(10);
-		ReplayDetail(csr + 1);
+		mainLoopState = MAIN_REPLAY_DETAIL;
+		init = true;
 	}
 }
 
 // リプレイ詳細 #1.60c7p5
-void ReplayDetail(int32_t number) {
-	int32_t i,k,sptemp[4];
+void ReplayDetail() {
+	if (init) {
+		// リプレイデータ読み込み
+		loadReplayData(0, csr + 1);
+		init = false;
+	}
 
-	// リプレイデータ読み込み
-	loadReplayData(0, number);
-
-	while(1) {
-		// 背景描画
-		count++;
-		if(background == 0) {
-			for(i = 0; i <= 4; i++) {
-				if(getDrawRate() == 1)
-					YGS2kBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
-				else
-					YGS2kBltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
-			}
-		} else if(background == 1) {
-			for(i = 0; i <= 4; i++) {
-				ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
-			}
-		} else {
-			ExBltFast(30, 0, 0);
-		}
-		ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
-		ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);
-
-		ExBltRect(77, count % 320, 0,  0, 28, 320 - (count % 320), 8);
-		ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
-		// 詳細を表示
-		printFont(1, 1,  "REPLAY DETAIL", 5);
-
-		/* 基本情報 */
-		printFont(1, 3,  "NUMBER      :", 0);
-		sprintf(string[0],"%d",number);
-		printFont(15, 3, string[0], 0);
-
-		printFont(1, 4,  "GAME MODE   :", 0);
-		if(gameMode[0] == 0) printFont(15, 4, "BEGINNER", 4);
-		else if(gameMode[0] == 1) printFont(15, 4, "MASTER", 1);
-		else if(gameMode[0] == 2) printFont(15, 4, "20G", 5);
-		else if(gameMode[0] == 3) printFont(15, 4, "DEVIL", 2);
-		else if(gameMode[0] == 4) printFont(15, 4, "VERSUS", 7);
-		else if(gameMode[0] == 6) printFont(15, 4, "TOMOYO", 3);
-		else if(gameMode[0] == 7) printFont(15, 4, "ACE", 0);
-		else if(gameMode[0] == 8) printFont(15, 4, "MISSION", 8);
-		else if(gameMode[0] == 9) printFont(15, 4, "SIMPLE", 9);
-		else if(gameMode[0] == 10) printFont(15, 4, "ORIGINAL", 0);
-		else printFont(15, 4, "INVALID MODE", 0);
-
-		if(death_plus[0]) printFont(21, 4, "DEATH+", 2);
-		if(devil_minus[0]) printFont(28-(7*(!death_plus[0])), 4, "MINUS", 2);
-		if(item_mode[0]) printFont(22, 4, "ITEM MODE", 5);
-		if(hebo_plus[0]) printFont(22, 4, "HEBO+", 9);
-		if(examination[0]) printFont(22, 4, "EXAMINATION", 7);
-		if(gameMode[0] == 7){
-			if(anothermode[0] == 1) printFont(18, 4, " ANOTHER", 0);
-			if(anothermode[0] == 2) printFont(18, 4, " HELL", 2);
-			else printFont(18, 4, " OLD STYLE", 9);
-		}
-		if(gameMode[0] == 0){
-			if(novice_mode[0]) printFont(24, 4, "SCORE TRIAL", 4);
-			else printFont(24, 4, "TAMAYA TRIAL", 4);
-		}
-		if(gameMode[0] == 9){
-			if(relaymode[0]){
-				if(std_opt[0]==0)printFont(24, 4, "ROT.RELAY 40L", 9);
-				else printFont(24, 4, "ROT.RELAY 2MIN", 9);
-			}else{
-				if(std_opt[0]==0) printFont(24, 4, "40LINES", 9);
-				else if(std_opt[0]==1) printFont(24, 4, "ULTRA2MIN", 9);
-				else if(std_opt[0]==2) printFont(24, 4, "SQUARE", 9);
-				else printFont(24, 4, "MARATHON", 4);
-			}
-		}
-
-		if(gameMode[0] != 4){
-			printFont(1, 5,  "ROTATE RULE :", 0);
-			if(rots[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
-			else if(rots[0] == 1) printFont(15, 5, "TI-ARS", fontc[1]);
-			else if(rots[0] == 2) printFont(15, 5, "TI-WORLD", fontc[2]);
-			else if(rots[0] == 3) printFont(15, 5, "ACE-SRS", fontc[3]);
-			else if(rots[0] == 4) printFont(15, 5, "ACE-ARS", fontc[4]);
-			else if(rots[0] == 5) printFont(15, 5, "ACE-ARS2", fontc[5]);
-			else if(rots[0] == 6) printFont(15, 5, "DS-WORLD", fontc[6]);
-			else if(rots[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
-			else if(rots[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
-		}
-
-		/* 設定 */
-		if((gameMode[0] != 4) && (gameMode[0] != 8) && (gameMode[0] != 9)){
-			printFont(1, 6,  "LVUP RULE   :", 0);
-			if((gameMode[0] <= 3) || (gameMode[0] == 6))
-				printFont(15, 6, "BLOCK+ERASE", 0);
+	// 背景描画
+	count++;
+	if(background == 0) {
+		for(int32_t i = 0; i <= 4; i++) {
+			if(getDrawRate() == 1)
+				YGS2kBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				printFont(15, 6, "ERASE LINES", 0);
+				YGS2kBltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+		}
+	} else if(background == 1) {
+		for(int32_t i = 0; i <= 4; i++) {
+			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+		}
+	} else {
+		ExBltFast(30, 0, 0);
+	}
+	ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);
+
+	ExBltRect(77, count % 320, 0,  0, 28, 320 - (count % 320), 8);
+	ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
+	// 詳細を表示
+	printFont(1, 1,  "REPLAY DETAIL", 5);
+
+	/* 基本情報 */
+	printFont(1, 3,  "NUMBER      :", 0);
+	sprintf(string[0],"%d",csr + 1);
+	printFont(15, 3, string[0], 0);
+
+	printFont(1, 4,  "GAME MODE   :", 0);
+	if(gameMode[0] == 0) printFont(15, 4, "BEGINNER", 4);
+	else if(gameMode[0] == 1) printFont(15, 4, "MASTER", 1);
+	else if(gameMode[0] == 2) printFont(15, 4, "20G", 5);
+	else if(gameMode[0] == 3) printFont(15, 4, "DEVIL", 2);
+	else if(gameMode[0] == 4) printFont(15, 4, "VERSUS", 7);
+	else if(gameMode[0] == 6) printFont(15, 4, "TOMOYO", 3);
+	else if(gameMode[0] == 7) printFont(15, 4, "ACE", 0);
+	else if(gameMode[0] == 8) printFont(15, 4, "MISSION", 8);
+	else if(gameMode[0] == 9) printFont(15, 4, "SIMPLE", 9);
+	else if(gameMode[0] == 10) printFont(15, 4, "ORIGINAL", 0);
+	else printFont(15, 4, "INVALID MODE", 0);
+
+	if(death_plus[0]) printFont(21, 4, "DEATH+", 2);
+	if(devil_minus[0]) printFont(28-(7*(!death_plus[0])), 4, "MINUS", 2);
+	if(item_mode[0]) printFont(22, 4, "ITEM MODE", 5);
+	if(hebo_plus[0]) printFont(22, 4, "HEBO+", 9);
+	if(examination[0]) printFont(22, 4, "EXAMINATION", 7);
+	if(gameMode[0] == 7){
+		if(anothermode[0] == 1) printFont(18, 4, " ANOTHER", 0);
+		if(anothermode[0] == 2) printFont(18, 4, " HELL", 2);
+		else printFont(18, 4, " OLD STYLE", 9);
+	}
+	if(gameMode[0] == 0){
+		if(novice_mode[0]) printFont(24, 4, "SCORE TRIAL", 4);
+		else printFont(24, 4, "TAMAYA TRIAL", 4);
+	}
+	if(gameMode[0] == 9){
+		if(relaymode[0]){
+			if(std_opt[0]==0)printFont(24, 4, "ROT.RELAY 40L", 9);
+			else printFont(24, 4, "ROT.RELAY 2MIN", 9);
+		}else{
+			if(std_opt[0]==0) printFont(24, 4, "40LINES", 9);
+			else if(std_opt[0]==1) printFont(24, 4, "ULTRA2MIN", 9);
+			else if(std_opt[0]==2) printFont(24, 4, "SQUARE", 9);
+			else printFont(24, 4, "MARATHON", 4);
+		}
+	}
+
+	if(gameMode[0] != 4){
+		printFont(1, 5,  "ROTATE RULE :", 0);
+		if(rots[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
+		else if(rots[0] == 1) printFont(15, 5, "TI-ARS", fontc[1]);
+		else if(rots[0] == 2) printFont(15, 5, "TI-WORLD", fontc[2]);
+		else if(rots[0] == 3) printFont(15, 5, "ACE-SRS", fontc[3]);
+		else if(rots[0] == 4) printFont(15, 5, "ACE-ARS", fontc[4]);
+		else if(rots[0] == 5) printFont(15, 5, "ACE-ARS2", fontc[5]);
+		else if(rots[0] == 6) printFont(15, 5, "DS-WORLD", fontc[6]);
+		else if(rots[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
+		else if(rots[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
+	}
+
+	/* 設定 */
+	if((gameMode[0] != 4) && (gameMode[0] != 8) && (gameMode[0] != 9)){
+		printFont(1, 6,  "LVUP RULE   :", 0);
+		if((gameMode[0] <= 3) || (gameMode[0] == 6))
+			printFont(15, 6, "BLOCK+ERASE", 0);
+		else
+			printFont(15, 6, "ERASE LINES", 0);
+	}
+
+
+	printFont(1, 8,  "8WAY INPUT  :", 0);
+	if(nanameallow) printFont(15, 8, "e", 0);
+	else printFont(15, 8, "c", 0);
+
+	printFont(1, 9,  "SONIC DROP  :", 0);
+	if(sonicdrop) printFont(15, 9, "e", 0);
+	else printFont(15, 9, "c", 0);
+
+	printFont(1, 10, "INIT LR MOVE:", 0);
+	if(fastlrmove) printFont(15, 10, "e", 0);
+	else printFont(15, 10, "c", 0);
+
+	printFont(1, 11, "WORLDREVERSE:", 0);
+	if(w_reverse) printFont(15, 11, "c", 0);
+	else printFont(15, 11, "e", 0);
+
+	printFont(1, 12, "DOWN RESET  :", 0);
+	if(downtype) printFont(15, 12, "c", 0);
+	else printFont(15, 12, "e", 0);
+
+	printFont(1, 13, "LVUP BONUS  :", 0);
+	if(lvupbonus==2) printFont(15, 13, "AUTO", 0);
+	else if(lvupbonus==1) printFont(15, 13, "e", 0);
+	else printFont(15, 13, "c", 0);
+
+	/* スコア類 */
+	if(gameMode[0] == 6) {
+		// TOMOYO
+		printFont(1, 15, "STAGE       :", 0);
+		sprintf(string[0],"%d",saveBuf[202]);
+		printFont(15, 15, string[0], 0);
+
+		printFont(1, 16, "START STAGE :", 0);
+		sprintf(string[0],"%d",start_stage[0] + 1);
+		printFont(15, 16, string[0], 0);
+
+		printFont(1, 17, "START NEXTC :", 0);
+		sprintf(string[0],"%d",start_nextc[0]);
+		printFont(15, 17, string[0], 0);
+
+		printFont(1, 18, "BORDER      :", 0);
+		if(t_noborder[0]) printFont(15, 18, "e", 0);
+		else printFont(15, 18, "c", 0);
+
+		printFont(1, 19, "TRAINING    :", 0);
+		if(t_training[0] == 2) printFont(15, 19, "B", 0);
+		else if(t_training[0] == 1) printFont(15, 19, "A", 0);
+		else printFont(15, 19, "e", 0);
+
+		printFont(1, 20, "CLEAR STAGE :", 0);
+		sprintf(string[0],"%d",saveBuf[219]);
+		printFont(15, 20, string[0], 0);
+		if(start_stage[0] <= 26){
+			printFont(1, 21, "CLEAR PER.  :", 0);
+			sprintf(string[0],"%d%%",saveBuf[220]);
+			printFont(15, 21, string[0], 0);
 		}
 
+		printFont(1, 22, "RANDOM      :", 0);
+		if(saveBuf[226]) printFont(15, 22, "c", 0);
+		else printFont(15, 22, "e", 0);
 
-		printFont(1, 8,  "8WAY INPUT  :", 0);
-		if(nanameallow) printFont(15, 8, "e", 0);
-		else printFont(15, 8, "c", 0);
+		printFont(1, 23, "ENABLE SPEED:", 0);
+		if((saveBuf[240]) || (repversw == 25)) printFont(15, 23, "c", 0);
+		else printFont(15, 23, "e", 0);
+	} else if(gameMode[0] == 4){
+		//VERSUS
+		printFont(1, 15,  "ROTATE RULE", 0);
+		printFont(3, 16,  "1P :", 0);
+		if(versus_rot[0] == 0) printFont(8, 16, "HEBORIS", fontc[0]);
+		else if(versus_rot[0] == 1) printFont(8, 16, "TI-ARS", fontc[1]);
+		else if(versus_rot[0] == 2) printFont(8, 16, "TI-WORLD", fontc[2]);
+		else if(versus_rot[0] == 3) printFont(8, 16, "ACE-SRS", fontc[3]);
+		else if(versus_rot[0] == 4) printFont(8, 16, "ACE-ARS", fontc[4]);
+		else if(versus_rot[0] == 5) printFont(8, 16, "ACE-ARS2", fontc[5]);
+		else if(versus_rot[0] == 6) printFont(8, 16, "DS-WORLD", fontc[6]);
+		else if(versus_rot[0] == 7) printFont(8, 16, "SRS-X", fontc[7]);
+		else if(versus_rot[0] == 8) printFont(8, 16, "D.R.S", fontc[8]);
+		else printFont(8, 16, "RANDOM", 0);
 
-		printFont(1, 9,  "SONIC DROP  :", 0);
-		if(sonicdrop) printFont(15, 9, "e", 0);
-		else printFont(15, 9, "c", 0);
+		printFont(3, 17,  "2P :", 0);
+		if(versus_rot[1] == 0) printFont(8, 17, "HEBORIS", fontc[0]);
+		else if(versus_rot[1] == 1) printFont(8, 17, "TI-ARS", fontc[1]);
+		else if(versus_rot[1] == 2) printFont(8, 17, "TI-WORLD", fontc[2]);
+		else if(versus_rot[1] == 3) printFont(8, 17, "ACE-SRS", fontc[3]);
+		else if(versus_rot[1] == 4) printFont(8, 17, "ACE-ARS", fontc[4]);
+		else if(versus_rot[1] == 5) printFont(8, 17, "ACE-ARS2", fontc[5]);
+		else if(versus_rot[1] == 6) printFont(8, 17, "DS-WORLD", fontc[6]);
+		else if(versus_rot[1] == 7) printFont(8, 17, "SRS-X", fontc[7]);
+		else if(versus_rot[1] == 8) printFont(8, 17, "D.R.S", fontc[8]);
+		else printFont(8, 17, "RANDOM", 0);
 
-		printFont(1, 10, "INIT LR MOVE:", 0);
-		if(fastlrmove) printFont(15, 10, "e", 0);
-		else printFont(15, 10, "c", 0);
+		printFont(1, 18, "MODE        :", 0);
+		if((disrise) && (noitem)) printFont(15, 18, "CEMENT", 0);
+		else if((!disrise) && (noitem)) printFont(15, 18, "NO ITEM", 0);
+		else if((disrise) && (!noitem)) printFont(15, 18, "ITEM ONLY", 0);
+		else printFont(15, 18, "NORMAL", 0);
 
-		printFont(1, 11, "WORLDREVERSE:", 0);
-		if(w_reverse) printFont(15, 11, "c", 0);
-		else printFont(15, 11, "e", 0);
+		printFont(1, 19, "GOAL TYPE   :", 0);
+		if(vs_goal == 0) sprintf(string[0], "SURVIVAL");
+		else if(wintype == 0) sprintf(string[0], "LV %d", vs_goal);
+		else if(wintype == 1) sprintf(string[0], "%d LINES", vs_goal / 10);
+		else sprintf(string[0], "SURVIVAL");
+		printFont(15, 19, string[0], 0);
 
-		printFont(1, 12, "DOWN RESET  :", 0);
-		if(downtype) printFont(15, 12, "c", 0);
-		else printFont(15, 12, "e", 0);
+		if(!noitem){
+			printFont(1, 21, "ITEMS", 0);
 
-		printFont(1, 13, "LVUP BONUS  :", 0);
-		if(lvupbonus==2) printFont(15, 13, "AUTO", 0);
-		else if(lvupbonus==1) printFont(15, 13, "e", 0);
-		else printFont(15, 13, "c", 0);
+			printFont(3, 22, "1P :", 0);
+			if(use_item[0] == 0) sprintf(string[0], "ALL");
+			else if(use_item[0] == item_num + 1) sprintf(string[0], "FEW");
+			else if(use_item[0] == item_num + 2) sprintf(string[0], "DS");
+			else if(use_item[0] == item_num + 3) sprintf(string[0], "TGM");
+			else sprintf(string[0], "%d", use_item[0]);
+			printFont(8, 22, string[0], 0);
 
-		/* スコア類 */
-		if(gameMode[0] == 6) {
-			// TOMOYO
-			printFont(1, 15, "STAGE       :", 0);
+			printFont(3, 23, "2P :", 0);
+			if(use_item[1] == 0) sprintf(string[0], "ALL");
+			else if(use_item[1] == item_num + 1) sprintf(string[0], "FEW");
+			else if(use_item[1] == item_num + 2) sprintf(string[0], "DS");
+			else if(use_item[1] == item_num + 3) sprintf(string[0], "TGM");
+			else sprintf(string[0], "%d", use_item[1]);
+			printFont(8, 23, string[0], 0);
+		}
+
+	} else if((gameMode[0] != 8)&&(gameMode[0] != 9)) {
+		// NORMAL
+		if(gameMode[0] != 7) {
+			printFont(1, 15, "SCORE       :", 0);
 			sprintf(string[0],"%d",saveBuf[202]);
 			printFont(15, 15, string[0], 0);
-
-			printFont(1, 16, "START STAGE :", 0);
-			sprintf(string[0],"%d",start_stage[0] + 1);
-			printFont(15, 16, string[0], 0);
-
-			printFont(1, 17, "START NEXTC :", 0);
-			sprintf(string[0],"%d",start_nextc[0]);
-			printFont(15, 17, string[0], 0);
-
-			printFont(1, 18, "BORDER      :", 0);
-			if(t_noborder[0]) printFont(15, 18, "e", 0);
-			else printFont(15, 18, "c", 0);
-
-			printFont(1, 19, "TRAINING    :", 0);
-			if(t_training[0] == 2) printFont(15, 19, "B", 0);
-			else if(t_training[0] == 1) printFont(15, 19, "A", 0);
-			else printFont(15, 19, "e", 0);
-
-			printFont(1, 20, "CLEAR STAGE :", 0);
-			sprintf(string[0],"%d",saveBuf[219]);
-			printFont(15, 20, string[0], 0);
-			if(start_stage[0] <= 26){
-				printFont(1, 21, "CLEAR PER.  :", 0);
-				sprintf(string[0],"%d%%",saveBuf[220]);
-				printFont(15, 21, string[0], 0);
-			}
-
-			printFont(1, 22, "RANDOM      :", 0);
-			if(saveBuf[226]) printFont(15, 22, "c", 0);
-			else printFont(15, 22, "e", 0);
-
-			printFont(1, 23, "ENABLE SPEED:", 0);
-			if((saveBuf[240]) || (repversw == 25)) printFont(15, 23, "c", 0);
-			else printFont(15, 23, "e", 0);
-		} else if(gameMode[0] == 4){
-			//VERSUS
-			printFont(1, 15,  "ROTATE RULE", 0);
-			printFont(3, 16,  "1P :", 0);
-			if(versus_rot[0] == 0) printFont(8, 16, "HEBORIS", fontc[0]);
-			else if(versus_rot[0] == 1) printFont(8, 16, "TI-ARS", fontc[1]);
-			else if(versus_rot[0] == 2) printFont(8, 16, "TI-WORLD", fontc[2]);
-			else if(versus_rot[0] == 3) printFont(8, 16, "ACE-SRS", fontc[3]);
-			else if(versus_rot[0] == 4) printFont(8, 16, "ACE-ARS", fontc[4]);
-			else if(versus_rot[0] == 5) printFont(8, 16, "ACE-ARS2", fontc[5]);
-			else if(versus_rot[0] == 6) printFont(8, 16, "DS-WORLD", fontc[6]);
-			else if(versus_rot[0] == 7) printFont(8, 16, "SRS-X", fontc[7]);
-			else if(versus_rot[0] == 8) printFont(8, 16, "D.R.S", fontc[8]);
-			else printFont(8, 16, "RANDOM", 0);
-
-			printFont(3, 17,  "2P :", 0);
-			if(versus_rot[1] == 0) printFont(8, 17, "HEBORIS", fontc[0]);
-			else if(versus_rot[1] == 1) printFont(8, 17, "TI-ARS", fontc[1]);
-			else if(versus_rot[1] == 2) printFont(8, 17, "TI-WORLD", fontc[2]);
-			else if(versus_rot[1] == 3) printFont(8, 17, "ACE-SRS", fontc[3]);
-			else if(versus_rot[1] == 4) printFont(8, 17, "ACE-ARS", fontc[4]);
-			else if(versus_rot[1] == 5) printFont(8, 17, "ACE-ARS2", fontc[5]);
-			else if(versus_rot[1] == 6) printFont(8, 17, "DS-WORLD", fontc[6]);
-			else if(versus_rot[1] == 7) printFont(8, 17, "SRS-X", fontc[7]);
-			else if(versus_rot[1] == 8) printFont(8, 17, "D.R.S", fontc[8]);
-			else printFont(8, 17, "RANDOM", 0);
-
-			printFont(1, 18, "MODE        :", 0);
-			if((disrise) && (noitem)) printFont(15, 18, "CEMENT", 0);
-			else if((!disrise) && (noitem)) printFont(15, 18, "NO ITEM", 0);
-			else if((disrise) && (!noitem)) printFont(15, 18, "ITEM ONLY", 0);
-			else printFont(15, 18, "NORMAL", 0);
-
-			printFont(1, 19, "GOAL TYPE   :", 0);
-			if(vs_goal == 0) sprintf(string[0], "SURVIVAL");
-			else if(wintype == 0) sprintf(string[0], "LV %d", vs_goal);
-			else if(wintype == 1) sprintf(string[0], "%d LINES", vs_goal / 10);
-			else sprintf(string[0], "SURVIVAL");
-			printFont(15, 19, string[0], 0);
-
-			if(!noitem){
-				printFont(1, 21, "ITEMS", 0);
-
-				printFont(3, 22, "1P :", 0);
-				if(use_item[0] == 0) sprintf(string[0], "ALL");
-				else if(use_item[0] == item_num + 1) sprintf(string[0], "FEW");
-				else if(use_item[0] == item_num + 2) sprintf(string[0], "DS");
-				else if(use_item[0] == item_num + 3) sprintf(string[0], "TGM");
-				else sprintf(string[0], "%d", use_item[0]);
-				printFont(8, 22, string[0], 0);
-
-				printFont(3, 23, "2P :", 0);
-				if(use_item[1] == 0) sprintf(string[0], "ALL");
-				else if(use_item[1] == item_num + 1) sprintf(string[0], "FEW");
-				else if(use_item[1] == item_num + 2) sprintf(string[0], "DS");
-				else if(use_item[1] == item_num + 3) sprintf(string[0], "TGM");
-				else sprintf(string[0], "%d", use_item[1]);
-				printFont(8, 23, string[0], 0);
-			}
-
-		} else if((gameMode[0] != 8)&&(gameMode[0] != 9)) {
-			// NORMAL
-			if(gameMode[0] != 7) {
-				printFont(1, 15, "SCORE       :", 0);
-				sprintf(string[0],"%d",saveBuf[202]);
-				printFont(15, 15, string[0], 0);
-			}
-
-			printFont(1, 16, "LEVEL       :", 0);
-			sprintf(string[0],"%d",saveBuf[203]);
-			printFont(15, 16, string[0], 0);
-
-			printFont(1, 17, "LINES       :", 0);
-			sprintf(string[0],"%d",saveBuf[204]);
-			printFont(15, 17, string[0], 0);
-
-			printFont(1, 18, "BIG         :", 0);
-			if(IsBigStart[0]) printFont(15, 18, "c", 0);
-			else printFont(15, 18, "e", 0);
-
-			printFont(1, 19, "START LEVEL :", 0);
-			sprintf(string[0],"%d",start[0]);
-			printFont(15, 19, string[0], 0);
-
-			printFont(1, 20, "RISE ON/OFF :", 0);
-			if((p_shirase[0]) || ((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))) printFont(15, 20, "c", 0);
-			else printFont(15, 20, "e", 0);
-
-			printFont(1, 21, "RISE START  :", 0);
-			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
-				sprintf(string[0],"500");
-			else sprintf(string[0],"%d",level_shirase_start);
-			printFont(15, 21, string[0], 0);
-
-			printFont(1, 22, "RISE LINES  :", 0);
-			sprintf(string[0],"%d",raise_shirase_lines);
-			printFont(15, 22, string[0], 0);
-
-			printFont(1, 23, "RISE INTER  :", 0);
-			if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
-				sprintf(string[0],"RANDOM BY SECTION");
-			else
-				sprintf(string[0],"%d",raise_shirase_interval);
-			printFont(15, 23, string[0], 0);
-		} else if(gameMode[0] == 8){	// MISSION
-			printFont(1, 15, "FILE NAME.  :", 0);
-			if(mission_file == 0)
-				sprintf(string[0], "BIG ROAD");
-			else if(mission_file == 1)
-				sprintf(string[0], "TRICKY ROAD");
-			else if(mission_file == 2)
-				sprintf(string[0], "GRAND ROAD");
-			else if(mission_file == 3)
-				sprintf(string[0], "STAR ROAD");
-			else if(mission_file == 4)
-				sprintf(string[0], "ANOTHER ROAD");
-			else if(mission_file == 5)
-				sprintf(string[0], "DS ROAD");
-			else if(mission_file == 6)
-				sprintf(string[0], "DEVIL ROAD");
-			else if(mission_file <= 16)
-				sprintf(string[0], "TRIAL S%d", mission_file - 6);
-			else if(mission_file == 17)
-				sprintf(string[0], "TRIAL HM");
-			else if(mission_file == 18)
-				sprintf(string[0], "TRIAL GOD");
-			else if(mission_file == 19)
-				sprintf(string[0], "HEBO AMATEUR");
-			else if(mission_file == 20)
-				sprintf(string[0], "HEBO PRO");
-			else if(mission_file == 21)
-				sprintf(string[0], "HEBO BRONZE");
-			else if(mission_file == 22)
-				sprintf(string[0], "HEBO SILVER ");
-			else if(mission_file == 23)
-				sprintf(string[0], "HEBO GOLD");
-			else if(mission_file == 24)
-				sprintf(string[0], "HEBO PLATINUM");
-			else
-				sprintf(string[0], "NO.%02d", mission_file);
-			printFont(15, 15, string[0], 0);
-
-			printFont(1, 16, "START MISSION:", 0);
-			sprintf(string[0],"%d",start_mission);
-			printFont(15, 16, string[0], 0);
-		}else if((gameMode[0] == 9) && (saveBuf[260] < 2)){	// STANDARD
-
-
-			printFont(1, 16, "SPEED     :", 0);
-			sprintf(string[0],"%d",saveBuf[261]);
-			printFont(15, 16, string[0], 0);
-
-			printFont(1, 17, "ARE       :", 0);
-
-			printFont(1, 18, "LINE CLEAR:", 0);
-
-			printFont(1, 19, "LOCK DELAY:", 0);
-
-			printFont(1, 20, "DAS       :", 0);
-			for(k = 0; k <= 3; k++) {
-				sprintf(string[0],"%4d",(saveBuf[262] >> (k * 8)) & 0xff);
-				printFont(15, 17+k, string[0], 0);
-			}
-			sprintf(string[0], "BGM       :%2d", saveBuf[266]);
-			printFont(1, 22, string[0], 0);
 		}
-		/* タイム類 */
-		printFont(1, 25, "TIME        :", 0);
-		getTime(saveBuf[200]);
-		printFont(15, 25, string[0], 0);
 
-		printFont(1, 26, "LENGTH      :", 0);
-		sprintf(string[0], "%zu", saveBuf[4] / sizeof(int16_t) + 1);
-		printFont(15, 26, string[0], 0);
+		printFont(1, 16, "LEVEL       :", 0);
+		sprintf(string[0],"%d",saveBuf[203]);
+		printFont(15, 16, string[0], 0);
 
-		/* バージョン */
-		printFont(1, 28, "VERSION     :", 0);
-		sprintf(string[0],"%d",repversw);
-		printFont(15, 28, string[0], 0);
+		printFont(1, 17, "LINES       :", 0);
+		sprintf(string[0],"%d",saveBuf[204]);
+		printFont(15, 17, string[0], 0);
 
-//		段位
+		printFont(1, 18, "BIG         :", 0);
+		if(IsBigStart[0]) printFont(15, 18, "c", 0);
+		else printFont(15, 18, "e", 0);
+
+		printFont(1, 19, "START LEVEL :", 0);
+		sprintf(string[0],"%d",start[0]);
+		printFont(15, 19, string[0], 0);
+
+		printFont(1, 20, "RISE ON/OFF :", 0);
+		if((p_shirase[0]) || ((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))) printFont(15, 20, "c", 0);
+		else printFont(15, 20, "e", 0);
+
+		printFont(1, 21, "RISE START  :", 0);
+		if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
+			sprintf(string[0],"500");
+		else sprintf(string[0],"%d",level_shirase_start);
+		printFont(15, 21, string[0], 0);
+
+		printFont(1, 22, "RISE LINES  :", 0);
+		sprintf(string[0],"%d",raise_shirase_lines);
+		printFont(15, 22, string[0], 0);
+
+		printFont(1, 23, "RISE INTER  :", 0);
+		if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
+			sprintf(string[0],"RANDOM BY SECTION");
+		else
+			sprintf(string[0],"%d",raise_shirase_interval);
+		printFont(15, 23, string[0], 0);
+	} else if(gameMode[0] == 8){	// MISSION
+		printFont(1, 15, "FILE NAME.  :", 0);
+		if(mission_file == 0)
+			sprintf(string[0], "BIG ROAD");
+		else if(mission_file == 1)
+			sprintf(string[0], "TRICKY ROAD");
+		else if(mission_file == 2)
+			sprintf(string[0], "GRAND ROAD");
+		else if(mission_file == 3)
+			sprintf(string[0], "STAR ROAD");
+		else if(mission_file == 4)
+			sprintf(string[0], "ANOTHER ROAD");
+		else if(mission_file == 5)
+			sprintf(string[0], "DS ROAD");
+		else if(mission_file == 6)
+			sprintf(string[0], "DEVIL ROAD");
+		else if(mission_file <= 16)
+			sprintf(string[0], "TRIAL S%d", mission_file - 6);
+		else if(mission_file == 17)
+			sprintf(string[0], "TRIAL HM");
+		else if(mission_file == 18)
+			sprintf(string[0], "TRIAL GOD");
+		else if(mission_file == 19)
+			sprintf(string[0], "HEBO AMATEUR");
+		else if(mission_file == 20)
+			sprintf(string[0], "HEBO PRO");
+		else if(mission_file == 21)
+			sprintf(string[0], "HEBO BRONZE");
+		else if(mission_file == 22)
+			sprintf(string[0], "HEBO SILVER ");
+		else if(mission_file == 23)
+			sprintf(string[0], "HEBO GOLD");
+		else if(mission_file == 24)
+			sprintf(string[0], "HEBO PLATINUM");
+		else
+			sprintf(string[0], "NO.%02d", mission_file);
+		printFont(15, 15, string[0], 0);
+
+		printFont(1, 16, "START MISSION:", 0);
+		sprintf(string[0],"%d",start_mission);
+		printFont(15, 16, string[0], 0);
+	}else if((gameMode[0] == 9) && (saveBuf[260] < 2)){	// STANDARD
+
+
+		printFont(1, 16, "SPEED     :", 0);
+		sprintf(string[0],"%d",saveBuf[261]);
+		printFont(15, 16, string[0], 0);
+
+		printFont(1, 17, "ARE       :", 0);
+
+		printFont(1, 18, "LINE CLEAR:", 0);
+
+		printFont(1, 19, "LOCK DELAY:", 0);
+
+		printFont(1, 20, "DAS       :", 0);
+		for(int32_t k = 0; k <= 3; k++) {
+			sprintf(string[0],"%4d",(saveBuf[262] >> (k * 8)) & 0xff);
+			printFont(15, 17+k, string[0], 0);
+		}
+		sprintf(string[0], "BGM       :%2d", saveBuf[266]);
+		printFont(1, 22, string[0], 0);
+	}
+	/* タイム類 */
+	printFont(1, 25, "TIME        :", 0);
+	getTime(saveBuf[200]);
+	printFont(15, 25, string[0], 0);
+
+	printFont(1, 26, "LENGTH      :", 0);
+	sprintf(string[0], "%zu", saveBuf[4] / sizeof(int16_t) + 1);
+	printFont(15, 26, string[0], 0);
+
+	/* バージョン */
+	printFont(1, 28, "VERSION     :", 0);
+	sprintf(string[0],"%d",repversw);
+	printFont(15, 28, string[0], 0);
+
+	// 段位
 	if((gameMode[0] <= 2) && (gameMode[0] != 0)){
 		printFont(20, 8, "GRADE TYPE :", 0);
 		if(repversw < 19) printFont(32, 8, "N/A", 0);
@@ -1462,68 +1460,57 @@ void ReplayDetail(int32_t number) {
 		else if(enable_grade[0] == 3) printFont(33, 8, "2", 0);
 		else if(enable_grade[0] == 4) printFont(33, 8, "3", 0);
 	}
-//		T-SPIN
-		printFont(20, 9, "T-SPIN TYPE:", 0);
-		if(repversw < 19) printFont(33, 9, "N/A", 0);
-		else if(tspin_type == 0) printFont(32, 9, "NO CHECK", 0);
-		else if(tspin_type == 1) printFont(33, 9, "SLIDE", 0);
-		else if(tspin_type == 2) printFont(32, 9, "3-CORNER", 0);
-		else if(tspin_type == 3) printFont(33, 9, "BOTH", 0);
+	// T-SPIN
+	printFont(20, 9, "T-SPIN TYPE:", 0);
+	if(repversw < 19) printFont(33, 9, "N/A", 0);
+	else if(tspin_type == 0) printFont(32, 9, "NO CHECK", 0);
+	else if(tspin_type == 1) printFont(33, 9, "SLIDE", 0);
+	else if(tspin_type == 2) printFont(32, 9, "3-CORNER", 0);
+	else if(tspin_type == 3) printFont(33, 9, "BOTH", 0);
 
-		if(gameMode[0] != 4){
-			printFont(20, 10, "NEXT NUM   :", 0);
-			if(repversw < 22) printFont(33, 10, "N/A", 0);
-			else if(((death_plus[0]) || (hebo_plus[0])) && (max_hnext[0] >= 1))
-				printFont(33, 10, "1", 0);
-			else{
-				sprintf(string[0],"%d",max_hnext[0]);
-				printFont(33, 10, string[0], 0);
-			}
-		}
-
-		printFont(20, 11, "FRAME RATE :", 0);
-		if(repversw < 25) printFont(33, 11, "N/A", 0);
+	if(gameMode[0] != 4){
+		printFont(20, 10, "NEXT NUM   :", 0);
+		if(repversw < 22) printFont(33, 10, "N/A", 0);
+		else if(((death_plus[0]) || (hebo_plus[0])) && (max_hnext[0] >= 1))
+			printFont(33, 10, "1", 0);
 		else{
-			sprintf(string[0],"%2dFPS",saveBuf[239]);
-			printFont(33, 11, string[0], 0);
+			sprintf(string[0],"%d",max_hnext[0]);
+			printFont(33, 10, string[0], 0);
 		}
-//		IRS
-		if(disable_irs){
-			printFont(20, 12, "IRS DISABLED", 0);
-		}else{
-			printFont(20, 12, "IRS STYLE  :", 0);
-			if((repversw < 32) || (ace_irs == 0)) printFont(33, 12, "HEBORIS", 0);
-			else if(ace_irs == 1) printFont(33, 12, "ACE", 0);
-			else if(ace_irs == 2) printFont(33, 12, "ACE+", 0);
-		}
-
-//		Back to Back
-		printFont(20, 13, "BACK TO BACK:", 0);
-		if(b2bcheck) printFont(33, 13, "c", 0);
-		else printFont(33, 13, "e", 0);
-
-//		SPAWN Y TYPE
-		printFont(20, 14, "SPAWN Y POS:", 0);
-		if(spawn_y_type) printFont(33, 14, "21/22", 0);
-		else printFont(33, 14, "19/20", 0);
-
-		// AorBで戻る
-		YGS2kInput();
-
-		if(getPushState(0, BTN_A) || getPushState(0, BTN_B)) {
-			PlaySE(5);
-			freeReplayData();
-			return;
-		}
-		if(quitNow()) {
-			restoreSetups();
-			flag = -1;
-			break;
-		}
-		spriteTime();
 	}
-	
-	freeReplayData();
+
+	printFont(20, 11, "FRAME RATE :", 0);
+	if(repversw < 25) printFont(33, 11, "N/A", 0);
+	else{
+		sprintf(string[0],"%2dFPS",saveBuf[239]);
+		printFont(33, 11, string[0], 0);
+	}
+	// IRS
+	if(disable_irs){
+		printFont(20, 12, "IRS DISABLED", 0);
+	}else{
+		printFont(20, 12, "IRS STYLE  :", 0);
+		if((repversw < 32) || (ace_irs == 0)) printFont(33, 12, "HEBORIS", 0);
+		else if(ace_irs == 1) printFont(33, 12, "ACE", 0);
+		else if(ace_irs == 2) printFont(33, 12, "ACE+", 0);
+	}
+
+	// Back to Back
+	printFont(20, 13, "BACK TO BACK:", 0);
+	if(b2bcheck) printFont(33, 13, "c", 0);
+	else printFont(33, 13, "e", 0);
+
+	// SPAWN Y TYPE
+	printFont(20, 14, "SPAWN Y POS:", 0);
+	if(spawn_y_type) printFont(33, 14, "21/22", 0);
+	else printFont(33, 14, "19/20", 0);
+
+	if(flag < 0 || getPushState(0, BTN_A) || getPushState(0, BTN_B)) {
+		PlaySE(5);
+		freeReplayData();
+		mainLoopState = MAIN_REPLAY_SELECT;
+		init = true;
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

@@ -13,7 +13,7 @@ void getModeNameEx(int32_t mode,int32_t number);
 void getRuleNameEx(int32_t rule,int32_t number);
 void RankingProc2_2();
 void RankingView2();
-void RankingProc_2(int32_t cat);
+void RankingProc_2();
 void RankingRegist2(int32_t rmode,int32_t rrots,int32_t rdata,int32_t rtime,int32_t rclear,int32_t rother,const char *rname,int32_t rank,int32_t rac,int32_t rst,int32_t rsk,int32_t rco,int32_t rre);
 int32_t RankingGet(int32_t rmode,int32_t rrots);
 int32_t ARSSRSch(int32_t rots);

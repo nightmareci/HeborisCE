@@ -130,8 +130,8 @@ void enterSoloMode(int32_t player);
 void padRepeat2(int32_t player);
 void doDemoMode(void);
 void testmenu(void);
-void lastProc(void);
-void playerExecute(void);
+bool lastProc(void);
+bool playerExecute(void);
 void restoreSetups();
 
 int32_t getPressState(int32_t player, EButton key);
@@ -159,10 +159,45 @@ void updateEscapeFrames();
 #endif
 int quitNow();
 
-void title(void);
+void title();
 void backupSetups();
-void initialize(void);
-void gameMain(void);
+void initialize();
+void mainUpdate();
+void gameExecute();
+
+typedef enum EMainLoopState {
+	MAIN_INIT,
+	MAIN_RESTART,
+	MAIN_START,
+	MAIN_INIT_TEXT,
+	MAIN_INIT_LOAD_1,
+	MAIN_INIT_LOAD_2,
+	MAIN_INIT_LOAD_3,
+	MAIN_INIT_LOAD_4,
+	MAIN_INIT_END,
+	MAIN_TITLE,
+	MAIN_GAME_EXECUTE,
+	MAIN_REPLAY_SELECT,
+	MAIN_REPLAY_DETAIL,
+	MAIN_RANKING_1,
+	MAIN_RANKING_2,
+	MAIN_RANKING_3,
+	MAIN_RANKING2_1,
+	MAIN_RANKING2_2,
+	MAIN_RANKING2_3,
+	MAIN_ST_RANKING,
+	MAIN_CONFIG,
+	MAIN_SOUND_TEST,
+	MAIN_TEST_MENU,
+	#ifdef ENABLE_KEYBOARD
+	MAIN_RESET_KEYBOARD,
+	#endif
+	MAIN_QUIT
+} EMainLoopState;
+extern bool init;
+extern EMainLoopState mainLoopState;
+extern EMainLoopState lastRankingMainLoopState;
+extern int32_t resumeAfterRanking;
 extern uint32_t SegaSeed[2];
 extern uint32_t BloxeedSeed[2];
 extern uint32_t SavedSeed[2];
@@ -487,7 +522,9 @@ extern int32_t p_stage;
 extern int32_t up_flag[2];
 extern int32_t t_training[2];
 extern int32_t endtime[2];
+extern int32_t lastBGM;
 extern int32_t bgm;
+extern int32_t lastSE;
 extern int32_t se;
 extern int32_t sevolume;
 extern int32_t block_rframe;

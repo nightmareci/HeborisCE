@@ -6,6 +6,7 @@
 /build*
 /pkg/windows/icon.aps
 /out
+/vcpkg_installed
 /CMakeSettings.json
 /.vscode
 /.vs

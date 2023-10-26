@@ -2150,6 +2150,14 @@ void gameExecute() {
 	}
 }
 
+// Pauses the game and stops the game time. This should only be used to change
+// the pause setting during an active game when the player presses the pause
+// button.
+void setGamePause(int32_t player, bool pauseSetting) {
+	pause[player] = pauseSetting;
+	timeOn[player] = !pauseSetting;
+}
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  最後にやる処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -2302,7 +2310,7 @@ bool lastProc(void) {
 			(status[0] == 22) || ((status[0] >= 25) && (status[0] != 30) && (status[0] != 36)) || (debug) ) {
 			if(pause[0]) {
 				// ポーズ解除
-				pause[0] = 0;
+				setGamePause(0, false);
 
 				if(gameMode[0] == 0)
 					YGS2kReplayWave(57);
@@ -2310,7 +2318,7 @@ bool lastProc(void) {
 					YGS2kReplayWave(56);
 			} else {
 				// ポーズ
-				pause[0] = 1;
+				setGamePause(0, true);
 
 				if(gameMode[0] == 0)
 					YGS2kPauseWave(57);
@@ -2319,7 +2327,7 @@ bool lastProc(void) {
 			}
 
 			if(gameMode[0] == 4)
-				pause[1] = !pause[1];
+				setGamePause(1, !pause[1]);
 		}
 	}
 
@@ -2334,7 +2342,7 @@ bool lastProc(void) {
 		if( ((status[1] >= 3) && (status[1] <= 8) && (status[1] != 7)) || (status[1] == 13) || (status[1] == 15) || (debug) ) {
 			if(pause[1]) {
 				// ポーズ解除
-				pause[1] = 0;
+				setGamePause(1, false);
 
 				if(gameMode[1] == 0)
 					YGS2kReplayWave(57);
@@ -2342,7 +2350,7 @@ bool lastProc(void) {
 					YGS2kReplayWave(56);
 			} else {
 				// ポーズ
-				pause[1] = 1;
+				setGamePause(1, true);
 
 				if(gameMode[1] == 0)
 					YGS2kPauseWave(57);
@@ -2351,7 +2359,7 @@ bool lastProc(void) {
 			}
 
 			if(gameMode[1] == 4)
-				pause[0] = !pause[0];
+				setGamePause(0, !pause[0]);
 		}
 	}
 	// TOMOYO E-Heart最終面ギミック C7U0
@@ -2424,8 +2432,8 @@ bool lastProc(void) {
 	#endif
 
 	if(flag || demo) {
-		pause[0] = 0;
-		pause[1] = 0;
+		setGamePause(0, false);
+		setGamePause(1, false);
 	}
 	
 	return false;
@@ -4090,8 +4098,7 @@ bool playerExecute(void) {
 	}
 	#endif
 	// 長押しされたら実行
-	if( (gameMode[0] == 6) && (timeOn[0]) && (ltime[0] > 1800) && (stage[0] < 19 )
-	 && (stage_skip_mpc[0] >= 60)) {
+	if( (gameMode[0] == 6) && (timeOn[0]) && (ltime[0] > 1800) && (stage[0] < 19 ) && (stage_skip_mpc[0] >= 60)) {
 		replay_save[0] = 0;				// リプレイ記録不可 #1.60c7n8
 		ltime[0] = ltime[0] - 1800;		// -30秒
 		timeOn[0] = 0;					// タイマーストップ
@@ -4103,8 +4110,7 @@ bool playerExecute(void) {
 		stage_skip_mpc[0] = 0;
 	}
 
-	for(i = 0; i < 1 +maxPlay; i++) {
-
+	for(i = 0; i < 1 + maxPlay; i++) {
 		if(pause[i]) {
 			if( (count % 40 < 20) && (!debug) ){
 				printFont(17 + 24 * i - 12 * maxPlay, 15, "PAUSE!", fontc[rots[i]]);
@@ -4217,7 +4223,7 @@ bool playerExecute(void) {
 				if(!isfever[1-i])
 					YGS2kStopWave(65);
 				if((!YGS2kIsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
-					YGS2kPlayWave(50 +bgmlv);
+					YGS2kPlayWave(50+bgmlv);
 				isfever[i] = 0;
 				item_timer[i] = 0;
 			} else if( (isUDreverse[i]) && (item_timer[i] <= 0) ) {

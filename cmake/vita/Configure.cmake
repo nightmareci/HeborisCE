@@ -13,7 +13,7 @@ if(ENABLE_GAME_CONTROLLER)
 	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller_vita.c")
 endif()
 
-add_executable(${EXE} ${EXE_SOURCES})
+add_executable(${EXE} ${EXE_SOURCES} ${EXE_HEADERS})
 
 set(ENABLE_KEYBOARD FALSE)
 set(ENABLE_JOYSTICK FALSE)

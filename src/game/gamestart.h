@@ -164,6 +164,7 @@ void backupSetups();
 void initialize();
 void mainUpdate();
 void gameExecute();
+void setGamePause(int32_t player, bool pauseSetting);
 
 typedef enum EMainLoopState {
 	MAIN_INIT,

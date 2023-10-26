@@ -13,7 +13,7 @@ if(ENABLE_GAME_CONTROLLER)
 endif()
 
 add_executable(${EXE}
-	${EXE_SOURCES}
+	${EXE_SOURCES} ${EXE_HEADERS}
 	"${SRC}/pkg/windows/icon.rc"
 )
 target_link_libraries(${EXE}

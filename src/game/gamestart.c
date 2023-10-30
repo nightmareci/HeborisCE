@@ -1471,6 +1471,7 @@ void mainUpdate() {
 		init = true;
 
 		YGS2kInit();
+		if (YGS2kIsPlayMusic()) YGS2kStopMusic();
 		gameInit();
 
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -1520,23 +1521,14 @@ void mainUpdate() {
 		}
 		for(int i = 0; i < 50; i++) se_play[i] = 0;
 
-		if(bgm) {
-			if (bgm != lastBGM) {
-				for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
-				{
-					bgmload[i] = 1;
-				}
-
-				if (wavebgm != lastWavebgm) {
-					if(wavebgm != 0) {
-						loadBGM();	// #1.60c7s6
-					} else {
-						YGS2kLoadMIDI("res/bgm/bgm.mid");
-						YGS2kPlayMIDI();
-						YGS2kSetVolumeMIDI(bgmvolume);
-					}
-				}
+		if(bgm && (bgm != lastBGM || wavebgm != lastWavebgm)) {
+			for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
+			{
+				bgmload[i] = 1;
 			}
+
+			loadBGM();	// #1.60c7s6
+			lastWavebgm = wavebgm;
 		}
 		else {
 			memset(bgmload, 0, sizeof(bgmload));
@@ -1736,13 +1728,7 @@ void mainUpdate() {
 
 		// BGM読み込み
 		if(bgm) {
-			if(wavebgm != 0) {
-				loadBGM();	// #1.60c7s6
-			} else {
-				YGS2kLoadMIDI("res/bgm/bgm.mid");
-				YGS2kPlayMIDI();
-				YGS2kSetVolumeMIDI(bgmvolume);
-			}
+			loadBGM();	// #1.60c7s6
 		}
 		else {
 			memset(bgmload, 0, sizeof(bgmload));
@@ -1853,23 +1839,14 @@ void mainUpdate() {
 		}
 		for(int i = 0; i < 50; i++) se_play[i] = 0;
 
-		if(bgm) {
-			if (bgm != lastBGM) {
-				for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
-				{
-					bgmload[i] = 1;
-				}
-
-				if (wavebgm != lastWavebgm) {
-					if(wavebgm != 0) {
-						loadBGM();	// #1.60c7s6
-					} else {
-						YGS2kLoadMIDI("res/bgm/bgm.mid");
-						YGS2kPlayMIDI();
-						YGS2kSetVolumeMIDI(bgmvolume);
-					}
-				}
+		if(bgm && (bgm != lastBGM || wavebgm != lastWavebgm)) {
+			for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
+			{
+				bgmload[i] = 1;
 			}
+
+			loadBGM();	// #1.60c7s6
+			lastWavebgm = wavebgm;
 		}
 		else {
 			memset(bgmload, 0, sizeof(bgmload));
@@ -2470,13 +2447,18 @@ void title(void) {
 		// 画面位置修正 via C++ Port
 		YGS2kSetSecondaryOffset(0,0);
 
-		if(wavebgm == 0) {	// No.30→38に変更 #1.60c7i2
-			if(!YGS2kIsPlayMIDI()) {
-				YGS2kPlayMIDI();
-				YGS2kSetVolumeMIDI(bgmvolume);
+		if (bgm) {
+			if(wavebgm & WAVEBGM_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+				if(!YGS2kIsPlayMusic()) {
+					YGS2kPlayMusic();
+					YGS2kSetVolumeMusic(bgmvolume);
+				}
+			} else {
+				if(!YGS2kIsPlayWave(61)) YGS2kPlayWave(61);
 			}
-		} else if(wavebgm >= 1) {
-			if(!YGS2kIsPlayWave(61)) YGS2kPlayWave(61);
+		}
+		else {
+			if (YGS2kIsPlayMusic()) YGS2kStopMusic();
 		}
 
 		init = false;
@@ -5006,7 +4988,7 @@ void statJoinwait(int32_t player) {
 		StopSE(8);
 		PlaySE(10);
 
-		if(wavebgm >= 1) {
+		if(!(wavebgm & WAVEBGM_SIMPLE)) {
 			if(!YGS2kIsPlayWave(62)) YGS2kPlayWave(62);
 		}
 		playerInitial(player);
@@ -5086,12 +5068,14 @@ void statSelectMode(int32_t player) {
 	padRepeat(player);
 	padRepeat2(player);
 
-	// モードセレクト曲
-	if( (!YGS2kIsPlayMIDI()) && (wavebgm == 0) ) {
-		YGS2kPlayMIDI();
-		YGS2kSetVolumeMIDI(bgmvolume);
-	} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(62)) && (wavebgm >= 1) ) {
-		YGS2kPlayWave(62);
+	// モードセレクト曲 || Mode select song
+	if (bgm) {
+		if( (!YGS2kIsPlayMusic()) && (wavebgm & WAVEBGM_SIMPLE) ) {
+			YGS2kPlayMusic();
+			YGS2kSetVolumeMusic(bgmvolume);
+		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(62)) && !(wavebgm & WAVEBGM_SIMPLE) ) {
+			YGS2kPlayWave(62);
+		}
 	}
 
 
@@ -6602,7 +6586,7 @@ void statReady(int32_t player) {
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 			else FP_bonus[player] = 10800;
 		}
-		if(wavebgm >= 1) {
+		if(!(wavebgm & WAVEBGM_SIMPLE)) {
 			if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
 		}
 
@@ -6786,7 +6770,7 @@ void statReady(int32_t player) {
 				onRecord[player] = 1;				// リプレイ記録開始
 			}
 		} else {
-			if(wavebgm >= 1) {
+			if(!(wavebgm & WAVEBGM_SIMPLE)) {
 				if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
 			}
 
@@ -7430,10 +7414,10 @@ void setGameOver(int32_t player) {
 	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-			if(wavebgm) {
-				StopAllBGM();
+			if(wavebgm & WAVEBGM_SIMPLE) {
+				if(YGS2kIsPlayMusic()) YGS2kStopMusic();
 			} else {
-				if(YGS2kIsPlayMIDI()) YGS2kStopMIDI();
+				StopAllBGM();
 			}
 		}
 	}
@@ -10070,10 +10054,10 @@ void statGameOver(int32_t player) {
 			//YGS2kPlayWave(8);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-				if(wavebgm) {
-					StopAllBGM();
+				if(wavebgm & WAVEBGM_SIMPLE) {
+					if(YGS2kIsPlayMusic()) YGS2kStopMusic();
 				} else {
-					if(YGS2kIsPlayMIDI()) YGS2kStopMIDI();
+					StopAllBGM();
 				}
 				statusc[player * 10 + 2] = 0;
 			} else {
@@ -11676,7 +11660,7 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && (wavebgm > 0) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & WAVEBGM_SIMPLE) )
 		YGS2kPlayWave(63);
 /*
 	// リプレイセーブ#1.60c7i5
@@ -12271,7 +12255,7 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && (wavebgm > 0) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & WAVEBGM_SIMPLE) )
 		YGS2kPlayWave(63);
 
 	//警告音が鳴っていたら止める
@@ -13188,7 +13172,7 @@ void winner() {
 	int32_t		player, i, j, block, win, obj, c, kosa;
 
 	// BGM停止
-	if(wavebgm > 0) StopAllBGM();
+	if(!(wavebgm & WAVEBGM_SIMPLE)) StopAllBGM();
 	// 残り時間が少ない時の効果音も停止
 	StopSE(32);
 
@@ -16831,13 +16815,7 @@ void initialize(void) {
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
 
-		if(wavebgm != 0) {
-			loadBGM();	// #1.60c7s6
-		} else {
-			YGS2kLoadMIDI("res/bgm/bgm.mid");
-			YGS2kPlayMIDI();
-			YGS2kSetVolumeMIDI(bgmvolume);
-		}
+		loadBGM();	// #1.60c7s6
 	}
 	else {
 		memset(bgmload, 0, sizeof(bgmload));
@@ -17353,56 +17331,74 @@ void loadWaves(void) {
 	//YGS2kSetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
+/* 拡張子を決める || Decide which extension to use based on the format */
+void strcatExt(char* str, EWaveBGM fmt) {
+	switch (fmt & WAVEBGM_FORMAT) {
+		case WAVEBGM_MID: YGS2kStrCat(str, ".mid"); break;   // MIDI
+		default:
+		case WAVEBGM_WAV: YGS2kStrCat(str, ".wav"); break;   // WAV
+		case WAVEBGM_OGG: YGS2kStrCat(str, ".ogg"); break;   // OGG
+		case WAVEBGM_MP3: YGS2kStrCat(str, ".mp3"); break;   // MP3
+		case WAVEBGM_FLAC: YGS2kStrCat(str, ".flac"); break; // FLAC
+		case WAVEBGM_OPUS: YGS2kStrCat(str, ".opus"); break; // OPUS
+		case WAVEBGM_MOD: YGS2kStrCat(str, ".mod"); break;   // Protracker
+		case WAVEBGM_IT: YGS2kStrCat(str, ".it"); break;     // Impulse Tracker
+		case WAVEBGM_XM: YGS2kStrCat(str, ".xm"); break;     // FastTracker II
+		case WAVEBGM_S3M: YGS2kStrCat(str, ".s3m"); break;   // Scream Tracker
+	}
+}
+
 /* BGM読み込み */
 void loadBGM(void) {
-	int32_t i;
-
-	YGS2kStrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
-	YGS2kStrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
-	YGS2kStrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
-	YGS2kStrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
-	YGS2kStrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
-	YGS2kStrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
-	YGS2kStrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
-	YGS2kStrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
-	YGS2kStrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
-	YGS2kStrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
-	YGS2kStrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
-	YGS2kStrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
-	YGS2kStrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
-	YGS2kStrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
-	YGS2kStrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
-	YGS2kStrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
-	YGS2kStrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
-	YGS2kStrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
-	YGS2kStrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
-	YGS2kStrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
-
-	for(i = 0; i <= 19; i++) {
-		if(bgmload[i]){
-			// 拡張子を決める
-			if(wavebgm == 1) YGS2kStrCat(string[i], ".mid");			// MIDI
-			else if(wavebgm == 3) YGS2kStrCat(string[i], ".ogg");		// OGG
-			else if(wavebgm == 4) YGS2kStrCat(string[i], ".mp3");		// MP3
-			else if(wavebgm == 5) YGS2kStrCat(string[i], ".flac");		// FLAC
-			else if(wavebgm == 6) YGS2kStrCat(string[i], ".opus");		// OPUS
-			else if(wavebgm == 7) YGS2kStrCat(string[i], ".mod");		// MOD (.mod)
-			else if(wavebgm == 8) YGS2kStrCat(string[i], ".it");			// MOD (.it)
-			else if(wavebgm == 9) YGS2kStrCat(string[i], ".xm");			// MOD (.xm)
-			else if(wavebgm >= WAVEBGM_MAX) YGS2kStrCat(string[i], ".s3m");	// MOD (.s3m)
-			else YGS2kStrCat(string[i], ".wav");					// WAV
-
-			// 読み込み
-			YGS2kLoadWave(string[i], 50 + i);
-
-			// ループON
-			YGS2kSetLoopModeWave(50 + i, 1);
-		}
+	if (wavebgm & WAVEBGM_SIMPLE) {
+		YGS2kStrCpy(string[0], "res/bgm/bgm");
+		strcatExt(string[0], wavebgm);
+		YGS2kLoadMusic(string[0]);
+		YGS2kPlayMusic();
+		YGS2kSetVolumeMusic(bgmvolume);
 	}
+	else {
+		if(YGS2kIsPlayMusic()) YGS2kStopMusic();
 
-	// エンディング曲ループか
-	//YGS2kSetLoopModeWave(56, 0);
-	//YGS2kSetLoopModeWave(57, 0);
+		int32_t i;
+
+		YGS2kStrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
+		YGS2kStrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
+		YGS2kStrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
+		YGS2kStrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
+		YGS2kStrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
+		YGS2kStrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
+		YGS2kStrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
+		YGS2kStrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
+		YGS2kStrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
+		YGS2kStrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
+		YGS2kStrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
+		YGS2kStrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
+		YGS2kStrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
+		YGS2kStrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
+		YGS2kStrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
+		YGS2kStrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
+		YGS2kStrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
+		YGS2kStrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
+		YGS2kStrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
+		YGS2kStrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
+
+		for(i = 0; i <= 19; i++) {
+			if(bgmload[i]){
+				strcatExt(string[i], wavebgm);
+
+				// 読み込み
+				YGS2kLoadWave(string[i], 50 + i);
+
+				// ループON
+				YGS2kSetLoopModeWave(50 + i, 1);
+			}
+		}
+
+		// エンディング曲ループか
+		//YGS2kSetLoopModeWave(56, 0);
+		//YGS2kSetLoopModeWave(57, 0);
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

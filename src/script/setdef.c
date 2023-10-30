@@ -107,9 +107,9 @@ static const SConfig DefaultConfig = {
 	.movesound = 1,			//ブロック移動音の選択	0:OFF 1:ON
 	.se = 1,
 	.sevolume = 100,
-	.bgm = 0,
+	.bgm = 1,
 	.bgmvolume = 100,
-	.wavebgm = 0,			//BGMの選択
+	.wavebgm = WAVEBGM_SIMPLE | WAVEBGM_OGG,	//BGMの選択
 	.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
 
 	.breakeffect = 1,	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
@@ -373,7 +373,7 @@ void SetDefaultConfig()
 	cfgbuf[61] =
 		(( DefaultConfig.se & 0x1) << 23) | (( DefaultConfig.sevolume & 0x7F) << 16) |
 		((DefaultConfig.bgm & 0x1) << 15) | ((DefaultConfig.bgmvolume & 0x7F) <<  8) |
-		(DefaultConfig.wavebgm & 0xFF);
+		(DefaultConfig.wavebgm & WAVEBGM_MASK);
 	cfgbuf[62] = DefaultConfig.breakeffect;
 	cfgbuf[63] = DefaultConfig.showcombo;
 	cfgbuf[64] = DefaultConfig.top_frame;

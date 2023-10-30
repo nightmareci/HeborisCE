@@ -1087,8 +1087,8 @@ void PracticeDeath() {
 	timeOn[0] = 0;
 	onRecord[0] = 0;
 
-	// BGM停止#1.60c6.2d
-	if(wavebgm >= 1)
+	// BGM停止 || Stop BGM#1.60c6.2d
+	if(!(wavebgm & WAVEBGM_SIMPLE))
 		StopAllBGM();
 
 	// 条件の単純化に合わせ、すべてのブロックの透明を無効化する #1.60c7k6
@@ -1128,8 +1128,8 @@ void PracticeOver(void) {
 	// FPSを戻す #1.60c7n7
 	if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
 
-	// BGM停止#1.60c6.2d
-	if(wavebgm >= 1)
+	// BGM停止 || Stop BGM#1.60c6.2d
+	if(!(wavebgm & WAVEBGM_SIMPLE))
 		StopAllBGM();
 
 	// 1Pの結果を2Pにコピー (from hogeパッチ)

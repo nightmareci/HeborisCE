@@ -29,7 +29,7 @@ void startup() {
 
 int main(int argc, char** argv)
 {
-	/* SDLの初期化 */
+	/* SDLの初期化 || SDL initialization */
 	if ( SDL_Init(
 		SDL_INIT_AUDIO | SDL_INIT_VIDEO
 		#ifdef ENABLE_JOYSTICK
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 	quitLevel++;
 	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
 
-	/* 画像の初期化 */
+	/* 画像の初期化 || Image initialization */
 	if ( IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
 	{
 		fprintf(stderr, "Couldn't initialize image support: %s\n", IMG_GetError());
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 	}
 	quitLevel++;
 
-	/* サウンドの初期化 */
+	/* サウンドの初期化 || Sound initialization */
 	const int formatsInitialized = Mix_Init(
 		MIX_INIT_MID |
 		MIX_INIT_OGG |
@@ -69,22 +69,21 @@ int main(int argc, char** argv)
 	);
 	if ( !formatsInitialized )
 	{
-		fprintf(stderr, "Couldn't initialize audio mixing: %s\n", Mix_GetError());
+		fprintf(stderr, "Couldn't initialize sound support: %s\n", Mix_GetError());
 		return quit(EXIT_FAILURE);
 	}
 	quitLevel++;
 
-	wavebgm_supported[0] = !!(formatsInitialized & MIX_INIT_MID);
-	wavebgm_supported[1] = !!(formatsInitialized & MIX_INIT_MID);
-	wavebgm_supported[2] = 1; // WAVEはいつでも利用可能
-	wavebgm_supported[3] = !!(formatsInitialized & MIX_INIT_OGG);
-	wavebgm_supported[4] = !!(formatsInitialized & MIX_INIT_MP3);
-	wavebgm_supported[5] = !!(formatsInitialized & MIX_INIT_FLAC);
-	wavebgm_supported[6] = !!(formatsInitialized & MIX_INIT_OPUS);
-	wavebgm_supported[7] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[8] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[9] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[10] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[WAVEBGM_MID] = !!(formatsInitialized & MIX_INIT_MID);
+	wavebgm_supported[WAVEBGM_WAV] = 1; // WAVEはいつでも利用可能 || WAVE is always supported
+	wavebgm_supported[WAVEBGM_OGG] = !!(formatsInitialized & MIX_INIT_OGG);
+	wavebgm_supported[WAVEBGM_MP3] = !!(formatsInitialized & MIX_INIT_MP3);
+	wavebgm_supported[WAVEBGM_FLAC] = !!(formatsInitialized & MIX_INIT_FLAC);
+	wavebgm_supported[WAVEBGM_OPUS] = !!(formatsInitialized & MIX_INIT_OPUS);
+	wavebgm_supported[WAVEBGM_MOD] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[WAVEBGM_IT] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[WAVEBGM_XM] = !!(formatsInitialized & MIX_INIT_MOD);
+	wavebgm_supported[WAVEBGM_S3M] = !!(formatsInitialized & MIX_INIT_MOD);
 
 	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
 	{

@@ -9,8 +9,6 @@ bool YGS2kInit();
 void YGS2kExit();
 bool YGS2kHalt();
 
-int YGS2kIsPlayMIDI();
-
 typedef enum YGS2kEScreenModeFlag {
 	YGS_SCREENMODE_WINDOW,
 	YGS_SCREENMODE_WINDOW_MAXIMIZED,
@@ -45,22 +43,25 @@ int YGS2kRenderLevelLowSupported();
 void YGS2kSetConstParam ( const char *param, int value );
 
 int YGS2kRand ( int max );
-void YGS2kPauseMIDI();
-void YGS2kReplayMIDI();
-void YGS2kPlayWave ( int no );
-void YGS2kReplayWave ( int no );
-void YGS2kStopWave ( int no );
-void YGS2kPauseWave ( int no );
-void YGS2kSetVolumeWave( int no, int vol );
-int YGS2kIsPlayWave( int no );
-void YGS2kLoadWave( const char* filename, int no );
-void YGS2kSetLoopModeWave( int no, int mode );
 
-void YGS2kLoadMIDI( const char* filename );
+void YGS2kPlayWave ( int num );
+void YGS2kReplayWave ( int num );
+void YGS2kStopWave ( int num );
+void YGS2kPauseWave ( int num );
+void YGS2kSetVolumeWave( int num, int vol );
+int YGS2kIsPlayWave( int num );
+void YGS2kLoadWave( const char* filename, int num );
+void YGS2kSetLoopModeWave( int num, int mode );
+
+int YGS2kIsPlayMusic();
+void YGS2kPauseMusic();
+void YGS2kReplayMusic();
+void YGS2kLoadMusic( const char* filename );
+void YGS2kPlayMusic();
+void YGS2kStopMusic();
+void YGS2kSetVolumeMusic(int vol);
+
 void YGS2kLoadBitmap( const char* filename, int plane, int value );
-void YGS2kPlayMIDI();
-void YGS2kStopMIDI();
-void YGS2kSetVolumeMIDI(int vol);
 void YGS2kSetColorKeyPos(int plane, int x, int y);
 void YGS2kEnableBlendColorKey(int plane, int key);
 void YGS2kCreateSurface(int surf, int w, int h);

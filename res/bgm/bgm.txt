@@ -4,13 +4,17 @@ bgm.txt - background music
 The background music plays at the following places. wav files are not strictly
 required. The available formats to use are: 
 
-	wav, MIDI (simple), ogg, mp3, mod (.mod, .xm, .it)
+	.mid, .wav, .ogg, .mp3, .flac, .opus, .mod, .it, .xm, .s3m
 
 Be aware that all the music must then be of the same format, and the format used
 should be specified in the in-game setting menu, under the 'BGM' option.
 
 The following tracks are used in-game.
 
+When BGM TYPE is SIMPLE
+bgm.wav			: Only track used
+
+When BGM TYPE is MULTITRACK
 bgm01.wav 		: MASTER mode Lv0-499
 bgm02.wav 		: MASTER mode Lv500-699
 bgm03.wav 		: MASTER mode Lv700... And DEVIL mode Lv0-499

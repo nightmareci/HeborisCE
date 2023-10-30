@@ -21,9 +21,9 @@ int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キ�
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-int32_t lastWavebgm;
-int32_t wavebgm;		// BGMの選択	0:標準midi 1:Wave 2:mp3
-int32_t wavebgm_supported[WAVEBGM_MAX + 1];
+EWaveBGM lastWavebgm = 0;
+EWaveBGM wavebgm;		// BGMの選択 || BGM selection
+int32_t wavebgm_supported[WAVEBGM_MAXFORMAT];
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
 int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON
@@ -113,7 +113,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[61] =
 		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 		((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-		(wavebgm & 0xFF);
+		(wavebgm & WAVEBGM_MASK);
 	cfgbuf[62] = breakeffect;
 	cfgbuf[63] = showcombo;
 	cfgbuf[64] = top_frame;
@@ -271,10 +271,9 @@ int32_t LoadConfig(void) {
 	bgm = (cfgbuf[61] >> 15) & 0x1;
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
-	lastWavebgm = wavebgm;
-	wavebgm = cfgbuf[61] & 0xFF;
-	if (wavebgm < 0 || wavebgm > WAVEBGM_MAX || !wavebgm_supported[wavebgm]) {
-		wavebgm = 2; // WAVE
+	wavebgm = cfgbuf[61] & WAVEBGM_MASK;
+	if ((wavebgm & WAVEBGM_FORMAT) < 1 || (wavebgm & WAVEBGM_FORMAT) >= WAVEBGM_MAXFORMAT || !wavebgm_supported[wavebgm & WAVEBGM_FORMAT]) {
+		wavebgm = WAVEBGM_WAV;
 	}
 
 	breakeffect = cfgbuf[62];
@@ -422,7 +421,7 @@ void ConfigMenu() {
 		ncfg[44] =
 			(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 			((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-			(wavebgm & 0xFF);
+			(wavebgm & WAVEBGM_MASK);
 		ncfg[45] = dispnext;
 		ncfg[46] = movesound;
 		ncfg[47] = fontsize;
@@ -810,7 +809,7 @@ void ConfigMenu() {
 				sevolume = (ncfg[44] >> 16) & 0x7F;
 				bgm = (ncfg[44] >> 15) & 0x1;
 				bgmvolume = (ncfg[44] >> 8) & 0x7F;
-				wavebgm = ncfg[44] & 0xFF;
+				wavebgm = ncfg[44] & WAVEBGM_MASK;
 				dispnext = ncfg[45];
 				movesound = ncfg[46];
 				fontsize = ncfg[47];
@@ -886,7 +885,7 @@ void ConfigMenu() {
 			if(getPushState(pl, BTN_B)) {	// B:設定破棄&タイトル画面に戻る
 				SetVolumeAllWaves(sevolume);
 				SetVolumeAllBGM(bgmvolume);
-				YGS2kSetVolumeMIDI(bgmvolume);
+				YGS2kSetVolumeMusic(bgmvolume);
 				status[0] = -1;
 			}
 		}
@@ -2080,6 +2079,7 @@ void ConfigMenu() {
 			MENU_AV_PLAY_BGM,
 			MENU_AV_BGM_VOLUME,
 			MENU_AV_BGM_TYPE,
+			MENU_AV_BGM_FORMAT,
 			MENU_AV_MAX
 		};
 		printFont(2, 3, "<< INPUT <<	   >> GAME P.1 >>", digitc[rots[0]] * (statusc[0] == MENU_AV_CHANGE_MENU) * (count % 2));
@@ -2102,6 +2102,7 @@ void ConfigMenu() {
 		printFont(2, 5 + MENU_AV_PLAY_BGM, "PLAY BGM    :", (statusc[0] == MENU_AV_PLAY_BGM) * fontc[rots[0]]);
 		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_VOLUME, "BGM VOLUME  :", (statusc[0] == MENU_AV_BGM_VOLUME) * fontc[rots[0]]);
 		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_TYPE, "BGM TYPE    :", (statusc[0] == MENU_AV_BGM_TYPE) * fontc[rots[0]]);
+		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_FORMAT, "BGM FORMAT  :", (statusc[0] == MENU_AV_BGM_FORMAT) * fontc[rots[0]]);
 
 		printGameButton(2, 28, BTN_A, 0, true);
 		printGameButton(4, 28, BTN_B, 0, true);
@@ -2204,19 +2205,25 @@ void ConfigMenu() {
             sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
 			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (count % 2) * digitc[rots[0]]);
 
-			int32_t wavebgm_temp = ncfg[44] & 0xFF;
-			if(wavebgm_temp == 0) sprintf(string[0], "MIDI (SIMPLE)");
-			else if(wavebgm_temp == 1) sprintf(string[0], "MIDI");
-			else if(wavebgm_temp == 2) sprintf(string[0], "WAVE");
-			else if(wavebgm_temp == 3) sprintf(string[0], "OGG");
-			else if(wavebgm_temp == 4) sprintf(string[0], "MP3");
-			else if(wavebgm_temp == 5) sprintf(string[0], "FLAC");
-			else if(wavebgm_temp == 6) sprintf(string[0], "OPUS");
-			else if(wavebgm_temp == 7) sprintf(string[0], "MOD (.MOD)");
-			else if(wavebgm_temp == 8) sprintf(string[0], "MOD (.IT)");
-			else if(wavebgm_temp == 9) sprintf(string[0], "MOD (.XM)");
-			else if(wavebgm_temp == 10) sprintf(string[0], "MOD (.S3M)");
+			int32_t wavebgm_temp = ncfg[44] & WAVEBGM_MASK;
+			if(wavebgm_temp & WAVEBGM_SIMPLE) sprintf(string[0], "SIMPLE");
+			else sprintf(string[0], "MULTITRACK");
 			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (count % 2) * digitc[rots[0]]);
+
+			switch(wavebgm_temp & WAVEBGM_FORMAT) {
+				case WAVEBGM_MID: sprintf(string[0], "MIDI"); break;
+				case WAVEBGM_WAV: sprintf(string[0], "WAVE"); break;
+				case WAVEBGM_OGG: sprintf(string[0], "OGG"); break;
+				case WAVEBGM_MP3: sprintf(string[0], "MP3"); break;
+				case WAVEBGM_FLAC: sprintf(string[0], "FLAC"); break;
+				case WAVEBGM_OPUS: sprintf(string[0], "OPUS"); break;
+				case WAVEBGM_MOD: sprintf(string[0], "MOD"); break;
+				case WAVEBGM_IT: sprintf(string[0], "IT"); break;
+				case WAVEBGM_XM: sprintf(string[0], "XM"); break;
+				case WAVEBGM_S3M: sprintf(string[0], "S3M"); break;
+				default: sprintf(string[0], "???"); break;
+			}
+			printFont(15, 5 + MENU_AV_BGM_FORMAT, string[0], (statusc[0] == MENU_AV_BGM_FORMAT) * (count % 2) * digitc[rots[0]]);
 		}
 
 		for(pl = 0; pl < 2; pl++) {
@@ -2234,10 +2241,10 @@ void ConfigMenu() {
 					nextChoice +=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
 #endif
 					nextChoice +=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
-					nextChoice += (nextChoice == MENU_AV_BGM_VOLUME && !((ncfg[44] >> 15) & 0x1)) * 2;
+					nextChoice += (nextChoice == MENU_AV_BGM_VOLUME && !((ncfg[44] >> 15) & 0x1)) * 3;
 				}
 				else if(m < 0) {
-					nextChoice -= (nextChoice == MENU_AV_BGM_TYPE && !((ncfg[44] >> 15) & 0x1)) * 2;
+					nextChoice -= (nextChoice == MENU_AV_BGM_FORMAT && !((ncfg[44] >> 15) & 0x1)) * 3;
 					nextChoice -=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
 #ifdef ALL_VIDEO_SETTINGS
 					nextChoice -=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
@@ -2248,77 +2255,48 @@ void ConfigMenu() {
 			} else {
 				padRepeat(pl);
 				m = getPushState(pl, BTN_RIGHT) - getPushState(pl, BTN_LEFT);
-				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SOUND) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE)) {
+				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SOUND) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE || statusc[0] == MENU_AV_BGM_FORMAT)) {
 					if(statusc[0] == MENU_AV_CHANGE_MENU) {
 						PlaySE(3);
 						status[0] = (status[0] + m + pages) % pages;
 						statusc[0] = MENU_AV_CHANGE_MENU;
 						statusc[1] = 1;
 					}
-#define NEED_RESET
 #ifdef ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_WINDOW_TYPE) {
 						ncfg[1] &= ~YGS_SCREENINDEX_MODE;
                         ncfg[0] = (ncfg[0] & ~YGS_SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) + YGS_SCREENMODE_NUMWINDOWTYPES + m)) % YGS_SCREENMODE_NUMWINDOWTYPES);
-#ifdef NEED_RESET
                         need_reset = 1;
                         if (screenMode != ncfg[0]) {
                             need_setScreen = 1;
                         }
-#else
-                        need_setScreen = 1;
-                        status[0] = -1;
-#endif
 					}
 					else if(statusc[0] == MENU_AV_SCREEN_INDEX) {
 						ncfg[1] &= ~YGS_SCREENINDEX_MODE;
 						ncfg[1] = (ncfg[1] & ~YGS_SCREENINDEX_DISPLAY) | YGS_SCREENINDEX_DISPLAY_TOSETTING((YGS_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]) + YGS2kGetMaxDisplayIndex() + m) % YGS2kGetMaxDisplayIndex());	// displayIndex
-#ifdef NEED_RESET
                         need_reset = 1;
                         need_setScreen = 1;
-#else
-                        status[0] = -1;
-#endif
                     }
 #endif
 					else if(statusc[0] == MENU_AV_DETAIL_LEVEL) {
 						if((ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) == YGS_SCREENMODE_WINDOW) ncfg[1] &= ~YGS_SCREENINDEX_MODE;
                         ncfg[0] ^= YGS_SCREENMODE_DETAILLEVEL;
-#ifdef NEED_RESET
                         need_reset = 1;
-#else
-                        need_reset = !!((ncfg[0] & YGS_SCREENMODE_DETAILLEVEL) ^ (screenMode & YGS_SCREENMODE_DETAILLEVEL));
-#endif
                     }
 #ifdef ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_VSYNC) {
 						ncfg[0] ^= YGS_SCREENMODE_VSYNC;
-#ifdef NEED_RESET
                         need_reset = 1;
-#else
-                        need_setScreen = 1;
-                        status[0] = -1;
-#endif
                     }
 #endif
 					else if(statusc[0] == MENU_AV_SCALE_MODE) {
 						ncfg[0] ^= YGS_SCREENMODE_SCALEMODE;
-#ifdef NEED_RESET
                         need_reset = 1;
-#else
-                        need_setScreen = 1;
-                        status[0] = -1;
-#endif
                     }
 #ifdef ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_RENDER_LEVEL) {
 						ncfg[0] ^= YGS_SCREENMODE_RENDERLEVEL;
-#ifdef NEED_RESET
                         need_reset = 1;
-#else
-                        need_setScreen = 1;
-                        status[0] = -1;
-#endif
                     }
 					else if(statusc[0] == MENU_AV_SCREEN_MODE) {
 						switch(ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) {
@@ -2367,19 +2345,24 @@ void ConfigMenu() {
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
-						// wavebgm
-						int32_t wavebgm_temp = ncfg[44] & 0xFF;
+						// wavebgm type
+						ncfg[44] ^= WAVEBGM_SIMPLE;
+						need_reset = 1;
+					}
+					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
+						// wavebgm format
+						int32_t wavebgm_format = (ncfg[44] & WAVEBGM_FORMAT) - 1;
 						do {
-							wavebgm_temp += m;
-							if (m < 0 && wavebgm_temp < 0) {
-								wavebgm_temp = WAVEBGM_MAX;
+							wavebgm_format += m;
+							if (m < 0 && wavebgm_format < 0) {
+								wavebgm_format = WAVEBGM_MAXFORMAT - 2;
 							}
-							else if (m > 0 && wavebgm_temp > WAVEBGM_MAX) {
-								wavebgm_temp = 0;
+							else if (m > 0 && wavebgm_format > WAVEBGM_MAXFORMAT - 2) {
+								wavebgm_format = 0;
 							}
-						} while (!wavebgm_supported[wavebgm_temp]);
+						} while (!wavebgm_supported[wavebgm_format + 1]);
 
-						ncfg[44] = (ncfg[44] & ~0xFF) | (wavebgm_temp & 0xFF);
+						ncfg[44] = (ncfg[44] & ~WAVEBGM_FORMAT) | (wavebgm_format + 1);
 						need_reset = 1;
 					}
 				}
@@ -2407,7 +2390,7 @@ void ConfigMenu() {
 
 						ncfg[44] = (ncfg[44] & ~(0x7F << 8)) | ((bgmvolume_temp & 0x7F) << 8);
 						SetVolumeAllBGM(bgmvolume_temp);
-						YGS2kSetVolumeMIDI(bgmvolume_temp);
+						YGS2kSetVolumeMusic(bgmvolume_temp);
 					}
 				}
 			}

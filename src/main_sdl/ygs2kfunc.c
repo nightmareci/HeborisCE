@@ -411,7 +411,7 @@ static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, in
 	YGS2kPrivateKanjiDraw(x, y, r, g, b, size, text);
 }
 
-int YGS2kIsPlayMIDI()
+int YGS2kIsPlayMusic()
 {
 	return Mix_PlayingMusic();
 }
@@ -862,32 +862,32 @@ int YGS2kRand ( int max )
 	return rand() % max;
 }
 
-void YGS2kPauseMIDI()
+void YGS2kPauseMusic()
 {
 	Mix_PauseMusic();
 }
 
-void YGS2kReplayMIDI()
+void YGS2kReplayMusic()
 {
 	Mix_ResumeMusic();
 }
 
-void YGS2kPlayWave ( int no )
+void YGS2kPlayWave ( int num )
 {
-	switch ( s_iYGSSoundType[no] )
+	switch ( s_iYGSSoundType[num] )
 	{
 	case YGS_SOUNDTYPE_WAV:
-		Mix_PlayChannel(no, s_pYGSSound[no], 0);
-		Mix_Volume(no, s_iYGSSoundVolume[no]);
+		Mix_PlayChannel(num, s_pYGSSound[num], 0);
+		Mix_Volume(num, s_iYGSSoundVolume[num]);
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-		if ((no == 56) || (no == 57)) {
-			Mix_PlayMusic(s_pYGSExMusic[no], 0);
+		if ((num == 56) || (num == 57)) {
+			Mix_PlayMusic(s_pYGSExMusic[num], 0);
 		} else {
-			Mix_PlayMusic(s_pYGSExMusic[no], -1);
+			Mix_PlayMusic(s_pYGSExMusic[num], -1);
 		}
-		Mix_VolumeMusic(s_iYGSSoundVolume[no]);
+		Mix_VolumeMusic(s_iYGSSoundVolume[num]);
 		break;
 
 	default:
@@ -895,12 +895,12 @@ void YGS2kPlayWave ( int no )
 	}
 }
 
-void YGS2kReplayWave ( int no )
+void YGS2kReplayWave ( int num )
 {
-	switch ( s_iYGSSoundType[no] )
+	switch ( s_iYGSSoundType[num] )
 	{
 	case YGS_SOUNDTYPE_WAV:
-		Mix_Resume(no);
+		Mix_Resume(num);
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
@@ -912,12 +912,12 @@ void YGS2kReplayWave ( int no )
 	}
 }
 
-void YGS2kStopWave ( int no )
+void YGS2kStopWave ( int num )
 {
-	switch ( s_iYGSSoundType[no] )
+	switch ( s_iYGSSoundType[num] )
 	{
 	case YGS_SOUNDTYPE_WAV:
-		Mix_HaltChannel(no);
+		Mix_HaltChannel(num);
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
@@ -929,12 +929,12 @@ void YGS2kStopWave ( int no )
 	}
 }
 
-void YGS2kPauseWave ( int no )
+void YGS2kPauseWave ( int num )
 {
-	switch ( s_iYGSSoundType[no] )
+	switch ( s_iYGSSoundType[num] )
 	{
 	case YGS_SOUNDTYPE_WAV:
-		Mix_Pause(no);
+		Mix_Pause(num);
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
@@ -946,17 +946,17 @@ void YGS2kPauseWave ( int no )
 	}
 }
 
-void YGS2kSetVolumeWave( int no, int vol )
+void YGS2kSetVolumeWave( int num, int vol )
 {
 	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
 	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
 	if ( volume < 0 )   { volume = 0; }
-	s_iYGSSoundVolume[no] = volume;
+	s_iYGSSoundVolume[num] = volume;
 
-	switch ( s_iYGSSoundType[no] )
+	switch ( s_iYGSSoundType[num] )
 	{
 	case YGS_SOUNDTYPE_WAV:
-		Mix_Volume(no, volume);
+		Mix_Volume(num, volume);
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
@@ -968,13 +968,13 @@ void YGS2kSetVolumeWave( int no, int vol )
 	}
 }
 
-int YGS2kIsPlayWave( int no )
+int YGS2kIsPlayWave( int num )
 {
-	switch ( s_iYGSSoundType[no] )
+	switch ( s_iYGSSoundType[num] )
 	{
 	case YGS_SOUNDTYPE_WAV:
 		/* なぜかここを実行すると落ちる… */
-		return Mix_Playing(no);
+		return Mix_Playing(num);
 
 	case YGS_SOUNDTYPE_MUS:
 		return Mix_PlayingMusic();
@@ -984,47 +984,48 @@ int YGS2kIsPlayWave( int no )
 	}
 }
 
-void YGS2kLoadWave( const char* filename, int no )
+void YGS2kLoadWave( const char* filename, int num )
 {
 	int		len = strlen(filename);
 	if ( len < 4 ) { return; }
 
-	s_iYGSSoundType[no] = YGS_SOUNDTYPE_NONE;
+	s_iYGSSoundType[num] = YGS_SOUNDTYPE_NONE;
 
 	// 拡張子、または番号(50番以降がBGM)によって読み込み方法を変える
+	// Change the loading method depending on the extension or number (numbers after 50 are BGM)
 	SDL_RWops *src;
 	src = FSOpenRead(filename);
 	if ( !src ) return;
-	if ( SDL_strcasecmp(&filename[len - 4], ".wav") || no >= 50 )
+	if ( SDL_strcasecmp(&filename[len - 4], ".wav") || num >= 50 )
 	{
-		if ( s_pYGSExMusic[no] != NULL )
+		if ( s_pYGSExMusic[num] != NULL )
 		{
-			Mix_FreeMusic(s_pYGSExMusic[no]);
-			s_pYGSExMusic[no] = NULL;
+			Mix_FreeMusic(s_pYGSExMusic[num]);
+			s_pYGSExMusic[num] = NULL;
 		}
-		s_pYGSExMusic[no] = Mix_LoadMUS_RW(src, SDL_TRUE);
-		s_iYGSSoundType[no] = YGS_SOUNDTYPE_MUS;
-		s_iYGSSoundVolume[no] = YGS_VOLUME_MAX;
+		s_pYGSExMusic[num] = Mix_LoadMUS_RW(src, SDL_TRUE);
+		s_iYGSSoundType[num] = YGS_SOUNDTYPE_MUS;
+		s_iYGSSoundVolume[num] = YGS_VOLUME_MAX;
 	}
 	else
 	{
-		if ( s_pYGSSound[no] != NULL )
+		if ( s_pYGSSound[num] != NULL )
 		{
-			Mix_FreeChunk(s_pYGSSound[no]);
-			s_pYGSSound[no] = NULL;
+			Mix_FreeChunk(s_pYGSSound[num]);
+			s_pYGSSound[num] = NULL;
 		}
-		s_pYGSSound[no] = Mix_LoadWAV_RW(src, SDL_TRUE);
-		s_iYGSSoundType[no] = YGS_SOUNDTYPE_WAV;
-		s_iYGSSoundVolume[no] = YGS_VOLUME_MAX;
+		s_pYGSSound[num] = Mix_LoadWAV_RW(src, SDL_TRUE);
+		s_iYGSSoundType[num] = YGS_SOUNDTYPE_WAV;
+		s_iYGSSoundVolume[num] = YGS_VOLUME_MAX;
 	}
 }
 
-void YGS2kSetLoopModeWave( int no, int mode )
+void YGS2kSetLoopModeWave( int num, int mode )
 {
    // true=loop, false=no loop.  since this is only used on BGMs, and all BGMs already loop, this is a no-op.
 }
 
-void YGS2kLoadMIDI( const char* filename )
+void YGS2kLoadMusic( const char* filename )
 {
 	if ( s_pYGSMusic )
 	{
@@ -1058,7 +1059,7 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
-void YGS2kPlayMIDI()
+void YGS2kPlayMusic()
 {
 	if ( s_pYGSMusic )
 	{
@@ -1066,12 +1067,12 @@ void YGS2kPlayMIDI()
 	}
 }
 
-void YGS2kStopMIDI()
+void YGS2kStopMusic()
 {
 	Mix_HaltMusic();
 }
 
-void YGS2kSetVolumeMIDI(int vol)
+void YGS2kSetVolumeMusic(int vol)
 {
 	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
 	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }

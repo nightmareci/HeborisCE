@@ -63,8 +63,13 @@ set_target_properties(${EXE}
 	RUNTIME_OUTPUT_DIRECTORY "${BIN}"
 )
 
-include(${SRC}/cmake/unix/AddLibrariesPkgConfig.cmake REQUIRED)
-AddLibrariesPkgConfig(${EXE})
+if(USE_VENDOR_LIBRARIES)
+	include(${SRC}/cmake/lib/AddLibrariesVendor.cmake REQUIRED)
+	AddLibrariesVendor(${EXE})
+else()
+	include(${SRC}/cmake/lib/AddLibrariesPkgConfig.cmake REQUIRED)
+	AddLibrariesPkgConfig(${EXE})
+endif()
 
 if(${PACKAGE_TYPE} STREQUAL Portable)
 	if(MINGW)

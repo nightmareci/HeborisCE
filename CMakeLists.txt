@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 project(HeborisC7EX-SDL2
 	VERSION 1.0.1
-	LANGUAGES C
+	LANGUAGES C CXX
 )
 
 set(PROJECT_VER "${CMAKE_PROJECT_VERSION}")
@@ -106,6 +106,8 @@ set(EXE_HEADERS
 
 set(DEFAULT_INPUT Desktop CACHE STRING "The default input type; this should be set to the type of input guaranteed available on a platform. Some platforms are hard set to override this option, so this setting can't be changed for them. Can be set to \"Desktop\" or \"Game Controller\" on configurable platforms.")
 
+option(USE_VENDOR_LIBRARIES "Use vendor libraries (the version of libraries bundled with the code)" OFF)
+
 # Override these defaults for platforms as required. These defaults work on a
 # lot of platforms, but some platforms, like game consoles, have to completely
 # override these settings.
@@ -126,6 +128,9 @@ if(${BUILD_TARGET} STREQUAL Vita)
 	include("${SRC}/cmake/vita/Configure.cmake")
 elseif(${BUILD_TARGET} STREQUAL Windows)
 	set(PACKAGE_TYPE WorkingDir CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
+	if(MSVC)
+		add_compile_options("/MP")
+	endif()
 	if(MINGW)
 		include("${SRC}/cmake/unix/Configure.cmake")
 	elseif(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)

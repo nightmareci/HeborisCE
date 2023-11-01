@@ -1,10 +1,5 @@
 set(FRAMEWORK_VER "WINDOWS-SDL2")
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
-find_package(PhysFS REQUIRED)
-
 list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
 list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
 
@@ -16,17 +11,14 @@ add_executable(${EXE}
 	${EXE_SOURCES} ${EXE_HEADERS}
 	"${SRC}/pkg/windows/icon.rc"
 )
-target_link_libraries(${EXE}
-	PUBLIC
-		SDL2::SDL2
-		SDL2::SDL2main
-		SDL2_image::SDL2_image
-		SDL2_mixer::SDL2_mixer
-		${PHYSFS_LIBRARY}
-)
-target_include_directories(${EXE} SYSTEM PRIVATE
-	"${PHYSFS_INCLUDE_DIR}"
-)
+
+if(USE_VENDOR_LIBRARIES)
+	include("${SRC}/cmake/lib/AddLibrariesVendor.cmake" REQUIRED)
+	AddLibrariesVendor(${EXE})
+else()
+	include("${SRC}/cmake/lib/AddLibrariesFindPackage.cmake" REQUIRED)
+	AddLibrariesFindPackage(${EXE})
+endif()
 
 option(HIDE_WINDOWS_CONSOLE "Hide the Windows console.")
 target_link_options(${EXE}

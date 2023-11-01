@@ -14,7 +14,7 @@ rm -rf "$BUILD_DIRECTORY" || exit 1
 mkdir "$BUILD_DIRECTORY" || exit 1
 cd "$BUILD_DIRECTORY" || exit 1
 
-cmake "$SOURCE_DIRECTORY" -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DPACKAGE_TYPE=Installable || exit 1
+cmake "$SOURCE_DIRECTORY" -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DPACKAGE_TYPE=Installable -DUSE_VENDOR_LIBRARIES=1 || exit 1
 cmake --build build || exit 1
 DESTDIR=AppDir cmake --install build || exit 1
 

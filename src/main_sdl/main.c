@@ -5,7 +5,15 @@
 #ifdef ENABLE_GAME_CONTROLLER
 #include "main_sdl/gamecontroller.h"
 #endif
-#include <stdarg.h>
+
+// TODO: Move basic init/deinit (SDL_Init, etc.) into YGS2k code. Some minor
+// issues seem to show up in the web/Emscripten port after page load in the
+// current setup, like audio not working at all sometimes, while working fine
+// other times. It might be the case that basic init/deinit is best done
+// somewhere in mainUpdate.
+
+// TODO: Move as much as possible of the Emscripten code into its own
+// source(s). The __EMSCRIPTEN__ checks really ugly up the code.
 
 static int quitLevel = 0;
 int quit(int status) {
@@ -44,7 +52,8 @@ int main(int argc, char** argv)
 		return quit(EXIT_FAILURE);
 	}
 
-	/* If this fails, it doesn't matter, the game will still work. But it's called because if it works, the game might perform better. */
+	// If this fails, it doesn't matter, the game will still work. But it's
+	// called because if it works, the game might perform better.
 	SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 
 	quitLevel++;
@@ -74,6 +83,8 @@ int main(int argc, char** argv)
 	}
 	quitLevel++;
 
+	// TODO: Refactor so this source file doesn't access anything in the
+	// game code.
 	wavebgm_supported[WAVEBGM_MID] = !!(formatsInitialized & MIX_INIT_MID);
 	wavebgm_supported[WAVEBGM_WAV] = 1; // WAVEはいつでも利用可能 || WAVE is always supported
 	wavebgm_supported[WAVEBGM_OGG] = !!(formatsInitialized & MIX_INIT_OGG);
@@ -85,7 +96,17 @@ int main(int argc, char** argv)
 	wavebgm_supported[WAVEBGM_XM] = !!(formatsInitialized & MIX_INIT_MOD);
 	wavebgm_supported[WAVEBGM_S3M] = !!(formatsInitialized & MIX_INIT_MOD);
 
+#ifdef __EMSCRIPTEN__
+	// In testing on desktop Linux, Firefox seems to cope with a 1024 byte
+	// buffer fine, but Chrome produces a fair bit of audio breakup. 2048
+	// seems to work fine in both, though.
+	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
+#else
+	// A 1024 byte buffer seems to be a good choice for all native code
+	// ports. It's reasonably low latency but doesn't result in audio
+	// breakup.
 	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
+#endif
 	{
 		fprintf(stderr, "Couldn't open audio: %s\n", Mix_GetError());
 		return quit(EXIT_FAILURE);
@@ -100,7 +121,8 @@ int main(int argc, char** argv)
 	quitLevel++;
 
 #ifdef ENABLE_GAME_CONTROLLER
-	/* Must be called after FSInit, as it reads gamecontrollerdb.txt in the res directory on some platforms. */
+	// Must be called after FSInit, as it reads gamecontrollerdb.txt in the
+	// res directory on some platforms.
 	OpenGameControllers();
 #endif
 

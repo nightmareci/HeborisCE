@@ -1,10 +1,27 @@
 cmake_minimum_required(VERSION 3.18)
 project(HeborisC7EX-SDL2
 	VERSION 1.0.1
-	LANGUAGES C CXX
+	LANGUAGES C
 )
 
 set(PROJECT_VER "${CMAKE_PROJECT_VERSION}")
+
+# NOTE: Never, ever change PROJECT_ORG and PROJECT_APP, unless you're making a
+# hard fork such that you're effectively making a new, distinct game, that
+# needs its own separate save data, in which case you'd still stick with the
+# new org/app names once the initially decided upon names are used in your
+# first distributed release. So, carefully choose org/app to be highly unique,
+# to increase likelihood no other program will ever clash with your choice;
+# something based on a web domain is a reasonable choice. These variables
+# together constitute the save data identifier for the game, so as long as the
+# save data should maintain continuity through new release versions, these
+# shouldn't be changed, even if the user-facing naming/branding changes.
+#
+# For maximum safety/portability, just stick to the subset of ASCII only
+# including the English alphabet, numbers, space, hyphen, and never change
+# alphabetic case once decided upon, while also not choosing names that differ
+# from another application's names only in alphabetic case, which accommodates
+# both case insensitive and sensitive filesystems.
 set(PROJECT_ORG "nightmareci")
 set(PROJECT_APP "HeborisC7EX SDL2")
 
@@ -128,15 +145,13 @@ if(${BUILD_TARGET} STREQUAL Vita)
 	include("${SRC}/cmake/vita/Configure.cmake")
 elseif(${BUILD_TARGET} STREQUAL Windows)
 	set(PACKAGE_TYPE WorkingDir CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
-	if(MSVC)
-		add_compile_options("/MP")
-	endif()
 	if(MINGW)
 		include("${SRC}/cmake/unix/Configure.cmake")
-	elseif(WIN32 AND MSVC AND VCPKG_TOOLCHAIN)
+	elseif(WIN32 AND MSVC)
+		add_compile_options("/MP")
 		include("${SRC}/cmake/windows/Configure.cmake")
 	else()
-		message(FATAL_ERROR "Current Windows build setup is unsupported; MinGW with pkg-config or MSVC with VCPKG are supported.")
+		message(FATAL_ERROR "Current Windows build setup is unsupported; only MinGW or MSVC are supported.")
 	endif()
 elseif(${BUILD_TARGET} STREQUAL Darwin)
 	set(PACKAGE_TYPE WorkingDir CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")

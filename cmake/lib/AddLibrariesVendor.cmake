@@ -7,10 +7,6 @@ function(AddLibrariesVendor EXE)
 	set(SDL_TEST FALSE)
 	set(SDL2_DISABLE_UNINSTALL ON)
 	add_subdirectory("dep/SDL" "${BIN}/dep/SDL")
-	target_link_libraries("${EXE}" PUBLIC SDL2::SDL2-static)
-	if(TARGET SDL2::SDL2main)
-		target_link_libraries("${EXE}" PUBLIC SDL2::SDL2main)
-	endif()
 
 	set(SDL2IMAGE_VENDORED ON)
 	set(SDL2IMAGE_DEPS_SHARED OFF)
@@ -18,7 +14,6 @@ function(AddLibrariesVendor EXE)
 	set(SDL2IMAGE_INSTALL OFF)
 	set(SDL2IMAGE_TESTS OFF)
 	add_subdirectory("dep/SDL_image" "${BIN}/dep/SDL_image")
-	target_link_libraries("${EXE}" PUBLIC SDL2_image::SDL2_image-static)
 
 	set(SDL2MIXER_VENDORED ON)
 	set(SDL2MIXER_DEPS_SHARED OFF)
@@ -28,7 +23,6 @@ function(AddLibrariesVendor EXE)
 	set(SDL2MIXER_VORBIS_VORBISFILE_SHARED OFF)
 	set(SDL2MIXER_OPUS_SHARED OFF)
 	add_subdirectory("dep/SDL_mixer" "${BIN}/dep/SDL_mixer")
-	target_link_libraries("${EXE}" PUBLIC SDL2_mixer::SDL2_mixer-static)
 
 	set(PHYSFS_BUILD_SHARED FALSE)
 	set(PHYSFS_BUILD_STATIC TRUE)
@@ -46,5 +40,14 @@ function(AddLibrariesVendor EXE)
 	set(PHYSFS_ARCHIVE_VDF FALSE)
 	set(PHYSFS_DISABLE_INSTALL TRUE)
 	add_subdirectory("dep/physfs" "${BIN}/dep/physfs")
-	target_link_libraries("${EXE}" PUBLIC PhysFS::PhysFS-static)
+
+	if(TARGET SDL2::SDL2main)
+		target_link_libraries("${EXE}" PUBLIC SDL2::SDL2main)
+	endif()
+	target_link_libraries("${EXE}" PUBLIC
+		SDL2::SDL2-static
+		SDL2_image::SDL2_image-static
+		SDL2_mixer::SDL2_mixer-static
+		PhysFS::PhysFS-static
+	)
 endfunction()

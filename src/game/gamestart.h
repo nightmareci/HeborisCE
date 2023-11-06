@@ -706,7 +706,7 @@ extern int32_t raise_shirase_lines;
 extern int32_t level_shirase_start;
 extern int32_t limit[8];
 extern int32_t gameMode[2];
-extern int32_t pause[2],hnext[2];
+extern int32_t pauseGame[2],hnext[2];
 extern int32_t setupBak[27];
 extern int32_t demotime;
 extern int32_t demo;

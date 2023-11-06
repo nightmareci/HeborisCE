@@ -114,7 +114,7 @@ void hiddenProc(int32_t player) {
 	}
 	if(hidden[player] == 8){
 //		hiddeny[player] = 1;// hoge 全て隠す
-		if(pause[player])
+		if(pauseGame[player])
 			hiddeny[player] = 21;
 	}
 	if(hidden[player] >= 9) shadow_timer_flag[player] = 1;//じわじわ隠れる
@@ -1590,7 +1590,7 @@ void viewField(void) {
 						}
 					}
 		//通常
-		} else if((!pause[i]) || (debug) || ((gameMode[i] == 5) && (pause[i]))) {
+		} else if((!pauseGame[i]) || (debug) || ((gameMode[i] == 5) && (pauseGame[i]))) {
 			for(b = 0; b < 2; b++)
 				for(j = 0; j < hiddeny[i]; j++)
 					for(k = 0; k < 10; k++) {
@@ -1677,12 +1677,12 @@ void viewField(void) {
 										// タイマーが-1（せり上がりまたは初期配置）な場合も表示してみる #1.60c7k3
 										// 条件を単純化(しすぎ？) #1.60c7k6
 										// NOTE: if(fldt3 == -1、1〜8)の条件を削除するとDTET風に。
-										if( (fldt3 == -1) || ((fldt3 != 0) && (fldt3 >= 8) && (m_roll_blockframe)) || ((isblind[i]) && (fldt3 != 0)) || (fldt3 < -1) || ((gameMode[i] == 5) && (pause[i]))) {
+										if( (fldt3 == -1) || ((fldt3 != 0) && (fldt3 >= 8) && (m_roll_blockframe)) || ((isblind[i]) && (fldt3 != 0)) || (fldt3 < -1) || ((gameMode[i] == 5) && (pauseGame[i]))) {
 											// 死んだとき枠を消す #1.60c7k9
 											// COLOR中は枠を描かない#1.60c7p9ex
 											if(( !color_flag[i] && ((!dead_blockframe) || (gameMode[i] == 5) || (status[i] != 7)) )&& (heboGB[i]==0) || (isblind[i])) {
 												// フィールド端では枠の一部分を表示しない #1.60c7s5
-												if((!isdark[i]) || ((gameMode[i] == 5) && (pause[i]))){
+												if((!isdark[i]) || ((gameMode[i] == 5) && (pauseGame[i]))){
 													// 新・枠線処理
 													if(fldt3 <= -10) add = 60 + fldt3 + 20;	//TI風消えロール時
 													else if(isblind[i]) add = 10;

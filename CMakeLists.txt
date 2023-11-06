@@ -49,6 +49,7 @@ set(EXE_SOURCES
 	"${SRC}/src/game/speed.c"
 
 	"${SRC}/src/main_sdl/delay.c"
+	"${SRC}/src/main_sdl/nanotime.c"
 	"${SRC}/src/main_sdl/filesystem.c"
 	"${SRC}/src/main_sdl/main.c"
 	"${SRC}/src/main_sdl/SDL_kanji.c"
@@ -87,6 +88,7 @@ set(EXE_HEADERS
 	"${SRC}/src/game/speed.h"
 
 	"${SRC}/src/main_sdl/delay.h"
+	"${SRC}/src/main_sdl/nanotime.h"
 	"${SRC}/src/main_sdl/gamecontroller.h"
 	"${SRC}/src/main_sdl/include.h"
 	"${SRC}/src/main_sdl/main.h"
@@ -154,6 +156,7 @@ elseif(${BUILD_TARGET} STREQUAL Windows)
 		message(FATAL_ERROR "Current Windows build setup is unsupported; only MinGW or MSVC are supported.")
 	endif()
 elseif(${BUILD_TARGET} STREQUAL Darwin)
+	add_compile_definitions(_POSIX_VERSION=200112L)
 	set(PACKAGE_TYPE WorkingDir CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
 	if(${PACKAGE_TYPE} MATCHES Mac)
 		include("${SRC}/cmake/macos/Configure.cmake")
@@ -161,6 +164,7 @@ elseif(${BUILD_TARGET} STREQUAL Darwin)
 		include("${SRC}/cmake/unix/Configure.cmake")
 	endif()
 elseif(${BUILD_TARGET} STREQUAL Linux)
+	add_compile_definitions(_POSIX_VERSION=200112L)
 	set(PACKAGE_TYPE WorkingDir CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
 	include("${SRC}/cmake/unix/Configure.cmake")
 elseif(${BUILD_TARGET} STREQUAL Emscripten)
@@ -173,5 +177,3 @@ target_include_directories(${EXE} PRIVATE
 	"${SRC}/src" "${SRC}/src/game" "${SRC}/src/main_sdl"
 	"${BIN}/src" "${BIN}/src/game" "${BIN}/src/main_sdl"
 )
-
-target_precompile_headers(${EXE} PRIVATE ${EXE_HEADERS})

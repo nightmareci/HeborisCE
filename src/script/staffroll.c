@@ -29,7 +29,7 @@ void staffExecute(int32_t player) {
 //  新しい文字列を下から表示させる
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void staffRoll(int32_t player) {
-	if( (ending[player] == 2) && (onRecord[player]) && (!pause[player]) ) {
+	if( (ending[player] == 2) && (onRecord[player]) && (!pauseGame[player]) ) {
 		if(fastroll[player]){
 			endtime[player]=endtime[player]+2; // 経過時間+1 #1.60c7o6
 		}else{
@@ -40,7 +40,7 @@ void staffRoll(int32_t player) {
 			endtime[player] = endtime[player] - 1 - (fastroll[player]);
 		}else{
 			// 上に移動
-			if( (endtime[player] % 2 == 0) && (endtime[player] < 3100) && (!pause[player]) ){
+			if( (endtime[player] % 2 == 0) && (endtime[player] < 3100) && (!pauseGame[player]) ){
 				staffroll_y_ex[player]++;
 			}
 		}

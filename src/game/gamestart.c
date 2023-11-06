@@ -564,7 +564,7 @@ int32_t		setupBak[27];		// セッティング内容のバックアップ用
 EMainLoopState	lastRankingMainLoopState;
 int32_t		resumeAfterRanking = 0;
 
-int32_t		pause[2], hnext[2];	// ポーズしてるかーい!?　hnextはnextで今見えてる数
+int32_t		pauseGame[2], hnext[2];	// ポーズしてるかーい!?　hnextはnextで今見えてる数
 
 int32_t		gameMode[2];		// 現在のゲームモード 0:BEGINNER 1:MASTER 2:20G 3:DEVIL 4:VERSUS 5:PRACTICE 6:TOMOYO 7:ACE 8:MISSION
 
@@ -2131,7 +2131,7 @@ void gameExecute() {
 // the pause setting during an active game when the player presses the pause
 // button.
 void setGamePause(int32_t player, bool pauseSetting) {
-	pause[player] = pauseSetting;
+	pauseGame[player] = pauseSetting;
 	timeOn[player] = !pauseSetting;
 }
 
@@ -2285,7 +2285,7 @@ bool lastProc(void) {
 	if(getPushState(0, BTN_PAUSE) || mpc4[0] == 1) {
 		if( ((status[0] >= 3) && (status[0] <= 8) && (status[0] != 7)) || (status[0] == 13) || (status[0] == 15) ||
 			(status[0] == 22) || ((status[0] >= 25) && (status[0] != 30) && (status[0] != 36)) || (debug) ) {
-			if(pause[0]) {
+			if(pauseGame[0]) {
 				// ポーズ解除
 				setGamePause(0, false);
 
@@ -2304,7 +2304,7 @@ bool lastProc(void) {
 			}
 
 			if(gameMode[0] == 4)
-				setGamePause(1, !pause[1]);
+				setGamePause(1, !pauseGame[1]);
 		}
 	}
 
@@ -2317,7 +2317,7 @@ bool lastProc(void) {
 
 	if(getPushState(1, BTN_PAUSE) || mpc4[1] == 1) {
 		if( ((status[1] >= 3) && (status[1] <= 8) && (status[1] != 7)) || (status[1] == 13) || (status[1] == 15) || (debug) ) {
-			if(pause[1]) {
+			if(pauseGame[1]) {
 				// ポーズ解除
 				setGamePause(1, false);
 
@@ -2336,7 +2336,7 @@ bool lastProc(void) {
 			}
 
 			if(gameMode[1] == 4)
-				setGamePause(0, !pause[0]);
+				setGamePause(0, !pauseGame[0]);
 		}
 	}
 	// TOMOYO E-Heart最終面ギミック C7U0
@@ -4093,7 +4093,7 @@ bool playerExecute(void) {
 	}
 
 	for(i = 0; i < 1 + maxPlay; i++) {
-		if(pause[i]) {
+		if(pauseGame[i]) {
 			if( (count % 40 < 20) && (!debug) ){
 				printFont(17 + 24 * i - 12 * maxPlay, 15, "PAUSE!", fontc[rots[i]]);
 			}
@@ -4468,7 +4468,7 @@ int32_t doGiveup() {
 
 	// giveup_safety修正 #1.60c7p4
 	if(giveup_safety) {
-		if(!pause[0] && !pause[1]) return 0;
+		if(!pauseGame[0] && !pauseGame[1]) return 0;
 	}
 
 	// 捨てゲーキーをjoypadに割り当て 1.60c7g7
@@ -4493,8 +4493,8 @@ int32_t doGiveup() {
 		bgfadesw = 0;
 		if(gameMode[0] != 5) backno = 0;
 
-		pause[0] = 0; // ポーズ解除
-		pause[1] = 0;
+		pauseGame[0] = 0; // ポーズ解除
+		pauseGame[1] = 0;
 		timeOn[0] = 0;
 		timeOn[1] = 0;
 		onRecord[0] = 0;

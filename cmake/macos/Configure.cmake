@@ -55,7 +55,7 @@ endif()
 
 if(USE_VENDOR_LIBRARIES)
 	include("${SRC}/cmake/lib/AddLibrariesVendor.cmake" REQUIRED)
-	AddLibrariesVendor(${EXE})
+	AddLibrariesVendor(${EXE} TRUE)
 else()
 	include("${SRC}/cmake/lib/AddLibrariesPkgConfig.cmake" REQUIRED)
 	AddLibrariesPkgConfig(${EXE})

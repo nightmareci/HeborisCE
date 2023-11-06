@@ -1,5 +1,8 @@
 #pragma once
 
+#include "SDL_scancode.h"
+#include <stdint.h>
+
 extern int32_t english;
 extern int32_t last_ranking_type;
 extern int32_t ranking_type;

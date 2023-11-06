@@ -1,3 +1,5 @@
+#include "init.h"
+
 /*
  ■目次
 

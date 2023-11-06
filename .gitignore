@@ -11,3 +11,6 @@
 /.vscode
 /.vs
 /CMakeLists.txt.*
+/*.kdev4
+/*.zip
+/.cache

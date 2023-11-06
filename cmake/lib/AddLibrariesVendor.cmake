@@ -1,4 +1,4 @@
-function(AddLibrariesVendor EXE)
+function(AddLibrariesVendor EXE LINK_PHYSFS)
 	set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 	set(BUILD_SHARED_LIBS FALSE)
 
@@ -24,23 +24,6 @@ function(AddLibrariesVendor EXE)
 	set(SDL2MIXER_OPUS_SHARED OFF)
 	add_subdirectory("dep/SDL_mixer" "${BIN}/dep/SDL_mixer")
 
-	set(PHYSFS_BUILD_SHARED FALSE)
-	set(PHYSFS_BUILD_STATIC TRUE)
-	set(PHYSFS_BUILD_TEST FALSE)
-	set(PHYSFS_BUILD_DOCS FALSE)
-	set(PHYSFS_ARCHIVE_ZIP TRUE)
-	set(PHYSFS_ARCHIVE_7Z FALSE)
-	set(PHYSFS_ARCHIVE_GRP FALSE)
-	set(PHYSFS_ARCHIVE_WAD FALSE)
-	set(PHYSFS_ARCHIVE_HOG FALSE)
-	set(PHYSFS_ARCHIVE_MVL FALSE)
-	set(PHYSFS_ARCHIVE_QPAK FALSE)
-	set(PHYSFS_ARCHIVE_SLB FALSE)
-	set(PHYSFS_ARCHIVE_ISO9660 FALSE)
-	set(PHYSFS_ARCHIVE_VDF FALSE)
-	set(PHYSFS_DISABLE_INSTALL TRUE)
-	add_subdirectory("dep/physfs" "${BIN}/dep/physfs")
-
 	if(TARGET SDL2::SDL2main)
 		target_link_libraries("${EXE}" PUBLIC SDL2::SDL2main)
 	endif()
@@ -48,6 +31,27 @@ function(AddLibrariesVendor EXE)
 		SDL2::SDL2-static
 		SDL2_image::SDL2_image-static
 		SDL2_mixer::SDL2_mixer-static
-		PhysFS::PhysFS-static
 	)
+
+	if(LINK_PHYSFS)
+		set(PHYSFS_BUILD_SHARED FALSE)
+		set(PHYSFS_BUILD_STATIC TRUE)
+		set(PHYSFS_BUILD_TEST FALSE)
+		set(PHYSFS_BUILD_DOCS FALSE)
+		set(PHYSFS_ARCHIVE_ZIP TRUE)
+		set(PHYSFS_ARCHIVE_7Z FALSE)
+		set(PHYSFS_ARCHIVE_GRP FALSE)
+		set(PHYSFS_ARCHIVE_WAD FALSE)
+		set(PHYSFS_ARCHIVE_HOG FALSE)
+		set(PHYSFS_ARCHIVE_MVL FALSE)
+		set(PHYSFS_ARCHIVE_QPAK FALSE)
+		set(PHYSFS_ARCHIVE_SLB FALSE)
+		set(PHYSFS_ARCHIVE_ISO9660 FALSE)
+		set(PHYSFS_ARCHIVE_VDF FALSE)
+		set(PHYSFS_DISABLE_INSTALL TRUE)
+		add_subdirectory("dep/physfs" "${BIN}/dep/physfs")
+		target_link_libraries("${EXE}" PUBLIC
+			PhysFS::PhysFS-static
+		)
+	endif()
 endfunction()

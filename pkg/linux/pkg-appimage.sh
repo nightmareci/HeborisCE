@@ -10,8 +10,7 @@ BUILD_DIRECTORY=`readlink -f "$2"`
 
 NAME="HeborisC7EX-SDL2"
 
-rm -rf "$BUILD_DIRECTORY" || exit 1
-mkdir "$BUILD_DIRECTORY" || exit 1
+mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY" || exit 1
 
 cmake "$SOURCE_DIRECTORY" -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DPACKAGE_TYPE=Installable -DUSE_VENDOR_LIBRARIES=1 || exit 1
@@ -23,5 +22,3 @@ curl -L -O "https://github.com/linuxdeploy/linuxdeploy/releases/download/continu
 chmod +x "$LINUXDEPLOY" || exit 1
 
 "./$LINUXDEPLOY" --appdir AppDir --output appimage --icon-file "$SOURCE_DIRECTORY/pkg/linux/icon.png" --icon-filename "$NAME" --desktop-file "$BUILD_DIRECTORY/build/$NAME.desktop" || exit 1
-
-rm -rf "$BUILD_DIRECTORY/AppDir" "$BUILD_DIRECTORY/build" "$BUILD_DIRECTORY/$LINUXDEPLOY" || exit 1

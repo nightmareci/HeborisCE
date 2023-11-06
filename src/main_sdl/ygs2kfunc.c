@@ -2,7 +2,8 @@
 #include "SDL_kanji.h"
 #include "ygs2kfunc.h"
 #include "ygs2kprivate.h"
-#include "delay.h"
+#include "filesystem.h"
+#include "nanotime.h"
 
 #define		YGS_GAME_CAPTION		"HEBORIS C7-EX SDL2"
 
@@ -45,11 +46,10 @@ static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
 static int			s_iLogicalWidth;
 static int			s_iLogicalHeight;
 
-static int			s_bNoFrameskip;
-static Uint64			s_uTimeCount;
-static Uint64			s_uTimeAccumulatorCount;
-static Uint64			s_uFPSCount;
-static unsigned int		s_uNowFrame;
+static bool			s_bNoFrameskip;
+static nanotime_step_data		s_StepData = { 0 };
+static bool		s_bLastFrameSkipped;
+static uint64_t		s_uFPSCount;
 static unsigned int		s_uFPSCnting;
 static unsigned int		s_uFPS;
 static unsigned int		s_uNowFPS;
@@ -143,11 +143,8 @@ bool YGS2kInit()
 
 	if (!s_bInitFast) YGS2kPrivateKanjiFontInitialize();
 
-	s_uTimeCount		= SDL_GetPerformanceCounter();
-	s_uTimeAccumulatorCount	= 0;
-	s_uFPSCount		= SDL_GetPerformanceCounter();
-	s_uNowFrame		= 0;
-	s_uFPSCnting		= 0;
+	s_bLastFrameSkipped = false;
+	s_uFPSCount = 0u;
 	s_uFPS			= 0;
 	s_bNoFrameskip		= false;
 
@@ -214,73 +211,16 @@ void YGS2kExit()
 	}
 }
 
-static inline void YGS2kFrameDelay() {
-	/*
-	 * Here, we insert a delay to produce accurate frame timing, using "hybrid
-	 * wait" and "fixed timestep". The first stage is to loop over delays of 1
-	 * millisecond, where it's assumed that delays are roughly 1 millisecond,
-	 * generally a bit above. But, during that first stage of delays, the max
-	 * delay duration is kept track of, and that stage of the delay loop is
-	 * broken out of when the time remaining to delay is less than or equal to
-	 * the max of the 1-millisecond delays. Then, the same delay loop is done
-	 * with 0-millisecond delay requests; requesting a delay of no time just
-	 * yields the game's running process, allowing the system to run other
-	 * tasks, without eating a bunch of CPU time. Once that loop stage is done,
-	 * a final, as-small-as-possible pure busyloop is run to finish out the
-	 * delay; it's critical to delay as much as possible via Delay first, so as
-	 * to minimize wasted CPU time. This scheme appears to be "optimal", in
-	 * that it produces correct timing, but with a minimum of wasted CPU time.
-	 * Mufunyo ( https://github.com/mufunyo ) showed me the "hybrid wait"
-	 * algorithm, where most of the delay is done via actual delays, and
-	 * completed with a busyloop, but that algorithm has been adapted to fit
-	 * into this game's "fixed timestep" variant ( https://www.gafferongames.com/post/fix_your_timestep/ ).
-	 * -Brandon McGriff <nightmareci@gmail.com>
-	 */
-
-	/*
-	 * Changing the ">= 0" to ">= 1" removes the Delay(0) delay, and increases
-	 * CPU usage on my Linux system from 2.8-3.0% in-game up to 3.5-3.8%. And
-	 * having it ">= 0" doesn't worsen frame timing, it's basically a free
-	 * optimization. The plain busyloop is still required to get very precise
-	 * timing, but with this setup the amount of spinning in the busyloop is
-	 * minimized. Though CPU usage doesn't reduce when using Delay(0) on
-	 * Windows.
-	 * -Brandon McGriff <nightmareci@gmail.com>
-	 */
-	const Uint64 frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
-	for (int milliseconds = 1; milliseconds >= 0; milliseconds--) {
-		Uint64 delayStartTimeCount;
-		Uint64 maxDelayCount = 0u;
-		while (
-			maxDelayCount < frameTimeCount &&
-			(delayStartTimeCount = SDL_GetPerformanceCounter()) - s_uTimeCount < frameTimeCount - maxDelayCount
-		) {
-			Delay(milliseconds);
-			Uint64 lastDelay;
-			if ((lastDelay = SDL_GetPerformanceCounter() - delayStartTimeCount) > maxDelayCount) {
-				maxDelayCount = lastDelay;
-			}
-		}
-	}
-	while (SDL_GetPerformanceCounter() - s_uTimeCount < frameTimeCount);
-
-	Uint64 nextTimeCount;
-	s_uTimeAccumulatorCount += (nextTimeCount = SDL_GetPerformanceCounter()) - s_uTimeCount;
-	s_uTimeCount = nextTimeCount;
-}
-
 bool YGS2kHalt()
 {
 	SDL_Event	ev;
-
-	const Uint64	frameTimeCount = SDL_GetPerformanceFrequency() / s_uNowFPS;
 
 	if ( s_pScreenRenderer )
 	{
 		SDL_RenderFlush( s_pScreenRenderer );
 
 		#ifndef NDEBUG
-		s_bNoFrameskip = 1;
+		s_bNoFrameskip = true;
 		#endif
 		if ( s_bNoFrameskip )
 		{
@@ -298,16 +238,14 @@ bool YGS2kHalt()
 			}
 
 			/* フレームレート待ち */
-			YGS2kFrameDelay();
-
-			s_uTimeAccumulatorCount = 0;
+			s_bLastFrameSkipped = !nanotime_step(&s_StepData);
 
 			/* 画面塗りつぶし */
 			SDL_RenderClear( s_pScreenRenderer );
 		}
 		else
 		{
-			if ( s_uTimeAccumulatorCount < frameTimeCount )
+			if ( !s_bLastFrameSkipped )
 			{
 				/* バックサーフェスをフロントに転送 */
 				if ( s_pScreenRenderTarget )
@@ -322,25 +260,23 @@ bool YGS2kHalt()
 					SDL_RenderPresent(s_pScreenRenderer);
 				}
 
-				/* フレームレート待ち */
-				YGS2kFrameDelay();
-
 				/* 画面塗りつぶし */
 				SDL_RenderClear( s_pScreenRenderer );
 			}
-			s_uTimeAccumulatorCount -= frameTimeCount;
+
+			/* フレームレート待ち */
+			s_bLastFrameSkipped = !nanotime_step(&s_StepData);
 		}
 	}
 
 	/* フレームレート計算 */
 	s_uFPSCnting ++;
-	s_uNowFrame ++;
 
-	if ( s_uFPSCount + SDL_GetPerformanceFrequency() <= s_uTimeCount )
+	if ( nanotime_interval(s_uFPSCount, nanotime_now(), s_StepData.now_max) >= NANOTIME_NSEC_PER_SEC )
 	{
 		s_uFPS = s_uFPSCnting;
 		s_uFPSCnting = 0;
-		s_uFPSCount = s_uTimeCount;
+		s_uFPSCount = nanotime_now();
 	}
 
 	/* イベント処理 */
@@ -355,9 +291,7 @@ bool YGS2kHalt()
 	{
 		switch(ev.type){
 			case SDL_QUIT:						// ウィンドウの×ボタンが押された時など
-				quitNowFlag = true;
 				return false;
-				break;
 
 			case SDL_WINDOWEVENT:
 				if (ev.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
@@ -1538,6 +1472,7 @@ void YGS2kSetFPS(unsigned fps)
 	else {
 		s_uNowFPS = fps;
 	}
+	nanotime_step_init(&s_StepData, NANOTIME_NSEC_PER_SEC / s_uNowFPS, nanotime_now_max(), nanotime_now, nanotime_sleep);
 }
 
 int YGS2kGetFPS()

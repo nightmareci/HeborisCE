@@ -10,12 +10,11 @@ if [ -z "$VITASDK" ] ; then
 	exit 1
 fi
 
-rm -rf "$2" || exit 1
-mkdir "$2" || exit 1
+mkdir "$2"
 
 SOURCE_DIRECTORY=`readlink -f "$1"`
 BUILD_DIRECTORY=`readlink -f "$2"`
 
 cd "$SOURCE_DIRECTORY"
-cmake -B "$BUILD_DIRECTORY" -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=Vita --toolchain "$VITASDK/share/vita.toolchain.cmake" || exit 1
+cmake -B "$BUILD_DIRECTORY" -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TARGET=Vita -DUSE_VENDOR_LIBRARIES=1 --toolchain "$VITASDK/share/vita.toolchain.cmake" || exit 1
 cmake --build "$BUILD_DIRECTORY" || exit 1

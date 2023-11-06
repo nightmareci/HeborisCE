@@ -6,6 +6,14 @@ else()
 	include("${VITASDK}/share/vita.cmake" REQUIRED)
 endif()
 
+# Adding to CMAKE_PREFIX_PATH like this fixes find_package commands in Vita SDK
+# builds.
+list(APPEND CMAKE_PREFIX_PATH "${VITASDK}/arm-vita-eabi/lib/cmake")
+
+# Vita SDK will fail linking the executable if position independent code is
+# used in the vendor libraries.
+set(CMAKE_POSITION_INDEPENDENT_CODE FALSE CACHE BOOL "Override" FORCE)
+
 list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
 list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
 
@@ -28,51 +36,28 @@ set(SCREEN_SUBPIXEL_OFFSET "0.0f")
 
 configure_file("${SRC}/src/main_sdl/defs.h.in" "src/main_sdl/defs.h" @ONLY)
 
-target_link_directories(${EXE} PRIVATE "${BIN}")
-
-target_link_libraries(${EXE}
-	SDL2_image
-	SDL2_mixer
-	SDL2
-
-	physfs
-
-	jpeg
-	png
-	webp
-
-	mikmod
-	modplug
-	mpg123
-	vorbisfile
-	vorbis
-	ogg
-	FLAC
-
-	pthread
-	z
-	m
-	stdc++
-
-	SceDisplay_stub
-	SceCtrl_stub
-	SceAudio_stub
-	SceAudioIn_stub
-	SceSysmodule_stub
-	SceGxm_stub
-	SceCommonDialog_stub
-	SceAppMgr_stub
-	SceTouch_stub
-	SceHid_stub
-	SceMotion_stub
-)
-
-target_include_directories(${EXE} PRIVATE
-	"${VITASDK}/arm-vita-eabi/include/SDL2"
-)
+# The upstream PhysFS doesn't have Vita SDK support, so we need to use Vita
+# SDK's included PhysFS, not the vendor version, thus the need for FALSE passed
+# to AddLibrariesVendor and finding the PhysFS package.
+#
+# Also, as of last attempting Vita SDK builds, SDL2_mixer was broken with
+# find_package, as it tries to link to libxmp-lite, which was missing in the
+# Vita SDK packages; using the vendor version works fine, though.
+include("${SRC}/cmake/lib/AddLibrariesVendor.cmake")
+AddLibrariesVendor(${EXE} FALSE)
+find_package(PhysFS REQUIRED)
+target_link_libraries(${EXE} PUBLIC ${PHYSFS_LIBRARY})
+target_include_directories(${EXE} PUBLIC ${PHYSFS_INCLUDE_DIR})
 
 file(ARCHIVE_CREATE OUTPUT "${BIN}/assets.zip"
-	PATHS "${SRC}/res/bg" "${SRC}/res/bgm" "${SRC}/res/font" "${SRC}/res/graphics" "${SRC}/res/se" "${SRC}/config/mission" "${SRC}/config/stage"
+	PATHS
+		"${SRC}/res/bg"
+		"${SRC}/res/bgm"
+		"${SRC}/res/font"
+		"${SRC}/res/graphics"
+		"${SRC}/res/se"
+		"${SRC}/config/mission"
+		"${SRC}/config/stage"
 	FORMAT zip
 )
 

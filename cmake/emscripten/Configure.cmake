@@ -16,7 +16,7 @@ elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
 endif()
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIME_METHODS=ccall -s EXPORTED_FUNCTIONS=_main,_startup -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIME_METHODS=ccall -s EXPORTED_FUNCTIONS=_main,_startup -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 -s ASYNCIFY \
 --preload-file '${SRC}/res/gamecontrollerdb.txt@basepath/res/gamecontrollerdb.txt' \
 --preload-file '${SRC}/res/bg/highDetail@basepath/res/bg/highDetail' \
 --preload-file '${SRC}/res/bg/lowDetail@basepath/res/bg/lowDetail' \

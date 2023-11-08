@@ -437,6 +437,29 @@ uint64_t nanotime_now() {
 #endif
 #endif
 
+#ifdef __EMSCRIPTEN__
+#ifndef NANOTIME_SLEEP_IMPLEMENTED
+#include <emscripten.h>
+/*
+ * NOTE: You *must* have asyncify enabled in the Emscripten build (pass
+ * -sASYNCIFY to the compiler/linker) or sleeping won't work.
+ */
+void nanotime_sleep(uint64_t nsec_count) {
+	emscripten_sleep(nsec_count / UINT64_C(1000000));
+}
+#define NANOTIME_SLEEP_IMPLEMENTED
+#endif
+
+#ifndef NANOTIME_NOW_IMPLEMENTED
+#include <emscripten.h>
+uint64_t nanotime_now() {
+	const double now = emscripten_get_now();
+	return (uint64_t)now * UINT64_C(1000000);
+}
+#define NANOTIME_NOW_IMPLEMENTED
+#endif
+#endif
+
 #ifndef NANOTIME_SLEEP_IMPLEMENTED
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_THREADS__)
 #include <threads.h>

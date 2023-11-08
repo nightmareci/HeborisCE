@@ -242,7 +242,7 @@ int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
 void bgmFadeout(void) {
 	int32_t player;
 
-	if(wavebgm & WAVEBGM_SIMPLE) return;
+	if(wavebgm & YGS_WAVE_SIMPLE) return;
 
 	for( player = 0; player <= maxPlay; player++ ) {
 		if((gameMode[player] <= 3) || (gameMode[player] == 7) || (gameMode[player] == 10)) {
@@ -329,7 +329,7 @@ void changeBGM(int32_t player) {
 	if((!isfever[0]) && (!isfever[1]))
 		YGS2kPlayWave(50 +bgmlv);
 	fadelv[player] = 0;
-	//if((!(wavebgm & WAVEBGM_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
+	//if((!(wavebgm & YGS_WAVE_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -413,7 +413,7 @@ void SoundTestProc(void) {
         if(getPushState(0, BTN_B)) {
                 StopAllWaves();
                 StopAllBGM();
-                if(wavebgm & WAVEBGM_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+                if(wavebgm & YGS_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
                         if(YGS2kIsPlayMusic()) YGS2kReplayMusic();
                 } else YGS2kPlayWave(61);//タイトルBGM
                 

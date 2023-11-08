@@ -38,30 +38,8 @@ extern int32_t fontsize;
 extern int32_t movesound;
 extern int32_t dispnext;
 
-typedef enum EWaveBGM
-{
-	WAVEBGM_MASK   = 0xFF,
-
-	// Flag BGM type as "simple", only one bgm.ext for everything.
-	WAVEBGM_SIMPLE = 0x80,
-
-	WAVEBGM_FORMAT = 0x7F,
-	WAVEBGM_MID    =  1,
-	WAVEBGM_WAV    =  2,
-	WAVEBGM_OGG    =  3,
-	WAVEBGM_MP3    =  4,
-	WAVEBGM_FLAC   =  5,
-	WAVEBGM_OPUS   =  6,
-	WAVEBGM_MOD    =  7,
-	WAVEBGM_IT     =  8,
-	WAVEBGM_XM     =  9,
-	WAVEBGM_S3M    = 10,
-	WAVEBGM_MAXFORMAT
-} EWaveBGM;
-
-extern EWaveBGM lastWavebgm;
-extern EWaveBGM wavebgm;
-extern int32_t wavebgm_supported[WAVEBGM_MAXFORMAT];
+extern YGS2kEWaveFormat lastWavebgm;
+extern YGS2kEWaveFormat wavebgm;
 extern int32_t fldtr;
 extern int32_t dtc;
 #ifdef ENABLE_KEYBOARD

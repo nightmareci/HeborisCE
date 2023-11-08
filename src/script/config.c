@@ -21,9 +21,8 @@ int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キ�
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-EWaveBGM lastWavebgm = 0;
-EWaveBGM wavebgm;		// BGMの選択 || BGM selection
-int32_t wavebgm_supported[WAVEBGM_MAXFORMAT];
+YGS2kEWaveFormat lastWavebgm = 0;
+YGS2kEWaveFormat wavebgm;		// BGMの選択 || BGM selection
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
 int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON
@@ -113,7 +112,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[61] =
 		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 		((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-		(wavebgm & WAVEBGM_MASK);
+		(wavebgm & YGS_WAVE_MASK);
 	cfgbuf[62] = breakeffect;
 	cfgbuf[63] = showcombo;
 	cfgbuf[64] = top_frame;
@@ -271,9 +270,9 @@ int32_t LoadConfig(void) {
 	bgm = (cfgbuf[61] >> 15) & 0x1;
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
-	wavebgm = cfgbuf[61] & WAVEBGM_MASK;
-	if ((wavebgm & WAVEBGM_FORMAT) < 1 || (wavebgm & WAVEBGM_FORMAT) >= WAVEBGM_MAXFORMAT || !wavebgm_supported[wavebgm & WAVEBGM_FORMAT]) {
-		wavebgm = WAVEBGM_WAV;
+	wavebgm = cfgbuf[61] & YGS_WAVE_MASK;
+	if ((wavebgm & YGS_WAVE_FORMAT) < 1 || (wavebgm & YGS_WAVE_FORMAT) >= YGS_WAVE_MAXFORMAT || !YGS2kWaveFormatSupported(wavebgm)) {
+		wavebgm = YGS_WAVE_WAV;
 	}
 
 	breakeffect = cfgbuf[62];
@@ -421,7 +420,7 @@ void ConfigMenu() {
 		ncfg[44] =
 			(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 			((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-			(wavebgm & WAVEBGM_MASK);
+			(wavebgm & YGS_WAVE_MASK);
 		ncfg[45] = dispnext;
 		ncfg[46] = movesound;
 		ncfg[47] = fontsize;
@@ -809,7 +808,7 @@ void ConfigMenu() {
 				sevolume = (ncfg[44] >> 16) & 0x7F;
 				bgm = (ncfg[44] >> 15) & 0x1;
 				bgmvolume = (ncfg[44] >> 8) & 0x7F;
-				wavebgm = ncfg[44] & WAVEBGM_MASK;
+				wavebgm = ncfg[44] & YGS_WAVE_MASK;
 				dispnext = ncfg[45];
 				movesound = ncfg[46];
 				fontsize = ncfg[47];
@@ -2205,22 +2204,22 @@ void ConfigMenu() {
             sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
 			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (count % 2) * digitc[rots[0]]);
 
-			int32_t wavebgm_temp = ncfg[44] & WAVEBGM_MASK;
-			if(wavebgm_temp & WAVEBGM_SIMPLE) sprintf(string[0], "SIMPLE");
+			int32_t wavebgm_temp = ncfg[44] & YGS_WAVE_MASK;
+			if(wavebgm_temp & YGS_WAVE_SIMPLE) sprintf(string[0], "SIMPLE");
 			else sprintf(string[0], "MULTITRACK");
 			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (count % 2) * digitc[rots[0]]);
 
-			switch(wavebgm_temp & WAVEBGM_FORMAT) {
-				case WAVEBGM_MID: sprintf(string[0], "MIDI"); break;
-				case WAVEBGM_WAV: sprintf(string[0], "WAVE"); break;
-				case WAVEBGM_OGG: sprintf(string[0], "OGG"); break;
-				case WAVEBGM_MP3: sprintf(string[0], "MP3"); break;
-				case WAVEBGM_FLAC: sprintf(string[0], "FLAC"); break;
-				case WAVEBGM_OPUS: sprintf(string[0], "OPUS"); break;
-				case WAVEBGM_MOD: sprintf(string[0], "MOD"); break;
-				case WAVEBGM_IT: sprintf(string[0], "IT"); break;
-				case WAVEBGM_XM: sprintf(string[0], "XM"); break;
-				case WAVEBGM_S3M: sprintf(string[0], "S3M"); break;
+			switch(wavebgm_temp & YGS_WAVE_FORMAT) {
+				case YGS_WAVE_MID: sprintf(string[0], "MIDI"); break;
+				case YGS_WAVE_WAV: sprintf(string[0], "WAVE"); break;
+				case YGS_WAVE_OGG: sprintf(string[0], "OGG"); break;
+				case YGS_WAVE_MP3: sprintf(string[0], "MP3"); break;
+				case YGS_WAVE_FLAC: sprintf(string[0], "FLAC"); break;
+				case YGS_WAVE_OPUS: sprintf(string[0], "OPUS"); break;
+				case YGS_WAVE_MOD: sprintf(string[0], "MOD"); break;
+				case YGS_WAVE_IT: sprintf(string[0], "IT"); break;
+				case YGS_WAVE_XM: sprintf(string[0], "XM"); break;
+				case YGS_WAVE_S3M: sprintf(string[0], "S3M"); break;
 				default: sprintf(string[0], "???"); break;
 			}
 			printFont(15, 5 + MENU_AV_BGM_FORMAT, string[0], (statusc[0] == MENU_AV_BGM_FORMAT) * (count % 2) * digitc[rots[0]]);
@@ -2346,23 +2345,23 @@ void ConfigMenu() {
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
-						ncfg[44] ^= WAVEBGM_SIMPLE;
+						ncfg[44] ^= YGS_WAVE_SIMPLE;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
 						// wavebgm format
-						int32_t wavebgm_format = (ncfg[44] & WAVEBGM_FORMAT) - 1;
+						int32_t wavebgm_format = (ncfg[44] & YGS_WAVE_FORMAT) - 1;
 						do {
 							wavebgm_format += m;
 							if (m < 0 && wavebgm_format < 0) {
-								wavebgm_format = WAVEBGM_MAXFORMAT - 2;
+								wavebgm_format = YGS_WAVE_MAXFORMAT - 2;
 							}
-							else if (m > 0 && wavebgm_format > WAVEBGM_MAXFORMAT - 2) {
+							else if (m > 0 && wavebgm_format > YGS_WAVE_MAXFORMAT - 2) {
 								wavebgm_format = 0;
 							}
-						} while (!wavebgm_supported[wavebgm_format + 1]);
+						} while (!YGS2kWaveFormatSupported(wavebgm_format + 1));
 
-						ncfg[44] = (ncfg[44] & ~WAVEBGM_FORMAT) | (wavebgm_format + 1);
+						ncfg[44] = (ncfg[44] & ~YGS_WAVE_FORMAT) | (wavebgm_format + 1);
 						need_reset = 1;
 					}
 				}

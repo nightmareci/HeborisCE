@@ -91,7 +91,6 @@ set(EXE_HEADERS
 	"${SRC}/src/main_sdl/nanotime.h"
 	"${SRC}/src/main_sdl/gamecontroller.h"
 	"${SRC}/src/main_sdl/include.h"
-	"${SRC}/src/main_sdl/main.h"
 	"${SRC}/src/main_sdl/filesystem.h"
 	"${SRC}/src/main_sdl/SDL_kanji.h"
 	"${SRC}/src/main_sdl/ygs2kfunc.h"

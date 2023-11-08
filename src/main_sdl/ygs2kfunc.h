@@ -6,7 +6,7 @@
 #define		YGS_DEADZONE_MAX	(32767 / 4)
 
 bool YGS2kInit();
-void YGS2kExit();
+void YGS2kExit(int exitStatus);
 bool YGS2kHalt();
 
 typedef enum YGS2kEScreenModeFlag {
@@ -35,6 +35,27 @@ typedef enum YGS2kEScreenIndexMask {
 
 #define YGS_SCREENINDEX_TOSETTING(display, mode) (((int32_t)((mode) & 0xFFFF) << 16) | (int32_t)((display) & 0xFFFF))
 
+typedef enum YGS2kEWaveFormat
+{
+	YGS_WAVE_MASK   = 0xFF,
+
+	// Flag BGM type as "simple", only one bgm.ext for everything.
+	YGS_WAVE_SIMPLE = 0x80,
+
+	YGS_WAVE_FORMAT = 0x7F,
+	YGS_WAVE_MID    =  1,
+	YGS_WAVE_WAV    =  2,
+	YGS_WAVE_OGG    =  3,
+	YGS_WAVE_MP3    =  4,
+	YGS_WAVE_FLAC   =  5,
+	YGS_WAVE_OPUS   =  6,
+	YGS_WAVE_MOD    =  7,
+	YGS_WAVE_IT     =  8,
+	YGS_WAVE_XM     =  9,
+	YGS_WAVE_S3M    = 10,
+	YGS_WAVE_MAXFORMAT
+} YGS2kEWaveFormat;
+
 int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex);
 int YGS2kGetMaxDisplayIndex();
 int YGS2kGetMaxDisplayMode( int displayIndex );
@@ -60,6 +81,7 @@ void YGS2kLoadMusic( const char* filename );
 void YGS2kPlayMusic();
 void YGS2kStopMusic();
 void YGS2kSetVolumeMusic(int vol);
+bool YGS2kWaveFormatSupported(YGS2kEWaveFormat format);
 
 void YGS2kLoadBitmap( const char* filename, int plane, int value );
 void YGS2kSetColorKeyPos(int plane, int x, int y);

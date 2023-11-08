@@ -2015,12 +2015,11 @@ void mainUpdate() {
 	#endif
 
 	case MAIN_QUIT:
-		YGS2kExit();
 		for ( int32_t i = 0 ; i < STRING_MAX ; i ++ )
 		{
 			free(string[i]);
 		}
-		exit(quit(exitStatus));
+		YGS2kExit(exitStatus);
 		break;
 	}
 
@@ -2448,7 +2447,7 @@ void title(void) {
 		YGS2kSetSecondaryOffset(0,0);
 
 		if (bgm) {
-			if(wavebgm & WAVEBGM_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+			if(wavebgm & YGS_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
 				if(!YGS2kIsPlayMusic()) {
 					YGS2kPlayMusic();
 					YGS2kSetVolumeMusic(bgmvolume);
@@ -2750,7 +2749,7 @@ void title(void) {
 		}
 	} else {
 		// モード2: ループから抜ける
-		exit(quit(EXIT_SUCCESS));
+		YGS2kExit(EXIT_SUCCESS);
 	}
 }
 
@@ -4988,7 +4987,7 @@ void statJoinwait(int32_t player) {
 		StopSE(8);
 		PlaySE(10);
 
-		if(!(wavebgm & WAVEBGM_SIMPLE)) {
+		if(!(wavebgm & YGS_WAVE_SIMPLE)) {
 			if(!YGS2kIsPlayWave(62)) YGS2kPlayWave(62);
 		}
 		playerInitial(player);
@@ -5070,10 +5069,10 @@ void statSelectMode(int32_t player) {
 
 	// モードセレクト曲 || Mode select song
 	if (bgm) {
-		if( (!YGS2kIsPlayMusic()) && (wavebgm & WAVEBGM_SIMPLE) ) {
+		if( (!YGS2kIsPlayMusic()) && (wavebgm & YGS_WAVE_SIMPLE) ) {
 			YGS2kPlayMusic();
 			YGS2kSetVolumeMusic(bgmvolume);
-		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(62)) && !(wavebgm & WAVEBGM_SIMPLE) ) {
+		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(62)) && !(wavebgm & YGS_WAVE_SIMPLE) ) {
 			YGS2kPlayWave(62);
 		}
 	}
@@ -6586,7 +6585,7 @@ void statReady(int32_t player) {
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 			else FP_bonus[player] = 10800;
 		}
-		if(!(wavebgm & WAVEBGM_SIMPLE)) {
+		if(!(wavebgm & YGS_WAVE_SIMPLE)) {
 			if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
 		}
 
@@ -6770,7 +6769,7 @@ void statReady(int32_t player) {
 				onRecord[player] = 1;				// リプレイ記録開始
 			}
 		} else {
-			if(!(wavebgm & WAVEBGM_SIMPLE)) {
+			if(!(wavebgm & YGS_WAVE_SIMPLE)) {
 				if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
 			}
 
@@ -7414,7 +7413,7 @@ void setGameOver(int32_t player) {
 	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-			if(wavebgm & WAVEBGM_SIMPLE) {
+			if(wavebgm & YGS_WAVE_SIMPLE) {
 				if(YGS2kIsPlayMusic()) YGS2kStopMusic();
 			} else {
 				StopAllBGM();
@@ -10054,7 +10053,7 @@ void statGameOver(int32_t player) {
 			//YGS2kPlayWave(8);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-				if(wavebgm & WAVEBGM_SIMPLE) {
+				if(wavebgm & YGS_WAVE_SIMPLE) {
 					if(YGS2kIsPlayMusic()) YGS2kStopMusic();
 				} else {
 					StopAllBGM();
@@ -11660,7 +11659,7 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & WAVEBGM_SIMPLE) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & YGS_WAVE_SIMPLE) )
 		YGS2kPlayWave(63);
 /*
 	// リプレイセーブ#1.60c7i5
@@ -12255,7 +12254,7 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & WAVEBGM_SIMPLE) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & YGS_WAVE_SIMPLE) )
 		YGS2kPlayWave(63);
 
 	//警告音が鳴っていたら止める
@@ -13172,7 +13171,7 @@ void winner() {
 	int32_t		player, i, j, block, win, obj, c, kosa;
 
 	// BGM停止
-	if(!(wavebgm & WAVEBGM_SIMPLE)) StopAllBGM();
+	if(!(wavebgm & YGS_WAVE_SIMPLE)) StopAllBGM();
 	// 残り時間が少ない時の効果音も停止
 	StopSE(32);
 
@@ -17332,25 +17331,25 @@ void loadWaves(void) {
 }
 
 /* 拡張子を決める || Decide which extension to use based on the format */
-void strcatExt(char* str, EWaveBGM fmt) {
-	switch (fmt & WAVEBGM_FORMAT) {
-		case WAVEBGM_MID: YGS2kStrCat(str, ".mid"); break;   // MIDI
+void strcatExt(char* str, YGS2kEWaveFormat fmt) {
+	switch (fmt & YGS_WAVE_FORMAT) {
+		case YGS_WAVE_MID: YGS2kStrCat(str, ".mid"); break;   // MIDI
 		default:
-		case WAVEBGM_WAV: YGS2kStrCat(str, ".wav"); break;   // WAV
-		case WAVEBGM_OGG: YGS2kStrCat(str, ".ogg"); break;   // OGG
-		case WAVEBGM_MP3: YGS2kStrCat(str, ".mp3"); break;   // MP3
-		case WAVEBGM_FLAC: YGS2kStrCat(str, ".flac"); break; // FLAC
-		case WAVEBGM_OPUS: YGS2kStrCat(str, ".opus"); break; // OPUS
-		case WAVEBGM_MOD: YGS2kStrCat(str, ".mod"); break;   // Protracker
-		case WAVEBGM_IT: YGS2kStrCat(str, ".it"); break;     // Impulse Tracker
-		case WAVEBGM_XM: YGS2kStrCat(str, ".xm"); break;     // FastTracker II
-		case WAVEBGM_S3M: YGS2kStrCat(str, ".s3m"); break;   // Scream Tracker
+		case YGS_WAVE_WAV: YGS2kStrCat(str, ".wav"); break;   // WAV
+		case YGS_WAVE_OGG: YGS2kStrCat(str, ".ogg"); break;   // OGG
+		case YGS_WAVE_MP3: YGS2kStrCat(str, ".mp3"); break;   // MP3
+		case YGS_WAVE_FLAC: YGS2kStrCat(str, ".flac"); break; // FLAC
+		case YGS_WAVE_OPUS: YGS2kStrCat(str, ".opus"); break; // OPUS
+		case YGS_WAVE_MOD: YGS2kStrCat(str, ".mod"); break;   // Protracker
+		case YGS_WAVE_IT: YGS2kStrCat(str, ".it"); break;     // Impulse Tracker
+		case YGS_WAVE_XM: YGS2kStrCat(str, ".xm"); break;     // FastTracker II
+		case YGS_WAVE_S3M: YGS2kStrCat(str, ".s3m"); break;   // Scream Tracker
 	}
 }
 
 /* BGM読み込み */
 void loadBGM(void) {
-	if (wavebgm & WAVEBGM_SIMPLE) {
+	if (wavebgm & YGS_WAVE_SIMPLE) {
 		YGS2kStrCpy(string[0], "res/bgm/bgm");
 		strcatExt(string[0], wavebgm);
 		YGS2kLoadMusic(string[0]);

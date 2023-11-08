@@ -15,20 +15,6 @@
 // TODO: Move as much as possible of the Emscripten code into its own
 // source(s). The __EMSCRIPTEN__ checks really ugly up the code.
 
-static int quitLevel = 0;
-int quit(int status) {
-	switch ( quitLevel )
-	{
-	case 5: FSDeInit();
-	case 4: Mix_CloseAudio();
-	case 3: Mix_Quit();
-	case 2: IMG_Quit();
-	case 1: SDL_Quit();
-	default: break;
-	}
-	return status;
-}
-
 #ifdef __EMSCRIPTEN__
 void startup() {
 	emscripten_set_main_loop(mainUpdate, 0, true);
@@ -37,88 +23,9 @@ void startup() {
 
 int main(int argc, char** argv)
 {
-	/* SDLの初期化 || SDL initialization */
-	if ( SDL_Init(
-		SDL_INIT_AUDIO | SDL_INIT_VIDEO
-		#ifdef ENABLE_JOYSTICK
-		| SDL_INIT_JOYSTICK
-		#endif
-		#ifdef ENABLE_GAME_CONTROLLER
-		| SDL_INIT_GAMECONTROLLER
-		#endif
-	) < 0 )
-	{
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		return quit(EXIT_FAILURE);
-	}
-
-	// If this fails, it doesn't matter, the game will still work. But it's
-	// called because if it works, the game might perform better.
-	SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
-
-	quitLevel++;
-	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
-
-	/* 画像の初期化 || Image initialization */
-	if ( IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
-	{
-		fprintf(stderr, "Couldn't initialize image support: %s\n", IMG_GetError());
-		return quit(EXIT_FAILURE);
-	}
-	quitLevel++;
-
-	/* サウンドの初期化 || Sound initialization */
-	const int formatsInitialized = Mix_Init(
-		MIX_INIT_MID |
-		MIX_INIT_OGG |
-		MIX_INIT_MP3 |
-		MIX_INIT_FLAC |
-		MIX_INIT_OPUS |
-		MIX_INIT_MOD
-	);
-	if ( !formatsInitialized )
-	{
-		fprintf(stderr, "Couldn't initialize sound support: %s\n", Mix_GetError());
-		return quit(EXIT_FAILURE);
-	}
-	quitLevel++;
-
-	// TODO: Refactor so this source file doesn't access anything in the
-	// game code.
-	wavebgm_supported[WAVEBGM_MID] = !!(formatsInitialized & MIX_INIT_MID);
-	wavebgm_supported[WAVEBGM_WAV] = 1; // WAVEはいつでも利用可能 || WAVE is always supported
-	wavebgm_supported[WAVEBGM_OGG] = !!(formatsInitialized & MIX_INIT_OGG);
-	wavebgm_supported[WAVEBGM_MP3] = !!(formatsInitialized & MIX_INIT_MP3);
-	wavebgm_supported[WAVEBGM_FLAC] = !!(formatsInitialized & MIX_INIT_FLAC);
-	wavebgm_supported[WAVEBGM_OPUS] = !!(formatsInitialized & MIX_INIT_OPUS);
-	wavebgm_supported[WAVEBGM_MOD] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[WAVEBGM_IT] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[WAVEBGM_XM] = !!(formatsInitialized & MIX_INIT_MOD);
-	wavebgm_supported[WAVEBGM_S3M] = !!(formatsInitialized & MIX_INIT_MOD);
-
-#ifdef __EMSCRIPTEN__
-	// In testing on desktop Linux, Firefox seems to cope with a 1024 byte
-	// buffer fine, but Chrome produces a fair bit of audio breakup. 2048
-	// seems to work fine in both, though.
-	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
-#else
-	// A 1024 byte buffer seems to be a good choice for all native code
-	// ports. It's reasonably low latency but doesn't result in audio
-	// breakup.
-	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
-#endif
-	{
-		fprintf(stderr, "Couldn't open audio: %s\n", Mix_GetError());
-		return quit(EXIT_FAILURE);
-	}
-	quitLevel++;
-
-	Mix_AllocateChannels(100);
-
 	if (!FSInit(argc, argv)) {
-		return quit(EXIT_FAILURE);
+		return EXIT_FAILURE;
 	}
-	quitLevel++;
 
 #ifdef ENABLE_GAME_CONTROLLER
 	// Must be called after FSInit, as it reads gamecontrollerdb.txt in the
@@ -135,6 +42,7 @@ int main(int argc, char** argv)
 	};
 	for (size_t i = 0u; i < sizeof(directories) / sizeof(*directories); i++) {
 		if (!FSMkdir(directories[i])) {
+			FSDeInit();
 			return EXIT_FAILURE;
 		}
 	}

@@ -988,7 +988,7 @@ void statTomoyoResult(int32_t player) {
 
 	// 音楽を流す
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( (status[1 - player] == 0) && (!YGS2kIsPlayWave(63)) && !(wavebgm & WAVEBGM_SIMPLE) ) YGS2kPlayWave(63);
+	if( (status[1 - player] == 0) && (!YGS2kIsPlayWave(63)) && !(wavebgm & YGS_WAVE_SIMPLE) ) YGS2kPlayWave(63);
 
 	// 警告音が鳴っていたら止める
 	StopSE(40);

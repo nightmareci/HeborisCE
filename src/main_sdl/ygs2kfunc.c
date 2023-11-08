@@ -39,6 +39,7 @@ static int			s_iYGSSoundVolume[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSExMusic[YGS_SOUND_MAX];
 static Mix_Music		*s_pYGSMusic;
 static int			s_iYGSMusicVolume;
+static bool s_bWaveFormatSupported[YGS_WAVE_MAXFORMAT];
 
 #define		YGS_KANJIFONTFILE_MAX	3
 static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
@@ -60,6 +61,8 @@ static int32_t			s_iScreenIndex;
 
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
+
+static int quitLevel;
 
 static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, int b, int size);
 static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);
@@ -109,6 +112,86 @@ static float YGS2kGetScreenSubpixelOffset()
 
 bool YGS2kInit()
 {
+	quitLevel = 0;
+
+	/* SDLの初期化 || SDL initialization */
+	if ( SDL_Init(
+		SDL_INIT_AUDIO | SDL_INIT_VIDEO
+		#ifdef ENABLE_JOYSTICK
+		| SDL_INIT_JOYSTICK
+		#endif
+		#ifdef ENABLE_GAME_CONTROLLER
+		| SDL_INIT_GAMECONTROLLER
+		#endif
+	) < 0 )
+	{
+		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+		YGS2kExit(EXIT_FAILURE);
+	}
+
+	// If this fails, it doesn't matter, the game will still work. But it's
+	// called because if it works, the game might perform better.
+	SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+
+	quitLevel++;
+	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
+
+	/* 画像の初期化 || Image initialization */
+	if ( IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
+	{
+		fprintf(stderr, "Couldn't initialize image support: %s\n", IMG_GetError());
+		YGS2kExit(EXIT_FAILURE);
+	}
+	quitLevel++;
+
+	/* サウンドの初期化 || Sound initialization */
+	const int formatsInitialized = Mix_Init(
+		MIX_INIT_MID |
+		MIX_INIT_OGG |
+		MIX_INIT_MP3 |
+		MIX_INIT_FLAC |
+		MIX_INIT_OPUS |
+		MIX_INIT_MOD
+	);
+	if ( !formatsInitialized )
+	{
+		fprintf(stderr, "Couldn't initialize sound support: %s\n", Mix_GetError());
+		YGS2kExit(EXIT_FAILURE);
+	}
+	quitLevel++;
+
+	// TODO: Refactor so this source file doesn't access anything in the
+	// game code.
+	s_bWaveFormatSupported[YGS_WAVE_MID] = !!(formatsInitialized & MIX_INIT_MID);
+	s_bWaveFormatSupported[YGS_WAVE_WAV] = 1; // WAVEはいつでも利用可能 || WAVE is always supported
+	s_bWaveFormatSupported[YGS_WAVE_OGG] = !!(formatsInitialized & MIX_INIT_OGG);
+	s_bWaveFormatSupported[YGS_WAVE_MP3] = !!(formatsInitialized & MIX_INIT_MP3);
+	s_bWaveFormatSupported[YGS_WAVE_FLAC] = !!(formatsInitialized & MIX_INIT_FLAC);
+	s_bWaveFormatSupported[YGS_WAVE_OPUS] = !!(formatsInitialized & MIX_INIT_OPUS);
+	s_bWaveFormatSupported[YGS_WAVE_MOD] = !!(formatsInitialized & MIX_INIT_MOD);
+	s_bWaveFormatSupported[YGS_WAVE_IT] = !!(formatsInitialized & MIX_INIT_MOD);
+	s_bWaveFormatSupported[YGS_WAVE_XM] = !!(formatsInitialized & MIX_INIT_MOD);
+	s_bWaveFormatSupported[YGS_WAVE_S3M] = !!(formatsInitialized & MIX_INIT_MOD);
+
+#ifdef __EMSCRIPTEN__
+	// In testing on desktop Linux, Firefox seems to cope with a 1024 byte
+	// buffer fine, but Chrome produces a fair bit of audio breakup. 2048
+	// seems to work fine in both, though.
+	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
+#else
+	// A 1024 byte buffer seems to be a good choice for all native code
+	// ports. It's reasonably low latency but doesn't result in audio
+	// breakup.
+	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
+#endif
+	{
+		fprintf(stderr, "Couldn't open audio: %s\n", Mix_GetError());
+		YGS2kExit(EXIT_FAILURE);
+	}
+	quitLevel++;
+
+	Mix_AllocateChannels(100);
+
 	int		configChanged = 0;
 
 	s_iNewOffsetX = 0;	s_iNewOffsetY = 0;
@@ -155,9 +238,31 @@ bool YGS2kInit()
 	return true;
 }
 
-void YGS2kExit()
+void YGS2kExit(int exitStatus)
 {
 	YGS2kInputClose();
+
+	/* サウンドの解放 */
+	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
+	{
+		s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
+
+		if ( s_pYGSSound[i] )
+		{
+			Mix_FreeChunk(s_pYGSSound[i]);
+			s_pYGSSound[i] = NULL;
+		}
+		if ( s_pYGSExMusic[i] )
+		{
+			Mix_FreeMusic(s_pYGSExMusic[i]);
+			s_pYGSExMusic[i] = NULL;
+		}
+	}
+	if ( s_pYGSMusic )
+	{
+		Mix_FreeMusic(s_pYGSMusic);
+		s_pYGSMusic = NULL;
+	}
 
 	/* テクスチャ領域の解放 */
 	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
@@ -185,30 +290,19 @@ void YGS2kExit()
 		s_pScreenWindow = NULL;
 	}
 
-	/* サウンドの解放 */
-	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
-	{
-		s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
-
-		if ( s_pYGSSound[i] )
-		{
-			Mix_FreeChunk(s_pYGSSound[i]);
-			s_pYGSSound[i] = NULL;
-		}
-		if ( s_pYGSExMusic[i] )
-		{
-			Mix_FreeMusic(s_pYGSExMusic[i]);
-			s_pYGSExMusic[i] = NULL;
-		}
-	}
 
 	YGS2kPrivateKanjiFontFinalize();
 
-	if ( s_pYGSMusic )
+	switch ( quitLevel )
 	{
-		Mix_FreeMusic(s_pYGSMusic);
-		s_pYGSMusic = NULL;
+	case 5: FSDeInit();
+	case 4: Mix_CloseAudio();
+	case 3: Mix_Quit();
+	case 2: IMG_Quit();
+	case 1: SDL_Quit();
+	default: break;
 	}
+	exit(exitStatus);
 }
 
 bool YGS2kHalt()
@@ -367,7 +461,7 @@ static EM_BOOL YGS2kEmscriptenResizeCallback(int eventType, const EmscriptenUiEv
 
 int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 {
-	Uint32		windowFlags = SDL_WINDOW_SHOWN;
+	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 	int		windowX, windowY;
 	int		logicalWidth, logicalHeight;
 
@@ -396,7 +490,6 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 	) {
 		*screenMode = DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
-		windowFlags |= SDL_WINDOW_RESIZABLE;
 		windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(*screenIndex);
 		windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(*screenIndex);
 	}
@@ -408,8 +501,6 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 		{
 		case YGS_SCREENMODE_WINDOW_MAXIMIZED:
 			windowFlags |= SDL_WINDOW_MAXIMIZED;
-		case YGS_SCREENMODE_WINDOW:
-			windowFlags |= SDL_WINDOW_RESIZABLE;
 			break;
 
 		case YGS_SCREENMODE_FULLSCREEN_DESKTOP:
@@ -1013,6 +1104,10 @@ void YGS2kSetVolumeMusic(int vol)
 	if ( volume < 0 )   { volume = 0; }
 	s_iYGSMusicVolume = volume;
 	Mix_VolumeMusic(volume);
+}
+
+bool YGS2kWaveFormatSupported(YGS2kEWaveFormat format) {
+	return s_bWaveFormatSupported[format & YGS_WAVE_FORMAT];
 }
 
 void YGS2kSetColorKeyPos(int plane, int x, int y)

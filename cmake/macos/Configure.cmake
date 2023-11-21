@@ -3,7 +3,7 @@ set(FRAMEWORK_VER "MACOS-SDL2")
 # Builds Mac application bundle, packaged into a DMG with CPack by default.
 
 list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
-list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/phsyfsrwops.h")
+list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
 
 if(ENABLE_GAME_CONTROLLER)
 	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller.c")

@@ -1470,7 +1470,12 @@ void mainUpdate() {
 		mainLoopState = MAIN_TITLE;
 		init = true;
 
-		YGS2kInit();
+		if (!YGS2kInit()) {
+			loopFlag = 0;
+			mainLoopState = MAIN_QUIT;
+			exitStatus = EXIT_FAILURE;
+			break;
+		}
 		if (YGS2kIsPlayMusic()) YGS2kStopMusic();
 		gameInit();
 
@@ -1589,11 +1594,17 @@ void mainUpdate() {
 	}
 
 	case MAIN_START: {
+		restart = 0;
 		mainLoopState = MAIN_INIT_TEXT;
 		init = true;
 		loopFlag = true;
 
-		YGS2kInit();
+		if (!YGS2kInit()) {
+			loopFlag = 0;
+			mainLoopState = MAIN_QUIT;
+			exitStatus = EXIT_FAILURE;
+			break;
+		}
 		gameInit();
 
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -1765,7 +1776,7 @@ void mainUpdate() {
 
 		// セクションタイムランキング読み込み
 		if( ST_RankingLoad() ) {
-				ST_RankingInit();
+			ST_RankingInit();
 		}
 
 		PlayerdataLoad();
@@ -1783,128 +1794,6 @@ void mainUpdate() {
 		domirror = 0;	// 鏡像を無効に
 
 		if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
-
-#if 1
-		mainLoopState = MAIN_TITLE;
-		init = true;
-
-		//YGS2kInit();
-		#if 0
-		gameInit();
-
-		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
-			SetDefaultConfig();
-			LoadConfig();
-		}
-
-		int32_t oldScreenMode = screenMode;
-		int32_t oldScreenIndex = screenIndex;
-		if ( !YGS2kSetScreen(&screenMode, &screenIndex) )
-		{
-			loopFlag = 0;
-			mainLoopState = MAIN_QUIT;
-			exitStatus = EXIT_FAILURE;
-			break;
-		}
-		if ( screenMode != oldScreenMode || screenIndex != oldScreenIndex )
-		{
-			SaveConfig();
-		}
-
-		YGS2kSetFillColor(0);
-		YGS2kClearSecondary();
-
-		for ( int layer = 1 ; layer <= 5 ; layer ++ )
-		{
-			YGS2kTextSize(layer, 12);
-			YGS2kTextBackColorDisable(layer);
-		}
-
-		hnext[0] = dispnext;	// #1.60c7o8
-		hnext[1] = dispnext;	// #1.60c7o8
-		versus_rot[0] = rots[0];
-		versus_rot[1] = rots[1];
-
-		// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-		if ( screenMode & YGS_SCREENMODE_DETAILLEVEL ) {
-			setDrawRate(2);
-		} else {
-			setDrawRate(1);
-		}
-
-		loadGraphics(maxPlay);
-
-		if(se && se != lastSE) {
-			loadWaves();	// #1.60c7o5
-		}
-		for(int i = 0; i < 50; i++) se_play[i] = 0;
-
-		if(bgm && (bgm != lastBGM || wavebgm != lastWavebgm)) {
-			for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
-			{
-				bgmload[i] = 1;
-			}
-
-			loadBGM();	// #1.60c7s6
-			lastWavebgm = wavebgm;
-		}
-		else {
-			memset(bgmload, 0, sizeof(bgmload));
-		}
-
-		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
-		{
-			YGS2kTextLayerOff(layer);
-		}
-
-		if (ranking_type != last_ranking_type) {
-			int32_t i;
-			if(ranking_type==0){
-				i = RankingLoad();
-				if(i == 1) RankingInit();
-				if(i == 2) RankingConvert();
-			}else if(ranking_type==1){
-				i = RankingLoad2();
-				if(i == 1) RankingInit2();
-			}else{
-				i = RankingLoad3();
-				if(i == 1) RankingInit3();
-			}
-		}
-
-		// 連続スナップ取得領域設定
-		if((capx < 0) || (capx > 320)) capx = capx % 320;
-		if((capy < 0) || (capy > 240)) capy = capy % 240;
-		if(capw < 1) capw = 1;
-		if(caph < 1) caph = 1;
-		if(capx + capw > 320) capw = 320 - capx;
-		if(capy + caph > 240) caph = 240 - capy;
-
-		// スタッフロール用データを初期化
-		//staffInit();
-
-		// セクションタイムランキング読み込み
-		if( ST_RankingLoad() ) {
-			ST_RankingInit();
-		}
-
-		PlayerdataLoad();
-
-		// YGS2kSetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
-		/* ここからポーズ有効 #1.60c7p9ex */
-		// YGS2kSetConstParam("EnablePause", 1);
-
-		StopAllWaves();
-		StopAllBGM();
-
-		backupSetups();	// 設定内容をバックアップ #1.60c7o6
-		domirror = 0;	// 鏡像を無効に
-
-		if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
-
-		restart = 0;
-		#endif
-#endif
 
 		goto skipSpriteTime;
 	}

@@ -6,6 +6,7 @@
 #define		YGS_DEADZONE_MAX	(32767 / 4)
 
 bool YGS2kInit();
+void YGS2kDeinit();
 void YGS2kExit(int exitStatus);
 bool YGS2kHalt();
 
@@ -56,10 +57,10 @@ typedef enum YGS2kEWaveFormat
 	YGS_WAVE_MAXFORMAT
 } YGS2kEWaveFormat;
 
-int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex);
+bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex);
 int YGS2kGetMaxDisplayIndex();
 int YGS2kGetMaxDisplayMode( int displayIndex );
-int YGS2kRenderLevelLowSupported();
+bool YGS2kRenderLevelLowSupported();
 
 void YGS2kSetConstParam ( const char *param, int value );
 

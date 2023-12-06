@@ -45,7 +45,7 @@ typedef struct {
 	int32_t rots[2];
 	int32_t segacheat;
 
-	int32_t		screenMode;
+	YGS2kEScreenModeFlag	screenMode;
 	int32_t		screenIndex;
 	int32_t		nextblock;
 	uint32_t	cfgversion;

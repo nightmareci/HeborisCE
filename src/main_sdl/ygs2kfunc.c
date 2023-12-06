@@ -24,8 +24,6 @@ typedef enum YGS2kESoundType
 	YGS_SOUNDTYPE_MUS,
 } YGS2kESoundType;
 
-static bool			s_bInitFast = false;
-
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pScreenRenderTarget = NULL;
@@ -62,7 +60,7 @@ static int32_t			s_iScreenIndex;
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
-static int quitLevel;
+static int s_iQuitLevel;
 
 static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, int b, int size);
 static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);
@@ -112,10 +110,11 @@ static float YGS2kGetScreenSubpixelOffset()
 
 bool YGS2kInit()
 {
-	quitLevel = 0;
+	static bool initFast = false;
+	s_iQuitLevel = 0;
 
 	/* SDLの初期化 || SDL initialization */
-	if ( SDL_Init(
+	if ( !initFast && SDL_Init(
 		SDL_INIT_AUDIO | SDL_INIT_VIDEO
 		#ifdef ENABLE_JOYSTICK
 		| SDL_INIT_JOYSTICK
@@ -131,66 +130,68 @@ bool YGS2kInit()
 
 	// If this fails, it doesn't matter, the game will still work. But it's
 	// called because if it works, the game might perform better.
-	SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+	if (!initFast) SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 
-	quitLevel++;
-	SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
+	s_iQuitLevel++;
+	if (!initFast) SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
 
 	/* 画像の初期化 || Image initialization */
-	if ( IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
+	if ( !initFast && IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
 	{
 		fprintf(stderr, "Couldn't initialize image support: %s\n", IMG_GetError());
 		YGS2kExit(EXIT_FAILURE);
 	}
-	quitLevel++;
+	s_iQuitLevel++;
 
 	/* サウンドの初期化 || Sound initialization */
-	const int formatsInitialized = Mix_Init(
-		MIX_INIT_MID |
-		MIX_INIT_OGG |
-		MIX_INIT_MP3 |
-		MIX_INIT_FLAC |
-		MIX_INIT_OPUS |
-		MIX_INIT_MOD
-	);
-	if ( !formatsInitialized )
-	{
-		fprintf(stderr, "Couldn't initialize sound support: %s\n", Mix_GetError());
-		YGS2kExit(EXIT_FAILURE);
+	if (!initFast) {
+		const int formatsInitialized = Mix_Init(
+			MIX_INIT_MID |
+			MIX_INIT_OGG |
+			MIX_INIT_MP3 |
+			MIX_INIT_FLAC |
+			MIX_INIT_OPUS |
+			MIX_INIT_MOD
+		);
+		if ( !formatsInitialized )
+		{
+			fprintf(stderr, "Couldn't initialize sound support: %s\n", Mix_GetError());
+			YGS2kExit(EXIT_FAILURE);
+		}
+
+		s_bWaveFormatSupported[YGS_WAVE_MID] = !!(formatsInitialized & MIX_INIT_MID);
+		s_bWaveFormatSupported[YGS_WAVE_WAV] = 1; // WAVEはいつでも利用可能 || WAVE is always supported
+		s_bWaveFormatSupported[YGS_WAVE_OGG] = !!(formatsInitialized & MIX_INIT_OGG);
+		s_bWaveFormatSupported[YGS_WAVE_MP3] = !!(formatsInitialized & MIX_INIT_MP3);
+		s_bWaveFormatSupported[YGS_WAVE_FLAC] = !!(formatsInitialized & MIX_INIT_FLAC);
+		s_bWaveFormatSupported[YGS_WAVE_OPUS] = !!(formatsInitialized & MIX_INIT_OPUS);
+		s_bWaveFormatSupported[YGS_WAVE_MOD] = !!(formatsInitialized & MIX_INIT_MOD);
+		s_bWaveFormatSupported[YGS_WAVE_IT] = !!(formatsInitialized & MIX_INIT_MOD);
+		s_bWaveFormatSupported[YGS_WAVE_XM] = !!(formatsInitialized & MIX_INIT_MOD);
+		s_bWaveFormatSupported[YGS_WAVE_S3M] = !!(formatsInitialized & MIX_INIT_MOD);
 	}
-	quitLevel++;
+	s_iQuitLevel++;
 
-	// TODO: Refactor so this source file doesn't access anything in the
-	// game code.
-	s_bWaveFormatSupported[YGS_WAVE_MID] = !!(formatsInitialized & MIX_INIT_MID);
-	s_bWaveFormatSupported[YGS_WAVE_WAV] = 1; // WAVEはいつでも利用可能 || WAVE is always supported
-	s_bWaveFormatSupported[YGS_WAVE_OGG] = !!(formatsInitialized & MIX_INIT_OGG);
-	s_bWaveFormatSupported[YGS_WAVE_MP3] = !!(formatsInitialized & MIX_INIT_MP3);
-	s_bWaveFormatSupported[YGS_WAVE_FLAC] = !!(formatsInitialized & MIX_INIT_FLAC);
-	s_bWaveFormatSupported[YGS_WAVE_OPUS] = !!(formatsInitialized & MIX_INIT_OPUS);
-	s_bWaveFormatSupported[YGS_WAVE_MOD] = !!(formatsInitialized & MIX_INIT_MOD);
-	s_bWaveFormatSupported[YGS_WAVE_IT] = !!(formatsInitialized & MIX_INIT_MOD);
-	s_bWaveFormatSupported[YGS_WAVE_XM] = !!(formatsInitialized & MIX_INIT_MOD);
-	s_bWaveFormatSupported[YGS_WAVE_S3M] = !!(formatsInitialized & MIX_INIT_MOD);
-
+	if (!initFast) {
 #ifdef __EMSCRIPTEN__
-	// In testing on desktop Linux, Firefox seems to cope with a 1024 byte
-	// buffer fine, but Chrome produces a fair bit of audio breakup. 2048
-	// seems to work fine in both, though.
-	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
+		// In testing on desktop Linux, Firefox seems to cope with a 1024 byte
+		// buffer fine, but Chrome produces a fair bit of audio breakup. 2048
+		// seems to work fine in both, though.
+		if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
 #else
-	// A 1024 byte buffer seems to be a good choice for all native code
-	// ports. It's reasonably low latency but doesn't result in audio
-	// breakup.
-	if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
+		// A 1024 byte buffer seems to be a good choice for all native code
+		// ports. It's reasonably low latency but doesn't result in audio
+		// breakup.
+		if ( Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0 )
 #endif
-	{
-		fprintf(stderr, "Couldn't open audio: %s\n", Mix_GetError());
-		YGS2kExit(EXIT_FAILURE);
+		{
+			fprintf(stderr, "Couldn't open audio: %s\n", Mix_GetError());
+			YGS2kExit(EXIT_FAILURE);
+		}
 	}
-	quitLevel++;
+	s_iQuitLevel++;
 
-	Mix_AllocateChannels(100);
+	if (!initFast) Mix_AllocateChannels(100);
 
 	int		configChanged = 0;
 
@@ -199,24 +200,27 @@ bool YGS2kInit()
 
 	YGS2kSetFPS(60);
 
-	if (!s_bInitFast) YGS2kInputOpen();
+	if (!initFast) YGS2kInputOpen();
 
-    /* テクスチャ領域の初期化 */
-    if (!s_bInitFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
+	/* テクスチャ領域の初期化 || Initialize the texture pointers */
+	if (!initFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
 
-	/* サウンドの初期化 */
+	/* サウンドの初期化 || Initialize sound data */
 	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
 	{
-		if (!s_bInitFast) s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
+		if ( !initFast )
+		{
+			s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
+			s_pYGSSound[i] = NULL;
+			s_pYGSExMusic[i] = NULL;
+		}
 		s_iYGSSoundVolume[i] = 0;
-		if (!s_bInitFast) s_pYGSSound[i] = NULL;
-		if (!s_bInitFast) s_pYGSExMusic[i] = NULL;
 	}
 
-	if (!s_bInitFast) s_pYGSMusic = NULL;
+	if ( !initFast ) s_pYGSMusic = NULL;
 	s_iYGSMusicVolume = 0;
 
-	/* テキストレイヤーの初期化 */
+	/* テキストレイヤーの初期化 || Initialize the text layers */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
 		memset(&s_TextLayer[i], 0, sizeof(YGS2kSTextLayer));
@@ -224,7 +228,7 @@ bool YGS2kInit()
 		s_TextLayer[i].size = 16;
 	}
 
-	if (!s_bInitFast) YGS2kPrivateKanjiFontInitialize();
+	if ( !initFast ) YGS2kPrivateKanjiFontInitialize();
 
 	s_bLastFrameSkipped = false;
 	s_uFPSCount = 0u;
@@ -232,13 +236,12 @@ bool YGS2kInit()
 	s_bNoFrameskip		= false;
 
 	srand((unsigned)time(NULL));
-
-	s_bInitFast = true;
 	
+	initFast = true;
 	return true;
 }
 
-void YGS2kExit(int exitStatus)
+void YGS2kDeinit()
 {
 	YGS2kInputClose();
 
@@ -293,7 +296,7 @@ void YGS2kExit(int exitStatus)
 
 	YGS2kPrivateKanjiFontFinalize();
 
-	switch ( quitLevel )
+	switch ( s_iQuitLevel )
 	{
 	case 5: FSDeInit();
 	case 4: Mix_CloseAudio();
@@ -302,6 +305,11 @@ void YGS2kExit(int exitStatus)
 	case 1: SDL_Quit();
 	default: break;
 	}
+}
+
+void YGS2kExit(int exitStatus)
+{
+	YGS2kDeinit();
 	exit(exitStatus);
 }
 
@@ -459,34 +467,33 @@ static EM_BOOL YGS2kEmscriptenResizeCallback(int eventType, const EmscriptenUiEv
 }
 #endif
 
-int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
+bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 {
 	Uint32		windowFlags = SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
 	int		windowX, windowY;
 	int		logicalWidth, logicalHeight;
 
-	/* 画面の設定 */
+	/* 画面の設定 || Set up the screen */
+
+	/* Validate the window type */
 	YGS2kEScreenModeFlag windowType = *screenMode & YGS_SCREENMODE_WINDOWTYPE;
-	if (windowType < 0 || windowType >= YGS_SCREENMODE_NUMWINDOWTYPES) {
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
+	if ( windowType < 0 || windowType >= YGS_SCREENMODE_NUMWINDOWTYPES )
+	{
+		goto fail;
 	}
+
 	int displayIndex = YGS_SCREENINDEX_DISPLAY_TOVALUE(*screenIndex);
 	int modeIndex = YGS_SCREENINDEX_MODE_TOVALUE(*screenIndex);
 	int numVideoDisplays = SDL_GetNumVideoDisplays();
 	int numDisplayModes = SDL_GetNumDisplayModes(displayIndex);
-	if (numVideoDisplays < 0 || numDisplayModes < 0) {
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
+	if ( numVideoDisplays < 0 || numDisplayModes < 0 )
+	{
+		goto fail;
 	}
 
 	if (
-			displayIndex >= numVideoDisplays ||
-			((windowType == YGS_SCREENMODE_FULLSCREEN || windowType == YGS_SCREENMODE_FULLSCREEN_DESKTOP) && modeIndex >= numDisplayModes)
+		displayIndex >= numVideoDisplays ||
+		((windowType == YGS_SCREENMODE_FULLSCREEN || windowType == YGS_SCREENMODE_FULLSCREEN_DESKTOP) && modeIndex >= numDisplayModes)
 	) {
 		*screenMode = DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
@@ -528,7 +535,7 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 	s_iLogicalWidth  = logicalWidth;
 	s_iLogicalHeight = logicalHeight;
 
-	/* ウィンドウの作成 */
+	/* ウィンドウの作成 || Create and set up the window */
 	if (
 		windowType == YGS_SCREENMODE_FULLSCREEN ||
 		windowType == YGS_SCREENMODE_FULLSCREEN_DESKTOP
@@ -544,22 +551,24 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 		{
 			status = SDL_GetDesktopDisplayMode(displayIndex, &displayMode);
 		}
-		if ( status < 0)
+		if ( status < 0 )
 		{
 			*screenMode &= ~YGS_SCREENMODE_WINDOWTYPE;
 			*screenMode |= YGS_SCREENMODE_WINDOW;
 			*screenIndex = 0;
 			if ( !s_pScreenWindow )
 			{
-				s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), logicalWidth, logicalHeight, SDL_WINDOW_HIDDEN |
-				SDL_WINDOW_RESIZABLE
+				s_pScreenWindow = SDL_CreateWindow(
+					YGS_GAME_CAPTION,
+					SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex),
+					SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex),
+					logicalWidth,
+					logicalHeight,
+					SDL_WINDOW_HIDDEN | SDL_WINDOW_RESIZABLE
 				);
 				if ( !s_pScreenWindow )
 				{
-					s_pScreenRenderTarget = NULL;
-					s_pScreenRenderer = NULL;
-					s_pScreenWindow = NULL;
-					return 0;
+					goto fail;
 				}
 			}
 			else
@@ -568,13 +577,9 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 				SDL_SetWindowSize(s_pScreenWindow, logicalWidth, logicalHeight);
 				SDL_SetWindowResizable(s_pScreenWindow, SDL_TRUE);
 				SDL_SetWindowPosition(s_pScreenWindow, SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex), SDL_WINDOWPOS_CENTERED_DISPLAY(displayIndex));
-				if (SDL_SetWindowFullscreen(s_pScreenWindow, 0u) < 0)
+				if ( SDL_SetWindowFullscreen(s_pScreenWindow, 0u) < 0 )
 				{
-					SDL_DestroyWindow(s_pScreenWindow);
-					s_pScreenRenderTarget = NULL;
-					s_pScreenRenderer = NULL;
-					s_pScreenWindow = NULL;
-					return 0;
+					goto fail;
 				}
 			}
 		}
@@ -584,48 +589,29 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 				s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, displayMode.w, displayMode.h, windowFlags);
 				if ( !s_pScreenWindow )
 				{
-					s_pScreenRenderTarget = NULL;
-					s_pScreenRenderer = NULL;
-					s_pScreenWindow = NULL;
-					return 0;
+					goto fail;
 				}
 			}
 			else
 			{
 				SDL_SetWindowPosition(s_pScreenWindow, windowX, windowY);
 				int fullscreenError = -1;
-				if ((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP)
+				if ( (windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP )
 				{
 					fullscreenError = SDL_SetWindowFullscreen(s_pScreenWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 				}
-				else if ((windowFlags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN)
+				else if ( (windowFlags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN )
 				{
 					fullscreenError = SDL_SetWindowFullscreen(s_pScreenWindow, SDL_WINDOW_FULLSCREEN);
 				}
-				if (fullscreenError < 0)
+				if ( fullscreenError < 0 )
 				{
-					if (s_pScreenRenderTarget) SDL_DestroyTexture(s_pScreenRenderTarget);
-					SDL_DestroyRenderer(s_pScreenRenderer);
-					SDL_DestroyWindow(s_pScreenWindow);
-
-					s_pScreenRenderTarget = NULL;
-					s_pScreenRenderer = NULL;
-					s_pScreenWindow = NULL;
-
-					return 0;
+					goto fail;
 				}
 			}
 			if ( SDL_SetWindowDisplayMode(s_pScreenWindow, &displayMode) < 0 )
 			{
-				if (s_pScreenRenderTarget) SDL_DestroyTexture(s_pScreenRenderTarget);
-				if (s_pScreenRenderer) SDL_DestroyRenderer(s_pScreenRenderer);
-				SDL_DestroyWindow(s_pScreenWindow);
-
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-
-				return 0;
+				goto fail;
 			}
 		}
 	}
@@ -637,18 +623,15 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 		SDL_DisplayMode displayMode;
 		if ( SDL_GetDesktopDisplayMode(displayIndex, &displayMode) < 0 )
 		{
-			s_pScreenRenderTarget = NULL;
-			s_pScreenRenderer = NULL;
-			s_pScreenWindow = NULL;
-			return 0;
+			goto fail;
 		}
 
 		int maxScale;
-		if(displayMode.w <= logicalWidth || displayMode.h <= logicalHeight)
+		if ( displayMode.w <= logicalWidth || displayMode.h <= logicalHeight )
 		{
 			maxScale = 1;
 		}
-		else if(displayMode.w > displayMode.h)
+		else if ( displayMode.w > displayMode.h )
 		{
 			maxScale = (displayMode.h / logicalHeight) - (displayMode.h % logicalHeight == 0);
 		}
@@ -671,135 +654,142 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 			s_pScreenWindow = SDL_CreateWindow(YGS_GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
 			if ( !s_pScreenWindow )
 			{
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-				return 0;
+				goto fail;
 			}
 		}
 		else
 		{
-			if (windowFlags & SDL_WINDOW_MAXIMIZED) {
+			if ( windowFlags & SDL_WINDOW_MAXIMIZED ) {
 				SDL_MaximizeWindow(s_pScreenWindow);
 			}
 			else {
 				SDL_RestoreWindow(s_pScreenWindow);
 			}
 			SDL_SetWindowResizable(s_pScreenWindow, SDL_TRUE);
-			int fullscreenError = SDL_SetWindowFullscreen(s_pScreenWindow, 0);
-			if (fullscreenError < 0)
+			if ( SDL_SetWindowFullscreen(s_pScreenWindow, 0) < 0 )
 			{
-				SDL_DestroyWindow(s_pScreenWindow);
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-				return 0;
+				goto fail;
 			}
 			SDL_SetWindowSize(s_pScreenWindow, windowW, windowH);
 			SDL_SetWindowPosition(s_pScreenWindow, windowX, windowY);
 		}
 	}
 
-	// fix to allow rendering to the texture.
-	if (!s_pScreenRenderer)
+	/* Hide the mouse cursor only for exclusive fullscreen */
+	if ( SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) ) < 0 )
 	{
-		s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, *screenMode & YGS_SCREENMODE_VSYNC ? SDL_RENDERER_PRESENTVSYNC : 0);
+		goto fail;
+	}
+
+	// Create the renderer, if not already created. It's important to not
+	// recreate the renderer if it's already created, so restarting without
+	// changing the detail level doesn't require reloading graphics. If the
+	// renderer were destroyed/created anew every restart, it would be required
+	// to reload the graphics every restart, even when detail level isn't
+	// changed.
+	// TODO: fix to allow rendering to the texture.
+	if ( !s_pScreenRenderer )
+	{
+		s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0);
 		if ( !s_pScreenRenderer )
 		{
-			SDL_DestroyWindow(s_pScreenWindow);
-			s_pScreenRenderTarget = NULL;
-			s_pScreenRenderer = NULL;
-			s_pScreenWindow = NULL;
-			return 0;
-		}
-	}
-	else
-	{
-		if (SDL_RenderSetVSync(s_pScreenRenderer, !!(*screenMode & YGS_SCREENMODE_VSYNC))) {
-			SDL_DestroyWindow(s_pScreenWindow);
-			s_pScreenRenderTarget = NULL;
-			s_pScreenRenderer = NULL;
-			s_pScreenWindow = NULL;
-			return 0;
+			goto fail;
 		}
 	}
 
-	if ( *screenMode & YGS_SCREENMODE_SCALEMODE )
+	// Unset the render target, if currently set, for making renderer setting
+	// changes. The render target should only be set once all settings have been
+	// set, with no setting changes made after the render target has been set;
+	// various bugs have been observed when attempting setting changes while the
+	// render target is non-NULL, such bugs disappearing when setting changes
+	// are made only while the render target is NULL.
+	if ( s_pScreenRenderTarget && SDL_SetRenderTarget(s_pScreenRenderer, NULL) < 0 )
 	{
-		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE) < 0 )
-		{
-			SDL_DestroyRenderer(s_pScreenRenderer);
-			SDL_DestroyWindow(s_pScreenWindow);
-			s_pScreenRenderTarget = NULL;
-			s_pScreenRenderer = NULL;
-			s_pScreenWindow = NULL;
-			return 0;
-		}
-		SDL_SetWindowMinimumSize(s_pScreenWindow, logicalWidth, logicalHeight);
+		goto fail;
 	}
-	else {
-		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_FALSE) < 0 )
-		{
-			SDL_DestroyRenderer(s_pScreenRenderer);
-			SDL_DestroyWindow(s_pScreenWindow);
-			s_pScreenRenderTarget = NULL;
-			s_pScreenRenderer = NULL;
-			s_pScreenWindow = NULL;
-			return 0;
-		}
-		SDL_SetWindowMinimumSize(s_pScreenWindow, 1, 1);
+
+	/* Clear the whole screen, as the framebuffer might be uninitialized */
+	if ( SDL_RenderClear(s_pScreenRenderer) < 0 )
+	{
+		goto fail;
+	}
+
+	// This should be somewhere after the renderer has been created, as
+	// SCREEN_SUBPIXEL_OFFSET queries the renderer when a given platform uses
+	// nonzero offsets.
+	s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
+
+	if ( SDL_RenderSetVSync(s_pScreenRenderer, !!(*screenMode & YGS_SCREENMODE_VSYNC)) )
+	{
+		goto fail;
 	}
 
 	if ( SDL_RenderSetLogicalSize(s_pScreenRenderer, logicalWidth, logicalHeight) < 0 )
 	{
-		if (s_pScreenRenderTarget)
-		{
-			SDL_DestroyTexture(s_pScreenRenderTarget);
-		}
-		SDL_DestroyRenderer(s_pScreenRenderer);
-		SDL_DestroyWindow(s_pScreenWindow);
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
+		goto fail;
 	}
 
-	s_fScreenSubpixelOffset = SCREEN_SUBPIXEL_OFFSET;
-    // TODO: Figure out how to get render targets in Emscripten working with
+	/* Use integer scaling, if required */
+	if ( *screenMode & YGS_SCREENMODE_SCALEMODE )
+	{
+		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_TRUE) < 0 )
+		{
+			goto fail;
+		}
+	}
+	else
+	{
+		if ( SDL_RenderSetIntegerScale(s_pScreenRenderer, SDL_FALSE) < 0 )
+		{
+			goto fail;
+		}
+	}
+
+	/* Set up the render target, if required */
+	// TODO: Figure out how to get render targets in Emscripten working with
 	// SDL_BLENDMODE_BLEND textures. This #ifdef is a workaround for now. It's
-	// probably a bug in the Emscripten SDL 2 port.
-    #ifndef __EMSCRIPTEN__
+	// probably a bug in the Emscripten SDL2 port.
+	#ifndef __EMSCRIPTEN__
 	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
 		if ( !(*screenMode & YGS_SCREENMODE_RENDERLEVEL) )
 		{
-			if (s_pScreenRenderTarget)
-			{
-				SDL_DestroyTexture(s_pScreenRenderTarget);
+			// There's no need to create a render target texture if the
+			// currently created render target texture is already the current
+			// logicalWidth x logicalHeight.
+			bool createNewRenderTarget = true;
+
+			if ( s_pScreenRenderTarget ) {
+				int w, h;
+				if ( SDL_QueryTexture(s_pScreenRenderTarget, NULL, NULL, &w, &h) < 0 ) {
+					goto fail;
+				}
+
+				if ( w == logicalWidth && h == logicalHeight )
+				{
+					createNewRenderTarget = false;
+				}
+				else {
+					SDL_DestroyTexture(s_pScreenRenderTarget);
+					s_pScreenRenderTarget = NULL;
+				}
 			}
-			s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
-			if ( !s_pScreenRenderTarget )
+
+			if ( createNewRenderTarget )
 			{
-				SDL_DestroyRenderer(s_pScreenRenderer);
-				SDL_DestroyWindow(s_pScreenWindow);
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-				 return 0;
+				s_pScreenRenderTarget = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
+				if ( !s_pScreenRenderTarget )
+				{
+					goto fail;
+				}
 			}
+
 			if (
-				SDL_RenderClear(s_pScreenRenderer) < 0 ||
 				SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget) < 0 ||
 				SDL_RenderClear(s_pScreenRenderer) < 0
 			)
 			{
-				SDL_DestroyTexture(s_pScreenRenderTarget);
-				SDL_DestroyRenderer(s_pScreenRenderer);
-				SDL_DestroyWindow(s_pScreenWindow);
-				s_pScreenRenderTarget = NULL;
-				s_pScreenRenderer = NULL;
-				s_pScreenWindow = NULL;
-				return 0;
+				goto fail;
 			}
 		}
 		else if ( s_pScreenRenderTarget )
@@ -809,45 +799,23 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 		}
 	}
 	else
-    #endif
-    {
+	#endif
+	{
 		s_pScreenRenderTarget = NULL;
 		*screenMode |= YGS_SCREENMODE_RENDERLEVEL;
 	}
 
-	/* マウスカーソルを消す場合は */
-	if ( SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) ) < 0)
-	{
-		if (s_pScreenRenderTarget)
-		{
-			SDL_DestroyTexture(s_pScreenRenderTarget);		
-		}
-		SDL_DestroyRenderer(s_pScreenRenderer);
-		SDL_DestroyWindow(s_pScreenWindow);
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
-	}
-	
-	s_iScreenMode = *screenMode;
-	s_iScreenIndex = *screenIndex;
+	// WARNING: Make no changes to the renderer settings from here on down, as
+	// the render target has been set, and bugs have been observed when
+	// attempting renderer setting changes while a non-NULL render target is
+	// set.
 
 	#ifdef __EMSCRIPTEN__
 	if ( emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, false, YGS2kEmscriptenResizeCallback) < 0 )
 	{
-		if (s_pScreenRenderTarget)
-		{
-			SDL_DestroyTexture(s_pScreenRenderTarget);
-		}
-		SDL_DestroyRenderer(s_pScreenRenderer);
-		SDL_DestroyWindow(s_pScreenWindow);
-		s_pScreenRenderTarget = NULL;
-		s_pScreenRenderer = NULL;
-		s_pScreenWindow = NULL;
-		return 0;
+		goto fail;
 	}
-
+	else
 	{
 		int width = -1, height = -1;
 		width = EM_ASM_INT({ return window.innerWidth; });
@@ -859,7 +827,25 @@ int YGS2kSetScreen(int32_t *screenMode, int32_t *screenIndex)
 	}
 	#endif
 
-	return 1;
+	s_iScreenMode = *screenMode;
+	s_iScreenIndex = *screenIndex;
+
+	/* Setup was successful, so return with success */
+	return true;
+
+	/* A failure condition was encountered, so clean up and return with error */
+	fail:
+	if ( s_pScreenRenderTarget )
+	{
+		SDL_SetRenderTarget(s_pScreenRenderer, NULL);
+		SDL_DestroyTexture(s_pScreenRenderTarget);
+	}
+	if ( s_pScreenRenderer ) SDL_DestroyRenderer(s_pScreenRenderer);
+	if ( s_pScreenWindow ) SDL_DestroyWindow(s_pScreenWindow);
+	s_pScreenRenderTarget = NULL;
+	s_pScreenRenderer = NULL;
+	s_pScreenWindow = NULL;
+	return false;
 }
 
 int YGS2kGetMaxDisplayIndex()
@@ -872,9 +858,9 @@ int YGS2kGetMaxDisplayMode( int displayIndex )
 	return SDL_GetNumDisplayModes(displayIndex);
 }
 
-int YGS2kRenderLevelLowSupported()
+bool YGS2kRenderLevelLowSupported()
 {
-	return s_pScreenRenderer ? SDL_RenderTargetSupported(s_pScreenRenderer) : 0;
+	return s_pScreenRenderer ? SDL_RenderTargetSupported(s_pScreenRenderer) : false;
 }
 
 void YGS2kSetConstParam ( const char *param, int value )

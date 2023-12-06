@@ -1,6 +1,6 @@
 #include "script/include.h"
 
-int32_t screenMode;		// スクリーンモード
+YGS2kEScreenModeFlag screenMode;	// スクリーンモード
 int32_t screenIndex;		// スクリーンインデックス
 int32_t nextblock;		// ツモ
 uint32_t cfgversion;		// 設定ファイルフォーマットのバージョン番号です。

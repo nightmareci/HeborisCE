@@ -21,7 +21,6 @@ int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キ�
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-YGS2kEWaveFormat lastWavebgm = 0;
 YGS2kEWaveFormat wavebgm;		// BGMの選択 || BGM selection
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
@@ -68,6 +67,7 @@ YGS2kSConKey conKeyAssign[8 * 2];
 #endif
 
 int32_t restart = 0;		// 再起動フラグ
+int32_t loadres = 1;		// Indicates if resources should be loaded.
 
 // 設定をバイナリデータに保存 1.60c5
 int32_t SaveConfig(void) {
@@ -262,11 +262,9 @@ int32_t LoadConfig(void) {
 	maxPlay = cfgbuf[55];
 
 	movesound = cfgbuf[60];
-	lastSE = se;
 	se = (cfgbuf[61] >> 23) & 0x1;
 	sevolume = (cfgbuf[61] >> 16) & 0x7F;
 	if(sevolume > 100) sevolume = 100;
-	lastBGM = bgm;
 	bgm = (cfgbuf[61] >> 15) & 0x1;
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
@@ -868,7 +866,7 @@ void ConfigMenu() {
 				disable_wallkick = ncfg[300];
 				showctrl = ncfg[301];
 				SaveConfig();
-				if((maxPlay == lastmaxPlay) && (top_frame == lasttopframe) && (((last_BG <= 1) && (background <= 1)) || (last_BG == 2) && (background == 2)))
+				if((maxPlay == lastmaxPlay) && (top_frame == lasttopframe) && (((last_BG <= 1) && (background <= 1)) || ((last_BG == 2) && (background == 2))))
 					need_reloadBG = 0;
 
 				tmp_maxPlay = maxPlay;
@@ -2264,38 +2262,39 @@ void ConfigMenu() {
 #ifdef ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_WINDOW_TYPE) {
 						ncfg[1] &= ~YGS_SCREENINDEX_MODE;
-                        ncfg[0] = (ncfg[0] & ~YGS_SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) + YGS_SCREENMODE_NUMWINDOWTYPES + m)) % YGS_SCREENMODE_NUMWINDOWTYPES);
-                        need_reset = 1;
-                        if (screenMode != ncfg[0]) {
-                            need_setScreen = 1;
-                        }
+						ncfg[0] = (ncfg[0] & ~YGS_SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) + YGS_SCREENMODE_NUMWINDOWTYPES + m)) % YGS_SCREENMODE_NUMWINDOWTYPES);
+						need_reset = 1;
+						if (screenMode != ncfg[0]) {
+							need_setScreen = 1;
+						}
 					}
 					else if(statusc[0] == MENU_AV_SCREEN_INDEX) {
 						ncfg[1] &= ~YGS_SCREENINDEX_MODE;
 						ncfg[1] = (ncfg[1] & ~YGS_SCREENINDEX_DISPLAY) | YGS_SCREENINDEX_DISPLAY_TOSETTING((YGS_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]) + YGS2kGetMaxDisplayIndex() + m) % YGS2kGetMaxDisplayIndex());	// displayIndex
-                        need_reset = 1;
-                        need_setScreen = 1;
+						need_reset = 1;
+						need_setScreen = 1;
                     }
 #endif
 					else if(statusc[0] == MENU_AV_DETAIL_LEVEL) {
 						if((ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) == YGS_SCREENMODE_WINDOW) ncfg[1] &= ~YGS_SCREENINDEX_MODE;
-                        ncfg[0] ^= YGS_SCREENMODE_DETAILLEVEL;
-                        need_reset = 1;
+						ncfg[0] ^= YGS_SCREENMODE_DETAILLEVEL;
+						loadres = 1;
+						need_reset = 1;
                     }
 #ifdef ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_VSYNC) {
 						ncfg[0] ^= YGS_SCREENMODE_VSYNC;
-                        need_reset = 1;
+						need_reset = 1;
                     }
 #endif
 					else if(statusc[0] == MENU_AV_SCALE_MODE) {
 						ncfg[0] ^= YGS_SCREENMODE_SCALEMODE;
-                        need_reset = 1;
+						need_reset = 1;
                     }
 #ifdef ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_RENDER_LEVEL) {
 						ncfg[0] ^= YGS_SCREENMODE_RENDERLEVEL;
-                        need_reset = 1;
+						need_reset = 1;
                     }
 					else if(statusc[0] == MENU_AV_SCREEN_MODE) {
 						switch(ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) {
@@ -2329,23 +2328,26 @@ void ConfigMenu() {
 						default: break;
 						}
 						need_reset = 1;
-                        need_setScreen = 1;
+						need_setScreen = 1;
 					}
 #endif
 					else if(statusc[0] == MENU_AV_MOVE_SOUND) ncfg[46] = !ncfg[46];
 					else if(statusc[0] == MENU_AV_PLAY_SOUND) {
 						// se
 						ncfg[44] ^= 0x1 << 23;
+						loadres = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_PLAY_BGM) {
 						// bgm
 						ncfg[44] ^= 0x1 << 15;
+						loadres = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
 						ncfg[44] ^= YGS_WAVE_SIMPLE;
+						loadres = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
@@ -2362,6 +2364,7 @@ void ConfigMenu() {
 						} while (!YGS2kWaveFormatSupported(wavebgm_format + 1));
 
 						ncfg[44] = (ncfg[44] & ~YGS_WAVE_FORMAT) | (wavebgm_format + 1);
+						loadres = 1;
 						need_reset = 1;
 					}
 				}

@@ -24,6 +24,7 @@ typedef enum YGS2kESoundType
 	YGS_SOUNDTYPE_MUS,
 } YGS2kESoundType;
 
+static bool s_bInitFast	= false;
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pScreenRenderTarget = NULL;
@@ -110,11 +111,10 @@ static float YGS2kGetScreenSubpixelOffset()
 
 bool YGS2kInit()
 {
-	static bool initFast = false;
 	s_iQuitLevel = 0;
 
 	/* SDLの初期化 || SDL initialization */
-	if ( !initFast && SDL_Init(
+	if ( !s_bInitFast && SDL_Init(
 		SDL_INIT_AUDIO | SDL_INIT_VIDEO
 		#ifdef ENABLE_JOYSTICK
 		| SDL_INIT_JOYSTICK
@@ -130,13 +130,13 @@ bool YGS2kInit()
 
 	// If this fails, it doesn't matter, the game will still work. But it's
 	// called because if it works, the game might perform better.
-	if (!initFast) SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+	if (!s_bInitFast) SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 
 	s_iQuitLevel++;
-	if (!initFast) SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
+	if (!s_bInitFast) SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
 
 	/* 画像の初期化 || Image initialization */
-	if ( !initFast && IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
+	if ( !s_bInitFast && IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG )
 	{
 		fprintf(stderr, "Couldn't initialize image support: %s\n", IMG_GetError());
 		YGS2kExit(EXIT_FAILURE);
@@ -144,7 +144,7 @@ bool YGS2kInit()
 	s_iQuitLevel++;
 
 	/* サウンドの初期化 || Sound initialization */
-	if (!initFast) {
+	if (!s_bInitFast) {
 		const int formatsInitialized = Mix_Init(
 			MIX_INIT_MID |
 			MIX_INIT_OGG |
@@ -172,7 +172,7 @@ bool YGS2kInit()
 	}
 	s_iQuitLevel++;
 
-	if (!initFast) {
+	if (!s_bInitFast) {
 #ifdef __EMSCRIPTEN__
 		// In testing on desktop Linux, Firefox seems to cope with a 1024 byte
 		// buffer fine, but Chrome produces a fair bit of audio breakup. 2048
@@ -191,7 +191,7 @@ bool YGS2kInit()
 	}
 	s_iQuitLevel++;
 
-	if (!initFast) Mix_AllocateChannels(100);
+	if (!s_bInitFast) Mix_AllocateChannels(100);
 
 	int		configChanged = 0;
 
@@ -200,15 +200,15 @@ bool YGS2kInit()
 
 	YGS2kSetFPS(60);
 
-	if (!initFast) YGS2kInputOpen();
+	if (!s_bInitFast) YGS2kInputOpen();
 
 	/* テクスチャ領域の初期化 || Initialize the texture pointers */
-	if (!initFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
+	if (!s_bInitFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
 
 	/* サウンドの初期化 || Initialize sound data */
 	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
 	{
-		if ( !initFast )
+		if ( !s_bInitFast )
 		{
 			s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
 			s_pYGSSound[i] = NULL;
@@ -217,7 +217,7 @@ bool YGS2kInit()
 		s_iYGSSoundVolume[i] = 0;
 	}
 
-	if ( !initFast ) s_pYGSMusic = NULL;
+	if ( !s_bInitFast ) s_pYGSMusic = NULL;
 	s_iYGSMusicVolume = 0;
 
 	/* テキストレイヤーの初期化 || Initialize the text layers */
@@ -228,7 +228,7 @@ bool YGS2kInit()
 		s_TextLayer[i].size = 16;
 	}
 
-	if ( !initFast ) YGS2kPrivateKanjiFontInitialize();
+	if ( !s_bInitFast ) YGS2kPrivateKanjiFontInitialize();
 
 	s_bLastFrameSkipped = false;
 	s_uFPSCount = 0u;
@@ -237,7 +237,7 @@ bool YGS2kInit()
 
 	srand((unsigned)time(NULL));
 	
-	initFast = true;
+	s_bInitFast = true;
 	return true;
 }
 
@@ -293,30 +293,30 @@ void YGS2kDeinit()
 		s_pScreenWindow = NULL;
 	}
 
-
 	YGS2kPrivateKanjiFontFinalize();
 
 	switch ( s_iQuitLevel )
 	{
-	case 5: FSDeInit();
 	case 4: Mix_CloseAudio();
 	case 3: Mix_Quit();
 	case 2: IMG_Quit();
 	case 1: SDL_Quit();
 	default: break;
 	}
+	s_iQuitLevel = 0;
+
+	s_bInitFast = false;
 }
 
 void YGS2kExit(int exitStatus)
 {
 	YGS2kDeinit();
+	FSDeInit();
 	exit(exitStatus);
 }
 
 bool YGS2kHalt()
 {
-	SDL_Event	ev;
-
 	if ( s_pScreenRenderer )
 	{
 		SDL_RenderFlush( s_pScreenRenderer );
@@ -339,10 +339,10 @@ bool YGS2kHalt()
 				SDL_RenderPresent(s_pScreenRenderer);
 			}
 
-			/* フレームレート待ち */
+			/* フレームレート待ち || Frame rate waiting */
 			s_bLastFrameSkipped = !nanotime_step(&s_StepData);
 
-			/* 画面塗りつぶし */
+			/* 画面塗りつぶし || Fill screen */
 			SDL_RenderClear( s_pScreenRenderer );
 		}
 		else
@@ -366,12 +366,12 @@ bool YGS2kHalt()
 				SDL_RenderClear( s_pScreenRenderer );
 			}
 
-			/* フレームレート待ち */
+			/* フレームレート待ち || Frame rate waiting */
 			s_bLastFrameSkipped = !nanotime_step(&s_StepData);
 		}
 	}
 
-	/* フレームレート計算 */
+	/* フレームレート計算 || Frame rate calculation */
 	s_uFPSCnting ++;
 
 	if ( nanotime_interval(s_uFPSCount, nanotime_now(), s_StepData.now_max) >= NANOTIME_NSEC_PER_SEC )
@@ -381,18 +381,23 @@ bool YGS2kHalt()
 		s_uFPSCount = nanotime_now();
 	}
 
-	/* イベント処理 */
-	SDL_PumpEvents();
+	/* イベント処理 || Process events */
+
 	#ifdef ENABLE_JOYSTICK
 	bool joyChanged = false;
 	#endif
+
 	#ifdef ENABLE_GAME_CONTROLLER
 	bool conChanged = false;
 	#endif
+
+	SDL_PumpEvents();
+	SDL_Event	ev;
 	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_LASTEVENT) == 1)
 	{
 		switch(ev.type){
-			case SDL_QUIT:						// ウィンドウの×ボタンが押された時など
+			// ウィンドウの×ボタンが押された時など || When the window's X-button is pressed, etc.
+			case SDL_QUIT:
 				return false;
 
 			case SDL_WINDOWEVENT:
@@ -676,7 +681,7 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 	}
 
 	/* Hide the mouse cursor only for exclusive fullscreen */
-	if ( SDL_ShowCursor( !(windowFlags & SDL_WINDOW_FULLSCREEN) ) < 0 )
+	if ( SDL_ShowCursor((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) != SDL_WINDOW_FULLSCREEN) < 0 )
 	{
 		goto fail;
 	}
@@ -811,12 +816,14 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 	// set.
 
 	#ifdef __EMSCRIPTEN__
-	if ( emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, false, YGS2kEmscriptenResizeCallback) < 0 )
+	static bool emscriptenCallbackSet = false;
+	if ( !emscriptenCallbackSet && emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, false, YGS2kEmscriptenResizeCallback) < 0 )
 	{
 		goto fail;
 	}
 	else
 	{
+		emscriptenCallbackSet = true;
 		int width = -1, height = -1;
 		width = EM_ASM_INT({ return window.innerWidth; });
 		height = EM_ASM_INT({ return window.innerHeight; });

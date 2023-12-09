@@ -16,6 +16,7 @@ int32_t LoadConfig(void);
 int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
+extern int32_t loadres;
 #ifdef ENABLE_JOYSTICK
 extern YGS2kSJoyKey joyKeyAssign[10 *2];
 #endif

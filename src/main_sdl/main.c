@@ -6,12 +6,6 @@
 #include "main_sdl/gamecontroller.h"
 #endif
 
-// TODO: Move basic init/deinit (SDL_Init, etc.) into YGS2k code. Some minor
-// issues seem to show up in the web/Emscripten port after page load in the
-// current setup, like audio not working at all sometimes, while working fine
-// other times. It might be the case that basic init/deinit is best done
-// somewhere in mainUpdate.
-
 // TODO: Move as much as possible of the Emscripten code into its own
 // source(s). The __EMSCRIPTEN__ checks really ugly up the code.
 

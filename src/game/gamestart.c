@@ -887,9 +887,7 @@ int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示ge
 
 // 以下hogeパッチより
 int32_t		sevolume = 100;		//効果音のボリューム。100が標準、0で無音。
-int32_t		lastSE = 1;
 int32_t		se = 1;			//効果音を流すかどうか。(0なら流さない)
-int32_t		lastBGM = 0;
 int32_t		bgm = 0;		//BGMを流すかどうか。(0なら流さない)
 
 // #1.60c7o6追加変数
@@ -1467,8 +1465,16 @@ void mainUpdate() {
 		goto skipSpriteTime;
 
 	case MAIN_RESTART: {
+		restart = 0;
 		mainLoopState = MAIN_TITLE;
 		init = true;
+#ifdef __EMSCRIPTEN__
+		loadres = 1;
+#endif
+
+		if (loadres) {
+			YGS2kDeinit();
+		}
 
 		if (!YGS2kInit()) {
 			loopFlag = 0;
@@ -1521,19 +1527,18 @@ void mainUpdate() {
 
 		loadGraphics(maxPlay);
 
-		if(se && se != lastSE) {
+		if(loadres && se) {
 			loadWaves();	// #1.60c7o5
 		}
 		for(int i = 0; i < 50; i++) se_play[i] = 0;
 
-		if(bgm && (bgm != lastBGM || wavebgm != lastWavebgm)) {
+		if(loadres && bgm) {
 			for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
 			{
 				bgmload[i] = 1;
 			}
 
 			loadBGM();	// #1.60c7s6
-			lastWavebgm = wavebgm;
 		}
 		else {
 			memset(bgmload, 0, sizeof(bgmload));
@@ -1589,7 +1594,6 @@ void mainUpdate() {
 
 		if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
 
-		restart = 0;
 		goto skipSpriteTime;
 	}
 
@@ -1666,7 +1670,7 @@ void mainUpdate() {
 			setDrawRate(1);
 		}
 
-		LoadGraphics("loading.png", 88, 0);		// Loading表示
+		LoadGraphic("loading.png", 88, 0);		// Loading表示
 			x = YGS2kRand(5);
 		if ( getDrawRate() != 1 )
 			y = YGS2kRand(2);
@@ -1708,7 +1712,7 @@ void mainUpdate() {
 		mainLoopState = MAIN_INIT_END;
 
 		// 効果音読み込み
-		if(se) {
+		if(loadres && se) {
 			loadWaves();	// #1.60c7o5
 		}
 
@@ -1799,6 +1803,7 @@ void mainUpdate() {
 	}
 
 	case MAIN_TITLE:
+		loadres = 0;
 		title();
 		break;
 
@@ -16655,7 +16660,7 @@ void initialize(void) {
 		setDrawRate(1);
 	}
 
-	LoadGraphics("loading.png", 88, 0);		// Loading表示
+	LoadGraphic("loading.png", 88, 0);		// Loading表示
 		i = YGS2kRand(5);
 	if ( getDrawRate() != 1 )
 		j = YGS2kRand(2);
@@ -16674,7 +16679,7 @@ void initialize(void) {
 	loadGraphics(maxPlay);
 
 	// 効果音読み込み
-	if(se) {
+	if(loadres && se) {
 		YGS2kTextLayerOn(1, 10, 36);
 		YGS2kTextOut(1, "Sound Effect Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
@@ -16689,7 +16694,7 @@ void initialize(void) {
 	for(i = 0; i < 50; i++) se_play[i] = 0;
 
 	// BGM読み込み
-	if(bgm) {
+	if(loadres && bgm) {
 		for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
 		{
 			bgmload[i] = 1;
@@ -16754,7 +16759,7 @@ void initialize(void) {
 /* グラフィック読み込み */
 // initializeから独立 #1.60c7o5
 // players : プレイする人数(maxPlayの代わり)
-void LoadGraphics(const char *nameStr, int32_t p1, int32_t p2) {
+void LoadGraphic(const char *nameStr, int32_t p1, int32_t p2) {
 	if ( getDrawRate() == 1 )
 		sprintf(string[0], "res/graphics/lowDetail/%s", nameStr);
 	else
@@ -16765,7 +16770,7 @@ void LoadGraphics(const char *nameStr, int32_t p1, int32_t p2) {
 
 void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
-		LoadGraphics("title.png", 8, 0);
+		LoadGraphic("title.png", 8, 0);
 		if ( getDrawRate() == 1 ){
 			YGS2kLoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
@@ -16798,33 +16803,33 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 void loadGraphics(int32_t players) {
 	int32_t i, j, k, tr;
 
-	if (!restart || getLastDrawRate() != getDrawRate()) {
+	if (loadres || getLastDrawRate() != getDrawRate()) {
 		/* プレーン0にメダルを読み込み #1.60c7m9 */
-		LoadGraphics("medal.png", 0, 0);
+		LoadGraphic("medal.png", 0, 0);
 		/* プレーン56にTIメダルを読み込み #1.60c7m9 */
-		LoadGraphics("medal_ti.png", 56, 0);
+		LoadGraphic("medal_ti.png", 56, 0);
 
 		// ブロック絵はプレーン40〜43に移転しました #1.60c7o8
 
 		/* プレーン1にフォントを読み込み */
-		LoadGraphics("hebofont.png", 1, 0);
+		LoadGraphic("hebofont.png", 1, 0);
 		YGS2kSetColorKeyPos(1, 0, 0);
 
 		/* プレーン2にフィールドを読み込み */
-		LoadGraphics("hebofld.png", 2, 0);
+		LoadGraphic("hebofld.png", 2, 0);
 		YGS2kSetColorKeyRGB(2,255,255,255);
 
 		/* プレーン3に各種スプライトを読み込み */
-		LoadGraphics("hebospr.png", 3, 0);
+		LoadGraphic("hebospr.png", 3, 0);
 		YGS2kSetColorKeyRGB(3,0,0,0);
 	//	YGS2kSetColorKeyPos(3, 0, 0);
 	//	YGS2kEnableBlendColorKey(3, 1);
 
 		/* プレーン4〜6, 24にフィールド背景を読み込み */
-		LoadGraphics("heboflb1.png", 4, 0);
-		LoadGraphics("heboflb2.png", 5, 0);
-		LoadGraphics("heboflb3.png", 6, 0);
-		LoadGraphics("heboflb0.png", 24, 0);
+		LoadGraphic("heboflb1.png", 4, 0);
+		LoadGraphic("heboflb2.png", 5, 0);
+		LoadGraphic("heboflb3.png", 6, 0);
+		LoadGraphic("heboflb0.png", 24, 0);
 	}
 
 	loadBG(players,0); //背景および半透明処理部を独立 C7T2.5EX
@@ -16834,55 +16839,55 @@ void loadGraphics(int32_t players) {
 //	LoadGraphics("logo.png", 7, 0);
 //	YGS2kSetColorKeyPos(7, 0, 0);
 
-	if (!restart || getLastDrawRate() != getDrawRate()) {
+	if (loadres || getLastDrawRate() != getDrawRate()) {
 	//	/* プレーン8にタイトル背景を読み込み */
 		LoadTitle();
 	//	LoadGraphics("title.png", 8, 0);
 	}
 
-	if (!restart || getLastDrawRate() != getDrawRate()) {
+	if (loadres || getLastDrawRate() != getDrawRate()) {
 		/* Glyphs for showing game controller buttons */
-		LoadGraphics("hebobtn.png", 23, 0);
+		LoadGraphic("hebobtn.png", 23, 0);
 
 		/* プレーン22に小文字大文字フォントを読み込み #1.60c7o4 */
-		LoadGraphics("hebofont4.png", 22, 0);
+		LoadGraphic("hebofont4.png", 22, 0);
 
 		/* プレーン25にモード選択時のメッセージを読み込み  */
-		LoadGraphics("text.png", 25, 0);
+		LoadGraphic("text.png", 25, 0);
 
 		YGS2kSetColorKeyRGB(25, 0, 0, 0);
 
 		/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
-		LoadGraphics("grade.png", 26, 0);
+		LoadGraphic("grade.png", 26, 0);
 		YGS2kSetColorKeyRGB(26,255,0,255);
 
 		/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
-		LoadGraphics("mirror_effect_TAP.png", 27, 0);
+		LoadGraphic("mirror_effect_TAP.png", 27, 0);
 		//YGS2kSetColorKeyRGB(27,255,0,255);
 
 		/* プレーン28にアイテム名を読み込み #1.60c7o4 */
-		LoadGraphics("item.png", 28, 0);
+		LoadGraphic("item.png", 28, 0);
 		YGS2kSetColorKeyRGB(28,255,0,255);
 
 		/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
-		LoadGraphics("guide.png", 29, 0);
+		LoadGraphic("guide.png", 29, 0);
 		YGS2kSetColorKeyRGB(29,0,0,0);
 
 		/* プレーン31にフォント(大)を読み込み */
-		LoadGraphics("hebofont3.png", 31, 0);
+		LoadGraphic("hebofont3.png", 31, 0);
 		YGS2kSetColorKeyRGB(31,0,0,0);
 	}
 
 	/* ブロック消去エフェクトを読み込み */
-	if(breakti) {
-		LoadGraphics("break0.png", 32, 0);
-		LoadGraphics("break1.png", 33, 0);
-		LoadGraphics("break2.png", 34, 0);
-		LoadGraphics("break3.png", 35, 0);
-		LoadGraphics("break4.png", 36, 0);
-		LoadGraphics("break5.png", 37, 0);
-		LoadGraphics("break6.png", 38, 0);
-		LoadGraphics("break7.png", 39, 0);
+	if(loadres && breakti) {
+		LoadGraphic("break0.png", 32, 0);
+		LoadGraphic("break1.png", 33, 0);
+		LoadGraphic("break2.png", 34, 0);
+		LoadGraphic("break3.png", 35, 0);
+		LoadGraphic("break4.png", 36, 0);
+		LoadGraphic("break5.png", 37, 0);
+		LoadGraphic("break6.png", 38, 0);
+		LoadGraphic("break7.png", 39, 0);
 		YGS2kSetColorKeyRGB(32,   0, 0,   0);
 		YGS2kSetColorKeyRGB(33,   0, 0,   0);
 		YGS2kSetColorKeyRGB(34,   0, 0,   0);
@@ -16891,15 +16896,15 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(37,   0, 0,   0);
 		YGS2kSetColorKeyRGB(38,   0, 0,   0);
 		YGS2kSetColorKeyRGB(39,   0, 0,   0);
-	} else {
-		LoadGraphics("break0_tap.png", 32, 0); // 黒ブロック追加 #1.60c7i5
-		LoadGraphics("break1_tap.png", 33, 0);
-		LoadGraphics("break2_tap.png", 34, 0);
-		LoadGraphics("break3_tap.png", 35, 0);
-		LoadGraphics("break4_tap.png", 36, 0);
-		LoadGraphics("break5_tap.png", 37, 0);
-		LoadGraphics("break6_tap.png", 38, 0);
-		LoadGraphics("break7_tap.png", 39, 0);
+	} else if (loadres) {
+		LoadGraphic("break0_tap.png", 32, 0); // 黒ブロック追加 #1.60c7i5
+		LoadGraphic("break1_tap.png", 33, 0);
+		LoadGraphic("break2_tap.png", 34, 0);
+		LoadGraphic("break3_tap.png", 35, 0);
+		LoadGraphic("break4_tap.png", 36, 0);
+		LoadGraphic("break5_tap.png", 37, 0);
+		LoadGraphic("break6_tap.png", 38, 0);
+		LoadGraphic("break7_tap.png", 39, 0);
 		YGS2kSetColorKeyRGB(32, 255, 0, 255);
 		YGS2kSetColorKeyRGB(33, 255, 0, 255);
 		YGS2kSetColorKeyRGB(34, 255, 0, 255);
@@ -16910,32 +16915,32 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(39, 255, 0, 255);
 	}
 
-	if (!restart || getLastDrawRate() != getDrawRate()) {
+	if (loadres || getLastDrawRate() != getDrawRate()) {
 		/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
-		LoadGraphics("heboblk0.png", 40, 0);	// TGM
-		LoadGraphics("heboblk1.png", 41, 0);	// TI & ARS & ARS2
-		LoadGraphics("heboblk2.png", 42, 0);	// WORLD & WORLD2
-		LoadGraphics("heboblk3.png", 43, 0);	// WORLD3
+		LoadGraphic("heboblk0.png", 40, 0);	// TGM
+		LoadGraphic("heboblk1.png", 41, 0);	// TI & ARS & ARS2
+		LoadGraphic("heboblk2.png", 42, 0);	// WORLD & WORLD2
+		LoadGraphic("heboblk3.png", 43, 0);	// WORLD3
 
 		/* プレーン44にミッションモード用画像を読み込み */
-		LoadGraphics("heboris_road.png", 44, 0);
+		LoadGraphic("heboris_road.png", 44, 0);
 		YGS2kSetColorKeyRGB(44, 0, 0, 0);
 
 		/* プレーン45にライン強制消去用画像を読み込み */
-		LoadGraphics("del_field.png", 45, 0);
+		LoadGraphic("del_field.png", 45, 0);
 		YGS2kSetColorKeyRGB(45, 0, 0, 0);
 
 		/* プレーン46にプラチナブロックとアイテム絵を読み込み */
-		LoadGraphics("heboblk_sp.png", 46, 0);
+		LoadGraphic("heboblk_sp.png", 46, 0);
 
 		/* プレーン47〜53に花火を読み込み */
-		LoadGraphics("hanabi_red.png",       47, 0);
-		LoadGraphics("hanabi_orange.png",    48, 0);
-		LoadGraphics("hanabi_yellow.png",    49, 0);
-		LoadGraphics("hanabi_green.png",     50, 0);
-		LoadGraphics("hanabi_waterblue.png", 51, 0);
-		LoadGraphics("hanabi_blue.png",      52, 0);
-		LoadGraphics("hanabi_purple.png",    53, 0);
+		LoadGraphic("hanabi_red.png",       47, 0);
+		LoadGraphic("hanabi_orange.png",    48, 0);
+		LoadGraphic("hanabi_yellow.png",    49, 0);
+		LoadGraphic("hanabi_green.png",     50, 0);
+		LoadGraphic("hanabi_waterblue.png", 51, 0);
+		LoadGraphic("hanabi_blue.png",      52, 0);
+		LoadGraphic("hanabi_purple.png",    53, 0);
 		YGS2kSetColorKeyRGB(47, 0, 0, 0);
 		YGS2kSetColorKeyRGB(48, 0, 0, 0);
 		YGS2kSetColorKeyRGB(49, 0, 0, 0);
@@ -16945,21 +16950,21 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(53, 0, 0, 0);
 
 		/* プレーン54にアイテムゲージを読み込み */
-		LoadGraphics("item_guage.png",       54, 0);
+		LoadGraphic("item_guage.png",       54, 0);
 		YGS2kSetColorKeyRGB(54, 255, 0, 255);
 
 		/* プレーン55に回転ルール性能指標を読み込み */
-		LoadGraphics("rot.png",              55, 0);
+		LoadGraphic("rot.png",              55, 0);
 		YGS2kSetColorKeyRGB(55, 255, 0, 255);
 
 		/* プラチナブロック消去エフェクトを読み込み */
-		LoadGraphics("perase1.png", 57, 0);
-		LoadGraphics("perase2.png", 58, 0);
-		LoadGraphics("perase3.png", 59, 0);
-		LoadGraphics("perase4.png", 60, 0);
-		LoadGraphics("perase5.png", 61, 0);
-		LoadGraphics("perase6.png", 62, 0);
-		LoadGraphics("perase7.png", 63, 0);
+		LoadGraphic("perase1.png", 57, 0);
+		LoadGraphic("perase2.png", 58, 0);
+		LoadGraphic("perase3.png", 59, 0);
+		LoadGraphic("perase4.png", 60, 0);
+		LoadGraphic("perase5.png", 61, 0);
+		LoadGraphic("perase6.png", 62, 0);
+		LoadGraphic("perase7.png", 63, 0);
 
 		YGS2kSetColorKeyRGB(57, 0, 0, 0);
 		YGS2kSetColorKeyRGB(58, 0, 0, 0);
@@ -16969,16 +16974,16 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(62, 0, 0, 0);
 		YGS2kSetColorKeyRGB(63, 0, 0, 0);
 
-		LoadGraphics("heboblk0B.png", 64, 0);
+		LoadGraphic("heboblk0B.png", 64, 0);
 
-		LoadGraphics("shootingstar.png", 65, 0);
+		LoadGraphic("shootingstar.png", 65, 0);
 		YGS2kSetColorKeyRGB(65, 0, 0, 0);
 
 		/* TI式ミラー演出画像を読み込み */
-		LoadGraphics("fldmirror01.png", 66, 0);
-		LoadGraphics("fldmirror02.png", 67, 0);
-		LoadGraphics("fldmirror03.png", 68, 0);
-		LoadGraphics("fldmirror04.png", 69, 0);
+		LoadGraphic("fldmirror01.png", 66, 0);
+		LoadGraphic("fldmirror02.png", 67, 0);
+		LoadGraphic("fldmirror03.png", 68, 0);
+		LoadGraphic("fldmirror04.png", 69, 0);
 
 		YGS2kSetColorKeyRGB(66, 0, 0, 0);
 		YGS2kSetColorKeyRGB(67, 0, 0, 0);
@@ -16986,53 +16991,53 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(69, 0, 0, 0);
 
 		/* スタッフロールの画像を読み込み */
-		LoadGraphics("staffroll.png", 70, 0);
+		LoadGraphic("staffroll.png", 70, 0);
 		YGS2kSetColorKeyRGB(70, 0, 0, 0);
 
-		LoadGraphics("heboblk4_5.png", 73, 0);
+		LoadGraphic("heboblk4_5.png", 73, 0);
 
-		LoadGraphics("fade.png", 72, 0);
+		LoadGraphic("fade.png", 72, 0);
 		YGS2kSetColorKeyRGB(72, 255, 255, 255);
 
-		LoadGraphics("heboblk_old.png", 74, 0);
+		LoadGraphic("heboblk_old.png", 74, 0);
 
-		LoadGraphics("tomoyo_eh_fade.png", 75, 0);
+		LoadGraphic("tomoyo_eh_fade.png", 75, 0);
 		YGS2kSetColorKeyRGB(75, 255, 0, 255);
 
-		LoadGraphics("heboblk_big.png", 76, 0);
-		LoadGraphics("line.png", 77, 0);//ランキングのライン
+		LoadGraphic("heboblk_big.png", 76, 0);
+		LoadGraphic("line.png", 77, 0);//ランキングのライン
 		YGS2kSetColorKeyRGB(77, 0, 0, 0);
 
-		LoadGraphics("laser.png", 78, 0);
+		LoadGraphic("laser.png", 78, 0);
 		YGS2kSetColorKeyRGB(78, 255, 0, 255);
 
-		LoadGraphics("shuffle_field_effect.png", 79, 0);
+		LoadGraphic("shuffle_field_effect.png", 79, 0);
 		YGS2kSetColorKeyRGB(79, 255, 0, 255);
 
-		LoadGraphics("heboblk6.png", 80, 0);
+		LoadGraphic("heboblk6.png", 80, 0);
 
-		LoadGraphics("text2.png", 81, 0);
+		LoadGraphic("text2.png", 81, 0);
 		YGS2kSetColorKeyRGB(81, 0, 0, 0);
 
-		LoadGraphics("itemerase.png", 82, 0);
+		LoadGraphic("itemerase.png", 82, 0);
 		YGS2kSetColorKeyRGB(82,0,0,0);
 
-		LoadGraphics("heboblk_sp2.png", 83, 0);
+		LoadGraphic("heboblk_sp2.png", 83, 0);
 
-		LoadGraphics("rotstext.png", 84, 0);
+		LoadGraphic("rotstext.png", 84, 0);
 		YGS2kSetColorKeyRGB(84, 0, 0, 0);
-		LoadGraphics("hebofont5.png", 85, 0);
+		LoadGraphic("hebofont5.png", 85, 0);
 		YGS2kSetColorKeyRGB(85, 172, 136, 199);
 
-		LoadGraphics("gamemodefont.png", 86, 0);
+		LoadGraphic("gamemodefont.png", 86, 0);
 		YGS2kSetColorKeyRGB(86, 0, 0, 0);
 
-		LoadGraphics("rollmark.png", 87, 0);
+		LoadGraphic("rollmark.png", 87, 0);
 		YGS2kSetColorKeyRGB(87, 0, 0, 0);
 
 		//プレーン88番使用中…
 
-		LoadGraphics("itemGra.png", 89, 0);
+		LoadGraphic("itemGra.png", 89, 0);
 	}
 
 //	YGS2kEnableBlendColorKey(85, 1);
@@ -17074,7 +17079,7 @@ void loadBG(int32_t players,int32_t vsmode){
 	int32_t i, j, k, tr,max;
 	int32_t movframe, framemax, tmp1, tmp2;
 
-	if (!restart || getLastDrawRate() != getDrawRate()) {
+	if (loadres || getLastDrawRate() != getDrawRate()) {
 		/* プレーン10〜にバックを読み込み */
 		LoadBackground("back01.png", 10, 0);
 		LoadBackground("back02.png", 11, 0);
@@ -17238,18 +17243,16 @@ void strcatExt(char* str, YGS2kEWaveFormat fmt) {
 
 /* BGM読み込み */
 void loadBGM(void) {
+	YGS2kStopMusic();
+
 	if (wavebgm & YGS_WAVE_SIMPLE) {
 		YGS2kStrCpy(string[0], "res/bgm/bgm");
 		strcatExt(string[0], wavebgm);
 		YGS2kLoadMusic(string[0]);
-		YGS2kPlayMusic();
 		YGS2kSetVolumeMusic(bgmvolume);
+		YGS2kPlayMusic();
 	}
 	else {
-		if(YGS2kIsPlayMusic()) YGS2kStopMusic();
-
-		int32_t i;
-
 		YGS2kStrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
 		YGS2kStrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
 		YGS2kStrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
@@ -17271,7 +17274,7 @@ void loadBGM(void) {
 		YGS2kStrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
 		YGS2kStrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 
-		for(i = 0; i <= 19; i++) {
+		for(int32_t i = 0; i <= 19; i++) {
 			if(bgmload[i]){
 				strcatExt(string[i], wavebgm);
 
@@ -17447,6 +17450,19 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
+	if ( quitNow() || !YGS2kHalt() )
+	{
+		shutDown();
+		mainLoopState = MAIN_QUIT;
+		init = true;
+		return;
+	}
+	YGS2kInput();
+
+	#ifdef ENABLE_KEYBOARD
+	updateEscapeFrames();
+	#endif
+
 	switch (lastControllerType = YGS2kGetLastControllerType()) {
 	#ifdef ENABLE_LINUX_GPIO
 	case YGS_CONTROLLER_LINUXGPIO: {
@@ -17512,18 +17528,7 @@ void spriteTime() {
 
 	PlayAllSE();
 
-	#ifdef ENABLE_KEYBOARD
-	updateEscapeFrames();
-	#endif
-	if ( quitNow() || !YGS2kHalt() )
-	{
-		shutDown();
-		mainLoopState = MAIN_QUIT;
-		init = true;
-	}
-
 	// キー入力
-	YGS2kInput();
 	if (fourwayfilter != 3) {
 		for (int32_t pl = 0; pl < 2; pl++) {
 			if (

@@ -48,7 +48,6 @@ set(EXE_SOURCES
 	"${SRC}/src/game/init.c"
 	"${SRC}/src/game/speed.c"
 
-	"${SRC}/src/main_sdl/delay.c"
 	"${SRC}/src/main_sdl/nanotime.c"
 	"${SRC}/src/main_sdl/filesystem.c"
 	"${SRC}/src/main_sdl/main.c"
@@ -87,7 +86,6 @@ set(EXE_HEADERS
 	"${SRC}/src/game/init.h"
 	"${SRC}/src/game/speed.h"
 
-	"${SRC}/src/main_sdl/delay.h"
 	"${SRC}/src/main_sdl/nanotime.h"
 	"${SRC}/src/main_sdl/gamecontroller.h"
 	"${SRC}/src/main_sdl/include.h"

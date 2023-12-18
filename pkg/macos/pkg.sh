@@ -31,7 +31,7 @@ else
 fi
 
 OLD_PWD="$PWD"
-cmake "$SOURCE_DIR" -B "$BUILD_DIR/build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DPACKAGE_TYPE="$PACKAGE_TYPE" -DAPPLE_CERT_NAME="$IDENTITY" -DCMAKE_OSX_ARCHITECTURES='x86_64;arm64' --install-prefix "$BUILD_DIR/install" || exit 1
+cmake "$SOURCE_DIR" -B "$BUILD_DIR/build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DUSE_VENDOR_LIBRARIES=1 -DPACKAGE_TYPE="$PACKAGE_TYPE" -DAPPLE_CERT_NAME="$IDENTITY" -DCMAKE_OSX_ARCHITECTURES='x86_64;arm64' -DCMAKE_OSX_DEPLOYMENT_TARGET=10.11 --install-prefix "$BUILD_DIR/install" || exit 1
 cmake --build "$BUILD_DIR/build" || exit 1
 cmake --install "$BUILD_DIR/build" || exit 1
 cd "$BUILD_DIR/build" || exit 1

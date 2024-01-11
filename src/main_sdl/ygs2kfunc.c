@@ -128,6 +128,8 @@ bool YGS2kInit()
 		YGS2kExit(EXIT_FAILURE);
 	}
 
+	if (!s_bInitFast) SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "0");
+
 	// If this fails, it doesn't matter, the game will still work. But it's
 	// called because if it works, the game might perform better.
 	if (!s_bInitFast) SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);

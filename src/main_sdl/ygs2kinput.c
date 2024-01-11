@@ -1076,6 +1076,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 
 	*text = NULL;
 	*button = BTN_NULL;
+	const SDL_GameControllerType conType = YGS2kGetSDLConType(s_aGameControllers[index].device);
 	switch (key->type)
 	{
 	case YGS_CONKEY_AXIS:
@@ -1114,7 +1115,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			*button = BTN_UP;
 			break;
 		case 8:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1136,7 +1137,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			}
 			break;
 		case 9:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1185,7 +1186,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			*button = BTN_UP + key->index - SDL_CONTROLLER_BUTTON_DPAD_UP;
 			break;
 		case SDL_CONTROLLER_BUTTON_MISC1:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
@@ -1220,7 +1221,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			*text = "TOUCHPAD";
 			break;
 		case SDL_CONTROLLER_BUTTON_LEFTSTICK:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1239,7 +1240,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1258,7 +1259,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1279,7 +1280,7 @@ bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const ch
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
-			switch(YGS2kGetSDLConType(s_aGameControllers[index].device))
+			switch(conType)
 			{
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:

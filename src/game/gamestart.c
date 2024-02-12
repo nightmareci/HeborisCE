@@ -1582,10 +1582,6 @@ void mainUpdate() {
 
 		PlayerdataLoad();
 
-		// YGS2kSetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
-		/* ここからポーズ有効 #1.60c7p9ex */
-		// YGS2kSetConstParam("EnablePause", 1);
-
 		StopAllWaves();
 		StopAllBGM();
 
@@ -1784,10 +1780,6 @@ void mainUpdate() {
 		}
 
 		PlayerdataLoad();
-
-		// YGS2kSetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
-		/* ここからポーズ有効 #1.60c7p9ex */
-		// YGS2kSetConstParam("EnablePause", 1);
 
 		YGS2kBltAlways(false);
 
@@ -3321,7 +3313,7 @@ void playerInitial(int32_t player) {
 					// 41:C7U4.5以降 42:C7U4.7以降 43:C7U4.72以降 44:C7U4.9以降 45:C7U5.0以降 46:C7U5.2以降 47:C7U5.45以降
 					// 48:C7U5.3以降 48:C7U6以降	-中略-
 					// 54:C7V2.1以降 55:C7V2.4以降 56:C7V2.43以降 57:C7V2.5以降 58:C7V3.3以降 59:C7V3.4以降 60:C7V3.45以降
-					// 61:C7V3.55以降 62:C7V3.6以降 63:C7V3.65以降 64:C7V3.7以降 65:C7V3.75以降 66: SDL2 1.0.1以降
+					// 61:C7V3.55以降 62:C7V3.6以降 63:C7V3.65以降 64:C7V3.7以降 65:C7V3.75以降 66: CE 1.0.1以降
 	//SetVolumeWaveAll(100);
 	item_pronum = 0;
 	for(i = 0; i < 9; i++)
@@ -16702,10 +16694,6 @@ void initialize(void) {
 	}
 
 	PlayerdataLoad();
-
-	// YGS2kSetConstParam("Caption", "HEBORIS C7-EX YGS2K+");
-	/* ここからポーズ有効 #1.60c7p9ex */
-	// YGS2kSetConstParam("EnablePause", 1);
 
 	YGS2kBltAlways(false);
 }

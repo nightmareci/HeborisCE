@@ -1,4 +1,4 @@
-#if [ "$(ldd HeborisC7EX-SDL2.exe | sed -ne 's/^.*\(\/mingw64\/bin\/.*\) (0x.*$/\1/p')" = '' ] ; then echo 'empty' ; else echo 'nonempty' ; fi
+#if [ "$(ldd HeborisCE.exe | sed -ne 's/^.*\(\/mingw64\/bin\/.*\) (0x.*$/\1/p')" = '' ] ; then echo 'empty' ; else echo 'nonempty' ; fi
 
 # TODO: Finish this for installation of DLLs of MinGW builds.
 #install(CODE "

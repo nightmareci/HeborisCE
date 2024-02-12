@@ -1,15 +1,17 @@
 cmake_minimum_required(VERSION 3.18)
-project(HeborisC7EX-SDL2
+project(HeborisCE
 	VERSION 1.0.1
 	LANGUAGES C
 )
 
 set(PROJECT_VER "${CMAKE_PROJECT_VERSION}")
+# PROJECT_NAME is set by the above project() command.
+set(PROJECT_ORG "nightmareci")
 
-# NOTE: Never, ever change PROJECT_ORG and PROJECT_APP, unless you're making a
-# hard fork such that you're effectively making a new, distinct game, that
-# needs its own separate save data, in which case you'd still stick with the
-# new org/app names once the initially decided upon names are used in your
+# NOTE: Never, ever change FILESYSTEM_ORG and FILESYSTEM_APP, unless you're
+# making a hard fork such that you're effectively making a new, distinct game,
+# that needs its own separate save data, in which case you'd still stick with
+# the new org/app names once the initially decided upon names are used in your
 # first distributed release. So, carefully choose org/app to be highly unique,
 # to increase likelihood no other program will ever clash with your choice;
 # something based on a web domain is a reasonable choice. These variables
@@ -22,8 +24,12 @@ set(PROJECT_VER "${CMAKE_PROJECT_VERSION}")
 # alphabetic case once decided upon, while also not choosing names that differ
 # from another application's names only in alphabetic case, which accommodates
 # both case insensitive and sensitive filesystems.
-set(PROJECT_ORG "nightmareci")
-set(PROJECT_APP "HeborisC7EX SDL2")
+#
+# Heboris C.E. was originally called HeborisC7EX-SDL2, and was rebranded later
+# to better indicate the direction of the project, so the project is stuck with
+# the originally-chosen "HeborisC7EX SDL2" filesystem application name.
+set(FILESYSTEM_ORG "${PROJECT_ORG}")
+set(FILESYSTEM_APP "HeborisC7EX SDL2")
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)

@@ -1,9 +1,9 @@
 ![Application Icon](/pkg/icon.png)
-# Heboris C7-EX SDL2 - unofficial version (YGS2K EX)
+# Heboris C.E. - Continuation of Heboris U.E.
 
-This version contains the source code for Heboris C7-EX. It requires a C
-compiler supporting C99 and the CMake utility, and the libraries for SDL 2.0,
-SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
+This version contains the source code for Heboris C.E. (Cross-platform
+Expansion). It requires a C compiler supporting C99 and the CMake utility, and
+the libraries for SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
 
 ## Default Keyboard Controls
 The keyboard controls can be reset to defaults at any time by holding the
@@ -49,10 +49,10 @@ sudo apt-get install flatpak
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install runtime/org.freedesktop.Platform/x86_64/21.08
 
-flatpak install ~/Downloads/HeborisC7EX-SDL2-Linux.flatpak
+flatpak install ~/Downloads/HeborisCE-Linux.flatpak
 
-# You might need to log out and then log back in for the HeborisC7EX-SDL2
-# application to show up in application menus.
+# You might need to log out and then log back in for the HeborisCE application
+# to show up in application menus.
 ```
 
 ## Setup On Ubuntu
@@ -82,11 +82,11 @@ pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-S
 ## Download, Build, and Run Without Installing
 
 ```sh
-git clone https://github.com/nightmareci/HeborisC7EX-SDL2
-cd HeborisC7EX-SDL2
+git clone https://github.com/nightmareci/HeborisCE
+cd HeborisCE
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-./build/HeborisC7EX-SDL2
+./build/HeborisCE
 ```
 
 ## Selecting a MIDI Soundfont if MIDI Doesn't Work
@@ -96,7 +96,7 @@ on Linux. If MIDI music doesn't seem to work, you can manually select a
 soundfont like this, on Linux:
 
 ```sh
-SDL_SOUNDFONTS='/usr/share/soundfonts/default.sf2' ./build/HeborisC7EX-SDL2
+SDL_SOUNDFONTS='/usr/share/soundfonts/default.sf2' ./build/HeborisCE
 ```
 
 Provide a full path to a .sf2 file after `SDL_SOUNDFONTS=` to select the
@@ -134,8 +134,8 @@ REM As of the time this was written, sdl2-mixer[opusfile] is broken, so you can'
 .\vcpkg install --triplet arm64-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
 
 REM Have your working directory somewhere for source repos here.
-git clone https://github.com/nightmareci/HeborisC7EX-SDL2
-cd HeborisC7EX-SDL2
+git clone https://github.com/nightmareci/HeborisCE
+cd HeborisCE
 REM Starting at the root of the VCPKG install/repo, vcpkg.cmake is at [vcpkg-root]\scripts\buildsystems\vcpkg.cmake
 .\pkg\windows\pkg.bat path\to\vcpkg.cmake . build-pkg
 REM All the builds will be in separate ZIPs in the build-pkg directory.
@@ -151,8 +151,8 @@ distribution.
 The "Installable Mac App" version will work unnotarized, though users will have to
 approve it, and will get the "Apple could not verify..." message.
 ```sh
-git clone https://github.com/nightmareci/HeborisC7EX-SDL2
-cd HeborisC7EX-SDL2
+git clone https://github.com/nightmareci/HeborisCE
+cd HeborisCE
 ./pkg/macos/pkg.sh 'Installable Mac App' . build-pkg
 ```
 
@@ -185,15 +185,15 @@ identity is provided.
 
 AppImage:
 ```sh
-git clone https://github.com/nightmareci/HeborisC7EX-SDL2
-cd HeborisC7EX-SDL2
+git clone https://github.com/nightmareci/HeborisCE
+cd HeborisCE
 ./pkg/linux/pkg-appimage.sh . build-appimage
 ```
 
 Flatpak:
 ```sh
-git clone https://github.com/nightmareci/HeborisC7EX-SDL2
-cd HeborisC7EX-SDL2
+git clone https://github.com/nightmareci/HeborisCE
+cd HeborisCE
 ./pkg/linux/pkg-flatpak.sh . build-flatpak
 ```
 
@@ -209,7 +209,7 @@ Set `ENABLE_LINUX_GPIO_INPUT` when running CMake, then build:
 ```sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_LINUX_GPIO_INPUT=1
 cmake --build build
-./build/HeborisC7EX-SDL2
+./build/HeborisCE
 ```
 
 No efforts will be made to support Linux systems without support for

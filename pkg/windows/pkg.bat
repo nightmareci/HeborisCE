@@ -3,7 +3,7 @@
 @if "%~3"=="" goto usage
 
 
-@set NAME=HeborisC7EX-SDL2
+@set NAME=HeborisCE
 @set SOURCE_DIRECTORY=%~1
 @set BUILD_DIRECTORY=%~2
 @set ARCHITECTURE=%~3

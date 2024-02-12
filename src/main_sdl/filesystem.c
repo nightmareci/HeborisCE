@@ -78,7 +78,7 @@ static char* FSPrefPath = NULL;
 
 bool FSInit(int argc, char** argv) {
 #ifdef __EMSCRIPTEN__
-	char* prefPath = SDL_GetPrefPath(PROJECT_ORG, PROJECT_APP);
+	char* prefPath = SDL_GetPrefPath(FILESYSTEM_ORG, FILESYSTEM_APP);
 	if ( !prefPath )
 	{
 		fprintf(stderr, "Error getting pref path\n");
@@ -174,7 +174,7 @@ bool FSInit(int argc, char** argv) {
 		}
 		free(fullBasePath);
 
-		char *prefPath = SDL_GetPrefPath(PROJECT_ORG, PROJECT_APP);
+		char *prefPath = SDL_GetPrefPath(FILESYSTEM_ORG, FILESYSTEM_APP);
 		if ( !prefPath )
 		{
 			fprintf(stderr, "Failed getting pref path: %s\n", SDL_GetError());
@@ -196,7 +196,7 @@ bool FSInit(int argc, char** argv) {
 	}
 
 #elif FILESYSTEM_TYPE == FILESYSTEM_PHYSFS
-	else if ( !PHYSFS_setSaneConfig(PROJECT_ORG, PROJECT_APP, "ZIP", 0, 0) )
+	else if ( !PHYSFS_setSaneConfig(FILESYSTEM_ORG, FILESYSTEM_APP, "ZIP", 0, 0) )
 	{
 		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
 		return false;

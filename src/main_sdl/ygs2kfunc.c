@@ -5,7 +5,7 @@
 #include "filesystem.h"
 #include "nanotime.h"
 
-#define		YGS_GAME_CAPTION		"HEBORIS C7-EX SDL2"
+#define		YGS_GAME_CAPTION		"Heboris C.E."
 
 typedef struct YGS2kSTextLayer
 {
@@ -112,6 +112,11 @@ static float YGS2kGetScreenSubpixelOffset()
 bool YGS2kInit()
 {
 	s_iQuitLevel = 0;
+
+#ifdef __EMSCRIPTEN__
+	/* Keyboard input gets a bit broken without this hint set. */
+	//SDL_SetHint(SDL_HINT_EMSCRIPTEN_KEYBOARD_ELEMENT, "#canvas");
+#endif
 
 	/* SDLの初期化 || SDL initialization */
 	if ( !s_bInitFast && SDL_Init(

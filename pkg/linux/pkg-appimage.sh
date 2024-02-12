@@ -14,7 +14,7 @@ else
 	GENERATOR="$3"
 fi
 
-NAME="HeborisC7EX-SDL2"
+NAME="HeborisCE"
 
 mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY" || exit 1

@@ -8,7 +8,7 @@ fi
 SOURCE_DIRECTORY=`readlink -f "$1"`
 BUILD_DIRECTORY=`readlink -f "$2"`
 
-NAME=HeborisC7EX-SDL2
+NAME=HeborisCE
 
 rm -rf "$BUILD_DIRECTORY" || exit 1
 mkdir "$BUILD_DIRECTORY" || exit 1

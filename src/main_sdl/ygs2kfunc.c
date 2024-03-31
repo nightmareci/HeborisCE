@@ -53,6 +53,7 @@ static uint64_t		s_uFPSCount;
 static unsigned int		s_uFPSCnting;
 static unsigned int		s_uFPS;
 static unsigned int		s_uNowFPS;
+static unsigned int		s_uCursorCnting;
 
 static YGS2kSTextLayer		s_TextLayer[YGS_TEXTLAYER_MAX];
 static int32_t			s_iScreenMode;
@@ -400,6 +401,7 @@ bool YGS2kHalt()
 
 	SDL_PumpEvents();
 	SDL_Event	ev;
+	int showCursor = SDL_DISABLE;
 	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_LASTEVENT) == 1)
 	{
 		switch(ev.type){
@@ -426,9 +428,27 @@ bool YGS2kHalt()
 				break;
 			#endif
 
+			case SDL_MOUSEMOTION:
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+			case SDL_MOUSEWHEEL:
+				showCursor = SDL_ENABLE;
+				break;
+			
 			default:
 				break;
 		}
+	}
+
+	if (showCursor == SDL_ENABLE)
+	{
+		SDL_ShowCursor(SDL_ENABLE);
+		s_uCursorCnting = 0u;
+	}
+
+	if (SDL_ShowCursor(SDL_QUERY) == SDL_ENABLE && s_uCursorCnting++ >= s_uNowFPS)
+	{
+		SDL_ShowCursor(SDL_DISABLE);
 	}
 
 	#ifdef ENABLE_JOYSTICK
@@ -687,12 +707,6 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 		}
 	}
 
-	/* Hide the mouse cursor only for exclusive fullscreen */
-	if ( SDL_ShowCursor((windowFlags & SDL_WINDOW_FULLSCREEN_DESKTOP) != SDL_WINDOW_FULLSCREEN) < 0 )
-	{
-		goto fail;
-	}
-
 	// Create the renderer, if not already created. It's important to not
 	// recreate the renderer if it's already created, so restarting without
 	// changing the detail level doesn't require reloading graphics. If the
@@ -843,6 +857,13 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 
 	s_iScreenMode = *screenMode;
 	s_iScreenIndex = *screenIndex;
+
+	/* Hide the mouse cursor at first */
+	if ( SDL_ShowCursor(SDL_DISABLE) < 0 )
+	{
+		goto fail;
+	}
+	s_uCursorCnting = 0u;
 
 	/* Setup was successful, so return with success */
 	return true;

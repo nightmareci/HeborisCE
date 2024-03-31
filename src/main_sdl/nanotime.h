@@ -117,40 +117,11 @@ uint64_t nanotime_now_max();
  */
 void nanotime_sleep(uint64_t nsec_count);
 
-#endif
-
-#ifndef NANOTIME_ONLY_STEP
-
 /*
- * The yield function is provided for some platforms, but in the case of
- * unknown platforms, the function is defined as a no-op.
+ * Yield the CPU/core that called nanotime_yield to the operating system for a
+ * small time slice.
  */
-
-#ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <Windows.h>
-#define nanotime_yield() YieldProcessor()
-#define NANOTIME_YIELD_IMPLEMENTED
-#elif (defined(__unix__) || defined(__APPLE__)) && defined(_POSIX_VERSION) && (_POSIX_VERSION >= 200112L)
-#include <sched.h>
-#define nanotime_yield() (void)sched_yield()
-#define NANOTIME_YIELD_IMPLEMENTED
-#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_THREADS__)
-#include <threads.h>
-#define nanotime_yield() thrd_yield()
-#define NANOTIME_YIELD_IMPLEMENTED
-#elif defined(__cplusplus)
-extern void (* const nanotime_yield)();
-#else
-#define nanotime_yield()
-#define NANOTIME_YIELD_NOP
-#define NANOTIME_YIELD_IMPLEMENTED
-#endif
+void nanotime_yield();
 
 #endif
 
@@ -169,10 +140,13 @@ typedef struct nanotime_step_data {
 	uint64_t (* now)();
 	void (* sleep)(uint64_t nsec_count);
 
+	// TODO: Figure out how to get the power usage optimization to not mess up timing.
+	#if 0
  	#ifdef __APPLE__
 	uint64_t overhead_numer;
 	uint64_t overhead_denom;
 	uint64_t backoff;
+	#endif
 	#endif
 	uint64_t zero_sleep_duration;
 	uint64_t accumulator;
@@ -183,7 +157,13 @@ typedef struct nanotime_step_data {
  * Initializes the nanotime precise fixed timestep object. Call immediately
  * before entering the loop using the stepper object.
  */
-void nanotime_step_init(nanotime_step_data* const stepper, const uint64_t sleep_duration, const uint64_t now_max, uint64_t (* const now)(), void (* const sleep)(uint64_t nsec_count));
+void nanotime_step_init(
+	nanotime_step_data* const stepper,
+	const uint64_t sleep_duration,
+	const uint64_t now_max,
+	uint64_t (* const now)(),
+	void (* const sleep)(uint64_t nsec_count)
+);
 
 /*
  * Does one step of sleeping for a fixed timestep logic update cycle. It makes
@@ -202,6 +182,10 @@ bool nanotime_step(nanotime_step_data* const stepper);
  * resort.
  */
 
+/*
+ * Checking _WIN32 must be above the UNIX-like implementations, so MinGW is
+ * guaranteed to use it.
+ */
 #ifdef _WIN32
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -274,7 +258,7 @@ void nanotime_sleep(uint64_t nsec_count) {
 	else {
 		HANDLE timer = NULL;
 		if (
-#ifdef CREATE_WAITABLE_TIMER_HIGH_RESOLUTION
+			#ifdef CREATE_WAITABLE_TIMER_HIGH_RESOLUTION
 			/*
 			 * Requesting a high resolution timer can make quite the
 			 * difference, so always request high resolution if available. It's
@@ -285,7 +269,7 @@ void nanotime_sleep(uint64_t nsec_count) {
 			 * doesn't support high resolution.
 			 */
 			(timer = CreateWaitableTimerEx(NULL, NULL, CREATE_WAITABLE_TIMER_HIGH_RESOLUTION, TIMER_ALL_ACCESS)) == NULL &&
-#endif
+			#endif
 			(timer = CreateWaitableTimer(NULL, TRUE, NULL)) == NULL
 		) {
 			return;
@@ -302,15 +286,36 @@ void nanotime_sleep(uint64_t nsec_count) {
 #define NANOTIME_SLEEP_IMPLEMENTED
 #endif
 
+#ifndef NANOTIME_YIELD_IMPLEMENTED
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <Windows.h>
+void nanotime_yield() {
+	YieldProcessor();
+}
+#define NANOTIME_YIELD_IMPLEMENTED
 #endif
 
-#if defined(__APPLE__) || defined(__MACH__)
+#endif
+
+/*
+ * To avoid using standard UNIX APIs on UNIX-like platforms, the
+ * platform-specific implementations must be first. That way, the
+ * lower-overhead kernel APIs can be used, that aren't UNIX-like.
+ */
 
 #ifndef NANOTIME_NOW_IMPLEMENTED
-// The current platform is some Apple operating system, or at least uses some
-// Mach kernel. The POSIX implementation below using clock_gettime works on at
-// least Apple platforms, though this version using Mach functions has lower
-// overhead.
+#if defined(__APPLE__) || defined(__MACH__)
+/*
+ * The current platform is some Apple operating system, or at least uses some
+ * Mach kernel. The POSIX implementation below using clock_gettime works on at
+ * least Apple platforms, though this version using Mach functions has lower
+ * overhead.
+ */
 #include <mach/mach_time.h>
 uint64_t nanotime_now() {
 	static mach_timebase_info_data_t info = { 0 };
@@ -325,8 +330,10 @@ uint64_t nanotime_now() {
 }
 #define NANOTIME_NOW_IMPLEMENTED
 #endif
+#endif
 
 #ifndef NANOTIME_NOW_MAX_IMPLEMENTED
+#if defined(__APPLE__) || defined(__MACH__)
 #include <mach/mach_time.h>
 uint64_t nanotime_now_max() {
 	static uint64_t now_max = UINT64_C(0);
@@ -345,11 +352,13 @@ uint64_t nanotime_now_max() {
 }
 #define NANOTIME_NOW_MAX_IMPLEMENTED
 #endif
-
 #endif
 
+#ifndef NANOTIME_NOW_IMPLEMENTED
 #if defined(__unix__) && defined(_POSIX_VERSION) && (_POSIX_VERSION >= 199309L) && !defined(NANOTIME_NOW_IMPLEMENTED)
-// Current platform is some version of POSIX, that might have clock_gettime.
+/*
+ * Current platform is some version of POSIX, that might have clock_gettime.
+ */
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
@@ -357,20 +366,26 @@ uint64_t nanotime_now() {
 	struct timespec now;
 	const int status = clock_gettime(
 		#if defined(CLOCK_MONOTONIC_RAW)
-		// Monotonic raw is more precise, but not always available. For the
-		// sorts of applications this code is intended for, mainly soft real
-		// time applications such as game programming, the subtle
-		// inconsistencies of it vs. monotonic aren't an issue.
+		/*
+		 * Monotonic raw is more precise, but not always available. For
+		 * the sorts of applications this code is intended for, mainly
+		 * soft real time applications such as game programming, the
+		 * subtle inconsistencies of it vs. monotonic aren't an issue.
+		 */
 		CLOCK_MONOTONIC_RAW
 		#elif defined(CLOCK_MONOTONIC)
-		// Monotonic is quite good, and widely available, but not as precise as
-		// monotonic raw, so it's only used if required.
+		/*
+		 * Monotonic is quite good, and widely available, but not as
+		 * precise as monotonic raw, so it's only used if required.
+		 */
 		CLOCK_MONOTONIC
 		#else
-		// Realtime isn't fully correct, as it's calendar time, but is even more
-		// widely available than monotonic. Monotonic is only unavailable on
-		// very old platforms though, so old they're likely unused now (as of
-		// last editing this, 2023).
+		/*
+		 * Realtime isn't fully correct, as it's calendar time, but is
+		 * even more widely available than monotonic. Monotonic is only
+		 * unavailable on very old platforms though, so old they're
+		 * likely unused now (as of last editing this, 2023).
+		 */
 		CLOCK_REALTIME
 		#endif
 	, &now);
@@ -383,10 +398,11 @@ uint64_t nanotime_now() {
 	}
 }
 #define NANOTIME_NOW_IMPLEMENTED
-
+#endif
 #endif
 
-#if (defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__MINGW32__) || defined(__MINGW64__)) && !defined(NANOTIME_SLEEP_IMPLEMENTED)
+#ifndef NANOTIME_SLEEP_IMPLEMENTED
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
@@ -395,11 +411,109 @@ void nanotime_sleep(uint64_t nsec_count) {
 		.tv_sec = (time_t)(nsec_count / NANOTIME_NSEC_PER_SEC),
 		.tv_nsec = (long)(nsec_count % NANOTIME_NSEC_PER_SEC)
 	};
-	const int status = nanosleep(&req, NULL);
+	#ifndef NDEBUG
+	const int status =
+	#endif
+	nanosleep(&req, NULL);
 	assert(status == 0 || (status == -1 && errno != EINVAL));
 }
 #define NANOTIME_SLEEP_IMPLEMENTED
 #endif
+#endif
+
+#ifndef NANOTIME_YIELD_IMPLEMENTED
+#if (defined(__unix__) || defined(__APPLE__)) && defined(_POSIX_VERSION) && (_POSIX_VERSION >= 200112L)
+#include <sched.h>
+void nanotime_yield() {
+	(void)sched_yield();
+}
+#define NANOTIME_YIELD_IMPLEMENTED
+#endif
+#endif
+
+
+#ifndef NANOTIME_NOW_IMPLEMENTED
+#if defined(__vita__)
+#include <psp2/kernel/processmgr.h>
+uint64_t nanotime_now() {
+	return sceKernelGetProcessTimeWide() * UINT64_C(1000);
+}
+#define NANOTIME_NOW_IMPLEMENTED
+#endif
+#endif
+
+#ifndef NANOTIME_SLEEP_IMPLEMENTED
+#if defined(__vita__)
+#include <psp2/kernel/processmgr.h>
+void nanotime_sleep(uint64_t nsec_count) {
+	sceKernelDelayThreadCB(nsec_count / UINT64_C(1000));
+}
+#define NANOTIME_SLEEP_IMPLEMENTED
+#endif
+#endif
+
+
+#ifndef NANOTIME_SLEEP_IMPLEMENTED
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+/*
+ * NOTE: You *must* have asyncify enabled in the Emscripten build (pass
+ * -sASYNCIFY to the compiler/linker) or sleeping won't work.
+ */
+void nanotime_sleep(uint64_t nsec_count) {
+	emscripten_sleep(nsec_count / UINT64_C(1000000));
+}
+#define NANOTIME_SLEEP_IMPLEMENTED
+#endif
+#endif
+
+#ifndef NANOTIME_NOW_IMPLEMENTED
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+uint64_t nanotime_now() {
+	const double now = emscripten_get_now();
+	return (uint64_t)now * UINT64_C(1000000);
+}
+#define NANOTIME_NOW_IMPLEMENTED
+#endif
+#endif
+
+
+#ifndef NANOTIME_SLEEP_IMPLEMENTED
+#ifdef __SWITCH__
+#include <switch.h>
+void nanotime_sleep(uint64_t nsec_count) {
+	if (nsec_count > INT64_MAX) {
+		svcSleepThread(INT64_MAX);
+	}
+	else {
+		svcSleepThread((s64)nsec_count);
+	}
+}
+#define NANOTIME_SLEEP_IMPLEMENTED
+#endif
+#endif
+
+#ifndef NANOTIME_NOW_IMPLEMENTED
+#ifdef __SWITCH__
+#include <switch.h>
+uint64_t nanotime_now() {
+	return svcGetSystemTick();
+}
+#define NANOTIME_NOW_IMPLEMENTED
+#endif
+#endif
+
+#ifndef NANOTIME_YIELD_IMPLEMENTED
+#if defined(__SWITCH__)
+#include <switch.h>
+void nanotime_yield() {
+	svcSleepThread(YieldType_ToAnyThread);
+}
+#define NANOTIME_YIELD_IMPLEMENTED
+#endif
+#endif
+
 
 #ifndef NANOTIME_NOW_IMPLEMENTED
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
@@ -414,47 +528,6 @@ uint64_t nanotime_now() {
 	else {
 		return UINT64_C(0);
 	}
-}
-#define NANOTIME_NOW_IMPLEMENTED
-#endif
-#endif
-
-#if defined(__vita__)
-#ifndef NANOTIME_SLEEP_IMPLEMENTED
-#include <psp2/kernel/processmgr.h>
-void nanotime_sleep(uint64_t nsec_count) {
-	sceKernelDelayThreadCB(nsec_count / UINT64_C(1000));
-}
-#define NANOTIME_SLEEP_IMPLEMENTED
-#endif
-
-#ifndef NANOTIME_NOW_IMPLEMENTED
-#include <psp2/kernel/processmgr.h>
-uint64_t nanotime_now() {
-	return sceKernelGetProcessTimeWide() * UINT64_C(1000);
-}
-#define NANOTIME_NOW_IMPLEMENTED
-#endif
-#endif
-
-#ifdef __EMSCRIPTEN__
-#ifndef NANOTIME_SLEEP_IMPLEMENTED
-#include <emscripten.h>
-/*
- * NOTE: You *must* have asyncify enabled in the Emscripten build (pass
- * -sASYNCIFY to the compiler/linker) or sleeping won't work.
- */
-void nanotime_sleep(uint64_t nsec_count) {
-	emscripten_sleep(nsec_count / UINT64_C(1000000));
-}
-#define NANOTIME_SLEEP_IMPLEMENTED
-#endif
-
-#ifndef NANOTIME_NOW_IMPLEMENTED
-#include <emscripten.h>
-uint64_t nanotime_now() {
-	const double now = emscripten_get_now();
-	return (uint64_t)now * UINT64_C(1000000);
 }
 #define NANOTIME_NOW_IMPLEMENTED
 #endif
@@ -475,21 +548,27 @@ void nanotime_sleep(uint64_t nsec_count) {
 #endif
 #endif
 
+#ifndef NANOTIME_YIELD_IMPLEMENTED
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L) && !defined(__STDC_NO_THREADS__)
+#include <threads.h>
+void nanotime_yield() {
+	thrd_yield();
+}
+#define NANOTIME_YIELD_IMPLEMENTED
 #endif
+#endif
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#if !defined(NANOTIME_ONLY_STEP) && defined(NANOTIME_IMPLEMENTATION) && defined(__cplusplus)
-
-#if !defined(NANOTIME_YIELD_IMPLEMENTED)
-#include <thread>
-extern "C" void (* const nanotime_yield)() = std::this_thread::yield;
-#define NANOTIME_YIELD_IMPLEMENTED
-#endif
+/*
+ * C++ implementations follow here, but defined with C linkage.
+ */
 
 #ifndef NANOTIME_NOW_IMPLEMENTED
+#ifdef __cplusplus
 #include <cstdint>
 #include <chrono>
 extern "C" uint64_t nanotime_now() {
@@ -501,8 +580,10 @@ extern "C" uint64_t nanotime_now() {
 }
 #define NANOTIME_NOW_IMPLEMENTED
 #endif
+#endif
 
 #ifndef NANOTIME_SLEEP_IMPLEMENTED
+#ifdef __cplusplus
 #include <cstdint>
 #include <thread>
 #include <exception>
@@ -515,10 +596,18 @@ extern "C" void nanotime_sleep(uint64_t nsec_count) {
 }
 #define NANOTIME_SLEEP_IMPLEMENTED
 #endif
-
 #endif
 
-#if !defined(NANOTIME_ONLY_STEP) && defined(NANOTIME_IMPLEMENTATION) 
+#ifndef NANOTIME_YIELD_IMPLEMENTED
+#ifdef __cplusplus
+#include <thread>
+extern "C" void nanotime_yield() {
+	std::this_thread::yield();
+}
+#define NANOTIME_YIELD_IMPLEMENTED
+#endif
+#endif
+
 
 #ifndef NANOTIME_NOW_IMPLEMENTED
 #error "Failed to implement nanotime_now (try using C11 with C11 threads support or C++11)."
@@ -528,28 +617,49 @@ extern "C" void nanotime_sleep(uint64_t nsec_count) {
 #error "Failed to implement nanotime_sleep (try using C11 with C11 threads support or C++11)."
 #endif
 
+#ifndef NANOTIME_YIELD_IMPLEMENTED
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * As a last resort, make a zero-duration sleep request to implement yield.
+ * Such sleep requests often have the desired yielding behavior on many
+ * platforms.
+ */
+void nanotime_yield() {
+	nanotime_sleep(0u);
+}
+#define NANOTIME_YIELD_IMPLEMENTED
+#ifdef __cplusplus
+}
+#endif
 #endif
 
-#ifdef NANOTIME_IMPLEMENTATION
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef NANOTIME_NOW_MAX_IMPLEMENTED
-// Might not be correct on some platforms, but it's the best we can do as a last
-// resort.
+/*
+ * Might not be correct on some platforms, but it's the best we can do as a last
+ * resort.
+ */
 uint64_t nanotime_now_max() {
 	return UINT64_MAX;
 }
 #define NANOTIME_NOW_MAX_IMPLEMENTED
 #endif
 
+#endif
+
+
+#ifdef NANOTIME_IMPLEMENTATION
+
 uint64_t nanotime_interval(const uint64_t start, const uint64_t end, const uint64_t max) {
-	assert(
-		max > UINT64_C(0) &&
-		start <= max &&
-		end <= max
-	);
+	assert(max > UINT64_C(0));
+	assert(start <= max);
+	assert(end <= max);
 
 	if (end >= start) {
 		return end - start;
@@ -559,14 +669,18 @@ uint64_t nanotime_interval(const uint64_t start, const uint64_t end, const uint6
 	}
 }
 
-void nanotime_step_init(nanotime_step_data* const stepper, const uint64_t sleep_duration, const uint64_t now_max, uint64_t (* const now)(), void (* const sleep)(uint64_t nsec_count)) {
-	assert(
-		stepper != NULL &&
-		sleep_duration > UINT64_C(0) &&
-		now_max > UINT64_C(0) &&
-		now != NULL &&
-		sleep != NULL
-	);
+void nanotime_step_init(
+	nanotime_step_data* const stepper,
+	const uint64_t sleep_duration,
+	const uint64_t now_max,
+	uint64_t (* const now)(),
+	void (* const sleep)(uint64_t nsec_count)
+) {
+	assert(stepper != NULL);
+	assert(sleep_duration > UINT64_C(0));
+	assert(now_max > UINT64_C(0));
+	assert(now != NULL);
+	assert(sleep != NULL);
 
 	stepper->sleep_duration = sleep_duration;
 	stepper->now_max = now_max;
@@ -574,17 +688,21 @@ void nanotime_step_init(nanotime_step_data* const stepper, const uint64_t sleep_
 	stepper->sleep = sleep;
 
 	const uint64_t start = now();
-	nanotime_sleep(UINT64_C(0));
+	sleep(UINT64_C(0));
 	stepper->zero_sleep_duration = nanotime_interval(start, now(), now_max);
+	#if 0
 	#ifdef __APPLE__
 	stepper->overhead_numer = UINT64_C(1);
 	stepper->overhead_denom = UINT64_C(1);
 	stepper->backoff = UINT64_C(0);
 	#endif
+	#endif
 	stepper->accumulator = UINT64_C(0);
 
-	// This should be last here, so the sleep point is close to what it
-	// should be.
+	/*
+	 * This should be last here, so the sleep point is close to what it
+	 * should be.
+	 */
 	stepper->sleep_point = now();
 }
 
@@ -597,31 +715,39 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 		uint64_t current_sleep_duration = total_sleep_duration;
 		const uint64_t shift = UINT64_C(4);
 
+		#if 0
 		#ifdef __APPLE__
-		// Start with a big sleep. This helps reduce CPU/power use vs. many
-		// shorter sleeps. Shorter sleeps are still done below, but this reduces
-		// the number of shorter sleeps. It appears that the actually-slept
-		// duration is roughly equal to the requested delay time multiplied by a
-		// factor that remains relatively constant over the short run, greater
-		// than 1.0, in testing on ARM macOS; such behavior doesn't appear to be
-		// the case on all platforms, but is the case in testing on an M1 Mac.
-		// By only setting the overhead factor when the sleep overshoots, it
-		// levels off to a pretty stable value in a feedback loop, resulting in
-		// the big sleep approaching a value that does as big as possible of a
-		// big sleep while reducing overshoots.  Also, a "backoff" duration is
-		// subtracted from the overhead factor-adjusted sleep duration, which
-		// reduces the frequency of overshoots, while still maintaining the
-		// desired longer sleep duration before the higher cost/higher precision
-		// sleeping below; the backoff duration is also updated in a feedback
-		// loop that causes it to approach a reasonably correct value.
-		// TODO: This was carefully tuned to be well-behaved on Apple Silicon
-		// M1, but hasn't been tested on any Intel Mac; test on an Intel Mac to
-		// see if this algorithm is appropriate there, if not, special-case for
-		// each CPU type.
-		// TODO: Implement "initial big sleep" for other platforms; it really
-		// does reduce wasted cycles regardless of platform. Or, if this
-		// algorithm seems to work fine on other platforms, change it to be used
-		// on all platforms, not just Apple's.
+		/*
+		 * Start with a big sleep. This helps reduce CPU/power use vs.
+		 * many shorter sleeps. Shorter sleeps are still done below,
+		 * but this reduces the number of shorter sleeps. It appears
+		 * that the actually-slept duration is roughly equal to the
+		 * requested delay time multiplied by a factor that remains
+		 * relatively constant over the short run, greater than 1.0, in
+		 * testing on ARM macOS; such behavior doesn't appear to be the
+		 * case on all platforms, but is the case in testing on an M1
+		 * Mac.  By only setting the overhead factor when the sleep
+		 * overshoots, it levels off to a pretty stable value in a
+		 * feedback loop, resulting in the big sleep approaching a
+		 * value that does as big as possible of a big sleep while
+		 * reducing overshoots.  Also, a "backoff" duration is
+		 * subtracted from the overhead factor-adjusted sleep duration,
+		 * which reduces the frequency of overshoots, while still
+		 * maintaining the desired longer sleep duration before the
+		 * higher cost/higher precision sleeping below; the backoff
+		 * duration is also updated in a feedback loop that causes it
+		 * to approach a reasonably correct value.
+		 *
+		 * TODO: This was carefully tuned to be well-behaved on Apple
+		 * Silicon M1, but hasn't been tested on any Intel Mac; test on
+		 * an Intel Mac to see if this algorithm is appropriate there,
+		 * if not, special-case for each CPU type.
+		 *
+		 * TODO: Implement "initial big sleep" for other platforms; it
+		 * really does reduce wasted cycles regardless of platform. Or,
+		 * if this algorithm seems to work fine on other platforms,
+		 * change it to be used on all platforms, not just Apple's.
+		 */
 		uint64_t overhead_sleep_duration = (current_sleep_duration * stepper->overhead_numer) / stepper->overhead_denom;
 		if (overhead_sleep_duration > stepper->backoff) {
 			overhead_sleep_duration -= stepper->backoff;
@@ -652,20 +778,25 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 			goto step_end;
 		}
 		#endif
+		#endif
 
-		// This has the flavor of Zeno's dichotomous paradox of motion, as it
-		// successively divides the time remaining to sleep, but attempts to
-		// stop short of the deadline to hopefully be able to precisely sleep up
-		// to the deadline below this loop. The divisor is larger than two
-		// though, as it produces better behavior, and seems to work fine in
-		// testing on real hardware. This loop, and the one below, take the
-		// assumption that sleep requests of the same amount are roughly equal;
-		// by keeping track of the max of all the sleeps, the loops can be
-		// broken out of when the remaining time is less than the max, allowing
-		// the loop after this one to do shorter sleeps, with a corresponding
-		// smaller max of the sleeps. The overshoot possible in the loop below
-		// this one won't overshoot much, or in the best case won't overshoot so
-		// the busyloop can finish up the sleep precisely.
+		/*
+		 * This has the flavor of Zeno's dichotomous paradox of motion,
+		 * as it successively divides the time remaining to sleep, but
+		 * attempts to stop short of the deadline to hopefully be able
+		 * to precisely sleep up to the deadline below this loop. The
+		 * divisor is larger than two though, as it produces better
+		 * behavior, and seems to work fine in testing on real
+		 * hardware. This loop, and the one below, take the assumption
+		 * that sleep requests of the same amount are roughly equal; by
+		 * keeping track of the max of all the sleeps, the loops can be
+		 * broken out of when the remaining time is less than the max,
+		 * allowing the loop after this one to do shorter sleeps, with
+		 * a corresponding smaller max of the sleeps. The overshoot
+		 * possible in the loop below this one won't overshoot much, or
+		 * in the best case won't overshoot so the busyloop can finish
+		 * up the sleep precisely.
+		 */
 		current_sleep_duration >>= shift;
 		for (
 			uint64_t max = stepper->zero_sleep_duration;
@@ -684,12 +815,15 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 		}
 
 		{
-			// After (hopefully) stopping short of the deadline by a small
-			// amount, do small sleeps here to get closer to the deadline, but
-			// again attempting to stop short by an even smaller amount. It's
-			// best to do larger sleeps as done in the above loop, to reduce
-			// CPU/power usage, as each sleep iteration has a CPU/power usage
-			// cost.
+			/*
+			 * After (hopefully) stopping short of the deadline by
+			 * a small amount, do small sleeps here to get closer
+			 * to the deadline, but again attempting to stop short
+			 * by an even smaller amount. It's best to do larger
+			 * sleeps as done in the above loop, to reduce
+			 * CPU/power usage, as each sleep iteration has a
+			 * CPU/power usage cost.
+			 */
 			uint64_t max = stepper->zero_sleep_duration;
 			uint64_t start;
 			while (nanotime_interval(stepper->sleep_point, start = stepper->now(), stepper->now_max) + max < total_sleep_duration) {
@@ -700,15 +834,19 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 			}
 		}
 
+		#if 0
 		#ifdef __APPLE__
 		step_end:
 		#endif
+		#endif
 		{
-			// Finally, do a busyloop to precisely sleep up to the
-			// deadline. The code above this loop attempts to reduce the
-			// remaining time to sleep to a minimum via process-yielding
-			// sleeps, so the amount of time spent spinning here is
-			// hopefully quite low.
+			/*
+			 * Finally, do a busyloop to precisely sleep up to the
+			 * deadline. The code above this loop attempts to
+			 * reduce the remaining time to sleep to a minimum via
+			 * process-yielding sleeps, so the amount of time spent
+			 * spinning here is hopefully quite low.
+			 */
 			uint64_t current_time;
 			uint64_t accumulated;
 			while ((accumulated = nanotime_interval(stepper->sleep_point, current_time = stepper->now(), stepper->now_max)) < total_sleep_duration);
@@ -725,9 +863,10 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 	return slept;
 }
 
+#endif
+
 #ifdef __cplusplus
 }
-#endif
 #endif
 
 #endif /* _include_guard_nanotime_ */

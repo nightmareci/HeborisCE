@@ -588,8 +588,8 @@ void ConfigMenu() {
 		printFont(2, 24, "4WAY FILTER      :", (statusc[0] == 19) * fontc[rots[0]]);
 		printFont(2, 25, "4WAY PRIORITY UP :", (statusc[0] == 20) * fontc[rots[0]]);
 
-		printGameButton(2, 28, BTN_A, 0);
-		printGameButton(17, 28, BTN_B, 0);
+		printMenuButton(2, 28, BTN_A, 0);
+		printMenuButton(17, 28, BTN_B, 0);
 		printFont(2, 28, " :SAVE&RETURN   :CANCEL", 9);
 
 		i = statusc[0];
@@ -603,7 +603,7 @@ void ConfigMenu() {
 
 		// next pattern
 		if((ncfg[2] > 1)&&(ncfg[2] < 8))
-        sprintf(string[0], "HEBO%" PRId32, ncfg[2]);
+		sprintf(string[0], "HEBO%" PRId32, ncfg[2]);
 		else if(ncfg[2] == 0)
 		sprintf(string[0], "RANDOM");
 		else if(ncfg[2] == 1)
@@ -627,7 +627,7 @@ void ConfigMenu() {
 		printFont(20, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
 		// next display
-        sprintf(string[0], "%" PRId32, ncfg[45]);
+		sprintf(string[0], "%" PRId32, ncfg[45]);
 		printFont(20, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
 		// 8way input
@@ -746,7 +746,7 @@ void ConfigMenu() {
 			}
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, BTN_D)) {
-                assert(pages > 0);
+				assert(pages > 0);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -911,8 +911,8 @@ void ConfigMenu() {
 		printFont(2, 24, "WALL KICK         :", (statusc[0] == 19) * fontc[rots[0]]);
 		printFont(2, 25, "SHOW 1P CONTROL   :", (statusc[0] == 20) * fontc[rots[0]]);
 
-		printGameButton(2, 28, BTN_A, 0);
-		printGameButton(4, 28, BTN_B, 0);
+		printMenuButton(2, 28, BTN_A, 0);
+		printMenuButton(4, 28, BTN_B, 0);
 		printFont(2, 28, " / :RETURN", 9);
 
 		i = statusc[0];
@@ -1123,8 +1123,8 @@ void ConfigMenu() {
 		printFont( 2, 22, "SHOW COMBOS    :", fontc[rots[0]] * (statusc[0] == 25));
 		printFont( 2, 23, "TOP FRAME      :", fontc[rots[0]] * (statusc[0] == 26));
 
-		printGameButton(2, 28, BTN_A, 0);
-		printGameButton(4, 28, BTN_B, 0);
+		printMenuButton(2, 28, BTN_A, 0);
+		printMenuButton(4, 28, BTN_B, 0);
 		printFont(2, 28, " / :RETURN", 9);
 
 		i = statusc[0];
@@ -1285,8 +1285,8 @@ void ConfigMenu() {
 			#endif
 			numOptions++; printFont(2, 4 + numOptions * 2, "[INPUT TEST]", fontc[rots[0]] * (statusc[0] == numOptions));
 			numOptions++; printFont(2, 4 + numOptions * 2, "[DISP ASSIGN]", fontc[rots[0]] * (statusc[0] == numOptions));
-			printGameButton(2, 28, BTN_A, 0);
-			printGameButton(12, 28, BTN_B, 0);
+			printMenuButton(2, 28, BTN_A, 0);
+			printMenuButton(12, 28, BTN_B, 0);
 			printFont(2, 28, " :SELECT   :RETURN", 9);
 
 			if(statusc[0] != 0) printFont(1, 4+statusc[0]*2, "b", fontc[rots[0]]);
@@ -1388,10 +1388,10 @@ void ConfigMenu() {
                 sprintf(string[0], "KEYBOARD %" PRId32 "P SETTING", pl + 1);
 				printFont(2, 3, string[0], digitc[rots[0]]);
 
-				printGameButton(3, 6, BTN_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
-				printGameButton(3, 7, BTN_DOWN, pl); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
-				printGameButton(3, 8, BTN_LEFT, pl); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
-				printGameButton(3, 9, BTN_RIGHT, pl); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
+				printMenuButton(3, 6, BTN_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
+				printMenuButton(3, 7, BTN_DOWN, pl); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
+				printMenuButton(3, 8, BTN_LEFT, pl); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
+				printMenuButton(3, 9, BTN_RIGHT, pl); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
 				printFont(3, 10, "A     :", fontc[rots[0]] * (statusc[0] == 4));
 				printFont(3, 11, "B     :", fontc[rots[0]] * (statusc[0] == 5));
 				printFont(3, 12, "C     :", fontc[rots[0]] * (statusc[0] == 6));
@@ -1496,10 +1496,10 @@ void ConfigMenu() {
                     sprintf(string[0], "JOYSTICK %" PRId32 "P SETTING", pl + 1);
 					printFont(2, 3, string[0], digitc[rots[0]]);
 
-					printGameButton(3, 6, BTN_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
-					printGameButton(3, 7, BTN_DOWN, pl); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
-					printGameButton(3, 8, BTN_LEFT, pl); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
-					printGameButton(3, 9, BTN_RIGHT, pl); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
+					printMenuButton(3, 6, BTN_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
+					printMenuButton(3, 7, BTN_DOWN, pl); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
+					printMenuButton(3, 8, BTN_LEFT, pl); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
+					printMenuButton(3, 9, BTN_RIGHT, pl); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
 					printFont(3, 10, "A     :", fontc[rots[0]] * (statusc[0] == 4));
 					printFont(3, 11, "B     :", fontc[rots[0]] * (statusc[0] == 5));
 					printFont(3, 12, "C     :", fontc[rots[0]] * (statusc[0] == 6));
@@ -1783,13 +1783,13 @@ void ConfigMenu() {
 				#endif
 				if (!cancel) {
 					pl = statusc[2] - optionIndex + 2;
-                    sprintf(string[0], "CONTROLLER %" PRId32 "P SETTING", pl + 1);
+					sprintf(string[0], "CONTROLLER %" PRId32 "P SETTING", pl + 1);
 					printFont(2, 3, string[0], digitc[rots[0]]);
 
-					printGameButton(3, 6, BTN_UP, pl); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 4));
-					printGameButton(3, 7, BTN_DOWN, pl); printFont(4, 7, ":", fontc[rots[0]] * (statusc[0] == 4));
-					printGameButton(3, 8, BTN_LEFT, pl); printFont(4, 8, ":", fontc[rots[0]] * (statusc[0] == 4));
-					printGameButton(3, 9, BTN_RIGHT, pl); printFont(4, 9, ":", fontc[rots[0]] * (statusc[0] == 4));
+					printMenuButton(3, 6, BTN_UP, pl); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 4));
+					printMenuButton(3, 7, BTN_DOWN, pl); printFont(4, 7, ":", fontc[rots[0]] * (statusc[0] == 4));
+					printMenuButton(3, 8, BTN_LEFT, pl); printFont(4, 8, ":", fontc[rots[0]] * (statusc[0] == 4));
+					printMenuButton(3, 9, BTN_RIGHT, pl); printFont(4, 9, ":", fontc[rots[0]] * (statusc[0] == 4));
 					printFont(3, 10, "A:", fontc[rots[0]] * (statusc[0] == 4));
 					printFont(3, 11, "B:", fontc[rots[0]] * (statusc[0] == 5));
 					printFont(3, 12, "C:", fontc[rots[0]] * (statusc[0] == 6));
@@ -1903,18 +1903,18 @@ void ConfigMenu() {
 			// INPUT TEST #1.60c7n3
 			printFont(2,  3, "INPUT TEST", digitc[rots[0]]);
 			printFont(2, 28, "EXIT[ & ]", 9);
-			printGameButton(7, 28, BTN_RIGHT, 0);
-			printGameButton(9, 28, BTN_A, 0);
+			printMenuButton(7, 28, BTN_RIGHT, 0);
+			printMenuButton(9, 28, BTN_A, 0);
 
 			for(pl=0; pl<2; pl++) {
                 sprintf(string[0],"%" PRId32 "P", pl + 1);
 				printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
 				for(i=0; i<=7; i++) {
-					if(i == 0)      { printGameButton(3, 7 + i + pl * 10, BTN_UP, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
-					else if(i == 1) { printGameButton(3, 7 + i + pl * 10, BTN_DOWN, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
-					else if(i == 2) { printGameButton(3, 7 + i + pl * 10, BTN_LEFT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
-					else if(i == 3) { printGameButton(3, 7 + i + pl * 10, BTN_RIGHT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					if(i == 0)      { printMenuButton(3, 7 + i + pl * 10, BTN_UP, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					else if(i == 1) { printMenuButton(3, 7 + i + pl * 10, BTN_DOWN, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					else if(i == 2) { printMenuButton(3, 7 + i + pl * 10, BTN_LEFT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					else if(i == 3) { printMenuButton(3, 7 + i + pl * 10, BTN_RIGHT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
 					else if(i == 4) { printFont(3, 7 + i + pl * 10, "A:", 0); }
 					else if(i == 5) { printFont(3, 7 + i + pl * 10, "B:", 0); }
 					else if(i == 6) { printFont(3, 7 + i + pl * 10, "C:", 0); }
@@ -1945,8 +1945,8 @@ void ConfigMenu() {
 		} else if(statusc[2] == optionIndex++) {
 			// DISP ASSIGN #1.60c7n4
 			printFont(2,  3, "DISP ASSIGN", digitc[rots[0]]);
-			printGameButton(2, 28, BTN_A, 0);
-			printGameButton(4, 28, BTN_B, 0);
+			printMenuButton(2, 28, BTN_A, 0);
+			printMenuButton(4, 28, BTN_B, 0);
 			printFont(2, 28, " / : EXIT", 9);
 
 			for(pl=0; pl<2; pl++) {
@@ -1955,10 +1955,10 @@ void ConfigMenu() {
 				printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
 				for(i=0; i<=7; i++) {
-					if(i == 0)      { printGameButton(3, 7 + i + pl * 10, BTN_UP, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
-					else if(i == 1) { printGameButton(3, 7 + i + pl * 10, BTN_DOWN, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
-					else if(i == 2) { printGameButton(3, 7 + i + pl * 10, BTN_LEFT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
-					else if(i == 3) { printGameButton(3, 7 + i + pl * 10, BTN_RIGHT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					if(i == 0)      { printMenuButton(3, 7 + i + pl * 10, BTN_UP, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					else if(i == 1) { printMenuButton(3, 7 + i + pl * 10, BTN_DOWN, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					else if(i == 2) { printMenuButton(3, 7 + i + pl * 10, BTN_LEFT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
+					else if(i == 3) { printMenuButton(3, 7 + i + pl * 10, BTN_RIGHT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
 					else if(i == 4) printFont(3, 7 + i + pl * 10, "A:", 0);
 					else if(i == 5) printFont(3, 7 + i + pl * 10, "B:", 0);
 					else if(i == 6) printFont(3, 7 + i + pl * 10, "C:", 0);
@@ -2100,8 +2100,8 @@ void ConfigMenu() {
 		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_TYPE, "BGM TYPE    :", (statusc[0] == MENU_AV_BGM_TYPE) * fontc[rots[0]]);
 		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_FORMAT, "BGM FORMAT  :", (statusc[0] == MENU_AV_BGM_FORMAT) * fontc[rots[0]]);
 
-		printGameButton(2, 28, BTN_A, 0);
-		printGameButton(4, 28, BTN_B, 0);
+		printMenuButton(2, 28, BTN_A, 0);
+		printMenuButton(4, 28, BTN_B, 0);
 		printFont(2, 28, " / :RETURN", 9);
 
 		switch(statusc[0]) {

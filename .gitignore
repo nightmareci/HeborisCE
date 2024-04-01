@@ -14,3 +14,6 @@
 /*.kdev4
 /*.zip
 /.cache
+/_build/
+/.cproject
+/.project

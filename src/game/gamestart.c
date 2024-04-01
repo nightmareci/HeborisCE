@@ -5108,16 +5108,16 @@ void statSelectMode(int32_t player) {
 		if(textguide){
 			printFont(15+24 * player - 12 * maxPlay, 26, "<L R>:TYPE", count % 9);
 			if(gameMode[player] == 6){
-				printGameButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
+				printMenuButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
 				printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 				printFont(26 + 6 * player - 12 * maxPlay, 16, "RANDOM", 7);
 			}else{
-				printGameButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
+				printMenuButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
 				printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 				printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 			}
 			if(gameMode[player] == 3){
-				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!death_plus[player])
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "DEATH+", 2);
@@ -5125,7 +5125,7 @@ void statSelectMode(int32_t player) {
 					printFont(26 + 8 * player - 12 * maxPlay, 19-(death_plus[player]),"ITEM", 5);
 			}
 			if((gameMode[player] == 1) || (gameMode[player] == 2)){
-				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!item_mode[player])
 					printFont(26 + 8 * player - 12 * maxPlay, 18,"ITEM", 5);
@@ -5134,7 +5134,7 @@ void statSelectMode(int32_t player) {
 			}
 
 			if((gameMode[player] == 6)&&(tomoyo_opt[player]==4)){
-				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!fpbas_mode[player])
 					printFont(26 + 7 * player - 12 * maxPlay, 18,"BASIC", 3);
@@ -5142,7 +5142,7 @@ void statSelectMode(int32_t player) {
 					printFont(26 + 7 * player - 12 * maxPlay, 18,"18MIN", 3);
 			}
 			if((gameMode[player] == 9) && (std_opt[player] < 2)){
-				printGameButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!relaymode[player]){
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "ROT.", 7);
@@ -5406,7 +5406,7 @@ void statSelectMode(int32_t player) {
 	// Cボタン
 	// Cボタン
 	if (statusc[player * 10 + 2] == 2 && gameMode[player] != 6) {
-		printGameButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
+		printMenuButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
 		printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 	}	
@@ -5829,11 +5829,11 @@ void statSelectStandardSp(int32_t player) {
 	printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], count % 9 * (statusc[player * 10 ]==6));
 
 	if(statusc[player * 10] > 0) {
-		printGameButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player);
+		printMenuButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player);
 		printFont(16 + 24 * player - 12 * maxPlay, 22, ":START", count % 9);
 	}
 	else {
-		printGameButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player);
+		printMenuButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player);
 		printFont(16 + 24 * player - 12 * maxPlay, 22, ":LOAD", count % 9);
 	}
 
@@ -12510,7 +12510,7 @@ void statReplaySave(int32_t player) {
 		if(repdata[9 + player * 20]) ExBltRect(85, 136 + 192 * player - 96 * maxPlay, 96, 154, 112, 14, 7);
 	}
 	if(statusc[player * 10 + 2] == 0){
-		printGameButton(16+24 * player - 12 * maxPlay, 25, BTN_B, player);
+		printMenuButton(16+24 * player - 12 * maxPlay, 25, BTN_B, player);
 		printFont(16+24 * player - 12 * maxPlay, 25, " :NO SAVE", 0);
 
 		// キー入力
@@ -12612,11 +12612,11 @@ void statVersusSelect(int32_t player) {
 	ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
 
 	if(vslevel[player] == 2) {
-		printGameButton(3 + 24 * player, 6, BTN_A, player);
+		printMenuButton(3 + 24 * player, 6, BTN_A, player);
 		printFont(4 + 24 * player, 6, ":LOAD SP", 7);
 	}
 	else {
-		printGameButton(3 + 24 * player, 6, BTN_A, player);
+		printMenuButton(3 + 24 * player, 6, BTN_A, player);
 		printFont(4 + 24 * player, 6, ":READY SP", 7);
 	}
 
@@ -16462,8 +16462,8 @@ void testmenu(void) {
                 }
 
                 if( !getPressState(0, BTN_D) ) {
-                        printGameButton(6, 29, BTN_B, 0);
-                        printGameButton(13, 29, BTN_D, 0);
+                        printMenuButton(6, 29, BTN_B, 0);
+                        printMenuButton(13, 29, BTN_D, 0);
                         sprintf(string[0],"NO.%02d  :EXIT  :HIDE",param);
                         //sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
                         printFont(0, 29, string[0], 0);

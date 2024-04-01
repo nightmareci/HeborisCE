@@ -36,7 +36,7 @@ void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type);
 void viewbesttimes(int32_t player);
 void viewbestSTtimes(int32_t player);
 void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor);
-void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t player);
+void printMenuButton(int32_t fontX, int32_t fontY, EButton button, int32_t player);
 #ifdef ENABLE_GAME_CONTROLLER
 void printConKey(int32_t fontX, int32_t fontY, int32_t index, YGS2kSConKey* key, int32_t fontColor);
 #endif

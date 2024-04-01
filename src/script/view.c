@@ -1449,18 +1449,18 @@ void viewTime(void) {
 	if((playback) && (!demo) && (gameMode[0] != 6) && (gameMode[0] != 8) && (gameMode[0] != 4)){
 		if((onRecord[0]) || (ending[0]) || (status[0] == 7) || (status[0] == 14)){
 			if(dispLinfo){
-				printGameButton(29 + (1 * (!maxPlay)), 26, BTN_D, 0);
+				printMenuButton(29 + (1 * (!maxPlay)), 26, BTN_D, 0);
 				printFont(27 + (1 * (!maxPlay)), 26, "k  :HIDE", 0);
 				printFont(27 + (3 * (!maxPlay)), 5, "iLINE INFO ", 3);
 				viewLineInfo();
 			}else{
-				printGameButton(29 + (1 * (!maxPlay)), 26, BTN_D, 0);
+				printMenuButton(29 + (1 * (!maxPlay)), 26, BTN_D, 0);
 				printFont(27 + (1 * (!maxPlay)), 26, "k  :SHOW", 0);
 				printFont(27 + (1 * (!maxPlay)), 27, "   LINE INFO", 0);
 			}
 		}else{
 			printFont(27 + (3 * (!maxPlay)), 14, "LINE INFO:", 0);
-			printGameButton(32 + (3 * (!maxPlay)), 16, BTN_D, 0);
+			printMenuButton(32 + (3 * (!maxPlay)), 16, BTN_D, 0);
 			printFont(27 + (3 * (!maxPlay)), 16, "PUSH", 0);
 			if(dispLinfo)
 				printFont(27 + (3 * (!maxPlay)), 15, "   ON", 0);
@@ -2074,7 +2074,7 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 	}
 }
 
-void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t player) {
+void printMenuButton(int32_t fontX, int32_t fontY, EButton button, int32_t player) {
 	if (button < 0 || button >= NUMGAMEBTNS) return;
 
 	switch (player >= 0 ? lastPlayerControllerType[player] : lastControllerType) {
@@ -2096,14 +2096,15 @@ void printGameButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 		case BTN_A:
 			ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, 3 * 8, 8, 8);
 			break;
+
 		case BTN_B:
 			ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, 3 * 8, 8, 8);
 			break;
+
 		default:
 			ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
 			break;
 		}
-		break;
 	#endif
 	}
 }

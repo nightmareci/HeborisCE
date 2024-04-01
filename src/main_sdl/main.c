@@ -2,9 +2,6 @@
 #include "script/config.h"
 #include "gamestart.h"
 #include "filesystem.h"
-#ifdef ENABLE_GAME_CONTROLLER
-#include "main_sdl/gamecontroller.h"
-#endif
 
 // TODO: Move as much as possible of the Emscripten code into its own
 // source(s). The __EMSCRIPTEN__ checks really ugly up the code.
@@ -20,12 +17,6 @@ int main(int argc, char** argv)
 	if (!FSInit(argc, argv)) {
 		return EXIT_FAILURE;
 	}
-
-#ifdef ENABLE_GAME_CONTROLLER
-	// Must be called after FSInit, as it reads gamecontrollerdb.txt in the
-	// res directory on some platforms.
-	OpenGameControllers();
-#endif
 
 	const char* directories[] = {
 		"replay",

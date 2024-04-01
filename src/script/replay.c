@@ -1041,7 +1041,7 @@ void ReplaySelect(void) {
 	ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 
 	printFont(9, 2, "- SELECT REPLAY DATA -", 4);
-	printGameButton(12, 3, BTN_C, -1);
+	printMenuButton(12, 3, BTN_C, -1);
 	printFont(6, 3, "PRESS   BUTTON TO VIEW DETAIL", 5);
 
 	// ↑↓カーソルリピード #1.60c7o6

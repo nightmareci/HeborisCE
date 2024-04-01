@@ -24,7 +24,7 @@ void statSelectLevel(int32_t player) {
 		printFont(15 + 24 * player - 12 * maxPlay,25 , "kn", count % 9);
 		sprintf(string[0], "PAGE %d/3",1+(1*(vslevel[0]>=14))+(1*(vslevel[0]>=29)));
 		printFont(18 + 24 * player - 12 * maxPlay,25 , string[0], 0);
-		printGameButton(18 + 24 * player - 12 * maxPlay,26 , BTN_C, player);
+		printMenuButton(18 + 24 * player - 12 * maxPlay,26 , BTN_C, player);
 		printFont(19 + 24 * player - 12 * maxPlay,26 , ":RAPID", 0);
 
 	if(vslevel[0] < 14) { // 1ページ目
@@ -1112,7 +1112,7 @@ void PracticeDeath() {
 		printFont(15 - 12 * maxPlay, 26, "S-GRADE", fontc[rots[0]]);
 		printFont(23 + (sgrade[0] < 9) - 12 * maxPlay, 26, gname[sgrade[0]], 0);
 	}
-	printGameButton(22 - 12 * maxPlay, 25, BTN_C, -1);
+	printMenuButton(22 - 12 * maxPlay, 25, BTN_C, -1);
 	printFont(16 - 12 * maxPlay, 25, "PRESS", fontc[rots[0]]);
 	if(getPushState(0, BTN_C)) {
 		PracticeOver();

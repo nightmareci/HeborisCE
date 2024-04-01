@@ -1,3 +1,3 @@
 #pragma once
 
-void OpenGameControllers();
+void OpenGameControllerDB();

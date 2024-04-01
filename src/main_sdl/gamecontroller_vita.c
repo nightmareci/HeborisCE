@@ -1,5 +1,5 @@
 #include "main_sdl/gamecontroller.h"
 
-void OpenGameControllers() {
+void OpenGameControllerDB() {
 	// TODO
 }

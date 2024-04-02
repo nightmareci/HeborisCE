@@ -53,7 +53,6 @@ elseif(CMAKE_BUILD_TYPE MATCHES Debug)
 endif()
 
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIME_METHODS=ccall -s EXPORTED_FUNCTIONS=_main,_startup -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
---preload-file '${SRC}/res/gamecontrollerdb.txt@basepath/res/gamecontrollerdb.txt' \
 --preload-file '${SRC}/res/bg/highDetail@basepath/res/bg/highDetail' \
 --preload-file '${SRC}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
 --preload-file '${SRC}/res/bgm@basepath/res/bgm' \
@@ -66,7 +65,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIM
 --preload-file '${SRC}/config/stage@basepath/config/stage' \
 ")
 
-add_executable(${EXE} ${EXE_SOURCES} "${SRC}/src/main_sdl/gamecontroller.c" ${EXE_HEADERS})
+add_executable(${EXE} ${EXE_SOURCES} "${SRC}/src/main_sdl/gamecontrollerdb_null.c" ${EXE_HEADERS})
 set(CMAKE_EXECUTABLE_SUFFIX .html)
 
 if(USE_VENDOR_LIBRARIES)

@@ -28,7 +28,7 @@ static int s_iNumJoysticks = -1;
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-#include "main_sdl/gamecontroller.h"
+#include "main_sdl/gamecontrollerdb.h"
 typedef struct YGS2kSGameController
 {
 	SDL_GameController* device;
@@ -636,9 +636,6 @@ void YGS2kConClose()
 
 int YGS2kConOpen()
 {
-	OpenGameControllerDB();
-	SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "0");
-
 	const int numJoysticks = SDL_NumJoysticks();
 	if (numJoysticks < 0)
 	{
@@ -1387,6 +1384,8 @@ int YGS2kInputOpen()
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
+	OpenGameControllerDB();
+	SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "0");
 	YGS2kConOpen();
 	#endif
 

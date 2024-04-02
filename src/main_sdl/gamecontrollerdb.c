@@ -1,10 +1,10 @@
-#include "main_sdl/gamecontroller.h"
+#include "main_sdl/gamecontrollerdb.h"
 #include "main_sdl/filesystem.h"
 
 void OpenGameControllerDB() {
 	// The game will just go without the database if it's missing or fails to load.
 
-	SDL_RWops* db = FSOpenRead("res/gamecontrollerdb.txt");
+	SDL_RWops* db = FSOpenRead("gamecontrollerdb.txt");
 	if (!db) {
 		return;
 	}

@@ -4,7 +4,7 @@ list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
 list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
 
 if(ENABLE_GAME_CONTROLLER)
-	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontroller.c")
+	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontrollerdb.c")
 endif()
 
 add_executable(${EXE}

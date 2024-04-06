@@ -157,12 +157,12 @@ int32_t SaveConfig(void) {
 	#endif
 	
 	#ifdef ENABLE_GAME_CONTROLLER
-	int32_t *conkeybuf = &cfgbuf[240];
+	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		conkeybuf[pl * (1 + 2 * 8)] = playerCons[pl];
-		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
+		int32_t* plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
-			const YGS2kSConKey *plcon = &conKeyAssign[pl * 8 + key];
+			const YGS2kSConKey* plcon = &conKeyAssign[pl * 8 + key];
 			plbuf[key * 2 + 0] = plcon->type;
 			plbuf[key * 2 + 1] = plcon->index;
 		}
@@ -326,12 +326,12 @@ int32_t LoadConfig(void) {
 	#endif
 	
 	#ifdef ENABLE_GAME_CONTROLLER
-	int32_t *conkeybuf = &cfgbuf[240];
+	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		playerCons[pl] = conkeybuf[pl * (1 + 2 * 8)];
-		int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
+		int32_t* plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 		for (int32_t key = 0; key < 8; key++) {
-			YGS2kSConKey *plcon = &conKeyAssign[pl * 8 + key];
+			YGS2kSConKey* plcon = &conKeyAssign[pl * 8 + key];
 			plcon->type = (YGS2kEConKeyType)plbuf[key * 2 + 0];
 			plcon->index = plbuf[key * 2 + 1];
 		}
@@ -482,12 +482,12 @@ void ConfigMenu() {
 		#endif
 		
 		#ifdef ENABLE_GAME_CONTROLLER
-		int32_t *conkeybuf = &ncfg[240];
+		int32_t* conkeybuf = &ncfg[240];
 		for (int32_t pl = 0; pl < 2; pl++) {
 			conkeybuf[pl * (1 + 2 * 8)] = playerCons[pl];
-			int32_t *plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
+			int32_t* plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
 			for (int32_t key = 0; key < 8; key++) {
-				const YGS2kSConKey *plcon = &conKeyAssign[pl * 8 + key];
+				const YGS2kSConKey* plcon = &conKeyAssign[pl * 8 + key];
 				plbuf[key * 2 + 0] = plcon->type;
 				plbuf[key * 2 + 1] = plcon->index;
 			}
@@ -1743,9 +1743,22 @@ void ConfigMenu() {
 				statusc[2] = 0;
 			}
 			else {
+				YGS2kSConKey cancelKey = {
+					.type = YGS_CONKEY_BUTTON,
+					.index = 4
+				};
 				bool cancel = false;
-				#if defined(ENABLE_JOYSTICK) || defined(ENABLE_LINUX_GPIO) || defined(ENABLE_KEYBOARD)
 				switch (YGS2kGetLastControllerType()) {
+				case YGS_CONTROLLER_XBOX:
+				case YGS_CONTROLLER_PLAYSTATION:
+				case YGS_CONTROLLER_NINTENDO:
+					if (YGS2kIsPushConKey(-1, &cancelKey)) {
+						PlaySE(5);
+						statusc[0] = 0;
+						statusc[2] = 0;
+						cancel = true;
+					}
+					break;
 				#ifdef ENABLE_JOYSTICK
 				case YGS_CONTROLLER_JOYSTICK:
 					if (statusc[0] < 8 && YGS2kIsPushJoyKey(&joyKeyAssign[BTN_B])) {
@@ -1780,29 +1793,31 @@ void ConfigMenu() {
 				default:
 					break;
 				}
-				#endif
+
 				if (!cancel) {
 					pl = statusc[2] - optionIndex + 2;
 					sprintf(string[0], "CONTROLLER %" PRId32 "P SETTING", pl + 1);
 					printFont(2, 3, string[0], digitc[rots[0]]);
 
-					printMenuButton(3, 6, BTN_UP, pl); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 4));
-					printMenuButton(3, 7, BTN_DOWN, pl); printFont(4, 7, ":", fontc[rots[0]] * (statusc[0] == 4));
-					printMenuButton(3, 8, BTN_LEFT, pl); printFont(4, 8, ":", fontc[rots[0]] * (statusc[0] == 4));
-					printMenuButton(3, 9, BTN_RIGHT, pl); printFont(4, 9, ":", fontc[rots[0]] * (statusc[0] == 4));
+					printMenuButton(3, 6, BTN_UP, pl); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
+					printMenuButton(3, 7, BTN_DOWN, pl); printFont(4, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
+					printMenuButton(3, 8, BTN_LEFT, pl); printFont(4, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
+					printMenuButton(3, 9, BTN_RIGHT, pl); printFont(4, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
 					printFont(3, 10, "A:", fontc[rots[0]] * (statusc[0] == 4));
 					printFont(3, 11, "B:", fontc[rots[0]] * (statusc[0] == 5));
 					printFont(3, 12, "C:", fontc[rots[0]] * (statusc[0] == 6));
 					printFont(3, 13, "D:", fontc[rots[0]] * (statusc[0] == 7));
 
 					YGS2kSConKey key;
+					int lastConIndex = -1;
 					key.type = YGS_CONKEY_ANY;
 					if (conIndex == -1 && !YGS2kIsPressConKey(-1, &key)) {
 						YGS2kResetLastConIndex();
 						conIndex = -2;
 					}
-					else if (conIndex == -2 && YGS2kGetLastConIndex() >= 0) {
-						conIndex = YGS2kGetLastConIndex();
+					else if (conIndex == -2 && (lastConIndex = YGS2kGetLastConIndex()) >= 0) {
+						conIndex = lastConIndex;
+						ncfg[240 + pl * (1 + 2 * 8)] = conIndex;
 					}
 
 					if (conIndex >= 0) {
@@ -1811,7 +1826,7 @@ void ConfigMenu() {
 								.type  = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0],
 								.index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1]
 							};
-							sprintf(string[0], "C%d:", playerCons[pl]);
+							sprintf(string[0], "C%" PRId32 ":", conIndex);
 							printFont(5, 6 + i, string[0], digitc[rots[0]]);
 							printConKey(5 + strlen(string[0]), 6 + i, conIndex, &key, digitc[rots[0]]);
 						}
@@ -1840,22 +1855,10 @@ void ConfigMenu() {
 						}
 
 						if (pushed) {
-							bool unmapped = true;
-							for (EButton button = 0; button < statusc[0]; button++) {
-								unmapped = (
-									ncfg[240 + pl * (1 + 2 * 8)] != conIndex ||
-									ncfg[240 + pl * (1 + 2 * 8) + 1 + button * 2 + 0] != pushKey.type ||
-									ncfg[240 + pl * (1 + 2 * 8) + 1 + button * 2 + 1] != pushKey.index
-								);
-								if (!unmapped) break;
-							}
-							if (unmapped) {
-								PlaySE(5);
-								ncfg[240 + pl * (1 + 2 * 8)] = conIndex;
-								ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 0] = pushKey.type;
-								ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 1] = pushKey.index;
-								statusc[0]++;
-							}
+							PlaySE(5);
+							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 0] = pushKey.type;
+							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 1] = pushKey.index;
+							statusc[0]++;
 						}
 					} else {
 						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
@@ -1864,8 +1867,8 @@ void ConfigMenu() {
 						printPrompt(3 + 32, 17, PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
 						if(IsPushPrompt(PROMPT_OK)) {
 							PlaySE(10);
+							playerCons[pl] = ncfg[240 + pl * (1 + 2 * 8)];
 							for(i = 0; i < 8; i++) {
-								playerCons[pl] = ncfg[240 + pl * (1 + 2 * 8)];
 								YGS2kSConKey* key = &conKeyAssign[pl * 8 + i];
 								key->type = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0];
 								key->index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1];
@@ -1875,8 +1878,8 @@ void ConfigMenu() {
 						}
 						else if(IsPushPrompt(PROMPT_RETRY)) {
 							PlaySE(5);
+							ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
 							for (i = 0; i < 8; i++) {
-								ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
 								YGS2kSConKey* key = &conKeyAssign[pl * 8 + i];
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
@@ -1885,8 +1888,8 @@ void ConfigMenu() {
 						}
 						else if(IsPushPrompt(PROMPT_CANCEL)) {
 							PlaySE(5);
+							ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
 							for (i = 0; i < 8; i++) {
-								ncfg[240 + pl * (1 + 2 * 8)] = playerCons[pl];
 								YGS2kSConKey* key = &conKeyAssign[pl * 8 + i];
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;

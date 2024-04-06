@@ -1578,6 +1578,11 @@ void YGS2kSwapToSecondary(int pno)
 	 // it's also used in the graphic loader, and the backgroud loader, but doesn't seem needed.
 }
 
+void YGS2kResetFrameStep()
+{
+	nanotime_step_init(&s_StepData, NANOTIME_NSEC_PER_SEC / s_uNowFPS, nanotime_now_max(), nanotime_now, nanotime_sleep);
+}
+
 void YGS2kSetFPS(unsigned fps)
 {
 	if (fps == 0) {
@@ -1586,7 +1591,7 @@ void YGS2kSetFPS(unsigned fps)
 	else {
 		s_uNowFPS = fps;
 	}
-	nanotime_step_init(&s_StepData, NANOTIME_NSEC_PER_SEC / s_uNowFPS, nanotime_now_max(), nanotime_now, nanotime_sleep);
+	YGS2kResetFrameStep();
 }
 
 int YGS2kGetFPS()

@@ -122,6 +122,7 @@ void YGS2kSetSecondaryOffset(int x, int y);
 void YGS2kSetColorKeyRGB(int pno, int r, int g, int b);
 void YGS2kSwapToSecondary(int pno);
 
+void YGS2kResetFrameStep();
 void YGS2kSetFPS(unsigned fps);
 int YGS2kGetFPS();
 int YGS2kGetRealFPS();

@@ -1588,7 +1588,12 @@ void mainUpdate() {
 		backupSetups();	// 設定内容をバックアップ #1.60c7o6
 		domirror = 0;	// 鏡像を無効に
 
-		if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
+		if(YGS2kGetFPS() != max_fps_2) {
+			YGS2kSetFPS(max_fps_2);
+		}
+		else {
+			YGS2kResetFrameStep();
+		}
 
 		goto skipSpriteTime;
 	}
@@ -1629,10 +1634,12 @@ void mainUpdate() {
 		YGS2kBltAlways(true);
 		YGS2kSetFillColor(0);
 		YGS2kClearSecondary();
+		YGS2kResetFrameStep();
 		break;
 	}
 
 	case MAIN_INIT_TEXT:
+		YGS2kResetFrameStep();
 		mainLoopState = MAIN_INIT_LOAD_1;
 
 		// YGS2kSetConstParam("Caption", "Now Loading...");
@@ -1652,6 +1659,7 @@ void mainUpdate() {
 		break;
 
 	case MAIN_INIT_LOAD_1: {
+		YGS2kResetFrameStep();
 		mainLoopState = MAIN_INIT_LOAD_2;
 
 		hnext[0] = dispnext;	// #1.60c7o8
@@ -1685,6 +1693,7 @@ void mainUpdate() {
 	}
 
 	case MAIN_INIT_LOAD_2:
+		YGS2kResetFrameStep();
 		mainLoopState = MAIN_INIT_LOAD_3;
 
 		loadGraphics(maxPlay);
@@ -1705,6 +1714,7 @@ void mainUpdate() {
 		break;
 
 	case MAIN_INIT_LOAD_3:
+		YGS2kResetFrameStep();
 		mainLoopState = MAIN_INIT_END;
 
 		// 効果音読み込み
@@ -1789,7 +1799,12 @@ void mainUpdate() {
 		backupSetups();	// 設定内容をバックアップ #1.60c7o6
 		domirror = 0;	// 鏡像を無効に
 
-		if(YGS2kGetFPS() != max_fps_2) YGS2kSetFPS(max_fps_2);
+		if(YGS2kGetFPS() != max_fps_2) {
+			YGS2kSetFPS(max_fps_2);
+		}
+		else {
+			YGS2kResetFrameStep();
+		}
 
 		goto skipSpriteTime;
 	}

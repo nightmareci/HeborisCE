@@ -498,7 +498,7 @@ void nanotime_sleep(uint64_t nsec_count) {
 #ifdef __SWITCH__
 #include <switch.h>
 uint64_t nanotime_now() {
-	return svcGetSystemTick();
+	return armTicksToNs(armGetSystemTick());
 }
 #define NANOTIME_NOW_IMPLEMENTED
 #endif
@@ -708,6 +708,11 @@ void nanotime_step_init(
 
 bool nanotime_step(nanotime_step_data* const stepper) {
 	assert(stepper != NULL);
+
+	if (nanotime_interval(stepper->sleep_point, stepper->now(), stepper->now_max) >= stepper->sleep_duration + NANOTIME_NSEC_PER_SEC / UINT64_C(10)) {
+		stepper->accumulator = UINT64_C(0);
+		stepper->sleep_point = stepper->now();
+	}
 
 	bool slept;
 	if (stepper->accumulator < stepper->sleep_duration) {

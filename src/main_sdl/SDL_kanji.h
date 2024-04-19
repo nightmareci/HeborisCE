@@ -4,12 +4,15 @@
 
 typedef enum { KANJI_SJIS, KANJI_EUC, KANJI_JIS } Kanji_CodingSystem;
 
+#define KANJI_MOJI_MAX (96*96+256)
+
 typedef struct {
 	int k_size;
 	int a_size;
 	Kanji_CodingSystem sys;
 	/* メモリ効率わるいけど、まあ死にはしないわな。 */
-	Uint32* moji[96*96+256];
+	/* This isn't efficient memory usage, but it's not fatal. */
+	Uint32* moji[KANJI_MOJI_MAX];
 } Kanji_Font;
 
 Kanji_Font* Kanji_OpenFont(SDL_RWops *src, int size);

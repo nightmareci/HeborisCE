@@ -5,7 +5,7 @@
 
 #define		YGS_DEADZONE_MAX	(32767 / 4)
 
-bool YGS2kInit();
+void YGS2kInit(int soundBufferSize);
 void YGS2kDeinit();
 void YGS2kExit(int exitStatus);
 bool YGS2kHalt();

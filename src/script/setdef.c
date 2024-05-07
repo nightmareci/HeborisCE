@@ -47,6 +47,7 @@ typedef struct {
 
 	YGS2kEScreenModeFlag	screenMode;
 	int32_t		screenIndex;
+	int32_t		soundbuffer;
 	int32_t		nextblock;
 	uint32_t	cfgversion;
 	int32_t		smooth;
@@ -209,6 +210,7 @@ static const SConfig DefaultConfig = {
 
 	.screenMode =DEFAULT_SCREEN_MODE,
 	.screenIndex =0,
+	.soundbuffer =0,
 	.nextblock =8,
 	.cfgversion =CFG_VERSION,
 	.smooth =0,
@@ -360,6 +362,7 @@ void SetDefaultConfig()
 
 	cfgbuf[35] = DefaultConfig.fourwayfilter;
 	cfgbuf[37] = DefaultConfig.fourwaypriorityup;
+	cfgbuf[38] = DefaultConfig.soundbuffer;
 
 	cfgbuf[40] = DefaultConfig.rots[0];
 	cfgbuf[41] = DefaultConfig.rots[1];

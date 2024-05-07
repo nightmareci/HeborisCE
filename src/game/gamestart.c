@@ -1469,19 +1469,14 @@ void mainUpdate() {
 		mainLoopState = MAIN_TITLE;
 		init = true;
 #ifdef __EMSCRIPTEN__
-		loadres = 1;
+		reinit = 1;
 #endif
 
-		if (loadres) {
+		if (reinit) {
 			YGS2kDeinit();
 		}
 
-		if (!YGS2kInit()) {
-			loopFlag = 0;
-			mainLoopState = MAIN_QUIT;
-			exitStatus = EXIT_FAILURE;
-			break;
-		}
+		YGS2kInit(1024 << soundbuffer);
 		if (YGS2kIsPlayMusic()) YGS2kStopMusic();
 		gameInit();
 
@@ -1527,12 +1522,12 @@ void mainUpdate() {
 
 		loadGraphics(maxPlay);
 
-		if(loadres && se) {
+		if(reinit && se) {
 			loadWaves();	// #1.60c7o5
 		}
 		for(int i = 0; i < 50; i++) se_play[i] = 0;
 
-		if(loadres && bgm) {
+		if(reinit && bgm) {
 			for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
 			{
 				bgmload[i] = 1;
@@ -1604,12 +1599,7 @@ void mainUpdate() {
 		init = true;
 		loopFlag = true;
 
-		if (!YGS2kInit()) {
-			loopFlag = 0;
-			mainLoopState = MAIN_QUIT;
-			exitStatus = EXIT_FAILURE;
-			break;
-		}
+		YGS2kInit(1024 << soundbuffer);
 		gameInit();
 
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -1718,7 +1708,7 @@ void mainUpdate() {
 		mainLoopState = MAIN_INIT_END;
 
 		// 効果音読み込み
-		if(loadres && se) {
+		if(reinit && se) {
 			loadWaves();	// #1.60c7o5
 		}
 
@@ -1810,7 +1800,7 @@ void mainUpdate() {
 	}
 
 	case MAIN_TITLE:
-		loadres = 0;
+		reinit = 0;
 		title();
 		break;
 
@@ -16640,7 +16630,7 @@ void initialize(void) {
 	loadGraphics(maxPlay);
 
 	// 効果音読み込み
-	if(loadres && se) {
+	if(reinit && se) {
 		YGS2kTextLayerOn(1, 10, 36);
 		YGS2kTextOut(1, "Sound Effect Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
@@ -16655,7 +16645,7 @@ void initialize(void) {
 	for(i = 0; i < 50; i++) se_play[i] = 0;
 
 	// BGM読み込み
-	if(loadres && bgm) {
+	if(reinit && bgm) {
 		for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
 		{
 			bgmload[i] = 1;
@@ -16760,7 +16750,7 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 void loadGraphics(int32_t players) {
 	int32_t i, j, k, tr;
 
-	if (loadres || getLastDrawRate() != getDrawRate()) {
+	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン0にメダルを読み込み #1.60c7m9 */
 		LoadGraphic("medal.png", 0, 0);
 		/* プレーン56にTIメダルを読み込み #1.60c7m9 */
@@ -16796,13 +16786,13 @@ void loadGraphics(int32_t players) {
 //	LoadGraphics("logo.png", 7, 0);
 //	YGS2kSetColorKeyPos(7, 0, 0);
 
-	if (loadres || getLastDrawRate() != getDrawRate()) {
+	if (reinit || getLastDrawRate() != getDrawRate()) {
 	//	/* プレーン8にタイトル背景を読み込み */
 		LoadTitle();
 	//	LoadGraphics("title.png", 8, 0);
 	}
 
-	if (loadres || getLastDrawRate() != getDrawRate()) {
+	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* Glyphs for showing game controller buttons */
 		LoadGraphic("hebobtn.png", 23, 0);
 
@@ -16836,7 +16826,7 @@ void loadGraphics(int32_t players) {
 	}
 
 	/* ブロック消去エフェクトを読み込み */
-	if(loadres && breakti) {
+	if(reinit && breakti) {
 		LoadGraphic("break0.png", 32, 0);
 		LoadGraphic("break1.png", 33, 0);
 		LoadGraphic("break2.png", 34, 0);
@@ -16853,7 +16843,7 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(37,   0, 0,   0);
 		YGS2kSetColorKeyRGB(38,   0, 0,   0);
 		YGS2kSetColorKeyRGB(39,   0, 0,   0);
-	} else if (loadres) {
+	} else if (reinit) {
 		LoadGraphic("break0_tap.png", 32, 0); // 黒ブロック追加 #1.60c7i5
 		LoadGraphic("break1_tap.png", 33, 0);
 		LoadGraphic("break2_tap.png", 34, 0);
@@ -16872,7 +16862,7 @@ void loadGraphics(int32_t players) {
 		YGS2kSetColorKeyRGB(39, 255, 0, 255);
 	}
 
-	if (loadres || getLastDrawRate() != getDrawRate()) {
+	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
 		LoadGraphic("heboblk0.png", 40, 0);	// TGM
 		LoadGraphic("heboblk1.png", 41, 0);	// TI & ARS & ARS2
@@ -17036,7 +17026,7 @@ void loadBG(int32_t players,int32_t vsmode){
 	int32_t i, j, k, tr,max;
 	int32_t movframe, framemax, tmp1, tmp2;
 
-	if (loadres || getLastDrawRate() != getDrawRate()) {
+	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン10〜にバックを読み込み */
 		LoadBackground("back01.png", 10, 0);
 		LoadBackground("back02.png", 11, 0);

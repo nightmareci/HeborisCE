@@ -16,7 +16,7 @@ int32_t LoadConfig(void);
 int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
-extern int32_t loadres;
+extern int32_t reinit;
 #ifdef ENABLE_JOYSTICK
 extern YGS2kSJoyKey joyKeyAssign[10 *2];
 #endif
@@ -61,4 +61,5 @@ extern int32_t nextblock;
 extern int32_t displayIndex;
 extern YGS2kEScreenModeFlag screenMode;
 extern int32_t screenIndex;
+extern int32_t soundbuffer;
 extern int32_t segacheat;

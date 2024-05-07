@@ -2,6 +2,8 @@
 
 YGS2kEScreenModeFlag screenMode;	// スクリーンモード
 int32_t screenIndex;		// スクリーンインデックス
+#define SOUND_BUFFER_MAX 4
+int32_t soundbuffer = 0;	// Size of the sound buffer. It's "1024 << soundbuffer" bytes.
 int32_t nextblock;		// ツモ
 uint32_t cfgversion;		// 設定ファイルフォーマットのバージョン番号です。
 int32_t smooth;			// ブロック落下	0:ノーマル 1:スムーズ
@@ -67,7 +69,7 @@ YGS2kSConKey conKeyAssign[8 * 2];
 #endif
 
 int32_t restart = 0;		// 再起動フラグ
-int32_t loadres = 1;		// Indicates if resources should be loaded.
+int32_t reinit = 1;		// Indicates if resources should be loaded.
 
 // 設定をバイナリデータに保存 1.60c5
 int32_t SaveConfig(void) {
@@ -98,6 +100,8 @@ int32_t SaveConfig(void) {
 
 	cfgbuf[35] = fourwayfilter;
 	cfgbuf[37] = fourwaypriorityup;
+
+	cfgbuf[38] = soundbuffer;
 
 	cfgbuf[40] = rots[0];
 	cfgbuf[41] = rots[1];
@@ -250,6 +254,13 @@ int32_t LoadConfig(void) {
 
 	fourwayfilter = cfgbuf[35];
 	fourwaypriorityup = cfgbuf[37];
+
+	if (cfgbuf[38] < 0 || cfgbuf[38] >= SOUND_BUFFER_MAX) {
+		soundbuffer = 0;
+	}
+	else {
+		soundbuffer = cfgbuf[38];
+	}
 
 	rots[0] = cfgbuf[40];
 	rots[1] = cfgbuf[41];
@@ -411,6 +422,8 @@ void ConfigMenu() {
 
 		ncfg[35] = fourwayfilter;
 		ncfg[37] = fourwaypriorityup;
+
+		ncfg[38] = soundbuffer;
 
 		ncfg[36] = dtc;
 		ncfg[42] = segacheat;
@@ -799,6 +812,7 @@ void ConfigMenu() {
 
 				fourwayfilter = ncfg[35];
 				fourwaypriorityup = ncfg[37];
+				soundbuffer = ncfg[38];
 				dtc = ncfg[36];
 				segacheat = ncfg[42];
 				fldtr = ncfg[43];
@@ -2073,6 +2087,7 @@ void ConfigMenu() {
 			MENU_AV_SCREEN_MODE,
 #endif
 			MENU_AV_MOVE_SOUND,
+			MENU_AV_SOUND_BUFFER,
 			MENU_AV_PLAY_SOUND,
 			MENU_AV_SOUND_VOLUME,
 			MENU_AV_PLAY_BGM,
@@ -2096,6 +2111,7 @@ void ConfigMenu() {
 		if(showScreenModeSetting) printFont(2, 5 + MENU_AV_SCREEN_MODE, "SCREEN MODE :", (statusc[0] == MENU_AV_SCREEN_MODE) * fontc[rots[0]]);
 #endif
 		printFont(2, 5 + MENU_AV_MOVE_SOUND, "MOVE SOUND  :", (statusc[0] == MENU_AV_MOVE_SOUND) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_SOUND_BUFFER, "SOUND BUFFER:", (statusc[0] == MENU_AV_SOUND_BUFFER)* fontc[rots[0]]);
 		printFont(2, 5 + MENU_AV_PLAY_SOUND, "PLAY SOUND  :", (statusc[0] == MENU_AV_PLAY_SOUND) * fontc[rots[0]]);
 		if ((ncfg[44] >> 23) & 0x1) printFont(2, 5 + MENU_AV_SOUND_VOLUME, "SOUND VOLUME:", (statusc[0] == MENU_AV_SOUND_VOLUME) * fontc[rots[0]]);
 		printFont(2, 5 + MENU_AV_PLAY_BGM, "PLAY BGM    :", (statusc[0] == MENU_AV_PLAY_BGM) * fontc[rots[0]]);
@@ -2186,6 +2202,9 @@ void ConfigMenu() {
 		if(ncfg[46]) sprintf(string[0], "ON");
 		else sprintf(string[0], "OFF");
 		printFont(15, 5 + MENU_AV_MOVE_SOUND, string[0], (statusc[0] == MENU_AV_MOVE_SOUND) * (count % 2) * digitc[rots[0]]);
+
+		sprintf(string[0], "%d BYTES", 1024 << (int)ncfg[38]);
+		printFont(15, 5 + MENU_AV_SOUND_BUFFER, string[0], (statusc[0] == MENU_AV_SOUND_BUFFER) * (count % 2) * digitc[rots[0]]);
 
 		if((ncfg[44] >> 23) & 0x1) sprintf(string[0], "ON");
 		else sprintf(string[0], "OFF");
@@ -2280,7 +2299,7 @@ void ConfigMenu() {
 					else if(statusc[0] == MENU_AV_DETAIL_LEVEL) {
 						if((ncfg[0] & YGS_SCREENMODE_WINDOWTYPE) == YGS_SCREENMODE_WINDOW) ncfg[1] &= ~YGS_SCREENINDEX_MODE;
 						ncfg[0] ^= YGS_SCREENMODE_DETAILLEVEL;
-						loadres = 1;
+						reinit = 1;
 						need_reset = 1;
                     }
 #ifdef ALL_VIDEO_SETTINGS
@@ -2334,22 +2353,33 @@ void ConfigMenu() {
 					}
 #endif
 					else if(statusc[0] == MENU_AV_MOVE_SOUND) ncfg[46] = !ncfg[46];
+					else if (statusc[0] == MENU_AV_SOUND_BUFFER) {
+						// soundbuffer
+						if (m < 0 && ncfg[38] == 0) {
+							ncfg[38] = SOUND_BUFFER_MAX - 1;
+						}
+						else {
+							ncfg[38] = (ncfg[38] + m) % SOUND_BUFFER_MAX;
+						}
+						reinit = 1;
+						need_reset = 1;
+					}
 					else if(statusc[0] == MENU_AV_PLAY_SOUND) {
 						// se
 						ncfg[44] ^= 0x1 << 23;
-						loadres = 1;
+						reinit = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_PLAY_BGM) {
 						// bgm
 						ncfg[44] ^= 0x1 << 15;
-						loadres = 1;
+						reinit = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
 						ncfg[44] ^= YGS_WAVE_SIMPLE;
-						loadres = 1;
+						reinit = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
@@ -2366,7 +2396,7 @@ void ConfigMenu() {
 						} while (!YGS2kWaveFormatSupported(wavebgm_format + 1));
 
 						ncfg[44] = (ncfg[44] & ~YGS_WAVE_FORMAT) | (wavebgm_format + 1);
-						loadres = 1;
+						reinit = 1;
 						need_reset = 1;
 					}
 				}

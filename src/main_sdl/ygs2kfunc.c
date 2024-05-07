@@ -110,8 +110,12 @@ static float YGS2kGetScreenSubpixelOffset()
 	}
 }
 
-bool YGS2kInit()
+void YGS2kInit(const int soundBufferSize)
 {
+	if (soundBufferSize <= 0) {
+		YGS2kExit(EXIT_FAILURE);
+	}
+
 	s_iQuitLevel = 0;
 
 #ifdef __EMSCRIPTEN__
@@ -244,7 +248,6 @@ bool YGS2kInit()
 	srand((unsigned)time(NULL));
 	
 	s_bInitFast = true;
-	return true;
 }
 
 void YGS2kDeinit()

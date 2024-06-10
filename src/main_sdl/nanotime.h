@@ -34,10 +34,10 @@
  *
  * The MIT License (MIT)
  *
- * Copyright © 2022 Brandon McGriff <nightmareci@gmail.com>
+ * Copyright (C) 2022 Brandon McGriff <nightmareci@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the “Software”), to
+ * of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
  * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
  * sell copies of the Software, and to permit persons to whom the Software is
@@ -46,7 +46,7 @@
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -140,14 +140,6 @@ typedef struct nanotime_step_data {
 	uint64_t (* now)();
 	void (* sleep)(uint64_t nsec_count);
 
-	// TODO: Figure out how to get the power usage optimization to not mess up timing.
-	#if 0
- 	#ifdef __APPLE__
-	uint64_t overhead_numer;
-	uint64_t overhead_denom;
-	uint64_t backoff;
-	#endif
-	#endif
 	uint64_t zero_sleep_duration;
 	uint64_t accumulator;
 	uint64_t sleep_point;
@@ -690,13 +682,6 @@ void nanotime_step_init(
 	const uint64_t start = now();
 	sleep(UINT64_C(0));
 	stepper->zero_sleep_duration = nanotime_interval(start, now(), now_max);
-	#if 0
-	#ifdef __APPLE__
-	stepper->overhead_numer = UINT64_C(1);
-	stepper->overhead_denom = UINT64_C(1);
-	stepper->backoff = UINT64_C(0);
-	#endif
-	#endif
 	stepper->accumulator = UINT64_C(0);
 
 	/*
@@ -709,9 +694,11 @@ void nanotime_step_init(
 bool nanotime_step(nanotime_step_data* const stepper) {
 	assert(stepper != NULL);
 
-	if (nanotime_interval(stepper->sleep_point, stepper->now(), stepper->now_max) >= stepper->sleep_duration + NANOTIME_NSEC_PER_SEC / UINT64_C(10)) {
+	const uint64_t start_point = stepper->now();
+
+	if (nanotime_interval(stepper->sleep_point, start_point, stepper->now_max) >= stepper->sleep_duration + NANOTIME_NSEC_PER_SEC / UINT64_C(10)) {
+		stepper->sleep_point = start_point;
 		stepper->accumulator = UINT64_C(0);
-		stepper->sleep_point = stepper->now();
 	}
 
 	bool slept;
@@ -720,70 +707,23 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 		uint64_t current_sleep_duration = total_sleep_duration;
 		const uint64_t shift = UINT64_C(4);
 
-		#if 0
-		#ifdef __APPLE__
 		/*
-		 * Start with a big sleep. This helps reduce CPU/power use vs.
-		 * many shorter sleeps. Shorter sleeps are still done below,
-		 * but this reduces the number of shorter sleeps. It appears
-		 * that the actually-slept duration is roughly equal to the
-		 * requested delay time multiplied by a factor that remains
-		 * relatively constant over the short run, greater than 1.0, in
-		 * testing on ARM macOS; such behavior doesn't appear to be the
-		 * case on all platforms, but is the case in testing on an M1
-		 * Mac.  By only setting the overhead factor when the sleep
-		 * overshoots, it levels off to a pretty stable value in a
-		 * feedback loop, resulting in the big sleep approaching a
-		 * value that does as big as possible of a big sleep while
-		 * reducing overshoots.  Also, a "backoff" duration is
-		 * subtracted from the overhead factor-adjusted sleep duration,
-		 * which reduces the frequency of overshoots, while still
-		 * maintaining the desired longer sleep duration before the
-		 * higher cost/higher precision sleeping below; the backoff
-		 * duration is also updated in a feedback loop that causes it
-		 * to approach a reasonably correct value.
-		 *
-		 * TODO: This was carefully tuned to be well-behaved on Apple
-		 * Silicon M1, but hasn't been tested on any Intel Mac; test on
-		 * an Intel Mac to see if this algorithm is appropriate there,
-		 * if not, special-case for each CPU type.
-		 *
-		 * TODO: Implement "initial big sleep" for other platforms; it
-		 * really does reduce wasted cycles regardless of platform. Or,
-		 * if this algorithm seems to work fine on other platforms,
-		 * change it to be used on all platforms, not just Apple's.
+		 * A big initial sleep lowers power usage on any platform, as more
+		 * small sleep requests use more power than one bigger, equivalent
+		 * sleep request. But we only want to do a big initial sleep if the
+		 * target step sleep duration is "big enough"; in practice, 4ms is a
+		 * good choice for the minimum "big enough" duration.
 		 */
-		uint64_t overhead_sleep_duration = (current_sleep_duration * stepper->overhead_numer) / stepper->overhead_denom;
-		if (overhead_sleep_duration > stepper->backoff) {
-			overhead_sleep_duration -= stepper->backoff;
-		}
-		else {
-			stepper->backoff = UINT64_C(0);
-		}
-		const uint64_t overhead_start = stepper->now();
-		stepper->sleep(overhead_sleep_duration);
-		const uint64_t big_sleep_duration = nanotime_interval(overhead_start, stepper->now(), stepper->now_max);
-		const uint64_t slept_so_far = nanotime_interval(stepper->sleep_point, stepper->now(), stepper->now_max);
-		if (slept_so_far <= total_sleep_duration) {
-			if (stepper->backoff >= total_sleep_duration - slept_so_far) {
-				stepper->backoff -= total_sleep_duration - slept_so_far;
+		const uint64_t min_initial = NANOTIME_NSEC_PER_SEC / UINT64_C(250);
+		if (current_sleep_duration > min_initial) {
+			stepper->sleep(current_sleep_duration - min_initial);
+			const uint64_t initial_end_point = stepper->now();
+			const uint64_t initial_duration = nanotime_interval(start_point, initial_end_point, stepper->now_max);
+			if (initial_duration >= current_sleep_duration) {
+				goto step_end;
 			}
-			current_sleep_duration -= slept_so_far;
+			current_sleep_duration -= initial_duration;
 		}
-		else {
-			stepper->overhead_numer = overhead_sleep_duration;
-			stepper->overhead_denom = big_sleep_duration > UINT64_C(0) ? big_sleep_duration : UINT64_C(1);
-			if (stepper->backoff <= UINT64_MAX - slept_so_far - total_sleep_duration) {
-				stepper->backoff += slept_so_far - total_sleep_duration;
-			}
-			if (stepper->overhead_numer > stepper->overhead_denom) {
-				stepper->overhead_numer = UINT64_C(1);
-				stepper->overhead_denom = UINT64_C(1);
-			}
-			goto step_end;
-		}
-		#endif
-		#endif
 
 		/*
 		 * This has the flavor of Zeno's dichotomous paradox of motion,
@@ -839,11 +779,7 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 			}
 		}
 
-		#if 0
-		#ifdef __APPLE__
 		step_end:
-		#endif
-		#endif
 		{
 			/*
 			 * Finally, do a busyloop to precisely sleep up to the

@@ -1659,6 +1659,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	SDL_RWops *src;
 
 	/* 10pxフォント読み込み */
+	/* Load 10px fonts */
 	src = FSOpenRead("res/font/knj10.bdf");
 	if ( src )
 	{
@@ -1680,6 +1681,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	else
 	{
 		/* フォントがない場合代替を使う */
+		/* Use a fallback if the 10px font is missing */
 		src = FSOpenRead("res/font/knj12.bdf");
 		if ( src )
 		{
@@ -1705,6 +1707,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 
 	/* 12pxフォント読み込み */
+	/* Load 12px fonts */
 	src = FSOpenRead("res/font/knj12.bdf");
 	if ( src ) {
 		s_pKanjiFont[1] = Kanji_OpenFont(src, 12);
@@ -1726,6 +1729,7 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 
 	/* 16pxフォント読み込み */
+	/* Load 16px fonts */
 	src = FSOpenRead("res/font/knj16.bdf");
 	if ( src )
 	{

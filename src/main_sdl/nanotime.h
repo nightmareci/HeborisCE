@@ -708,21 +708,49 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 		const uint64_t shift = UINT64_C(4);
 
 		/*
-		 * A big initial sleep lowers power usage on any platform, as more
-		 * small sleep requests use more power than one bigger, equivalent
-		 * sleep request. But we only want to do a big initial sleep if the
-		 * target step sleep duration is "big enough"; in practice, 4ms is a
-		 * good choice for the minimum "big enough" duration.
+		 * The algorithm implemented here takes the assumption that a
+		 * sequence of repeated sleep requests of the same requested
+		 * duration end up being approximately of equal actual sleep
+		 * duration, even if they're all well above the requested
+		 * duration. In practice, such an assumption proves out to be
+		 * true on various platforms.
 		 */
-		const uint64_t min_initial = NANOTIME_NSEC_PER_SEC / UINT64_C(250);
-		if (current_sleep_duration > min_initial) {
-			stepper->sleep(current_sleep_duration - min_initial);
-			const uint64_t initial_end_point = stepper->now();
-			const uint64_t initial_duration = nanotime_interval(start_point, initial_end_point, stepper->now_max);
-			if (initial_duration >= current_sleep_duration) {
+
+		/*
+		 * A big initial sleep lowers power usage on any platform, as
+		 * more small sleep requests use more power than fewer bigger,
+		 * equivalent sleep requests. In practice, operating systems
+		 * "actually sleep" when 1ms or more is requested, and 1ms is
+		 * the minimum request duration you can make on some platforms
+		 * (like older versions of Windows). Additionally, power usage
+		 * is nice and low when doing the number of 1ms sleeps that's
+		 * (hopefully) short of the target duration.
+		 *
+		 * But, the loop here maintains a maximum of the actual slept
+		 * durations, breaking out when the time remaining is greater
+		 * than or equal to the maximum found. By breaking out on the
+		 * maximum found rather than just 1ms-or-less remaining,
+		 * sleeping beyond the target deadline is reduced.
+		 */
+		{
+			uint64_t max = NANOTIME_NSEC_PER_SEC / UINT64_C(1000);
+			uint64_t start = stepper->now();
+			while (nanotime_interval(stepper->sleep_point, start, stepper->now_max) + max < total_sleep_duration) {
+				stepper->sleep(NANOTIME_NSEC_PER_SEC / UINT64_C(1000));
+				const uint64_t next = stepper->now();
+				const uint64_t current_interval = nanotime_interval(start, next, stepper->now_max);
+				if (current_interval > max) {
+					max = current_interval;
+				}
+				start = next;
+			}
+			const uint64_t initial_duration = nanotime_interval(start_point, stepper->now(), stepper->now_max);
+			if (initial_duration < current_sleep_duration) {
+				current_sleep_duration -= initial_duration;
+			}
+			else {
 				goto step_end;
 			}
-			current_sleep_duration -= initial_duration;
 		}
 
 		/*
@@ -732,15 +760,11 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 		 * to precisely sleep up to the deadline below this loop. The
 		 * divisor is larger than two though, as it produces better
 		 * behavior, and seems to work fine in testing on real
-		 * hardware. This loop, and the one below, take the assumption
-		 * that sleep requests of the same amount are roughly equal; by
-		 * keeping track of the max of all the sleeps, the loops can be
-		 * broken out of when the remaining time is less than the max,
-		 * allowing the loop after this one to do shorter sleeps, with
-		 * a corresponding smaller max of the sleeps. The overshoot
-		 * possible in the loop below this one won't overshoot much, or
-		 * in the best case won't overshoot so the busyloop can finish
-		 * up the sleep precisely.
+		 * hardware. The same method of keeping track of the max
+		 * duration per loop of same sleep request durations above is
+		 * used here. The overshoot possible in the loop below this one
+		 * won't overshoot much, or in the best case won't overshoot,
+		 * so the busyloop can finish up the sleep precisely.
 		 */
 		current_sleep_duration >>= shift;
 		for (
@@ -758,6 +782,9 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 				}
 			}
 		}
+		if (nanotime_interval(stepper->sleep_point, stepper->now(), stepper->now_max) >= total_sleep_duration) {
+			goto step_end;
+		}
 
 		{
 			/*
@@ -765,9 +792,15 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 			 * a small amount, do small sleeps here to get closer
 			 * to the deadline, but again attempting to stop short
 			 * by an even smaller amount. It's best to do larger
-			 * sleeps as done in the above loop, to reduce
+			 * sleeps as done in the above loops, to reduce
 			 * CPU/power usage, as each sleep iteration has a
-			 * CPU/power usage cost.
+			 * more-or-less fixed overhead of CPU/power usage.
+			 *
+			 * In testing on an M1 Mac mini running macOS, power
+			 * usage is lower using zero-duration sleeps vs.
+			 * nanotime_yield(), with no loss of timing precision.
+			 * The same might be true for other hardwares/operating
+			 * systems.
 			 */
 			uint64_t max = stepper->zero_sleep_duration;
 			uint64_t start;
@@ -787,6 +820,18 @@ bool nanotime_step(nanotime_step_data* const stepper) {
 			 * reduce the remaining time to sleep to a minimum via
 			 * process-yielding sleeps, so the amount of time spent
 			 * spinning here is hopefully quite low.
+			 *
+			 * In testing on an M1 Mac mini running macOS,
+			 * busylooping here produces the absolute greatest
+			 * precision possible on the hardware, down to the
+			 * sub-10ns-off-per-update range for longish stretches
+			 * during 60 Hz updates, but in the
+			 * hundreds-to-thousands of nanoseconds off when using
+			 * nanotime_yield() or zero-duration sleeps. And,
+			 * because the sleeping algorithm above does such a
+			 * good job of stopping very close to the deadline,
+			 * busylooping here has basically negligible difference
+			 * in power usage vs. yields/zero-duration sleeps.
 			 */
 			uint64_t current_time;
 			uint64_t accumulated;

@@ -1,39 +1,51 @@
-#pragma once
+#ifndef SDL_kanji_utf8_
+#define SDL_kanji_utf8_
 
-#include "include.h"
+#include "SDL.h"
 
-typedef enum { KANJI_SJIS, KANJI_EUC, KANJI_JIS } Kanji_CodingSystem;
+struct Kanji_Font;
+typedef struct Kanji_Font Kanji_Font;
 
-#define KANJI_MOJI_MAX (96*96+256)
+/**
+ * Create a font object, optionally loading characters from src. If src ==
+ * NULL, an empty font object is created. Use Kanji_AddFont to add font(s) to
+ * an empty font object.
+ */
+Kanji_Font* Kanji_OpenFont(SDL_RWops* src);
 
-typedef struct {
-	int k_size;
-	int a_size;
-	Kanji_CodingSystem sys;
-	/* メモリ効率わるいけど、まあ死にはしないわな。 */
-	/* This isn't efficient memory usage, but it's not fatal. */
-	Uint32* moji[KANJI_MOJI_MAX];
-} Kanji_Font;
+/**
+ * Add characters in the font data src contains to the font object. Characters
+ * already in the font object will not be replaced. The src font data's font
+ * must be the same font size as the size of the font object, or can be any
+ * size if the font object is currently empty.
+ */
+int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src);
 
-Kanji_Font* Kanji_OpenFont(SDL_RWops *src, int size);
+/**
+ * Get the size of a font.
+ */
+Uint32 Kanji_FontSize(Kanji_Font* font);
 
-int Kanji_AddFont(Kanji_Font* font, SDL_RWops *src);
+/**
+ * Get the width of text in a font.
+ */
+Sint64 Kanji_TextWidth(Kanji_Font* font, const char* text);
 
-int Kanji_FontHeight(Kanji_Font* font);
-/* text == 0 なら ASCII 一文字分の幅を返す */
-int Kanji_FontWidth(Kanji_Font* font, const char* text);
+typedef int (* Kanji_PutPixelCallback)(void* dst, int x, int y, float subx, float suby, SDL_Color color);
+int Kanji_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color);
+int Kanji_PutPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel);
 
-void Kanji_SetCodingSystem(Kanji_Font* font, Kanji_CodingSystem sys);
+int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, Kanji_PutPixelCallback put_pixel);
+int Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* text, SDL_Color fg);
+int Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* text, SDL_Color fg);
 
-void Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color));
-void Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* text, SDL_Color fg);
-void Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* text, SDL_Color fg);
-
-void Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, void (* putPixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color));
-void Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* text, SDL_Color fg);
-void Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg);
+int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, Kanji_PutPixelCallback put_pixel);
+int Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* text, SDL_Color fg);
+int Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg);
 
 SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color fg, int bpp);
 SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text, SDL_Color fg, int bpp);
 
 void Kanji_CloseFont(Kanji_Font* font);
+
+#endif

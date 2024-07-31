@@ -1091,7 +1091,7 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 	if ( !s_pScreenRenderer )
 	{
 		return;
-    }
+	}
 
 	if ( s_pYGSTexture[plane] )
 	{
@@ -1330,7 +1330,7 @@ void YGS2kBltAlways(bool always)
 
 void YGS2kBlt(int pno, int dx, int dy)
 {
-    if ( s_pYGSTexture[pno] == NULL ) { return; }
+	if ( s_pYGSTexture[pno] == NULL ) { return; }
 	int w, h;
 	SDL_QueryTexture(s_pYGSTexture[pno], NULL, NULL, &w, &h);
 	YGS2kBltRect(pno, dx, dy, 0, 0, w, h);
@@ -1341,9 +1341,9 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 	if ( !s_pScreenRenderer )
 	{
 		return;
-    }
+	}
 
-    if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
+	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
 	{
 		SDL_Rect	src = { 0 };
 		SDL_Rect	dst = { 0 };
@@ -1356,8 +1356,8 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		return;
 	}
-    if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-    if ( s_pYGSTexture[pno] == NULL ) return;
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
+	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	if ( s_pScreenRenderTarget )
 	{
@@ -1397,7 +1397,7 @@ void YGS2kBltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 
 void YGS2kBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-    if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	YGS2kBlt(pno, dx, dy);
@@ -1406,7 +1406,7 @@ void YGS2kBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int 
 
 void YGS2kBlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-    if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
 	YGS2kBltRect(pno, dx, dy, sx, sy, hx, hy);
@@ -1441,8 +1441,8 @@ void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		return;
 	}
-    if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-    if ( s_pYGSTexture[pno] == NULL ) return;
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
+	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
 	if ( s_pScreenRenderTarget )
@@ -1522,8 +1522,8 @@ void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy,
 		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
 		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, SDL_ALPHA_OPAQUE);		return;
 	}
-    if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-    if ( s_pYGSTexture[pno] == NULL ) return;
+	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
+	if ( s_pYGSTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
 	if ( s_pScreenRenderTarget )
@@ -1656,99 +1656,29 @@ void YGS2kFillMemory(void* buf, int size, int val)
 
 static void YGS2kPrivateKanjiFontInitialize()
 {
+	const char* const filenames[YGS_KANJIFONTFILE_MAX] = {
+		"res/font/font10.bdf",
+		"res/font/font12.bdf",
+		"res/font/font16.bdf"
+	};
 	SDL_RWops *src;
+	int i;
 
-	/* 10pxフォント読み込み */
-	/* Load 10px fonts */
-	src = FSOpenRead("res/font/knj10.bdf");
-	if ( src )
-	{
-		s_pKanjiFont[0] = Kanji_OpenFont(src, 10);
+	/* フォント読み込み */
+	/* Load fonts */
+	for (i = 0; i < YGS_KANJIFONTFILE_MAX; i++) {
+		SDL_RWops *src = FSOpenRead(filenames[i]);
+		if ( !src ) {
+			s_pKanjiFont[i] = NULL;
+			continue;
+		}
+		s_pKanjiFont[i] = Kanji_OpenFont(src);
+		if ( !s_pKanjiFont[i] ) {
+			SDL_Log("Failed to load font \"%s\": %s\n", filenames[i], SDL_GetError());
+			SDL_RWclose(src);
+			YGS2kExit(EXIT_FAILURE);
+		}
 		SDL_RWclose(src);
-	}
-	else
-	{
-		s_pKanjiFont[0] = NULL;
-	}
-	if ( s_pKanjiFont[0] )
-	{
-		src = FSOpenRead("res/font/5x10a.bdf");
-		if ( src ) {
-			Kanji_AddFont(s_pKanjiFont[0], src);
-			SDL_RWclose(src);
-		}
-	}
-	else
-	{
-		/* フォントがない場合代替を使う */
-		/* Use a fallback if the 10px font is missing */
-		src = FSOpenRead("res/font/knj12.bdf");
-		if ( src )
-		{
-			s_pKanjiFont[0] = Kanji_OpenFont(src, 10);
-			SDL_RWclose(src);
-		}
-		else {
-			s_pKanjiFont[0] = NULL;
-		}
-		if ( s_pKanjiFont[0] )
-		{
-			src = FSOpenRead("res/font/6x12a.bdf");
-			if ( src ) {
-				Kanji_AddFont(s_pKanjiFont[0], src);
-				SDL_RWclose(src);
-			}
-		}
-	}
-
-	if ( s_pKanjiFont[0] )
-	{
-		Kanji_SetCodingSystem(s_pKanjiFont[0], KANJI_SJIS);
-	}
-
-	/* 12pxフォント読み込み */
-	/* Load 12px fonts */
-	src = FSOpenRead("res/font/knj12.bdf");
-	if ( src ) {
-		s_pKanjiFont[1] = Kanji_OpenFont(src, 12);
-		SDL_RWclose(src);
-	}
-	else
-	{
-		s_pKanjiFont[1] = NULL;
-	}
-	if ( s_pKanjiFont[1] )
-	{
-		src = FSOpenRead("res/font/6x12a.bdf");
-		if ( src )
-		{
-			Kanji_AddFont(s_pKanjiFont[1], src);
-			SDL_RWclose(src);
-			Kanji_SetCodingSystem(s_pKanjiFont[1], KANJI_SJIS);
-		}
-	}
-
-	/* 16pxフォント読み込み */
-	/* Load 16px fonts */
-	src = FSOpenRead("res/font/knj16.bdf");
-	if ( src )
-	{
-		s_pKanjiFont[2] = Kanji_OpenFont(src, 16);
-		SDL_RWclose(src);
-	}
-	else
-	{
-		s_pKanjiFont[2] = NULL;
-	}
-	if ( s_pKanjiFont[2] )
-	{
-		src = FSOpenRead("res/font/8x16a.bdf");
-		if ( src )
-		{
-			Kanji_AddFont(s_pKanjiFont[2], src);
-			SDL_RWclose(src);
-			Kanji_SetCodingSystem(s_pKanjiFont[2], KANJI_SJIS);
-		}
 	}
 }
 
@@ -1786,10 +1716,14 @@ static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, c
 	{
 		if ( s_pScreenRenderTarget )
 		{
-			Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, 0.0f, 0.0f, s_pScreenRenderer, str, col);
+			if (Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, 0.0f, 0.0f, s_pScreenRenderer, str, col) < 0) {
+				SDL_Log("Failed to draw text to render target: %s\n", SDL_GetError());
+				YGS2kExit(EXIT_FAILURE);
+			}
 		}
-		else {
-			Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, s_pScreenRenderer, str, col);
+		else if (Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, s_pScreenRenderer, str, col) < 0) {
+			SDL_Log("Failed to draw text to screen: %s\n", SDL_GetError());
+			YGS2kExit(EXIT_FAILURE);
 		}
 	}
 }

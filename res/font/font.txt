@@ -1,6 +1,9 @@
-font.txt - kanji fonts
+font.txt - Unicode BDF fonts
 ----------------------
 
-This directory stores the kanji fonts that are loaded. If the language is set
-to english, then these are not used. DO NOT delete these files, as they are
-required when loading the heboris.
+This directory stores the Unicode BDF fonts that are loaded. These are used for
+text that should be localized. DO NOT delete these files, as they are required
+when loading Heboris.
+
+The game only supports Unicode BDF fonts, with the text functions using UTF-8
+encoded text.

@@ -723,6 +723,8 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 			goto fail;
 		}
 	}
+	SDL_RenderClear(s_pScreenRenderer);
+	SDL_RenderPresent(s_pScreenRenderer);
 
 	// Unset the render target, if currently set, for making renderer setting
 	// changes. The render target should only be set once all settings have been
@@ -1661,14 +1663,16 @@ static void YGS2kPrivateKanjiFontInitialize()
 		"res/font/font12.bdf",
 		"res/font/font16.bdf"
 	};
-	SDL_RWops *src;
-	int i;
 
 	/* フォント読み込み */
 	/* Load fonts */
-	for (i = 0; i < YGS_KANJIFONTFILE_MAX; i++) {
+	for (int i = 0; i < YGS_KANJIFONTFILE_MAX; i++) {
+		if (s_pKanjiFont[i]) {
+			continue;
+		}
 		SDL_RWops *src = FSOpenRead(filenames[i]);
 		if ( !src ) {
+			SDL_Log("Failed to open file for font \"%s\"; continuing without it.", filenames[i]);
 			s_pKanjiFont[i] = NULL;
 			continue;
 		}
@@ -1684,9 +1688,12 @@ static void YGS2kPrivateKanjiFontInitialize()
 
 static void YGS2kPrivateKanjiFontFinalize()
 {
-	if ( s_pKanjiFont[0] ) { Kanji_CloseFont(s_pKanjiFont[0]); }
-	if ( s_pKanjiFont[1] ) { Kanji_CloseFont(s_pKanjiFont[1]); }
-	if ( s_pKanjiFont[2] ) { Kanji_CloseFont(s_pKanjiFont[2]); }
+	for (int i = 0; i < YGS_KANJIFONTFILE_MAX; i++) {
+		if (s_pKanjiFont[i]) {
+			Kanji_CloseFont(s_pKanjiFont[i]);
+		}
+		s_pKanjiFont[i] = NULL;
+	}
 }
 
 static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)

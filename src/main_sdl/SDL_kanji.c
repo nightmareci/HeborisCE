@@ -316,7 +316,7 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 			for (s = 8; s < width; s += 8) {}
 			rshift = s - width;
 			if (Parse_Char(font, (Uint32)encoding, (Uint32)width, &line, end, rshift) < 0) {
-				SDL_SetError("Failed to parse a font character: %s");
+				SDL_SetError("Failed to parse a font character: %s", SDL_GetError());
 				SDL_free(src_data);
 				return -1;
 			}

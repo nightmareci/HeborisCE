@@ -255,8 +255,7 @@ This option isn't available in all IDEs, however.
  - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported platforms.
  - Change to a CMake build system.
  - Convert all source code from C++ to C.
- - Convert source code to UTF-8, so the Japanese comments are easy to work with
-   on modern systems. Text strings used in-game remain Shift-JIS, though.
+ - Convert everything to UTF-8.
  - Move the script sources from merely being included in gamestart.c, out to
    being individually compiled. Massively improves compile time on multi-core,
    bad-single-threaded-performance systems.
@@ -286,9 +285,6 @@ This repository will be maintained for bug fixes, non-new-content enhancements
 
  - Implement automated packaging of builds. At least support Windows, macOS, and
    desktop Linux.
- - Add a prerecorded copy of the default MIDI music and corresponding support
-   for the "simple" BGM type for non-MIDI formats, as an option for systems
-   without immediately working MIDI playback.
 
 ## Definitely Not Legal Advice
 

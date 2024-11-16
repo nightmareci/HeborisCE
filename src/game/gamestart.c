@@ -3395,7 +3395,7 @@ void versusInit(int32_t player) {
 	// re-initialize start_nextc
 	start_nextc[player]=0;		// continuing sets start_nextc to stage_nextc. this undoes this to avoid breaking the FOLLOWING replay.
 	// tomoyoのパターン #1.60c7l9
-	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
+	if( (!getPushState(player, BTN_B) && (gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
 			// use sakura bag.
 			len = YGS2kStrLen(nextb_list);			
@@ -5250,7 +5250,7 @@ void statSelectMode(int32_t player) {
 				gameMode[player] = 3;
 			if(gameMode[player] == 8)
 				gameMode[player] = 7;
-			versusInit(player);
+			// versusInit(player); //fix is wrong
 		}
 		// その他
 		if(statusc[player * 10 + 2] == 2) {
@@ -5281,7 +5281,7 @@ void statSelectMode(int32_t player) {
 				gameMode[player] = 6;
 			if(gameMode[player] == 8)
 				gameMode[player] = 9;
-			versusInit(player);
+			// versusInit(player); // wrong fix to bug
 		}
 		// その他
 		if(statusc[player * 10 + 2] == 2) {
@@ -5331,7 +5331,7 @@ void statSelectMode(int32_t player) {
 			ori_opt[player]--;
 			if(ori_opt[player] < 0)
 				ori_opt[player] = 3;
-			versusInit(player);
+			// versusInit(player); // fix is wrong
 		}
 		if(statusc[player * 10 + 2] == 2) {
 			if(statusc[player * 10 + 3] == 0) {
@@ -5389,7 +5389,7 @@ void statSelectMode(int32_t player) {
 			ori_opt[player]++;
 			if(ori_opt[player] > 3)
 				ori_opt[player] = 0;
-			versusInit(player);
+			// versusInit(player); fix is wrong
 		}
 		if(statusc[player * 10 + 2] == 2) {
 			if(statusc[player * 10 + 3] == 0) {

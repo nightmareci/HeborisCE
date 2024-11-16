@@ -920,6 +920,7 @@ void statTomoyoSelect(int32_t player) {
 		status[player] = 2;					// SOLO MODEモードセレクト
 		statusc[player * 10] = 0;				// ステータスカウンタを0に
 		statusc[player * 10 + 1] = 0;			//
+		versusInit(player);				// CORRECT fix for backing out of mini select.
 	}
 
 	// HOLDボタンでnextcを0に戻す

@@ -3395,7 +3395,7 @@ void versusInit(int32_t player) {
 	// re-initialize start_nextc
 	start_nextc[player]=0;		// continuing sets start_nextc to stage_nextc. this undoes this to avoid breaking the FOLLOWING replay.
 	// tomoyoのパターン #1.60c7l9
-	if( ((gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
+	if( (!getPushState(player, BTN_B) && (gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
 			// use sakura bag.
 			len = YGS2kStrLen(nextb_list);			

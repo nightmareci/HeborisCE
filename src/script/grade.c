@@ -230,7 +230,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			}
 		}else if(((combo[player]-1)!=0)&&(combo2[player]>=3)&&(combo2[player]<5)){//3コンボ以上
 			if(lines == 1){		//コンボ主体では段位ポイントが上がりにくく C7T7.1
-				i[player] = (i[player] * 21*(combo[player] - 1)) /20;//1.05倍
+				i[player] = (i[player] * 21*(combo2[player] - 1)) /20;//1.05倍  fixed typo
 		 	}else if(lines == 2){
 		 		i[player] = (i[player] * 11 * (combo2[player] - 1)) / 10;//1.1倍
 			}else if(lines == 3){

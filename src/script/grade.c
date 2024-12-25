@@ -219,27 +219,141 @@ void GradeUp2(int32_t player, int32_t lines){
 		if(gbai[player] < 2)gbai[player]= 2;//1以下にはならない
 
 		i[player] = (i[player] * gbai[player]) / 2;
-
-		if(((combo[player]-1)!=0)&&(combo2[player]<3)){//2コンボまで
-			if(lines == 2){
-		 		i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2倍
-			}else if(lines == 3){
-				i[player] = (i[player] * 13 * (combo2[player] - 1)) / 10;//1.3倍
-			}else if(lines == 4){
-				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5倍
-			}
-		}else if(((combo[player]-1)!=0)&&(combo2[player]>=3)&&(combo2[player]<5)){//3コンボ以上
-			if(lines == 1){		//コンボ主体では段位ポイントが上がりにくく C7T7.1
-				i[player] = (i[player] * 21*(combo2[player] - 1)) /20;//1.05倍  fixed typo
-		 	}else if(lines == 2){
-		 		i[player] = (i[player] * 11 * (combo2[player] - 1)) / 10;//1.1倍
-			}else if(lines == 3){
-				i[player] = (i[player] * 6 * (combo2[player] - 1)) / 5;//1.2倍
-			}else if(lines == 4){
-				i[player] = (i[player] * 3 * (combo2[player] - 1)) / 2;//1.5倍
-			}
-		}
-
+		// add combo bonus, if any. tetrises don't gaem extra g points, because it's true in TAP.
+		if(combo2[player] == 2)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 6 ) / 5;//1.2ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                	}
+			else if(lines == 3){
+                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                	}
+        	}
+		else if(combo2[player] == 3)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 6 ) / 5;//1.2ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 9 ) / 5;//1.8ö{
+                	}
+        	}
+		else if(combo2[player] == 4)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 8 ) / 5;//1.6ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 2 );//2.0ö{
+                	}
+        	}
+		else if(combo2[player] == 5)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 17 ) / 10;//1.7ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 11 ) / 5;//2.2ö{
+	                }
+        	}
+		else if(combo2[player] == 6)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 9 ) / 5;//1.8ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 23 ) / 10;//2.3ö{
+                	}
+        	}
+		else if(combo2[player] == 7)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 19 ) / 10;//1.9ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 12 ) / 5;//2.4ö{
+                	}
+        	}
+		else if(combo2[player] == 8)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 2 );//2.0ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 5 ) / 2;//2.5ö{
+                	}
+        	}
+		else if(combo2[player] == 9)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 21 ) /10;//2.1ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 13 ) / 5;//2.6ö{
+                	}
+        	}
+		else if(combo2[player] > 9)
+		{
+                	if(lines == 1)
+			{
+                        	i[player] = (i[player] * 2 );//2.0ö{
+                	}
+			else if(lines == 2)
+			{
+                        	i[player] = (i[player] * 5 ) /2;//2.5ö{
+                	}
+			else if(lines == 3)
+			{
+                        	i[player] = (i[player] * 3 ) ;//3.0ö{
+                	}
+        	}
 		gpoint[player] = gpoint[player] + i[player];
 		if(enable_grade[player] == 2){
 			if(medal_sk[player] == 4)gbai[player] = 10;//SKメダルが4になると4倍

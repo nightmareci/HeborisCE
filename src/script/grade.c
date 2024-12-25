@@ -224,134 +224,134 @@ void GradeUp2(int32_t player, int32_t lines){
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 6 ) / 5;//1.2ö{
+                        	i[player] = (i[player] * 6 ) / 5;//1.2倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4倍
                 	}
 			else if(lines == 3){
-                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5倍
                 	}
         	}
 		else if(combo2[player] == 3)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 6 ) / 5;//1.2ö{
+                        	i[player] = (i[player] * 6 ) / 5;//1.2倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 9 ) / 5;//1.8ö{
+                        	i[player] = (i[player] * 9 ) / 5;//1.8倍
                 	}
         	}
 		else if(combo2[player] == 4)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 8 ) / 5;//1.6ö{
+                        	i[player] = (i[player] * 8 ) / 5;//1.6倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 2 );//2.0ö{
+                        	i[player] = (i[player] * 2 );//2.0倍
                 	}
         	}
 		else if(combo2[player] == 5)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 17 ) / 10;//1.7ö{
+                        	i[player] = (i[player] * 17 ) / 10;//1.7倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 11 ) / 5;//2.2ö{
+                        	i[player] = (i[player] * 11 ) / 5;//2.2倍
 	                }
         	}
 		else if(combo2[player] == 6)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 9 ) / 5;//1.8ö{
+                        	i[player] = (i[player] * 9 ) / 5;//1.8倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 23 ) / 10;//2.3ö{
+                        	i[player] = (i[player] * 23 ) / 10;//2.3倍
                 	}
         	}
 		else if(combo2[player] == 7)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 7 ) / 5;//1.4ö{
+                        	i[player] = (i[player] * 7 ) / 5;//1.4倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 19 ) / 10;//1.9ö{
+                        	i[player] = (i[player] * 19 ) / 10;//1.9倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 12 ) / 5;//2.4ö{
+                        	i[player] = (i[player] * 12 ) / 5;//2.4倍
                 	}
         	}
 		else if(combo2[player] == 8)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 2 );//2.0ö{
+                        	i[player] = (i[player] * 2 );//2.0倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 5 ) / 2;//2.5ö{
+                        	i[player] = (i[player] * 5 ) / 2;//2.5倍
                 	}
         	}
 		else if(combo2[player] == 9)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 3 ) / 2;//1.5ö{
+                        	i[player] = (i[player] * 3 ) / 2;//1.5倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 21 ) /10;//2.1ö{
+                        	i[player] = (i[player] * 21 ) /10;//2.1倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 13 ) / 5;//2.6ö{
+                        	i[player] = (i[player] * 13 ) / 5;//2.6倍
                 	}
         	}
 		else if(combo2[player] > 9)
 		{
                 	if(lines == 1)
 			{
-                        	i[player] = (i[player] * 2 );//2.0ö{
+                        	i[player] = (i[player] * 2 );//2.0倍
                 	}
 			else if(lines == 2)
 			{
-                        	i[player] = (i[player] * 5 ) /2;//2.5ö{
+                        	i[player] = (i[player] * 5 ) /2;//2.5倍
                 	}
 			else if(lines == 3)
 			{
-                        	i[player] = (i[player] * 3 ) ;//3.0ö{
+                        	i[player] = (i[player] * 3 ) ;//3.0倍
                 	}
         	}
 		gpoint[player] = gpoint[player] + i[player];

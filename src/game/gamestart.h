@@ -137,8 +137,8 @@ void restoreSetups();
 int32_t getPressState(int32_t player, EButton key);
 int32_t getPushState(int32_t player, EButton key);
 
-int IsPressMenu(int32_t player, EButton button, YGS2kEControllerType type);
-int IsPushMenu(int32_t player, EButton button, YGS2kEControllerType type);
+int IsPressMenu(int32_t player, EButton button, YGS2kEInputType type);
+int IsPushMenu(int32_t player, EButton button, YGS2kEInputType type);
 
 typedef enum EPrompt
 {
@@ -150,8 +150,8 @@ int IsPressPrompt(EPrompt prompt);
 int IsPushPrompt(EPrompt prompt);
 
 #ifdef ENABLE_GAME_CONTROLLER
-int IsPressConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key);
-int IsPushConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key);
+int IsPressConTypeKey(YGS2kEInputType type, YGS2kSConKey* key);
+int IsPushConTypeKey(YGS2kEInputType type, YGS2kSConKey* key);
 #endif
 
 #ifdef ENABLE_KEYBOARD
@@ -204,8 +204,8 @@ extern uint32_t BloxeedSeed[2];
 extern uint32_t SavedSeed[2];
 extern uint32_t PieceSeed;
 extern bool inmenu;
-extern YGS2kEControllerType lastControllerType;
-extern YGS2kEControllerType lastPlayerControllerType[2];
+extern YGS2kEInputType lastInputType;
+extern YGS2kEInputType lastPlayerInputType[2];
 extern char *string[STRING_MAX];
 extern int32_t fldihardno;
 extern int32_t fldigsno;

@@ -12,17 +12,21 @@
 #define		YGS_WIDE_SCREEN (4.0f / 3.0f)
 #define		YGS_NARROW_SCREEN (3.0f / 4.0f)
 
-extern YGS2kEControllerType YGS2kLastControllerType;
+extern YGS2kEInputType YGS2kLastInputType;
 
 #ifdef ENABLE_JOYSTICK
-void YGS2kJoyClose();
-int YGS2kJoyOpen();
+// TODO: Replace YGS2kJoysClose() + YGS2kJoysOpen() with YGS2kJoysChanged() and
+// make joysticks use player indices instead of device indices, like
+// controllers
+
+void YGS2kJoysClose();
+bool YGS2kJoysOpen();
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-void YGS2kConClose();
-int YGS2kConOpen();
+void YGS2kConsClose();
+bool YGS2kConsChanged();
 #endif
 
-int YGS2kInputOpen();
-void YGS2kInputClose();
+bool YGS2kInputsOpen();
+void YGS2kInputsClose();

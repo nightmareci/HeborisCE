@@ -1427,8 +1427,8 @@ uint32_t	SavedSeed[2]={0,0};							// needed to save randomizer states
 uint32_t	PieceSeed=0;							// needed to generate pieces without losing saved seed.
 
 bool inmenu = true;
-YGS2kEControllerType lastControllerType = YGS_CONTROLLER_NULL;
-YGS2kEControllerType lastPlayerControllerType[2] = { YGS_CONTROLLER_NULL, YGS_CONTROLLER_NULL };
+YGS2kEInputType lastInputType = YGS_INPUT_NULL;
+YGS2kEInputType lastPlayerInputType[2] = { YGS_INPUT_NULL, YGS_INPUT_NULL };
 
 bool	lastPushUp[2] = { 0 };
 bool	lastPushDown[2] = { 0 };
@@ -15671,19 +15671,19 @@ int32_t getPressState(int32_t player, EButton key) { // パッドボタン割り
 		case BTN_GIVEUP:
 			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
-			ctmp = YGS2kIsPressConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPressConPlayerKey(playerCons[pl], &conkey);
 			break;
 
 		case BTN_PAUSE:
 			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
-			ctmp = YGS2kIsPressConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPressConPlayerKey(playerCons[pl], &conkey);
 			break;
 
 		default:
 			ctmp = inmenu ?
-				IsPressMenu(pl, key, YGS2kGetConType(playerCons[pl])) :
-				YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+				IsPressMenu(pl, key, YGS2kGetConPlayerType(playerCons[pl])) :
+				YGS2kIsPressConPlayerKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
 		#endif
@@ -15765,19 +15765,19 @@ int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り�
 		case BTN_GIVEUP:
 			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
-			ctmp = YGS2kIsPushConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPushConPlayerKey(playerCons[pl], &conkey);
 			break;
 
 		case BTN_PAUSE:
 			conkey.type = YGS_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
-			ctmp = YGS2kIsPushConKey(playerCons[pl], &conkey);
+			ctmp = YGS2kIsPushConPlayerKey(playerCons[pl], &conkey);
 			break;
 
 		default:
 			ctmp = inmenu ?
-				IsPushMenu(pl, key, YGS2kGetConType(playerCons[pl])) :
-				YGS2kIsPushConKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
+				IsPushMenu(pl, key, YGS2kGetConPlayerType(playerCons[pl])) :
+				YGS2kIsPushConPlayerKey(playerCons[pl], &conKeyAssign[key + 8 * pl]);
 			break;
 		}
 		#endif
@@ -15797,7 +15797,7 @@ int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り�
 	}
 }
 
-int IsPressMenu(int32_t player, EButton button, YGS2kEControllerType type)
+int IsPressMenu(int32_t player, EButton button, YGS2kEInputType type)
 {
 	#ifdef ENABLE_GAME_CONTROLLER
 	YGS2kSConKey key;
@@ -15810,46 +15810,46 @@ int IsPressMenu(int32_t player, EButton button, YGS2kEControllerType type)
 	#endif
 	{
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX:
-	case YGS_CONTROLLER_PLAYSTATION:
-	case YGS_CONTROLLER_NINTENDO:
+	case YGS_INPUT_XBOX:
+	case YGS_INPUT_PLAYSTATION:
+	case YGS_INPUT_NINTENDO:
 		switch (button)
 		{
 		case BTN_UP:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
-			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			pushed = YGS2kIsPressConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPressConPlayerKey(playerCons[player], &key);
 		case BTN_DOWN:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
-			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			pushed = YGS2kIsPressConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPressConPlayerKey(playerCons[player], &key);
 		case BTN_LEFT:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
-			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			pushed = YGS2kIsPressConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPressConPlayerKey(playerCons[player], &key);
 		case BTN_RIGHT:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
-			pushed = YGS2kIsPressConKey(playerCons[player], &key);
+			pushed = YGS2kIsPressConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || YGS2kIsPressConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPressConPlayerKey(playerCons[player], &key);
 		case BTN_A:
 			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_CONTROLLER_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
+			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
 			else key.index = SDL_CONTROLLER_BUTTON_A;
-			return YGS2kIsPressConKey(playerCons[player], &key);
+			return YGS2kIsPressConPlayerKey(playerCons[player], &key);
 		case BTN_B:
 			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_CONTROLLER_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
+			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
 			else key.index = SDL_CONTROLLER_BUTTON_B;
-			return YGS2kIsPressConKey(playerCons[player], &key);
+			return YGS2kIsPressConPlayerKey(playerCons[player], &key);
 			break;
-		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPressConKey(playerCons[player], &key);
-		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPressConKey(playerCons[player], &key);
-		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPressConKey(playerCons[player], &key);
-		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPressConKey(playerCons[player], &key);
+		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPressConPlayerKey(playerCons[player], &key);
+		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPressConPlayerKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPressConPlayerKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPressConPlayerKey(playerCons[player], &key);
 		default: return 0;
 		}
 		break;
@@ -15860,7 +15860,7 @@ int IsPressMenu(int32_t player, EButton button, YGS2kEControllerType type)
 	}
 }
 
-int IsPushMenu(int32_t player, EButton button, YGS2kEControllerType type)
+int IsPushMenu(int32_t player, EButton button, YGS2kEInputType type)
 {
 	#ifdef ENABLE_GAME_CONTROLLER
 	YGS2kSConKey key;
@@ -15873,46 +15873,46 @@ int IsPushMenu(int32_t player, EButton button, YGS2kEControllerType type)
 	#endif
 	{
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX:
-	case YGS_CONTROLLER_PLAYSTATION:
-	case YGS_CONTROLLER_NINTENDO:
+	case YGS_INPUT_XBOX:
+	case YGS_INPUT_PLAYSTATION:
+	case YGS_INPUT_NINTENDO:
 		switch (button)
 		{
 		case BTN_UP:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
-			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			pushed = YGS2kIsPushConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPushConPlayerKey(playerCons[player], &key);
 		case BTN_DOWN:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
-			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			pushed = YGS2kIsPushConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPushConPlayerKey(playerCons[player], &key);
 		case BTN_LEFT:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
-			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			pushed = YGS2kIsPushConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPushConPlayerKey(playerCons[player], &key);
 		case BTN_RIGHT:
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
-			pushed = YGS2kIsPushConKey(playerCons[player], &key);
+			pushed = YGS2kIsPushConPlayerKey(playerCons[player], &key);
 			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || YGS2kIsPushConKey(playerCons[player], &key);
+			return pushed || YGS2kIsPushConPlayerKey(playerCons[player], &key);
 		case BTN_A:
 			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_CONTROLLER_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
+			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
 			else key.index = SDL_CONTROLLER_BUTTON_A;
-			return YGS2kIsPushConKey(playerCons[player], &key);
+			return YGS2kIsPushConPlayerKey(playerCons[player], &key);
 		case BTN_B:
 			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_CONTROLLER_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
+			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
 			else key.index = SDL_CONTROLLER_BUTTON_B;
-			return YGS2kIsPushConKey(playerCons[player], &key);
+			return YGS2kIsPushConPlayerKey(playerCons[player], &key);
 			break;
-		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPushConKey(playerCons[player], &key);
-		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPushConKey(playerCons[player], &key);
-		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPushConKey(playerCons[player], &key);
-		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPushConKey(playerCons[player], &key);
+		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPushConPlayerKey(playerCons[player], &key);
+		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPushConPlayerKey(playerCons[player], &key);
+		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPushConPlayerKey(playerCons[player], &key);
+		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPushConPlayerKey(playerCons[player], &key);
 		default: return 0;
 		}
 		break;
@@ -15924,7 +15924,7 @@ int IsPushMenu(int32_t player, EButton button, YGS2kEControllerType type)
 }
 
 #ifdef ENABLE_GAME_CONTROLLER
-int IsPressConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key)
+int IsPressConTypeKey(YGS2kEInputType type, YGS2kSConKey* key)
 {
 	#ifdef ONLY_CONTROLLER_TYPE
 	switch (ONLY_CONTROLLER_TYPE)
@@ -15932,35 +15932,35 @@ int IsPressConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key)
 	switch (type)
 	#endif
 	{
-	case YGS_CONTROLLER_XBOX:
-	case YGS_CONTROLLER_PLAYSTATION:
-	case YGS_CONTROLLER_NINTENDO:
+	case YGS_INPUT_XBOX:
+	case YGS_INPUT_PLAYSTATION:
+	case YGS_INPUT_NINTENDO:
 		break;
 
 	default:
 		return 0;
 	}
 
-	for (int index = 0; index < YGS2kGetNumCons(); index++) {
-		if (YGS2kGetConType(index) == type && YGS2kIsPressConKey(index, key)) return 1;
+	for (int conPlayer = 0; conPlayer < YGS2kGetNumConPlayers(); conPlayer++) {
+		if (YGS2kGetConPlayerType(conPlayer) == type && YGS2kIsPressConPlayerKey(conPlayer, key)) return 1;
 	}
 	return 0;
 }
 
-int IsPushConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key)
+int IsPushConTypeKey(YGS2kEInputType type, YGS2kSConKey* key)
 {
 	switch (type) {
-	case YGS_CONTROLLER_XBOX:
-	case YGS_CONTROLLER_PLAYSTATION:
-	case YGS_CONTROLLER_NINTENDO:
+	case YGS_INPUT_XBOX:
+	case YGS_INPUT_PLAYSTATION:
+	case YGS_INPUT_NINTENDO:
 		break;
 
 	default:
 		return 0;
 	}
 
-	for (int index = 0; index < YGS2kGetNumCons(); index++) {
-		if (YGS2kGetConType(index) == type && YGS2kIsPushConKey(index, key)) return 1;
+	for (int conPlayer = 0; conPlayer < YGS2kGetNumConPlayers(); conPlayer++) {
+		if (YGS2kGetConPlayerType(conPlayer) == type && YGS2kIsPushConPlayerKey(conPlayer, key)) return 1;
 	}
 	return 0;
 }
@@ -15968,10 +15968,10 @@ int IsPushConTypeKey(YGS2kEControllerType type, YGS2kSConKey* key)
 
 int IsPressPrompt(EPrompt prompt)
 {
-	switch (YGS2kGetLastControllerType())
+	switch (YGS2kGetLastInputType())
 	{
 	#ifdef ENABLE_LINUXGPIO
-	case YGS_CONTROLLER_LINUXGPIO:
+	case YGS_INPUT_LINUXGPIO:
 		switch (input)
 		{
 		case PROMPT_OK: return YGS2kIsPressGPIO(4);
@@ -15983,10 +15983,10 @@ int IsPressPrompt(EPrompt prompt)
 
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
-	case YGS_CONTROLLER_JOYSTICK:
+	case YGS_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case YGS_CONTROLLER_KEYBOARD:
+	case YGS_INPUT_KEYBOARD:
 		switch (prompt)
 		{
 		case PROMPT_OK: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
@@ -15997,7 +15997,7 @@ int IsPressPrompt(EPrompt prompt)
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX: {
+	case YGS_INPUT_XBOX: {
 		YGS2kSConKey key;
 		switch (prompt)
 		{
@@ -16006,10 +16006,10 @@ int IsPressPrompt(EPrompt prompt)
 		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPressConTypeKey(YGS_CONTROLLER_XBOX, &key);
+		return IsPressConTypeKey(YGS_INPUT_XBOX, &key);
 	}
 
-	case YGS_CONTROLLER_PLAYSTATION: {
+	case YGS_INPUT_PLAYSTATION: {
 		YGS2kSConKey key;
 		switch (prompt)
 		{
@@ -16018,10 +16018,10 @@ int IsPressPrompt(EPrompt prompt)
 		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPressConTypeKey(YGS_CONTROLLER_PLAYSTATION, &key);
+		return IsPressConTypeKey(YGS_INPUT_PLAYSTATION, &key);
 	}
 
-	case YGS_CONTROLLER_NINTENDO: {
+	case YGS_INPUT_NINTENDO: {
 		YGS2kSConKey key;
 		switch (prompt)
 		{
@@ -16030,7 +16030,7 @@ int IsPressPrompt(EPrompt prompt)
 		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: break;
 		}
-		return IsPressConTypeKey(YGS_CONTROLLER_NINTENDO, &key);
+		return IsPressConTypeKey(YGS_INPUT_NINTENDO, &key);
 	}
 	#endif
 
@@ -16041,10 +16041,10 @@ int IsPressPrompt(EPrompt prompt)
 
 int IsPushPrompt(EPrompt prompt)
 {
-	switch (YGS2kGetLastControllerType())
+	switch (YGS2kGetLastInputType())
 	{
 	#ifdef ENABLE_LINUXGPIO
-	case YGS_CONTROLLER_LINUXGPIO:
+	case YGS_INPUT_LINUXGPIO:
 		switch (input)
 		{
 		case PROMPT_OK: return YGS2kIsPushGPIO(4);
@@ -16056,10 +16056,10 @@ int IsPushPrompt(EPrompt prompt)
 
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
-	case YGS_CONTROLLER_JOYSTICK:
+	case YGS_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case YGS_CONTROLLER_KEYBOARD:
+	case YGS_INPUT_KEYBOARD:
 		switch (prompt)
 		{
 		case PROMPT_OK: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
@@ -16070,7 +16070,7 @@ int IsPushPrompt(EPrompt prompt)
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX: {
+	case YGS_INPUT_XBOX: {
 		YGS2kSConKey key;
 		switch (prompt)
 		{
@@ -16079,10 +16079,10 @@ int IsPushPrompt(EPrompt prompt)
 		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPushConTypeKey(YGS_CONTROLLER_XBOX, &key);
+		return IsPushConTypeKey(YGS_INPUT_XBOX, &key);
 	}
 
-	case YGS_CONTROLLER_PLAYSTATION: {
+	case YGS_INPUT_PLAYSTATION: {
 		YGS2kSConKey key;
 		switch (prompt)
 		{
@@ -16091,10 +16091,10 @@ int IsPushPrompt(EPrompt prompt)
 		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPushConTypeKey(YGS_CONTROLLER_PLAYSTATION, &key);
+		return IsPushConTypeKey(YGS_INPUT_PLAYSTATION, &key);
 	}
 
-	case YGS_CONTROLLER_NINTENDO: {
+	case YGS_INPUT_NINTENDO: {
 		YGS2kSConKey key;
 		switch (prompt)
 		{
@@ -16103,7 +16103,7 @@ int IsPushPrompt(EPrompt prompt)
 		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: break;
 		}
-		return IsPushConTypeKey(YGS_CONTROLLER_NINTENDO, &key);
+		return IsPushConTypeKey(YGS_INPUT_NINTENDO, &key);
 	}
 	#endif
 
@@ -17404,28 +17404,28 @@ void spriteTime() {
 		init = true;
 		return;
 	}
-	YGS2kInput();
+	YGS2kInputsUpdate();
 
 	#ifdef ENABLE_KEYBOARD
 	updateEscapeFrames();
 	#endif
 
-	switch (lastControllerType = YGS2kGetLastControllerType()) {
+	switch (lastInputType = YGS2kGetLastInputType()) {
 	#ifdef ENABLE_LINUX_GPIO
-	case YGS_CONTROLLER_LINUXGPIO: {
-		int pushed = 0;
+	case YGS_INPUT_LINUXGPIO: {
+		bool pushed = false;
 		for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
 			pushed = YGS2kIsPushGPIO(button);
 		}
 		if (pushed) {
-			lastPlayerControllerType[0] = lastControllerType;
+			lastPlayerInputType[0] = lastInputType;
 		}
 		break;
 	}
 	#endif
 	#ifdef ENABLE_KEYBOARD
-	case YGS_CONTROLLER_KEYBOARD: {
-		int pushed = 0;
+	case YGS_INPUT_KEYBOARD: {
+		bool pushed = false;
 		int32_t pl;
 		for (pl = 0; pl < 2; pl++) {
 			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
@@ -17434,14 +17434,14 @@ void spriteTime() {
 			if (pushed) break;
 		}
 		if (pushed) {
-			lastPlayerControllerType[pl] = lastControllerType;
+			lastPlayerInputType[pl] = lastInputType;
 		}
 		break;
 	}
 	#endif
 	#ifdef ENABLE_JOYSTICK
-	case YGS_CONTROLLER_JOYSTICK: {
-		int pushed = 0;
+	case YGS_INPUT_JOYSTICK: {
+		bool pushed = false;
 		int32_t pl;
 		for (pl = 0; pl < 2; pl++) {
 			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
@@ -17450,21 +17450,21 @@ void spriteTime() {
 			if (pushed) break;
 		}
 		if (pushed) {
-			lastPlayerControllerType[pl] = lastControllerType;
+			lastPlayerInputType[pl] = lastInputType;
 		}
 		break;
 	}
 	#endif
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX:
-	case YGS_CONTROLLER_PLAYSTATION:
-	case YGS_CONTROLLER_NINTENDO: {
-		int index = YGS2kGetLastConIndex();
-		if (index == playerCons[0]) {
-			lastPlayerControllerType[0] = lastControllerType;
+	case YGS_INPUT_XBOX:
+	case YGS_INPUT_PLAYSTATION:
+	case YGS_INPUT_NINTENDO: {
+		int conPlayer = YGS2kGetLastActiveConPlayer();
+		if (conPlayer == playerCons[0]) {
+			lastPlayerInputType[0] = lastInputType;
 		}
-		else if (index == playerCons[1]) {
-			lastPlayerControllerType[1] = lastControllerType;
+		else if (conPlayer == playerCons[1]) {
+			lastPlayerInputType[1] = lastInputType;
 		}
 		break;
 	}
@@ -17518,16 +17518,16 @@ void spriteTime() {
 
 				#ifdef ENABLE_GAME_CONTROLLER
 				if (inmenu) {
-					up = up || IsPushMenu(pl, BTN_UP, YGS2kGetConType(playerCons[pl]));
-					down = down || IsPushMenu(pl, BTN_DOWN, YGS2kGetConType(playerCons[pl]));
-					left = left || IsPushMenu(pl, BTN_LEFT, YGS2kGetConType(playerCons[pl]));
-					right = right || IsPushMenu(pl, BTN_RIGHT, YGS2kGetConType(playerCons[pl]));
+					up = up || IsPushMenu(pl, BTN_UP, YGS2kGetConPlayerType(playerCons[pl]));
+					down = down || IsPushMenu(pl, BTN_DOWN, YGS2kGetConPlayerType(playerCons[pl]));
+					left = left || IsPushMenu(pl, BTN_LEFT, YGS2kGetConPlayerType(playerCons[pl]));
+					right = right || IsPushMenu(pl, BTN_RIGHT, YGS2kGetConPlayerType(playerCons[pl]));
 				}
 				else {
-					up = up || YGS2kIsPushConKey(playerCons[pl], &conKeyAssign[BTN_UP + 8 * pl]);
-					down = down || YGS2kIsPushConKey(playerCons[pl], &conKeyAssign[BTN_DOWN + 8 * pl]);
-					left = left || YGS2kIsPushConKey(playerCons[pl], &conKeyAssign[BTN_LEFT + 8 * pl]);
-					right = right || YGS2kIsPushConKey(playerCons[pl], &conKeyAssign[BTN_RIGHT + 8 * pl]);
+					up = up || YGS2kIsPushConPlayerKey(playerCons[pl], &conKeyAssign[BTN_UP + 8 * pl]);
+					down = down || YGS2kIsPushConPlayerKey(playerCons[pl], &conKeyAssign[BTN_DOWN + 8 * pl]);
+					left = left || YGS2kIsPushConPlayerKey(playerCons[pl], &conKeyAssign[BTN_LEFT + 8 * pl]);
+					right = right || YGS2kIsPushConPlayerKey(playerCons[pl], &conKeyAssign[BTN_RIGHT + 8 * pl]);
 				}
 				#endif
 
@@ -17568,16 +17568,16 @@ void spriteTime() {
 
 				#ifdef ENABLE_GAME_CONTROLLER
 				if (inmenu) {
-					up = up || IsPressMenu(pl, BTN_UP, YGS2kGetConType(playerCons[pl]));
-					down = down || IsPressMenu(pl, BTN_DOWN, YGS2kGetConType(playerCons[pl]));
-					left = left || IsPressMenu(pl, BTN_LEFT, YGS2kGetConType(playerCons[pl]));
-					right = right || IsPressMenu(pl, BTN_RIGHT, YGS2kGetConType(playerCons[pl]));
+					up = up || IsPressMenu(pl, BTN_UP, YGS2kGetConPlayerType(playerCons[pl]));
+					down = down || IsPressMenu(pl, BTN_DOWN, YGS2kGetConPlayerType(playerCons[pl]));
+					left = left || IsPressMenu(pl, BTN_LEFT, YGS2kGetConPlayerType(playerCons[pl]));
+					right = right || IsPressMenu(pl, BTN_RIGHT, YGS2kGetConPlayerType(playerCons[pl]));
 				}
 				else {
-					up = up || YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[BTN_UP + 8 * pl]);
-					down = down || YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[BTN_DOWN + 8 * pl]);
-					left = left || YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[BTN_LEFT + 8 * pl]);
-					right = right || YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[BTN_RIGHT + 8 * pl]);
+					up = up || YGS2kIsPressConPlayerKey(playerCons[pl], &conKeyAssign[BTN_UP + 8 * pl]);
+					down = down || YGS2kIsPressConPlayerKey(playerCons[pl], &conKeyAssign[BTN_DOWN + 8 * pl]);
+					left = left || YGS2kIsPressConPlayerKey(playerCons[pl], &conKeyAssign[BTN_LEFT + 8 * pl]);
+					right = right || YGS2kIsPressConPlayerKey(playerCons[pl], &conKeyAssign[BTN_RIGHT + 8 * pl]);
 				}
 				#endif
 

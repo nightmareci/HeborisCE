@@ -210,7 +210,7 @@ void YGS2kInit(const int soundBufferSize)
 
 	YGS2kSetFPS(60);
 
-	if (!s_bInitFast) YGS2kInputOpen();
+	if (!s_bInitFast) YGS2kInputsOpen();
 
 	/* テクスチャ領域の初期化 || Initialize the texture pointers */
 	if (!s_bInitFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
@@ -252,7 +252,7 @@ void YGS2kInit(const int soundBufferSize)
 
 void YGS2kDeinit()
 {
-	YGS2kInputClose();
+	YGS2kInputsClose();
 
 	/* サウンドの解放 */
 	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
@@ -393,13 +393,12 @@ bool YGS2kHalt()
 	/* イベント処理 || Process events */
 
 	#ifdef ENABLE_JOYSTICK
-	bool joyChanged = false;
+	bool joysChanged = false;
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	bool conChanged = false;
+	bool consChanged = false;
 	#endif
-
 	SDL_PumpEvents();
 	SDL_Event	ev;
 	int showCursor = SDL_DISABLE;
@@ -419,13 +418,13 @@ bool YGS2kHalt()
 			#ifdef ENABLE_JOYSTICK
 			case SDL_JOYDEVICEADDED:
 			case SDL_JOYDEVICEREMOVED:
-				joyChanged = true;
+				joysChanged = true;
 			#endif
 
 			#ifdef ENABLE_GAME_CONTROLLER
 			case SDL_CONTROLLERDEVICEADDED:
 			case SDL_CONTROLLERDEVICEREMOVED:
-				conChanged = true;
+				consChanged = true;
 				break;
 			#endif
 
@@ -453,18 +452,20 @@ bool YGS2kHalt()
 	}
 
 	#ifdef ENABLE_JOYSTICK
-	if (joyChanged)
+	if (joysChanged)
 	{
-		YGS2kJoyClose();
-		YGS2kJoyOpen();
+		YGS2kJoysClose();
+		if (!YGS2kJoysOpen()) {
+			YGS2kExit(EXIT_FAILURE);
+		}
 	}
 	#endif
-		
+
 	#ifdef ENABLE_GAME_CONTROLLER
-	if (conChanged)
-	{
-		YGS2kConClose();
-		YGS2kConOpen();
+	if (consChanged) {
+		if (!YGS2kConsChanged()) {
+			YGS2kExit(EXIT_FAILURE);
+		}
 	}
 	#endif
 

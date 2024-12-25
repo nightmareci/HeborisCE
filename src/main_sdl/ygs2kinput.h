@@ -3,45 +3,45 @@
 #include "include.h"
 #include "game/button.h"
 
-typedef enum YGS2kEControllerType
+typedef enum YGS2kEInputType
 {
 	// NULL must be zero.
-	YGS_CONTROLLER_NULL = 0u
+	YGS_INPUT_NULL = 0u
 	#ifdef ENABLE_JOYSTICK
-	,YGS_CONTROLLER_JOYSTICK
+	,YGS_INPUT_JOYSTICK
 	#endif
 	#ifdef ENABLE_GAME_CONTROLLER
-	,YGS_CONTROLLER_GAMECONTROLLER
-	,YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE
-	,YGS_CONTROLLER_XBOX = YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE
-	,YGS_CONTROLLER_PLAYSTATION
-	,YGS_CONTROLLER_NINTENDO
+	,YGS_INPUT_GAMECONTROLLER
+	,YGS_INPUT_FIRSTGAMECONTROLLERTYPE
+	,YGS_INPUT_XBOX = YGS_INPUT_FIRSTGAMECONTROLLERTYPE
+	,YGS_INPUT_PLAYSTATION
+	,YGS_INPUT_NINTENDO
 	#endif
 	#ifdef ENABLE_KEYBOARD	
-	,YGS_CONTROLLER_KEYBOARD
+	,YGS_INPUT_KEYBOARD
 	#endif
 	#ifdef ENABLE_LINUX_GPIO
-	,YGS_CONTROLLER_LINUXGPIO
+	,YGS_INPUT_LINUXGPIO
 	#endif
-} YGS2kEControllerType;
+} YGS2kEInputType;
 
-YGS2kEControllerType YGS2kGetLastControllerType();
+YGS2kEInputType YGS2kGetLastInputType();
 
-void YGS2kInput();
+void YGS2kInputsUpdate();
 
 #define YGS_INPUTREPEAT_MAX INT_MAX
 
 #ifdef ENABLE_LINUX_GPIO
-int YGS2kIsPushGPIO(int key);
-int YGS2kIsPressGPIO(int key);
+bool YGS2kIsPushGPIO(int key);
+bool YGS2kIsPressGPIO(int key);
 int YGS2kGetGPIORepeat(int key);
 #endif
 
 #ifdef ENABLE_KEYBOARD
 #define YGS_KEY_MAX SDL_NUM_SCANCODES
 
-int YGS2kIsPushKey(int key);
-int YGS2kIsPressKey(int key);
+bool YGS2kIsPushKey(int key);
+bool YGS2kIsPressKey(int key);
 int YGS2kGetKeyRepeat(int key);
 int YGS2kGetMaxKey();
 #endif
@@ -67,28 +67,29 @@ typedef union YGS2kSJoyKeySetting {
 } YGS2kSJoyKeySetting;
 
 typedef struct YGS2kSJoyKey {
-	int index;
+	int device;
 	YGS2kSJoyGUID guid;
 	YGS2kEJoyKeyType type;
 	YGS2kSJoyKeySetting setting;
 } YGS2kSJoyKey;
 
-int YGS2kIsPushJoyKey(const YGS2kSJoyKey* const key);
-int YGS2kIsPressJoyKey(const YGS2kSJoyKey* const key);
+bool YGS2kIsPushJoyKey(const YGS2kSJoyKey* const key);
+bool YGS2kIsPressJoyKey(const YGS2kSJoyKey* const key);
 int YGS2kGetJoyKeyRepeat(const YGS2kSJoyKey* const key); // If key->type == YGS_JOYKEY_ANY, checks all inputs of the key's joystick and returns the max repeat value.
 
 int YGS2kGetMaxJoys();
 int YGS2kGetNumJoys();
 
-// If game controller support is enabled, a joystick index can possibly
+// If game controller support is enabled, a joystick device can possibly
 // correspond to a game controller, in which case these functions return -1 if
-// the joystick index refers to a game controller. Also, YGS2kGetJoyGUID returns the
-// zero GUID for a joystick index that's actually a game controller.
+// the joystick device refers to a game controller. Also, YGS2kGetJoyGUID
+// returns the zero GUID for a joystick device that's actually a game
+// controller.
 
-YGS2kSJoyGUID YGS2kGetJoyGUID(int index);
-int YGS2kGetMaxJoyAxis(int index);
-int YGS2kGetMaxJoyHat(int index);
-int YGS2kGetMaxJoyButton(int index);
+YGS2kSJoyGUID YGS2kGetJoyGUID(int device);
+int YGS2kGetMaxJoyAxis(int device);
+int YGS2kGetMaxJoyHat(int device);
+int YGS2kGetMaxJoyButton(int device);
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
@@ -116,14 +117,14 @@ typedef struct YGS2kSConKey {
 // Button numbers are the same as the SDL_CONTROLLER_BUTTON_* constants.
 #define YGS_CONBUTTON_MAX SDL_CONTROLLER_BUTTON_MAX
 
-int YGS2kIsPushConKey(const int index, const YGS2kSConKey* const key);
-int YGS2kIsPressConKey(const int index, const YGS2kSConKey* const key);
-int YGS2kGetConKeyRepeat(const int index, YGS2kSConKey* const key);
+bool YGS2kIsPushConPlayerKey(const int player, const YGS2kSConKey* const key);
+bool YGS2kIsPressConPlayerKey(const int player, const YGS2kSConKey* const key);
+int YGS2kGetConPlayerKeyRepeat(const int player, YGS2kSConKey* const key);
 
-bool YGS2kIsGameController(int index);
-void YGS2kResetLastConIndex();
-int YGS2kGetLastConIndex();
-int YGS2kGetNumCons();
-YGS2kEControllerType YGS2kGetConType(const int index);
-bool YGS2kGetConKeyDesc(const int index, const YGS2kSConKey* const key, const char** text, EButton* button);
+bool YGS2kIsCon(int device);
+void YGS2kResetLastActiveConPlayer();
+int YGS2kGetLastActiveConPlayer();
+int YGS2kGetNumConPlayers();
+YGS2kEInputType YGS2kGetConPlayerType(const int player);
+bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, const char** text, EButton* button);
 #endif

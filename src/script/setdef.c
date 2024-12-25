@@ -402,7 +402,7 @@ void SetDefaultConfig()
 		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
 			const YGS2kSJoyKey *pljoy = &DefaultConfig.joyKeyAssign[pl * 10 + key];
-			plbuf[0] = pljoy->index;
+			plbuf[0] = pljoy->device;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
 			}

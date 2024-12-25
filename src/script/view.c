@@ -2028,13 +2028,13 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 }
 
 void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor) {
-	switch (lastControllerType) {
+	switch (lastInputType) {
 	#ifdef ENABLE_KEYBOARD
 	#ifdef ENABLE_JOYSTICK
-	case YGS_CONTROLLER_JOYSTICK:
+	case YGS_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case YGS_CONTROLLER_KEYBOARD: {
+	case YGS_INPUT_KEYBOARD: {
 		const char* s;
 		switch (prompt) {
 		case PROMPT_OK: s = "ENTER"; break;
@@ -2048,21 +2048,21 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 	#endif
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX:
-	case YGS_CONTROLLER_PLAYSTATION:
+	case YGS_INPUT_XBOX:
+	case YGS_INPUT_PLAYSTATION:
 		switch (prompt) {
-		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastInputType - YGS_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastInputType - YGS_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastInputType - YGS_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
 
-	case YGS_CONTROLLER_NINTENDO:
+	case YGS_INPUT_NINTENDO:
 		switch (prompt) {
-		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastControllerType - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, (1 + lastInputType - YGS_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, BTN_A * 8, (1 + lastInputType - YGS_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, BTN_C * 8, (1 + lastInputType - YGS_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
@@ -2077,21 +2077,21 @@ void printPrompt(int32_t fontX, int32_t fontY, EPrompt prompt, int32_t fontColor
 void printMenuButton(int32_t fontX, int32_t fontY, EButton button, int32_t player) {
 	if (button < 0 || button >= NUMGAMEBTNS) return;
 
-	switch (player >= 0 ? lastPlayerControllerType[player] : lastControllerType) {
+	switch (player >= 0 ? lastPlayerInputType[player] : lastInputType) {
 	default:
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
 		break;
 
 	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_CONTROLLER_XBOX:
+	case YGS_INPUT_XBOX:
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
 		break;
 
-	case YGS_CONTROLLER_PLAYSTATION:
+	case YGS_INPUT_PLAYSTATION:
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
 		break;
 
-	case YGS_CONTROLLER_NINTENDO:
+	case YGS_INPUT_NINTENDO:
 		switch (button) {
 		case BTN_A:
 			ExBltRect(23, fontX * 8, fontY * 8, BTN_B * 8, 3 * 8, 8, 8);
@@ -2110,19 +2110,19 @@ void printMenuButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 }
 
 #ifdef ENABLE_GAME_CONTROLLER
-void printConKey(int32_t fontX, int32_t fontY, int32_t index, YGS2kSConKey* key, int32_t fontColor) {
-	if (YGS2kGetNumCons() <= 0 || index < 0 || index >= YGS2kGetNumCons() || key == NULL) return;
+void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, YGS2kSConKey* key, int32_t fontColor) {
+	if (YGS2kGetNumConPlayers() <= 0 || conPlayer < 0 || conPlayer >= YGS2kGetNumConPlayers() || key == NULL) return;
 	const char* text;
 	EButton button;
-	if (YGS2kGetConKeyDesc(index, key, &text, &button)) {
+	if (YGS2kGetConPlayerKeyDesc(conPlayer, key, &text, &button)) {
 		if (text != NULL) {
 			printFont(fontX, fontY, text, fontColor);
 			if (button != BTN_NULL) {
-				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (YGS2kGetConType(index) - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (YGS2kGetConPlayerType(conPlayer) - YGS_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 			}
 		}
 		else if (button != BTN_NULL) {
-			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (YGS2kGetConType(index) - YGS_CONTROLLER_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (YGS2kGetConPlayerType(conPlayer) - YGS_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 		}
 	}
 }

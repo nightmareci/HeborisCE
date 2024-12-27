@@ -14,18 +14,8 @@
 
 extern YGS2kEInputType YGS2kLastInputType;
 
-#ifdef ENABLE_JOYSTICK
-// TODO: Replace YGS2kJoysClose() + YGS2kJoysOpen() with YGS2kJoysChanged() and
-// make joysticks use player indices instead of device indices, like
-// controllers
-
-void YGS2kJoysClose();
-bool YGS2kJoysOpen();
-#endif
-
-#ifdef ENABLE_GAME_CONTROLLER
-void YGS2kConsClose();
-bool YGS2kConsChanged();
+#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
+bool YGS2kPlayerSlotsChanged();
 #endif
 
 bool YGS2kInputsOpen();

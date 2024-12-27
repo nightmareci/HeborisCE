@@ -138,7 +138,7 @@ int32_t SaveConfig(void) {
 		for (int32_t key = 0; key < 10; key++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
 			YGS2kSJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
-			plbuf[0] = pljoy->device;
+			plbuf[0] = pljoy->player;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
 			}
@@ -314,7 +314,7 @@ int32_t LoadConfig(void) {
 		for (int32_t key = 0; key < 10; key++) {
 			YGS2kSJoyKey *pljoy = &joyKeyAssign[pl * 10 + key];
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8 + key * 8];
-			pljoy->device = plbuf[0];
+			pljoy->player = plbuf[0];
 			for (int32_t i = 0; i < 4; i++) {
 				pljoy->guid.data[i] = plbuf[1 + i];
 			}
@@ -473,7 +473,7 @@ void ConfigMenu() {
 		for (int32_t pl = 0; pl < 2; pl++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8];
 			YGS2kSJoyKey *pljoy = &joyKeyAssign[pl * 10];
-			plbuf[0] = pljoy->device;
+			plbuf[0] = pljoy->player;
 			for (int32_t i = 0; i < 4; i++) {
 				plbuf[1 + i] = pljoy->guid.data[i];
 			}
@@ -1525,13 +1525,13 @@ void ConfigMenu() {
 					for(i = 0; i < statusc[0]; i++) {
 						switch((YGS2kEJoyKeyType)ncfg[j+5+i*8]) {
 						case YGS_JOYKEY_AXIS:
-							sprintf(string[0], "J%d:A%d%c", (int)ncfg[j+0+i*8], (int)ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
+							sprintf(string[0], "JOY%dP:A%d%c", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
 							break;
 						case YGS_JOYKEY_HAT:
-							sprintf(string[0], "J%d:H%d,%d", (int)ncfg[j+0+i*8], (int)ncfg[j+6+i*8], (int)ncfg[j+7+i*8]);
+							sprintf(string[0], "JOY%dP:H%d,%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], (int)ncfg[j+7+i*8]);
 							break;
 						case YGS_JOYKEY_BUTTON:
-							sprintf(string[0], "J%d:B%d", (int)ncfg[j+0+i*8], (int)ncfg[j+6+i*8]);
+							sprintf(string[0], "JOY%dP:B%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8]);
 							break;
 						default:
 							sprintf(string[0], "???");
@@ -1544,9 +1544,13 @@ void ConfigMenu() {
 						printFont(10, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
 						YGS2kSJoyKey pushKey;
 						bool pushed = false;
-						for (int32_t i = 0; i < YGS2kGetMaxJoys(); i++)
+						for (int32_t i = 0; i < YGS2kGetNumPlayerSlots(); i++)
 						{
-							pushKey.device = i;
+							if (YGS2kGetPlayerSlotType(i) != YGS_PLAYERSLOT_JOY) {
+								continue;
+							}
+
+							pushKey.player = i;
 							pushKey.guid = YGS2kGetJoyGUID(i);
 
 							pushKey.type = YGS_JOYKEY_AXIS;
@@ -1618,7 +1622,7 @@ void ConfigMenu() {
 							bool unmapped = true;
 							for (EButton button = 0; button < statusc[0]; button++) {
 								if (
-									ncfg[j+0+button*8] == pushKey.device &&
+									ncfg[j+0+button*8] == pushKey.player &&
 									memcmp(&ncfg[j+1+button*8], pushKey.guid.data, sizeof(int32_t) * 4) == 0 &&
 									ncfg[j+5+button*8] == pushKey.type
 								) {
@@ -1638,7 +1642,7 @@ void ConfigMenu() {
 							}
 							if (unmapped) {
 								PlaySE(5);
-								ncfg[j+0+statusc[0]*8] = pushKey.device;
+								ncfg[j+0+statusc[0]*8] = pushKey.player;
 								for (int32_t i = 0; i < 4; i++) {
 									ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
 								}
@@ -1668,7 +1672,7 @@ void ConfigMenu() {
 							for (EButton button = 0; button < NUMBTNS; button++) {
 								YGS2kSJoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
-								pljoy->device = plcfg[0];
+								pljoy->player = plcfg[0];
 								for (int32_t i = 0; i < 4; i++) {
 									pljoy->guid.data[i] = plcfg[1 + i];
 								}
@@ -1696,7 +1700,7 @@ void ConfigMenu() {
 							for (EButton button = 0; button < NUMBTNS; button++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
 								YGS2kSJoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
-								plcfg[0] = pljoy->device;
+								plcfg[0] = pljoy->player;
 								for (int32_t i = 0; i < 4; i++) {
 									plcfg[1 + i] = pljoy->guid.data[i];
 								}
@@ -1722,7 +1726,7 @@ void ConfigMenu() {
 							for (EButton button = 0; button < 10; button++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
 								YGS2kSJoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
-								plcfg[0] = pljoy->device;
+								plcfg[0] = pljoy->player;
 								for (int32_t i = 0; i < 4; i++) {
 									plcfg[1 + i] = pljoy->guid.data[i];
 								}
@@ -1752,7 +1756,7 @@ void ConfigMenu() {
 		#ifdef ENABLE_GAME_CONTROLLER
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// game controller setting
-			if (YGS2kGetNumConPlayers() <= 0) {
+			if (YGS2kGetNumCons() <= 0) {
 				statusc[0] = 0;
 				statusc[2] = 0;
 			}
@@ -1766,7 +1770,7 @@ void ConfigMenu() {
 				case YGS_INPUT_XBOX:
 				case YGS_INPUT_PLAYSTATION:
 				case YGS_INPUT_NINTENDO:
-					if (YGS2kIsPushConPlayerKey(-1, &cancelKey)) {
+					if (YGS2kIsPushConKey(-1, &cancelKey)) {
 						PlaySE(5);
 						statusc[0] = 0;
 						statusc[2] = 0;
@@ -1825,11 +1829,11 @@ void ConfigMenu() {
 					YGS2kSConKey key;
 					int lastConPlayer = -1;
 					key.type = YGS_CONKEY_ANY;
-					if (conPlayer == -1 && !YGS2kIsPressConPlayerKey(-1, &key)) {
-						YGS2kResetLastActiveConPlayer();
+					if (conPlayer == -1 && !YGS2kIsPressConKey(-1, &key)) {
+						YGS2kResetLastActiveCon();
 						conPlayer = -2;
 					}
-					else if (conPlayer == -2 && (lastConPlayer = YGS2kGetLastActiveConPlayer()) >= 0) {
+					else if (conPlayer == -2 && (lastConPlayer = YGS2kGetLastActiveCon()) >= 0) {
 						conPlayer = lastConPlayer;
 						ncfg[240 + pl * (1 + 2 * 8)] = conPlayer;
 					}
@@ -1852,7 +1856,7 @@ void ConfigMenu() {
 
 						pushKey.type = YGS_CONKEY_BUTTON;
 						for (pushKey.index = 0; pushKey.index < YGS_CONBUTTON_MAX; pushKey.index++) {
-							if (YGS2kIsPushConPlayerKey(conPlayer, &pushKey)) {
+							if (YGS2kIsPushConKey(conPlayer, &pushKey)) {
 								pushed = true;
 								break;
 							}
@@ -1861,7 +1865,7 @@ void ConfigMenu() {
 						if (!pushed) {
 							pushKey.type = YGS_CONKEY_AXIS;
 							for (pushKey.index = 0; pushKey.index < YGS_CONAXIS_MAX; pushKey.index++) {
-								if (YGS2kIsPushConPlayerKey(conPlayer, &pushKey)) {
+								if (YGS2kIsPushConKey(conPlayer, &pushKey)) {
 									pushed = true;
 									break;
 								}
@@ -1945,7 +1949,7 @@ void ConfigMenu() {
 						|| YGS2kIsPressJoyKey(&joyKeyAssign[i + 10 * pl])	// キー入力状態取得
 						#endif
 						#ifdef ENABLE_GAME_CONTROLLER
-						|| YGS2kIsPressConPlayerKey(playerCons[pl], &conKeyAssign[i + 8 * pl])
+						|| YGS2kIsPressConKey(playerCons[pl], &conKeyAssign[i + 8 * pl])
 						#endif
 						;
 					if(j) sprintf(string[0],"d");
@@ -1995,35 +1999,32 @@ void ConfigMenu() {
 
 					#ifdef ENABLE_JOYSTICK
 					YGS2kSJoyKey* const key = &joyKeyAssign[i + pl * 10];
-					YGS2kSJoyGUID getGUID = YGS2kGetJoyGUID(key->device);
+					YGS2kSJoyGUID getGUID = YGS2kGetJoyGUID(key->player);
 					YGS2kSJoyGUID zeroGUID = { 0 };
 					if (
-						YGS2kGetNumJoys() > 0 && key->device < YGS2kGetMaxJoys() &&
-						#ifdef ENABLE_GAME_CONTROLLER
-						!YGS2kIsCon(key->device) &&
-						#endif
+						YGS2kGetPlayerSlotType(key->player) == YGS_PLAYERSLOT_JOY &&
 						memcmp(key->guid.data, zeroGUID.data, sizeof(key->guid.data)) != 0 &&
 						memcmp(getGUID.data, zeroGUID.data, sizeof(getGUID.data)) != 0 &&
 						memcmp(key->guid.data, getGUID.data, sizeof(key->guid.data)) == 0
 					) {
 						switch(key->type) {
 						case YGS_JOYKEY_AXIS:
-							sprintf(string[1], " J%d:A%d%c",
-								key->device,
+							sprintf(string[1], " JOY%dP:A%d%c",
+								key->player + 1,
 								key->setting.index,
 								key->setting.value >= 0 ? '+' : '-'
 							);
 							break;
 						case YGS_JOYKEY_HAT:
-							sprintf(string[1], " J%d:H%d,%d",
-								key->device,
+							sprintf(string[1], " JOY%dP:H%d,%d",
+								key->player + 1,
 								key->setting.index,
 								key->setting.value
 							);
 							break;
 						case YGS_JOYKEY_BUTTON:
-							sprintf(string[1], " J%d:B%d",
-								key->device,
+							sprintf(string[1], " JOY%dP:B%d",
+								key->player + 1,
 								key->setting.button
 							);
 							break;
@@ -2040,7 +2041,7 @@ void ConfigMenu() {
 					
 					#ifdef ENABLE_GAME_CONTROLLER
 					YGS2kSConKey conKey = conKeyAssign[i + pl * 8];
-					if (YGS2kGetConPlayerType(playerCons[pl]) != YGS_INPUT_NULL && (conKey.type == YGS_CONKEY_AXIS || conKey.type == YGS_CONKEY_BUTTON)) {
+					if (YGS2kGetPlayerSlotType(playerCons[pl]) == YGS_PLAYERSLOT_CON && (conKey.type == YGS_CONKEY_AXIS || conKey.type == YGS_CONKEY_BUTTON)) {
 						if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);
 						sprintf(string[1], " CON%" PRId32 "P:", playerCons[pl] + 1);
 						int32_t x = 5 + strlen(string[0]);

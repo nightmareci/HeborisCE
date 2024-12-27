@@ -2111,18 +2111,18 @@ void printMenuButton(int32_t fontX, int32_t fontY, EButton button, int32_t playe
 
 #ifdef ENABLE_GAME_CONTROLLER
 void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, YGS2kSConKey* key, int32_t fontColor) {
-	if (YGS2kGetNumConPlayers() <= 0 || conPlayer < 0 || conPlayer >= YGS2kGetNumConPlayers() || key == NULL) return;
+	if (conPlayer < 0 || conPlayer >= YGS2kGetNumPlayerSlots() || !key) return;
 	const char* text;
 	EButton button;
-	if (YGS2kGetConPlayerKeyDesc(conPlayer, key, &text, &button)) {
+	if (YGS2kGetConKeyDesc(conPlayer, key, &text, &button)) {
 		if (text != NULL) {
 			printFont(fontX, fontY, text, fontColor);
 			if (button != BTN_NULL) {
-				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (YGS2kGetConPlayerType(conPlayer) - YGS_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (YGS2kGetConType(conPlayer) - YGS_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 			}
 		}
 		else if (button != BTN_NULL) {
-			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (YGS2kGetConPlayerType(conPlayer) - YGS_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (YGS2kGetConType(conPlayer) - YGS_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 		}
 	}
 }

@@ -23,8 +23,6 @@ typedef struct YGS2kSJoy
 	int* hatsRepeat;
 	int* buttonsRepeat;
 } YGS2kSJoy;
-static YGS2kSJoy* s_aJoys = NULL;
-static int s_iNumJoys = -1;
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
@@ -32,21 +30,29 @@ static int s_iNumJoys = -1;
 typedef struct YGS2kSCon
 {
 	SDL_GameController* controller;
-	SDL_JoystickID joyid;
 	int axesRepeat[YGS_CONAXIS_MAX];
 	int buttonsRepeat[YGS_CONBUTTON_MAX];
 } YGS2kSCon;
-static YGS2kSCon* s_aConPlayerSlots = NULL;
-static int s_iNumConPlayerSlots = 0;
-static int s_iLastActiveConPlayer = -1;
+static int s_iLastActiveCon = -1;
+#endif
 
-bool YGS2kIsCon ( int device )
+#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
+typedef struct YGS2kSPlayerSlot
 {
-	return
-		(SDL_IsGameController(device) && SDL_GameControllerTypeForIndex(device) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
-		SDL_GameControllerMappingForGUID(SDL_JoystickGetDeviceGUID(device)) != NULL;
-}
+	YGS2kEPlayerSlotType type;
+	union
+	{
+		#ifdef ENABLE_JOYSTICK
+		YGS2kSJoy joy;
+		#endif
+		#ifdef ENABLE_GAME_CONTROLLER
+		YGS2kSCon con;
+		#endif
+	};
+} YGS2kSPlayerSlot;
 
+static YGS2kSPlayerSlot* s_aPlayerSlots = NULL;
+static int s_iNumPlayerSlots = 0;
 #endif
 
 YGS2kEInputType YGS2kGetLastInputType ()
@@ -97,116 +103,303 @@ int YGS2kGetMaxKey ()
 }
 #endif
 
-#ifdef ENABLE_JOYSTICK
-// TODO: Change joysticks to use SDL player index APIs instead of SDL device
-// index APIs, similar to game controllers.
+#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
 
-void YGS2kJoysClose ()
+static bool YGS2kIsCon ( int device )
 {
-	if (s_aJoys)
-	{
-		for (int device = 0; device < s_iNumJoys; device++)
-		{
-			if (s_aJoys[device].joystick && SDL_JoystickGetAttached(s_aJoys[device].joystick)) SDL_JoystickClose(s_aJoys[device].joystick);
-			if (s_aJoys[device].axesRepeat) free(s_aJoys[device].axesRepeat);
-			if (s_aJoys[device].hatsRepeat) free(s_aJoys[device].hatsRepeat);
-			if (s_aJoys[device].buttonsRepeat) free(s_aJoys[device].buttonsRepeat);
-		}
-		free(s_aJoys);
+	if (device < 0) {
+		return false;
 	}
-	s_aJoys = NULL;
-	s_iNumJoys = -1;
+
+	return
+		(SDL_IsGameController(device) && SDL_GameControllerTypeForIndex(device) != SDL_CONTROLLER_TYPE_UNKNOWN) ||
+		SDL_GameControllerMappingForGUID(SDL_JoystickGetDeviceGUID(device)) != NULL;
 }
 
-bool YGS2kJoysOpen ()
-{
-	if ((s_iNumJoys = SDL_NumJoysticks()) > 0)
-	{
-		if (!(s_aJoys = (YGS2kSJoy*)calloc((size_t)s_iNumJoys, sizeof(YGS2kSJoy))))
-		{
-			s_iNumJoys = -1;
-			return false;
-		}
-
-		for (int device = 0; device < s_iNumJoys; device++)
-		{
-			#ifdef ENABLE_GAME_CONTROLLER
-			if (!YGS2kIsCon(device))
-			{
-			#endif
-				bool fail = false;
-				if (!(s_aJoys[device].joystick = SDL_JoystickOpen(device))) fail = true;
-				else if (
-					(s_aJoys[device].numAxes = SDL_JoystickNumAxes(s_aJoys[device].joystick)) >= 0 &&
-					(s_aJoys[device].numHats = SDL_JoystickNumHats(s_aJoys[device].joystick)) >= 0 &&
-					(s_aJoys[device].numButtons = SDL_JoystickNumButtons(s_aJoys[device].joystick)) >= 0
-				)
-				{
-					if (s_aJoys[device].numAxes > 0 && !(s_aJoys[device].axesRepeat = (int*)calloc((size_t)s_aJoys[device].numAxes * 2, sizeof(int)))) fail = true;
-					if (s_aJoys[device].numHats > 0 && !(s_aJoys[device].hatsRepeat = (int*)calloc((size_t)s_aJoys[device].numHats * 4, sizeof(int)))) fail = true;
-					if (s_aJoys[device].numButtons > 0 && !(s_aJoys[device].buttonsRepeat = (int*)calloc((size_t)s_aJoys[device].numButtons, sizeof(int)))) fail = true;
-				}
-				if (fail)
-				{
-					s_iNumJoys = device + !!s_aJoys[device].joystick;
-					YGS2kJoysClose();
-					s_iNumJoys = -1;
-					return false;
-				}
-			#ifdef ENABLE_GAME_CONTROLLER
-			}
-			#endif
-		}
+static bool YGS2kResizePlayerSlots(int numSlots) {
+	if (numSlots == s_iNumPlayerSlots) {
 		return true;
 	}
-	else if (s_iNumJoys == 0) return true;
-	else return false;
+	else if (numSlots == 0) {
+		free(s_aPlayerSlots);
+		s_aPlayerSlots = NULL;
+		s_iNumPlayerSlots = 0;
+		return true;
+	}
+
+	YGS2kSPlayerSlot* const oldSlots = s_aPlayerSlots;
+	const int oldNumSlots = s_iNumPlayerSlots;
+	if (s_aPlayerSlots) {
+		s_aPlayerSlots = realloc(s_aPlayerSlots, sizeof(YGS2kSPlayerSlot) * numSlots);
+	}
+	else {
+		s_aPlayerSlots = malloc(sizeof(YGS2kSPlayerSlot) * numSlots);
+	}
+	if (!s_aPlayerSlots) {
+		fprintf(stderr, "Failed to resize joysticks/controllers array\n");
+		s_aPlayerSlots = oldSlots;
+		return false;
+	}
+	for (int player = s_iNumPlayerSlots; player < numSlots; player++) {
+		s_aPlayerSlots[player] = (YGS2kSPlayerSlot) { 0 };
+	}
+	s_iNumPlayerSlots = numSlots;
+	return true;
 }
 
-static void YGS2kJoyInputsUpdate ()
-{
-	if (!s_aJoys) return;
-
-	for (int device = 0; device < s_iNumJoys; device++)
-	{
-		#ifdef ENABLE_GAME_CONTROLLER
-		if (YGS2kIsCon(device)) continue;
+bool YGS2kPlayerSlotsChanged() {
+	for (int player = 0; player < s_iNumPlayerSlots; player++) {
+		YGS2kSPlayerSlot* const slot = &s_aPlayerSlots[player];
+		switch (slot->type) {
+		#ifdef ENABLE_JOYSTICK
+		case YGS_PLAYERSLOT_JOY:
+			if (!SDL_JoystickGetAttached(slot->joy.joystick)) {
+				if (slot->joy.axesRepeat) free(slot->joy.axesRepeat);
+				if (slot->joy.hatsRepeat) free(slot->joy.hatsRepeat);
+				if (slot->joy.buttonsRepeat) free(slot->joy.buttonsRepeat);
+				*slot = (YGS2kSPlayerSlot) { 0 };
+			}
+			break;
 		#endif
-		if (!SDL_JoystickGetAttached(s_aJoys[device].joystick))
-		{
+
+		#ifdef ENABLE_GAME_CONTROLLER
+		case YGS_PLAYERSLOT_CON:
+			if (!SDL_GameControllerGetAttached(slot->con.controller)) {
+				*slot = (YGS2kSPlayerSlot) { 0 };
+			}
+			break;
+		#endif
+
+		default:
+		case YGS_PLAYERSLOT_NULL:
+			break;
+		}
+	}
+
+	const int numJoys = SDL_NumJoysticks();
+
+	// Only opened joysticks will have a non-NULL return value from
+	// SDL_JoystickFromInstanceID(), so we can use it to skip already opened
+	// devices.
+	//
+	// Internally, SDL uses joystick APIs for game controllers, so it also skips
+	// already opened game controllers.
+
+	#ifdef ENABLE_GAME_CONTROLLER
+	for (int device = 0; device < numJoys; device++) {
+		const SDL_JoystickID id = SDL_JoystickGetDeviceInstanceID(device);
+		if (id >= 0 && SDL_JoystickFromInstanceID(id)) {
+			continue;
+		}
+		if (!YGS2kIsCon(device)) {
 			continue;
 		}
 
-		const YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(device);
+		SDL_GameController* const controller = SDL_GameControllerOpen(device);
+		if (!controller) {
+			fprintf(stderr, "Failed to open controller: %s\n", SDL_GetError());
+			return false;
+		}
+		bool playerIndexFound = false;
+		int player;
+		for (player = 0; player < s_iNumPlayerSlots; player++) {
+			if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_NULL) {
+				playerIndexFound = true;
+				break;
+			}
+		}
+		if (!playerIndexFound) {
+			if (!YGS2kResizePlayerSlots(s_iNumPlayerSlots + 1)) {
+				fprintf(stderr, "Failed to open controller: %s\n", SDL_GetError());
+				SDL_GameControllerClose(controller);
+				return false;
+			}
+			player = s_iNumPlayerSlots - 1;
+		}
+		SDL_GameControllerSetPlayerIndex(controller, player);
+		s_aPlayerSlots[player].con.controller = controller;
+		s_aPlayerSlots[player].type = YGS_PLAYERSLOT_CON;
+	}
+	#endif
+
+	#ifdef ENABLE_JOYSTICK
+	for (int device = 0; device < numJoys; device++) {
+		const SDL_JoystickID id = SDL_JoystickGetDeviceInstanceID(device);
+		if (id >= 0 && SDL_JoystickFromInstanceID(id)) {
+			continue;
+		}
+		if (YGS2kIsCon(device)) {
+			continue;
+		}
+
+		SDL_Joystick* const joystick = SDL_JoystickOpen(device);
+		if (!joystick) {
+			fprintf(stderr, "Failed to open joystick: %s\n", SDL_GetError());
+			goto fail;
+		}
+		bool playerIndexFound = false;
+		int player;
+		for (player = 0; player < s_iNumPlayerSlots; player++) {
+			if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_NULL) {
+				playerIndexFound = true;
+				break;
+			}
+		}
+		if (!playerIndexFound) {
+			if (!YGS2kResizePlayerSlots(s_iNumPlayerSlots + 1)) {
+				goto fail;
+			}
+			player = s_iNumPlayerSlots - 1;
+		}
+		SDL_JoystickSetPlayerIndex(joystick, player);
+
+		if (
+			(s_aPlayerSlots[player].joy.numAxes = SDL_JoystickNumAxes(joystick)) >= 0 &&
+			(s_aPlayerSlots[player].joy.numHats = SDL_JoystickNumHats(joystick)) >= 0 &&
+			(s_aPlayerSlots[player].joy.numButtons = SDL_JoystickNumButtons(joystick)) >= 0
+		) {
+			if (s_aPlayerSlots[player].joy.numAxes > 0 && !(s_aPlayerSlots[player].joy.axesRepeat = (int*)calloc((size_t)s_aPlayerSlots[player].joy.numAxes * 2, sizeof(int)))) {
+				fprintf(stderr, "Failed to allocate axes repeat array for joystick\n");
+				goto fail;
+			}
+			if (s_aPlayerSlots[player].joy.numHats > 0 && !(s_aPlayerSlots[player].joy.hatsRepeat = (int*)calloc((size_t)s_aPlayerSlots[player].joy.numHats * 4, sizeof(int)))) {
+				fprintf(stderr, "Failed to allocate hats repeat array for joystick\n");
+				goto fail;
+			}
+			if (s_aPlayerSlots[player].joy.numButtons > 0 && !(s_aPlayerSlots[player].joy.buttonsRepeat = (int*)calloc((size_t)s_aPlayerSlots[player].joy.numButtons, sizeof(int)))) {
+				fprintf(stderr, "Failed to allocate buttons repeat array for joystick\n");
+				goto fail;
+			}
+		}
+		if (false) {
+		fail:
+			if (s_aPlayerSlots[player].joy.axesRepeat) free(s_aPlayerSlots[player].joy.axesRepeat);
+			if (s_aPlayerSlots[player].joy.hatsRepeat) free(s_aPlayerSlots[player].joy.hatsRepeat);
+			if (s_aPlayerSlots[player].joy.buttonsRepeat) free(s_aPlayerSlots[player].joy.buttonsRepeat);
+			if (joystick) SDL_JoystickClose(joystick);
+			return false;
+		}
+		s_aPlayerSlots[player].joy.joystick = joystick;
+		s_aPlayerSlots[player].type = YGS_PLAYERSLOT_JOY;
+	}
+	#endif
+
+	int numRequiredSlots = 0;
+	for (int player = 0; player < s_iNumPlayerSlots; player++) {
+		if (s_aPlayerSlots[player].type != YGS_PLAYERSLOT_NULL) {
+			numRequiredSlots = player + 1;
+		}
+	}
+	return YGS2kResizePlayerSlots(numRequiredSlots);
+}
+
+static void YGS2kPlayerSlotsClose()
+{
+	if (s_aPlayerSlots)
+	{
+		for (int player = 0; player < s_iNumPlayerSlots; player++)
+		{
+			switch (s_aPlayerSlots[player].type)
+			{
+			#ifdef ENABLE_JOYSTICK
+			case YGS_PLAYERSLOT_JOY: {
+				YGS2kSJoy* const joy = &s_aPlayerSlots[player].joy;
+				if (SDL_JoystickGetAttached(joy->joystick))
+				{
+					SDL_JoystickClose(joy->joystick);
+				}
+				if (joy->axesRepeat) free(joy->axesRepeat);
+				if (joy->hatsRepeat) free(joy->hatsRepeat);
+				if (joy->buttonsRepeat) free(joy->buttonsRepeat);
+				break;
+			}
+			#endif
+
+			#ifdef ENABLE_GAME_CONTROLLER
+			case YGS_PLAYERSLOT_CON: {
+				if (SDL_GameControllerGetAttached(s_aPlayerSlots[player].con.controller))
+				{
+					SDL_GameControllerClose(s_aPlayerSlots[player].con.controller);
+				}
+				break;
+			}
+			#endif
+
+			default:
+			case YGS_PLAYERSLOT_NULL:
+				break;
+			}
+		}
+		free(s_aPlayerSlots);
+	}
+	s_aPlayerSlots = NULL;
+	s_iNumPlayerSlots = 0;
+}
+
+int YGS2kGetNumPlayerSlots()
+{
+	return s_iNumPlayerSlots;
+}
+
+YGS2kEPlayerSlotType YGS2kGetPlayerSlotType(int player)
+{
+	if (player < 0 || player >= s_iNumPlayerSlots) {
+		return YGS_PLAYERSLOT_NULL;
+	}
+	else {
+		return s_aPlayerSlots[player].type;
+	}
+}
+
+#endif
+
+#ifdef ENABLE_JOYSTICK
+
+static void YGS2kJoyInputsUpdate ()
+{
+	if (!s_aPlayerSlots) return;
+
+	for (int player = 0; player < s_iNumPlayerSlots; player++)
+	{
+		if (
+			s_aPlayerSlots[player].type != YGS_PLAYERSLOT_JOY ||
+			!SDL_JoystickGetAttached(s_aPlayerSlots[player].joy.joystick)
+		) {
+			continue;
+		}
+
+		const YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(player);
 		const YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) == 0) continue;
 
-		for (int axis = 0; axis < s_aJoys[device].numAxes; axis++)
+		YGS2kSJoy* const joy = &s_aPlayerSlots[player].joy;
+
+		for (int axis = 0; axis < joy->numAxes; axis++)
 		{
-			const int value = SDL_JoystickGetAxis(s_aJoys[device].joystick, axis);
+			const int value = SDL_JoystickGetAxis(joy->joystick, axis);
 
 			if (value < -YGS_DEADZONE_MAX)
 			{
-				if (++s_aJoys[device].axesRepeat[axis*2 + 0] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
+				if (++joy->axesRepeat[axis*2 + 0] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
 			}
 			else
 			{
-				s_aJoys[device].axesRepeat[axis*2 + 0] = 0;
+				joy->axesRepeat[axis*2 + 0] = 0;
 			}
 
 			if (value > +YGS_DEADZONE_MAX)
 			{
-				if (++s_aJoys[device].axesRepeat[axis*2 + 1] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
+				if (++joy->axesRepeat[axis*2 + 1] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
 			}
 			else
 			{
-				s_aJoys[device].axesRepeat[axis*2 + 1] = 0;
+				joy->axesRepeat[axis*2 + 1] = 0;
 			}
 		}
 
-		for (int hat = 0; hat < s_aJoys[device].numHats; hat++)
+		for (int hat = 0; hat < joy->numHats; hat++)
 		{
-			Uint8 value = SDL_JoystickGetHat(s_aJoys[device].joystick, hat);
+			Uint8 value = SDL_JoystickGetHat(joy->joystick, hat);
 			const Uint8 hatValues[4] =
 			{
 				SDL_HAT_LEFT,
@@ -218,24 +411,24 @@ static void YGS2kJoyInputsUpdate ()
 			{
 				if (value & hatValues[valueIndex])
 				{
-					if (++s_aJoys[device].hatsRepeat[hat*4 + valueIndex] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
+					if (++joy->hatsRepeat[hat*4 + valueIndex] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
 				}
 				else
 				{
-					s_aJoys[device].hatsRepeat[hat*4 + valueIndex] = 0;
+					joy->hatsRepeat[hat*4 + valueIndex] = 0;
 				}
 			}
 		}
 
-		for (int button = 0; button < s_aJoys[device].numButtons; button++)
+		for (int button = 0; button < joy->numButtons; button++)
 		{
-			if (SDL_JoystickGetButton(s_aJoys[device].joystick, button))
+			if (SDL_JoystickGetButton(joy->joystick, button))
 			{
-				if (++s_aJoys[device].buttonsRepeat[button] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
+				if (++joy->buttonsRepeat[button] == 1) YGS2kLastInputType = YGS_INPUT_JOYSTICK;
 			}
 			else
 			{
-				s_aJoys[device].buttonsRepeat[button] = 0;
+				joy->buttonsRepeat[button] = 0;
 			}
 		}
 	}
@@ -243,77 +436,79 @@ static void YGS2kJoyInputsUpdate ()
 
 bool YGS2kIsPushJoyKey ( const YGS2kSJoyKey* const key )
 {
-	if (!s_aJoys || s_iNumJoys <= 0 || key == NULL || key->device >= s_iNumJoys) return false;
+	if (!s_aPlayerSlots || s_iNumPlayerSlots <= 0 || key == NULL || key->player >= s_iNumPlayerSlots) return false;
 
-	int device = 0;
-	int deviceMax = 0;
-	if (key->device >= 0)
+	int player = 0;
+	int playerMax = 0;
+	if (key->player >= 0)
 	{
-		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->device);
+		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->player);
 		YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 		{
-			device = key->device;
-			deviceMax = key->device + 1;
+			player = key->player;
+			playerMax = key->player + 1;
 		}
 	}
 	else
 	{
-		device = 0;
-		deviceMax = s_iNumJoys;
+		player = 0;
+		playerMax = s_iNumPlayerSlots;
 	}
-	for (; device < deviceMax; device++)
+	for (; player < playerMax; player++)
 	{
+		YGS2kSJoy* const joy = &s_aPlayerSlots[player].joy;
+
 		switch (key->type)
 		{
 		case YGS_JOYKEY_ANY:
-			for (int axis = 0; axis < s_aJoys[device].numAxes; axis++)
+			for (int axis = 0; axis < joy->numAxes; axis++)
 			{
-				if (s_aJoys[device].axesRepeat[axis*2 + 0] == 1) return true;
-				if (s_aJoys[device].axesRepeat[axis*2 + 1] == 1) return true;
+				if (joy->axesRepeat[axis*2 + 0] == 1) return true;
+				if (joy->axesRepeat[axis*2 + 1] == 1) return true;
 			}
-			for (int hat = 0; hat < s_aJoys[device].numHats; hat++)
+			for (int hat = 0; hat < joy->numHats; hat++)
 			{
-				if (s_aJoys[device].hatsRepeat[hat] == 1) return true;
+				if (joy->hatsRepeat[hat] == 1) return true;
 			}
-			for (int button = 0; button < s_aJoys[device].numButtons; button++)
+			for (int button = 0; button < joy->numButtons; button++)
 			{
-				if (s_aJoys[device].buttonsRepeat[button] == 1) return true;
+				if (joy->buttonsRepeat[button] == 1) return true;
 			}
 			break;
 		case YGS_JOYKEY_AXIS:
-			if (key->setting.index < s_aJoys[device].numAxes)
+			if (key->setting.index < joy->numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
 				{
-					return s_aJoys[device].axesRepeat[key->setting.index * 2 + 0] == 1;
+					return joy->axesRepeat[key->setting.index * 2 + 0] == 1;
 				}
 				else if (key->setting.value == +YGS_DEADZONE_MAX)
 				{
-					return s_aJoys[device].axesRepeat[key->setting.index * 2 + 1] == 1;
+					return joy->axesRepeat[key->setting.index * 2 + 1] == 1;
 				}
 			}
 			break;
 		case YGS_JOYKEY_HAT:
-			if (key->setting.index < s_aJoys[device].numHats)
+			if (key->setting.index < joy->numHats)
 			{
 				switch (key->setting.value)
 				{
 				case SDL_HAT_LEFT:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 0] == 1;
+					return joy->hatsRepeat[key->setting.index * 4 + 0] == 1;
 				case SDL_HAT_RIGHT:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 1] == 1;
+					return joy->hatsRepeat[key->setting.index * 4 + 1] == 1;
 				case SDL_HAT_UP:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 2] == 1;
+					return joy->hatsRepeat[key->setting.index * 4 + 2] == 1;
 				case SDL_HAT_DOWN:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 3] == 1;
+					return joy->hatsRepeat[key->setting.index * 4 + 3] == 1;
 				default:
 					break;
 				}
 			}
 			break;
 		case YGS_JOYKEY_BUTTON:
-			if (key->setting.button < s_aJoys[device].numButtons) return s_aJoys[device].buttonsRepeat[key->setting.button] == 1;
+			if (key->setting.button < joy->numButtons) return joy->buttonsRepeat[key->setting.button] == 1;
 			break;
 		default:
 			break;
@@ -324,77 +519,79 @@ bool YGS2kIsPushJoyKey ( const YGS2kSJoyKey* const key )
 
 bool YGS2kIsPressJoyKey ( const YGS2kSJoyKey* const key )
 {
-	if (!s_aJoys || s_iNumJoys <= 0 || key == NULL || key->device >= s_iNumJoys) return false;
+	if (!s_aPlayerSlots || s_iNumPlayerSlots <= 0 || key == NULL || key->player >= s_iNumPlayerSlots) return false;
 
-	int device = 0;
-	int deviceMax = 0;
-	if (key->device >= 0)
+	int player = 0;
+	int playerMax = 0;
+	if (key->player >= 0)
 	{
-		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->device);
+		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->player);
 		YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 		{
-			device = key->device;
-			deviceMax = key->device + 1;
+			player = key->player;
+			playerMax = key->player + 1;
 		}
 	}
 	else
 	{
-		device = 0;
-		deviceMax = s_iNumJoys;
+		player = 0;
+		playerMax = s_iNumPlayerSlots;
 	}
-	for (; device < deviceMax; device++)
+	for (; player < playerMax; player++)
 	{
+		YGS2kSJoy* const joy = &s_aPlayerSlots[player].joy;
+
 		switch (key->type)
 		{
 		case YGS_JOYKEY_ANY:
-			for (int axis = 0; axis < s_aJoys[device].numAxes; axis++)
+			for (int axis = 0; axis < joy->numAxes; axis++)
 			{
-				if (s_aJoys[device].axesRepeat[axis*2 + 0] != 0) return true;
-				if (s_aJoys[device].axesRepeat[axis*2 + 1] != 0) return true;
+				if (joy->axesRepeat[axis*2 + 0] != 0) return true;
+				if (joy->axesRepeat[axis*2 + 1] != 0) return true;
 			}
-			for (int hat = 0; hat < s_aJoys[device].numHats; hat++)
+			for (int hat = 0; hat < joy->numHats; hat++)
 			{
-				if (s_aJoys[device].hatsRepeat[hat] != 0) return true;
+				if (joy->hatsRepeat[hat] != 0) return true;
 			}
-			for (int button = 0; button < s_aJoys[device].numButtons; button++)
+			for (int button = 0; button < joy->numButtons; button++)
 			{
-				if (s_aJoys[device].buttonsRepeat[button] != 0) return true;
+				if (joy->buttonsRepeat[button] != 0) return true;
 			}
 			break;
 		case YGS_JOYKEY_AXIS:
-			if (key->setting.index < s_aJoys[device].numAxes)
+			if (key->setting.index < joy->numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
 				{
-					return s_aJoys[device].axesRepeat[key->setting.index * 2 + 0] != 0;
+					return joy->axesRepeat[key->setting.index * 2 + 0] != 0;
 				}
 				else if (key->setting.value == +YGS_DEADZONE_MAX)
 				{
-					return s_aJoys[device].axesRepeat[key->setting.index * 2 + 1] != 0;
+					return joy->axesRepeat[key->setting.index * 2 + 1] != 0;
 				}
 			}
 			break;
 		case YGS_JOYKEY_HAT:
-			if (key->setting.index < s_aJoys[device].numHats)
+			if (key->setting.index < joy->numHats)
 			{
 				switch (key->setting.value)
 				{
 				case SDL_HAT_LEFT:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 0] != 0;
+					return joy->hatsRepeat[key->setting.index * 4 + 0] != 0;
 				case SDL_HAT_RIGHT:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 1] != 0;
+					return joy->hatsRepeat[key->setting.index * 4 + 1] != 0;
 				case SDL_HAT_UP:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 2] != 0;
+					return joy->hatsRepeat[key->setting.index * 4 + 2] != 0;
 				case SDL_HAT_DOWN:
-					return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 3] != 0;
+					return joy->hatsRepeat[key->setting.index * 4 + 3] != 0;
 				default:
 					break;
 				}
 			}
 			break;
 		case YGS_JOYKEY_BUTTON:
-			if (key->setting.button < s_aJoys[device].numButtons) return s_aJoys[device].buttonsRepeat[key->setting.button] != 0 ? 1 : 0;
+			if (key->setting.button < joy->numButtons) return joy->buttonsRepeat[key->setting.button] != 0;
 			break;
 		default:
 			break;
@@ -405,111 +602,113 @@ bool YGS2kIsPressJoyKey ( const YGS2kSJoyKey* const key )
 
 int YGS2kGetJoyKeyRepeat ( const YGS2kSJoyKey* const key )
 {
-	if (!s_aJoys || s_iNumJoys <= 0 || key == NULL || key->device >= s_iNumJoys) return 0;
+	if (!s_aPlayerSlots || s_iNumPlayerSlots <= 0 || key == NULL || key->player >= s_iNumPlayerSlots) return 0;
 
 	bool multi;
-	int device = 0;
-	int deviceMax = 0;
+	int player = 0;
+	int playerMax = 0;
 	int maxRepeat = 0;
-	if (key->device >= 0)
+	if (key->player >= 0)
 	{
-		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->device);
+		YGS2kSJoyGUID checkGUID = YGS2kGetJoyGUID(key->player);
 		YGS2kSJoyGUID zeroGUID = { 0 };
 		if (memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
 		{
-			device = key->device;
-			deviceMax = key->device + 1;
+			player = key->player;
+			playerMax = key->player + 1;
 			multi = false;
 		}
 	}
 	else
 	{
-		device = 0;
-		deviceMax = s_iNumJoys;
+		player = 0;
+		playerMax = s_iNumPlayerSlots;
 		multi = true;
 	}
-	for (; device < deviceMax; device++)
+	for (; player < playerMax; player++)
 	{
+		YGS2kSJoy* const joy = &s_aPlayerSlots[player].joy;
+
 		switch (key->type)
 		{
 		case YGS_JOYKEY_ANY:
-			for (int axis = 0; axis < s_aJoys[device].numAxes; axis++)
+			for (int axis = 0; axis < joy->numAxes; axis++)
 			{
-				if (s_aJoys[device].axesRepeat[axis*2 + 0] > maxRepeat) maxRepeat = s_aJoys[device].axesRepeat[axis*2 + 0];
-				if (s_aJoys[device].axesRepeat[axis*2 + 1] > maxRepeat) maxRepeat = s_aJoys[device].axesRepeat[axis*2 + 1];
+				if (joy->axesRepeat[axis*2 + 0] > maxRepeat) maxRepeat = joy->axesRepeat[axis*2 + 0];
+				if (joy->axesRepeat[axis*2 + 1] > maxRepeat) maxRepeat = joy->axesRepeat[axis*2 + 1];
 			}
-			for (int hat = 0; hat < s_aJoys[device].numHats; hat++)
+			for (int hat = 0; hat < joy->numHats; hat++)
 			{
-				if (s_aJoys[device].hatsRepeat[hat] > maxRepeat) maxRepeat = s_aJoys[device].hatsRepeat[hat];
+				if (joy->hatsRepeat[hat] > maxRepeat) maxRepeat = joy->hatsRepeat[hat];
 			}
-			for (int button = 0; button < s_aJoys[device].numButtons; button++)
+			for (int button = 0; button < joy->numButtons; button++)
 			{
-				if (s_aJoys[device].buttonsRepeat[button] > maxRepeat) maxRepeat = s_aJoys[device].buttonsRepeat[button];
+				if (joy->buttonsRepeat[button] > maxRepeat) maxRepeat = joy->buttonsRepeat[button];
 			}
 			break;
 		case YGS_JOYKEY_AXIS:
-			if (key->setting.index < s_aJoys[device].numAxes)
+			if (key->setting.index < joy->numAxes)
 			{
 				if (key->setting.value == -YGS_DEADZONE_MAX)
 				{
 					if (multi)
 					{
-						if (s_aJoys[device].axesRepeat[key->setting.index * 2 + 0] > maxRepeat) maxRepeat = s_aJoys[device].axesRepeat[key->setting.index * 2 + 0];
+						if (joy->axesRepeat[key->setting.index * 2 + 0] > maxRepeat) maxRepeat = joy->axesRepeat[key->setting.index * 2 + 0];
 					}
-					else return s_aJoys[device].axesRepeat[key->setting.index * 2 + 0];
+					else return joy->axesRepeat[key->setting.index * 2 + 0];
 				}
 				else if (key->setting.value == +YGS_DEADZONE_MAX)
 				{
 					if (multi)
 					{
-						if (s_aJoys[device].axesRepeat[key->setting.index * 2 + 1] > maxRepeat) maxRepeat = s_aJoys[device].axesRepeat[key->setting.index * 2 + 1];
+						if (joy->axesRepeat[key->setting.index * 2 + 1] > maxRepeat) maxRepeat = joy->axesRepeat[key->setting.index * 2 + 1];
 					}
-					else return s_aJoys[device].axesRepeat[key->setting.index * 2 + 1];
+					else return joy->axesRepeat[key->setting.index * 2 + 1];
 				}
 			}
 			break;
 		case YGS_JOYKEY_HAT:
-			if (key->setting.index < s_aJoys[device].numHats)
+			if (key->setting.index < joy->numHats)
 			{
 				switch (key->setting.value)
 				{
 				case SDL_HAT_LEFT:
 					if (multi)
 					{
-						if (s_aJoys[device].hatsRepeat[key->setting.index * 4 + 0] > maxRepeat) maxRepeat = s_aJoys[device].hatsRepeat[key->setting.index * 4 + 0];
+						if (joy->hatsRepeat[key->setting.index * 4 + 0] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 0];
 					}
-					else return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 0];
+					else return joy->hatsRepeat[key->setting.index * 4 + 0];
 				case SDL_HAT_RIGHT:
 					if (multi)
 					{
-						if (s_aJoys[device].hatsRepeat[key->setting.index * 4 + 1] > maxRepeat) maxRepeat = s_aJoys[device].hatsRepeat[key->setting.index * 4 + 1];
+						if (joy->hatsRepeat[key->setting.index * 4 + 1] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 1];
 					}
-					else return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 1];
+					else return joy->hatsRepeat[key->setting.index * 4 + 1];
 				case SDL_HAT_UP:
 					if (multi)
 					{
-						if (s_aJoys[device].hatsRepeat[key->setting.index * 4 + 2] > maxRepeat) maxRepeat = s_aJoys[device].hatsRepeat[key->setting.index * 4 + 2];
+						if (joy->hatsRepeat[key->setting.index * 4 + 2] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 2];
 					}
-					else return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 2];
+					else return joy->hatsRepeat[key->setting.index * 4 + 2];
 				case SDL_HAT_DOWN:
 					if (multi)
 					{
-						if (s_aJoys[device].hatsRepeat[key->setting.index * 4 + 3] > maxRepeat) maxRepeat = s_aJoys[device].hatsRepeat[key->setting.index * 4 + 3];
+						if (joy->hatsRepeat[key->setting.index * 4 + 3] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 3];
 					}
-					else return s_aJoys[device].hatsRepeat[key->setting.index * 4 + 3];
+					else return joy->hatsRepeat[key->setting.index * 4 + 3];
 				default:
 					break;
 				}
 			}
 			break;
 		case YGS_JOYKEY_BUTTON:
-			if (key->setting.button < s_aJoys[device].numButtons)
+			if (key->setting.button < joy->numButtons)
 			{
 				if (multi)
 				{
-					if (s_aJoys[device].buttonsRepeat[key->setting.button] > maxRepeat) maxRepeat = s_aJoys[device].buttonsRepeat[key->setting.button];
+					if (joy->buttonsRepeat[key->setting.button] > maxRepeat) maxRepeat = joy->buttonsRepeat[key->setting.button];
 				}
-				else return s_aJoys[device].buttonsRepeat[key->setting.button];
+				else return joy->buttonsRepeat[key->setting.button];
 			}
 			break;
 		default:
@@ -519,35 +718,30 @@ int YGS2kGetJoyKeyRepeat ( const YGS2kSJoyKey* const key )
 	return maxRepeat;
 }
 
-int YGS2kGetMaxJoys()
-{
-	return s_iNumJoys;
-}
-
 int YGS2kGetNumJoys()
 {
-	#ifdef ENABLE_GAME_CONTROLLER
-	int numJoys = 0;
-	for (int device = 0; device < s_iNumJoys; device++)
-	{
-		if (!YGS2kIsCon(device)) numJoys++;
+	int foundJoys;
+	for (int player = 0; player < s_iNumPlayerSlots; player++) {
+		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_JOY) {
+			foundJoys++;
+		}
 	}
-	return numJoys;
-	#else
-	return s_iNumJoys;
-	#endif
+	return foundJoys;
 }
 
-YGS2kSJoyGUID YGS2kGetJoyGUID(int device)
+YGS2kSJoyGUID YGS2kGetJoyGUID(int player)
 {
-	if (s_iNumJoys <= 0 || device >= s_iNumJoys
-	#ifdef ENABLE_GAME_CONTROLLER
-		|| YGS2kIsCon(device)
-	#endif
-	) return (YGS2kSJoyGUID) { 0 };
+	if (
+		player < 0 ||
+		s_iNumPlayerSlots <= 0 ||
+		player >= s_iNumPlayerSlots ||
+		s_aPlayerSlots[player].type != YGS_PLAYERSLOT_JOY
+	) {
+		return (YGS2kSJoyGUID) { 0 };
+	}
 
 	SDL_JoystickGUID sdlGUID;
-	sdlGUID = SDL_JoystickGetGUID(s_aJoys[device].joystick);
+	sdlGUID = SDL_JoystickGetGUID(s_aPlayerSlots[player].joy.joystick);
 
 	YGS2kSJoyGUID joyGUID = { 0 };
 	for (int32_t i = 0; i < 4; i++)
@@ -561,22 +755,18 @@ YGS2kSJoyGUID YGS2kGetJoyGUID(int device)
 	return joyGUID;
 }
 
-int YGS2kGetMaxJoyAxis(int device)
+int YGS2kGetMaxJoyAxis(int player)
 {
-	if (s_iNumJoys > 0 && device < s_iNumJoys)
+	if (player >= 0 && s_iNumPlayerSlots > 0 && player < s_iNumPlayerSlots)
 	{
-		#ifdef ENABLE_GAME_CONTROLLER
-		if (!YGS2kIsCon(device))
+		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_JOY)
 		{
-			return s_aJoys[device].numAxes;
+			return s_aPlayerSlots[player].joy.numAxes;
 		}
 		else
 		{
 			return -1;
 		}
-		#else
-		return s_aJoys[device].numAxes;
-		#endif
 	}
 	else
 	{
@@ -584,22 +774,18 @@ int YGS2kGetMaxJoyAxis(int device)
 	}
 }
 
-int YGS2kGetMaxJoyHat(int device)
+int YGS2kGetMaxJoyHat(int player)
 {
-	if (s_iNumJoys > 0 && device < s_iNumJoys)
+	if (player >= 0 && s_iNumPlayerSlots > 0 && player < s_iNumPlayerSlots)
 	{
-		#ifdef ENABLE_GAME_CONTROLLER
-		if (!YGS2kIsCon(device))
+		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_JOY)
 		{
-			return s_aJoys[device].numHats;
+			return s_aPlayerSlots[player].joy.numHats;
 		}
 		else
 		{
 			return -1;
 		}
-		#else
-		return s_aJoys[device].numHats;
-		#endif
 	}
 	else
 	{
@@ -607,22 +793,18 @@ int YGS2kGetMaxJoyHat(int device)
 	}
 }
 
-int YGS2kGetMaxJoyButton(int device)
+int YGS2kGetMaxJoyButton(int player)
 {
-	if (s_iNumJoys > 0 && device < s_iNumJoys)
+	if (player >= 0 && s_iNumPlayerSlots > 0 && player < s_iNumPlayerSlots)
 	{
-		#ifdef ENABLE_GAME_CONTROLLER
-		if (!YGS2kIsCon(device))
+		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_JOY)
 		{
-			return s_aJoys[device].numButtons;
+			return s_aPlayerSlots[player].joy.numButtons;
 		}
 		else
 		{
 			return -1;
 		}
-		#else
-		return s_aJoys[device].numButtons;
-		#endif
 	}
 	else
 	{
@@ -632,97 +814,6 @@ int YGS2kGetMaxJoyButton(int device)
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-void YGS2kConsClose()
-{
-	for (int player = 0; player < s_iNumConPlayerSlots; player++)
-	{
-		if (s_aConPlayerSlots[player].controller && SDL_GameControllerGetAttached(s_aConPlayerSlots[player].controller))
-		{
-			SDL_GameControllerClose(s_aConPlayerSlots[player].controller);
-		}
-	}
-	if (s_aConPlayerSlots) {
-		free(s_aConPlayerSlots);
-		s_aConPlayerSlots = NULL;
-	}
-	s_iNumConPlayerSlots = 0;
-}
-
-static bool YGS2kConPlayerSlotsResize(int numSlots) {
-	if (numSlots == s_iNumConPlayerSlots) {
-		return true;
-	}
-	else if (numSlots == 0) {
-		free(s_aConPlayerSlots);
-		s_aConPlayerSlots = NULL;
-		s_iNumConPlayerSlots = 0;
-		return true;
-	}
-
-	YGS2kSCon* const oldSlots = s_aConPlayerSlots;
-	const int oldNumSlots = s_iNumConPlayerSlots;
-	if (s_aConPlayerSlots) {
-		s_aConPlayerSlots = realloc(s_aConPlayerSlots, sizeof(YGS2kSCon) * numSlots);
-	}
-	else {
-		s_aConPlayerSlots = malloc(sizeof(YGS2kSCon) * numSlots);
-	}
-	if (!s_aConPlayerSlots) {
-		printf("Failed to resize controllers array\n");
-		s_aConPlayerSlots = oldSlots;
-		return false;
-	}
-	for (int player = s_iNumConPlayerSlots; player < numSlots; player++) {
-		s_aConPlayerSlots[player] = (YGS2kSCon) { 0 };
-	}
-	s_iNumConPlayerSlots = numSlots;
-	return true;
-}
-
-bool YGS2kConsChanged() {
-	for (int player = 0; player < s_iNumConPlayerSlots; player++) {
-		if (!SDL_GameControllerGetAttached(s_aConPlayerSlots[player].controller)) {
-			s_aConPlayerSlots[player] = (YGS2kSCon) { 0 };
-		}
-	}
-
-	const int numJoys = SDL_NumJoysticks();
-	for (int device = 0; device < numJoys; device++) {
-		if (YGS2kIsCon(device)) {
-			// SDL internally calls SDL_JoystickOpen() in SDL_GameControllerOpen(), and
-			// SDL_JoystickFromInstanceID() only returns a joystick if it's been opened, so
-			// we can use SDL_JoystickFromInstanceID() to determine if a device index is
-			// already open.
-			const SDL_JoystickID id = SDL_JoystickGetDeviceInstanceID(device);
-			if (id >= 0 && !SDL_JoystickFromInstanceID(id)) {
-				SDL_GameController* const controller = SDL_GameControllerOpen(device);
-				if (!controller) {
-					printf("Failed to open controller\n");
-					return false;
-				}
-				const int player = SDL_GameControllerGetPlayerIndex(controller);
-				if (player < 0) {
-					printf("Failed to get controller player index\n");
-					SDL_GameControllerClose(controller);
-					return false;
-				}
-				if (player >= s_iNumConPlayerSlots && !YGS2kConPlayerSlotsResize(player + 1)) {
-					SDL_GameControllerClose(controller);
-					return false;
-				}
-				s_aConPlayerSlots[player].controller = controller;
-			}
-		}
-	}
-
-	int numRequiredSlots = 0;
-	for (int player = 0; player < s_iNumConPlayerSlots; player++) {
-		if (s_aConPlayerSlots[player].controller) {
-			numRequiredSlots = player + 1;
-		}
-	}
-	return YGS2kConPlayerSlotsResize(numRequiredSlots);
-}
 
 static SDL_GameControllerType YGS2kGetSDLGameControllerType(SDL_GameController* const controller)
 {
@@ -735,164 +826,170 @@ static SDL_GameControllerType YGS2kGetSDLGameControllerType(SDL_GameController* 
 
 static void YGS2kConInputsUpdate()
 {
-	if (!s_aConPlayerSlots) return;
+	if (!s_aPlayerSlots) return;
 
-	for (int player = 0; player < s_iNumConPlayerSlots; player++)
+	for (int player = 0; player < s_iNumPlayerSlots; player++)
 	{
-		if (!SDL_GameControllerGetAttached(s_aConPlayerSlots[player].controller)) continue;
+		YGS2kSPlayerSlot* const slot = &s_aPlayerSlots[player];
+		if (slot->type != YGS_PLAYERSLOT_CON) {
+			continue;
+		}
+		YGS2kSCon* const con = &slot->con;
 
-		YGS2kEInputType const inputType = YGS2kGetConPlayerType(player);
+		if (!SDL_GameControllerGetAttached(con->controller)) continue;
+
+		YGS2kEInputType const inputType = YGS2kGetConType(player);
 		Sint16 axisValue;
 
-		axisValue = SDL_GameControllerGetAxis(s_aConPlayerSlots[player].controller, SDL_CONTROLLER_AXIS_LEFTX);
+		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_LEFTX);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			if (++s_aConPlayerSlots[player].axesRepeat[0] == 1)
+			if (++con->axesRepeat[0] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
-			s_aConPlayerSlots[player].axesRepeat[1] = 0;
+			con->axesRepeat[1] = 0;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
-			s_aConPlayerSlots[player].axesRepeat[0] = 0;
-			if (++s_aConPlayerSlots[player].axesRepeat[1] == 1)
+			con->axesRepeat[0] = 0;
+			if (++con->axesRepeat[1] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
 		}
 		else
 		{
-			s_aConPlayerSlots[player].axesRepeat[0] = 0;
-			s_aConPlayerSlots[player].axesRepeat[1] = 0;
+			con->axesRepeat[0] = 0;
+			con->axesRepeat[1] = 0;
 		}
 
-		axisValue = SDL_GameControllerGetAxis(s_aConPlayerSlots[player].controller, SDL_CONTROLLER_AXIS_LEFTY);
+		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_LEFTY);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			if (++s_aConPlayerSlots[player].axesRepeat[2] == 1)
+			if (++con->axesRepeat[2] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
-			s_aConPlayerSlots[player].axesRepeat[3] = 0;
+			con->axesRepeat[3] = 0;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
-			s_aConPlayerSlots[player].axesRepeat[2] = 0;
-			if (++s_aConPlayerSlots[player].axesRepeat[3] == 1)
+			con->axesRepeat[2] = 0;
+			if (++con->axesRepeat[3] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
 		}
 		else
 		{
-			s_aConPlayerSlots[player].axesRepeat[2] = 0;
-			s_aConPlayerSlots[player].axesRepeat[3] = 0;
+			con->axesRepeat[2] = 0;
+			con->axesRepeat[3] = 0;
 		}
 
-		axisValue = SDL_GameControllerGetAxis(s_aConPlayerSlots[player].controller, SDL_CONTROLLER_AXIS_RIGHTX);
+		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_RIGHTX);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			if (++s_aConPlayerSlots[player].axesRepeat[4] == 1)
+			if (++con->axesRepeat[4] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
-			s_aConPlayerSlots[player].axesRepeat[5] = 0;
+			con->axesRepeat[5] = 0;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
-			s_aConPlayerSlots[player].axesRepeat[4] = 0;
-			if (++s_aConPlayerSlots[player].axesRepeat[5] == 1)
+			con->axesRepeat[4] = 0;
+			if (++con->axesRepeat[5] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
 		}
 		else
 		{
-			s_aConPlayerSlots[player].axesRepeat[4] = 0;
-			s_aConPlayerSlots[player].axesRepeat[5] = 0;
+			con->axesRepeat[4] = 0;
+			con->axesRepeat[5] = 0;
 		}
 
-		axisValue = SDL_GameControllerGetAxis(s_aConPlayerSlots[player].controller, SDL_CONTROLLER_AXIS_RIGHTY);
+		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_RIGHTY);
 		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
 		{
-			if (++s_aConPlayerSlots[player].axesRepeat[6] == 1)
+			if (++con->axesRepeat[6] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
-			s_aConPlayerSlots[player].axesRepeat[7] = 0;
+			con->axesRepeat[7] = 0;
 		}
 		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
 		{
-			s_aConPlayerSlots[player].axesRepeat[6] = 0;
-			if (++s_aConPlayerSlots[player].axesRepeat[7] == 1)
+			con->axesRepeat[6] = 0;
+			if (++con->axesRepeat[7] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
 		}
 		else
 		{
-			s_aConPlayerSlots[player].axesRepeat[6] = 0;
-			s_aConPlayerSlots[player].axesRepeat[7] = 0;
+			con->axesRepeat[6] = 0;
+			con->axesRepeat[7] = 0;
 		}
 
-		axisValue = SDL_GameControllerGetAxis(s_aConPlayerSlots[player].controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
 		if (axisValue > YGS_DEADZONE_MAX)
 		{
-			if (++s_aConPlayerSlots[player].axesRepeat[8] == 1)
+			if (++con->axesRepeat[8] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
 		}
 		else
 		{
-			s_aConPlayerSlots[player].axesRepeat[8] = 0;
+			con->axesRepeat[8] = 0;
 		}
 
-		axisValue = SDL_GameControllerGetAxis(s_aConPlayerSlots[player].controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 		if (axisValue > YGS_DEADZONE_MAX)
 		{
-			if (++s_aConPlayerSlots[player].axesRepeat[9] == 1)
+			if (++con->axesRepeat[9] == 1)
 			{
 				YGS2kLastInputType = inputType;
-				s_iLastActiveConPlayer = player;
+				s_iLastActiveCon = player;
 			}
 		}
 		else
 		{
-			s_aConPlayerSlots[player].axesRepeat[9] = 0;
+			con->axesRepeat[9] = 0;
 		}
 
 		for (SDL_GameControllerButton button = 0; button < SDL_CONTROLLER_BUTTON_MAX; button++)
 		{
-			if (SDL_GameControllerGetButton(s_aConPlayerSlots[player].controller, button))
+			if (SDL_GameControllerGetButton(con->controller, button))
 			{
-				if (++s_aConPlayerSlots[player].buttonsRepeat[button] == 1)
+				if (++con->buttonsRepeat[button] == 1)
 				{
 					YGS2kLastInputType = inputType;
-					s_iLastActiveConPlayer = player;
+					s_iLastActiveCon = player;
 				}
 			}
 			else
 			{
-				s_aConPlayerSlots[player].buttonsRepeat[button] = 0;
+				con->buttonsRepeat[button] = 0;
 			}
 		}
 	}
 }
 
-bool YGS2kIsPushConPlayerKey ( const int player, const YGS2kSConKey* const key )
+bool YGS2kIsPushConKey ( const int player, const YGS2kSConKey* const key )
 {
-	if (!s_aConPlayerSlots || s_iNumConPlayerSlots == 0 || player >= s_iNumConPlayerSlots || !s_aConPlayerSlots[player].controller || !key) return false;
+	if (!key || !s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return false;
 
 	int playerStart = 0;
 	int playerMax = 0;
@@ -904,32 +1001,39 @@ bool YGS2kIsPushConPlayerKey ( const int player, const YGS2kSConKey* const key )
 	else
 	{
 		playerStart = 0;
-		playerMax = s_iNumConPlayerSlots;
+		playerMax = s_iNumPlayerSlots;
 	}
 	for (; playerStart < playerMax; playerStart++)
 	{
+		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON)
+		{
+			continue;
+		}
+
+		YGS2kSCon* const con = &s_aPlayerSlots[playerStart].con;
+
 		switch (key->type)
 		{
 		case YGS_CONKEY_ANY:
 			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 			{
-				if (s_aConPlayerSlots[playerStart].axesRepeat[axis] == 1) return true;
+				if (con->axesRepeat[axis] == 1) return true;
 			}
 			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
 			{
-				if (s_aConPlayerSlots[playerStart].buttonsRepeat[button] == 1) return true;
+				if (con->buttonsRepeat[button] == 1) return true;
 			}
 			break;
 		case YGS_CONKEY_AXIS:
 			if (key->index < YGS_CONAXIS_MAX)
 			{
-				if (s_aConPlayerSlots[playerStart].axesRepeat[key->index] == 1) return true;
+				if (con->axesRepeat[key->index] == 1) return true;
 			}
 			break;
 		case YGS_CONKEY_BUTTON:
 			if (key->index < YGS_CONBUTTON_MAX)
 			{
-				if (s_aConPlayerSlots[playerStart].buttonsRepeat[key->index] == 1) return true;
+				if (con->buttonsRepeat[key->index] == 1) return true;
 			}
 			break;
 		default:
@@ -939,9 +1043,9 @@ bool YGS2kIsPushConPlayerKey ( const int player, const YGS2kSConKey* const key )
 	return false;
 }
 
-bool YGS2kIsPressConPlayerKey ( const int player, const YGS2kSConKey* const key )
+bool YGS2kIsPressConKey ( const int player, const YGS2kSConKey* const key )
 {
-	if (!s_aConPlayerSlots || s_iNumConPlayerSlots == 0 || player >= s_iNumConPlayerSlots || !s_aConPlayerSlots[player].controller || !key) return false;
+	if (!key || !s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return false;
 
 	int playerStart = 0;
 	int playerMax = 0;
@@ -953,32 +1057,39 @@ bool YGS2kIsPressConPlayerKey ( const int player, const YGS2kSConKey* const key 
 	else
 	{
 		playerStart = 0;
-		playerMax = s_iNumConPlayerSlots;
+		playerMax = s_iNumPlayerSlots;
 	}
 	for (; playerStart < playerMax; playerStart++)
 	{
+		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON)
+		{
+			continue;
+		}
+
+		YGS2kSCon* const con = &s_aPlayerSlots[playerStart].con;
+
 		switch (key->type)
 		{
 		case YGS_CONKEY_ANY:
 			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 			{
-				if (s_aConPlayerSlots[playerStart].axesRepeat[axis] != 0) return true;
+				if (con->axesRepeat[axis] != 0) return true;
 			}
 			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
 			{
-				if (s_aConPlayerSlots[playerStart].buttonsRepeat[button] != 0) return true;
+				if (con->buttonsRepeat[button] != 0) return true;
 			}
 			break;
 		case YGS_CONKEY_AXIS:
 			if (key->index < YGS_CONAXIS_MAX)
 			{
-				if (s_aConPlayerSlots[playerStart].axesRepeat[key->index] != 0) return true;
+				if (con->axesRepeat[key->index] != 0) return true;
 			}
 			break;
 		case YGS_CONKEY_BUTTON:
 			if (key->index < YGS_CONBUTTON_MAX)
 			{
-				if (s_aConPlayerSlots[playerStart].buttonsRepeat[key->index] != 0) return true;
+				if (con->buttonsRepeat[key->index] != 0) return true;
 			}
 			break;
 		default:
@@ -988,9 +1099,9 @@ bool YGS2kIsPressConPlayerKey ( const int player, const YGS2kSConKey* const key 
 	return false;
 }
 
-int YGS2kGetConPlayerKeyRepeat ( const int player, YGS2kSConKey* const key )
+int YGS2kGetConKeyRepeat ( const int player, YGS2kSConKey* const key )
 {
-	if (!s_aConPlayerSlots || s_iNumConPlayerSlots == 0 || player >= s_iNumConPlayerSlots || !s_aConPlayerSlots[player].controller || !key) return 0;
+	if (!key || !s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return 0;
 
 	bool multi;
 	int playerStart = 0;
@@ -1005,21 +1116,28 @@ int YGS2kGetConPlayerKeyRepeat ( const int player, YGS2kSConKey* const key )
 	else
 	{
 		playerStart = 0;
-		playerMax = s_iNumConPlayerSlots;
+		playerMax = s_iNumPlayerSlots;
 		multi = true;
 	}
 	for (; playerStart < playerMax; playerStart++)
 	{
+		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON)
+		{
+			continue;
+		}
+
+		YGS2kSCon* const con = &s_aPlayerSlots[playerStart].con;
+
 		switch (key->type)
 		{
 		case YGS_CONKEY_ANY:
 			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 			{
-				if (s_aConPlayerSlots[playerStart].axesRepeat[axis] > maxRepeat) maxRepeat = s_aConPlayerSlots[playerStart].axesRepeat[axis];
+				if (con->axesRepeat[axis] > maxRepeat) maxRepeat = con->axesRepeat[axis];
 			}
 			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
 			{
-				if (s_aConPlayerSlots[playerStart].buttonsRepeat[button] > maxRepeat) maxRepeat = s_aConPlayerSlots[playerStart].buttonsRepeat[button];
+				if (con->buttonsRepeat[button] > maxRepeat) maxRepeat = con->buttonsRepeat[button];
 			}
 			break;
 		case YGS_CONKEY_AXIS:
@@ -1027,9 +1145,9 @@ int YGS2kGetConPlayerKeyRepeat ( const int player, YGS2kSConKey* const key )
 			{
 					if (multi)
 					{
-						if (s_aConPlayerSlots[playerStart].axesRepeat[key->index] > maxRepeat) maxRepeat = s_aConPlayerSlots[playerStart].axesRepeat[key->index];
+						if (con->axesRepeat[key->index] > maxRepeat) maxRepeat = con->axesRepeat[key->index];
 					}
-					else return s_aConPlayerSlots[playerStart].axesRepeat[key->index];
+					else return con->axesRepeat[key->index];
 			}
 			break;
 		case YGS_CONKEY_BUTTON:
@@ -1037,9 +1155,9 @@ int YGS2kGetConPlayerKeyRepeat ( const int player, YGS2kSConKey* const key )
 			{
 				if (multi)
 				{
-					if (s_aConPlayerSlots[playerStart].buttonsRepeat[key->index] > maxRepeat) maxRepeat = s_aConPlayerSlots[playerStart].buttonsRepeat[key->index];
+					if (con->buttonsRepeat[key->index] > maxRepeat) maxRepeat = con->buttonsRepeat[key->index];
 				}
-				else return s_aConPlayerSlots[playerStart].buttonsRepeat[key->index];
+				else return con->buttonsRepeat[key->index];
 			}
 			break;
 		default:
@@ -1049,61 +1167,109 @@ int YGS2kGetConPlayerKeyRepeat ( const int player, YGS2kSConKey* const key )
 	return maxRepeat;
 }
 
-void YGS2kResetLastActiveConPlayer()
+int YGS2kGetNumCons()
 {
-	s_iLastActiveConPlayer = -1;
+	int foundCons;
+	for (int player = 0; player < s_iNumPlayerSlots; player++) {
+		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_CON) {
+			foundCons++;
+		}
+	}
+	return foundCons;
 }
 
-int YGS2kGetLastActiveConPlayer()
+void YGS2kResetLastActiveCon()
 {
-	return s_iLastActiveConPlayer;
+	s_iLastActiveCon = -1;
 }
 
-int YGS2kGetNumConPlayers()
+int YGS2kGetLastActiveCon()
 {
-	return s_iNumConPlayerSlots;
+	return s_iLastActiveCon;
 }
 
-YGS2kEInputType YGS2kGetConPlayerType(const int player)
+/*
+ * Controller type constants were introduced in SDL 2.0.12, with later versions
+ * introducing more.
+ *
+ * SDL 2.0.12:
+ * SDL_CONTROLLER_TYPE_UNKNOWN
+ * SDL_CONTROLLER_TYPE_XBOX360
+ * SDL_CONTROLLER_TYPE_XBOXONE
+ * SDL_CONTROLLER_TYPE_PS3
+ * SDL_CONTROLLER_TYPE_PS4
+ * SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO
+ *
+ * SDL 2.0.14:
+ * SDL_CONTROLLER_TYPE_VIRTUAL
+ * SDL_CONTROLLER_TYPE_PS5
+ *
+ * SDL 2.0.16:
+ * SDL_CONTROLLER_TYPE_AMAZON_LUNA
+ * SDL_CONTROLLER_TYPE_GOOGLE_STADIA
+ *
+ * SDL 2.24.0:
+ * SDL_CONTROLLER_TYPE_NVIDIA_SHIELD
+ * SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT
+ * SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT
+ * SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR
+ */
+YGS2kEInputType YGS2kGetConType(const int player)
 {
-	if (!s_aConPlayerSlots || s_iNumConPlayerSlots == 0 || player < 0 || player >= s_iNumConPlayerSlots || !s_aConPlayerSlots[player].controller) return YGS_INPUT_NULL;
+	if (!s_aPlayerSlots || s_iNumPlayerSlots == 0 || player < 0 || player >= s_iNumPlayerSlots || s_aPlayerSlots[player].type != YGS_PLAYERSLOT_CON) return YGS_INPUT_NULL;
 
 	#ifdef ONLY_INPUT_TYPE
 	return ONLY_INPUT_TYPE;
 	#else
-	switch(YGS2kGetSDLGameControllerType(s_aConPlayerSlots[player].controller))
+	switch(YGS2kGetSDLGameControllerType(s_aPlayerSlots[player].con.controller))
 	{
 	default:
 	case SDL_CONTROLLER_TYPE_XBOX360:
 	case SDL_CONTROLLER_TYPE_XBOXONE:
-	case SDL_CONTROLLER_TYPE_VIRTUAL:
-	case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
-	case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
-	case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
 		return YGS_INPUT_XBOX;
 
 	case SDL_CONTROLLER_TYPE_PS3:
 	case SDL_CONTROLLER_TYPE_PS4:
-	case SDL_CONTROLLER_TYPE_PS5:
 		return YGS_INPUT_PLAYSTATION;
 
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+		return YGS_INPUT_NINTENDO;
+
+	#if SDL_VERSION_ATLEAST(2, 0, 14)
+	case SDL_CONTROLLER_TYPE_VIRTUAL:
+		return YGS_INPUT_XBOX;
+
+	case SDL_CONTROLLER_TYPE_PS5:
+		return YGS_INPUT_PLAYSTATION;
+	#endif
+
+	#if SDL_VERSION_ATLEAST(2, 0, 16)
+	case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+	case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+		return YGS_INPUT_XBOX;
+	#endif
+
+	#if SDL_VERSION_ATLEAST(2, 24, 0)
+	case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+		return YGS_INPUT_XBOX;
+
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
 	case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 		return YGS_INPUT_NINTENDO;
+	#endif
 	}
 	#endif
 }
 
-bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, const char** text, EButton* button)
+bool YGS2kGetConKeyDesc(const int player, const YGS2kSConKey* const key, const char** text, EButton* button)
 {
 	if (
-		!s_aConPlayerSlots ||
-		s_iNumConPlayerSlots == 0 ||
+		!s_aPlayerSlots ||
+		s_iNumPlayerSlots == 0 ||
 		player < 0 ||
-		player >= s_iNumConPlayerSlots ||
-		!s_aConPlayerSlots[player].controller ||
+		player >= s_iNumPlayerSlots ||
+		s_aPlayerSlots[player].type != YGS_PLAYERSLOT_CON ||
 		!key ||
 		!text ||
 		!button
@@ -1113,7 +1279,7 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 
 	*text = NULL;
 	*button = BTN_NULL;
-	const SDL_GameControllerType sdlGameControllerType = YGS2kGetSDLGameControllerType(s_aConPlayerSlots[player].controller);
+	const SDL_GameControllerType sdlGameControllerType = YGS2kGetSDLGameControllerType(s_aPlayerSlots[player].con.controller);
 	switch (key->type)
 	{
 	case YGS_CONKEY_AXIS:
@@ -1157,28 +1323,42 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_VIRTUAL:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
 			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			#endif
 				*text = "LT";
 				break;
 
-			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
 			case SDL_CONTROLLER_TYPE_PS3:
 			case SDL_CONTROLLER_TYPE_PS4:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
 				*text = "L2";
 				break;
 
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "ZL";
 				break;
 
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
 				*text = "SL";
 				break;
+			#endif
 			}
 			break;
 		case 9:
@@ -1187,28 +1367,42 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_VIRTUAL:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
 			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			#endif
 				*text = "RT";
 				break;
 
-			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
 			case SDL_CONTROLLER_TYPE_PS3:
 			case SDL_CONTROLLER_TYPE_PS4:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
 				*text = "R2";
 				break;
 
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "ZR";
 				break;
 
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
 				*text = "SR";
 				break;
+			#endif
 			}
 			break;
 		default:
@@ -1222,15 +1416,18 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 		case SDL_CONTROLLER_BUTTON_START:
 			// "Start" and "Back" are reserved for "Pause" and "Give Up", and may not be remapped.
 			break;
+
 		case SDL_CONTROLLER_BUTTON_GUIDE:
 			*text = "HOME";
 			break;
+
 		case SDL_CONTROLLER_BUTTON_A:
 		case SDL_CONTROLLER_BUTTON_B:
 		case SDL_CONTROLLER_BUTTON_X:
 		case SDL_CONTROLLER_BUTTON_Y:
 			*button = BTN_A + key->index;
 			break;
+
 		case SDL_CONTROLLER_BUTTON_DPAD_UP:
 		case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
 		case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
@@ -1238,6 +1435,7 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			*text = "DPAD";
 			*button = BTN_UP + key->index - SDL_CONTROLLER_BUTTON_DPAD_UP;
 			break;
+
 		case SDL_CONTROLLER_BUTTON_MISC1:
 			switch(sdlGameControllerType)
 			{
@@ -1245,20 +1443,34 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			case SDL_CONTROLLER_TYPE_XBOXONE:
 				*text = "SHARE";
 				break;
+
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "CAPTURE";
 				break;
+
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
 			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
 			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			#endif
 				*text = "MICROPHONE";
 				break;
+			#endif
+
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_VIRTUAL:
 			default:
 				*text = "MISC1";
 				break;
+			#endif
 			}
 			break;
 		case SDL_CONTROLLER_BUTTON_PADDLE1:
@@ -1282,19 +1494,30 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
-			case SDL_CONTROLLER_TYPE_VIRTUAL:
-			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
+			case SDL_CONTROLLER_TYPE_VIRTUAL:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
+			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "LS";
 				break;
 
-			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
-			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
 			case SDL_CONTROLLER_TYPE_PS3:
 			case SDL_CONTROLLER_TYPE_PS4:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
 				*text = "L3";
 				break;
 			}
@@ -1305,17 +1528,26 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
-			case SDL_CONTROLLER_TYPE_VIRTUAL:
-			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
+			case SDL_CONTROLLER_TYPE_VIRTUAL:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
+			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "RS";
 				break;
 
-			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
-			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
 			case SDL_CONTROLLER_TYPE_PS3:
 			case SDL_CONTROLLER_TYPE_PS4:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
+			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
 				*text = "R3";
 				break;
 			}
@@ -1326,19 +1558,33 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_VIRTUAL:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
 			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			#endif
 				*text = "LB";
 				break;
 
-			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
 			case SDL_CONTROLLER_TYPE_PS3:
 			case SDL_CONTROLLER_TYPE_PS4:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
 				*text = "L1";
 				break;
+
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "L";
 				break;
 			}
@@ -1349,19 +1595,33 @@ bool YGS2kGetConPlayerKeyDesc(const int player, const YGS2kSConKey* const key, c
 			default:
 			case SDL_CONTROLLER_TYPE_XBOX360:
 			case SDL_CONTROLLER_TYPE_XBOXONE:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_VIRTUAL:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
 			case SDL_CONTROLLER_TYPE_AMAZON_LUNA:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
 			case SDL_CONTROLLER_TYPE_NVIDIA_SHIELD:
+			#endif
 				*text = "RB";
 				break;
 
-			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
 			case SDL_CONTROLLER_TYPE_PS3:
 			case SDL_CONTROLLER_TYPE_PS4:
+			#if SDL_VERSION_ATLEAST(2, 0, 14)
 			case SDL_CONTROLLER_TYPE_PS5:
+			#endif
+			#if SDL_VERSION_ATLEAST(2, 0, 16)
+			case SDL_CONTROLLER_TYPE_GOOGLE_STADIA:
+			#endif
 				*text = "R1";
 				break;
+
 			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO:
+			#if SDL_VERSION_ATLEAST(2, 24, 0)
+			case SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
+			#endif
 				*text = "R";
 				break;
 			}
@@ -1442,15 +1702,8 @@ bool YGS2kInputsOpen()
 	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
 	#endif
 
-	/* パッドの初期化 */
-
-	#ifdef ENABLE_JOYSTICK
-	if (!YGS2kJoysOpen()) {
-		return false;
-	}
-	#endif
-
 	#ifdef ENABLE_GAME_CONTROLLER
+	/* パッドの初期化 */
 	OpenGameControllerDB();
 	SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "0");
 	#endif
@@ -1478,12 +1731,8 @@ void YGS2kInputsClose()
 	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
 	#endif
 
-	#ifdef ENABLE_JOYSTICK
-	YGS2kJoysClose();
-	#endif
-
-	#ifdef ENABLE_GAME_CONTROLLER
-	YGS2kConsClose();
+	#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
+	YGS2kPlayerSlotsClose();
 	#endif
 }
 

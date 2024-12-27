@@ -392,16 +392,12 @@ bool YGS2kHalt()
 
 	/* イベント処理 || Process events */
 
-	#ifdef ENABLE_JOYSTICK
-	bool joysChanged = false;
-	#endif
-
-	#ifdef ENABLE_GAME_CONTROLLER
-	bool consChanged = false;
-	#endif
 	SDL_PumpEvents();
 	SDL_Event	ev;
 	int showCursor = SDL_DISABLE;
+	#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
+	bool slotsChanged = false;
+	#endif
 	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_LASTEVENT) == 1)
 	{
 		switch(ev.type){
@@ -418,13 +414,13 @@ bool YGS2kHalt()
 			#ifdef ENABLE_JOYSTICK
 			case SDL_JOYDEVICEADDED:
 			case SDL_JOYDEVICEREMOVED:
-				joysChanged = true;
+				slotsChanged = true;
 			#endif
 
 			#ifdef ENABLE_GAME_CONTROLLER
 			case SDL_CONTROLLERDEVICEADDED:
 			case SDL_CONTROLLERDEVICEREMOVED:
-				consChanged = true;
+				slotsChanged = true;
 				break;
 			#endif
 
@@ -451,19 +447,9 @@ bool YGS2kHalt()
 		SDL_ShowCursor(SDL_DISABLE);
 	}
 
-	#ifdef ENABLE_JOYSTICK
-	if (joysChanged)
-	{
-		YGS2kJoysClose();
-		if (!YGS2kJoysOpen()) {
-			YGS2kExit(EXIT_FAILURE);
-		}
-	}
-	#endif
-
-	#ifdef ENABLE_GAME_CONTROLLER
-	if (consChanged) {
-		if (!YGS2kConsChanged()) {
+	#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
+	if (slotsChanged) {
+		if (!YGS2kPlayerSlotsChanged()) {
 			YGS2kExit(EXIT_FAILURE);
 		}
 	}

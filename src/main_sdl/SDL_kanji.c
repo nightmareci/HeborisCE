@@ -1,11 +1,11 @@
 #include "SDL_kanji.h"
-#include "HT_hashtable.h"
+#include "hashmap.h"
 
 #define LINE_SIZE 256
 
 struct Kanji_Font {
 	Uint32 size;
-	HT_HashTable* mojis;
+	struct hashmap* mojis;
 };
 
 static char* Line_Get(char* buf, int count, char** src, char* end) {
@@ -44,24 +44,33 @@ static char* Line_Get(char* buf, int count, char** src, char* end) {
 }
 
 typedef struct Moji {
+	Uint32 encoding;
 	unsigned int width;
 	Uint32* pixels;
 } Moji;
 
-static Uint32 Moji_Hash(const void* key, void* data) {
-	return *(Uint32*)key;
+static uint64_t Moji_Hash(const void *item, uint64_t seed0, uint64_t seed1) {
+	const Moji* const moji = item;
+	return hashmap_sip(&moji->encoding, sizeof(moji->encoding), seed0, seed1);
 }
 
-static SDL_bool Moji_KeyMatch(const void* a, const void* b, void* data) {
-	return *(Uint32*)a == *(Uint32*)b;
+static int Moji_Compare(const void* a, const void* b, void* udata) {
+	const Moji* const mojiA = a;
+	const Moji* const mojiB = b;
+	if (mojiA->encoding == mojiB->encoding) {
+		return 0;
+	}
+	else if (mojiA->encoding > mojiB->encoding) {
+		return 1;
+	}
+	else {
+		return -1;
+	}
 }
 
-static void Moji_Nuke(const void* key, const void* value, void* data) {
-	Moji* moji = (Moji*)value;
-
-	SDL_free((Uint32*)key);
+static void Moji_Free(void *item) {
+	Moji* const moji = item;
 	SDL_free(moji->pixels);
-	SDL_free(moji);
 }
 
 static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
@@ -151,54 +160,36 @@ static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
 
 static int Parse_Char(Kanji_Font* font, Uint32 encoding, Uint32 width, char** line, char* end, int rshift) {
 	Uint32* key;
-	Moji* moji;
+	Moji moji;
 	char buf[LINE_SIZE];
 	Uint32 y;
 
 	/* 既にロードされている文字は読み込まない */
 	/* Do not load characters that have already been loaded */
-	if (HT_FindInHashTable(font->mojis, &encoding, (const void**)&moji)) {
+	moji.encoding = encoding;
+	if (hashmap_get(font->mojis, &moji)) {
 		return 0;
 	}
 
-	key = SDL_malloc(sizeof(Uint32));
-	if (!key) {
-		SDL_SetError("Failed to allocate memory for the hashtable key of a font.");
-		return -1;
-	}
+	moji.width = width;
 
-	moji = SDL_malloc(sizeof(Moji));
-	if (!moji) {
-		SDL_SetError("Failed to allocate memory for a character of a font.");
-		SDL_free(key);
-		return -1;
-	}
-
-	moji->width = width;
-
-	moji->pixels = SDL_malloc(sizeof(Uint32) * font->size);
-	if (!moji->pixels) {
+	moji.pixels = SDL_malloc(sizeof(Uint32) * font->size);
+	if (!moji.pixels) {
 		SDL_SetError("Failed to allocate memory for a character's pixels of a font.");
-		SDL_free(moji);
-		SDL_free(key);
 		return -1;
 	}
-
-	*key = encoding;
 
 	for (y = 0; y < font->size; y++) {
 		Line_Get(buf, sizeof(buf), line, end);
-		moji->pixels[y] = (SDL_strtol(buf, 0, 16) >> rshift);
+		moji.pixels[y] = (SDL_strtol(buf, 0, 16) >> rshift);
 	}
 
-	if (HT_InsertIntoHashTable(font->mojis, key, moji)) {
+	if (!hashmap_set(font->mojis, &moji)) {
 		return 0;
 	}
 	else {
-		SDL_SetError("Failed to insert a character into a font's hashtable.");
-		SDL_free(moji->pixels);
-		SDL_free(moji);
-		SDL_free(key);
+		SDL_SetError("Failed to insert a character into a font's hashmap.");
+		SDL_free(moji.pixels);
 		return -1;
 	}
 }
@@ -338,9 +329,9 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 
 	font->size = 0;
 
-	font->mojis= HT_CreateHashTable(NULL, 16, Moji_Hash, Moji_KeyMatch, Moji_Nuke, SDL_TRUE);
+	font->mojis = hashmap_new(sizeof(Moji), 16, 0, 0, Moji_Hash, Moji_Compare, Moji_Free, NULL);
 	if (!font->mojis) {
-		SDL_SetError("Failed to create the hashtable for the font object: %s", SDL_GetError());
+		SDL_SetError("Failed to create the hashmap for the font object: %s", SDL_GetError());
 		SDL_free(font);
 		return NULL;
 	}
@@ -378,19 +369,21 @@ Sint64 Kanji_TextWidth(Kanji_Font* font, const char* text) {
 
 	width = 0;
 	for (p = UTF8_Next((const Uint8*)text, &encoding); p != NULL && encoding != 0x0u; p = UTF8_Next(p, &encoding)) {
-		Moji* moji;
+		Moji getMoji;
+		const Moji* gotMoji;
 
-		if (!HT_FindInHashTable(font->mojis, &encoding, (const void**)&moji)) {
+		getMoji.encoding = encoding;
+		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
 			SDL_SetError("The text contains a character not in the font, so width cannot be calculated.");
 			return -1;
 		}
 
-		if (width > SDL_MAX_SINT64 - moji->width) {
+		if (width > SDL_MAX_SINT64 - gotMoji->width) {
 			SDL_SetError("The calculated width of the text overflowed (maximum possible width is %" SDL_PRIs64 ").", SDL_MAX_SINT64);
 			return -1;
 		}
 
-		width += moji->width;
+		width += gotMoji->width;
 	}
 
 	if (p != NULL) {
@@ -442,11 +435,10 @@ int Kanji_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, 
 int Kanji_PutPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
 	Uint8 r, g, b, a;
 
-	/* TODO: Handle errors. */
-	SDL_GetRenderDrawColor(s, &r, &g, &b, &a);
-	SDL_SetRenderDrawColor(s, pixel.r, pixel.g, pixel.b, pixel.a);
-	SDL_RenderDrawPointF(s, subx + x, suby + y);
-	SDL_SetRenderDrawColor(s, r, g, b, a);
+	if (SDL_GetRenderDrawColor(s, &r, &g, &b, &a) < 0) return -1;
+	if (SDL_SetRenderDrawColor(s, pixel.r, pixel.g, pixel.b, pixel.a) < 0) return -1;
+	if (SDL_RenderDrawPointF(s, subx + x, suby + y) < 0) return -1;
+	if (SDL_SetRenderDrawColor(s, r, g, b, a) < 0) return -1;
 	return 0;
 }
 
@@ -458,13 +450,14 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void
 	cx = dx;
 	cy = dy;
 	for (p = UTF8_Next((const Uint8*)txt, &encoding); p != NULL && encoding != '\0'; p = UTF8_Next(p, &encoding)) {
-		Moji* moji;
+		Moji getMoji;
+		const Moji* gotMoji;
 		int x, y;
 		int minx, miny, maxx, maxy;
 
 		/* Handle any newline format */
 		if (encoding == '\n' || encoding == '\r') {
-            /* If we see '\r' and '\n' adjacent, we should consider those two bytes as meaning one newline. */
+		/* If we see '\r' and '\n' adjacent, we should consider those two bytes as meaning one newline. */
 			if (encoding == '\r' && *p == '\n') {
 				p++;
 			}
@@ -478,26 +471,27 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void
 			continue;
 		}
 
-		if (!HT_FindInHashTable(font->mojis, &encoding, (const void**)&moji)) {
+		getMoji.encoding = encoding;
+		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
 			SDL_SetError("The text contains a character not in the font (U+%04" SDL_PRIX32 "), so it cannot be drawn.", encoding);
 			return -1;
 		}
 
 		minx = (cx >= 0) ? 0 : -cx;
 		miny = (cy >= 0) ? 0 : -cy;
-		maxx = (cx + moji->width <= dw) ? moji->width : dw - cx;
+		maxx = (cx + gotMoji->width <= dw) ? gotMoji->width : dw - cx;
 		maxy = (cy + font->size <= dh) ? font->size : dh - cy;
 
 		for (y = miny; y < maxy; y++) {
 			for (x = minx; x < maxx; x++) {
-				if (moji->pixels[y] & (1 << (moji->width - x - 1))) {
+				if (gotMoji->pixels[y] & (1 << (gotMoji->width - x - 1))) {
 					if (put_pixel(dst, cx + x, cy + y, subx, suby, fg) < 0) {
 						return -1;
 					}
 				}
 			}
 		}
-		cx += moji->width;
+		cx += gotMoji->width;
 	}
 
 	return 0;
@@ -662,6 +656,6 @@ SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text, SDL_Col
 void Kanji_CloseFont(Kanji_Font* font) {
 	SDL_assert(font != NULL);
 
-	HT_DestroyHashTable(font->mojis);
+	hashmap_free(font->mojis);
 	SDL_free(font);
 }

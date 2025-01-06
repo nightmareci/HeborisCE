@@ -524,237 +524,248 @@ void viewMission() {
 
 	// 問題の種類
 	if((ending[0] <= 1) || (ending[0] >= 4)){
-	if(getDrawRate() == 1) {
-		YGS2kTextLayerOn(0, 6 + 208 * maxPlay, 8 + 112);
-		YGS2kTextSize(0, 10);
-	} else {
-		YGS2kTextLayerOn(0, 10 + 16 + maxPlay * 400, 8 + 228);
-		YGS2kTextSize(0, 16);
-	}
-	YGS2kTextColor(0, 0, 0, 0);
-	YGS2kTextBackColorDisable(0);
-
-	getMissionName(mission_type[c_mission],c_mission);
-
-	// 落下速度レベル
-	if((mission_type[c_mission] != 19) && (mission_type[c_mission] != 20) && (mission_type[c_mission] != 29)){
-		sprintf(string[70], " LV%02d", mission_lv[c_mission] + 1 - 15 * (mission_lv[c_mission] >= 15));
-		strcat(string[0], string[70]);
-	}else if(mission_type[c_mission] == 20){
-		if(!mission_opt_3[c_mission])
-			strcat(string[0]," OLD");
-		else
-			strcat(string[0], " REAL");
-	}
-
-	// 描画
-	YGS2kTextOut(0, string[0]);
-	YGS2kTextBlt(0);
-
-	// 制限時間
-	if(getDrawRate() == 1) {
-		YGS2kTextMove(0, 6 + 208 * maxPlay, 30 + 112);
-	} else {
-		YGS2kTextMove(0, 10 + 16 + maxPlay * 400, 30 + 228);
-	}
-
-	if(!english) strcpy(string[70], "制限時間 ");
-	else strcpy(string[70], "Time ");
-
-	getTime(mission_time[c_mission]);
-	if(mission_time[c_mission]>0){
-	strcat(string[70], string[0]);
-	}else{
-		if(!english) strcat(string[70], "無制限");
-		else strcat(string[70], "NoLimit");
-	}
-
-	// 描画
-	YGS2kTextOut(0, string[70]);
-	YGS2kTextBlt(0);
-
-	// 指令文
-	if(getDrawRate() == 1) {
-		YGS2kTextMove(0, 6 + 208 * maxPlay, 52 + 112);
-	} else {
-		YGS2kTextMove(0, 10 + 16 + maxPlay * 400, 52 + 228);
-	}
-	// LITE版を参考に整理
-	if(!english) {//"\n\nを使って\n%dライン消せ！",
-		sprintf(string[0], mission_info_jp[mission_type[c_mission]], mission_norm[c_mission]);
-		if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\n消す前にそのブロック\nを一度ホールドに入れろ");
-		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\n指定以上でもカウント!");
-		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\n指定以外で\nノルマリセット!");
-		if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\n最後のラインは\nダブルで消せ！");
-	} else {
-		sprintf(string[0], mission_info_en[mission_type[c_mission]], mission_norm[c_mission]);
-		if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nBefore Erase \ninto HOLD");
-		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\nErase over lines count");
-		if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\nDo not erase\n other lines!");
-		if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\nlast erase 2 lines");
-
-	}
-
-	//ブロックオーダー系のブロックの絵
-	if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
-		if(mission_opt_3[c_mission]<=6){
-			if( isWRule(0) ) {
-				// ワールド
-				c_tmp = wcol[mission_opt_3[c_mission]];
-			} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
-				// ARS
-				c_tmp = acol[mission_opt_3[c_mission]];
-			} else {
-				// クラシック
-				c_tmp = ccol[mission_opt_3[c_mission]];
-			}
-			//7JL 8SZ
-			if ( getDrawRate() == 1 ){
-				if(!english){
-					drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, -1, 0, 0 ,0);
-				}else{
-					drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 1, 0, 0, 0);
-				}
-			}else{
-				if(!english){
-					drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 2, 0, 0, 0);
-				}else{
-					drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 4, 0, 0, 0);
-				}
-			}
-		}else if(mission_opt_3[c_mission]==7){//LJ
-			if( isWRule(0) ) {
-				// ワールド
-				c_tmp1 = wcol[1];
-				c_tmp2 = wcol[5];
-			} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
-				// ARS
-				c_tmp1 = acol[1];
-				c_tmp2 = acol[5];
-			} else {
-				// クラシック
-				c_tmp1 = ccol[1];
-				c_tmp2 = ccol[5];
-			}
-			//7JL 8SZ
-			if ( getDrawRate() == 1 ){
-				if(!english){
-					drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, -1, 0, 0, 0);
-					drawBlockFast(6 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, -1, 0, 0, 0);
-				}else{
-					drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)),1, 0, c_tmp1, 0, 1, 0, 0, 0);
-					drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)),5, 0, c_tmp2, 0, 1, 0, 0, 0);
-				}
-			}else{
-				if(!english){
-					drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, 2, 0, 0, 0);
-					drawBlockFast(6 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, 2, 0, 0, 0);
-				}else{
-					drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, 4, 0, 0, 0);
-					drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, 4, 0, 0, 0);
-				}
-			}
-		}else if(mission_opt_3[c_mission]==8){//SZ
-			if( isWRule(0) ) {
-				// ワールド
-				c_tmp1 = wcol[3];
-				c_tmp2 = wcol[6];
-			} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
-				// ARS
-				c_tmp1 = acol[3];
-				c_tmp2 = acol[6];
-			} else {
-				// クラシック
-				c_tmp1 = ccol[3];
-				c_tmp2 = ccol[6];
-			}
-			//7JL 8SZ
-			if ( getDrawRate() == 1 ){
-				if(!english){
-					drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, -1, 0, 0, 0);
-					drawBlockFast(6 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, -1, 0, 0, 0);
-				}else{
-					drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 1, 0, 0, 0);
-					drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 1, 0, 0, 0);
-				}
-			}else{
-				if(!english){
-					drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 2, 0, 0, 0);
-					drawBlockFast(6 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 2, 0, 0, 0);
-				}else{
-					drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 4, 0, 0, 0);
-					drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
-					(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-					((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 4, 0, 0, 0);
-				}
-			}
-		}
-	}
-
-	// 描画
-	YGS2kTextOut(0, string[0]);
-	YGS2kTextBlt(0);
-
-	// 使用終了
-	YGS2kTextLayerOff(0);
-	while(c_mission - tmp > 4){
-		tmp = tmp + 5;
-	}
-
-	// ミッション一覧
-	for(i = tmp; i < (tmp+5); i++) {
+		int textSize;
 		if(getDrawRate() == 1) {
-			YGS2kBltFastRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
-			YGS2kTextLayerOn(0, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
-			YGS2kTextSize(0, 10);
+			YGS2kTextLayerOn(0, 6 + 208 * maxPlay, 8 + 112);
+			textSize = 10;
 		} else {
-			YGS2kBltFastRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
-			YGS2kTextLayerOn(0, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
-			YGS2kTextSize(0, 14);
+			YGS2kTextLayerOn(0, 10 + 16 + maxPlay * 400, 8 + 228);
+			textSize = 16;
 		}
+		YGS2kTextSize(0, textSize);
 		YGS2kTextColor(0, 0, 0, 0);
 		YGS2kTextBackColorDisable(0);
 
-		getMissionName(mission_type[i],i);
+		getMissionName(mission_type[c_mission],c_mission);
+
+		// 落下速度レベル
+		if((mission_type[c_mission] != 19) && (mission_type[c_mission] != 20) && (mission_type[c_mission] != 29)){
+			sprintf(string[70], " LV%02d", mission_lv[c_mission] + 1 - 15 * (mission_lv[c_mission] >= 15));
+			strcat(string[0], string[70]);
+		}else if(mission_type[c_mission] == 20){
+			if(!mission_opt_3[c_mission])
+				strcat(string[0]," OLD");
+			else
+				strcat(string[0], " REAL");
+		}
 
 		// 描画
 		YGS2kTextOut(0, string[0]);
 		YGS2kTextBlt(0);
 
+		// 制限時間
+		YGS2kTextLayerOn(1, 0, 0);
+		YGS2kTextSize(1, textSize);
+		YGS2kTextColor(1, 0, 0, 0);
+		if(getDrawRate() == 1) {
+			YGS2kTextMove(1, 6 + 208 * maxPlay, 30 + 112);
+		} else {
+			YGS2kTextMove(1, 10 + 16 + maxPlay * 400, 30 + 228);
+		}
+
+		if(!english) strcpy(string[70], "制限時間 ");
+		else strcpy(string[70], "Time ");
+
+		getTime(mission_time[c_mission]);
+		if(mission_time[c_mission]>0){
+		strcat(string[70], string[0]);
+		}else{
+			if(!english) strcat(string[70], "無制限");
+			else strcat(string[70], "NoLimit");
+		}
+
+		// 描画
+		YGS2kTextOut(1, string[70]);
+		YGS2kTextBlt(1);
+
+		// 指令文
+		YGS2kTextLayerOn(2, 0, 0);
+		YGS2kTextSize(2, textSize);
+		YGS2kTextColor(2, 0, 0, 0);
+		if(getDrawRate() == 1) {
+			YGS2kTextMove(2, 6 + 208 * maxPlay, 52 + 112);
+		} else {
+			YGS2kTextMove(2, 10 + 16 + maxPlay * 400, 52 + 228);
+		}
+		// LITE版を参考に整理
+		if(!english) {//"\n\nを使って\n%dライン消せ！",
+			sprintf(string[0], mission_info_jp[mission_type[c_mission]], mission_norm[c_mission]);
+			if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\n消す前にそのブロック\nを一度ホールドに入れろ");
+			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\n指定以上でもカウント!");
+			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\n指定以外で\nノルマリセット!");
+			if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\n最後のラインは\nダブルで消せ！");
+		} else {
+			sprintf(string[0], mission_info_en[mission_type[c_mission]], mission_norm[c_mission]);
+			if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nBefore Erase \ninto HOLD");
+			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\nErase over lines count");
+			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\nDo not erase\n other lines!");
+			if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\nlast erase 2 lines");
+
+		}
+
+		//ブロックオーダー系のブロックの絵
+		if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
+			if(mission_opt_3[c_mission]<=6){
+				if( isWRule(0) ) {
+					// ワールド
+					c_tmp = wcol[mission_opt_3[c_mission]];
+				} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
+					// ARS
+					c_tmp = acol[mission_opt_3[c_mission]];
+				} else {
+					// クラシック
+					c_tmp = ccol[mission_opt_3[c_mission]];
+				}
+				//7JL 8SZ
+				if ( getDrawRate() == 1 ){
+					if(!english){
+						drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, -1, 0, 0 ,0);
+					}else{
+						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 1, 0, 0, 0);
+					}
+				}else{
+					if(!english){
+						drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 2, 0, 0, 0);
+					}else{
+						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 4, 0, 0, 0);
+					}
+				}
+			}else if(mission_opt_3[c_mission]==7){//LJ
+				if( isWRule(0) ) {
+					// ワールド
+					c_tmp1 = wcol[1];
+					c_tmp2 = wcol[5];
+				} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
+					// ARS
+					c_tmp1 = acol[1];
+					c_tmp2 = acol[5];
+				} else {
+					// クラシック
+					c_tmp1 = ccol[1];
+					c_tmp2 = ccol[5];
+				}
+				//7JL 8SZ
+				if ( getDrawRate() == 1 ){
+					if(!english){
+						drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, -1, 0, 0, 0);
+						drawBlockFast(6 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, -1, 0, 0, 0);
+					}else{
+						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)),1, 0, c_tmp1, 0, 1, 0, 0, 0);
+						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)),5, 0, c_tmp2, 0, 1, 0, 0, 0);
+					}
+				}else{
+					if(!english){
+						drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, 2, 0, 0, 0);
+						drawBlockFast(6 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, 2, 0, 0, 0);
+					}else{
+						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, 4, 0, 0, 0);
+						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, 4, 0, 0, 0);
+					}
+				}
+			}else if(mission_opt_3[c_mission]==8){//SZ
+				if( isWRule(0) ) {
+					// ワールド
+					c_tmp1 = wcol[3];
+					c_tmp2 = wcol[6];
+				} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
+					// ARS
+					c_tmp1 = acol[3];
+					c_tmp2 = acol[6];
+				} else {
+					// クラシック
+					c_tmp1 = ccol[3];
+					c_tmp2 = ccol[6];
+				}
+				//7JL 8SZ
+				if ( getDrawRate() == 1 ){
+					if(!english){
+						drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, -1, 0, 0, 0);
+						drawBlockFast(6 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, -1, 0, 0, 0);
+					}else{
+						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 1, 0, 0, 0);
+						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 1, 0, 0, 0);
+					}
+				}else{
+					if(!english){
+						drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 2, 0, 0, 0);
+						drawBlockFast(6 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 2, 0, 0, 0);
+					}else{
+						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 4, 0, 0, 0);
+						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
+						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
+						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 4, 0, 0, 0);
+					}
+				}
+			}
+		}
+
+		// 描画
+		YGS2kTextOut(2, string[0]);
+		YGS2kTextBlt(2);
+
 		// 使用終了
 		YGS2kTextLayerOff(0);
+		YGS2kTextLayerOff(1);
+		YGS2kTextLayerOff(2);
+		while(c_mission - tmp > 4){
+			tmp = tmp + 5;
+		}
 
-		// 終了フラグがある場合はここでループを抜ける
-		if(mission_end[i]) break;
-	}
+		// ミッション一覧
+		int layer = 3;
+		for(i = tmp; i < (tmp+5); i++, layer++) {
+			if(getDrawRate() == 1) {
+				YGS2kBltFastRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
+				YGS2kTextLayerOn(layer, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
+				YGS2kTextSize(layer, 10);
+			} else {
+				YGS2kBltFastRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
+				YGS2kTextLayerOn(layer, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
+				YGS2kTextSize(layer, 14);
+			}
+			YGS2kTextColor(layer, 0, 0, 0);
+			YGS2kTextBackColorDisable(layer);
+
+			getMissionName(mission_type[i],i);
+
+			// 描画
+			YGS2kTextOut(layer, string[0]);
+			YGS2kTextBlt(layer);
+
+			// 使用終了
+			YGS2kTextLayerOff(layer);
+
+			// 終了フラグがある場合はここでループを抜ける
+			if(mission_end[i]) break;
+		}
 	}	//if(!ending[0])
 }
 

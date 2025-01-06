@@ -1,10 +1,11 @@
 #include "SDL_kanji.h"
 #include "hashmap.h"
+#include <limits.h>
 
 #define LINE_SIZE 256
 
 struct Kanji_Font {
-	Uint32 size;
+	int size;
 	struct hashmap* mojis;
 };
 
@@ -45,7 +46,7 @@ static char* Line_Get(char* buf, int count, char** src, char* end) {
 
 typedef struct Moji {
 	Uint32 encoding;
-	unsigned int width;
+	int width;
 	Uint32* pixels;
 } Moji;
 
@@ -158,7 +159,7 @@ static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
 	}
 }
 
-static int Parse_Char(Kanji_Font* font, Uint32 encoding, Uint32 width, char** line, char* end, int rshift) {
+static int Parse_Char(Kanji_Font* font, Uint32 encoding, int width, char** line, char* end, int rshift) {
 	Uint32* key;
 	Moji moji;
 	char buf[LINE_SIZE];
@@ -230,32 +231,28 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 	while (Line_Get(buf, sizeof(buf), &line, end) != NULL) {
 		if (SDL_strstr(buf, "SIZE") == buf) {
 			if (found_size) {
-				SDL_SetError("Erroneous extra SIZE line encountered.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Erroneous extra SIZE line encountered.");
 			}
 			p = SDL_strchr(buf, ' ');
 			if (!p) {
-				SDL_SetError("Invalid format of a SIZE line.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Invalid format of a SIZE line.");
 			}
 			font_size = SDL_strtol(p, 0, 10);
-			if (font_size <= 0 || font_size > SDL_MAX_UINT32) {
-				SDL_SetError("Font size of %ld is invalid, must be nonzero and less than SDL_MAX_UINT32.", font_size);
+			if (font_size <= 0 || font_size > INT_MAX) {
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Font size of %ld is invalid, must be between 0 and %d.", font_size, INT_MAX);
 			}
 			if (font->size == 0) {
-				font->size = (Uint32)font_size;
+				font->size = (int)font_size;
 			}
 			found_size = SDL_TRUE;
 		}
 		else if (SDL_strstr(buf, "STARTCHAR") == buf) {
 			if (!found_size) {
-				SDL_SetError("SIZE line not found before a STARTCHAR line.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("SIZE line not found before a STARTCHAR line.");
 			}
 			found_encoding = SDL_FALSE;
 			found_width = SDL_FALSE;
@@ -263,53 +260,48 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 		}
 		else if (SDL_strstr(buf, "ENCODING") == buf) {
 			if (!found_size) {
-				SDL_SetError("SIZE line not found before an ENCODING line.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("SIZE line not found before an ENCODING line.");
 			}
 			p = SDL_strchr(buf, ' ');
 			if (!p) {
-				SDL_SetError("Invalid format of an ENCODING line.");
+				return SDL_SetError("Invalid format of an ENCODING line.");
 			}
 			encoding = SDL_strtol(p, 0, 10);
-			if (encoding < 0 || encoding > SDL_MAX_UINT32) {
+			if (encoding < 0) {
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Character encoding of %ld is invalid, must be nonnegative.", encoding);
 			}
 			found_encoding = SDL_TRUE;
 		}
 		else if (SDL_strstr(buf, "DWIDTH") == buf) {
 			if (!found_size) {
-				SDL_SetError("SIZE line not found before a DWIDTH line.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("SIZE line not found before a DWIDTH line.");
 			}
 			p = SDL_strchr(buf, ' ');
 			if (!p) {
-				SDL_SetError("Invalid format of a DWIDTH line.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Invalid format of a DWIDTH line.");
 			}
 			width = SDL_strtol(p, 0, 10);
-			if (width <= 0 || width > SDL_MAX_UINT32) {
+			if (width <= 0 || width > INT_MAX) {
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Character width of %ld is invalid, must be between 0 and %d.", width, INT_MAX);
 			}
 			found_width = SDL_TRUE;
 		}
 		else if (SDL_strstr(buf, "BITMAP") == buf) {
 			int rshift;
 			if (!found_size || !found_encoding || !found_width) {
-				SDL_SetError("BITMAP line encountered before all of SIZE, ENCODING, and DWIDTH lines have been found.");
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("BITMAP line encountered before all of SIZE, ENCODING, and DWIDTH lines have been found.");
 			}
 			for (s = 8; s < width; s += 8) {}
 			rshift = s - width;
-			if (Parse_Char(font, (Uint32)encoding, (Uint32)width, &line, end, rshift) < 0) {
-				SDL_SetError("Failed to parse a font character: %s", SDL_GetError());
+			if (Parse_Char(font, (Uint32)encoding, width, &line, end, rshift) < 0) {
 				SDL_free(src_data);
-				return -1;
+				return SDL_SetError("Failed to parse a font character: %s", SDL_GetError());
 			}
 		}
 	}
@@ -331,8 +323,8 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 
 	font->mojis = hashmap_new(sizeof(Moji), 16, 0, 0, Moji_Hash, Moji_Compare, Moji_Free, NULL);
 	if (!font->mojis) {
-		SDL_SetError("Failed to create the hashmap for the font object: %s", SDL_GetError());
 		SDL_free(font);
+		SDL_SetError("Failed to create the hashmap for the font object: %s", SDL_GetError());
 		return NULL;
 	}
 
@@ -340,8 +332,8 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 		return font;
 	}
 	else if (Kanji_AddFont(font, src) < 0) {
-		SDL_SetError("Failed to parse the font: %s", SDL_GetError());
 		SDL_free(font);
+		SDL_SetError("Failed to parse the font: %s", SDL_GetError());
 		return NULL;
 	}
 	else {
@@ -349,64 +341,118 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 	}
 }
 
-Uint32 Kanji_FontSize(Kanji_Font* font) {
+int Kanji_FontSize(Kanji_Font* font) {
 	return font->size;
 }
 
-Sint64 Kanji_TextWidth(Kanji_Font* font, const char* text) {
+int Kanji_TextWidth(Kanji_Font* font, const char* text) {
 	const Uint8* p;
 	Uint32 encoding;
-	Sint64 width;
+	int w;
 
 	if (font == NULL) {
-		SDL_SetError("Parameter \"font\" must not be NULL.");
-		return -1;
+		return SDL_SetError("Parameter \"font\" must not be NULL.");
 	}
 	else if (text == NULL) {
-		SDL_SetError("Parameter \"text\" must not be NULL.");
-		return -1;
+		return SDL_SetError("Parameter \"text\" must not be NULL.");
 	}
 
-	width = 0;
-	for (p = UTF8_Next((const Uint8*)text, &encoding); p != NULL && encoding != 0x0u; p = UTF8_Next(p, &encoding)) {
+	w = 0;
+	for (p = UTF8_Next((const Uint8*)text, &encoding); p != NULL && encoding != '\0' && encoding != '\n' && encoding != '\r'; p = UTF8_Next(p, &encoding)) {
+		Moji getMoji;
+		const Moji* gotMoji;
+
+		getMoji.encoding = encoding;
+
+		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
+			return SDL_SetError("The text contains a character not in the font, so width cannot be calculated.");
+		}
+
+		if (w > INT_MAX - gotMoji->width) {
+			return SDL_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
+		}
+
+		w += gotMoji->width;
+	}
+
+	if (p != NULL) {
+		return w;
+	}
+	else {
+		return SDL_SetError("Invalid data found in the text. The text must be valid UTF-8 data.");
+	}
+}
+
+int Kanji_TextDimensions(Kanji_Font* font, const char *text, int* w, int* h) {
+	const Uint8* p;
+	Uint32 encoding;
+
+	int line_w = 0;
+	int temp_w = 0;
+	int temp_h = font->size;
+	for (p = UTF8_Next((const Uint8*)text, &encoding); p != NULL && encoding != '\0'; p = UTF8_Next(p, &encoding)) {
+		/* Handle any newline format */
+		if (encoding == '\n' || encoding == '\r') {
+			/* If we see '\r' and '\n' adjacent, we should consider those two bytes as meaning one newline. */
+			if (encoding == '\r' && *p == '\n') {
+				p++;
+			}
+			else if (encoding == '\n' && *p == '\r') {
+				p++;
+			}
+			/* Only one byte for newline formats of only one '\r' or '\n', so don't increment. */
+
+			if (temp_h > INT_MAX - font->size) {
+				return SDL_SetError("The calculated height of the text overflowed (maximum possible height is %d).", INT_MAX);
+			}
+			temp_h += font->size;
+			if (line_w > temp_w) {
+				temp_w = line_w;
+			}
+			line_w = 0;
+			continue;
+		}
+
 		Moji getMoji;
 		const Moji* gotMoji;
 
 		getMoji.encoding = encoding;
 		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
-			SDL_SetError("The text contains a character not in the font, so width cannot be calculated.");
-			return -1;
+			return SDL_SetError("The text contains a character not in the font, so dimensions cannot be calculated.");
 		}
 
-		if (width > SDL_MAX_SINT64 - gotMoji->width) {
-			SDL_SetError("The calculated width of the text overflowed (maximum possible width is %" SDL_PRIs64 ").", SDL_MAX_SINT64);
-			return -1;
+		if (temp_w > INT_MAX - gotMoji->width) {
+			return SDL_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
 		}
 
-		width += gotMoji->width;
+		line_w += gotMoji->width;
+	}
+	if (line_w > temp_w) {
+		temp_w = line_w;
 	}
 
-	if (p != NULL) {
-		return width;
-	}
-	else {
-		SDL_SetError("Invalid data found in the text. The text must be valid UTF-8 data.");
-		return -1;
-	}
+	*w = temp_w;
+	*h = temp_h;
+	return 0;
 }
 
 int Kanji_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color) {
 	Uint8* p, bpp;
 	Uint32 mapped_color;
-	int status = 0;
 
 	if (SDL_MUSTLOCK(s)) {
 		if (SDL_LockSurface(s) < 0) {
-			return -1;
+			return SDL_SetError("Failed to lock surface for putting a pixel.");
 		}
 	}
 
 	bpp = s->format->BytesPerPixel;
+	if (bpp != 1 && bpp != 2 && bpp != 4) {
+		if(SDL_MUSTLOCK(s)){
+			SDL_UnlockSurface(s);
+		}
+		return SDL_SetError("bpp of surface is not supported (must be 1, 2, or 4).");
+	}
 	p = (Uint8*)(s->pixels) + y * s->pitch + x * bpp;
 	mapped_color = SDL_MapRGB(s->format, color.r, color.g, color.b);
 
@@ -420,16 +466,12 @@ int Kanji_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, 
 	case 4:
 		*((Uint32*)p) = mapped_color;
 		break;
-
-	default:
-		status = -1;
-		break;
 	}
 
 	if(SDL_MUSTLOCK(s)){
 		SDL_UnlockSurface(s);
 	}
-	return status;
+	return 0;
 }
 
 int Kanji_PutPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
@@ -457,7 +499,7 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void
 
 		/* Handle any newline format */
 		if (encoding == '\n' || encoding == '\r') {
-		/* If we see '\r' and '\n' adjacent, we should consider those two bytes as meaning one newline. */
+			/* If we see '\r' and '\n' adjacent, we should consider those two bytes as meaning one newline. */
 			if (encoding == '\r' && *p == '\n') {
 				p++;
 			}
@@ -473,8 +515,7 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void
 
 		getMoji.encoding = encoding;
 		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
-			SDL_SetError("The text contains a character not in the font (U+%04" SDL_PRIX32 "), so it cannot be drawn.", encoding);
-			return -1;
+			return SDL_SetError("The text contains a character not in the font (U+%04" SDL_PRIX32 "), so it cannot be drawn.", encoding);
 		}
 
 		minx = (cx >= 0) ? 0 : -cx;
@@ -507,151 +548,63 @@ int Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, float subx, float su
 	return Kanji_PutText(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (Kanji_PutPixelCallback)Kanji_PutPixelRenderer);
 }
 
-#if 0
-int Kanji_PutTextTate(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, int (* put_pixel)(void* dst, int x, int y, float subx, float suby, SDL_Color color)) {
-	int encoding;
-	int x, y, cx = dx, cy = dy;
-	unsigned char high, low;
-	int minx, miny, maxx, maxy;
-	int now_kanji = 0;
-	const unsigned char* text = (const unsigned char*)txt;
-
-	while (*text != 0) {
-		if (font->sys == KANJI_JIS && *text == 0x1b) {
-			if (*(text+1) == 0x24 && *(text+2) == 0x42) {
-				now_kanji = 1;
-			}
-			else if (*(text+1) == 0x28 && *(text+2) == 0x42) {
-				now_kanji = 0;
-			}
-			text += 3;
-			continue;
-		}
-		if (font->sys != KANJI_JIS) now_kanji = !isprint(*text);
-
-		/* ASCII は無視 */
-		if (!now_kanji) {
-			text++;
-		}
-		else {
-			high = *text;
-			low = *(text+1);
-			ConvertCodingSystem(font, &high, &low);
-			encoding = (high - 0x20) * 96 + low - 0x20 + 0xff;
-			text += 2;
-			if (font->moji[encoding] == 0) {
-				cy += font->k_size;
-				continue;
-			}
-
-			if (high == 0x21 && (low >= 0x22 || low <= 0x25)) {
-				cx += font->k_size * 0.6;
-				cy -= font->k_size * 0.6;
-			}
-
-			minx = (cx >= 0) ? 0 : -cx;
-			miny = (cy >= 0) ? 0 : -cy;
-			maxx = (cx+font->k_size <= dw) ? font->k_size : dw-cx;
-			maxy = (cy+font->k_size <= dh) ? font->k_size : dh-cy;
-
-			for (y = miny; y < maxy; y++) {
-				for (x = minx; x < maxx; x++) {
-					if (font->moji[encoding][y] & (1 << (font->k_size-x-1))) {
-						if (put_pixel(dst, cx + x, cy + y, subx, suby, fg) < 0) {
-							return -1;
-						}
-					}
-				}
-			}
-
-			if (high == 0x21 && (low >= 0x22 || low <= 0x25)) {
-				cx -= font->k_size * 0.6;
-				cy += font->k_size * 1.6;
-			}
-			else {
-				cy += font->k_size;
-			}
-		}
+SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color fg, int depth) {
+	int w, h;
+	if (Kanji_TextDimensions(font, text, &w, &h) < 0) {
+		return NULL;
 	}
-	return 0;
+
+	Uint32 format;
+	// TODO: Consider supporting additional formats. Indexed should be
+	// fine, since the surface only has to support full-transparent and a
+	// single color.
+	switch (depth) {
+	case 16:
+		format = SDL_PIXELFORMAT_RGBA5551;
+		break;
+
+	case 32:
+		format = SDL_PIXELFORMAT_RGBA8888;
+		break;
+
+	default:
+		SDL_SetError("Invalid depth of %d, only 16 or 32 are supported.", depth);
+		return NULL;
+	}
+
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, w, h, depth, format);
+	if (!surface) {
+		return NULL;
+	}
+
+	const Uint32 alpha = SDL_MapRGBA(surface->format, 0x00, 0x00, 0x00, SDL_ALPHA_TRANSPARENT);
+	if (SDL_FillRect(surface, NULL, alpha) < 0) {
+		SDL_FreeSurface(surface);
+		return NULL;
+	}
+
+	if (Kanji_PutTextSurface(font, 0, 0, 0.0f, 0.0f, surface, text, fg) < 0) {
+		SDL_FreeSurface(surface);
+		return NULL;
+	}
+
+	return surface;
 }
 
-int Kanji_PutTextTateSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
-	return Kanji_PutTextTate(font, dx, dy, subx, suby, dst, dst->w, dst->h, txt, fg, (int (*)(void*, int, int, float, float, SDL_Color))Kanji_PutPixelSurface);
+SDL_Texture* Kanji_CreateTexture(Kanji_Font* font, SDL_Renderer* renderer, const char* text, SDL_Color fg, int depth) {
+	SDL_Surface* surface = Kanji_CreateSurface(font, text, fg, depth);
+	if (!surface) {
+		return NULL;
+	}
+
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+	if (!texture) {
+		return NULL;
+	}
+
+	return texture;
 }
-
-int Kanji_PutTextTateRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
-	int dw, dh;
-	SDL_RenderGetLogicalSize(dst, &dw, &dh);
-	return Kanji_PutTextTate(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (int (*)(void*, int, int, float, float, SDL_Color))Kanji_PutPixelRenderer);
-}
-
-SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color fg, int bpp) {
-	SDL_Surface* textbuf;
-	int len;
-	Uint32 bgcol;
-
-	if (font == NULL) return NULL;
-	if (text == NULL) return NULL;
-	if (*text == 0 ) return NULL;
-	len = SDL_strlen(text);
-
-	textbuf = SDL_CreateRGBSurface(0, font->a_size*len, font->k_size, bpp, 0, 0, 0, 0);
-	if (textbuf == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,  "ERROR: at SDL_kanji.c(%d)\n", __LINE__);
-		return NULL;
-	}
-	bgcol = SDL_MapRGB(textbuf->format, 255-fg.r, 255-fg.g, 255-fg.b);
-	if (SDL_FillRect(textbuf, NULL, bgcol) < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,  "ERROR: at SDL_kanji.c(%d)\n", __LINE__);
-		SDL_FreeSurface(textbuf);
-		return NULL;
-	}
-	if (SDL_SetColorKey(textbuf, SDL_TRUE, bgcol) < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,  "ERROR: at SDL_kanji.c(%d)\n", __LINE__);
-		SDL_FreeSurface(textbuf);
-		return NULL;
-	}
-
-	Kanji_PutTextSurface(font, 0, 0, 0.0f, 0.0f, textbuf, text, fg);
-
-	return textbuf;
-}
-
-SDL_Surface* Kanji_CreateSurfaceTate(Kanji_Font* font, const char* text, SDL_Color fg, int bpp) {
-	SDL_Surface* textbuf;
-	size_t len;
-	Uint32 bgcol;
-
-	if (font == NULL) return NULL;
-	if (text == NULL) return NULL;
-	if (*text == 0 ) return NULL;
-	len = SDL_strlen(text);
-
-	textbuf = SDL_CreateRGBSurface(0, font->k_size, font->a_size*len, bpp, 0, 0, 0, 0);
-	if (textbuf == NULL) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "ERROR: at SDL_kanji.c(%d)\n", __LINE__);
-		return NULL;
-	}
-
-	bgcol = SDL_MapRGB(textbuf->format, 255-fg.r, 255-fg.g, 255-fg.b);
-	if (SDL_FillRect(textbuf, NULL, bgcol) < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "ERROR: at SDL_kanji.c(%d)\n", __LINE__);
-		SDL_FreeSurface(textbuf);
-		return NULL;
-	}
-	if (SDL_SetColorKey(textbuf, SDL_TRUE, bgcol) < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "ERROR: at SDL_kanji.c(%d)\n", __LINE__);
-		SDL_FreeSurface(textbuf);
-		return NULL;
-	}
-
-	Kanji_PutTextTateSurface(font, 0, 0, 0.0f, 0.0f, textbuf, text, fg);
-
-	return textbuf;
-}
-
-#endif
 
 void Kanji_CloseFont(Kanji_Font* font) {
 	SDL_assert(font != NULL);

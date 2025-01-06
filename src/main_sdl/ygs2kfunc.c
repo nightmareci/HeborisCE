@@ -9,12 +9,16 @@
 
 typedef struct YGS2kSTextLayer
 {
-	bool	enable;
-	int	x;
-	int	y;
-	int	r, g, b;
-	int	size;
-	char	string[256];
+	bool enable;
+	int x;
+	int y;
+	SDL_Color color;
+	int size;
+	char string[256];
+	bool updateTexture;
+	SDL_Texture* texture;
+	int textureW;
+	int textureH;
 } YGS2kSTextLayer;
 
 typedef enum YGS2kESoundType
@@ -64,8 +68,6 @@ static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
 static int s_iQuitLevel;
 
-static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, int b, int size);
-static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str);
 static void YGS2kPrivateKanjiFontFinalize();
 static void YGS2kPrivateKanjiFontInitialize();
 
@@ -234,7 +236,8 @@ void YGS2kInit(const int soundBufferSize)
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 	{
 		memset(&s_TextLayer[i], 0, sizeof(YGS2kSTextLayer));
-		s_TextLayer[i].r = s_TextLayer[i].g = s_TextLayer[i].b = 255;
+		s_TextLayer[i].color.r = s_TextLayer[i].color.g = s_TextLayer[i].color.b = 255;
+		s_TextLayer[i].color.a = SDL_ALPHA_OPAQUE;
 		s_TextLayer[i].size = 16;
 	}
 
@@ -276,15 +279,29 @@ void YGS2kDeinit()
 		s_pYGSMusic = NULL;
 	}
 
-	/* テクスチャ領域の解放 */
-	for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
+	if ( s_pScreenRenderer )
 	{
-		if ( s_pYGSTexture[i] )
+		for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
 		{
-			SDL_DestroyTexture(s_pYGSTexture[i]);
-			s_pYGSTexture[i] = NULL;
+			if ( s_TextLayer[i].texture )
+			{
+				SDL_DestroyTexture(s_TextLayer[i].texture);
+				s_TextLayer[i].texture = NULL;
+			}
+		}
+		memset(s_TextLayer, 0, sizeof(s_TextLayer));
+
+		/* テクスチャ領域の解放 */
+		for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
+		{
+			if ( s_pYGSTexture[i] )
+			{
+				SDL_DestroyTexture(s_pYGSTexture[i]);
+				s_pYGSTexture[i] = NULL;
+			}
 		}
 	}
+
 	if ( s_pScreenRenderer ) {
 		SDL_SetRenderTarget( s_pScreenRenderer, NULL );
 	}
@@ -460,11 +477,6 @@ bool YGS2kHalt()
 	s_iOffsetY = s_iNewOffsetY;
 
 	return true;
-}
-
-static void YGS2kPrivateTextBlt(int x, int y, const char* text, int r, int g, int b, int size)
-{
-	YGS2kPrivateKanjiDraw(x, y, r, g, b, size, text);
 }
 
 int YGS2kIsPlayMusic()
@@ -1271,9 +1283,17 @@ void YGS2kTextMove ( int layer, int x, int y )
 
 void YGS2kTextColor ( int layer, int r, int g, int b )
 {
-	s_TextLayer[layer].r = r;
-	s_TextLayer[layer].g = g;
-	s_TextLayer[layer].b = b;
+	if (
+		s_TextLayer[layer].color.r != r ||
+		s_TextLayer[layer].color.g != g ||
+		s_TextLayer[layer].color.b != b
+	) {
+		s_TextLayer[layer].color.r = r;
+		s_TextLayer[layer].color.g = g;
+		s_TextLayer[layer].color.b = b;
+		s_TextLayer[layer].color.a = SDL_ALPHA_OPAQUE;
+		s_TextLayer[layer].updateTexture = true;
+	}
 }
 
 void YGS2kTextBackColorDisable ( int layer )
@@ -1284,8 +1304,10 @@ void YGS2kTextBackColorDisable ( int layer )
 
 void YGS2kTextSize ( int layer, int size )
 {
-	// TODO
-	s_TextLayer[layer].size = size;
+	if (s_TextLayer[layer].size != size) {
+		s_TextLayer[layer].size = size;
+		s_TextLayer[layer].updateTexture = true;
+	}
 }
 
 void YGS2kTextHeight ( int layer, int height )
@@ -1296,14 +1318,88 @@ void YGS2kTextHeight ( int layer, int height )
 
 void YGS2kTextOut ( int layer, const char* text )
 {
-	strcpy(s_TextLayer[layer].string, text);
+	if ( strcmp(text, s_TextLayer[layer].string) != 0 )
+	{
+		strcpy(s_TextLayer[layer].string, text);
+		s_TextLayer[layer].updateTexture = true;
+	}
 }
 
 void YGS2kTextBlt ( int layer )
 {
-	if ( s_TextLayer[layer].enable )
+	if ( !s_pScreenRenderer || !s_TextLayer[layer].enable)
 	{
-		YGS2kPrivateTextBlt(s_TextLayer[layer].x + s_iOffsetX, s_TextLayer[layer].y + s_iOffsetY, s_TextLayer[layer].string, s_TextLayer[layer].r, s_TextLayer[layer].g, s_TextLayer[layer].b, s_TextLayer[layer].size);
+		return;
+	}
+
+	int font = 0;
+
+	if ( s_TextLayer[layer].size >= 12 )
+	{
+		font ++;
+	}
+	if ( s_TextLayer[layer].size >= 16 )
+	{
+		font ++;
+	}
+
+	if ( !s_pKanjiFont[font] )
+	{
+		return;
+	}
+
+	if ( s_TextLayer[layer].updateTexture )
+	{
+		if ( s_TextLayer[layer].texture )
+		{
+			SDL_DestroyTexture(s_TextLayer[layer].texture);
+		}
+		s_TextLayer[layer].texture = Kanji_CreateTexture(s_pKanjiFont[font], s_pScreenRenderer, s_TextLayer[layer].string, s_TextLayer[layer].color, 32);
+		if ( !s_TextLayer[layer].texture )
+		{
+			SDL_Log("Error creating texture to blit text: %s\n", SDL_GetError());
+			YGS2kExit(EXIT_FAILURE);
+		}
+		if ( SDL_QueryTexture(s_TextLayer[layer].texture, NULL, NULL, &s_TextLayer[layer].textureW, &s_TextLayer[layer].textureH) < 0 )
+		{
+			SDL_Log("Error getting size of a text layer texture: %s\n", SDL_GetError());
+			YGS2kExit(EXIT_FAILURE);
+		}
+		s_TextLayer[layer].updateTexture = false;
+	}
+
+	if ( s_TextLayer[layer].texture )
+	{
+		if ( s_pScreenRenderTarget )
+		{
+			const SDL_Rect dstRect =
+			{
+				s_TextLayer[layer].x + s_iOffsetX,
+				s_TextLayer[layer].y + s_iOffsetY,
+				s_TextLayer[layer].textureW,
+				s_TextLayer[layer].textureH
+			};
+			if ( SDL_RenderCopy(s_pScreenRenderer, s_TextLayer[layer].texture, NULL, &dstRect) < 0 )
+			{
+				SDL_Log("Error rendering text layer: %s\n", SDL_GetError());
+				YGS2kExit(EXIT_FAILURE);
+			}
+		}
+		else
+		{
+			const SDL_FRect dstRect =
+			{
+				s_TextLayer[layer].x + s_iOffsetX + s_fScreenSubpixelOffset,
+				s_TextLayer[layer].y + s_iOffsetY + s_fScreenSubpixelOffset,
+				s_TextLayer[layer].textureW,
+				s_TextLayer[layer].textureH
+			};
+			if ( SDL_RenderCopyF(s_pScreenRenderer, s_TextLayer[layer].texture, NULL, &dstRect) < 0 )
+			{
+				SDL_Log("Error rendering text layer: %s\n", SDL_GetError());
+				YGS2kExit(EXIT_FAILURE);
+			}
+		}
 	}
 }
 
@@ -1680,44 +1776,5 @@ static void YGS2kPrivateKanjiFontFinalize()
 			Kanji_CloseFont(s_pKanjiFont[i]);
 		}
 		s_pKanjiFont[i] = NULL;
-	}
-}
-
-static void YGS2kPrivateKanjiDraw(int x, int y, int r, int g, int b, int size, const char *str)
-{
-	if ( !s_pScreenRenderer )
-	{
-		return;
-	}
-
-	SDL_Color col = { 0 };
-	int		font = 0;
-
-	if ( size >= 12 )
-	{
-		font ++;
-	}
-	if ( size >= 16 )
-	{
-		font ++;
-	}
-
-	col.r = r;
-	col.g = g;
-	col.b = b;
-
-	if ( s_pKanjiFont[font] )
-	{
-		if ( s_pScreenRenderTarget )
-		{
-			if (Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, 0.0f, 0.0f, s_pScreenRenderer, str, col) < 0) {
-				SDL_Log("Failed to draw text to render target: %s\n", SDL_GetError());
-				YGS2kExit(EXIT_FAILURE);
-			}
-		}
-		else if (Kanji_PutTextRenderer(s_pKanjiFont[font], x, y, s_fScreenSubpixelOffset, s_fScreenSubpixelOffset, s_pScreenRenderer, str, col) < 0) {
-			SDL_Log("Failed to draw text to screen: %s\n", SDL_GetError());
-			YGS2kExit(EXIT_FAILURE);
-		}
 	}
 }

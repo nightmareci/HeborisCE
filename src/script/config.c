@@ -231,7 +231,13 @@ int32_t LoadConfig(void) {
 
 #else
 	screenMode &= ~YGS_SCREENMODE_WINDOWTYPE;
-	screenMode |= YGS_SCREENMODE_WINDOW | YGS_SCREENMODE_VSYNC;
+	screenMode |=
+#ifdef __vita__
+		YGS_SCREENMODE_FULLSCREEN
+#else
+		YGS_SCREENMODE_WINDOW
+#endif
+		| YGS_SCREENMODE_VSYNC | YGS_SCREENMODE_RENDERLEVEL;
 	screenIndex = 0;
 
 #endif

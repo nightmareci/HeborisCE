@@ -21,7 +21,6 @@ extern int32_t reinit;
 extern YGS2kSJoyKey joyKeyAssign[10 *2];
 #endif
 #ifdef ENABLE_GAME_CONTROLLER
-extern int32_t playerCons[2];
 extern YGS2kSConKey conKeyAssign[8 * 2];
 #endif
 #ifdef ENABLE_KEYBOARD

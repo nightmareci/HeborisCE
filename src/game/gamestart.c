@@ -7838,14 +7838,20 @@ int32_t isTLS(int32_t player) {
 	}
 
 	// ACE
-	if( (gameMode[player] == 7) || (gameMode[player] == 8) ) {
-		if(heboGB[player] >0){
+	if ((gameMode[player] == 7) || (gameMode[player] == 8)) {
+		if (heboGB[player] > 0) {
 			return 0;
-		}else{
+		}
+		else {
 			return 1;
 		}
 	}
-		// ORI
+
+	// SIMPLE
+	if ((gameMode[player] == 7) || (gameMode[player] == 9)) {
+			return 1; // these are guideline inspirefd modes, and shold always have TLS.
+	}
+	// ORI
 	if(gameMode[player] == 10) {
 		// BEGINNERは常に有効
 		if(ori_opt[player] == 0) {

@@ -11854,7 +11854,13 @@ fadelv[player] = 0;
 					// スタッフロール開始fastroll[player]
 					ending[player] = 2;
 					// エンディングBGM再生
+					if ((gameMode[player] == 0) && (beginner_rollbgm == 0))
+						YGS2kPlayWave(57);
+					else if ((gameMode[player] == 0) && (beginner_rollbgm == 1))
+						YGS2kPlayWave(51);
+					else
 						YGS2kPlayWave(56);
+
 fadelv[player] = 0;
 //sprintf(string[0],"-3- %2d %2d PLAY56",ending[player],gameMode[player]);
 //printFont(0, 4, string[0], (count % 4 / 2) * digitc[rots[i]]);

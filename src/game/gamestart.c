@@ -10725,7 +10725,7 @@ void calcScore(int32_t player, int32_t lines) {
 
 				/* 段位上昇 */
 				if(enable_grade[player] == 1){
-					GradeUp(player);
+					GradeUp(player,lines);
 				}else if((enable_grade[player] == 2)||(enable_grade[player] == 3)){
 					GradeUp2(player,lines);
 				}else if(enable_grade[player] == 4){//

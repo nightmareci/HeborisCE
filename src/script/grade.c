@@ -2,7 +2,7 @@
 
 #include "script/include.h"
 
-void GradeUp(int32_t player){
+void GradeUp(int32_t player, int32_t lines){
 	if(gameMode[player] >= 4) return;
 	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVIL以外
 		// (S8までなら)段位上昇判定 #1.60c7g5
@@ -12,9 +12,13 @@ void GradeUp(int32_t player){
 			gflash[player]=120;
 			gup_down[player] = 1;
 		}
-
+		int32_t bonuslines = lines;
+		if (lvupbonus == 0) // if levelup bonus is on in this mode,  which is the case only lvupbonus==0
+		{
+			bonuslines += (lines > 1) * (lines = 2); // adjust lien count to match what it wold be after te update.
+		}
 		// gmflag1成立判定#1.60c7g5
-		if((tc[player] >= 300) && (!gmflag1_e[player])) {
+		if((tc[player]+bonuslines >= 300) && (!gmflag1_e[player])) {
 			if((grade[player] >= 6) && (gametime[player] <= 255 * 60)){
 					gmflag1[player] = 1;
 					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
@@ -23,7 +27,7 @@ void GradeUp(int32_t player){
 		}
 
 		// gmflag2成立判定#1.60c7g5
-		if((tc[player] >= 500) && (!gmflag2_e[player])) {
+		if((tc[player]+bonuslines >= 500) && (!gmflag2_e[player])) {
 			if((grade[player] >= 9) && (gametime[player] <= 450 * 60)){
 					gmflag2[player] = 1;
 					objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);

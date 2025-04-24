@@ -720,7 +720,7 @@ int YGS2kGetJoyKeyRepeat ( const YGS2kSJoyKey* const key )
 
 int YGS2kGetNumJoys()
 {
-	int foundJoys;
+	int foundJoys = 0;
 	for (int player = 0; player < s_iNumPlayerSlots; player++) {
 		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_JOY) {
 			foundJoys++;
@@ -1169,7 +1169,7 @@ int YGS2kGetConKeyRepeat ( const int player, YGS2kSConKey* const key )
 
 int YGS2kGetNumCons()
 {
-	int foundCons;
+	int foundCons = 0;
 	for (int player = 0; player < s_iNumPlayerSlots; player++) {
 		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_CON) {
 			foundCons++;

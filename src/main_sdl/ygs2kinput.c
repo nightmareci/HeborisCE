@@ -51,6 +51,28 @@ typedef struct YGS2kSPlayerSlot
 	};
 } YGS2kSPlayerSlot;
 
+/*
+Builtin controllers are controllers that can't be detached from the host system
+(normally...), and are always active, even while docked; an external display is
+attached and external controllers are attached. The builtin controller is
+specially treated as always controlling player 1, with external controllers then
+assigned player slots 1, 2, etc. So, in the case of a builtin controller and
+only one attached external controller, both controllers control player 1, then
+if one more external controller is attached, that controller controls player 2;
+this is the behavior desired when docking a handheld system.
+
+If a device has a builtin controller, but its host software automatically
+detaches the controller upon docking, that device's builtin controller *should
+not* be placed here. This list is *only* for when the builtin controller can
+still be used even while external controllers are attached while docked.
+*/
+#define YGS_CON_ID(vendor, product) (Uint32)(((Uint32)(Uint16)(vendor) << 16) | (Uint16)(product))
+static Uint32 s_aBuiltinConIDs[] = {
+	YGS_CON_ID(0x28de, 0x1205) // Steam Deck
+};
+static YGS2kSCon s_sBuiltinCon = { 0 };
+static bool s_bLastInputBuiltinCon = true;
+
 static YGS2kSPlayerSlot* s_aPlayerSlots = NULL;
 static int s_iNumPlayerSlots = 0;
 #endif
@@ -128,7 +150,6 @@ static bool YGS2kResizePlayerSlots(int numSlots) {
 	}
 
 	YGS2kSPlayerSlot* const oldSlots = s_aPlayerSlots;
-	const int oldNumSlots = s_iNumPlayerSlots;
 	if (s_aPlayerSlots) {
 		s_aPlayerSlots = realloc(s_aPlayerSlots, sizeof(YGS2kSPlayerSlot) * numSlots);
 	}
@@ -147,7 +168,26 @@ static bool YGS2kResizePlayerSlots(int numSlots) {
 	return true;
 }
 
+static bool YGS2kConIsBuiltin(SDL_GameController* const controller) {
+	for (size_t i = 0; i < SDL_arraysize(s_aBuiltinConIDs); i++) {
+		const Uint16 vendor = SDL_GameControllerGetVendor(controller);
+		const Uint16 product = SDL_GameControllerGetProduct(controller);
+		const Uint32 conID = YGS_CON_ID(vendor, product);
+		if (conID == s_aBuiltinConIDs[i]) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool YGS2kPlayerSlotsChanged() {
+	#ifdef ENABLE_GAME_CONTROLLER
+	// This should never be needed, as the builtin controller most likely will
+	// always be connected, but you never know, maybe a modder detached it.
+	if (s_sBuiltinCon.controller && !SDL_GameControllerGetAttached(s_sBuiltinCon.controller)) {
+		s_sBuiltinCon = (YGS2kSCon) { 0 };
+	}
+	#endif
 	for (int player = 0; player < s_iNumPlayerSlots; player++) {
 		YGS2kSPlayerSlot* const slot = &s_aPlayerSlots[player];
 		switch (slot->type) {
@@ -200,6 +240,10 @@ bool YGS2kPlayerSlotsChanged() {
 			fprintf(stderr, "Failed to open controller: %s\n", SDL_GetError());
 			return false;
 		}
+		if (!s_sBuiltinCon.controller && YGS2kConIsBuiltin(controller)) {
+			s_sBuiltinCon.controller = controller;
+			continue;
+		}
 		bool playerIndexFound = false;
 		int player;
 		for (player = 0; player < s_iNumPlayerSlots; player++) {
@@ -216,7 +260,6 @@ bool YGS2kPlayerSlotsChanged() {
 			}
 			player = s_iNumPlayerSlots - 1;
 		}
-		SDL_GameControllerSetPlayerIndex(controller, player);
 		s_aPlayerSlots[player].con.controller = controller;
 		s_aPlayerSlots[player].type = YGS_PLAYERSLOT_CON;
 	}
@@ -251,7 +294,6 @@ bool YGS2kPlayerSlotsChanged() {
 			}
 			player = s_iNumPlayerSlots - 1;
 		}
-		SDL_JoystickSetPlayerIndex(joystick, player);
 
 		if (
 			(s_aPlayerSlots[player].joy.numAxes = SDL_JoystickNumAxes(joystick)) >= 0 &&
@@ -338,12 +380,20 @@ static void YGS2kPlayerSlotsClose()
 
 int YGS2kGetNumPlayerSlots()
 {
-	return s_iNumPlayerSlots;
+	if (s_iNumPlayerSlots <= 0 && s_sBuiltinCon.controller) {
+		return 1;
+	}
+	else {
+		return s_iNumPlayerSlots;
+	}
 }
 
 YGS2kEPlayerSlotType YGS2kGetPlayerSlotType(int player)
 {
-	if (player < 0 || player >= s_iNumPlayerSlots) {
+	if (player == 0 && s_sBuiltinCon.controller && s_bLastInputBuiltinCon) {
+		return YGS_PLAYERSLOT_CON;
+	}
+	else if (player < 0 || player >= s_iNumPlayerSlots) {
 		return YGS_PLAYERSLOT_NULL;
 	}
 	else {
@@ -826,6 +876,170 @@ static SDL_GameControllerType YGS2kGetSDLGameControllerType(SDL_GameController* 
 
 static void YGS2kConInputsUpdate()
 {
+	bool backupLastInputBuiltinCon;
+	if (s_sBuiltinCon.controller && SDL_GameControllerGetAttached(s_sBuiltinCon.controller)) {
+		backupLastInputBuiltinCon = s_bLastInputBuiltinCon;
+		s_bLastInputBuiltinCon = true;
+		YGS2kEInputType const inputType = YGS2kGetConType(-1);
+		s_bLastInputBuiltinCon = backupLastInputBuiltinCon;
+		Sint16 axisValue;
+
+		axisValue = SDL_GameControllerGetAxis(s_sBuiltinCon.controller, SDL_CONTROLLER_AXIS_LEFTX);
+		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
+		{
+			if (++s_sBuiltinCon.axesRepeat[0] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+			s_sBuiltinCon.axesRepeat[1] = 0;
+		}
+		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
+		{
+			s_sBuiltinCon.axesRepeat[0] = 0;
+			if (++s_sBuiltinCon.axesRepeat[1] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+		}
+		else
+		{
+			s_sBuiltinCon.axesRepeat[0] = 0;
+			s_sBuiltinCon.axesRepeat[1] = 0;
+		}
+
+		axisValue = SDL_GameControllerGetAxis(s_sBuiltinCon.controller, SDL_CONTROLLER_AXIS_LEFTY);
+		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
+		{
+			if (++s_sBuiltinCon.axesRepeat[2] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+			s_sBuiltinCon.axesRepeat[3] = 0;
+		}
+		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
+		{
+			s_sBuiltinCon.axesRepeat[2] = 0;
+			if (++s_sBuiltinCon.axesRepeat[3] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+		}
+		else
+		{
+			s_sBuiltinCon.axesRepeat[2] = 0;
+			s_sBuiltinCon.axesRepeat[3] = 0;
+		}
+
+		axisValue = SDL_GameControllerGetAxis(s_sBuiltinCon.controller, SDL_CONTROLLER_AXIS_RIGHTX);
+		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
+		{
+			if (++s_sBuiltinCon.axesRepeat[4] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+			s_sBuiltinCon.axesRepeat[5] = 0;
+		}
+		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
+		{
+			s_sBuiltinCon.axesRepeat[4] = 0;
+			if (++s_sBuiltinCon.axesRepeat[5] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+		}
+		else
+		{
+			s_sBuiltinCon.axesRepeat[4] = 0;
+			s_sBuiltinCon.axesRepeat[5] = 0;
+		}
+
+		axisValue = SDL_GameControllerGetAxis(s_sBuiltinCon.controller, SDL_CONTROLLER_AXIS_RIGHTY);
+		if (axisValue > 0 && axisValue > +YGS_DEADZONE_MAX)
+		{
+			if (++s_sBuiltinCon.axesRepeat[6] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+			s_sBuiltinCon.axesRepeat[7] = 0;
+		}
+		else if (axisValue < 0 && axisValue < -YGS_DEADZONE_MAX)
+		{
+			s_sBuiltinCon.axesRepeat[6] = 0;
+			if (++s_sBuiltinCon.axesRepeat[7] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+		}
+		else
+		{
+			s_sBuiltinCon.axesRepeat[6] = 0;
+			s_sBuiltinCon.axesRepeat[7] = 0;
+		}
+
+		axisValue = SDL_GameControllerGetAxis(s_sBuiltinCon.controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+		if (axisValue > YGS_DEADZONE_MAX)
+		{
+			if (++s_sBuiltinCon.axesRepeat[8] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+		}
+		else
+		{
+			s_sBuiltinCon.axesRepeat[8] = 0;
+		}
+
+		axisValue = SDL_GameControllerGetAxis(s_sBuiltinCon.controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+		if (axisValue > YGS_DEADZONE_MAX)
+		{
+			if (++s_sBuiltinCon.axesRepeat[9] == 1)
+			{
+				YGS2kLastInputType = inputType;
+				s_iLastActiveCon = 0;
+				s_bLastInputBuiltinCon = true;
+			}
+		}
+		else
+		{
+			s_sBuiltinCon.axesRepeat[9] = 0;
+		}
+
+		for (SDL_GameControllerButton button = 0; button < SDL_CONTROLLER_BUTTON_MAX; button++)
+		{
+			if (SDL_GameControllerGetButton(s_sBuiltinCon.controller, button))
+			{
+				if (++s_sBuiltinCon.buttonsRepeat[button] == 1)
+				{
+					YGS2kLastInputType = inputType;
+					s_iLastActiveCon = 0;
+					s_bLastInputBuiltinCon = true;
+				}
+			}
+			else
+			{
+				s_sBuiltinCon.buttonsRepeat[button] = 0;
+			}
+		}
+	}
+
 	if (!s_aPlayerSlots) return;
 
 	for (int player = 0; player < s_iNumPlayerSlots; player++)
@@ -838,7 +1052,10 @@ static void YGS2kConInputsUpdate()
 
 		if (!SDL_GameControllerGetAttached(con->controller)) continue;
 
+		backupLastInputBuiltinCon = s_bLastInputBuiltinCon;
+		s_bLastInputBuiltinCon = false;
 		YGS2kEInputType const inputType = YGS2kGetConType(player);
+		s_bLastInputBuiltinCon = backupLastInputBuiltinCon;
 		Sint16 axisValue;
 
 		axisValue = SDL_GameControllerGetAxis(con->controller, SDL_CONTROLLER_AXIS_LEFTX);
@@ -848,6 +1065,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 			con->axesRepeat[1] = 0;
 		}
@@ -858,6 +1076,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 		}
 		else
@@ -873,6 +1092,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 			con->axesRepeat[3] = 0;
 		}
@@ -883,6 +1103,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 		}
 		else
@@ -898,6 +1119,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 			con->axesRepeat[5] = 0;
 		}
@@ -908,6 +1130,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 		}
 		else
@@ -923,6 +1146,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 			con->axesRepeat[7] = 0;
 		}
@@ -933,6 +1157,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 		}
 		else
@@ -948,6 +1173,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 		}
 		else
@@ -962,6 +1188,7 @@ static void YGS2kConInputsUpdate()
 			{
 				YGS2kLastInputType = inputType;
 				s_iLastActiveCon = player;
+				if (player == 0) s_bLastInputBuiltinCon = false;
 			}
 		}
 		else
@@ -977,6 +1204,7 @@ static void YGS2kConInputsUpdate()
 				{
 					YGS2kLastInputType = inputType;
 					s_iLastActiveCon = player;
+					if (player == 0) s_bLastInputBuiltinCon = false;
 				}
 			}
 			else
@@ -987,9 +1215,43 @@ static void YGS2kConInputsUpdate()
 	}
 }
 
+static bool YGS2kIsPushConKeyPrivate ( const YGS2kSCon* const con, const YGS2kSConKey* const key )
+{
+	switch (key->type)
+	{
+	case YGS_CONKEY_ANY:
+		for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
+		{
+			if (con->axesRepeat[axis] == 1) return true;
+		}
+		for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
+		{
+			if (con->buttonsRepeat[button] == 1) return true;
+		}
+		break;
+	case YGS_CONKEY_AXIS:
+		if (key->index < YGS_CONAXIS_MAX)
+		{
+			if (con->axesRepeat[key->index] == 1) return true;
+		}
+		break;
+	case YGS_CONKEY_BUTTON:
+		if (key->index < YGS_CONBUTTON_MAX)
+		{
+			if (con->buttonsRepeat[key->index] == 1) return true;
+		}
+		break;
+	default:
+		break;
+	}
+	return false;
+}
+
 bool YGS2kIsPushConKey ( const int player, const YGS2kSConKey* const key )
 {
-	if (!key || !s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return false;
+	if (!key) return false;
+	if (player <= 0 && s_sBuiltinCon.controller && YGS2kIsPushConKeyPrivate(&s_sBuiltinCon, key)) return true;
+	if (!s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return false;
 
 	int playerStart = 0;
 	int playerMax = 0;
@@ -1005,47 +1267,50 @@ bool YGS2kIsPushConKey ( const int player, const YGS2kSConKey* const key )
 	}
 	for (; playerStart < playerMax; playerStart++)
 	{
-		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON)
-		{
-			continue;
-		}
-
+		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON) continue;
 		YGS2kSCon* const con = &s_aPlayerSlots[playerStart].con;
+		if (YGS2kIsPushConKeyPrivate(con, key)) return true;
+	}
+	return false;
+}
 
-		switch (key->type)
+static bool YGS2kIsPressConKeyPrivate ( const YGS2kSCon* const con, const YGS2kSConKey* const key)
+{
+	switch (key->type)
+	{
+	case YGS_CONKEY_ANY:
+		for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
 		{
-		case YGS_CONKEY_ANY:
-			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
-			{
-				if (con->axesRepeat[axis] == 1) return true;
-			}
-			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
-			{
-				if (con->buttonsRepeat[button] == 1) return true;
-			}
-			break;
-		case YGS_CONKEY_AXIS:
-			if (key->index < YGS_CONAXIS_MAX)
-			{
-				if (con->axesRepeat[key->index] == 1) return true;
-			}
-			break;
-		case YGS_CONKEY_BUTTON:
-			if (key->index < YGS_CONBUTTON_MAX)
-			{
-				if (con->buttonsRepeat[key->index] == 1) return true;
-			}
-			break;
-		default:
-			break;
+			if (con->axesRepeat[axis] != 0) return true;
 		}
+		for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
+		{
+			if (con->buttonsRepeat[button] != 0) return true;
+		}
+		break;
+	case YGS_CONKEY_AXIS:
+		if (key->index < YGS_CONAXIS_MAX)
+		{
+			if (con->axesRepeat[key->index] != 0) return true;
+		}
+		break;
+	case YGS_CONKEY_BUTTON:
+		if (key->index < YGS_CONBUTTON_MAX)
+		{
+			if (con->buttonsRepeat[key->index] != 0) return true;
+		}
+		break;
+	default:
+		break;
 	}
 	return false;
 }
 
 bool YGS2kIsPressConKey ( const int player, const YGS2kSConKey* const key )
 {
-	if (!key || !s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return false;
+	if (!key) return false;
+	if (player <= 0 && s_sBuiltinCon.controller && YGS2kIsPressConKeyPrivate(&s_sBuiltinCon, key)) return true;
+	if (!s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return false;
 
 	int playerStart = 0;
 	int playerMax = 0;
@@ -1061,52 +1326,88 @@ bool YGS2kIsPressConKey ( const int player, const YGS2kSConKey* const key )
 	}
 	for (; playerStart < playerMax; playerStart++)
 	{
-		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON)
-		{
-			continue;
-		}
-
+		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON) continue;
 		YGS2kSCon* const con = &s_aPlayerSlots[playerStart].con;
-
-		switch (key->type)
-		{
-		case YGS_CONKEY_ANY:
-			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
-			{
-				if (con->axesRepeat[axis] != 0) return true;
-			}
-			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
-			{
-				if (con->buttonsRepeat[button] != 0) return true;
-			}
-			break;
-		case YGS_CONKEY_AXIS:
-			if (key->index < YGS_CONAXIS_MAX)
-			{
-				if (con->axesRepeat[key->index] != 0) return true;
-			}
-			break;
-		case YGS_CONKEY_BUTTON:
-			if (key->index < YGS_CONBUTTON_MAX)
-			{
-				if (con->buttonsRepeat[key->index] != 0) return true;
-			}
-			break;
-		default:
-			break;
-		}
+		if (YGS2kIsPressConKeyPrivate(con, key)) return true;
 	}
 	return false;
 }
 
-int YGS2kGetConKeyRepeat ( const int player, YGS2kSConKey* const key )
+static void YGS2kGetConKeyRepeatPrivate ( const YGS2kSCon* const con, const YGS2kSConKey* const key, int* const maxRepeat)
 {
-	if (!key || !s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return 0;
+	switch (key->type)
+	{
+	case YGS_CONKEY_ANY:
+		for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
+		{
+			if (con->axesRepeat[axis] > *maxRepeat) *maxRepeat = con->axesRepeat[axis];
+		}
+		for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
+		{
+			if (con->buttonsRepeat[button] > *maxRepeat) *maxRepeat = con->buttonsRepeat[button];
+		}
+		break;
+	case YGS_CONKEY_AXIS:
+		if (key->index < YGS_CONAXIS_MAX)
+		{
+			*maxRepeat = con->axesRepeat[key->index];
+		}
+		break;
+	case YGS_CONKEY_BUTTON:
+		if (key->index < YGS_CONBUTTON_MAX)
+		{
+			*maxRepeat = con->buttonsRepeat[key->index];
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+static void YGS2kGetConKeyRepeatMultiPrivate ( const YGS2kSCon* const con, const YGS2kSConKey* const key, int* const maxRepeat)
+{
+	switch (key->type)
+	{
+	case YGS_CONKEY_ANY:
+		for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
+		{
+			if (con->axesRepeat[axis] > *maxRepeat) *maxRepeat = con->axesRepeat[axis];
+		}
+		for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
+		{
+			if (con->buttonsRepeat[button] > *maxRepeat) *maxRepeat = con->buttonsRepeat[button];
+		}
+		break;
+	case YGS_CONKEY_AXIS:
+		if (key->index < YGS_CONAXIS_MAX)
+		{
+			if (con->axesRepeat[key->index] > *maxRepeat) *maxRepeat = con->axesRepeat[key->index];
+		}
+		break;
+	case YGS_CONKEY_BUTTON:
+		if (key->index < YGS_CONBUTTON_MAX)
+		{
+			if (con->buttonsRepeat[key->index] > *maxRepeat) *maxRepeat = con->buttonsRepeat[key->index];
+		}
+		break;
+	default:
+		break;
+	}
+}
+int YGS2kGetConKeyRepeat ( const int player, const YGS2kSConKey* const key )
+{
+	if (!key) return false;
+
+	int maxRepeat = 0;
+	if (player <= 0 && s_sBuiltinCon.controller)
+	{
+		YGS2kGetConKeyRepeatPrivate(&s_sBuiltinCon, key, &maxRepeat);
+	}
+	if (!s_aPlayerSlots || s_iNumPlayerSlots == 0 || player >= s_iNumPlayerSlots) return maxRepeat;
 
 	bool multi;
 	int playerStart = 0;
 	int playerMax = 0;
-	int maxRepeat = 0;
 	if (player >= 0)
 	{
 		playerStart = player;
@@ -1121,48 +1422,10 @@ int YGS2kGetConKeyRepeat ( const int player, YGS2kSConKey* const key )
 	}
 	for (; playerStart < playerMax; playerStart++)
 	{
-		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON)
-		{
-			continue;
-		}
-
+		if (s_aPlayerSlots[playerStart].type != YGS_PLAYERSLOT_CON) continue;
 		YGS2kSCon* const con = &s_aPlayerSlots[playerStart].con;
-
-		switch (key->type)
-		{
-		case YGS_CONKEY_ANY:
-			for (int axis = 0; axis < YGS_CONAXIS_MAX; axis++)
-			{
-				if (con->axesRepeat[axis] > maxRepeat) maxRepeat = con->axesRepeat[axis];
-			}
-			for (int button = 0; button < YGS_CONBUTTON_MAX; button++)
-			{
-				if (con->buttonsRepeat[button] > maxRepeat) maxRepeat = con->buttonsRepeat[button];
-			}
-			break;
-		case YGS_CONKEY_AXIS:
-			if (key->index < YGS_CONAXIS_MAX)
-			{
-					if (multi)
-					{
-						if (con->axesRepeat[key->index] > maxRepeat) maxRepeat = con->axesRepeat[key->index];
-					}
-					else return con->axesRepeat[key->index];
-			}
-			break;
-		case YGS_CONKEY_BUTTON:
-			if (key->index < YGS_CONBUTTON_MAX)
-			{
-				if (multi)
-				{
-					if (con->buttonsRepeat[key->index] > maxRepeat) maxRepeat = con->buttonsRepeat[key->index];
-				}
-				else return con->buttonsRepeat[key->index];
-			}
-			break;
-		default:
-			break;
-		}
+		if (multi) YGS2kGetConKeyRepeatMultiPrivate(con, key, &maxRepeat);
+		else YGS2kGetConKeyRepeatPrivate(con, key, &maxRepeat);
 	}
 	return maxRepeat;
 }
@@ -1174,6 +1437,9 @@ int YGS2kGetNumCons()
 		if (s_aPlayerSlots[player].type == YGS_PLAYERSLOT_CON) {
 			foundCons++;
 		}
+	}
+	if (foundCons == 0 && s_sBuiltinCon.controller) {
+		foundCons = 1;
 	}
 	return foundCons;
 }
@@ -1216,12 +1482,21 @@ int YGS2kGetLastActiveCon()
  */
 YGS2kEInputType YGS2kGetConType(const int player)
 {
-	if (!s_aPlayerSlots || s_iNumPlayerSlots == 0 || player < 0 || player >= s_iNumPlayerSlots || s_aPlayerSlots[player].type != YGS_PLAYERSLOT_CON) return YGS_INPUT_NULL;
+	SDL_GameController* controller = NULL;
+	if (player <= 0 && s_sBuiltinCon.controller && s_bLastInputBuiltinCon) {
+		controller = s_sBuiltinCon.controller;
+	}
+	else if (player >= 0 && player < s_iNumPlayerSlots && s_aPlayerSlots && s_iNumPlayerSlots > 0 && s_aPlayerSlots[player].type == YGS_PLAYERSLOT_CON) {
+		controller = s_aPlayerSlots[player].con.controller;
+	}
+	else {
+		return YGS_INPUT_NULL;
+	}
 
 	#ifdef ONLY_INPUT_TYPE
 	return ONLY_INPUT_TYPE;
 	#else
-	switch(YGS2kGetSDLGameControllerType(s_aPlayerSlots[player].con.controller))
+	switch(YGS2kGetSDLGameControllerType(controller))
 	{
 	default:
 	case SDL_CONTROLLER_TYPE_XBOX360:
@@ -1264,22 +1539,32 @@ YGS2kEInputType YGS2kGetConType(const int player)
 
 bool YGS2kGetConKeyDesc(const int player, const YGS2kSConKey* const key, const char** text, EButton* button)
 {
-	if (
-		!s_aPlayerSlots ||
-		s_iNumPlayerSlots == 0 ||
-		player < 0 ||
-		player >= s_iNumPlayerSlots ||
-		s_aPlayerSlots[player].type != YGS_PLAYERSLOT_CON ||
-		!key ||
-		!text ||
-		!button
-	) {
+	SDL_GameController* controller;
+	if (player == 0 && s_sBuiltinCon.controller && s_bLastInputBuiltinCon)
+	{
+		controller = s_sBuiltinCon.controller;
+	}
+	else if (
+		s_aPlayerSlots &&
+		s_iNumPlayerSlots > 0 &&
+		player >= 0 &&
+		player < s_iNumPlayerSlots &&
+		s_aPlayerSlots[player].type == YGS_PLAYERSLOT_CON &&
+		key &&
+		text &&
+		button
+	)
+	{
+		controller = s_aPlayerSlots[player].con.controller;
+	}
+	else
+	{
 		return false;
 	}
 
 	*text = NULL;
 	*button = BTN_NULL;
-	const SDL_GameControllerType sdlGameControllerType = YGS2kGetSDLGameControllerType(s_aPlayerSlots[player].con.controller);
+	const SDL_GameControllerType sdlGameControllerType = YGS2kGetSDLGameControllerType(controller);
 	switch (key->type)
 	{
 	case YGS_CONKEY_AXIS:
@@ -1732,6 +2017,12 @@ void YGS2kInputsClose()
 	#endif
 
 	#if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
+	#ifdef ENABLE_GAME_CONTROLLER
+	if (s_sBuiltinCon.controller && SDL_GameControllerGetAttached(s_sBuiltinCon.controller)) {
+		SDL_GameControllerClose(s_sBuiltinCon.controller);
+		s_sBuiltinCon.controller = NULL;
+	}
+	#endif
 	YGS2kPlayerSlotsClose();
 	#endif
 }

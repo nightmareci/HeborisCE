@@ -129,7 +129,7 @@ typedef struct YGS2kSConKey {
 
 bool YGS2kIsPushConKey(const int player, const YGS2kSConKey* const key);
 bool YGS2kIsPressConKey(const int player, const YGS2kSConKey* const key);
-int YGS2kGetConKeyRepeat(const int player, YGS2kSConKey* const key);
+int YGS2kGetConKeyRepeat(const int player, const YGS2kSConKey* const key);
 
 int YGS2kGetNumCons();
 void YGS2kResetLastActiveCon();

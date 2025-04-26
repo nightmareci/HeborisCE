@@ -952,7 +952,7 @@ void YGS2kReplayWave ( int num )
 		break;
 
 	case YGS_SOUNDTYPE_MUS:
-		Mix_RewindMusic();
+		Mix_ResumeMusic();
 		break;
 	
 	default:

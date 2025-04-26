@@ -1956,6 +1956,11 @@ void gameExecute() {
 
 			mainLoopState = MAIN_TITLE;
 			init = true;
+			// stop music.
+			if (YGS2kIsPlayMusic())
+				YGS2kStopMusic();
+			if (YGS2kIsPlayWave(62))
+			YGS2kStopWave(62);
 			return;
 		}
 		if(getPushState(0, BTN_D))
@@ -2013,6 +2018,11 @@ void gameExecute() {
 
 		mainLoopState = MAIN_TITLE;
 		init = true;
+		// stop music.
+		if (YGS2kIsPlayMusic())
+			YGS2kStopMusic();
+		if (YGS2kIsPlayWave(62))
+			YGS2kStopWave(62);
 		return;
 	}
 }
@@ -2178,7 +2188,7 @@ bool lastProc(void) {
 			if(pauseGame[0]) {
 				// ポーズ解除
 				setGamePause(0, false);
-
+				
 				if(gameMode[0] == 0)
 					YGS2kReplayWave(57);
 				else
@@ -2214,7 +2224,7 @@ bool lastProc(void) {
 				if(gameMode[1] == 0)
 					YGS2kReplayWave(57);
 				else
-					YGS2kReplayWave(56);
+				YGS2kReplayWave(56);
 			} else {
 				// ポーズ
 				setGamePause(1, true);
@@ -16439,6 +16449,11 @@ void testmenu(void) {
                 if( getPushState(0, BTN_B) ) {
                         mainLoopState = MAIN_TITLE;
                         init = true;
+						// stop music.
+						if (YGS2kIsPlayMusic())
+							YGS2kStopMusic();
+						if (YGS2kIsPlayWave(62))
+							YGS2kStopWave(62);
                         return;
                 }
         }
@@ -16552,6 +16567,11 @@ void testmenu(void) {
                         if (param==1) {
                                 mainLoopState = MAIN_TITLE;
                                 init = true;
+								// stop music.
+								if (YGS2kIsPlayMusic())
+									YGS2kStopMusic();
+								if (YGS2kIsPlayWave(62))
+									YGS2kStopWave(62);
                                 return;
                         }
                 }

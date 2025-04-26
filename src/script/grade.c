@@ -13,9 +13,9 @@ void GradeUp(int32_t player, int32_t lines){
 			gup_down[player] = 1;
 		}
 		int32_t bonuslines = lines;
-		if (lvupbonus == 0) // if levelup bonus is on in this mode,  which is the case only lvupbonus==0
+		if (lvupbonus == 0) // if levelup bonus is on in this mode,  which is the case only for lvupbonus==0
 		{
-			bonuslines += (lines > 1) * (lines = 2); // adjust lien count to match what it wold be after te update.
+			bonuslines += (lines > 1) * (lines - 2); // adjust line count to match what it would be after the update.
 		}
 		// gmflag1成立判定#1.60c7g5
 		if((tc[player]+bonuslines >= 300) && (!gmflag1_e[player])) {

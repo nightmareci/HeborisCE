@@ -5640,17 +5640,19 @@ void statSelectMode(int32_t player) {
 				stage[player] = start_stage[player];
 			}else
 				if(((gameMode[player] == 1) || (gameMode[player] == 2))){
-					if((((enable_randexam==1) && (!item_mode[player]) && (!hebo_plus[player])) && (YGS2kRand(10) < 2)) ||(getPressState(player, BTN_D))){
+					if((((enable_randexam==1) && (!item_mode[player]) && (!IsBig[player]) && (!hebo_plus[player])) && (YGS2kRand(10) < 2)) ||(getPressState(player, BTN_D))){
 						item_mode[player] = 0;
 						hebo_plus[player] = 0;
+						IsBig[player] = 0;
 						examination[player] = Admitgradecheck(player);
 						if(examination[player]==0)
 							examination[player] = 1; // force exam if not already demotion or promotion.  if forced for g4, and neithe is due it will be for current qualified grade
 					}
 					//admitgradecheck(player);
-					if((enable_randexam==2) && (!item_mode[player]) && (!hebo_plus[player])&&(Admitgradecheck(player)>0)&&(!cp_player_1p)){
+					if((enable_randexam==2) && (!item_mode[player]) && (!IsBig[player]) && (!hebo_plus[player])&&(Admitgradecheck(player)>0)&&(!cp_player_1p)){
 						item_mode[player] = 0;
 						hebo_plus[player] = 0;
+						IsBig[player] = 0;
 						examination[player] = Admitgradecheck(player);
 					}
 				}

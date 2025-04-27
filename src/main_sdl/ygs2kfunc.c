@@ -21,28 +21,23 @@ typedef struct YGS2kSTextLayer
 	int textureH;
 } YGS2kSTextLayer;
 
-typedef enum YGS2kESoundType
+typedef struct YGS2kSWave
 {
-	YGS_SOUNDTYPE_NONE,
-	YGS_SOUNDTYPE_WAV,
-	YGS_SOUNDTYPE_MUS,
-} YGS2kESoundType;
+	Mix_Chunk *chunk;
+	int loops;
+} YGS2kSWave;
 
-static bool s_bInitFast	= false;
+static bool 			s_bInitFast = false;
 static SDL_Window		*s_pScreenWindow = NULL;
 static SDL_Renderer		*s_pScreenRenderer = NULL;
 static SDL_Texture		*s_pScreenRenderTarget = NULL;
 static float			s_fScreenSubpixelOffset = 0.0f;
 
-static SDL_Texture		*s_pYGSTexture[YGS_TEXTURE_MAX];
+static SDL_Texture		*s_pTexture[YGS_TEXTURE_MAX];
 
-static int			s_iYGSSoundType[YGS_SOUND_MAX];
-static Mix_Chunk		*s_pYGSSound[YGS_SOUND_MAX];
-static int			s_iYGSSoundVolume[YGS_SOUND_MAX];
-static Mix_Music		*s_pYGSExMusic[YGS_SOUND_MAX];
-static Mix_Music		*s_pYGSMusic;
-static int			s_iYGSMusicVolume;
-static bool s_bWaveFormatSupported[YGS_WAVE_MAXFORMAT];
+static YGS2kSWave		s_Wave[YGS_WAVE_MAX];
+static Mix_Music		*s_pMusic;
+static bool			s_bWaveFormatSupported[YGS_WAVE_MAXFORMAT];
 
 #define		YGS_KANJIFONTFILE_MAX	3
 static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
@@ -51,9 +46,9 @@ static int			s_iLogicalWidth;
 static int			s_iLogicalHeight;
 
 static bool			s_bNoFrameskip;
-static nanotime_step_data		s_StepData = { 0 };
-static bool		s_bLastFrameSkipped;
-static uint64_t		s_uFPSCount;
+static nanotime_step_data	s_StepData = { 0 };
+static bool			s_bLastFrameSkipped;
+static uint64_t			s_uFPSCount;
 static unsigned int		s_uFPSCnting;
 static unsigned int		s_uFPS;
 static unsigned int		s_uNowFPS;
@@ -66,7 +61,7 @@ static int32_t			s_iScreenIndex;
 static int			s_iNewOffsetX = 0, s_iNewOffsetY = 0;
 static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
-static int s_iQuitLevel;
+static int			s_iQuitLevel;
 
 static void YGS2kPrivateKanjiFontFinalize();
 static void YGS2kPrivateKanjiFontInitialize();
@@ -215,22 +210,18 @@ void YGS2kInit(const int soundBufferSize)
 	if (!s_bInitFast) YGS2kInputsOpen();
 
 	/* テクスチャ領域の初期化 || Initialize the texture pointers */
-	if (!s_bInitFast) memset(s_pYGSTexture, 0, sizeof(s_pYGSTexture));
+	if (!s_bInitFast) memset(s_pTexture, 0, sizeof(s_pTexture));
 
 	/* サウンドの初期化 || Initialize sound data */
-	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
+	for ( int i = 0 ; i < YGS_WAVE_MAX ; i ++ )
 	{
 		if ( !s_bInitFast )
 		{
-			s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
-			s_pYGSSound[i] = NULL;
-			s_pYGSExMusic[i] = NULL;
+			s_Wave[i] = (YGS2kSWave) { 0 };
 		}
-		s_iYGSSoundVolume[i] = 0;
 	}
 
-	if ( !s_bInitFast ) s_pYGSMusic = NULL;
-	s_iYGSMusicVolume = 0;
+	if ( !s_bInitFast ) s_pMusic = NULL;
 
 	/* テキストレイヤーの初期化 || Initialize the text layers */
 	for ( int i = 0 ; i < YGS_TEXTLAYER_MAX ; i ++ )
@@ -258,25 +249,18 @@ void YGS2kDeinit()
 	YGS2kInputsClose();
 
 	/* サウンドの解放 */
-	for ( int i = 0 ; i < YGS_SOUND_MAX ; i ++ )
+	for ( int i = 0 ; i < YGS_WAVE_MAX ; i ++ )
 	{
-		s_iYGSSoundType[i] = YGS_SOUNDTYPE_NONE;
-
-		if ( s_pYGSSound[i] )
+		if ( s_Wave[i].chunk )
 		{
-			Mix_FreeChunk(s_pYGSSound[i]);
-			s_pYGSSound[i] = NULL;
-		}
-		if ( s_pYGSExMusic[i] )
-		{
-			Mix_FreeMusic(s_pYGSExMusic[i]);
-			s_pYGSExMusic[i] = NULL;
+			Mix_FreeChunk(s_Wave[i].chunk);
+			s_Wave[i].chunk = NULL;
 		}
 	}
-	if ( s_pYGSMusic )
+	if ( s_pMusic )
 	{
-		Mix_FreeMusic(s_pYGSMusic);
-		s_pYGSMusic = NULL;
+		Mix_FreeMusic(s_pMusic);
+		s_pMusic = NULL;
 	}
 
 	if ( s_pScreenRenderer )
@@ -294,10 +278,10 @@ void YGS2kDeinit()
 		/* テクスチャ領域の解放 */
 		for ( int i = 0 ; i < YGS_TEXTURE_MAX ; i ++ )
 		{
-			if ( s_pYGSTexture[i] )
+			if ( s_pTexture[i] )
 			{
-				SDL_DestroyTexture(s_pYGSTexture[i]);
-				s_pYGSTexture[i] = NULL;
+				SDL_DestroyTexture(s_pTexture[i]);
+				s_pTexture[i] = NULL;
 			}
 		}
 	}
@@ -922,76 +906,25 @@ void YGS2kReplayMusic()
 
 void YGS2kPlayWave ( int num )
 {
-	switch ( s_iYGSSoundType[num] )
+	if ( s_Wave[num].chunk )
 	{
-	case YGS_SOUNDTYPE_WAV:
-		Mix_PlayChannel(num, s_pYGSSound[num], 0);
-		Mix_Volume(num, s_iYGSSoundVolume[num]);
-		break;
-
-	case YGS_SOUNDTYPE_MUS:
-		if ((num == 56) || (num == 57)) {
-			Mix_PlayMusic(s_pYGSExMusic[num], 0);
-		} else {
-			Mix_PlayMusic(s_pYGSExMusic[num], -1);
-		}
-		Mix_VolumeMusic(s_iYGSSoundVolume[num]);
-		break;
-
-	default:
-		break;
+		Mix_PlayChannel(num, s_Wave[num].chunk, s_Wave[num].loops);
 	}
 }
 
 void YGS2kReplayWave ( int num )
 {
-	switch ( s_iYGSSoundType[num] )
-	{
-	case YGS_SOUNDTYPE_WAV:
-		Mix_Resume(num);
-		break;
-
-	case YGS_SOUNDTYPE_MUS:
-		Mix_ResumeMusic();
-		break;
-	
-	default:
-		break;
-	}
+	Mix_Resume(num);
 }
 
 void YGS2kStopWave ( int num )
 {
-	switch ( s_iYGSSoundType[num] )
-	{
-	case YGS_SOUNDTYPE_WAV:
-		Mix_HaltChannel(num);
-		break;
-
-	case YGS_SOUNDTYPE_MUS:
-		Mix_HaltMusic();
-		break;
-		
-	default:
-		break;
-	}
+	Mix_HaltChannel(num);
 }
 
 void YGS2kPauseWave ( int num )
 {
-	switch ( s_iYGSSoundType[num] )
-	{
-	case YGS_SOUNDTYPE_WAV:
-		Mix_Pause(num);
-		break;
-
-	case YGS_SOUNDTYPE_MUS:
-		Mix_PauseMusic();
-		break;
-
-	default:
-		break;
-	}
+	Mix_Pause(num);
 }
 
 void YGS2kSetVolumeWave( int num, int vol )
@@ -999,92 +932,58 @@ void YGS2kSetVolumeWave( int num, int vol )
 	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
 	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
 	if ( volume < 0 )   { volume = 0; }
-	s_iYGSSoundVolume[num] = volume;
-
-	switch ( s_iYGSSoundType[num] )
-	{
-	case YGS_SOUNDTYPE_WAV:
-		Mix_Volume(num, volume);
-		break;
-
-	case YGS_SOUNDTYPE_MUS:
-		Mix_VolumeMusic(volume);
-		break;
-
-	default:
-		break;
-	}
+	Mix_Volume(num, volume);
 }
 
 int YGS2kIsPlayWave( int num )
 {
-	switch ( s_iYGSSoundType[num] )
-	{
-	case YGS_SOUNDTYPE_WAV:
-		/* なぜかここを実行すると落ちる… */
-		return Mix_Playing(num);
-
-	case YGS_SOUNDTYPE_MUS:
-		return Mix_PlayingMusic();
-		
-	default:
-		return 0;
-	}
+	return Mix_Playing(num);
 }
 
 void YGS2kLoadWave( const char* filename, int num )
 {
-	int		len = strlen(filename);
+	int len = strlen(filename);
 	if ( len < 4 ) { return; }
 
-	s_iYGSSoundType[num] = YGS_SOUNDTYPE_NONE;
-
-	// 拡張子、または番号(50番以降がBGM)によって読み込み方法を変える
-	// Change the loading method depending on the extension or number (numbers after 50 are BGM)
 	SDL_RWops *src;
 	src = FSOpenRead(filename);
 	if ( !src ) return;
-	if ( SDL_strcasecmp(&filename[len - 4], ".wav") || num >= 50 )
+	if ( s_Wave[num].chunk )
 	{
-		if ( s_pYGSExMusic[num] != NULL )
-		{
-			Mix_FreeMusic(s_pYGSExMusic[num]);
-			s_pYGSExMusic[num] = NULL;
-		}
-		s_pYGSExMusic[num] = Mix_LoadMUS_RW(src, SDL_TRUE);
-		s_iYGSSoundType[num] = YGS_SOUNDTYPE_MUS;
-		s_iYGSSoundVolume[num] = YGS_VOLUME_MAX;
+		Mix_FreeChunk(s_Wave[num].chunk);
+		s_Wave[num].chunk = NULL;
 	}
-	else
-	{
-		if ( s_pYGSSound[num] != NULL )
-		{
-			Mix_FreeChunk(s_pYGSSound[num]);
-			s_pYGSSound[num] = NULL;
-		}
-		s_pYGSSound[num] = Mix_LoadWAV_RW(src, SDL_TRUE);
-		s_iYGSSoundType[num] = YGS_SOUNDTYPE_WAV;
-		s_iYGSSoundVolume[num] = YGS_VOLUME_MAX;
-	}
+	s_Wave[num].chunk = Mix_LoadWAV_RW(src, 1);
+	Mix_VolumeChunk(s_Wave[num].chunk, YGS_VOLUME_MAX);
+	s_Wave[num].loops = 0;
 }
 
 void YGS2kSetLoopModeWave( int num, int mode )
 {
-   // true=loop, false=no loop.  since this is only used on BGMs, and all BGMs already loop, this is a no-op.
+	if ( mode )
+	{
+		// SDL2 SDL_mixer doesn't really support infinite looping of
+		// chunks, but INT_MAX is plenty enough.
+		s_Wave[num].loops = INT_MAX;
+	}
+	else
+	{
+		s_Wave[num].loops = 0;
+	}
 }
 
 void YGS2kLoadMusic( const char* filename )
 {
-	if ( s_pYGSMusic )
+	if ( s_pMusic )
 	{
-		Mix_FreeMusic(s_pYGSMusic);
-		s_pYGSMusic = NULL;
+		Mix_FreeMusic(s_pMusic);
+		s_pMusic = NULL;
 	}
 
 	SDL_RWops* src;
 	if (!(src = FSOpenRead(filename))) return;
-	s_pYGSMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
-	s_iYGSMusicVolume = YGS_VOLUME_MAX;
+	s_pMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
+	Mix_VolumeMusic(YGS_VOLUME_MAX);
 }
 
 void YGS2kLoadBitmap( const char* filename, int plane, int val )
@@ -1094,24 +993,24 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 		return;
 	}
 
-	if ( s_pYGSTexture[plane] )
+	if ( s_pTexture[plane] )
 	{
-		SDL_DestroyTexture(s_pYGSTexture[plane]);
-		s_pYGSTexture[plane] = NULL;
+		SDL_DestroyTexture(s_pTexture[plane]);
+		s_pTexture[plane] = NULL;
 	}
 
 	SDL_RWops* src;
 	if (!(src = FSOpenRead(filename))) return;
-	if (!(s_pYGSTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE))) return;
+	if (!(s_pTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE))) return;
 
-	SDL_SetTextureBlendMode(s_pYGSTexture[plane], SDL_BLENDMODE_BLEND);
+	SDL_SetTextureBlendMode(s_pTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
 void YGS2kPlayMusic()
 {
-	if ( s_pYGSMusic )
+	if ( s_pMusic )
 	{
-		Mix_PlayMusic(s_pYGSMusic, -1);
+		Mix_PlayMusic(s_pMusic, -1);
 	}
 }
 
@@ -1125,7 +1024,6 @@ void YGS2kSetVolumeMusic(int vol)
 	int volume = (int)((vol / 100.0f) * YGS_VOLUME_MAX);
 	if ( volume > YGS_VOLUME_MAX ) { volume = YGS_VOLUME_MAX; }
 	if ( volume < 0 )   { volume = 0; }
-	s_iYGSMusicVolume = volume;
 	Mix_VolumeMusic(volume);
 }
 
@@ -1415,9 +1313,9 @@ void YGS2kBltAlways(bool always)
 
 void YGS2kBlt(int pno, int dx, int dy)
 {
-	if ( s_pYGSTexture[pno] == NULL ) { return; }
+	if ( s_pTexture[pno] == NULL ) { return; }
 	int w, h;
-	SDL_QueryTexture(s_pYGSTexture[pno], NULL, NULL, &w, &h);
+	SDL_QueryTexture(s_pTexture[pno], NULL, NULL, &w, &h);
 	YGS2kBltRect(pno, dx, dy, 0, 0, w, h);
 }
 
@@ -1442,7 +1340,7 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		return;
 	}
 	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-	if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pTexture[pno] == NULL ) return;
 
 	if ( s_pScreenRenderTarget )
 	{
@@ -1454,7 +1352,7 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
 		dst.w = hx;			dst.h = hy;
 
-		SDL_RenderCopy(s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst);
+		SDL_RenderCopy(s_pScreenRenderer, s_pTexture[pno], &src, &dst);
 	}
 	else
 	{
@@ -1466,7 +1364,7 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		dst.x += dx + s_iOffsetX;	dst.y += dy + s_iOffsetY;
 		dst.w  = hx;			dst.h  = hy;
 
-		SDL_RenderCopyF(s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst);
+		SDL_RenderCopyF(s_pScreenRenderer, s_pTexture[pno], &src, &dst);
 	}
 }
 
@@ -1482,20 +1380,20 @@ void YGS2kBltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 
 void YGS2kBlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-	if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pTexture[pno] == NULL ) return;
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
+	SDL_SetTextureAlphaMod(s_pTexture[pno], ar);
 	YGS2kBlt(pno, dx, dy);
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+	SDL_SetTextureAlphaMod(s_pTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
 void YGS2kBlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
 {
-	if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pTexture[pno] == NULL ) return;
 
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
+	SDL_SetTextureAlphaMod(s_pTexture[pno], ar);
 	YGS2kBltRect(pno, dx, dy, sx, sy, hx, hy);
-	SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+	SDL_SetTextureAlphaMod(s_pTexture[pno], SDL_ALPHA_OPAQUE);
 }
 
 void YGS2kBltR(int pno, int dx, int dy, int scx, int scy)
@@ -1527,7 +1425,7 @@ void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 		return;
 	}
 	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-	if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
 	if ( s_pScreenRenderTarget )
@@ -1543,7 +1441,7 @@ void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 
 		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-		SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+		SDL_RenderCopy( s_pScreenRenderer, s_pTexture[pno], &src, &dst );
 	}
 	else
 	{
@@ -1558,7 +1456,7 @@ void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 
 		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-		SDL_RenderCopyF( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
+		SDL_RenderCopyF( s_pScreenRenderer, s_pTexture[pno], &src, &dst );
 	}
 }
 
@@ -1608,7 +1506,7 @@ void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy,
 		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, SDL_ALPHA_OPAQUE);		return;
 	}
 	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
-	if ( s_pYGSTexture[pno] == NULL ) return;
+	if ( s_pTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
 	if ( s_pScreenRenderTarget )
@@ -1624,9 +1522,9 @@ void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy,
 
 		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
-		SDL_RenderCopy( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
-		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+		SDL_SetTextureAlphaMod(s_pTexture[pno], ar);
+		SDL_RenderCopy( s_pScreenRenderer, s_pTexture[pno], &src, &dst );
+		SDL_SetTextureAlphaMod(s_pTexture[pno], SDL_ALPHA_OPAQUE);
 	}
 	else
 	{
@@ -1641,9 +1539,9 @@ void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy,
 
 		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
 
-		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], ar);
-		SDL_RenderCopyF( s_pScreenRenderer, s_pYGSTexture[pno], &src, &dst );
-		SDL_SetTextureAlphaMod(s_pYGSTexture[pno], SDL_ALPHA_OPAQUE);
+		SDL_SetTextureAlphaMod(s_pTexture[pno], ar);
+		SDL_RenderCopyF( s_pScreenRenderer, s_pTexture[pno], &src, &dst );
+		SDL_SetTextureAlphaMod(s_pTexture[pno], SDL_ALPHA_OPAQUE);
 	}
 }
 

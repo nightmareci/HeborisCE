@@ -17193,15 +17193,15 @@ void loadWaves(void) {
 	YGS2kLoadWave("res/se/medal.wav", 39);
 	YGS2kLoadWave("res/se/pinch.wav", 40);
 
-	YGS2kLoadWave("res/se/platinaerase.wav",41);
-	YGS2kLoadWave("res/se/timeextend.wav",42);
-	YGS2kLoadWave("res/se/stgstar.wav",43);
-	YGS2kLoadWave("res/se/ace_sonic_lock.wav",44);
-	YGS2kLoadWave("res/se/regret.wav",45);
-	YGS2kLoadWave("res/se/cool.wav",46);
+	YGS2kLoadWave("res/se/platinaerase.wav", 41);
+	YGS2kLoadWave("res/se/timeextend.wav", 42);
+	YGS2kLoadWave("res/se/stgstar.wav", 43);
+	YGS2kLoadWave("res/se/ace_sonic_lock.wav", 44);
+	YGS2kLoadWave("res/se/regret.wav", 45);
+	YGS2kLoadWave("res/se/cool.wav", 46);
 
-	YGS2kLoadWave("res/se/timestop.wav",47);
-	YGS2kLoadWave("res/se/tserase.wav",48);
+	YGS2kLoadWave("res/se/timestop.wav", 47);
+	YGS2kLoadWave("res/se/tserase.wav", 48);
 	//YGS2kSetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
@@ -17268,8 +17268,8 @@ void loadBGM(void) {
 		}
 
 		// エンディング曲ループか
-		//YGS2kSetLoopModeWave(56, 0);
-		//YGS2kSetLoopModeWave(57, 0);
+		YGS2kSetLoopModeWave(56, 0);
+		YGS2kSetLoopModeWave(57, 0);
 	}
 }
 

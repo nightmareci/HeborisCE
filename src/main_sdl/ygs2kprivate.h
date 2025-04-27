@@ -3,8 +3,7 @@
 #include "ygs2kfunc.h"
 
 #define		YGS_TEXTURE_MAX		100
-#define		YGS_SOUND_MAX		100
-#define		YGS_MUSIC_MAX		100
+#define		YGS_WAVE_MAX		100
 #define		YGS_TEXTLAYER_MAX	16
 
 #define 	YGS_VOLUME_MAX		MIX_MAX_VOLUME

@@ -182,7 +182,7 @@ static int Parse_Char(Kanji_Font* font, Uint32 encoding, int width, char** line,
 
 	for (y = 0; y < font->size; y++) {
 		Line_Get(buf, sizeof(buf), line, end);
-		moji.pixels[y] = (SDL_strtol(buf, 0, 16) >> rshift);
+		moji.pixels[y] = (SDL_strtol(buf, NULL, 16) >> rshift);
 	}
 
 	if (!hashmap_set(font->mojis, &moji)) {
@@ -234,12 +234,10 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 				SDL_free(src_data);
 				return SDL_SetError("Erroneous extra SIZE line encountered.");
 			}
-			p = SDL_strchr(buf, ' ');
-			if (!p) {
-				SDL_free(src_data);
-				return SDL_SetError("Invalid format of a SIZE line.");
-			}
-			font_size = SDL_strtol(p, 0, 10);
+			p = buf;
+			while (*p != ' ' && *p != '\t') p++;
+			while (*p == ' ' || *p == '\t') p++;
+			font_size = SDL_strtol(p, NULL, 10);
 			if (font_size <= 0 || font_size > INT_MAX) {
 				SDL_free(src_data);
 				return SDL_SetError("Font size of %ld is invalid, must be between 0 and %d.", font_size, INT_MAX);
@@ -263,11 +261,10 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 				SDL_free(src_data);
 				return SDL_SetError("SIZE line not found before an ENCODING line.");
 			}
-			p = SDL_strchr(buf, ' ');
-			if (!p) {
-				return SDL_SetError("Invalid format of an ENCODING line.");
-			}
-			encoding = SDL_strtol(p, 0, 10);
+			p = buf;
+			while (*p != ' ' && *p != '\t') p++;
+			while (*p == ' ' || *p == '\t') p++;
+			encoding = SDL_strtol(p, NULL, 10);
 			if (encoding < 0) {
 				SDL_free(src_data);
 				return SDL_SetError("Character encoding of %ld is invalid, must be nonnegative.", encoding);
@@ -279,12 +276,10 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 				SDL_free(src_data);
 				return SDL_SetError("SIZE line not found before a DWIDTH line.");
 			}
-			p = SDL_strchr(buf, ' ');
-			if (!p) {
-				SDL_free(src_data);
-				return SDL_SetError("Invalid format of a DWIDTH line.");
-			}
-			width = SDL_strtol(p, 0, 10);
+			p = buf;
+			while (*p != ' ' && *p != '\t') p++;
+			while (*p == ' ' || *p == '\t') p++;
+			width = SDL_strtol(p, NULL, 10);
 			if (width <= 0 || width > INT_MAX) {
 				SDL_free(src_data);
 				return SDL_SetError("Character width of %ld is invalid, must be between 0 and %d.", width, INT_MAX);

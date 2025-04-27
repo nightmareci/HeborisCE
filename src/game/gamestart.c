@@ -2189,18 +2189,12 @@ bool lastProc(void) {
 				// ポーズ解除
 				setGamePause(0, false);
 				
-				if(gameMode[0] == 0)
-					YGS2kReplayWave(57);
-				else
-					YGS2kReplayWave(56);
+					YGS2kReplayWave(-1); // resuem all paused waves
 			} else {
 				// ポーズ
 				setGamePause(0, true);
 
-				if(gameMode[0] == 0)
-					YGS2kPauseWave(57);
-				else
-					YGS2kPauseWave(56);
+					YGS2kPauseWave(-1); //pause all waves, can't use 50+bgmlevel cuz that wontt get credit music.
 			}
 
 			if(gameMode[0] == 4)
@@ -2221,18 +2215,12 @@ bool lastProc(void) {
 				// ポーズ解除
 				setGamePause(1, false);
 
-				if(gameMode[1] == 0)
-					YGS2kReplayWave(57);
-				else
-				YGS2kReplayWave(56);
+				YGS2kReplayWave(-1); // same as above
 			} else {
 				// ポーズ
 				setGamePause(1, true);
 
-				if(gameMode[1] == 0)
-					YGS2kPauseWave(57);
-				else
-					YGS2kPauseWave(56);
+				YGS2kPauseWave(-1); // saem as above.
 			}
 
 			if(gameMode[1] == 4)

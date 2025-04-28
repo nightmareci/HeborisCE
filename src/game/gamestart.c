@@ -1394,7 +1394,7 @@ int32_t misstimer[2];	//アイテム「スカ」用のitem_t
 
 int32_t repdata[20 * 2];
 
-int32_t fade_seed = 20;	// BGMフェードアウト用
+int32_t fade_seed = 100;	// BGMフェードアウト用
 
 int32_t se_play[50];
 
@@ -1959,8 +1959,7 @@ void gameExecute() {
 			// stop music.
 			if (YGS2kIsPlayMusic())
 				YGS2kStopMusic();
-			if (YGS2kIsPlayWave(62))
-			YGS2kStopWave(62);
+			StopAllBGM();
 			return;
 		}
 		if(getPushState(0, BTN_D))
@@ -2021,8 +2020,7 @@ void gameExecute() {
 		// stop music.
 		if (YGS2kIsPlayMusic())
 			YGS2kStopMusic();
-		if (YGS2kIsPlayWave(62))
-			YGS2kStopWave(62);
+		StopAllBGM();
 		return;
 	}
 }
@@ -16442,8 +16440,7 @@ void testmenu(void) {
 						// stop music.
 						if (YGS2kIsPlayMusic())
 							YGS2kStopMusic();
-						if (YGS2kIsPlayWave(62))
-							YGS2kStopWave(62);
+						StopAllBGM();
                         return;
                 }
         }
@@ -16560,8 +16557,7 @@ void testmenu(void) {
 								// stop music.
 								if (YGS2kIsPlayMusic())
 									YGS2kStopMusic();
-								if (YGS2kIsPlayWave(62))
-									YGS2kStopWave(62);
+								StopAllBGM();
                                 return;
                         }
                 }

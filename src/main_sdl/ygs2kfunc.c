@@ -1323,7 +1323,7 @@ void YGS2kBlt(int pno, int dx, int dy)
 	SDL_QueryTexture(s_pTexture[pno], NULL, NULL, &w, &h);
 	YGS2kBltRect(pno, dx, dy, 0, 0, w, h);
 }
-void IsRenderToTargetSupported()
+bool IsRenderToTargetSupported()
 {
 	if (s_pScreenRenderer)
 	{

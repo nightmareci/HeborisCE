@@ -1583,10 +1583,17 @@ void viewField(void) {
 							if((disable_giji3D < 3) && (getFieldBlock2(i, k + (1-2*i), j) == 0)){
 								if(fi < 8) tmp[0]=getBigBlock_add(i);
 								else tmp[0] = 8;
-								ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j+1+4) * 8,
-									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8 );
-								}
-							ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+1+ 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
+								if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+									ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
+									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8);
+								if (tomoyo_domirror[0] && (i==0))
+								ExBltFastRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
+									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8);
+							}
+							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+								ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j + 1 + 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
+							if (tomoyo_domirror[0] && (i==0))
+							ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * (1) - 12 * maxPlay) * 8, (j + 1 + 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
 						}
 					}
 		//通常
@@ -1650,21 +1657,37 @@ void viewField(void) {
 											if((disable_giji3D < 4) && (!iscolor[i]) && (getFieldBlock(i, k + (1-2*i), j, 0) == 0) && (add == 0) && (fi != 8) && (fi != 9) && (heboGB[i]==0)){
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
-												BlendExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j+ 3) * 8 + ofs_y2[i],
-													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8 ,fldt4,fldt4,fldt4,fldt5,fldt5,fldt5);
+												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+													BlendExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
+												if (tomoyo_domirror[0] && (i == 0))
+												BlendExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
 											}
-											BlendExBltRect(getBlockPlaneNo(i, fi),(k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j+ 3) * 8 + ofs_y2[i],
-												((fi+add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8 ,fldt4,fldt4,fldt4,fldt5,fldt5,fldt5);
+											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+											BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
+												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
+											if (tomoyo_domirror[0] && (i == 0))
+											BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
+												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
 										} else if((fldt3 != 0) && (fldt3 > -10)) {
 											// タイマーが0なら無視する #1.60c7k4
 											if((disable_giji3D < 4) && (!iscolor[i]) && (getFieldBlock(i, k + (1-2*i), j, 0) == 0) && (add == 0) && (fi != 8) && (fi != 9) && (heboGB[i]==0)){
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
-												ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j+ 3) * 8 + ofs_y2[i],
-													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8 );
+												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+												ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
+												if (tomoyo_domirror[0] && (i == 0))
+												ExBltFastRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 											}
+											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 											ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i],
-												(j+ 3) * 8 + ofs_y2[i], ((fi+add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
+												(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
+											if (tomoyo_domirror[0] && (i == 0))
+											ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i],
+												(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
 										}
 									}
 								}
@@ -1692,17 +1715,37 @@ void viewField(void) {
 													tmp[2] = getFieldBlock(i, k    , j - 1, 0);	//上
 													tmp[3] = getFieldBlock(i, k    , j + 1, 0);	//下
 													// 左
-													if(tmp[0] == 0)
+													if (tmp[0] == 0)
+													{
+														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
+														if (tomoyo_domirror[0] && (i == 0))
+														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
+													}
 													// 右
-													if(tmp[1] == 0)
+													if (tmp[1] == 0)
+													{
+														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
+														if (tomoyo_domirror[0] && (i == 0))
+														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
+													}
 													// 上
-													if(tmp[2] == 0)
+													if (tmp[2] == 0)
+													{
+														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
+														if (tomoyo_domirror[0] && (i == 0))
+														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
+													}
 													// 下
-													if(tmp[3] == 0)
+													if (tmp[3] == 0)
+													{
+														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
+														if (tomoyo_domirror[0] && (i == 0))
+														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
+													}
 													add = 0;
 												}
 											}
@@ -1810,29 +1853,65 @@ void viewPreview(void){
 			// []の場合は棒を押し下げない #1.60c7p9ex改造
 			if(ishidenext[i] != 1){
 				if((isfakenext[i]) && (ndelay[i])){//偽者
-					drawBlockFast(18+ 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) , nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, - 2, 1, i, (disable_giji3D < 3));
+					{
+						if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+						drawBlockFast(18 + 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0), nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+						if (tomoyo_domirror[0] && (i == 0))
+						drawBlockFast(18 + 24 * 1 - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0), nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+					}
 				}else if(ndelay[i]){
-					drawBlockFast(18+ 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rots[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, - 2, 1, i, (disable_giji3D < 3));
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawBlockFast(18 + 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rots[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+					if (tomoyo_domirror[0] && (i == 0))
+					drawBlockFast(18 + 24 * 1 - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rots[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
 				}else if((!ndelay[i]) && ((hnext[i] == 1) || (hebo_plus[i]) || (death_plus[i])) && (!heboGB[i])){
-					drawhBlock(160 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i,rt_nblk[0 + 6 * i],(disable_giji3D < 3));
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawhBlock(160 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i, rt_nblk[0 + 6 * i], (disable_giji3D < 3));
+					if(tomoyo_domirror[0] && (i == 0))
+					drawhBlock(160 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i, rt_nblk[0 + 6 * i], (disable_giji3D < 3));
 				}
 			}
 			//next2個目〜6個目
 			if((ishidenext[i] == 0) && (!death_plus[i])&&(!hebo_plus[i])&&(!heboGB[i])){
 				// 表示位置を微調整 #1.60c7p9ex
-				if(hnext[i] >= 2)
-					drawhBlock(180 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4-(6*(top_frame)), n2[i], c_tmp[1-(!ndelay[i])], 4, i,rt_nblk[(1-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
-				if(hnext[i] >= 3)
-					drawhBlock(200 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4-(6*(top_frame)), n3[i], c_tmp[2-(!ndelay[i])], 4, i,rt_nblk[(2-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
-				if(hnext[i] >= 4)
-					drawhBlock(210 + 192 * i - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4-8, n4[i], c_tmp[3-(!ndelay[i])], 4, i,rt_nblk[(3-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
-				if(hnext[i] >= 5)
-					drawhBlock(210 + 192 * i - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4-8, n5[i], c_tmp[4-(!ndelay[i])], 4, i,rt_nblk[(4-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
-				if(hnext[i] >= 6)
-					drawhBlock(210 + 192 * i - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4-8, n6[i], c_tmp[5-(!ndelay[i])], 4, i,rt_nblk[(5-(!ndelay[i])) + 6 * i],(disable_giji3D < 3));
+				if (hnext[i] >= 2)
+				{
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawhBlock(180 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4 - (6 * (top_frame)), n2[i], c_tmp[1 - (!ndelay[i])], 4, i, rt_nblk[(1 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+					if (tomoyo_domirror[0] && (i == 0))
+					drawhBlock(180 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4 - (6 * (top_frame)), n2[i], c_tmp[1 - (!ndelay[i])], 4, i, rt_nblk[(1 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+				}
+				if (hnext[i] >= 3)
+				{
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawhBlock(200 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4 - (6 * (top_frame)), n3[i], c_tmp[2 - (!ndelay[i])], 4, i, rt_nblk[(2 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+					if (tomoyo_domirror[0] && (i == 0))
+					drawhBlock(200 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4 - (6 * (top_frame)), n3[i], c_tmp[2 - (!ndelay[i])], 4, i, rt_nblk[(2 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+				}
+				if (hnext[i] >= 4)
+				{
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawhBlock(210 + 192 * i - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4 - 8, n4[i], c_tmp[3 - (!ndelay[i])], 4, i, rt_nblk[(3 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+					if (tomoyo_domirror[0] && (i == 0))
+					drawhBlock(210 + 192 * 1 - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4 - 8, n4[i], c_tmp[3 - (!ndelay[i])], 4, i, rt_nblk[(3 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+				}
+				if (hnext[i] >= 5)
+				{
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawhBlock(210 + 192 * i - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4 - 8, n5[i], c_tmp[4 - (!ndelay[i])], 4, i, rt_nblk[(4 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+					if (tomoyo_domirror[0] && (i == 0))
+					drawhBlock(210 + 192 * 1 - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4 - 8, n5[i], c_tmp[4 - (!ndelay[i])], 4, i, rt_nblk[(4 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+				}
+				if (hnext[i] >= 6)
+				{
+					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+					drawhBlock(210 + 192 * i - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4 - 8, n6[i], c_tmp[5 - (!ndelay[i])], 4, i, rt_nblk[(5 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+					if (tomoyo_domirror[0] && (i == 0))
+					drawhBlock(210 + 192 * 1 - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4 - 8, n6[i], c_tmp[5 - (!ndelay[i])], 4, i, rt_nblk[(5 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+				}
 			}
 		}
-
+		if (!tomoyo_domirror[0])  // stop redrawing frame after mirror starts.
 		if(!top_frame)
 			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 33);
 		else
@@ -1862,16 +1941,28 @@ void viewPreview(void){
 					if(!isfakenext[i]){
 						// 表示位置を微調整 #1.60c7p9ex
 						if((ishidenext[i] != 1) || ((ishidenext[i]) && (j != 0) && (j != 9))){
-							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i]!=0) * 4, hold[i], j, 4, i,0,(disable_giji3D < 3));
+							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, hold[i], j, 4, i, 0, (disable_giji3D < 3));
+							if (tomoyo_domirror[0] && (i == 0))
+							drawhBlock(116 + 192 * 1 - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, hold[i], j, 4, i, 0, (disable_giji3D < 3));
 						}else{	//HIDE NEXT時の「？」
-							printFont(15 + 24 * i - 12 * maxPlay,2,"?",0);
+							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+							printFont(15 + 24 * i - 12 * maxPlay, 2, "?", 0);
+							if (tomoyo_domirror[0] && (i == 0))
+							printFont(15 + 24 * 1 - 12 * maxPlay, 2, "?", 0);
 						}
 					}else{//偽者
 						// 表示位置を微調整 #1.60c7p9ex
 						if((ishidenext[i] != 1) || ((ishidenext[i]) && (j != 0) && (j != 9))){
-							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i]!=0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i,0,(disable_giji3D < 3));
+							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i, 0, (disable_giji3D < 3));
+							if (tomoyo_domirror[0] && (i == 0))
+							drawhBlock(116 + 192 * 1 - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i, 0, (disable_giji3D < 3));
 						}else{	//HIDE NEXT時の「!」
-							printFont(15 + 24 * i - 12 * maxPlay,2,"!",0);
+							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+							printFont(15 + 24 * i - 12 * maxPlay, 2, "!", 0);
+							if (tomoyo_domirror[0] && (i == 0))
+							printFont(15 + 24 * 1 - 12 * maxPlay, 2, "!", 0);
 						}
 					}
 				}
@@ -2732,10 +2823,16 @@ void drawCBlock(int32_t player, int32_t color, int32_t bright, int32_t offset, i
 	if(IsBig[player]) {
 		// BIG時
 		drawBigBlockNew(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3,
-			blk[player], rt[player], c_cblk[player], bright, offset, flash, player,((disable_giji3D < 3) && (!not3D)));
+			blk[player], rt[player], c_cblk[player], bright, offset, flash, player, ((disable_giji3D < 3) && (!not3D)));
+		if(tomoyo_domirror[0])
+		drawBigBlockNew(bx[player] + 15 + 24 * 1 - 12 * maxPlay, by[player] + 3,
+			blk[player], rt[player], c_cblk[player], bright, offset, flash, player, ((disable_giji3D < 3) && (!not3D)));
 	} else {
 		// 通常時
 		drawBlock(bx[player] + 15 + 24 * player - 12 * maxPlay, by[player] + 3,
+			blk[player], rt[player], c_cblk[player], bright, offset, flash, player, ((disable_giji3D < 3) && (!not3D)));
+		if (tomoyo_domirror[0])
+		drawBlock(bx[player] + 15 + 24 * 1 - 12 * maxPlay, by[player] + 3,
 			blk[player], rt[player], c_cblk[player], bright, offset, flash, player, ((disable_giji3D < 3) && (!not3D)));
 	}
 }
@@ -2749,10 +2846,16 @@ void drawTLSBlock(int32_t player, int32_t bottom) {
 	if(IsBig[player]) {
 		// BIG時
 		drawBigBlockFast(bx[player] + 15 + 24 * player - 12 * maxPlay, bottom + 2, blk[player],
-					rt[player], c_cblk[player], (7 + 5 * (c_cblk[player] > 10)) * (alpha_tls < 2), 0, 999 * (alpha_tls == 2), player, (disable_giji3D == 0));
+			rt[player], c_cblk[player], (7 + 5 * (c_cblk[player] > 10)) * (alpha_tls < 2), 0, 999 * (alpha_tls == 2), player, (disable_giji3D == 0));
+		if (tomoyo_domirror[0])
+		drawBigBlockFast(bx[player] + 15 + 24 * 1 - 12 * maxPlay, bottom + 2, blk[player],
+			rt[player], c_cblk[player], (7 + 5 * (c_cblk[player] > 10)) * (alpha_tls < 2), 0, 999 * (alpha_tls == 2), player, (disable_giji3D == 0));
 	} else {
 		drawBlockFast(bx[player] + 15 + 24 * player - 12 * maxPlay, bottom + 2, blk[player]
-					, rt[player], c_cblk[player], 12 * (!alpha_tls), 0, 999 * (alpha_tls), player, (disable_giji3D < 2));
+			, rt[player], c_cblk[player], 12 * (!alpha_tls), 0, 999 * (alpha_tls), player, (disable_giji3D < 2));
+		if (tomoyo_domirror[0])
+		drawBlockFast(bx[player] + 15 + 24 * 1 - 12 * maxPlay, bottom + 2, blk[player]
+			, rt[player], c_cblk[player], 12 * (!alpha_tls), 0, 999 * (alpha_tls), player, (disable_giji3D < 2));
 	}
 }
 

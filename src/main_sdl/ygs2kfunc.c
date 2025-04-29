@@ -764,8 +764,7 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 	#ifndef __EMSCRIPTEN__
 	if ( SDL_RenderTargetSupported(s_pScreenRenderer) )
 	{
-//		if (!(*screenMode & YGS_SCREENMODE_RENDERLEVEL))
-		if (SDL_TRUE)
+		if (!(*screenMode & YGS_SCREENMODE_RENDERLEVEL))
 		{
 			// There's no need to create a render target texture if the
 			// currently created render target texture is already the current
@@ -1003,7 +1002,6 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 	SDL_RWops* src;
 	if (!(src = FSOpenRead(filename))) return;
 	if (!(s_pTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE))) return;
-
 	SDL_SetTextureBlendMode(s_pTexture[plane], SDL_BLENDMODE_BLEND);
 }
 
@@ -1326,25 +1324,6 @@ void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 		return;
 	}
 
-	if ((pno > 99) && s_pScreenRenderTarget) //  hack to use screen render target as source
-	{
-		SDL_Rect	src = { 0 };
-		SDL_Rect	dst = { 0 };
-
-		src.x = sx;			src.y = sy;
-		src.w = hx;			src.h = hy;
-		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
-		dst.w = hx;			dst.h = hy;
-		if (s_pTexture[90])
-			SDL_DestroyTexture(s_pTexture[90]);  
-		s_pTexture[90] = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, 320* getDrawRate(), 240* getDrawRate());
-		SDL_SetRenderTarget(s_pScreenRenderer, s_pTexture[90]);
-		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
-		SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
-
-		return;
-	}
-	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pTexture[pno] == NULL ) return;
 
 	if ( s_pScreenRenderTarget )
@@ -1412,28 +1391,6 @@ void YGS2kBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int 
 	{
 		return;
 	}
-
-	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
-	{
-		SDL_Rect	src = { 0 };
-		SDL_Rect	dst = { 0 };
-
-		src.x = sx;					src.y = sy;
-		src.w = hx;					src.h = hy;
-		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
-		dst.w = hx * (scx / 65536.0f);
-		dst.h = hy * (scy / 65536.0f);
-
-		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
-		if (s_pTexture[90])
-			SDL_DestroyTexture(s_pTexture[90]);  
-		s_pTexture[90] = SDL_CreateTexture(s_pScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, 320 * getDrawRate(), 240 * getDrawRate());
-		SDL_SetRenderTarget(s_pScreenRenderer, s_pTexture[90]);
-		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
-		SDL_SetRenderTarget(s_pScreenRenderer, s_pScreenRenderTarget);
-		return;
-	}
-	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
@@ -1497,25 +1454,6 @@ void YGS2kBlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy,
 		return;
 	}
 
-	if ((pno > 99)&& s_pScreenRenderTarget) //  hack to use screen render target as source
-	{
-		SDL_Rect	src = { 0 };
-		SDL_Rect	dst = { 0 };
-
-		src.x = sx;					src.y = sy;
-		src.w = hx;					src.h = hy;
-		dst.x = dx + s_iOffsetX;	dst.y = dy + s_iOffsetY;
-		dst.w = hx * (scx / 65536.0f);
-		dst.h = hy * (scy / 65536.0f);
-
-		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
-
-		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, ar);
-		SDL_RenderCopy(s_pScreenRenderer, s_pScreenRenderTarget, &src, &dst);
-		SDL_SetTextureAlphaMod(s_pScreenRenderTarget, SDL_ALPHA_OPAQUE);		
-		return;
-	}
-	if (pno > 99) return; // give up so check below isn't ran if we use the hack.
 	if ( s_pTexture[pno] == NULL ) return;
 
 	// ちゃんと拡大して描画する
@@ -1565,13 +1503,6 @@ void YGS2kSetColorKeyRGB(int pno, int r, int g, int b)
 {
 	// TODO
 	//  again because we have actual transparency in our assets, this is a no-op.
-}
-
-void YGS2kSwapToSecondary(int pno)
-{
-	 // swaps the rendering target with a layer.  not implemented because no one can figuer out HOW in SDL.
-	 // Only required for EH-Final gimmick, which currently has a workaround.
-	 // it's also used in the graphic loader, and the backgroud loader, but doesn't seem needed.
 }
 
 void YGS2kResetFrameStep()

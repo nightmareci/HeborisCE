@@ -1521,6 +1521,7 @@ void mainUpdate() {
 		}
 
 		loadGraphics(maxPlay);
+		disable_ehlast_gimmick = !IsRenderToTargetSupported();
 
 		if(reinit && se) {
 			loadWaves();	// #1.60c7o5
@@ -1601,7 +1602,6 @@ void mainUpdate() {
 
 		YGS2kInit(1024 << soundbuffer);
 		gameInit();
-
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
 			SetDefaultConfig();
 			LoadConfig();
@@ -2227,11 +2227,11 @@ bool lastProc(void) {
 	}
 	// TOMOYO E-Heart最終面ギミック C7U0
 	for(pl = 0; pl <= maxPlay ; pl++){
-	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){ 
+	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){
 // 		YGS2kSwapToSecondary(23);  // does nothing
-//		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);  // does nothing because the previous thing did nothing
+		ExBltFastRect(100, 160*pl, 0, 160*pl, 0, 160, 240);  // does nothing because the previous thing did nothing
 //		YGS2kSwapToSecondary(23);                               // doe snothing
-		ExBltFastRect(100, 160*(!pl), 0,160*pl,0,160,240);  // hack to render to rendering texture directly if present.
+		ExBltFastRect(90, 160 * (1-pl), 0, 160 * pl, 0, 160, 240);  // hack to render to rendering texture directly if present.
 		if((ending[pl] != 3) && (status[pl] != 21) && (status[pl] != 20)){
 			if(tomoyo_ehfinal_c[pl] < 220)
 				fadec = 19;

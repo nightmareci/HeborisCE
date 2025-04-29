@@ -701,10 +701,6 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 	{
 		
 		s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0x00000008); // ask for render to texture support.
-		if (!s_pScreenRenderer) // if that failed
-		{
-			s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0); // get one without
-		}
 		if (!s_pScreenRenderer)
 		{
 			goto fail;
@@ -1322,15 +1318,6 @@ void YGS2kBlt(int pno, int dx, int dy)
 	int w, h;
 	SDL_QueryTexture(s_pTexture[pno], NULL, NULL, &w, &h);
 	YGS2kBltRect(pno, dx, dy, 0, 0, w, h);
-}
-bool IsRenderToTargetSupported()
-{
-	if (s_pScreenRenderer)
-	{
-		return SDL_RenderTargetSupported(s_pScreenRenderer);
-	}
-	else
-		return SDL_FALSE;
 }
 void YGS2kBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
 {

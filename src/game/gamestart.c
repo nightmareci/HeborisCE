@@ -1521,7 +1521,6 @@ void mainUpdate() {
 		}
 
 		loadGraphics(maxPlay);
-		disable_ehlast_gimmick = !IsRenderToTargetSupported();
 
 		if(reinit && se) {
 			loadWaves();	// #1.60c7o5

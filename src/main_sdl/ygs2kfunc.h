@@ -137,3 +137,4 @@ int YGS2kValLong(const char *stri);
 void YGS2kFillMemory(void* buf, int size, int val);
 
 bool IsRenderToTargetSupported();
+extern int32_t getDrawRate();

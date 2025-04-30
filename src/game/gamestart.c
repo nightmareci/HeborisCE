@@ -11809,7 +11809,9 @@ bgmteisiflg = 1;
 			for(i = 0; i < fldsizew[player]; i++) {
 				// ライン消しエフェクトで消える #1.60c7n5
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
+					if (tomoyo_domirror[0]  && (player==0))
+					objectCreate(player, 1, (i + 15 + 24 * 1 - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
 				}
 
 				fld[i+ j * fldsizew[player] + player * 220] = 0;

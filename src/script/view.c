@@ -2026,16 +2026,25 @@ void viewFldBackground(void) {
 		{
 			if(getDrawRate() == 1)
 			{
-				YGS2kBlendBltRect(4+pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count%128 / 4, count%256 /8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+				YGS2kBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				if (tomoyo_domirror[0] && (i == 0))
+				YGS2kBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 			}
 			else
 			{
-				YGS2kBlendBltRect(4+pinch[i] * 2, 240 + (ofs_x[i]*2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i]*2), count%64 / 2, count%64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+				YGS2kBlendBltRect(4 + pinch[i] * 2, 240 + (ofs_x[i] * 2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i] * 2), count % 64 / 2, count % 64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				if (tomoyo_domirror[0] && (i == 0))
+				YGS2kBlendBltRect(4 + pinch[i] * 2, 240 + (ofs_x[i] * 2) + 384 * 1 - 192 * maxPlay, 80 + (ofs_y[i] * 2), count % 64 / 2, count % 64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 			}
 		}
 		else if(background == 1)
 		{
-			ExBlendBltRect(4+pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+			if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
+			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+			if (tomoyo_domirror[0] && (i == 0))
+			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 		}
 	}
 }

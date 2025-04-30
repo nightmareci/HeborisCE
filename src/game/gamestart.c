@@ -10298,12 +10298,25 @@ void statEraseBlock(int32_t player) {
 			}
 			if((showcombo != 0) || (gameMode[player] == 10)){
 				objectComboClearPl(player);
-				if(lines >= 4)
-					objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
-					 100 + 32 * player, - 900 * (player * 2 - 1), - 600, 4, combo2[player] * isComboMode(player));
+				if (lines >= 4)
+				{
+					if(!tomoyo_domirror[0] || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459))) // seriously
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
+							100 + 32 * player, -900 * (player * 2 - 1), -600, 4, combo2[player] * isComboMode(player));
+					if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + 1 * 120 - 96 * maxPlay,
+							100 + 32 * 1, -900 * (1 * 2 - 1), -600, 4, combo2[player] * isComboMode(player));
+
+				}
 				else
-					objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
-					 100 + 32 * player, - 900 * (player * 2 - 1), - 600, lines, combo2[player] * isComboMode(player));
+				{
+					if (!tomoyo_domirror[0] || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
+							100 + 32 * player, -900 * (player * 2 - 1), -600, lines, combo2[player] * isComboMode(player));
+					if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + 1 * 120 - 96 * maxPlay,
+							100 + 32 * 1, -900 * (1 * 2 - 1), -600, lines, combo2[player] * isComboMode(player));
+				}
 			}
 			// T-SPIN獲得 #1.60c7n6
 			// エンディングでも獲得できる #1.60c7n8

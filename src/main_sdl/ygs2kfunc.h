@@ -134,5 +134,3 @@ void YGS2kLeftStr(const char *src, int len, char *dest);
 char YGS2kCharAt(const char *stri, int pos);
 int YGS2kValLong(const char *stri);
 void YGS2kFillMemory(void* buf, int size, int val);
-
-extern int32_t getDrawRate();

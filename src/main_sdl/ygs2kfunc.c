@@ -700,7 +700,7 @@ bool YGS2kSetScreen(YGS2kEScreenModeFlag *screenMode, int32_t *screenIndex)
 	if ( !s_pScreenRenderer )
 	{
 		
-		s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, 0x00000008); // ask for render to texture support.
+		s_pScreenRenderer = SDL_CreateRenderer(s_pScreenWindow, -1, SDL_RENDERER_TARGETTEXTURE); // ask for render to texture support.
 		if (!s_pScreenRenderer)
 		{
 			goto fail;

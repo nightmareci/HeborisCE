@@ -241,7 +241,7 @@ void viewBack(void) {
 			bgfade_cnt++;
 			for(i=0;i<5*getDrawRate();i++){
 				for(j=0;j<5*getDrawRate();j++){
-					YGS2kBltRect(72,i*64,j*48,0,bgfade_cnt*48,64,48);
+					YGS2kBltRect(72,i*64,j*48,0,bgfade_cnt*48,64,48); // accounts for draw rate, so correct to call directly.
 				}
 			}
 			if(bgfade_cnt == 6) {
@@ -2024,20 +2024,10 @@ void viewFldBackground(void) {
 		}
 		else if(background == 0)
 		{
-			if(getDrawRate() == 1)
-			{
 				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-				YGS2kBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 				if (tomoyo_domirror[0] && (i == 0))
-				YGS2kBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-			}
-			else
-			{
-				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-				YGS2kBlendBltRect(4 + pinch[i] * 2, 240 + (ofs_x[i] * 2) + 384 * i - 192 * maxPlay, 80 + (ofs_y[i] * 2), count % 64 / 2, count % 64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-				if (tomoyo_domirror[0] && (i == 0))
-				YGS2kBlendBltRect(4 + pinch[i] * 2, 240 + (ofs_x[i] * 2) + 384 * 1 - 192 * maxPlay, 80 + (ofs_y[i] * 2), count % 64 / 2, count % 64 / 2, 160, 320, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
-			}
+				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 		}
 		else if(background == 1)
 		{

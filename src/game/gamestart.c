@@ -10285,7 +10285,7 @@ void statEraseBlock(int32_t player) {
 			if(hebocombo[player]) PlaySE(18);
 			combo[player]++;
 			cmbpts[player] = cmbpts[player] + (lines * 2 - 2);
-			if(lines >= 2) {
+			if((lines) >= 2 || gameMode[player]==10 ) { // singles DO count in Original modes.
 				// 1ライン消しを含まないコンボ #1.60c7m8
 				combo2[player]++;
 			}

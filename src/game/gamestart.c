@@ -887,7 +887,7 @@ int32_t		tmp_maxPlay;		// プレイ人数のバックアップ シングル台�
 int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示getPressState(int
 
 // 以下hogeパッチより
-int32_t		sevolume = 100;		//効果音のボリューム。100が標準、0で無音。
+int32_t		sevolume = 50;		//効果音のボリューム。100が標準、0で無音。
 int32_t		se = 1;			//効果音を流すかどうか。(0なら流さない)
 int32_t		bgm = 0;		//BGMを流すかどうか。(0なら流さない)
 
@@ -914,7 +914,7 @@ int32_t		bgfade_cnt = 0;		// 背景フェードの速さ 数字が大きいほ�
 int32_t		english = 0;		// For English Users
 
 // #1.60c7p8追加変数
-int32_t		bgmvolume = 100;	// BGMのボリューム 100が標準、0で無音
+int32_t		bgmvolume = 50;	// BGMのボリューム 100が標準、0で無音
 int32_t		bg_max = 9;		// 背景の最大数
 
 // #1.60c7p9ex追加変数

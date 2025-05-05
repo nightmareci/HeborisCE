@@ -59,7 +59,7 @@ void gameInit() {
 
 	// bigginer〜devil、originalにおいて15分以上プレイすると超高速に#1.60c7h3
 	// 0=ならない 1=なる
-	limit15 = 1;
+	limit15 = 2;
 
 	// BIGモードの縦移動単位
 	// 0=2マス 1=1マス

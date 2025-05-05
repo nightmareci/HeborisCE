@@ -639,8 +639,9 @@ int32_t		repversw;			// 旧バージョンのリプレイデータを再生す�
 // #1.60c7h3追加変数
 int32_t		deadtype = 0;		// 死亡アニメ (0=下からブロック消去 1=灰色化)
 
-int32_t		limit15 = 1;		// 15分以上プレイすると超高速 (0=無効 1=有効)
+int32_t		limit15 = 2;		// 15分以上プレイすると超高速 (0=無効 1=有効)
 							// (リプレイに保存されます)
+							//2 measn no limit for original.
 
 // #1.60c7h8追加変数
 //int32_t		flag_over1000[3 * 2];	// NEXTの出現LV
@@ -4119,7 +4120,9 @@ bool playerExecute(void) {
 		// 横溜めは高速化させない #1.60c7k8
 		// speed.defで速度を変えられる #1.60c7l2
 		// ミッションでは無効 C7T6.6
-		if((gameMode[i] <= 4) || (gameMode[i] == 10)) {
+		// Removed 15 minute limit for original modes, as they were endless in original heboris.
+
+		if((gameMode[i] <= 4) || ((gameMode[i])==10)&&(limit15==1)) {
 			if((gametime[i] > 54000) && (limit15)) {
 				sp[i]    = speed_limit15;
 				wait1[i] = wait1_limit15;

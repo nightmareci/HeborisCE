@@ -639,8 +639,9 @@ int32_t		repversw;			// 旧バージョンのリプレイデータを再生す�
 // #1.60c7h3追加変数
 int32_t		deadtype = 0;		// 死亡アニメ (0=下からブロック消去 1=灰色化)
 
-int32_t		limit15 = 1;		// 15分以上プレイすると超高速 (0=無効 1=有効)
+int32_t		limit15 = 2;		// 15分以上プレイすると超高速 (0=無効 1=有効)
 							// (リプレイに保存されます)
+							//2 measn no limit for original.
 
 // #1.60c7h8追加変数
 //int32_t		flag_over1000[3 * 2];	// NEXTの出現LV
@@ -886,7 +887,7 @@ int32_t		tmp_maxPlay;		// プレイ人数のバックアップ シングル台�
 int32_t		block_rframe = 0;	// ブロックの周りに白い四角形を表示getPressState(int
 
 // 以下hogeパッチより
-int32_t		sevolume = 100;		//効果音のボリューム。100が標準、0で無音。
+int32_t		sevolume = 50;		//効果音のボリューム。100が標準、0で無音。
 int32_t		se = 1;			//効果音を流すかどうか。(0なら流さない)
 int32_t		bgm = 0;		//BGMを流すかどうか。(0なら流さない)
 
@@ -913,7 +914,7 @@ int32_t		bgfade_cnt = 0;		// 背景フェードの速さ 数字が大きいほ�
 int32_t		english = 0;		// For English Users
 
 // #1.60c7p8追加変数
-int32_t		bgmvolume = 100;	// BGMのボリューム 100が標準、0で無音
+int32_t		bgmvolume = 50;	// BGMのボリューム 100が標準、0で無音
 int32_t		bg_max = 9;		// 背景の最大数
 
 // #1.60c7p9ex追加変数
@@ -1601,7 +1602,6 @@ void mainUpdate() {
 
 		YGS2kInit(1024 << soundbuffer);
 		gameInit();
-
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
 			SetDefaultConfig();
 			LoadConfig();
@@ -2227,11 +2227,7 @@ bool lastProc(void) {
 	}
 	// TOMOYO E-Heart最終面ギミック C7U0
 	for(pl = 0; pl <= maxPlay ; pl++){
-	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){ 
-// 		YGS2kSwapToSecondary(23);  // does nothing
-//		ExBltFastRect(23, 160*pl, 0, 160*pl, 0, 160, 240);  // does nothing because the previous thing did nothing
-//		YGS2kSwapToSecondary(23);                               // doe snothing
-		ExBltFastRect(100, 160*(!pl), 0,160*pl,0,160,240);  // hack to render to rendering texture directly if present.
+	if((tomoyo_domirror[pl]) && (status[1-pl] == 0)){
 		if((ending[pl] != 3) && (status[pl] != 21) && (status[pl] != 20)){
 			if(tomoyo_ehfinal_c[pl] < 220)
 				fadec = 19;
@@ -2245,7 +2241,7 @@ bool lastProc(void) {
 			for(tmp = 0; tmp <= 1 ; tmp++)
 				for(i = 0; i < 20; i++)
 					for(j = 0 + 4 * pl; j < 10 + 4 * pl; j++)
-						ExBltRect(75, (24+(160*tmp))+(j * 8), (i+1+ 4) * 8, tmp*8, fadec*8, 8, 8);
+						ExBltRect(75, (24+(192*tmp))+(j * 8), (i+1+ 4) * 8, tmp*8, fadec*8, 8, 8);
 		}
 	} else if((tomoyo_domirror[pl]) && (ending[pl] != 3)){
 		if(tomoyo_ehfinal_c[pl] < 220)
@@ -2260,7 +2256,7 @@ bool lastProc(void) {
 		tmp = pl;
 		for(i = 0; i < 20; i++)
 			for(j = 0 + 4 * pl; j < 10 + 4 * pl; j++)
-				ExBltRect(75, (24+(160*tmp))+(j * 8), (i+1+ 4) * 8, tmp*8, fadec*8, 8, 8);
+				ExBltRect(75, (24+(192*tmp))+(j * 8), (i+1+ 4) * 8, tmp*8, fadec*8, 8, 8);
 	}
 	}
 	if(thunder_timer){
@@ -3979,6 +3975,9 @@ bool playerExecute(void) {
 	}
 
 	for(i = 0; i < 1 + maxPlay; i++) {
+		if ((i == 1) && (tomoyo_domirror[0] == 1))
+			goto skip;
+		// instead all other functions in thos loop that do blitting need tocheck
 		if(pauseGame[i]) {
 			if( (count % 40 < 20) && (!debug) ){
 				printFont(17 + 24 * i - 12 * maxPlay, 15, "PAUSE!", fontc[rots[i]]);
@@ -4121,7 +4120,9 @@ bool playerExecute(void) {
 		// 横溜めは高速化させない #1.60c7k8
 		// speed.defで速度を変えられる #1.60c7l2
 		// ミッションでは無効 C7T6.6
-		if((gameMode[i] <= 4) || (gameMode[i] == 10)) {
+		// Removed 15 minute limit for original modes, as they were endless in original heboris.
+
+		if((gameMode[i] <= 4) || ((gameMode[i])==10)&&(limit15==1)) {
 			if((gametime[i] > 54000) && (limit15)) {
 				sp[i]    = speed_limit15;
 				wait1[i] = wait1_limit15;
@@ -10082,14 +10083,23 @@ void statEraseBlock(int32_t player) {
 					x = statusc[player * 10];
 
 					if(breakeffect) {
-						objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+//						if ((player == 0) || ((!tomoyo_domirror[0]) && (player == 1)))
+						if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))  //omg
+							objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+						if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+						objectCreate(player, 1, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 					}
 					fld[x + i * 10 + player * 220] = 0;
 					fldt[x + i * 10 + player * 220] = 0;	// #1.60c7j5
 
 				} else {
-					if(erase[i + player * 22] == 2)
+					if (erase[i + player * 22] == 2)
+					{
+						if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
 						objectCreate(player, 13, (15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, 0, 0, 0, 0);
+						if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+						objectCreate(player, 13, (15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, 0, 0, 0, 0);
+					}
 					for(x = 0; x < fldsizew[player]; x++) { // #1.60c7b
 						fldtmp = fld[x + i * fldsizew[player] + player * 220];
 
@@ -10100,19 +10110,33 @@ void statEraseBlock(int32_t player) {
 								if( (fld[x + i * fldsizew[player] + player * 220] >= 11) || (super_breakeffect == 1) ||
 									( ((breaktype == 0)||((breaktype == 3)&&(gameMode[player] == 0))) && (super_breakeffect == 2) ) ||
 									((heboGB[player] != 0) && (super_breakeffect == 2)) ) {
-									objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+									if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
+									objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+									if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+									objectCreate(player, 1, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 								} else if(lines & 1) {
 									if((x & 1) == 1) {
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * 1 - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									}
 								} else {
 									if((x & 1) == 0) {
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * 1 - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									}
 								}
 								if(fldi[x + i * fldsizew[player] + player * 220])//アイテムが消えるときの白いエフェクト
-									if(fldi[x + i * 10 + player * 220] < fldihardno)
+									if (fldi[x + i * 10 + player * 220] < fldihardno)
+									{
+										if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
 										objectCreate(player, 12, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, 0, 0, 0, 100);
+										if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+										objectCreate(player, 12, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, 0, 0, 0, 100);
+									}
 							}
 						}
 
@@ -10264,7 +10288,7 @@ void statEraseBlock(int32_t player) {
 			if(hebocombo[player]) PlaySE(18);
 			combo[player]++;
 			cmbpts[player] = cmbpts[player] + (lines * 2 - 2);
-			if(lines >= 2) {
+			if((lines) >= 2 || gameMode[player]==10 ) { // singles DO count in Original modes.
 				// 1ライン消しを含まないコンボ #1.60c7m8
 				combo2[player]++;
 			}
@@ -10277,12 +10301,25 @@ void statEraseBlock(int32_t player) {
 			}
 			if((showcombo != 0) || (gameMode[player] == 10)){
 				objectComboClearPl(player);
-				if(lines >= 4)
-					objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
-					 100 + 32 * player, - 900 * (player * 2 - 1), - 600, 4, combo2[player] * isComboMode(player));
+				if (lines >= 4)
+				{
+					if(!tomoyo_domirror[0] || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459))) // seriously
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
+							100 + 32 * player, -900 * (player * 2 - 1), -600, 4, combo2[player] * isComboMode(player));
+					if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + 1 * 120 - 96 * maxPlay,
+							100 + 32 * 1, -900 * (1 * 2 - 1), -600, 4, combo2[player] * isComboMode(player));
+
+				}
 				else
-					objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
-					 100 + 32 * player, - 900 * (player * 2 - 1), - 600, lines, combo2[player] * isComboMode(player));
+				{
+					if (!tomoyo_domirror[0] || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + player * 120 - 96 * maxPlay,
+							100 + 32 * player, -900 * (player * 2 - 1), -600, lines, combo2[player] * isComboMode(player));
+					if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
+						objectCreate((b_to_b_flag[player] != 0) + (tspin_flag[player] == 2), 2, 156 + 1 * 120 - 96 * maxPlay,
+							100 + 32 * 1, -900 * (1 * 2 - 1), -600, lines, combo2[player] * isComboMode(player));
+				}
 			}
 			// T-SPIN獲得 #1.60c7n6
 			// エンディングでも獲得できる #1.60c7n8
@@ -11788,7 +11825,9 @@ bgmteisiflg = 1;
 			for(i = 0; i < fldsizew[player]; i++) {
 				// ライン消しエフェクトで消える #1.60c7n5
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
+					if (tomoyo_domirror[0]  && (player==0))
+					objectCreate(player, 1, (i + 15 + 24 * 1 - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
 				}
 
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -11821,7 +11860,7 @@ bgmteisiflg = 1;
 						ending[player] = 2;
 						// エンディングBGM再生
 						YGS2kPlayWave(56);
-fadelv[player] = 0;
+						fadelv[player] = 0;
 					}
 					else if((gameMode[player] == 8) && (mission_end[c_mission ] < 4))
 						PlaySE(36);
@@ -17028,13 +17067,11 @@ void loadGraphics(int32_t players) {
 	// タイトル画像を暗くする #1.60c7o5
 	if(background == 2) {
 		ExCreateSurface(30, 320, 240);
-		YGS2kSwapToSecondary(30);
 		ExBltFastRect(8, 0, 0,0,0,320,240);
 
 		for(i = 0; i < 3; i++)
 			BlendExBlt(24, (i % 3) * 120, 0, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
 
-		YGS2kSwapToSecondary(30);
 	}
 }
 
@@ -17090,8 +17127,6 @@ void loadBG(int32_t players,int32_t vsmode){
 					framemax = back_mov_f[12];
 			}
 
-			YGS2kSwapToSecondary(i);
-
 			for(movframe = 0; movframe < framemax; movframe++) {
 				tmp1 = ((movframe / 10) * 320);
 				tmp2 = ((movframe % 10) * 240);
@@ -17116,8 +17151,6 @@ void loadBG(int32_t players,int32_t vsmode){
 					}
 				}
 			}
-
-			YGS2kSwapToSecondary(i);
 		}
 	}
 	YGS2kEnableBlendColorKey(3, 0);

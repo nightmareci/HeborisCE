@@ -3414,11 +3414,16 @@ void versusInit(int32_t player) {
 	} else if((nextblock == 9)|| ((p_nextblock ==9)&&(gameMode[player] == 5))) {
 		// ガイドライン対応ゲーム風NEXT生成 #1.60c7s1(nextblock ==11)
 		guidelineNextInit(player);
-	} else if((nextblock == 8)|| ((p_nextblock ==8)&&(gameMode[player] == 5))) {
+	}
+	else if ((nextblock == 8) || ((p_nextblock == 8) && (gameMode[player] == 5))) {
 		// TGM風NEXT生成#1.60c7h4
 		tgmNextInit(player);
-	} else if((nextblock == 15)|| ((p_nextblock ==15)&&(gameMode[player] == 5))) {
+	}
+	else if ((nextblock == 16) || ((p_nextblock == 16) && (gameMode[player] == 5))) {
 		// TGM風NEXT生成#1.60c7h4
+		tgm3NextInit(player);
+	} else if((nextblock == 15)|| ((p_nextblock ==15)&&(gameMode[player] == 5))) {
+		// Sakura風NEXT
 		SakuraNextInit(player);
 	} else if((nextblock == 10)|| ((p_nextblock ==10)&&(gameMode[player] == 5))) {
 		//電源パターンNEXT生成
@@ -3574,48 +3579,47 @@ void tgmNextInit(int32_t player) {
 	int32_t history[4];
 	int32_t block;
 
-//	for(i = 0; i < 4; i++) history[i] = 3; // 履歴を緑で埋める
+	//	for(i = 0; i < 4; i++) history[i] = 3; // 履歴を緑で埋める
 
-	// Z S Z Sで埋める c7t3.1
-		history[0] = 3;
-		history[1] = 6;
-		history[2] = 3;
-		history[3] = 6;
+		// Z S Z Sで埋める c7t3.1
+	history[0] = 3;
+	history[1] = 6;
+	history[2] = 3;
+	history[3] = 6;
 
 	// 初手生成
 	// next_adjustが動作してなかったのでとりあえず修正 #1.60c7i4
-	if( ((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust)) ) {
+	if (((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust))) {
 		do {
 			nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
-		} while((nextb[0 + player * 1400] == 2) || (nextb[0 + player * 1400] == 3) || (nextb[0 + player * 1400] == 6));
-	} else {
+		} while ((nextb[0 + player * 1400] == 2) || (nextb[0 + player * 1400] == 3) || (nextb[0 + player * 1400] == 6));
+	}
+	else {
 		nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
 	}
 	// 初手生成時に履歴がずれていなかった LITE30.20より C7U1.5
-	for(j = 0; j < 3; j++) {
+	for (j = 0; j < 3; j++) {
 		history[3 - j] = history[3 - (j + 1)];
 	}
 
 	history[0] = nextb[0 + player * 1400];
 
 	// 残りのツモを生成
-	for(i = 1; i < 1400; i++) {
+	for (i = 1; i < 1400; i++) {
 		// ツモを引く
-		block = TGMPiece(&PieceSeed);
 
 		// 引いたツモが履歴にあったら最大4回引き直し→6回に変更c7t3.1	これもリプレイには影響なし？
-		if((block == history[0]) || (block == history[1]) || (block == history[2]) || (block == history[3])) {
-			for(j = 0; j < 6; j++) {
-				block = TGMPiece(&PieceSeed);
+		for (j = 0; j < 6; j++) {
+			block = TGMPiece(&PieceSeed); //  tap bug. this is supposed to be above the loop.
 
-				// 4つの履歴に無かったらその場で抜ける
-				if((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
-					break;
-			}
+			// 4つの履歴に無かったらその場で抜ける
+			if ((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
+				break;
+			block = TGMPiece(&PieceSeed); // the actual intended reroll.   
 		}
 
 		// 履歴をずらす
-		for(j=0;j<3;j++) {
+		for (j = 0; j < 3; j++) {
 			history[3 - j] = history[3 - (j + 1)];
 		}
 
@@ -3623,6 +3627,129 @@ void tgmNextInit(int32_t player) {
 		history[0] = block;
 
 		// nextbに入れる
+		nextb[i + player * 1400] = block;
+	}
+}
+//▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
+//  TGM3 NEXT
+//▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
+int32_t MostDroughtedPiece(int32_t histogram[7])
+{
+	int32_t DroughtedPiece = 0; // assume it's an i until we know otherwise
+	int32_t DroughtLength = 0; // get drought length  of I piece
+	for (int32_t position = 0; position < 7; position++)
+	{
+		if (histogram[position] > DroughtLength)
+		{
+			DroughtedPiece = position;
+			DroughtLength = histogram[position];
+		}
+	}
+	return DroughtedPiece; // don't need to convert
+}
+
+void tgm3NextInit(int32_t player) {
+	int32_t i, j;
+	int32_t history[4] = { 3,6,3,6 }; 	// init history to Z S Z S
+	int32_t block,bagpos,bugdrought,droughtlength,maxdroughtlength;
+	int32_t dp_bag[35]= { 0,0,0,0,0,3,3,3,3,3,6,6,6,6,6,5,5,5,5,5,1,1,1,1,1,2,2,2,2,2,4,4,4,4,4 }; // used to tryand prevent droughts  i,z,s,j,l,o,t
+	int32_t histogram[7] = { 4,4,4,4,4,4,4 }; // 
+	// next_adjust
+	if (((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust))) {
+		do {
+
+			nextb[0 + player * 1400] = TGMPiece(&PieceSeed);
+		} while ((nextb[0 + player * 1400] == 2) || (nextb[0 + player * 1400] == 3) || (nextb[0 + player * 1400] == 6));
+	}
+	else {
+		nextb[0 + player * 1400] = TGMPiece(&PieceSeed);;
+
+	}
+	// piece falls off history
+	for (j = 0; j < 3; j++) {
+		history[3 - j] = history[3 - (j + 1)];
+	}
+	// queue the non s/z/o piece in it
+	history[0] = nextb[0 + player * 1400];
+	// update histogram
+    // increment all seven
+	histogram[0]++;
+	histogram[1]++;
+	histogram[2]++;
+	histogram[3]++;
+	histogram[4]++;
+	histogram[5]++;
+	histogram[6]++;
+	histogram[nextb[0 + player * 1400]] = 0; // zero the piece we just saw. will be duplicated later
+    
+	// fill the rest.
+	for (i = 1; i < 1400; i++) {
+		for (j = 0; j < 6; j++) {
+			bugdrought = -1; // start with no bug.
+
+			bagpos = LCGRand(&PieceSeed)%35;  //  initial roll
+			block = dp_bag[bagpos];
+
+			// is piece in history?
+			if ((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
+				break;  // out of the loop if not
+			// it was in history, so we replace it with the most droughted piece for the reroll.
+			dp_bag[bagpos] = MostDroughtedPiece(histogram);
+			bugdrought= MostDroughtedPiece(histogram);
+			// same bug from tap here. previos roll should have been outside the loop.
+			bagpos = LCGRand(&PieceSeed) % 35;  //  initial roll
+			block = dp_bag[bagpos];
+
+		}
+		// now we have our current piece
+		// but we must check the bug.
+		// calculate highest drought length before update the histogram
+		droughtlength = 0;
+		for (int32_t position = 0; position < 7; position++)
+		{
+			if (histogram[position] > droughtlength)
+			{
+				droughtlength = histogram[position];
+			}
+		}
+		maxdroughtlength = droughtlength;  // remember for later check.
+		
+		// update histogram
+	    // increment all seven
+		histogram[0]++;
+		histogram[1]++;
+		histogram[2]++;
+		histogram[3]++;
+		histogram[4]++;
+		histogram[5]++;
+		histogram[6]++;
+		histogram[block] = 0; // zero the piece we just saw.
+		// now for the bug.
+		// if two pieces shared the same drought length, one of them will have incremented.
+		for (int32_t position = 0; position < 7; position++)
+		{
+			if (histogram[position] > droughtlength)
+			{
+				droughtlength = histogram[position];
+			}
+		}
+		if (bugdrought < 0)
+		{
+			// no reroll happened, update the bag regardless
+			dp_bag[bagpos] = MostDroughtedPiece(histogram);
+		}
+		else if (droughtlength > maxdroughtlength)
+		{
+			// no bug, time to update
+			dp_bag[bagpos] = MostDroughtedPiece(histogram);
+		}
+		// update history
+		for (j = 0; j < 3; j++) {
+			history[3 - j] = history[3 - (j + 1)];
+		}
+		history[0] = block;
+
+		// add block to sequence array.
 		nextb[i + player * 1400] = block;
 	}
 }
@@ -3696,17 +3823,17 @@ uint32_t LCGRand(uint32_t *lcgseed)
 int32_t TGMConvert(int32_t piece)
 {
 	int32_t retval;
-				switch (piece)          // 
-			{
-				case 1: retval= 3;break;
-				case 2: retval= 6;break;
-				case 3: retval=  5;break;
-				case 4: retval=  1;break;
-				case 5: retval=  2;break;
-				case 6: retval=  4;break;
-			default: retval=  piece;break; // I is correct
-			}
-			return retval;
+	switch (piece)          // 
+	{
+	case 1: retval = 3; break;
+	case 2: retval = 6; break;
+	case 3: retval = 5; break;
+	case 4: retval = 1; break;
+	case 5: retval = 2; break;
+	case 6: retval = 4; break;
+	default: retval = piece; break; // I is correct
+	}
+	return retval;
 
 }
 // combine them into one function and mod 7 :)

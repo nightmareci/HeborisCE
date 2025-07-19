@@ -1,4 +1,4 @@
-set(FRAMEWORK_VER "WINDOWS-SDL2")
+set(FRAMEWORK_VER "WINDOWS SDL2")
 
 add_compile_options("/MP")
 add_compile_options("/utf-8")

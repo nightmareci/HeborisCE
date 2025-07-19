@@ -1,4 +1,4 @@
-set(FRAMEWORK_VER "MACOS-SDL2")
+set(FRAMEWORK_VER "MACOSX SDL2")
 
 # Builds Mac application bundle, packaged into a DMG with CPack by default.
 

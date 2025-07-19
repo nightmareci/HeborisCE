@@ -1,4 +1,4 @@
-set(FRAMEWORK_VER "VITA-SDL2")
+set(FRAMEWORK_VER "VITA SDL2")
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT DEFINED VITASDK)
 	message(FATAL_ERROR "Vita SDK CMake toolchain file must be provided to the CMake configure command.")

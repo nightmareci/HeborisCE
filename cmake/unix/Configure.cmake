@@ -1,7 +1,22 @@
-if(${BUILD_TARGET} STREQUAL Linux)
-	set(FRAMEWORK_VER "LINUX-SDL2")
-elseif(${BUILD_TARGET} STREQUAL Darwin)
-	set(FRAMEWORK_VER "MACOS-SDL2")
+if(${BUILD_TARGET} STREQUAL Darwin)
+	# The "Darwin" target is a special case, as it's confusingly not the
+	# actual name of the operating system it corresponds to, the
+	# NeXTSTEP-derived Apple desktop operating system (Mac OS X, macOS). It
+	# seems all other system names do correspond to the correct name,
+	# however; such sensibly-named systems are handled below in the else()
+	# case.
+	#
+	# The choice of MACOSX was made to leave open the possibility of a
+	# classic Mac OS port in the future, which would use MACOS as the shown
+	# system name.
+	set(FRAMEWORK_VER "MACOSX SDL2")
+else()
+	# It's probably a fair assumption that system names are always ASCII,
+	# so it's likely no conversion to ASCII is needed here; the framework
+	# version is displayed using the game font, not the Unicode font, so it
+	# must be ASCII.
+	string(TOUPPER "${BUILD_TARGET}" FRAMEWORK_TGT)
+	set(FRAMEWORK_VER "${FRAMEWORK_TGT} SDL2")
 endif()
 
 # Builds commandline program for some Unix-type platforms. The "Portable" package type supports creating distributable packages with CPack.

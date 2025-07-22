@@ -7452,12 +7452,17 @@ void checkSecretGrade(int32_t player) {
 
 	sgrade[player] = -1;	// 裏段位
 
-	for(i = fldsizeh[player]; i > 3; i--) {	// 最上段とフィールド外はチェックしない
+	for(i = fldsizeh[player]; i > 2; i--) {	// 最上段とフィールド外はチェックしない
 		for(j = 0; j < fldsizew[player]; j++) {
 			// 穴の部分以外が埋まっていない場合は終了
 			if( (j != uhole) && (fld[j + fldsizew[player] * i + player * 220] == 0) ) {
 				return;
 			}
+		}
+
+		// If the hole is not covered, stop here.
+		if( fld[uhole + fldsizew[player] * (i - 1) + player * 220] == 0 ) {
+			return;
 		}
 
 		// 穴の位置を変える
@@ -7475,12 +7480,6 @@ void checkSecretGrade(int32_t player) {
 		}
 
 		sgrade[player]++;	// 裏段位上昇
-	}
-
-	/* GM判定 */
-	// 左上(X:0 Y:1)が埋まっていたらGM
-	if(fld[1 + fldsizew[player] * 2 + player * 220] != 0) {
-		sgrade[player]++;
 	}
 }
 

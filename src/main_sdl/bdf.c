@@ -1,67 +1,68 @@
-#include "SDL_kanji.h"
+#include "bdf.h"
 #include "hashmap.h"
 #include <limits.h>
 
-#define LINE_SIZE 256
+#define BDF_LINE_MAX 256
 
-struct Kanji_Font {
+struct BDF_Font {
 	int size;
-	struct hashmap* mojis;
+	struct hashmap* glyphs;
 };
 
-static char* Line_Get(char* buf, int count, char** src, char* end) {
-	if (buf != NULL && count > 0 && *src < end) {
+static char* BDF_GetLine(char* buffer, int length, char** src, char* end) {
+	if (buffer != NULL && length > 0 && *src < end) {
 		int i;
-		for (i = 0; i < count - 1 && *src + i < end; i++) {
+		for (i = 0; i < length - 1 && *src + i < end; i++) {
 			if ((*src)[i] == '\n' || (*src)[i] == '\r') {
 				char endc = (*src)[i];
-				buf[i] = endc;
+				buffer[i] = endc;
 				i++;
-				if (i < count - 1 && *src + i < end) {
+				if (i < length - 1 && *src + i < end) {
 					if (((*src)[i] == '\n' || (*src)[i] == '\r') && (*src)[i] != endc) {
-						buf[i] = (*src)[i];
+						buffer[i] = (*src)[i];
 						i++;
 					}
 				}
-				buf[i] = '\0';
+				buffer[i] = '\0';
 				*src += i;
 				if (*src < end) {
-					return buf;
+					return buffer;
 				}
 				else {
 					return NULL;
 				}
 			}
 			else {
-				buf[i] = (*src)[i];
+				buffer[i] = (*src)[i];
 			}
 		}
-		buf[i] = '\0';
+		buffer[i] = '\0';
 		*src += i;
-		return buf;
+		return buffer;
 	}
 
 	return NULL;
 }
 
-typedef struct Moji {
+typedef struct BDF_Glyph {
 	Uint32 encoding;
 	int width;
 	Uint32* pixels;
-} Moji;
+} BDF_Glyph;
 
-static uint64_t Moji_Hash(const void *item, uint64_t seed0, uint64_t seed1) {
-	const Moji* const moji = item;
-	return hashmap_sip(&moji->encoding, sizeof(moji->encoding), seed0, seed1);
+static uint64_t BDF_HashGlyphEncodings(const void *item, uint64_t seed0, uint64_t seed1) {
+	const BDF_Glyph* const glyph = item;
+	return hashmap_sip(&glyph->encoding, sizeof(glyph->encoding), seed0, seed1);
 }
 
-static int Moji_Compare(const void* a, const void* b, void* udata) {
-	const Moji* const mojiA = a;
-	const Moji* const mojiB = b;
-	if (mojiA->encoding == mojiB->encoding) {
+static int BDF_CompareGlyphEncodings(const void* a, const void* b, void* udata) {
+	(void)udata;
+	const BDF_Glyph* const glyph_a = a;
+	const BDF_Glyph* const glyph_b = b;
+	if (glyph_a->encoding == glyph_b->encoding) {
 		return 0;
 	}
-	else if (mojiA->encoding > mojiB->encoding) {
+	else if (glyph_a->encoding > glyph_b->encoding) {
 		return 1;
 	}
 	else {
@@ -69,13 +70,13 @@ static int Moji_Compare(const void* a, const void* b, void* udata) {
 	}
 }
 
-static void Moji_Free(void *item) {
-	Moji* const moji = item;
-	SDL_free(moji->pixels);
+static void BDF_FreeGlyph(void *item) {
+	BDF_Glyph* const glyph = item;
+	SDL_free(glyph->pixels);
 }
 
-static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
-	Uint32 res;
+static const Uint8* BDF_NextUTF8Encoding(const Uint8* text, Uint32* encoding) {
+	Uint32 tmp_encoding;
 	int bytes;
 	const Uint8* c;
 
@@ -91,32 +92,35 @@ static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
 		return text;
 	}
 
-	res = *text & 0xFFu;
-	if ((res & 0x80u) == 0x00u) {
-		*encoding = res;
+	tmp_encoding = *text & 0xFFu;
+	if ((tmp_encoding & 0x80u) == 0x00u) {
+		*encoding = tmp_encoding;
 		return text + 1;
 	}
 
-	if ((res & 0xE0u) == 0xC0u) {
+	if ((tmp_encoding & 0xE0u) == 0xC0u) {
 		if (text[1] == '\0') {
 			return NULL;
 		}
-		res &= 0x1Fu;
+		tmp_encoding &= 0x1Fu;
 		bytes = 2;
 	}
-	else if ((res & 0xF0u) == 0xE0u) {
+	else if ((tmp_encoding & 0xF0u) == 0xE0u) {
 		if (text[1] == '\0' || text[2] == '\0') {
 			return NULL;
 		}
-		res &= 0xFu;
+		tmp_encoding &= 0xFu;
 		bytes = 3;
 	}
-	else if ((res & 0xF1u) == 0xF0u) {
+	else if ((tmp_encoding & 0xF1u) == 0xF0u) {
 		if (text[1] == '\0' || text[2] == '\0' || text[3] == '\0') {
 			return NULL;
 		}
-		res &= 0x7u;
+		tmp_encoding &= 0x7u;
 		bytes = 4;
+	}
+	else {
+		return NULL;
 	}
 
 	for (c = text + 1; c < text + bytes; c++) {
@@ -124,24 +128,24 @@ static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
 		if ((byte & 0xC0u) != 0x80u) {
 			return NULL;
 		}
-		res = (res << 6) | (byte & 0x3Fu);
+		tmp_encoding = (tmp_encoding << 6) | (byte & 0x3Fu);
 	}
 
 	switch (bytes) {
 	case 2:
-		if (res <= 0x7Fu) {
+		if (tmp_encoding <= 0x7Fu) {
 			return NULL;
 		}
 		break;
 
 	case 3:
-		if (res <= 0x7FFu) {
+		if (tmp_encoding <= 0x7FFu) {
 			return NULL;
 		}
 		break;
 
 	case 4:
-		if (res <= 0xFFFFu) {
+		if (tmp_encoding <= 0xFFFFu) {
 			return NULL;
 		}
 		break;
@@ -150,67 +154,63 @@ static const Uint8* UTF8_Next(const Uint8* text, Uint32* encoding) {
 		return NULL;
 	}
 
-	if ((res >= 0xD800u && res <= 0xDFFFu) || res > 0x10FFFFu) {
+	if ((tmp_encoding >= 0xD800u && tmp_encoding <= 0xDFFFu) || tmp_encoding > 0x10FFFFu) {
 		return NULL;
 	}
 	else {
-		*encoding = res;
+		*encoding = tmp_encoding;
 		return text + bytes;
 	}
 }
 
-static int Parse_Char(Kanji_Font* font, Uint32 encoding, int width, char** line, char* end, int rshift) {
-	Uint32* key;
-	Moji moji;
-	char buf[LINE_SIZE];
+static int BDF_ParseChar(BDF_Font* font, Uint32 encoding, int width, char** line, char* end, int rshift) {
+	BDF_Glyph glyph;
+	char buffer[BDF_LINE_MAX];
 	Uint32 y;
 
-	/* 既にロードされている文字は読み込まない */
 	/* Do not load characters that have already been loaded */
-	moji.encoding = encoding;
-	if (hashmap_get(font->mojis, &moji)) {
+	glyph.encoding = encoding;
+	if (hashmap_get(font->glyphs, &glyph)) {
 		return 0;
 	}
 
-	moji.width = width;
+	glyph.width = width;
 
-	moji.pixels = SDL_malloc(sizeof(Uint32) * font->size);
-	if (!moji.pixels) {
+	glyph.pixels = SDL_malloc(sizeof(Uint32) * font->size);
+	if (!glyph.pixels) {
 		SDL_SetError("Failed to allocate memory for a character's pixels of a font.");
 		return -1;
 	}
 
 	for (y = 0; y < font->size; y++) {
-		Line_Get(buf, sizeof(buf), line, end);
-		moji.pixels[y] = (SDL_strtol(buf, NULL, 16) >> rshift);
+		BDF_GetLine(buffer, sizeof(buffer), line, end);
+		glyph.pixels[y] = (SDL_strtol(buffer, NULL, 16) >> rshift);
 	}
 
-	if (!hashmap_set(font->mojis, &moji)) {
+	if (!hashmap_set(font->glyphs, &glyph)) {
 		return 0;
 	}
 	else {
 		SDL_SetError("Failed to insert a character into a font's hashmap.");
-		SDL_free(moji.pixels);
+		SDL_free(glyph.pixels);
 		return -1;
 	}
 }
 
-int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
+int BDF_AddFont(BDF_Font* font, SDL_RWops* src) {
 	char* src_data;
 	char* end;
 	char* line;
 	char *p;
-	char sc;
 	long encoding;
 	long font_size;
 	long width;
 	int s;
-	char buf[LINE_SIZE];
+	char buffer[BDF_LINE_MAX];
 	Sint64 src_size;
 	SDL_bool found_size;
 	SDL_bool found_encoding;
 	SDL_bool found_width;
-	SDL_bool found_bitmap;
 
 	src_size = SDL_RWsize(src);
 	src_data = SDL_malloc(src_size);
@@ -227,14 +227,13 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 	found_size = SDL_FALSE;
 	found_encoding = SDL_FALSE;
 	found_width = SDL_FALSE;
-	found_bitmap = SDL_FALSE;
-	while (Line_Get(buf, sizeof(buf), &line, end) != NULL) {
-		if (SDL_strstr(buf, "SIZE") == buf) {
+	while (BDF_GetLine(buffer, sizeof(buffer), &line, end) != NULL) {
+		if (SDL_strstr(buffer, "SIZE") == buffer) {
 			if (found_size) {
 				SDL_free(src_data);
 				return SDL_SetError("Erroneous extra SIZE line encountered.");
 			}
-			p = buf;
+			p = buffer;
 			while (*p != ' ' && *p != '\t') p++;
 			while (*p == ' ' || *p == '\t') p++;
 			font_size = SDL_strtol(p, NULL, 10);
@@ -247,21 +246,20 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 			}
 			found_size = SDL_TRUE;
 		}
-		else if (SDL_strstr(buf, "STARTCHAR") == buf) {
+		else if (SDL_strstr(buffer, "STARTCHAR") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
 				return SDL_SetError("SIZE line not found before a STARTCHAR line.");
 			}
 			found_encoding = SDL_FALSE;
 			found_width = SDL_FALSE;
-			found_bitmap = SDL_FALSE;
 		}
-		else if (SDL_strstr(buf, "ENCODING") == buf) {
+		else if (SDL_strstr(buffer, "ENCODING") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
 				return SDL_SetError("SIZE line not found before an ENCODING line.");
 			}
-			p = buf;
+			p = buffer;
 			while (*p != ' ' && *p != '\t') p++;
 			while (*p == ' ' || *p == '\t') p++;
 			encoding = SDL_strtol(p, NULL, 10);
@@ -271,12 +269,12 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 			}
 			found_encoding = SDL_TRUE;
 		}
-		else if (SDL_strstr(buf, "DWIDTH") == buf) {
+		else if (SDL_strstr(buffer, "DWIDTH") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
 				return SDL_SetError("SIZE line not found before a DWIDTH line.");
 			}
-			p = buf;
+			p = buffer;
 			while (*p != ' ' && *p != '\t') p++;
 			while (*p == ' ' || *p == '\t') p++;
 			width = SDL_strtol(p, NULL, 10);
@@ -286,7 +284,7 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 			}
 			found_width = SDL_TRUE;
 		}
-		else if (SDL_strstr(buf, "BITMAP") == buf) {
+		else if (SDL_strstr(buffer, "BITMAP") == buffer) {
 			int rshift;
 			if (!found_size || !found_encoding || !found_width) {
 				SDL_free(src_data);
@@ -294,7 +292,7 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 			}
 			for (s = 8; s < width; s += 8) {}
 			rshift = s - width;
-			if (Parse_Char(font, (Uint32)encoding, width, &line, end, rshift) < 0) {
+			if (BDF_ParseChar(font, (Uint32)encoding, width, &line, end, rshift) < 0) {
 				SDL_free(src_data);
 				return SDL_SetError("Failed to parse a font character: %s", SDL_GetError());
 			}
@@ -305,10 +303,10 @@ int Kanji_AddFont(Kanji_Font* font, SDL_RWops* src) {
 	return 0;
 }
 
-Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
-	Kanji_Font* font;
+BDF_Font* BDF_OpenFont(SDL_RWops* src) {
+	BDF_Font* font;
 
-	font = SDL_malloc(sizeof(Kanji_Font));
+	font = SDL_malloc(sizeof(BDF_Font));
 	if (!font) {
 		SDL_SetError("Failed to allocate memory for the font object.");
 		return NULL;
@@ -316,8 +314,8 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 
 	font->size = 0;
 
-	font->mojis = hashmap_new(sizeof(Moji), 16, 0, 0, Moji_Hash, Moji_Compare, Moji_Free, NULL);
-	if (!font->mojis) {
+	font->glyphs = hashmap_new(sizeof(BDF_Glyph), 16, 0, 0, BDF_HashGlyphEncodings, BDF_CompareGlyphEncodings, BDF_FreeGlyph, NULL);
+	if (!font->glyphs) {
 		SDL_free(font);
 		SDL_SetError("Failed to create the hashmap for the font object: %s", SDL_GetError());
 		return NULL;
@@ -326,7 +324,7 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 	if (src == NULL) {
 		return font;
 	}
-	else if (Kanji_AddFont(font, src) < 0) {
+	else if (BDF_AddFont(font, src) < 0) {
 		SDL_free(font);
 		SDL_SetError("Failed to parse the font: %s", SDL_GetError());
 		return NULL;
@@ -336,11 +334,11 @@ Kanji_Font* Kanji_OpenFont(SDL_RWops* src) {
 	}
 }
 
-int Kanji_FontSize(Kanji_Font* font) {
+int BDF_FontSize(BDF_Font* font) {
 	return font->size;
 }
 
-int Kanji_TextWidth(Kanji_Font* font, const char* text) {
+int BDF_TextWidth(BDF_Font* font, const char* text) {
 	const Uint8* p;
 	Uint32 encoding;
 	int w;
@@ -353,21 +351,21 @@ int Kanji_TextWidth(Kanji_Font* font, const char* text) {
 	}
 
 	w = 0;
-	for (p = UTF8_Next((const Uint8*)text, &encoding); p != NULL && encoding != '\0' && encoding != '\n' && encoding != '\r'; p = UTF8_Next(p, &encoding)) {
-		Moji getMoji;
-		const Moji* gotMoji;
+	for (p = BDF_NextUTF8Encoding((const Uint8*)text, &encoding); p != NULL && encoding != '\0' && encoding != '\n' && encoding != '\r'; p = BDF_NextUTF8Encoding(p, &encoding)) {
+		BDF_Glyph get_glyph;
+		const BDF_Glyph* got_glyph;
 
-		getMoji.encoding = encoding;
+		get_glyph.encoding = encoding;
 
-		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
+		if (!(got_glyph = hashmap_get(font->glyphs, &get_glyph))) {
 			return SDL_SetError("The text contains a character not in the font, so width cannot be calculated.");
 		}
 
-		if (w > INT_MAX - gotMoji->width) {
+		if (w > INT_MAX - got_glyph->width) {
 			return SDL_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
 		}
 
-		w += gotMoji->width;
+		w += got_glyph->width;
 	}
 
 	if (p != NULL) {
@@ -378,14 +376,14 @@ int Kanji_TextWidth(Kanji_Font* font, const char* text) {
 	}
 }
 
-int Kanji_TextDimensions(Kanji_Font* font, const char *text, int* w, int* h) {
+int BDF_TextDimensions(BDF_Font* font, const char *text, int* w, int* h) {
 	const Uint8* p;
 	Uint32 encoding;
 
 	int line_w = 0;
 	int temp_w = 0;
 	int temp_h = font->size;
-	for (p = UTF8_Next((const Uint8*)text, &encoding); p != NULL && encoding != '\0'; p = UTF8_Next(p, &encoding)) {
+	for (p = BDF_NextUTF8Encoding((const Uint8*)text, &encoding); p != NULL && encoding != '\0'; p = BDF_NextUTF8Encoding(p, &encoding)) {
 		/* Handle any newline format */
 		if (encoding == '\n' || encoding == '\r') {
 			/* If we see '\r' and '\n' adjacent, we should consider those two bytes as meaning one newline. */
@@ -408,19 +406,19 @@ int Kanji_TextDimensions(Kanji_Font* font, const char *text, int* w, int* h) {
 			continue;
 		}
 
-		Moji getMoji;
-		const Moji* gotMoji;
+		BDF_Glyph get_glyph;
+		const BDF_Glyph* got_glyph;
 
-		getMoji.encoding = encoding;
-		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
+		get_glyph.encoding = encoding;
+		if (!(got_glyph = hashmap_get(font->glyphs, &get_glyph))) {
 			return SDL_SetError("The text contains a character not in the font, so dimensions cannot be calculated.");
 		}
 
-		if (temp_w > INT_MAX - gotMoji->width) {
+		if (temp_w > INT_MAX - got_glyph->width) {
 			return SDL_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
 		}
 
-		line_w += gotMoji->width;
+		line_w += got_glyph->width;
 	}
 	if (line_w > temp_w) {
 		temp_w = line_w;
@@ -431,7 +429,9 @@ int Kanji_TextDimensions(Kanji_Font* font, const char *text, int* w, int* h) {
 	return 0;
 }
 
-int Kanji_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color) {
+int BDF_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color) {
+	(void)subx;
+	(void)suby;
 	Uint8* p, bpp;
 	Uint32 mapped_color;
 
@@ -469,7 +469,7 @@ int Kanji_PutPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, 
 	return 0;
 }
 
-int Kanji_PutPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
+int BDF_PutPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
 	Uint8 r, g, b, a;
 
 	if (SDL_GetRenderDrawColor(s, &r, &g, &b, &a) < 0) return -1;
@@ -479,16 +479,16 @@ int Kanji_PutPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby
 	return 0;
 }
 
-int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, Kanji_PutPixelCallback put_pixel) {
+int BDF_PutText(BDF_Font* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, BDF_PutPixelCallback put_pixel) {
 	int cx, cy;
 	const Uint8* p;
 	Uint32 encoding;
 
 	cx = dx;
 	cy = dy;
-	for (p = UTF8_Next((const Uint8*)txt, &encoding); p != NULL && encoding != '\0'; p = UTF8_Next(p, &encoding)) {
-		Moji getMoji;
-		const Moji* gotMoji;
+	for (p = BDF_NextUTF8Encoding((const Uint8*)txt, &encoding); p != NULL && encoding != '\0'; p = BDF_NextUTF8Encoding(p, &encoding)) {
+		BDF_Glyph get_glyph;
+		const BDF_Glyph* got_glyph;
 		int x, y;
 		int minx, miny, maxx, maxy;
 
@@ -508,44 +508,44 @@ int Kanji_PutText(Kanji_Font* font, int dx, int dy, float subx, float suby, void
 			continue;
 		}
 
-		getMoji.encoding = encoding;
-		if (!(gotMoji = hashmap_get(font->mojis, &getMoji))) {
+		get_glyph.encoding = encoding;
+		if (!(got_glyph = hashmap_get(font->glyphs, &get_glyph))) {
 			return SDL_SetError("The text contains a character not in the font (U+%04" SDL_PRIX32 "), so it cannot be drawn.", encoding);
 		}
 
 		minx = (cx >= 0) ? 0 : -cx;
 		miny = (cy >= 0) ? 0 : -cy;
-		maxx = (cx + gotMoji->width <= dw) ? gotMoji->width : dw - cx;
+		maxx = (cx + got_glyph->width <= dw) ? got_glyph->width : dw - cx;
 		maxy = (cy + font->size <= dh) ? font->size : dh - cy;
 
 		for (y = miny; y < maxy; y++) {
 			for (x = minx; x < maxx; x++) {
-				if (gotMoji->pixels[y] & (1 << (gotMoji->width - x - 1))) {
+				if (got_glyph->pixels[y] & (1 << (got_glyph->width - x - 1))) {
 					if (put_pixel(dst, cx + x, cy + y, subx, suby, fg) < 0) {
 						return -1;
 					}
 				}
 			}
 		}
-		cx += gotMoji->width;
+		cx += got_glyph->width;
 	}
 
 	return 0;
 }
 
-int Kanji_PutTextSurface(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
-	return Kanji_PutText(font, dx, dy, subx, suby, dst, dst->w, dst->h, txt, fg, (Kanji_PutPixelCallback)Kanji_PutPixelSurface);
+int BDF_PutTextSurface(BDF_Font* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
+	return BDF_PutText(font, dx, dy, subx, suby, dst, dst->w, dst->h, txt, fg, (BDF_PutPixelCallback)BDF_PutPixelSurface);
 }
 
-int Kanji_PutTextRenderer(Kanji_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
+int BDF_PutTextRenderer(BDF_Font* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
 	int dw, dh;
 	SDL_RenderGetLogicalSize(dst, &dw, &dh);
-	return Kanji_PutText(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (Kanji_PutPixelCallback)Kanji_PutPixelRenderer);
+	return BDF_PutText(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (BDF_PutPixelCallback)BDF_PutPixelRenderer);
 }
 
-SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color fg, int depth) {
+SDL_Surface* BDF_CreateSurface(BDF_Font* font, const char* text, SDL_Color fg, int depth) {
 	int w, h;
-	if (Kanji_TextDimensions(font, text, &w, &h) < 0) {
+	if (BDF_TextDimensions(font, text, &w, &h) < 0) {
 		return NULL;
 	}
 
@@ -578,7 +578,7 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color f
 		return NULL;
 	}
 
-	if (Kanji_PutTextSurface(font, 0, 0, 0.0f, 0.0f, surface, text, fg) < 0) {
+	if (BDF_PutTextSurface(font, 0, 0, 0.0f, 0.0f, surface, text, fg) < 0) {
 		SDL_FreeSurface(surface);
 		return NULL;
 	}
@@ -586,8 +586,8 @@ SDL_Surface* Kanji_CreateSurface(Kanji_Font* font, const char* text, SDL_Color f
 	return surface;
 }
 
-SDL_Texture* Kanji_CreateTexture(Kanji_Font* font, SDL_Renderer* renderer, const char* text, SDL_Color fg, int depth) {
-	SDL_Surface* surface = Kanji_CreateSurface(font, text, fg, depth);
+SDL_Texture* BDF_CreateTexture(BDF_Font* font, SDL_Renderer* renderer, const char* text, SDL_Color fg, int depth) {
+	SDL_Surface* surface = BDF_CreateSurface(font, text, fg, depth);
 	if (!surface) {
 		return NULL;
 	}
@@ -601,9 +601,9 @@ SDL_Texture* Kanji_CreateTexture(Kanji_Font* font, SDL_Renderer* renderer, const
 	return texture;
 }
 
-void Kanji_CloseFont(Kanji_Font* font) {
+void BDF_CloseFont(BDF_Font* font) {
 	SDL_assert(font != NULL);
 
-	hashmap_free(font->mojis);
+	hashmap_free(font->glyphs);
 	SDL_free(font);
 }

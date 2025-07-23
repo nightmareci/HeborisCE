@@ -1,5 +1,5 @@
 #include "main_sdl/include.h"
-#include "SDL_kanji.h"
+#include "bdf.h"
 #include "ygs2kfunc.h"
 #include "ygs2kprivate.h"
 #include "filesystem.h"
@@ -39,8 +39,8 @@ static YGS2kSWave		s_Wave[YGS_WAVE_MAX];
 static Mix_Music		*s_pMusic;
 static bool			s_bWaveFormatSupported[YGS_WAVE_MAXFORMAT];
 
-#define		YGS_KANJIFONTFILE_MAX	3
-static Kanji_Font		*s_pKanjiFont[YGS_KANJIFONTFILE_MAX];
+#define		YGS_BDFFONTFILE_MAX	3
+static BDF_Font		*s_pBDFFont[YGS_BDFFONTFILE_MAX];
 
 static int			s_iLogicalWidth;
 static int			s_iLogicalHeight;
@@ -63,8 +63,8 @@ static int			s_iOffsetX = 0, s_iOffsetY = 0;
 
 static int			s_iQuitLevel;
 
-static void YGS2kPrivateKanjiFontFinalize();
-static void YGS2kPrivateKanjiFontInitialize();
+static void YGS2kPrivateBDFFontFinalize();
+static void YGS2kPrivateBDFFontInitialize();
 
 static float YGS2kGetScreenSubpixelOffset()
 {
@@ -232,7 +232,7 @@ void YGS2kInit(const int soundBufferSize)
 		s_TextLayer[i].size = 16;
 	}
 
-	if ( !s_bInitFast ) YGS2kPrivateKanjiFontInitialize();
+	if ( !s_bInitFast ) YGS2kPrivateBDFFontInitialize();
 
 	s_bLastFrameSkipped = false;
 	s_uFPSCount = 0u;
@@ -302,7 +302,7 @@ void YGS2kDeinit()
 		s_pScreenWindow = NULL;
 	}
 
-	YGS2kPrivateKanjiFontFinalize();
+	YGS2kPrivateBDFFontFinalize();
 
 	switch ( s_iQuitLevel )
 	{
@@ -1240,7 +1240,7 @@ void YGS2kTextBlt ( int layer )
 		font ++;
 	}
 
-	if ( !s_pKanjiFont[font] )
+	if ( !s_pBDFFont[font] )
 	{
 		return;
 	}
@@ -1251,7 +1251,7 @@ void YGS2kTextBlt ( int layer )
 		{
 			SDL_DestroyTexture(s_TextLayer[layer].texture);
 		}
-		s_TextLayer[layer].texture = Kanji_CreateTexture(s_pKanjiFont[font], s_pScreenRenderer, s_TextLayer[layer].string, s_TextLayer[layer].color, 32);
+		s_TextLayer[layer].texture = BDF_CreateTexture(s_pBDFFont[font], s_pScreenRenderer, s_TextLayer[layer].string, s_TextLayer[layer].color, 32);
 		if ( !s_TextLayer[layer].texture )
 		{
 			SDL_Log("Error creating texture to blit text: %s\n", SDL_GetError());
@@ -1578,9 +1578,9 @@ void YGS2kFillMemory(void* buf, int size, int val)
 
 ////////////////////////////////////////////////////
 
-static void YGS2kPrivateKanjiFontInitialize()
+static void YGS2kPrivateBDFFontInitialize()
 {
-	const char* const filenames[YGS_KANJIFONTFILE_MAX] = {
+	const char* const filenames[YGS_BDFFONTFILE_MAX] = {
 		"res/font/font10.bdf",
 		"res/font/font12.bdf",
 		"res/font/font16.bdf"
@@ -1588,18 +1588,18 @@ static void YGS2kPrivateKanjiFontInitialize()
 
 	/* フォント読み込み */
 	/* Load fonts */
-	for (int i = 0; i < YGS_KANJIFONTFILE_MAX; i++) {
-		if (s_pKanjiFont[i]) {
+	for (int i = 0; i < YGS_BDFFONTFILE_MAX; i++) {
+		if (s_pBDFFont[i]) {
 			continue;
 		}
 		SDL_RWops *src = FSOpenRead(filenames[i]);
 		if ( !src ) {
 			SDL_Log("Failed to open file for font \"%s\"; continuing without it.", filenames[i]);
-			s_pKanjiFont[i] = NULL;
+			s_pBDFFont[i] = NULL;
 			continue;
 		}
-		s_pKanjiFont[i] = Kanji_OpenFont(src);
-		if ( !s_pKanjiFont[i] ) {
+		s_pBDFFont[i] = BDF_OpenFont(src);
+		if ( !s_pBDFFont[i] ) {
 			SDL_Log("Failed to load font \"%s\": %s\n", filenames[i], SDL_GetError());
 			SDL_RWclose(src);
 			YGS2kExit(EXIT_FAILURE);
@@ -1608,12 +1608,12 @@ static void YGS2kPrivateKanjiFontInitialize()
 	}
 }
 
-static void YGS2kPrivateKanjiFontFinalize()
+static void YGS2kPrivateBDFFontFinalize()
 {
-	for (int i = 0; i < YGS_KANJIFONTFILE_MAX; i++) {
-		if (s_pKanjiFont[i]) {
-			Kanji_CloseFont(s_pKanjiFont[i]);
+	for (int i = 0; i < YGS_BDFFONTFILE_MAX; i++) {
+		if (s_pBDFFont[i]) {
+			BDF_CloseFont(s_pBDFFont[i]);
 		}
-		s_pKanjiFont[i] = NULL;
+		s_pBDFFont[i] = NULL;
 	}
 }

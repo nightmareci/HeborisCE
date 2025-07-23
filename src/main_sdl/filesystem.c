@@ -3,6 +3,7 @@
 #include "physfsrwops.h"
 #endif
 
+#ifdef __EMSCRIPTEN__
 static char* alloc_strcat_multi(const char* const s, ...) {
 	if (!s) {
 		return NULL;
@@ -30,7 +31,7 @@ static char* alloc_strcat_multi(const char* const s, ...) {
 		};
 
 		size_t cat_length = head->length;
-		
+
 		str_node* cur = head;
 		size_t num_nodes = 1u;
 		while (true) {
@@ -72,18 +73,17 @@ static char* alloc_strcat_multi(const char* const s, ...) {
 	}
 }
 
-#ifdef __EMSCRIPTEN__
-static char* FSPrefPath = NULL;
+static char* FS_PrefPath = NULL;
 #endif
 
-bool FSInit(int argc, char** argv) {
+bool FS_Init(int argc, char** argv) {
 #ifdef __EMSCRIPTEN__
 	char* prefPath = SDL_GetPrefPath(FILESYSTEM_ORG, FILESYSTEM_APP);
 	if ( !prefPath )
 	{
 		fprintf(stderr, "Error getting pref path\n");
 	}
-	FSPrefPath = prefPath;
+	FS_PrefPath = prefPath;
 
 	return true;
 
@@ -212,16 +212,16 @@ bool FSInit(int argc, char** argv) {
 #endif
 }
 
-void FSDeInit() {
+void FS_Quit(void) {
 #ifdef __EMSCRIPTEN__
 	EM_ASM({
 		FS.syncfs(function (err) {
 			assert(!err);
 		});
 	});
-	if (FSPrefPath) {
-		SDL_free(FSPrefPath);
-		FSPrefPath = NULL;
+	if (FS_PrefPath) {
+		SDL_free(FS_PrefPath);
+		FS_PrefPath = NULL;
 	}
 
 #else
@@ -232,9 +232,9 @@ void FSDeInit() {
 #endif
 }
 
-bool FSMkdir(const char* const directory) {
+bool FS_CreateDirectory(const char* const directory) {
 	#ifdef __EMSCRIPTEN__
-	char* const prefPathDirectory = alloc_strcat_multi(FSPrefPath, directory, NULL);
+	char* const prefPathDirectory = alloc_strcat_multi(FS_PrefPath, directory, NULL);
 
 	// NOTE: It seems this only really works with one FS.mkdir call in the try
 	// block; putting more than one seems to always cause a fatal error.
@@ -266,7 +266,7 @@ bool FSMkdir(const char* const directory) {
 }
 
 #ifdef __EMSCRIPTEN__
-SDL_RWops* FSOpenInMode(const char* const filename, const char mode) {
+SDL_RWops* FS_OpenInMode(const char* const filename, const char mode) {
 	const char* mode_str = NULL;
 	bool canWrite = false;
 
@@ -288,7 +288,7 @@ SDL_RWops* FSOpenInMode(const char* const filename, const char mode) {
 	}
 
 	{
-		char* const prefPathFilename = alloc_strcat_multi(FSPrefPath, filename, NULL);
+		char* const prefPathFilename = alloc_strcat_multi(FS_PrefPath, filename, NULL);
 		SDL_RWops* const file = SDL_RWFromFile(prefPathFilename, mode_str);
 		free(prefPathFilename);
 		if (file) {
@@ -308,7 +308,7 @@ SDL_RWops* FSOpenInMode(const char* const filename, const char mode) {
 }
 
 #else
-SDL_RWops* FSOpenInMode(const char* const filename, const char mode) {
+SDL_RWops* FS_OpenInMode(const char* const filename, const char mode) {
 	switch (mode) {
 	case 'r':
 		return PHYSFSRWOPS_openRead(filename);
@@ -323,14 +323,14 @@ SDL_RWops* FSOpenInMode(const char* const filename, const char mode) {
 
 #endif
 
-SDL_RWops* FSOpenRead(const char* const filename) {
-	return FSOpenInMode(filename, 'r');
+SDL_RWops* FS_OpenRead(const char* const filename) {
+	return FS_OpenInMode(filename, 'r');
 }
 
-SDL_RWops* FSOpenWrite(const char* const filename) {
-	return FSOpenInMode(filename, 'w');
+SDL_RWops* FS_OpenWrite(const char* const filename) {
+	return FS_OpenInMode(filename, 'w');
 }
 
-SDL_RWops* FSOpenAppend(const char* const filename) {
-	return FSOpenInMode(filename, 'a');
+SDL_RWops* FS_OpenAppend(const char* const filename) {
+	return FS_OpenInMode(filename, 'a');
 }

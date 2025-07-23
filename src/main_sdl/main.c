@@ -14,7 +14,7 @@ void startup() {
 
 int main(int argc, char** argv)
 {
-	if (!FSInit(argc, argv)) {
+	if (!FS_Init(argc, argv)) {
 		return EXIT_FAILURE;
 	}
 
@@ -26,8 +26,8 @@ int main(int argc, char** argv)
 		"config/stage"
 	};
 	for (size_t i = 0u; i < sizeof(directories) / sizeof(*directories); i++) {
-		if (!FSMkdir(directories[i])) {
-			FSDeInit();
+		if (!FS_CreateDirectory(directories[i])) {
+			FS_Quit();
 			return EXIT_FAILURE;
 		}
 	}

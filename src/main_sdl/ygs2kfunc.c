@@ -320,7 +320,7 @@ void YGS2kDeinit()
 void YGS2kExit(int exitStatus)
 {
 	YGS2kDeinit();
-	FSDeInit();
+	FS_Quit();
 	exit(exitStatus);
 }
 
@@ -946,7 +946,7 @@ void YGS2kLoadWave( const char* filename, int num )
 	if ( len < 4 ) { return; }
 
 	SDL_RWops *src;
-	src = FSOpenRead(filename);
+	src = FS_OpenRead(filename);
 	if ( !src ) return;
 	if ( s_Wave[num].chunk )
 	{
@@ -981,7 +981,7 @@ void YGS2kLoadMusic( const char* filename )
 	}
 
 	SDL_RWops* src;
-	if (!(src = FSOpenRead(filename))) return;
+	if (!(src = FS_OpenRead(filename))) return;
 	s_pMusic = Mix_LoadMUS_RW(src, SDL_TRUE);
 	Mix_VolumeMusic(YGS_VOLUME_MAX);
 }
@@ -1000,7 +1000,7 @@ void YGS2kLoadBitmap( const char* filename, int plane, int val )
 	}
 
 	SDL_RWops* src;
-	if (!(src = FSOpenRead(filename))) return;
+	if (!(src = FS_OpenRead(filename))) return;
 	if (!(s_pTexture[plane] = IMG_LoadTexture_RW(s_pScreenRenderer, src, SDL_TRUE))) return;
 	SDL_SetTextureBlendMode(s_pTexture[plane], SDL_BLENDMODE_BLEND);
 }
@@ -1063,7 +1063,7 @@ void YGS2kSetFillColor(int col)
 
 void YGS2kLoadFile( const char* filename, void* buf, size_t size )
 {
-	SDL_RWops	*src = FSOpenRead(filename);
+	SDL_RWops	*src = FS_OpenRead(filename);
 
 	if ( src )
 	{
@@ -1081,7 +1081,7 @@ void YGS2kLoadFile( const char* filename, void* buf, size_t size )
 
 void YGS2kReadFile( const char* filename, void* buf, size_t size, size_t offset )
 {
-	SDL_RWops	*src = FSOpenRead(filename);
+	SDL_RWops	*src = FS_OpenRead(filename);
 
 	if ( src )
 	{
@@ -1108,7 +1108,7 @@ void YGS2kSaveFile( const char* filename, void* buf, size_t size )
 		buf2[i] = SWAP32(buf2[i]);
 	}
 
-	SDL_RWops	*dst = FSOpenWrite(filename);
+	SDL_RWops	*dst = FS_OpenWrite(filename);
 
 	if ( dst )
 	{
@@ -1142,7 +1142,7 @@ void YGS2kAppendFile( const char* filename, void* buf, size_t size ) {
 		buf2[i] = SWAP32(buf2[i]);
 	}
 
-	SDL_RWops	*dst = FSOpenAppend(filename);
+	SDL_RWops	*dst = FS_OpenAppend(filename);
 
 	if ( dst )
 	{
@@ -1592,7 +1592,7 @@ static void YGS2kPrivateBDFFontInitialize()
 		if (s_pBDFFont[i]) {
 			continue;
 		}
-		SDL_RWops *src = FSOpenRead(filenames[i]);
+		SDL_RWops *src = FS_OpenRead(filenames[i]);
 		if ( !src ) {
 			SDL_Log("Failed to open file for font \"%s\"; continuing without it.", filenames[i]);
 			s_pBDFFont[i] = NULL;

@@ -4,7 +4,7 @@
 void OpenGameControllerDB() {
 	// The game will just go without the database if it's missing or fails to load.
 
-	SDL_RWops* db = FSOpenRead("gamecontrollerdb.txt");
+	SDL_RWops* db = FS_OpenRead("gamecontrollerdb.txt");
 	if (!db) {
 		return;
 	}

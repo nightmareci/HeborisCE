@@ -24,10 +24,6 @@ endif()
 list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
 list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
 
-if(ENABLE_GAME_CONTROLLER)
-	list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/gamecontrollerdb.c")
-endif()
-
 option(ENABLE_LINUX_GPIO_INPUT "Enable input via GPIO (Linux only)" OFF)
 if(${ENABLE_LINUX_GPIO_INPUT})
 	if(${BUILD_TARGET} STREQUAL Linux)

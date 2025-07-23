@@ -26,7 +26,6 @@ typedef struct YGS2kSJoy
 #endif
 
 #ifdef ENABLE_GAME_CONTROLLER
-#include "main_sdl/gamecontrollerdb.h"
 typedef struct YGS2kSCon
 {
 	SDL_GameController* controller;
@@ -34,6 +33,10 @@ typedef struct YGS2kSCon
 	int buttonsRepeat[YGS_CONBUTTON_MAX];
 } YGS2kSCon;
 static int s_iLastActiveCon = -1;
+#endif
+
+#ifdef ENABLE_GAME_CONTROLLER_DB
+#include "main_sdl/filesystem.h"
 #endif
 
 #if defined(ENABLE_JOYSTICK) || defined(ENABLE_GAME_CONTROLLER)
@@ -1987,9 +1990,18 @@ bool YGS2kInputsOpen()
 	memset(s_iKeyRepeat, 0, sizeof(s_iKeyRepeat));
 	#endif
 
-	#ifdef ENABLE_GAME_CONTROLLER
 	/* パッドの初期化 */
-	OpenGameControllerDB();
+	#ifdef ENABLE_GAME_CONTROLLER_DB
+	// The game will just go without the database if it's missing or fails to load.
+	SDL_RWops* db = FS_OpenRead("gamecontrollerdb.txt");
+	if (db) {
+		if (SDL_RWsize(db) > 0) {
+			SDL_GameControllerAddMappingsFromRW(db, 0);
+		}
+		SDL_RWclose(db);
+	}
+	#endif
+	#ifdef ENABLE_GAME_CONTROLLER
 	SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "0");
 	#endif
 

@@ -94,7 +94,6 @@ set(EXE_HEADERS
 	"${SRC}/src/game/speed.h"
 
 	"${SRC}/src/main_sdl/nanotime.h"
-	"${SRC}/src/main_sdl/gamecontrollerdb.h"
 	"${SRC}/src/main_sdl/include.h"
 	"${SRC}/src/main_sdl/filesystem.h"
 	"${SRC}/src/main_sdl/hashmap.h"
@@ -137,6 +136,7 @@ option(USE_VENDOR_LIBRARIES "Use vendor libraries (the version of libraries bund
 # override these settings.
 option(ENABLE_KEYBOARD "Enable input via keyboard" TRUE)
 option(ENABLE_GAME_CONTROLLER "Enable input via game controllers (not the same as classic joystick input)" TRUE)
+option(ENABLE_GAME_CONTROLLER_DB "Enable loading gamecontrollerdb.txt for supporting more game controllers" TRUE)
 option(ENABLE_JOYSTICK "Enable input via any joystick device" TRUE)
 option(ALL_VIDEO_SETTINGS "Enable all video settings; disabling this option hides some \"unsafe\" options" TRUE)
 option(ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any time or selecting the \"QUIT\" option in the main menu" TRUE)

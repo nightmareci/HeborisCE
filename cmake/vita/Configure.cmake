@@ -1,4 +1,4 @@
-set(FRAMEWORK_VER "VITA SDL2")
+set(APP_FRAMEWORK_TYPE "VITA SDL2")
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT DEFINED VITASDK)
 	message(FATAL_ERROR "Vita SDK CMake toolchain file must be provided to the CMake configure command.")
@@ -14,22 +14,22 @@ list(APPEND CMAKE_PREFIX_PATH "${VITASDK}/arm-vita-eabi/lib/cmake")
 # used in the vendor libraries.
 set(CMAKE_POSITION_INDEPENDENT_CODE FALSE CACHE BOOL "Override" FORCE)
 
-list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
-list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
+list(APPEND APP_SOURCES "${APP_SRC_DIR}/src/app/physfsrwops.c")
+list(APPEND APP_HEADERS "${APP_SRC_DIR}/src/app/physfsrwops.h")
 
-add_executable(${EXE} ${EXE_SOURCES} ${EXE_HEADERS})
+add_executable(${APP_EXE} ${APP_SOURCES} ${APP_HEADERS})
 
-set(ENABLE_KEYBOARD FALSE CACHE BOOL "" FORCE)
-set(ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
-set(ONLY_INPUT_TYPE YGS_INPUT_PLAYSTATION CACHE STRING "" FORCE)
-set(ONLY_SDL_CONTROLLER_TYPE SDL_CONTROLLER_TYPE_PS4 CACHE STRING "" FORCE)
-set(ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
-set(ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
-set(FILESYSTEM_TYPE FILESYSTEM_PHYSFS CACHE STRING "" FORCE)
-set(DEFAULT_SCREEN_MODE "(YGS_SCREENMODE_FULLSCREEN | YGS_SCREENMODE_DETAILLEVEL | YGS_SCREENMODE_VSYNC)" CACHE STRING "" FORCE)
-set(SCREEN_SUBPIXEL_OFFSET "0.0f" CACHE STRING "" FORCE)
+set(APP_ENABLE_KEYBOARD FALSE CACHE BOOL "" FORCE)
+set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
+set(APP_ONLY_INPUT_TYPE APP_INPUT_PLAYSTATION CACHE STRING "" FORCE)
+set(APP_ONLY_SDL_CONTROLLER_TYPE SDL_CONTROLLER_TYPE_PS4 CACHE STRING "" FORCE)
+set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
+set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
+set(APP_FILESYSTEM_TYPE APP_FILESYSTEM_PHYSFS CACHE STRING "" FORCE)
+set(APP_DEFAULT_SCREEN_MODE "(APP_SCREENMODE_FULLSCREEN | APP_SCREENMODE_DETAILLEVEL | APP_SCREENMODE_VSYNC)" CACHE STRING "" FORCE)
+set(APP_SCREEN_SUBPIXEL_OFFSET "0.0f" CACHE STRING "" FORCE)
 
-configure_file("${SRC}/src/main_sdl/defs.h.in" "src/main_sdl/defs.h" @ONLY)
+configure_file("${APP_SRC_DIR}/src/app/APP_build_config.h.in" "src/app/APP_build_config.h" @ONLY)
 
 # The upstream PhysFS doesn't have Vita SDK support, so we need to use Vita
 # SDK's included PhysFS, not the vendor version, thus the need for FALSE passed
@@ -38,40 +38,40 @@ configure_file("${SRC}/src/main_sdl/defs.h.in" "src/main_sdl/defs.h" @ONLY)
 # Also, as of last attempting Vita SDK builds, SDL2_mixer was broken with
 # find_package, as it tries to link to libxmp-lite, which was missing in the
 # Vita SDK packages; using the vendor version works fine, though.
-include("${SRC}/cmake/lib/AddLibrariesVendor.cmake")
-AddLibrariesVendor(${EXE} FALSE)
+include("${APP_SRC_DIR}/cmake/lib/AddLibrariesVendor.cmake")
+AddLibrariesVendor(${APP_EXE} FALSE)
 find_package(PhysFS REQUIRED)
-target_link_libraries(${EXE} PUBLIC ${PHYSFS_LIBRARY})
-target_include_directories(${EXE} PUBLIC ${PHYSFS_INCLUDE_DIR})
+target_link_libraries(${APP_EXE} PUBLIC ${PHYSFS_LIBRARY})
+target_include_directories(${APP_EXE} PUBLIC ${PHYSFS_INCLUDE_DIR})
 
-file(ARCHIVE_CREATE OUTPUT "${BIN}/assets.zip"
+file(ARCHIVE_CREATE OUTPUT "${APP_BIN_DIR}/assets.zip"
 	PATHS
-		"${SRC}/res/bg"
-		"${SRC}/res/bgm"
-		"${SRC}/res/font"
-		"${SRC}/res/graphics"
-		"${SRC}/res/se"
-		"${SRC}/config/mission"
-		"${SRC}/config/stage"
+		"${APP_SRC_DIR}/res/bg"
+		"${APP_SRC_DIR}/res/bgm"
+		"${APP_SRC_DIR}/res/font"
+		"${APP_SRC_DIR}/res/graphics"
+		"${APP_SRC_DIR}/res/se"
+		"${APP_SRC_DIR}/config/mission"
+		"${APP_SRC_DIR}/config/stage"
 	FORMAT zip
 )
 
-set(VITA_APP_NAME ${EXE})
+set(VITA_APP_NAME ${APP_EXE})
 set(VITA_TITLEID "NMCI00000")
 set(VITA_VERSION "01.00")
 set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=12")
 
-vita_create_self(${EXE}.self ${EXE})
-vita_create_vpk(${EXE}.vpk ${VITA_TITLEID} ${EXE}.self
+vita_create_self(${APP_EXE}.self ${APP_EXE})
+vita_create_vpk(${APP_EXE}.vpk ${VITA_TITLEID} ${APP_EXE}.self
 	VERSION ${VITA_VERSION}
 	NAME "${VITA_APP_NAME}"
 
 	# Game assets.
-	FILE "${BIN}/assets.zip" assets.zip
+	FILE "${APP_BIN_DIR}/assets.zip" assets.zip
 
 	# Files for LiveArea and boot.
-	FILE "${SRC}/pkg/vita/sce_sys/icon0.png" sce_sys/icon0.png
-	FILE "${SRC}/pkg/vita/sce_sys/pic0.png" sce_sys/pic0.png
-	FILE "${SRC}/pkg/vita/sce_sys/livearea/contents/bg0.png" sce_sys/livearea/contents/bg0.png
-	FILE "${SRC}/pkg/vita/sce_sys/livearea/contents/template.xml" sce_sys/livearea/contents/template.xml
+	FILE "${APP_SRC_DIR}/pkg/vita/sce_sys/icon0.png" sce_sys/icon0.png
+	FILE "${APP_SRC_DIR}/pkg/vita/sce_sys/pic0.png" sce_sys/pic0.png
+	FILE "${APP_SRC_DIR}/pkg/vita/sce_sys/livearea/contents/bg0.png" sce_sys/livearea/contents/bg0.png
+	FILE "${APP_SRC_DIR}/pkg/vita/sce_sys/livearea/contents/template.xml" sce_sys/livearea/contents/template.xml
 )

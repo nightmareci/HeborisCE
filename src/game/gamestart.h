@@ -1,15 +1,12 @@
-#pragma once
+#ifndef gamestart_h_
+#define gamestart_h_
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  外部ライブラリのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "main_sdl/include.h"
-
-#include "ygs2kfunc.h"
-#include "button.h"
+#include "common.h"
 
 #define		STRING_MAX		200
-#define		cstr			const char*
 #define		loop			while ( loopFlag )
 #define		halt			spriteTime()
 #define		ctime			cgametime
@@ -45,7 +42,6 @@ void recSectionTime(int32_t player);
 void LevelUp(int32_t player);
 int32_t fldMirrorProc(int32_t player);
 int32_t UpLineShirase(int32_t player);
-int32_t abs_YGS2K(int32_t i);
 int32_t makeSquare(int32_t player);
 void recStageTime(int32_t player);
 void UpLineBlock(int32_t player);
@@ -136,27 +132,21 @@ bool lastProc(void);
 bool playerExecute(void);
 void restoreSetups();
 
-int32_t getPressState(int32_t player, EButton key);
-int32_t getPushState(int32_t player, EButton key);
+int32_t getPressState(int32_t player, APP_Button key);
+int32_t getPushState(int32_t player, APP_Button key);
 
-int IsPressMenu(int32_t player, EButton button, YGS2kEInputType type);
-int IsPushMenu(int32_t player, EButton button, YGS2kEInputType type);
+int IsPressMenu(int32_t player, APP_Button button, APP_InputType type);
+int IsPushMenu(int32_t player, APP_Button button, APP_InputType type);
 
-typedef enum EPrompt
-{
-	PROMPT_OK,
-	PROMPT_CANCEL,
-	PROMPT_RETRY
-} EPrompt;
-int IsPressPrompt(EPrompt prompt);
-int IsPushPrompt(EPrompt prompt);
+int IsPressPrompt(APP_Prompt prompt);
+int IsPushPrompt(APP_Prompt prompt);
 
-#ifdef ENABLE_GAME_CONTROLLER
-int IsPressConTypeKey(YGS2kEInputType type, YGS2kSConKey* key);
-int IsPushConTypeKey(YGS2kEInputType type, YGS2kSConKey* key);
+#ifdef APP_ENABLE_GAME_CONTROLLER
+int IsPressConTypeKey(APP_InputType type, APP_ConKey* key);
+int IsPushConTypeKey(APP_InputType type, APP_ConKey* key);
 #endif
 
-#ifdef ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD
 void updateEscapeFrames();
 #endif
 int quitNow();
@@ -192,7 +182,7 @@ typedef enum EMainLoopState {
 	MAIN_CONFIG,
 	MAIN_SOUND_TEST,
 	MAIN_TEST_MENU,
-	#ifdef ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD
 	MAIN_RESET_KEYBOARD,
 	#endif
 	MAIN_QUIT
@@ -206,15 +196,15 @@ extern uint32_t BloxeedSeed[2];
 extern uint32_t SavedSeed[2];
 extern uint32_t PieceSeed;
 extern bool inmenu;
-extern YGS2kEInputType lastInputType;
-extern YGS2kEInputType lastPlayerInputType[2];
+extern APP_InputType lastInputType;
+extern APP_InputType lastPlayerInputType[2];
 extern char *string[STRING_MAX];
 extern int32_t fldihardno;
 extern int32_t fldigsno;
 extern int32_t fldisno;
 extern int32_t item_pronum;
-extern cstr RankString;
-extern cstr version;
+extern const char* RankString;
+extern const char* version;
 extern int32_t se_play[50];
 extern int32_t fade_seed;
 extern int32_t repdata[20 *2];
@@ -583,7 +573,7 @@ extern int32_t clearnum[2];
 extern int32_t randommode[2];
 extern int32_t stage_nextc[2];
 extern int32_t start_nextc[2];
-#ifdef ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD
 extern int32_t skipKey;
 #endif
 extern int32_t start_stage[2];
@@ -688,9 +678,9 @@ extern int32_t gmflag1_e[2];
 extern int32_t gmflag2[2];
 extern int32_t gmflag1[2];
 extern int32_t grade[2];
-extern cstr gname2[35];
-extern cstr dgname[17];
-extern cstr gname[20];
+extern const char* gname2[35];
+extern const char* dgname[17];
+extern const char* gname[20];
 extern int32_t gscore[18];
 extern char nextfp_list[4096];
 extern char nextdengen_list[4096];
@@ -811,3 +801,5 @@ void shutDown();
 void spriteTime();
 extern bool loopFlag;
 extern bool quitNowFlag;
+
+#endif

@@ -357,7 +357,7 @@ C7U8EX YGS2K
 
 #include "gamestart.h"
 #include "speed.h"
-#include "script/include.h"
+#include "common.h"
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
@@ -602,14 +602,14 @@ int32_t		gscore[18] = {         1400,  4200,   8400,  14000,  21000,  29400,  39
 					   63000, 70000, 82400, 100000, 117400, 137000, 158000, 180400, 204200,
 					  220000};
 // 段位の表示名(geade1,3で使う)
-cstr		gname[20]  = {"9", "8", "7", "6", "5", "4", "3", "2", "1",
+const char*		gname[20]  = {"9", "8", "7", "6", "5", "4", "3", "2", "1",
 					  "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",
 					  "M","GM"};
 // デビルモードでの段位の表示名
-cstr		dgname[17]  = {"1", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13","M","GM","GOD"};
+const char*		dgname[17]  = {"1", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9", "S10", "S11", "S12", "S13","M","GM","GOD"};
 
 // 段位名 C7T5(geade2,4で使う)
-cstr		gname2[35] = //バグ対策に二つ多く
+const char*		gname2[35] = //バグ対策に二つ多く
 {
 	 "9",  "8",  "7",  "6",  "5",  "4",  "3",  "2",  "1",	//  0〜 8
 	"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9",	//  9〜17
@@ -785,7 +785,7 @@ int32_t		dummy;	// 設定ファイルが空だと23行目で発生する謎の�
 
 // #1.60c7l8追加変数
 int32_t		start_stage[2] = {0,0};		// スタート時のステージ番号
-#ifdef ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD
 int32_t		skipKey = 0x3F;				// ステージスキップキー
 #endif
 
@@ -1400,8 +1400,8 @@ int32_t fade_seed = 100;	// BGMフェードアウト用
 int32_t se_play[50];
 
 // 文字列定数
-cstr		version = FRAMEWORK_VER " V" PROJECT_VER;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
-cstr		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
+const char*		version = APP_FRAMEWORK_TYPE " V" APP_PROJECT_VERSION;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
+const char*		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */
 int32_t		item_pronum;		//item_proの合計　面倒だから手動で計算
@@ -1411,7 +1411,7 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 bool	quitNowFlag = false;
-#ifdef ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD
 bool	enterResetKeys = false;
 bool	resetKeysFlag = false;
 bool	lastEnterPressed = false;
@@ -1428,20 +1428,20 @@ uint32_t	SavedSeed[2]={0,0};							// needed to save randomizer states
 uint32_t	PieceSeed=0;							// needed to generate pieces without losing saved seed.
 
 bool inmenu = true;
-YGS2kEInputType lastInputType = YGS_INPUT_NULL;
-YGS2kEInputType lastPlayerInputType[2] = { YGS_INPUT_NULL, YGS_INPUT_NULL };
+APP_InputType lastInputType = APP_INPUT_NULL;
+APP_InputType lastPlayerInputType[2] = { APP_INPUT_NULL, APP_INPUT_NULL };
 
 bool	lastPushUp[2] = { 0 };
 bool	lastPushDown[2] = { 0 };
 bool	lastPushLeft[2] = { 0 };
 bool	lastPushRight[2] = { 0 };
-EButton	pushDirection[2] = { BTN_NULL, BTN_NULL };
+APP_Button	pushDirection[2] = { APP_BUTTON_NULL, APP_BUTTON_NULL };
 
 bool	lastPressUp[2] = { 0 };
 bool	lastPressDown[2] = { 0 };
 bool	lastPressLeft[2] = { 0 };
 bool	lastPressRight[2] = { 0 };
-EButton	pressDirection[2] = { BTN_NULL, BTN_NULL };
+APP_Button	pressDirection[2] = { APP_BUTTON_NULL, APP_BUTTON_NULL };
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  The main update function.
@@ -1474,11 +1474,11 @@ void mainUpdate() {
 #endif
 
 		if (reinit) {
-			YGS2kDeinit();
+			APP_Quit();
 		}
 
-		YGS2kInit(1024 << soundbuffer);
-		if (YGS2kIsPlayMusic()) YGS2kStopMusic();
+		APP_Init(1024 << soundbuffer);
+		if (APP_IsPlayMusic()) APP_StopMusic();
 		gameInit();
 
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -1488,7 +1488,7 @@ void mainUpdate() {
 
 		int32_t oldScreenMode = screenMode;
 		int32_t oldScreenIndex = screenIndex;
-		if ( !YGS2kSetScreen(&screenMode, &screenIndex) )
+		if ( !APP_SetScreen(&screenMode, &screenIndex) )
 		{
 			loopFlag = 0;
 			mainLoopState = MAIN_QUIT;
@@ -1500,13 +1500,13 @@ void mainUpdate() {
 			SaveConfig();
 		}
 
-		YGS2kSetFillColor(0);
-		YGS2kClearSecondary();
+		APP_SetFillColor(0);
+		APP_ClearSecondary();
 
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			YGS2kTextSize(layer, 12);
-			YGS2kTextBackColorDisable(layer);
+			APP_TextSize(layer, 12);
+			APP_TextBackColorDisable(layer);
 		}
 
 		hnext[0] = dispnext;	// #1.60c7o8
@@ -1515,7 +1515,7 @@ void mainUpdate() {
 		versus_rot[1] = rots[1];
 
 		// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-		if ( screenMode & YGS_SCREENMODE_DETAILLEVEL ) {
+		if ( screenMode & APP_SCREENMODE_DETAILLEVEL ) {
 			setDrawRate(2);
 		} else {
 			setDrawRate(1);
@@ -1542,7 +1542,7 @@ void mainUpdate() {
 
 		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			YGS2kTextLayerOff(layer);
+			APP_TextLayerOff(layer);
 		}
 
 		if (ranking_type != last_ranking_type) {
@@ -1584,11 +1584,11 @@ void mainUpdate() {
 		backupSetups();	// 設定内容をバックアップ #1.60c7o6
 		domirror = 0;	// 鏡像を無効に
 
-		if(YGS2kGetFPS() != max_fps_2) {
-			YGS2kSetFPS(max_fps_2);
+		if(APP_GetFPS() != max_fps_2) {
+			APP_SetFPS(max_fps_2);
 		}
 		else {
-			YGS2kResetFrameStep();
+			APP_ResetFrameStep();
 		}
 
 		goto skipSpriteTime;
@@ -1600,7 +1600,7 @@ void mainUpdate() {
 		init = true;
 		loopFlag = true;
 
-		YGS2kInit(1024 << soundbuffer);
+		APP_Init(1024 << soundbuffer);
 		gameInit();
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
 			SetDefaultConfig();
@@ -1609,7 +1609,7 @@ void mainUpdate() {
 
 		int32_t oldScreenMode = screenMode;
 		int32_t oldScreenIndex = screenIndex;
-		if ( !YGS2kSetScreen(&screenMode, &screenIndex) )
+		if ( !APP_SetScreen(&screenMode, &screenIndex) )
 		{
 			loopFlag = 0;
 			mainLoopState = MAIN_QUIT;
@@ -1621,35 +1621,33 @@ void mainUpdate() {
 			SaveConfig();
 		}
 
-		YGS2kBltAlways(true);
-		YGS2kSetFillColor(0);
-		YGS2kClearSecondary();
-		YGS2kResetFrameStep();
+		APP_BltAlways(true);
+		APP_SetFillColor(0);
+		APP_ClearSecondary();
+		APP_ResetFrameStep();
 		break;
 	}
 
 	case MAIN_INIT_TEXT:
-		YGS2kResetFrameStep();
+		APP_ResetFrameStep();
 		mainLoopState = MAIN_INIT_LOAD_1;
 
-		// YGS2kSetConstParam("Caption", "Now Loading...");
-
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			YGS2kTextSize(layer, 12);
-			YGS2kTextBackColorDisable(layer);
+			APP_TextSize(layer, 12);
+			APP_TextBackColorDisable(layer);
 		}
 
-		YGS2kTextLayerOn(1, 10, 220);
-		YGS2kTextOut(1, version);
+		APP_TextLayerOn(1, 10, 220);
+		APP_TextOut(1, version);
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			YGS2kTextBlt(layer);
+			APP_TextBlt(layer);
 		}
 		break;
 
 	case MAIN_INIT_LOAD_1: {
-		YGS2kResetFrameStep();
+		APP_ResetFrameStep();
 		mainLoopState = MAIN_INIT_LOAD_2;
 
 		hnext[0] = dispnext;	// #1.60c7o8
@@ -1658,43 +1656,43 @@ void mainUpdate() {
 		versus_rot[1] = rots[1];
 
 		// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-		if ( screenMode & YGS_SCREENMODE_DETAILLEVEL ) {
+		if ( screenMode & APP_SCREENMODE_DETAILLEVEL ) {
 			setDrawRate(2);
 		} else {
 			setDrawRate(1);
 		}
 
 		LoadGraphic("loading.png", 88, 0);		// Loading表示
-			x = YGS2kRand(5);
+			x = APP_Rand(5);
 		if ( getDrawRate() != 1 )
-			y = YGS2kRand(2);
+			y = APP_Rand(2);
 		else
 			y = 0;
 
 		// グラフィック読み込み
-		YGS2kTextLayerOn(4, 10, 23);
-		YGS2kTextOut(4, "Graphics Loading");
+		APP_TextLayerOn(4, 10, 23);
+		APP_TextOut(4, "Graphics Loading");
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			YGS2kTextBlt(layer);
+			APP_TextBlt(layer);
 		}
 		ExBltFastRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
 		break;
 	}
 
 	case MAIN_INIT_LOAD_2:
-		YGS2kResetFrameStep();
+		APP_ResetFrameStep();
 		mainLoopState = MAIN_INIT_LOAD_3;
 
 		loadGraphics(maxPlay);
 
 		// 効果音読み込み
 		if(se) {
-			YGS2kTextLayerOn(1, 10, 36);
-			YGS2kTextOut(1, "Sound Effect Loading");
+			APP_TextLayerOn(1, 10, 36);
+			APP_TextOut(1, "Sound Effect Loading");
 			for ( int layer = 1 ; layer <= 5 ; layer ++ )
 			{
-				YGS2kTextBlt(layer);
+				APP_TextBlt(layer);
 			}
 			ExBltFastRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
 		}
@@ -1704,7 +1702,7 @@ void mainUpdate() {
 		break;
 
 	case MAIN_INIT_LOAD_3:
-		YGS2kResetFrameStep();
+		APP_ResetFrameStep();
 		mainLoopState = MAIN_INIT_END;
 
 		// 効果音読み込み
@@ -1720,11 +1718,11 @@ void mainUpdate() {
 			{
 				bgmload[i] = 1;
 			}
-			YGS2kTextLayerOn(5, 10, 49);
-			YGS2kTextOut(5, "BGM Loading");
+			APP_TextLayerOn(5, 10, 49);
+			APP_TextOut(5, "BGM Loading");
 			for ( int i = 1 ; i <= 5 ; i ++ )
 			{
-				YGS2kTextBlt(i);
+				APP_TextBlt(i);
 			}
 			ExBltFastRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
 		}
@@ -1747,7 +1745,7 @@ void mainUpdate() {
 
 		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			YGS2kTextLayerOff(layer);
+			APP_TextLayerOff(layer);
 		}
 
 		int32_t i;
@@ -1781,7 +1779,7 @@ void mainUpdate() {
 
 		PlayerdataLoad();
 
-		YGS2kBltAlways(false);
+		APP_BltAlways(false);
 
 		StopAllWaves();
 		StopAllBGM();
@@ -1789,11 +1787,11 @@ void mainUpdate() {
 		backupSetups();	// 設定内容をバックアップ #1.60c7o6
 		domirror = 0;	// 鏡像を無効に
 
-		if(YGS2kGetFPS() != max_fps_2) {
-			YGS2kSetFPS(max_fps_2);
+		if(APP_GetFPS() != max_fps_2) {
+			APP_SetFPS(max_fps_2);
 		}
 		else {
-			YGS2kResetFrameStep();
+			APP_ResetFrameStep();
 		}
 
 		goto skipSpriteTime;
@@ -1856,7 +1854,7 @@ void mainUpdate() {
 		testmenu();
 		break;
 
-	#ifdef ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD
 	case MAIN_RESET_KEYBOARD: {
 		const char* const lines[] = {
 			"RESET KEYBOARD INPUT SETTING?",
@@ -1875,8 +1873,8 @@ void mainUpdate() {
 		if (
 			!enterResetKeys &&
 			(
-				(lastEnterPressed && !YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) ||
-				(lastEscapePressed && !YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)))
+				(lastEnterPressed && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) ||
+				(lastEscapePressed && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)))
 			)
 		) {
 			if (lastEnterPressed && !lastEscapePressed) {
@@ -1893,13 +1891,13 @@ void mainUpdate() {
 			mainLoopState = MAIN_RESTART;
 		}
 		if (enterResetKeys) {
-			if (!YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)) && !YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
+			if (!APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)) && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
 				enterResetKeys = false;
 			}
 		}
 		else {
-			lastEnterPressed = YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-			lastEscapePressed = YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+			lastEnterPressed = APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+			lastEscapePressed = APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 		}
 		break;
 	}
@@ -1910,7 +1908,7 @@ void mainUpdate() {
 		{
 			free(string[i]);
 		}
-		YGS2kExit(exitStatus);
+		APP_Exit(exitStatus);
 		break;
 	}
 
@@ -1938,11 +1936,11 @@ void gameExecute() {
 	noredraw = 0;
 	if(playback && !demo) {
 		playback = 0;
-		if(getPushState(0, BTN_A) || getPushState(1, BTN_A)) fast = 5;
-		if(!(getPressState(0, BTN_A) || getPressState(1, BTN_A))) fast = 0;
-		if(!fast && (getPressState(0, BTN_UP) || getPressState(1, BTN_UP))) fast = 3;
-		if(!fast && (getPressState(0, BTN_DOWN) || getPressState(1, BTN_DOWN))) fast = 1;
-		if(getPushState(0, BTN_B) || getPushState(1, BTN_B)) {
+		if(getPushState(0, APP_BUTTON_A) || getPushState(1, APP_BUTTON_A)) fast = 5;
+		if(!(getPressState(0, APP_BUTTON_A) || getPressState(1, APP_BUTTON_A))) fast = 0;
+		if(!fast && (getPressState(0, APP_BUTTON_UP) || getPressState(1, APP_BUTTON_UP))) fast = 3;
+		if(!fast && (getPressState(0, APP_BUTTON_DOWN) || getPressState(1, APP_BUTTON_DOWN))) fast = 1;
+		if(getPushState(0, APP_BUTTON_B) || getPushState(1, APP_BUTTON_B)) {
 			if(!tmp_maxPlay)
 				maxPlay = 0;
 			restoreSetups();
@@ -1957,12 +1955,12 @@ void gameExecute() {
 			mainLoopState = MAIN_TITLE;
 			init = true;
 			// stop music.
-			if (YGS2kIsPlayMusic())
-				YGS2kStopMusic();
+			if (APP_IsPlayMusic())
+				APP_StopMusic();
 			StopAllBGM();
 			return;
 		}
-		if(getPushState(0, BTN_D))
+		if(getPushState(0, APP_BUTTON_D))
 			dispLinfo = !dispLinfo;
 		playback = 1;
 	}
@@ -2018,8 +2016,8 @@ void gameExecute() {
 		mainLoopState = MAIN_TITLE;
 		init = true;
 		// stop music.
-		if (YGS2kIsPlayMusic())
-			YGS2kStopMusic();
+		if (APP_IsPlayMusic())
+			APP_StopMusic();
 		StopAllBGM();
 		return;
 	}
@@ -2108,7 +2106,7 @@ bool lastProc(void) {
 		cpu_flag[0] = 0;
 		cpu_flag[1] = 0;
 
-		if(getPushState(0, BTN_A) || getPushState(1, BTN_A)) {
+		if(getPushState(0, APP_BUTTON_A) || getPushState(1, APP_BUTTON_A)) {
 			StopAllBGM();
 			StopSE(40);
 			cpu_flag[0] = 0;
@@ -2174,25 +2172,25 @@ bool lastProc(void) {
 
 	// ポーズキーをjoypadに割り当て 1.60c7g7
 	if(!playback) {
-		if(getPressState(0, BTN_PAUSE)) mpc4[0]++;
+		if(getPressState(0, APP_BUTTON_PAUSE)) mpc4[0]++;
 		else mpc4[0] = 0;
 	} else {
 		mpc4[0] = 0;
 	}
 
-	if(getPushState(0, BTN_PAUSE) || mpc4[0] == 1) {
+	if(getPushState(0, APP_BUTTON_PAUSE) || mpc4[0] == 1) {
 		if( ((status[0] >= 3) && (status[0] <= 8) && (status[0] != 7)) || (status[0] == 13) || (status[0] == 15) ||
 			(status[0] == 22) || ((status[0] >= 25) && (status[0] != 30) && (status[0] != 36)) || (debug) ) {
 			if(pauseGame[0]) {
 				// ポーズ解除
 				setGamePause(0, false);
 				
-					YGS2kReplayWave(-1); // resuem all paused waves
+					APP_ReplayWave(-1); // resuem all paused waves
 			} else {
 				// ポーズ
 				setGamePause(0, true);
 
-					YGS2kPauseWave(-1); //pause all waves, can't use 50+bgmlevel cuz that wontt get credit music.
+					APP_PauseWave(-1); //pause all waves, can't use 50+bgmlevel cuz that wontt get credit music.
 			}
 
 			if(gameMode[0] == 4)
@@ -2201,24 +2199,24 @@ bool lastProc(void) {
 	}
 
 	if(!playback) {
-		if(getPressState(1, BTN_PAUSE)) mpc4[1]++;
+		if(getPressState(1, APP_BUTTON_PAUSE)) mpc4[1]++;
 		else mpc4[1] = 0;
 	} else {
 		mpc4[0] = 0;
 	}
 
-	if(getPushState(1, BTN_PAUSE) || mpc4[1] == 1) {
+	if(getPushState(1, APP_BUTTON_PAUSE) || mpc4[1] == 1) {
 		if( ((status[1] >= 3) && (status[1] <= 8) && (status[1] != 7)) || (status[1] == 13) || (status[1] == 15) || (debug) ) {
 			if(pauseGame[1]) {
 				// ポーズ解除
 				setGamePause(1, false);
 
-				YGS2kReplayWave(-1); // same as above
+				APP_ReplayWave(-1); // same as above
 			} else {
 				// ポーズ
 				setGamePause(1, true);
 
-				YGS2kPauseWave(-1); // saem as above.
+				APP_PauseWave(-1); // saem as above.
 			}
 
 			if(gameMode[1] == 4)
@@ -2260,30 +2258,30 @@ bool lastProc(void) {
 	}
 	}
 	if(thunder_timer){
-		i = (10 - YGS2kRand(20))*getDrawRate();
-		j = (10 - YGS2kRand(20))*getDrawRate();
-		YGS2kSetSecondaryOffset(i-(i/2),j-(j/2));
+		i = (10 - APP_Rand(20))*getDrawRate();
+		j = (10 - APP_Rand(20))*getDrawRate();
+		APP_SetSecondaryOffset(i-(i/2),j-(j/2));
 		thunder_timer--;
 	}else{
-		YGS2kSetSecondaryOffset(0,0);
+		APP_SetSecondaryOffset(0,0);
 	}
 
 	/* FPS表示 */
 	// heboris.iniの設定でFPSを非表示にできる#1.60c7e
 	if(!hide_fps) {
-		sprintf(string[0], "%3d/%2dFPS", YGS2kGetRealFPS(), YGS2kGetFPS() );	// FPSの取得(測定値)
+		sprintf(string[0], "%3d/%2dFPS", APP_GetRealFPS(), APP_GetFPS() );	// FPSの取得(測定値)
 		printTinyFont(130, 233, string[0]);
 	}
 
-	#ifdef ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD
 	// NEXT隠し
-	if(YGS2kIsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
+	if(APP_IsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
 		// next表示個数は0〜6 #1.60c7q3
 		hnext[0]++;
 		if(hnext[0] > 6) hnext[0] = 0;
 		if((hnext[0] > max_hnext[0]) && onRecord[0]) max_hnext[0] = hnext[0];
 	}
-	if(YGS2kIsPushKey(dispnextkey[1]) && (!demo) && (!playback) && (!death_plus[1]) && (!hebo_plus[1])&&(!heboGB[1])&&(!onRecord[1])) {
+	if(APP_IsPushKey(dispnextkey[1]) && (!demo) && (!playback) && (!death_plus[1]) && (!hebo_plus[1])&&(!heboGB[1])&&(!onRecord[1])) {
 		hnext[1]++;
 		if(hnext[1] > 6) hnext[1] = 0;
 		if((hnext[1] > max_hnext[1]) && onRecord[1]) max_hnext[1] = hnext[1];
@@ -2304,7 +2302,7 @@ bool lastProc(void) {
 void title(void) {
 	static int32_t	ofs, mode, game, democ;
 	static const int32_t maxGame =
-	#ifdef ENABLE_GAME_QUIT
+	#ifdef APP_ENABLE_GAME_QUIT
 		8;
 	#else
 		7;
@@ -2327,20 +2325,20 @@ void title(void) {
 		tmp_maxPlay = maxPlay;	// プレイ人数をバックアップ
 
 		// 画面位置修正 via C++ Port
-		YGS2kSetSecondaryOffset(0,0);
+		APP_SetSecondaryOffset(0,0);
 
 		if (bgm) {
-			if(wavebgm & YGS_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
-				if(!YGS2kIsPlayMusic()) {
-					YGS2kPlayMusic();
-					YGS2kSetVolumeMusic(bgmvolume);
+			if(wavebgm & APP_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+				if(!APP_IsPlayMusic()) {
+					APP_PlayMusic();
+					APP_SetVolumeMusic(bgmvolume);
 				}
 			} else {
-				if(!YGS2kIsPlayWave(61)) YGS2kPlayWave(61);
+				if(!APP_IsPlayWave(61)) APP_PlayWave(61);
 			}
 		}
 		else {
-			if (YGS2kIsPlayMusic()) YGS2kStopMusic();
+			if (APP_IsPlayMusic()) APP_StopMusic();
 		}
 
 		init = false;
@@ -2382,7 +2380,7 @@ void title(void) {
 	printFont(27, 13, "VERSION 1.60", 4);
 	printFont(27, 14, "(2002/03/31)", 6);
 	sprintf(string[0], "%s", version);
-	printFont(20 - YGS2kStrLen(version) / 2, 16, string[0], 1); // #1.60c7f4
+	printFont(20 - APP_StrLen(version) / 2, 16, string[0], 1); // #1.60c7f4
 
 	// モード0: ボタン入力待ち
 	if (mode == 0) {
@@ -2395,7 +2393,7 @@ void title(void) {
 
 		// どちらかのスタートボタンが押されたらモード1へ
 		for(int32_t player = 0; player < 2; player++) {
-			if(getPushState(player, BTN_A)) {
+			if(getPushState(player, APP_BUTTON_A)) {
 				democ = 0;
 				PlaySE(10);
 				mode = 1;
@@ -2403,13 +2401,13 @@ void title(void) {
 		}
 
 		// HOLDボタンでサウンドテスト#1.60c7c
-		if(getPushState(0, BTN_D)) {
+		if(getPushState(0, APP_BUTTON_D)) {
 			mainLoopState = MAIN_SOUND_TEST;
 			init = true;
 		}
 
 		// Cボタンでテストメニュー#1.60c7i4
-		if(getPushState(0, BTN_C)) {
+		if(getPushState(0, APP_BUTTON_C)) {
 			mainLoopState = MAIN_TEST_MENU;
 			//testmenu();
 			//if(restart) mode = 2;
@@ -2436,7 +2434,7 @@ void title(void) {
 		printFont(15, 23, "NORMAL RANKING",       (fontc[rots[0]]) * (game == 5));
 		printFont(15, 24, "SECTION TIME RANKING", (fontc[rots[0]]) * (game == 6));
 		printFont(15, 25, "SETTING",	      (fontc[rots[0]]) * (game == 7));
-		#ifdef ENABLE_GAME_QUIT
+		#ifdef APP_ENABLE_GAME_QUIT
 		printFont(15, 26, "QUIT",		 (fontc[rots[0]]) * (game == 8));
 		#endif
 
@@ -2447,7 +2445,7 @@ void title(void) {
 
 			// 上へ
 			if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-			if(getPressState(player, BTN_UP)) {
+			if(getPressState(player, APP_BUTTON_UP)) {
 				PlaySE(5);
 				game--;
 				if(game < 0) game = maxGame; // 対戦モード追加に従い修正 #1.60c7g1
@@ -2455,22 +2453,22 @@ void title(void) {
 
 			// 下へ
 			if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-			if(getPressState(player, BTN_DOWN)) {
+			if(getPressState(player, APP_BUTTON_DOWN)) {
 				PlaySE(5);
 				game++;
 				if(game > maxGame) game = 0; // 対戦モード追加に従い修正 #1.60c7g1
 			}
 
 			// キャンセル
-			if(getPushState(player, BTN_B)) {
+			if(getPushState(player, APP_BUTTON_B)) {
 				democ = 0;
 				mode = 0;
 				domirror = 0;
 			}
 
 			// 決定
-			if(getPushState(player, BTN_A)) {
-				YGS2kPlayWave(10);
+			if(getPushState(player, APP_BUTTON_A)) {
+				APP_PlayWave(10);
 				mode = 2;
 				domirror = 0;	//鏡像は最初は無効、必要に応じて1にする
 
@@ -2616,7 +2614,7 @@ void title(void) {
 					mainLoopState = MAIN_CONFIG;
 					init = true;
 					return;
-#ifdef ENABLE_GAME_QUIT
+#ifdef APP_ENABLE_GAME_QUIT
 				// Quit
 				} else if(game == 8) {
 					game = 0;
@@ -2632,7 +2630,7 @@ void title(void) {
 		}
 	} else {
 		// モード2: ループから抜ける
-		YGS2kExit(EXIT_SUCCESS);
+		APP_Exit(EXIT_SUCCESS);
 	}
 }
 
@@ -2808,9 +2806,9 @@ void doDemoMode(void) {
 	demo = 1;
 	demotime = (demotime + 1) & 3;
 
-	rots[0] = YGS2kRand(9);
-	rots[1] = YGS2kRand(9);
-	if(YGS2kRand(10) < 6){	//VSデモ
+	rots[0] = APP_Rand(9);
+	rots[1] = APP_Rand(9);
+	if(APP_Rand(10) < 6){	//VSデモ
 		gameMode[0] = 4;
 		gameMode[1] = 4;
 		tmp_maxPlay = maxPlay;	// プレイ人数をバックアップ
@@ -2819,18 +2817,18 @@ void doDemoMode(void) {
 	else{	//通常デモ
 		for(player = 0; player <= maxPlay; player++) {
 			do{
-				tmp = YGS2kRand(11);
+				tmp = APP_Rand(11);
 			}while((tmp == 2) || (tmp == 3) || (tmp == 4) || (tmp == 5) || (tmp == 6) || (tmp == 8) || (tmp > 10));
 			gameMode[player] = tmp;
 			if(gameMode[player] == 9){
-				std_opt[player] = YGS2kRand(2);
-				relaymode[player] = YGS2kRand(2);
+				std_opt[player] = APP_Rand(2);
+				relaymode[player] = APP_Rand(2);
 			}else if(gameMode[player] == 10){
-				ori_opt[player] = YGS2kRand(2);
+				ori_opt[player] = APP_Rand(2);
 			}
-			if(gameMode[player] == 1) item_mode[player] = (YGS2kRand(10) < 4);
+			if(gameMode[player] == 1) item_mode[player] = (APP_Rand(10) < 4);
 		}
-		backno = YGS2kRand(12);
+		backno = APP_Rand(12);
 		bgmlv = 0;
 	}
 
@@ -2843,7 +2841,7 @@ void doDemoMode(void) {
 		bgmlv = 10;
 	}
 	else{
-		backno = YGS2kRand(12);
+		backno = APP_Rand(12);
 
 		bgmlv = setstartBGM(gameMode[0], 0);
 		fadelv[0] = 0;
@@ -3387,26 +3385,26 @@ void versusInit(int32_t player) {
 	// re-initialize start_nextc
 	start_nextc[player]=0;		// continuing sets start_nextc to stage_nextc. this undoes this to avoid breaking the FOLLOWING replay.
 	// tomoyoのパターン #1.60c7l9
-	if( (!getPushState(player, BTN_B) && (gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
+	if( (!getPushState(player, APP_BUTTON_B) && (gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
 			// use sakura bag.
-			len = YGS2kStrLen(nextb_list);			
+			len = APP_StrLen(nextb_list);			
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
-					YGS2kMidStr(nextb_list, j + 1, 1, string[0]);
-					temp = YGS2kValLong(string[0]);
+					APP_MidStr(nextb_list, j + 1, 1, string[0]);
+					temp = APP_ValLong(string[0]);
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
 		}
 			else{							//F-Point stages, use f point pattern.
-			len = YGS2kStrLen(nextfp_list);
+			len = APP_StrLen(nextfp_list);
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
-					YGS2kMidStr(nextfp_list, j + 1, 1, string[0]);
-					temp = YGS2kValLong(string[0]);
+					APP_MidStr(nextfp_list, j + 1, 1, string[0]);
+					temp = APP_ValLong(string[0]);
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
@@ -3427,36 +3425,36 @@ void versusInit(int32_t player) {
 		SakuraNextInit(player);
 	} else if((nextblock == 10)|| ((p_nextblock ==10)&&(gameMode[player] == 5))) {
 		//電源パターンNEXT生成
-		len = YGS2kStrLen(nextdengen_list);
+		len = APP_StrLen(nextdengen_list);
 		//sprintf(string[0], "len=%d", len);
 		if(len > 0) {
 			for(i = 0; i < 1400; i++) {
 				j = i % len;
-				YGS2kMidStr(nextdengen_list, j + 1, 1, string[0]);
-				temp = YGS2kValLong(string[0]);
+				APP_MidStr(nextdengen_list, j + 1, 1, string[0]);
+				temp = APP_ValLong(string[0]);
 				if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			}
 		}
 	} else if((nextblock == 12)|| ((p_nextblock ==12)&&(gameMode[player] == 5))) {
 		//FP電源パターンNEXT生成
-		len = YGS2kStrLen(nextfp_list);
+		len = APP_StrLen(nextfp_list);
 		//sprintf(string[0], "len=%d", len);
 		if(len > 0) {
 			for(i = 0; i < 1400; i++) {
 				j = i % len;
-				YGS2kMidStr(nextfp_list, j + 1, 1, string[0]);
-				temp = YGS2kValLong(string[0]);
+				APP_MidStr(nextfp_list, j + 1, 1, string[0]);
+				temp = APP_ValLong(string[0]);
 				if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			}
 		}
 	}else if((nextblock == 0)|| ((p_nextblock ==0)&&(gameMode[player] == 5))) {
 		//完全ランダム
 		do {
-			nextb[0 + player * 1400] = YGS2kRand(7);
+			nextb[0 + player * 1400] = APP_Rand(7);
 		} while((nextb[0 + player * 1400] != 0) && (nextb[0 + player * 1400] != 1) && (nextb[0 + player * 1400] != 4) && (nextb[0 + player * 1400] != 5));
 
 		for(i = 1; i < 1400; i++) {
-			nextb[i + player * 1400] = YGS2kRand(7);
+			nextb[i + player * 1400] = APP_Rand(7);
 		}
 	}else if((nextblock == 13)|| ((p_nextblock ==13)&&(gameMode[player] == 5))) {
 		//SEGA TETRIS
@@ -3564,7 +3562,7 @@ void versusInit(int32_t player) {
 	nextc[player] = 0;
 	next[player] = nextb[0 + player * 1400];
 
-//	hole[player] = YGS2kRand(10);	//擬似乱数のためにブロックシャッターへ移動
+//	hole[player] = APP_Rand(10);	//擬似乱数のためにブロックシャッターへ移動
 
 	// NEXTブロックの色を設定 #1.60c7m9
 	setNextBlockColors(player, 1);
@@ -4072,7 +4070,7 @@ bool playerExecute(void) {
 	// 窒息しそうなら警告音を鳴らす #1.60c7l5
 	// プレイ中のみ #1.60c7l6
 	if( ((pinch[0])&&(onRecord[0])) || ((pinch[1])&&(onRecord[1])) ) {
-		if( !YGS2kIsPlayWave(40) ) PlaySE(40);
+		if( !APP_IsPlayWave(40) ) PlaySE(40);
 	} else {
 		// ピンチから通常状態に戻ったら即止める #1.60c7l6
 		StopSE(40);
@@ -4080,9 +4078,9 @@ bool playerExecute(void) {
 
 
 	// TODO: Add "skip stage" player input.
-	#ifdef ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD
 	// ステージスキップキー長押し
-	if( YGS2kIsPressKey(skipKey) ){
+	if( APP_IsPressKey(skipKey) ){
 			stage_skip_mpc[0]++;
 			}else{
 			stage_skip_mpc[0]=0;
@@ -4117,14 +4115,14 @@ bool playerExecute(void) {
 				}
 				if((item_mode[i])||(novice_mode[i])){
 					printFont(14 - 12 * maxPlay, 16, "C+<L R>:ITEM", count % 9);
-					if(getPressState(i, BTN_C)){
-						if(getPushState(i, BTN_LEFT)){
+					if(getPressState(i, APP_BUTTON_C)){
+						if(getPushState(i, APP_BUTTON_LEFT)){
 							PlaySE(5);
 							item_nblk[0 + i * 6]--;
 							if(item_nblk[0 + i * 6] < 0) item_nblk[0 + i * 6] = item_num;
 							item_name[i] = item_nblk[0 + i * 6];
 						}
-						if(getPushState(i, BTN_RIGHT)){
+						if(getPushState(i, APP_BUTTON_RIGHT)){
 							PlaySE(5);
 							item_nblk[0 + i * 6]++;
 							if(item_nblk[0 + i * 6] > item_num) item_nblk[0 + i * 6] = 0;
@@ -4155,7 +4153,7 @@ bool playerExecute(void) {
 			if(hanabi_frame[i] >= 30) {
 				hanabi_waiting[i]--;
 				PlaySE(35);
-				objectCreate2(i, 7, YGS2kRand(80) + 72 + 192 * i - 96 * maxPlay, 16 + YGS2kRand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, YGS2kRand(7)+1, 0);
+				objectCreate2(i, 7, APP_Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + APP_Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, APP_Rand(7)+1, 0);
 				//hanabi_total[i]++;//総数カウント
 				hanabi_frame[i] = 0;
 			}
@@ -4165,7 +4163,7 @@ bool playerExecute(void) {
 		if((ending[i] == 2) && (gameMode[i] == 0)&&(endtime[i] % hanabi_int[i] == 0)&&(!novice_mode[i])){//ロール中花火　staffroll.cから移動
 			hanabi_total[i]++;
 			PlaySE(35);
-			objectCreate2(i, 7, YGS2kRand(80) + 72 + 192 * i - 96 * maxPlay, 16 + YGS2kRand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, YGS2kRand(7)+1, 0);
+			objectCreate2(i, 7, APP_Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + APP_Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, APP_Rand(7)+1, 0);
 		}
 
 
@@ -4215,9 +4213,9 @@ bool playerExecute(void) {
 			} else if( (isfever[i]) && (item_timer[i] <= 0)) {
 				// フィーバー
 				if(!isfever[1-i])
-					YGS2kStopWave(65);
-				if((!YGS2kIsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
-					YGS2kPlayWave(50+bgmlv);
+					APP_StopWave(65);
+				if((!APP_IsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
+					APP_PlayWave(50+bgmlv);
 				isfever[i] = 0;
 				item_timer[i] = 0;
 			} else if( (isUDreverse[i]) && (item_timer[i] <= 0) ) {
@@ -4486,10 +4484,10 @@ int32_t doGiveup() {
 	}
 
 	// 捨てゲーキーをjoypadに割り当て 1.60c7g7
-	if(getPressState(0, BTN_GIVEUP)) mpc3[0]++;
+	if(getPressState(0, APP_BUTTON_GIVE_UP)) mpc3[0]++;
 	else mpc3[0] = 0;
 
-	if(getPressState(1, BTN_GIVEUP)) mpc3[1]++;
+	if(getPressState(1, APP_BUTTON_GIVE_UP)) mpc3[1]++;
 	else mpc3[1] = 0;
 
 	// いつでも捨てゲーできるようにした#1.60cd
@@ -4742,8 +4740,8 @@ void increment_time(int32_t player) {
 			}
 
 			temp = 0;
-			for(j = 0; j < NUMGAMEBTNS; j++)
-				temp = temp | (getPressState(player, j) << j) | (getPushState(player, j) << (j + NUMGAMEBTNS));
+			for(j = 0; j < APP_BUTTON_GAME_COUNT; j++)
+				temp = temp | (getPressState(player, j) << j) | (getPushState(player, j) << (j + APP_BUTTON_GAME_COUNT));
 
 			replayData[time2[player] / REPLAY_PLAYER_CHUNK][time2[player] % REPLAY_PLAYER_CHUNK + player * REPLAY_PLAYER_CHUNK] = temp;
 		}
@@ -4998,12 +4996,12 @@ void statJoinwait(int32_t player) {
 	}
 
 	// ボタンが利きにくいのを修正#1.60cf
-	if((getPushState(player, BTN_A)) && (tomoyo_domirror[1-player] == 0) && !((player == 1) && ((domirror) && (mirror)) ) && (!bgfadesw)) {
+	if((getPushState(player, APP_BUTTON_A)) && (tomoyo_domirror[1-player] == 0) && !((player == 1) && ((domirror) && (mirror)) ) && (!bgfadesw)) {
 		StopSE(8);
 		PlaySE(10);
 
-		if(!(wavebgm & YGS_WAVE_SIMPLE)) {
-			if(!YGS2kIsPlayWave(62)) YGS2kPlayWave(62);
+		if(!(wavebgm & APP_WAVE_SIMPLE)) {
+			if(!APP_IsPlayWave(62)) APP_PlayWave(62);
 		}
 		playerInitial(player);
 		randommode[player] = 1;
@@ -5084,11 +5082,11 @@ void statSelectMode(int32_t player) {
 
 	// モードセレクト曲 || Mode select song
 	if (bgm) {
-		if( (!YGS2kIsPlayMusic()) && (wavebgm & YGS_WAVE_SIMPLE) ) {
-			YGS2kPlayMusic();
-			YGS2kSetVolumeMusic(bgmvolume);
-		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(62)) && !(wavebgm & YGS_WAVE_SIMPLE) ) {
-			YGS2kPlayWave(62);
+		if( (!APP_IsPlayMusic()) && (wavebgm & APP_WAVE_SIMPLE) ) {
+			APP_PlayMusic();
+			APP_SetVolumeMusic(bgmvolume);
+		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsPlayWave(62)) && !(wavebgm & APP_WAVE_SIMPLE) ) {
+			APP_PlayWave(62);
 		}
 	}
 
@@ -5237,16 +5235,16 @@ void statSelectMode(int32_t player) {
 		if(textguide){
 			printFont(15+24 * player - 12 * maxPlay, 26, "<L R>:TYPE", count % 9);
 			if(gameMode[player] == 6){
-				printMenuButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
+				printMenuButton(26 + 10 * player - 12 * maxPlay, 15, APP_BUTTON_C, player);
 				printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 				printFont(26 + 6 * player - 12 * maxPlay, 16, "RANDOM", 7);
 			}else{
-				printMenuButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
+				printMenuButton(26 + 10 * player - 12 * maxPlay, 15, APP_BUTTON_C, player);
 				printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 				printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 			}
 			if(gameMode[player] == 3){
-				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, APP_BUTTON_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!death_plus[player])
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "DEATH+", 2);
@@ -5254,7 +5252,7 @@ void statSelectMode(int32_t player) {
 					printFont(26 + 8 * player - 12 * maxPlay, 19-(death_plus[player]),"ITEM", 5);
 			}
 			if((gameMode[player] == 1) || (gameMode[player] == 2)){
-				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, APP_BUTTON_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!item_mode[player])
 					printFont(26 + 8 * player - 12 * maxPlay, 18,"ITEM", 5);
@@ -5263,7 +5261,7 @@ void statSelectMode(int32_t player) {
 			}
 
 			if((gameMode[player] == 6)&&(tomoyo_opt[player]==4)){
-				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, APP_BUTTON_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!fpbas_mode[player])
 					printFont(26 + 7 * player - 12 * maxPlay, 18,"BASIC", 3);
@@ -5271,7 +5269,7 @@ void statSelectMode(int32_t player) {
 					printFont(26 + 7 * player - 12 * maxPlay, 18,"18MIN", 3);
 			}
 			if((gameMode[player] == 9) && (std_opt[player] < 2)){
-				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, BTN_D, player);
+				printMenuButton(26 + 7 * player - 12 * maxPlay, 17, APP_BUTTON_D, player);
 				printFont(27 + 7 * player - 12 * maxPlay, 17, ":", 0);
 				if(!relaymode[player]){
 					printFont(26 + 6 * player - 12 * maxPlay, 18, "ROT.", 7);
@@ -5354,7 +5352,7 @@ void statSelectMode(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, BTN_UP) ) {
+	if( getPressState(player, APP_BUTTON_UP) ) {
 		PlaySE(5);
 
 		// モードセレクト
@@ -5385,7 +5383,7 @@ void statSelectMode(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, BTN_DOWN) ) {
+	if( getPressState(player, APP_BUTTON_DOWN) ) {
 		PlaySE(5);
 
 		// モードセレクト
@@ -5416,7 +5414,7 @@ void statSelectMode(int32_t player) {
 
 	// ←
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
-	if( getPressState(player, BTN_LEFT) ) {
+	if( getPressState(player, APP_BUTTON_LEFT) ) {
 		PlaySE(3);
 		// ルールセレクト
 		if(statusc[player * 10 + 2] == 0) {
@@ -5475,7 +5473,7 @@ void statSelectMode(int32_t player) {
 
 	// →
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
-	if( getPressState(player, BTN_RIGHT) ) {
+	if( getPressState(player, APP_BUTTON_RIGHT) ) {
 		PlaySE(3);
 		// ルールセレクト
 		if(statusc[player * 10 + 2] == 0) {
@@ -5535,11 +5533,11 @@ void statSelectMode(int32_t player) {
 	// Cボタン
 	// Cボタン
 	if (statusc[player * 10 + 2] == 2 && gameMode[player] != 6) {
-		printMenuButton(26 + 10 * player - 12 * maxPlay, 15, BTN_C, player);
+		printMenuButton(26 + 10 * player - 12 * maxPlay, 15, APP_BUTTON_C, player);
 		printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
 	}	
-	if( getPressState(player, BTN_C) ) {
+	if( getPressState(player, APP_BUTTON_C) ) {
 		if(statusc[player * 10 + 2] == 1){
 			if(gameMode[player] == 6)//RANDOM
 				ExBltRect(85, (16 + 24 * player - 12 * maxPlay)*8, (10 + (gameMode[player] - ((gameMode[player] >= 6)+(gameMode[player] >= 9)) * 2)*2)*8, 70, 7*6, 33, 7);
@@ -5555,7 +5553,7 @@ void statSelectMode(int32_t player) {
 	}
 	// HOLDボタン
 	// アイテムモードとか、DEATH+とか
-	if(getPushState(player, BTN_D) && (statusc[player * 10 + 2] == 1)) {
+	if(getPushState(player, APP_BUTTON_D) && (statusc[player * 10 + 2] == 1)) {
 		PlaySE(5);
 		if((gameMode[player] == 6)&&(tomoyo_opt[player]==4)){
 			if(!fpbas_mode[player])
@@ -5594,7 +5592,7 @@ void statSelectMode(int32_t player) {
 	}
 
 	// Bボタン
-	if( getPushState(player, BTN_B) ) {
+	if( getPushState(player, APP_BUTTON_B) ) {
 		PlaySE(5);
 		death_plus[player] = 0;
 		item_mode[player] = 0;
@@ -5625,7 +5623,7 @@ void statSelectMode(int32_t player) {
 	}
 
 	// Aボタン
-	if( getPushState(player, BTN_A) ) {
+	if( getPushState(player, APP_BUTTON_A) ) {
 		PlaySE(10);
 		statusc[player * 10 + 1] = 0;
 		statusc[player * 10 + 4] = 0;
@@ -5676,7 +5674,7 @@ void statSelectMode(int32_t player) {
 			fpbas_mode[player] = 0;
 			}
 
-			if( getPressState(player, BTN_C) ) {
+			if( getPressState(player, APP_BUTTON_C) ) {
 				if(gameMode[player] == 6) {
 					// ランダムモード
 					randommode[player] = 1;
@@ -5754,7 +5752,7 @@ void statSelectMode(int32_t player) {
 				stage[player] = start_stage[player];
 			}else
 				if(((gameMode[player] == 1) || (gameMode[player] == 2))){
-					if((((enable_randexam==1) && (!item_mode[player]) && (!IsBig[player]) && (!hebo_plus[player])) && (YGS2kRand(10) < 2)) ||(getPressState(player, BTN_D))){
+					if((((enable_randexam==1) && (!item_mode[player]) && (!IsBig[player]) && (!hebo_plus[player])) && (APP_Rand(10) < 2)) ||(getPressState(player, APP_BUTTON_D))){
 						item_mode[player] = 0;
 						hebo_plus[player] = 0;
 						IsBig[player] = 0;
@@ -5809,7 +5807,7 @@ void statSelectMode(int32_t player) {
 
 						//段位認定試験発生
 						do{	//試験段位を設定
-							exam_grade[player] = YGS2kRand(32) + 1;
+							exam_grade[player] = APP_Rand(32) + 1;
 						}while((exam_grade[player] < exam_range[(enable_grade[player] - 1) * 2]) ||
 						(exam_grade[player] > exam_range[((enable_grade[player] - 1) * 2) + 1]));
 					}
@@ -5960,11 +5958,11 @@ void statSelectStandardSp(int32_t player) {
 	printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], count % 9 * (statusc[player * 10 ]==6));
 
 	if(statusc[player * 10] > 0) {
-		printMenuButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player);
+		printMenuButton(15 + 24 * player - 12 * maxPlay, 22, APP_BUTTON_A, player);
 		printFont(16 + 24 * player - 12 * maxPlay, 22, ":START", count % 9);
 	}
 	else {
-		printMenuButton(15 + 24 * player - 12 * maxPlay, 22, BTN_A, player);
+		printMenuButton(15 + 24 * player - 12 * maxPlay, 22, APP_BUTTON_A, player);
 		printFont(16 + 24 * player - 12 * maxPlay, 22, ":LOAD", count % 9);
 	}
 
@@ -5983,7 +5981,7 @@ void statSelectStandardSp(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, BTN_UP)) {
+		if(getPressState(player, APP_BUTTON_UP)) {
 			PlaySE(5);
 			statusc[player * 10]--;
 			if(statusc[player * 10] < 0) statusc[player * 10] = 6;
@@ -5994,7 +5992,7 @@ void statSelectStandardSp(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, BTN_DOWN)) {
+		if(getPressState(player, APP_BUTTON_DOWN)) {
 			PlaySE(5);
 			statusc[player * 10]++;
 			if(statusc[player * 10] > 6) statusc[player * 10] = 0;
@@ -6003,8 +6001,8 @@ void statSelectStandardSp(int32_t player) {
 		}
 	}
 	// ← (Cボタンを押しながらだと高速に数値を変更します)
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
-		if(getPressState(player, BTN_LEFT)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
+		if(getPressState(player, APP_BUTTON_LEFT)) {
 			PlaySE(3);
 					// FAVORITES
 			if(statusc[player * 10] == 0) {
@@ -6045,8 +6043,8 @@ void statSelectStandardSp(int32_t player) {
 		}
 
 		// → (Cボタンを押しながらだと高速に数値を変更します)
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
-		if(getPressState(player, BTN_RIGHT)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
+		if(getPressState(player, APP_BUTTON_RIGHT)) {
 			PlaySE(3);
 			// FAVORITES
 			if(statusc[player * 10] == 0) {
@@ -6088,7 +6086,7 @@ void statSelectStandardSp(int32_t player) {
 
 
 
-	if(getPushState(player, BTN_B)) {		// Bボタンでモード選択画面に戻る
+	if(getPushState(player, APP_BUTTON_B)) {		// Bボタンでモード選択画面に戻る
 		sp[player] = 1;
 		PlaySE(5);
 		status[player] = 1;				// ブロックシャッター実行
@@ -6097,7 +6095,7 @@ void statSelectStandardSp(int32_t player) {
 		relaymode[player] = 0;
 	}
 
-	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, BTN_A))) {
+	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, APP_BUTTON_A))) {
 		if(statusc[player * 10] == 0) {
 			// FAVORITES関連
 			loadWait(player, statusc[player * 10 + 1]); // 対応した設定を読み込む。
@@ -6162,7 +6160,7 @@ void statSelectStartLv(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, BTN_UP)) {
+	if(getPressState(player, APP_BUTTON_UP)) {
 		PlaySE(5);
 		statusc[player * 10]--;
 		if(statusc[player * 10] < 0) statusc[player * 10] = 13;
@@ -6172,7 +6170,7 @@ void statSelectStartLv(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, BTN_DOWN)) {
+	if(getPressState(player, APP_BUTTON_DOWN)) {
 		PlaySE(5);
 		statusc[player * 10]++;
 		if(statusc[player * 10] > 13) statusc[player * 10] = 0;
@@ -6188,7 +6186,7 @@ void statSelectStartLv(int32_t player) {
 	}
 
 
-	if(getPushState(player, BTN_B)) {		// Bボタンでモード選択画面に戻る
+	if(getPushState(player, APP_BUTTON_B)) {		// Bボタンでモード選択画面に戻る
 		PlaySE(5);
 		status[player] = 2;					// ステータスカウンタを0に
 		statusc[player * 10] = 0;
@@ -6196,7 +6194,7 @@ void statSelectStartLv(int32_t player) {
 		statusc[player * 10 + 2] = 0;
 	}
 
-	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, BTN_A))) {
+	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, APP_BUTTON_A))) {
 		PlaySE(10);
 		upLines[player] = 0;
 
@@ -6602,8 +6600,8 @@ void statReady(int32_t player) {
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 			else FP_bonus[player] = 10800;
 		}
-		if(!(wavebgm & YGS_WAVE_SIMPLE)) {
-			if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
+		if(!(wavebgm & APP_WAVE_SIMPLE)) {
+			if( !APP_IsPlayWave(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
 		}
 
 		if((repversw >= 25) && (sp[player] < min_speed[player]) && (enable_minspeed) || (tomoyo_waits[player]))
@@ -6771,7 +6769,7 @@ void statReady(int32_t player) {
 		// PRACTICEでエンディング中の場合#1.60c6.2d
 		if((gameMode[0] == 5) && (ending[0] != 0)) {
 			if(ending[0] == 1){
-				YGS2kPlayWave(56);						// BGM流れてなかったorz 差し替え#1.60c7i4
+				APP_PlayWave(56);						// BGM流れてなかったorz 差し替え#1.60c7i4
 				status[player] = 13;					// エンディング開始
 				statusc[player * 10] = 0;				// あとかたづけ
 				// エンディング突入を高速化#1.60c7i4
@@ -6786,8 +6784,8 @@ void statReady(int32_t player) {
 				onRecord[player] = 1;				// リプレイ記録開始
 			}
 		} else {
-			if(!(wavebgm & YGS_WAVE_SIMPLE)) {
-				if( !YGS2kIsPlayWave(50 +bgmlv) ) YGS2kPlayWave(50 +bgmlv);
+			if(!(wavebgm & APP_WAVE_SIMPLE)) {
+				if( !APP_IsPlayWave(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
 			}
 
 			status[player] = 4;
@@ -6832,16 +6830,16 @@ void statReady(int32_t player) {
 				ExBltRect(25,120 + 192 * player - 96 * maxPlay, 136, 240, 168, 80, 56);
 				if(noitem)	//ITEMに×マーク
 					ExBltRect(3,127 + 192 * player - 96 * maxPlay, 166, 274, 384, 12, 12);
-				if(getPushState(player, BTN_DOWN)){
+				if(getPushState(player, APP_BUTTON_DOWN)){
 					PlaySE(5);
 					vs_style[player] = 0;	//NORMAL
-				}else if(getPushState(player, BTN_UP)){
+				}else if(getPushState(player, APP_BUTTON_UP)){
 					PlaySE(5);
 					vs_style[player] = 1;	//ATTACK
-				}else if(getPushState(player, BTN_RIGHT)){
+				}else if(getPushState(player, APP_BUTTON_RIGHT)){
 					PlaySE(5);
 					vs_style[player] = 2;	//DEFENCE
-				}else if((getPushState(player, BTN_LEFT)) && (!noitem)){
+				}else if((getPushState(player, APP_BUTTON_LEFT)) && (!noitem)){
 					PlaySE(5);
 					vs_style[player] = 3;	//ITEM
 				}
@@ -6874,7 +6872,7 @@ void statReady(int32_t player) {
 		}
 		// ツモ送り機能 #1.60c7j5
 		if( (gameMode[player] == 6) || ((gameMode[0] == 5) && (p_nextpass)) ) {
-			if((!pass_flg[player]) && (getPressState(player, BTN_D))) {
+			if((!pass_flg[player]) && (getPressState(player, APP_BUTTON_D))) {
 				PlaySE(6);	// hold.wav
 				// if not in FP-Basic
 				if(!fpbas_mode[player])
@@ -6902,7 +6900,7 @@ void statReady(int32_t player) {
 				dhold2[player] = 0;
 				}
 			}
-			pass_flg[player] = getPressState(player, BTN_D);
+			pass_flg[player] = getPressState(player, APP_BUTTON_D);
 		}
 	}
 	statusc[player * 10]++;	// ブロック落下開始へ
@@ -7097,15 +7095,15 @@ void statBlock(int32_t player) {
 	{
 		if (nextblock==10) // sega poweron pattern
 		{
-			nextc[player] = (nextc[player]) % YGS2kStrLen(nextdengen_list); // actual size of it. should be 1000
+			nextc[player] = (nextc[player]) % APP_StrLen(nextdengen_list); // actual size of it. should be 1000
 		}
 		if (nextblock==11) // Tomoyo bag
 		{
-			nextc[player] = (nextc[player]) % YGS2kStrLen(nextb_list); // actual size of it. should be 255
+			nextc[player] = (nextc[player]) % APP_StrLen(nextb_list); // actual size of it. should be 255
 		}
 		if (nextblock==12) // flashpoint poweron pattern
 		{
-			nextc[player] = (nextc[player]) % YGS2kStrLen(nextfp_list); // actual size of it. should be 1000
+			nextc[player] = (nextc[player]) % APP_StrLen(nextfp_list); // actual size of it. should be 1000
 		}
 		if (nextblock==13) // actual sega randomizer. 
 		{
@@ -7430,8 +7428,8 @@ void setGameOver(int32_t player) {
 	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-			if(wavebgm & YGS_WAVE_SIMPLE) {
-				if(YGS2kIsPlayMusic()) YGS2kStopMusic();
+			if(wavebgm & APP_WAVE_SIMPLE) {
+				if(APP_IsPlayMusic()) APP_StopMusic();
 			} else {
 				StopAllBGM();
 			}
@@ -7490,11 +7488,11 @@ void doIRS(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	if(repversw >= 43){	//新Ver
-	if( getPressState(player, BTN_A) || getPressState(player, BTN_B) || getPressState(player, BTN_C) ) {
+	if( getPressState(player, APP_BUTTON_A) || getPressState(player, APP_BUTTON_B) || getPressState(player, APP_BUTTON_C) ) {
 		PlaySE(0);
 
 		// 回転する方向を決める
-		if( !getPressState(player, BTN_B) ) {
+		if( !getPressState(player, APP_BUTTON_B) ) {
 			// AまたはC
 			if(isWRule(player) && w_reverse)
 				bak = 1;	// WORLD 右回転
@@ -7509,7 +7507,7 @@ void doIRS(int32_t player) {
 		}
 
 		// 180度回転
-		if( ((rots[player] == 7) || (rots[player] == 8)) && getPressState(player, BTN_C) ) {
+		if( ((rots[player] == 7) || (rots[player] == 8)) && getPressState(player, APP_BUTTON_C) ) {
 			bak = 2;
 		}
 
@@ -7529,24 +7527,24 @@ void doIRS(int32_t player) {
 	}
 	}else{	//旧Ver
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
-	if(getPressState(player, BTN_A) || getPressState(player, BTN_C)) {
+	if(getPressState(player, APP_BUTTON_A) || getPressState(player, APP_BUTTON_C)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) )
 			rt[player] = (judgeBlock(player, bx[player], by[player], blk[player], 1 +
-			(1*((rots[player] == 7) && getPressState(player, BTN_C)))) == 0) +(1*((rots[player] == 7) && getPressState(player, BTN_C)));
+			(1*((rots[player] == 7) && getPressState(player, APP_BUTTON_C)))) == 0) +(1*((rots[player] == 7) && getPressState(player, APP_BUTTON_C)));
 		else
 			rt[player] = (judgeBlock(player, bx[player], by[player], blk[player], 3 -
-			(1*((rots[player] == 8) && getPressState(player, BTN_C)))) == 0) * 3 - (1*((rots[player] == 8) && getPressState(player, BTN_C)));
+			(1*((rots[player] == 8) && getPressState(player, APP_BUTTON_C)))) == 0) * 3 - (1*((rots[player] == 8) && getPressState(player, APP_BUTTON_C)));
 
 		// 赤色ブロックで回転しなかったとき
 		if(!rt[player] && !blk[player] && !r_irs) {
 			// 回転逆転 #1.60c7f8
 			if( (isWRule(player)) && (w_reverse) )
 				rt[player] = (judgeBlock(player, bx[player], by[player] - 1, blk[player], 1 +(1
-				*((rots[player] == 7) && getPressState(player, BTN_C)))) == 0) +(1*((rots[player] == 7) && getPressState(player, BTN_C)));
+				*((rots[player] == 7) && getPressState(player, APP_BUTTON_C)))) == 0) +(1*((rots[player] == 7) && getPressState(player, APP_BUTTON_C)));
 			else
 				rt[player] = (judgeBlock(player, bx[player], by[player] - 1, blk[player], 3) == 0) * 3;
 
@@ -7554,7 +7552,7 @@ void doIRS(int32_t player) {
 				by[player]--;
 		}
 	}
-	if(getPressState(player, BTN_B)) {
+	if(getPressState(player, APP_BUTTON_B)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -7583,7 +7581,7 @@ void doIRS2(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
-	if(getPushState(player, BTN_A) || getPushState(player, BTN_C)) {
+	if(getPushState(player, APP_BUTTON_A) || getPushState(player, APP_BUTTON_C)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -7600,7 +7598,7 @@ void doIRS2(int32_t player) {
 		if(rt_nblk[0 + 6 * player] > 3) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] - 4;
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
-	if(getPushState(player, BTN_B)) {
+	if(getPushState(player, APP_BUTTON_B)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -7619,24 +7617,24 @@ void doIRS2plus(int32_t player) {
 	if((disable_irs) || (isrotatelock[player]) || (heboGB[player]>0)) return;
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
-	if(getPressState(player, BTN_A) || getPressState(player, BTN_C)) {
+	if(getPressState(player, APP_BUTTON_A) || getPressState(player, APP_BUTTON_C)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) ){
 			rt_nblk[0 + 6 * player]++;
-			if((rots[player] == 7) && (getPressState(player, BTN_C) != 0))
+			if((rots[player] == 7) && (getPressState(player, APP_BUTTON_C) != 0))
 				rt_nblk[0 + 6 * player]++;
 		}else{
 			rt_nblk[0 + 6 * player]--;
-			if((rots[player] == 8) && (getPressState(player, BTN_C) != 0))
+			if((rots[player] == 8) && (getPressState(player, APP_BUTTON_C) != 0))
 				rt_nblk[0 + 6 * player]--;
 		}
 		if(rt_nblk[0 + 6 * player] > 3) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] - 4;
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
-	if(getPressState(player, BTN_B)) {
+	if(getPressState(player, APP_BUTTON_B)) {
 		PlaySE(0);
 		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
 
@@ -7687,12 +7685,12 @@ void setBlockSpawnPosition(int32_t player) {
 	}
 	// D.R.Sの先行移動
 	if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
-		if(getPressState(player, BTN_LEFT) && (judgeBlock(player, bx[player] - 1 - (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
+		if(getPressState(player, APP_BUTTON_LEFT) && (judgeBlock(player, bx[player] - 1 - (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] - 1 - (1 * (IsBig[player] && BigMove[player]));
 			if(movesound) PlaySE(5);
 		}
 		if((blk[player] != 0) || (!IsBig[player]))
-		if(getPressState(player, BTN_RIGHT) && (judgeBlock(player, bx[player] + 1 + (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
+		if(getPressState(player, APP_BUTTON_RIGHT) && (judgeBlock(player, bx[player] + 1 + (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] + 1 + (1 * (IsBig[player] && BigMove[player]));
 			if(movesound) PlaySE(5);
 		}
@@ -7775,7 +7773,7 @@ void doHold(int32_t player, int32_t ihs) {
 	first = 0;
 	if((disable_hold) || (isholdlock[player] == 1) || (death_plus[player])||(hebo_plus[player])||(heboGB[player])) return;
 
-	if(getPressState(player, BTN_D) && !dhold[player]) {
+	if(getPressState(player, APP_BUTTON_D) && !dhold[player]) {
 		if( (hold_snd != 0) && (((hold_snd == 1) && (ihs)) || (hold_snd == 2)) )
 		PlaySE(6);	// hold.wav #1.60c7f7
 
@@ -8223,7 +8221,7 @@ void statRelayselect(int32_t player) {
 					for(i = 0; i < fldsizew[player]; i++) {
 						// ライン消しエフェクトで消える #1.60c7n5
 						if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-							objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+							objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 						}
 
 						fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -8384,7 +8382,7 @@ void statRelayselect(int32_t player) {
 
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, BTN_UP)) {
+		if(getPressState(player, APP_BUTTON_UP)) {
 			PlaySE(5);
 			do {
 				rots[player]--;
@@ -8396,7 +8394,7 @@ void statRelayselect(int32_t player) {
 
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
-		if(getPressState(player, BTN_DOWN)) {
+		if(getPressState(player, APP_BUTTON_DOWN)) {
 			PlaySE(5);
 			do {
 				rots[player]++;
@@ -8409,7 +8407,7 @@ void statRelayselect(int32_t player) {
 
 		statusc[player * 10]++;
 
-		if((getPushState(player, BTN_A)) || (statusc[player * 10] > 600)){
+		if((getPushState(player, APP_BUTTON_A)) || (statusc[player * 10] > 600)){
 			PlaySE(10);
 			setNextBlockColors(player, 1);
 			status[player] = 3;					// Ready
@@ -8771,7 +8769,7 @@ void statErase(int32_t player) {
 		UpLineBlockJudge(player);
 
 	if(ismiss[player]){
-		y = YGS2kRand(8);
+		y = APP_Rand(8);
 		ofs_x[player] = y - (8 / 2);
 		ofs_x2[player] = ofs_x[player];
 		if(statusc[player * 10] == wait1[player])
@@ -8836,16 +8834,16 @@ void statErase(int32_t player) {
 			// ラインせり上がり穴そろい
 			}else if(mission_erase[c_mission - 1] < -20) {
 				upLineT[player] = 4;//実際はない
-				//upLines[player] = abs_YGS2K(mission_erase[c_mission - 1]+20);
-				statusc[player * 10 + 3] = abs_YGS2K(mission_erase[c_mission - 1]+20);
+				//upLines[player] = SDL_abs(mission_erase[c_mission - 1]+20);
+				statusc[player * 10 + 3] = SDL_abs(mission_erase[c_mission - 1]+20);
 				status[player] = 22;
 				statusc[player * 10] = wait1[player] / 2;
 				statusc[player * 10 + 1] = 3;	// Ready
 				statusc[player * 10 + 4] = 4;
 			} else if(mission_erase[c_mission - 1] < 0) {
 				upLineT[player] = 2;
-//				upLines[player] = abs_YGS2K(mission_erase[c_mission - 1]);
-				statusc[player * 10 + 3] = abs_YGS2K(mission_erase[c_mission - 1]);
+//				upLines[player] = SDL_abs(mission_erase[c_mission - 1]);
+				statusc[player * 10 + 3] = SDL_abs(mission_erase[c_mission - 1]);
 				status[player] = 22;
 				statusc[player * 10] = wait1[player] / 2;
 				statusc[player * 10 + 1] = 3;	// Ready
@@ -9043,15 +9041,15 @@ void statErase(int32_t player) {
 
 	//D.R.SのAREスキップ
 	if( ((rots[player] == 8) && (harddrop[player])) &&
-	((getPushState(player, BTN_UP)) || (getPushState(player, BTN_DOWN)) || (getPushState(player, BTN_LEFT)) ||
-	 (getPushState(player, BTN_RIGHT)) || (getPushState(player, BTN_A)) || (getPushState(player, BTN_B)) ||
-	 (getPushState(player, BTN_C)) || (getPushState(player, BTN_D))) )
+	((getPushState(player, APP_BUTTON_UP)) || (getPushState(player, APP_BUTTON_DOWN)) || (getPushState(player, APP_BUTTON_LEFT)) ||
+	 (getPushState(player, APP_BUTTON_RIGHT)) || (getPushState(player, APP_BUTTON_A)) || (getPushState(player, APP_BUTTON_B)) ||
+	 (getPushState(player, APP_BUTTON_C)) || (getPushState(player, APP_BUTTON_D))) )
 		statusc[player * 10] = -1;
 
 	if( ((rots[player] == 8) && (are_skipflag[player])) &&
-	((getPressState(player, BTN_UP)) || (getPressState(player, BTN_DOWN)) || (getPressState(player, BTN_LEFT)) ||
-	 (getPressState(player, BTN_RIGHT)) || (getPressState(player, BTN_A)) || (getPressState(player, BTN_B)) ||
-	 (getPressState(player, BTN_C)) || (getPressState(player, BTN_D))) ){
+	((getPressState(player, APP_BUTTON_UP)) || (getPressState(player, APP_BUTTON_DOWN)) || (getPressState(player, APP_BUTTON_LEFT)) ||
+	 (getPressState(player, APP_BUTTON_RIGHT)) || (getPressState(player, APP_BUTTON_A)) || (getPressState(player, APP_BUTTON_B)) ||
+	 (getPressState(player, APP_BUTTON_C)) || (getPressState(player, APP_BUTTON_D))) ){
 	 	are_skipflag[player] = 0;
 		statusc[player * 10] = -1;
 	}
@@ -9185,7 +9183,7 @@ int32_t fldMirrorProc(int32_t player) {
 		if( (((gameMode[player] == 4) || (item_mode[player]))&&(bdowncnt[player] % 1 == 0)) || (bdowncnt[player] % p_fmirror_interval == 0) || (gameMode[player] == 8) ) {
 			if(fmirror_cnt[player] <= p_fmirror_timer) {
 				if(((repversw >= 18) && (fmirror_cnt[player] == -20)) || ((repversw <= 17) && (fmirror_cnt[player] == 0))) {
-//					YGS2kPlayWave(20);
+//					APP_PlayWave(20);
 					// フィールドをバッファに確保
 					for(i = 0; i <= fldsizeh[player]; i++) {
 						for(j = 0; j < fldsizew[player]; j++) {
@@ -9897,7 +9895,7 @@ void LevelUp(int32_t player) {
 							bgmlv++;
 							changeBGM(player);
 						}
-//					YGS2kPlayWave(30);	// rankup.wav
+//					APP_PlayWave(30);	// rankup.wav
 				}
 			}
 		}
@@ -10042,9 +10040,9 @@ void statGameOver(int32_t player) {
 		winc = 0;
 		winu = - 24;
 		wink = 0;
-		if(YGS2kIsPlayWave(65)){
-			YGS2kStopWave(65);
-			YGS2kPlayWave(50 +bgmlv);
+		if(APP_IsPlayWave(65)){
+			APP_StopWave(65);
+			APP_PlayWave(50 +bgmlv);
 		}
 		if(status[1 - player] != 7){
 			vs_points[1 - player]++;
@@ -10072,11 +10070,11 @@ void statGameOver(int32_t player) {
 
 	if( statusc[player * 10] > 22 ) {
 		if(statusc[player * 10 + 1] == 141) {
-			//YGS2kPlayWave(8);
+			//APP_PlayWave(8);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-				if(wavebgm & YGS_WAVE_SIMPLE) {
-					if(YGS2kIsPlayMusic()) YGS2kStopMusic();
+				if(wavebgm & APP_WAVE_SIMPLE) {
+					if(APP_IsPlayMusic()) APP_StopMusic();
 				} else {
 					StopAllBGM();
 				}
@@ -10211,9 +10209,9 @@ void statEraseBlock(int32_t player) {
 					if(breakeffect) {
 //						if ((player == 0) || ((!tomoyo_domirror[0]) && (player == 1)))
 						if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))  //omg
-							objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+							objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 						if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
-						objectCreate(player, 1, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+						objectCreate(player, 1, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 					}
 					fld[x + i * 10 + player * 220] = 0;
 					fldt[x + i * 10 + player * 220] = 0;	// #1.60c7j5
@@ -10237,22 +10235,22 @@ void statEraseBlock(int32_t player) {
 									( ((breaktype == 0)||((breaktype == 3)&&(gameMode[player] == 0))) && (super_breakeffect == 2) ) ||
 									((heboGB[player] != 0) && (super_breakeffect == 2)) ) {
 									if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
-									objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
-									objectCreate(player, 1, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1, (x + 15 + 24 * 1 - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 								} else if(lines & 1) {
 									if((x & 1) == 1) {
 										if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 										if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * 1 - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * 1 - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									}
 								} else {
 									if((x & 1) == 0) {
 										if ((!tomoyo_domirror[0]) || ((player == 0) && ((tomoyo_ehfinal_c[0] < 240)) || (tomoyo_ehfinal_c[0] > 459)))
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 										if (tomoyo_domirror[0] && (player == 0) && (tomoyo_ehfinal_c[0] > 219))
-										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * 1 - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
+										objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * 1 - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + lines * 250, fld[x + i * 10 + player * 220], 100);
 									}
 								}
 								if(fldi[x + i * fldsizew[player] + player * 220])//アイテムが消えるときの白いエフェクト
@@ -10557,14 +10555,14 @@ void statEraseBlock(int32_t player) {
 	} else {
 		//D.R.SのAREスキップ
 		if( ((rots[player] == 8) && (harddrop[player])) &&
-		((getPushState(player, BTN_UP)) || (getPushState(player, BTN_DOWN)) || (getPushState(player, BTN_LEFT)) ||
-		 (getPushState(player, BTN_RIGHT)) || (getPushState(player, BTN_A)) || (getPushState(player, BTN_B)) ||
-		 (getPushState(player, BTN_C)) || (getPushState(player, BTN_D))) ){
+		((getPushState(player, APP_BUTTON_UP)) || (getPushState(player, APP_BUTTON_DOWN)) || (getPushState(player, APP_BUTTON_LEFT)) ||
+		 (getPushState(player, APP_BUTTON_RIGHT)) || (getPushState(player, APP_BUTTON_A)) || (getPushState(player, APP_BUTTON_B)) ||
+		 (getPushState(player, APP_BUTTON_C)) || (getPushState(player, APP_BUTTON_D))) ){
 		 	statusc[player * 10] = wait2[player];
 		 	are_skipflag[player] = 1;
 	 	}
 		if(ismiss[player]){
-			y = YGS2kRand(6);
+			y = APP_Rand(6);
 			ofs_x[player] = y - (6 / 2);
 			ofs_x2[player] = ofs_x[player];
 		}
@@ -10747,7 +10745,7 @@ void calcScore(int32_t player, int32_t lines) {
 			if(bravo) {
 				for(i = -3; i <= 3; i++)
 					for(j = 0; j < 5; j++)
-						objectCreate(player, 5, 62 + player * 196, 64 + j * 30 + (i % 2) * 15, 180 * i, - 2000 + j * 200, YGS2kRand(7) + 1, 1);
+						objectCreate(player, 5, 62 + player * 196, 64 + j * 30 + (i % 2) * 15, 180 * i, - 2000 + j * 200, APP_Rand(7) + 1, 1);
 			}
 		}
 		if((squaremode[player])&&(tspin_flag[player] == 2)){//本当は部分フリーフォルらしいけどわからないから全部
@@ -11129,21 +11127,21 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		// gm条件が成立するとシャドウロールになる		#1.60c7i2
 		if(enable_grade[player] == 1) {
 			if((sc[player] > gscore[17]) && (gametime[player] <= 810 * 60) && (gmflag1[player]) && (gmflag2[player])) {
-				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		} else if(enable_grade[player] == 2) {
 		//M以上で8分45秒以内
 			if((grade[player] >= 27) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
-				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		}  else if(enable_grade[player] == 3) {
 		//M以上で8分45秒以内
 			if((grade2[player] >= 29) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
-				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
@@ -11151,7 +11149,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		//m5以上で6分30秒以内
 		//skillcoolが6個以上、regretが一回も出ていない
 			if((grade[player] >= 22) && (gametime[player] <= 390 * 60) && (gup3rank[player] == 2) && (gmflag1[player]) && (!gmflag2[player])) {
-				objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
+				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
 				PlaySE(43);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
@@ -11201,7 +11199,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		recSectionTime(player);
 	// BEGINNERなら200で終了させる#1.60c7n2
 	} else if((gameMode[player] == 0) && (tc[player] >= 200)&&(!novice_mode[player])) {
-		//YGS2kPlayWave(28);
+		//APP_PlayWave(28);
 		tc[player] = 200;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -11220,13 +11218,13 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
 
-		//YGS2kPlayWave(19);
+		//APP_PlayWave(19);
 		if(backno <= 1) {
 			bgfadesw = 1;
 		}
 	// NOVICEなら300で終了させる
 	} else if((gameMode[player] == 0) && (tc[player] >= 300) && (novice_mode[player])) {
-		//YGS2kPlayWave(28);
+		//APP_PlayWave(28);
 
 		// タイムボーナス
 		if((novice_mode[player])&&(gametime[player] < 18000)) {
@@ -11245,14 +11243,14 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
 
-		//YGS2kPlayWave(19);
+		//APP_PlayWave(19);
 		if(backno <= 1) {
 			bgfadesw = 1;
 		}
 	// DEVIL-なら1000で終了させる#1.60c7u0.9
 	} else if((((enable_grade[player] == 1) && (repversw < 42)) || (devil_minus[player]))&&(gameMode[player] == 3)&&(repversw >= 31) && (tc[player] >= 1000)) {
 
-		//YGS2kPlayWave(28);
+		//APP_PlayWave(28);
 		tc[player] = 1000;
 		grade[player] = 10; // Grade設定 #1.60c7j7
 		gflash[player]=120;
@@ -11269,10 +11267,10 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		}
 	// DEVILなら1300で終了させる#1.60c7f3
 	} else if((gameMode[player] == 3) && (tc[player] >= 1300)) {
-		if(( ((!isWRule(player)) && (gametime[player] <= 19200)) || ((isWRule(player)) && (gametime[player] <= 21000)) )&&(YGS2kGetRealFPS()>40)) {
+		if(( ((!isWRule(player)) && (gametime[player] <= 19200)) || ((isWRule(player)) && (gametime[player] <= 21000)) )&&(APP_GetRealFPS()>40)) {
 			grade[player] = 16;
-			objectCreate2(player, 8, YGS2kRand(20) + 180 + 192 * player - 96 * maxPlay, 20 + YGS2kRand(10), 0, 0, 0, 0);
-			YGS2kPlayWave(43);
+			objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+			APP_PlayWave(43);
 		}//ネ申条件を満たしていたらその時点でS13に
 
 		if(death_plus[player]){
@@ -11324,7 +11322,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 			( ((gametime[player] > timelimitm[player]) && (timelimitm[player] > 0) && ( !isWRule(player) )) ||	// TGM,Ti
 			  ((gametime[player] > timelimitmw[player]) && (timelimitmw[player] > 0) && (isWRule(player) )) )  ) {
 
-		//YGS2kPlayWave(28);
+		//APP_PlayWave(28);
 		tc[player] = 500;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -11340,7 +11338,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 	} else if(((gameMode[player] == 1) || (gameMode[player] == 2)) && //マスター20G
 				(tc[player] >= 500) && (tcbuf < 500) &&
 				(gametime[player] > timelimit[player]) && (timelimit[player] > 0)) {
-		//YGS2kPlayWave(28);
+		//APP_PlayWave(28);
 		tc[player] = 500;
 		bgfadesw = 1;
 		lv[player] = tc[player];
@@ -11353,7 +11351,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 				 ( ( (gametime[player] > timelimit[player]) && (timelimit[player] > 0) && (!isWRule(player)) )||	// TGM,Ti
 				 ( (gametime[player] > timelimitw[player]) && (timelimitw[player] > 0) && (isWRule(player)) ) )	// ワールド系
 				) {
-		//YGS2kPlayWave(28);
+		//APP_PlayWave(28);
 		tc[player] = 500;
 		bgfadesw = 1;
 		grade[player]++;	//S5になる
@@ -11458,7 +11456,7 @@ void statVersusWait(int32_t player) {
 
 		//回転法則のランダムセレクト
 		if((versus_rot[player] == 9) && (status[1 - player] != 38)){
-			rots[player] = YGS2kRand(9);
+			rots[player] = APP_Rand(9);
 			setNextBlockColors(player, 1);
 		}
 
@@ -11717,8 +11715,8 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & YGS_WAVE_SIMPLE) )
-		YGS2kPlayWave(63);
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsPlayWave(63)) && !(wavebgm & APP_WAVE_SIMPLE) )
+		APP_PlayWave(63);
 /*
 	// リプレイセーブ#1.60c7i5
 	if((textguide) && (!playback) && (!demo)){
@@ -11781,9 +11779,9 @@ void statNameEntry(int32_t player) {
 		}
 	}
 	if(statusc[player * 10 + 1] == 0)
-		YGS2kStrCpy(string[player + 2], "");
+		APP_StrCpy(string[player + 2], "");
 
-	len = YGS2kStrLen(string[player + 2]);
+	len = APP_StrLen(string[player + 2]);
 
 	// 何位に入ったか表示#1.60c7i5
 	if(rank != -1) {
@@ -11807,7 +11805,7 @@ void statNameEntry(int32_t player) {
 	if(statusc[player * 10 + 1] < 45 * 60){
 		padRepeat(player);
 
-		move = getPressState(player, BTN_RIGHT) - getPressState(player, BTN_LEFT);
+		move = getPressState(player, APP_BUTTON_RIGHT) - getPressState(player, APP_BUTTON_LEFT);
 		if(move)
 			if((mpc[player] == 1) || (mpc[player] >= 15)) {
 				if(mpc[player] >= 15) mpc[player] = 12;
@@ -11820,7 +11818,7 @@ void statNameEntry(int32_t player) {
 		if(statusc[player * 10 + 2] < (len == 3) * 53)
 			statusc[player * 10 + 2] = 54;
 
-		YGS2kMidStr(RankString, statusc[player * 10 + 2] + 1, 1, string[4]);
+		APP_MidStr(RankString, statusc[player * 10 + 2] + 1, 1, string[4]);
 
 	//	statusc[player * 10 + 1]++;
 
@@ -11833,22 +11831,22 @@ void statNameEntry(int32_t player) {
 		for(k = 0;k <= 9;k++){
 			if(k > statusc[player * 10 + 1] / 2) break;
 			j = statusc[player * 10 + 2]-3-len + k;
-			YGS2kMidStr(RankString, j + 1 + (55 * (j < 0)) - (55 * (j > 54)), 1, string[0]);
+			APP_MidStr(RankString, j + 1 + (55 * (j < 0)) - (55 * (j > 54)), 1, string[0]);
 			if(j==statusc[player * 10 + 2]){
 				printFont(15 + k + 24 * player - 12 * maxPlay, 12-add, string[0], 2 * (count % 20 > 10));
 				printFont(15 + k + 24 * player - 12 * maxPlay, 13-add, "n", count % 9);
 			} else printFont(15 + k + 24 * player - 12 * maxPlay, 12-add, string[0], 0);
 		}
-		if(getPushState(player, BTN_A)) {
+		if(getPushState(player, APP_BUTTON_A)) {
 			PlaySE(10);
 			if(statusc[player * 10 + 2] == 53) {
 				if(len) {
-					YGS2kMidStr(string[player + 2], 1, len - 1, string[player + 2]);
+					APP_MidStr(string[player + 2], 1, len - 1, string[player + 2]);
 				}
 			} else if(statusc[player * 10 + 2] == 54) {
 				statusc[player * 10 + 1] = 45 * 60;
 			} else
-				YGS2kStrCat(string[player + 2], string[4]);
+				APP_StrCat(string[player + 2], string[4]);
 		}
 	} else{
 		printFont(18 + 24 * player - 12 * maxPlay, 14-add, string[player + 2], (count % 4 / 2) * digitc[rots[player]]);
@@ -11856,12 +11854,12 @@ void statNameEntry(int32_t player) {
 
 	if(statusc[player * 10 + 1] >= 45 * 60) {
 		if(statusc[player * 10 + 1] == 45 * 60) {
-			if(!len) YGS2kStrCpy(string[player + 2], "NOP");
+			if(!len) APP_StrCpy(string[player + 2], "NOP");
 			PlaySE(18);
 		}
 		if(statusc[player * 10 + 1] == (46 * 60) + 30){
 			sprintf(string[player + 2], "%s   ", string[player + 2]);
-			YGS2kLeftStr(string[player + 2], 3, string[player + 2]);
+			APP_LeftStr(string[player + 2], 3, string[player + 2]);
 
 			if(ranking_type==0){
 				RankingRegist(gameMode[player], 0, sc[player], li[player], lv[player], gametime[player], (ending[player]==3), string[player + 2]);
@@ -11951,9 +11949,9 @@ bgmteisiflg = 1;
 			for(i = 0; i < fldsizew[player]; i++) {
 				// ライン消しエフェクトで消える #1.60c7n5
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
 					if (tomoyo_domirror[0]  && (player==0))
-					objectCreate(player, 1, (i + 15 + 24 * 1 - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), -1900 + YGS2kRand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * 1 - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - APP_Rand(40), -1900 + APP_Rand(150) + 1 * 250, fld[i + j * fldsizew[player] + player * 220], 100);
 				}
 
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -11985,7 +11983,7 @@ bgmteisiflg = 1;
 						}
 						ending[player] = 2;
 						// エンディングBGM再生
-						YGS2kPlayWave(56);
+						APP_PlayWave(56);
 						fadelv[player] = 0;
 					}
 					else if((gameMode[player] == 8) && (mission_end[c_mission ] < 4))
@@ -12015,7 +12013,7 @@ bgmteisiflg = 1;
 							IsBig[player] = 1;
 						}
 						// エンディングBGM再生
-						YGS2kPlayWave(56);
+						APP_PlayWave(56);
 fadelv[player] = 0;
 					}
 				} else {
@@ -12024,11 +12022,11 @@ fadelv[player] = 0;
 					ending[player] = 2;
 					// エンディングBGM再生
 					if ((gameMode[player] == 0) && (beginner_rollbgm == 0))
-						YGS2kPlayWave(57);
+						APP_PlayWave(57);
 					else if ((gameMode[player] == 0) && (beginner_rollbgm == 1))
-						YGS2kPlayWave(51);
+						APP_PlayWave(51);
 					else
-						YGS2kPlayWave(56);
+						APP_PlayWave(56);
 
 fadelv[player] = 0;
 //sprintf(string[0],"-3- %2d %2d PLAY56",ending[player],gameMode[player]);
@@ -12075,7 +12073,7 @@ fadelv[player] = 0;
 		// 花火
 		if((statusc[player * 10] % 9 == 0)&&(endingcnt[player] < 30)) {//30発上がるとやめる
 			PlaySE(35);
-			objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 16 + YGS2kRand(24), 0, 0, YGS2kRand(7)+1, 0);
+			objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 16 + APP_Rand(24), 0, 0, APP_Rand(7)+1, 0);
 			hanabi_total[player]++;
 			endingcnt[player]++;
 		}
@@ -12178,7 +12176,7 @@ fadelv[player] = 0;
 			}
 			if((statusc[player * 10] % 40 == 0)&&(endingcnt[player] < 4)) {
 				PlaySE(35);
-				objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
+				objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 			}
 		} else {
 			if(statusc[player * 10] == 220) objectClearPl(player);	// Tiっぽく花火を消す
@@ -12199,7 +12197,7 @@ fadelv[player] = 0;
 			printFont(16 + 24 * player - 12 * maxPlay, 17, "2 LINES", 0);
 			}
 			// ボタンでスキップ
-			if(getPushState(player, BTN_A)) {
+			if(getPushState(player, APP_BUTTON_A)) {
 				statusc[player * 10] = 420;
 			}
 			if(statusc[player * 10] >= 420) {
@@ -12245,7 +12243,7 @@ fadelv[player] = 0;
 			bgmlv = p_bgmlv;
 			changeBGM(player);
 		}else
-			YGS2kPlayWave(56);
+			APP_PlayWave(56);
 
 		statusc[player * 10]++;
 	}else if (ending[player] == 7){//超短縮
@@ -12265,7 +12263,7 @@ fadelv[player] = 0;
 				for(i = 0; i < fldsizew[player]; i++) {
 				// ライン消しエフェクトで消える #1.60c7n5
 				if( fld[i+ j * fldsizew[player] + player * 220] != 0) {
-					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
+					objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8,(j + 3) * 8, (i - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150) + 1 * 250, fld[i+ j * fldsizew[player] + player * 220], 100);
 				}
 
 				fld[i+ j * fldsizew[player] + player * 220] = 0;
@@ -12280,7 +12278,7 @@ fadelv[player] = 0;
 			// 花火
 			if((statusc[player * 10] % 9 == 0)&&(endingcnt[player] < 10)) {
 				PlaySE(35);
-				objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
+				objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 				hanabi_total[player]++;
 				endingcnt[player]++;
 			}
@@ -12320,8 +12318,8 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!YGS2kIsPlayWave(63)) && !(wavebgm & YGS_WAVE_SIMPLE) )
-		YGS2kPlayWave(63);
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsPlayWave(63)) && !(wavebgm & APP_WAVE_SIMPLE) )
+		APP_PlayWave(63);
 
 	//警告音が鳴っていたら止める
 	StopSE(40);
@@ -12539,7 +12537,7 @@ void statResult(int32_t player) {
 	}
 
 	// ボタンでスキップ
-	if(getPushState(player, BTN_A)) {
+	if(getPushState(player, APP_BUTTON_A)) {
 		statusc[player * 10 + 1] = 1000;
 	}
 
@@ -12690,33 +12688,33 @@ void statReplaySave(int32_t player) {
 		if(repdata[9 + player * 20]) ExBltRect(85, 136 + 192 * player - 96 * maxPlay, 96, 154, 112, 14, 7);
 	}
 	if(statusc[player * 10 + 2] == 0){
-		printMenuButton(16+24 * player - 12 * maxPlay, 25, BTN_B, player);
+		printMenuButton(16+24 * player - 12 * maxPlay, 25, APP_BUTTON_B, player);
 		printFont(16+24 * player - 12 * maxPlay, 25, " :NO SAVE", 0);
 
 		// キー入力
 		padRepeat(player);
 		// ←
-		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, BTN_C) )
-		if( getPressState(player, BTN_LEFT) ) {
+		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, APP_BUTTON_C) )
+		if( getPressState(player, APP_BUTTON_LEFT) ) {
 			PlaySE(3);
 			statusc[player * 10 + 0]--;
 			if(statusc[player * 10 + 0] < 1) statusc[player * 10 + 0] = 40;
 			statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
 		}
 		// →
-		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, BTN_C) )
-		if( getPressState(player, BTN_RIGHT) ) {
+		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, APP_BUTTON_C) )
+		if( getPressState(player, APP_BUTTON_RIGHT) ) {
 			PlaySE(3);
 			statusc[player * 10 + 0]++;
 			if(statusc[player * 10 + 0] > 40) statusc[player * 10 + 0] = 1;
 			statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
 		}
 		// A (SAVE)
-		if( getPushState(player, BTN_A) ) {
+		if( getPushState(player, APP_BUTTON_A) ) {
 			if((time2[player] > REPLAY_TIME_MAX) || (!replay_save[player])){
 				statusc[player * 10 + 2] = 120;
 			}else{
-				if(abs_YGS2K(YGS2kGetRealFPS() - max_fps_2) < 10){
+				if(SDL_abs(APP_GetRealFPS() - max_fps_2) < 10){
 					PlaySE(10);
 					saveReplayData(player, statusc[player * 10 + 0]);
 					freeReplayData();
@@ -12726,7 +12724,7 @@ void statReplaySave(int32_t player) {
 			}
 		}
 		// B (NO SAVE)
-		if( getPushState(player, BTN_B) ) {
+		if( getPushState(player, APP_BUTTON_B) ) {
 			freeReplayData();
 			statusc[player * 10 + 2] = 120;
 		}
@@ -12792,11 +12790,11 @@ void statVersusSelect(int32_t player) {
 	ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
 
 	if(vslevel[player] == 2) {
-		printMenuButton(3 + 24 * player, 6, BTN_A, player);
+		printMenuButton(3 + 24 * player, 6, APP_BUTTON_A, player);
 		printFont(4 + 24 * player, 6, ":LOAD SP", 7);
 	}
 	else {
-		printMenuButton(3 + 24 * player, 6, BTN_A, player);
+		printMenuButton(3 + 24 * player, 6, APP_BUTTON_A, player);
 		printFont(4 + 24 * player, 6, ":READY SP", 7);
 	}
 
@@ -12975,10 +12973,10 @@ void statVersusSelect(int32_t player) {
 
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, BTN_UP)) {
+	if(getPressState(player, APP_BUTTON_UP)) {
 		PlaySE(5);
 
-		if(getPressState(player, BTN_D)){
+		if(getPressState(player, APP_BUTTON_D)){
 			winpoint--;
 			if(winpoint <= 0) winpoint = 10;
 		}else{
@@ -12989,10 +12987,10 @@ void statVersusSelect(int32_t player) {
 
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if(getPressState(player, BTN_DOWN)) {
+	if(getPressState(player, APP_BUTTON_DOWN)) {
 		PlaySE(5);
 
-		if(getPressState(player, BTN_D)){
+		if(getPressState(player, APP_BUTTON_D)){
 			winpoint++;
 			if(winpoint > 10) winpoint = 1;
 		}else{
@@ -13004,8 +13002,8 @@ void statVersusSelect(int32_t player) {
 	padRepeat(player);
 
 	// ←
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
-	if(getPressState(player, BTN_LEFT)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
+	if(getPressState(player, APP_BUTTON_LEFT)) {
 		PlaySE(3);
 
 		// 回転法則
@@ -13078,8 +13076,8 @@ void statVersusSelect(int32_t player) {
 	}
 
 	// →
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, BTN_C)))
-	if(getPressState(player, BTN_RIGHT)) {
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
+	if(getPressState(player, APP_BUTTON_RIGHT)) {
 		PlaySE(3);
 		// 回転法則
 		if(vslevel[player] == 0) {
@@ -13166,12 +13164,12 @@ void statVersusSelect(int32_t player) {
 	}
 	//回転法則のランダムセレクト
 	if(versus_rot[player] == 9){
-		rots[player] = YGS2kRand(9);
+		rots[player] = APP_Rand(9);
 		setNextBlockColors(player, 1);
 	}
 
 	// Bボタン
-	if(getPushState(player, BTN_B)) {
+	if(getPushState(player, APP_BUTTON_B)) {
 		upLineT[0] = uplinetype;
 		use_item[0] = 0;
 		upLineT[1] = uplinetype;
@@ -13189,7 +13187,7 @@ void statVersusSelect(int32_t player) {
 	}
 
 	// Aボタン
-	if(getPushState(player, BTN_A)) {
+	if(getPushState(player, APP_BUTTON_A)) {
 		if(vslevel[player] == 2) {
 			PlaySE(3);
 			if(sptmp[player] == -10){
@@ -13237,7 +13235,7 @@ void winner() {
 	int32_t		player, i, j, block, win, obj, c, kosa;
 
 	// BGM停止
-	if(!(wavebgm & YGS_WAVE_SIMPLE)) StopAllBGM();
+	if(!(wavebgm & APP_WAVE_SIMPLE)) StopAllBGM();
 	// 残り時間が少ない時の効果音も停止
 	StopSE(32);
 
@@ -13311,7 +13309,7 @@ void winner() {
 			}
 		}
 		// Aボタンで設定画面に戻る
-		if((getPushState(player, BTN_A) && (winr > 22) && (!playback)) || (demo) && (winr > 19) || (winr > 80)) {
+		if((getPushState(player, APP_BUTTON_A) && (winr > 22) && (!playback)) || (demo) && (winr > 19) || (winr > 80)) {
 			if((playback) || (demo)){
 				if(!tmp_maxPlay)
 					maxPlay = 0;
@@ -13354,7 +13352,7 @@ void winner() {
 		// 花火
 		if( (statusc[0] % 9 == 0) && (endingcnt[player] <= 30) && (obj == 0)) {
 			PlaySE(35);
-			objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
+			objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 			endingcnt[player]++;
 		}
 	}
@@ -13823,8 +13821,8 @@ void eraseItem(int32_t player, int32_t type) {
 		misstimer[player] = 0;
 	// 解除ここまで
 		if(!ending[player]){	//ロール中はBGMを変えない
-			YGS2kStopWave(50 +bgmlv);
-			YGS2kPlayWave(65);
+			APP_StopWave(50 +bgmlv);
+			APP_PlayWave(65);
 		}
 		isfever[player] = 1;
 		item_timer[player] = 600;
@@ -13902,7 +13900,7 @@ void eraseItem(int32_t player, int32_t type) {
 					bx2 = (bx[enemy] + blkDataX[blk[enemy] * 16 + rt[enemy] * 4 + i]);
 					by2 = (by[enemy] + blkDataY[blk[enemy] * 16 + rt[enemy] * 4 + i]);
 				}
-				objectCreate(enemy, 6, (bx2 + 15 + 24 * enemy - 12 * maxPlay) * 8, (by2 + 3) * 8, (bx2 - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + 250, c_cblk[enemy]+1, 100);
+				objectCreate(enemy, 6, (bx2 + 15 + 24 * enemy - 12 * maxPlay) * 8, (by2 + 3) * 8, (bx2 - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150) + 250, c_cblk[enemy]+1, 100);
 			}
 			ndelay[enemy] = 1;
 			status[enemy] = 22;
@@ -14051,7 +14049,7 @@ void statGameOver2(int32_t player) {
 	}
 
 	// ボタンでスキップ
-	if(getPushState(player, BTN_A)) {
+	if(getPushState(player, APP_BUTTON_A)) {
 		statusc[player * 10] = 480;
 	}
 
@@ -14263,7 +14261,7 @@ void statLaser(int32_t player) {
 			if(statusc[player * 10 + 0] < waitA){	//レーザー発射前
 				if(statusc[player * 10 + 0] % 5 == 0)
 					PlaySE(3);
-				if( ( getPushState(player, BTN_A)) || ( getPushState(player, BTN_B)) || ( getPushState(player, BTN_C)) )
+				if( ( getPushState(player, APP_BUTTON_A)) || ( getPushState(player, APP_BUTTON_B)) || ( getPushState(player, APP_BUTTON_C)) )
 					rapid_c[player]++;
 				if((rapid_c[player] > 4) && (lasernum[player] < 4)){	//レーザーを増やす（最大4本）
 					lasernum[player]++;
@@ -14272,13 +14270,13 @@ void statLaser(int32_t player) {
 				}
 				//照準を移動
 				// →	照準は動かしにくくする
-				if((getPushState(player, BTN_RIGHT)) && (statusc[player * 10 + 0] % 10 < 2)){
+				if((getPushState(player, APP_BUTTON_RIGHT)) && (statusc[player * 10 + 0] % 10 < 2)){
 					for(i = 0; i < lasernum[player]; i++){
 						if(laserpos[i + 4 * player] < fldsizew[player] - 1) laserpos[i + 4 * player]++;
 					}
 				}
 				// ←	移動入力の受付は一定間隔で
-				if((getPushState(player, BTN_LEFT)) && (statusc[player * 10 + 0] % 10 < 2)){
+				if((getPushState(player, APP_BUTTON_LEFT)) && (statusc[player * 10 + 0] % 10 < 2)){
 					for(i = 0; i < lasernum[player]; i++){
 						if(laserpos[i + 4 * player] > 0) laserpos[i + 4 * player]--;
 					}
@@ -14294,7 +14292,7 @@ void statLaser(int32_t player) {
 					ExBltRect(78, ((laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) - 1) * 8, (4 - 1) * 8, 0, 0, 24, 24);
 					for(j = 0; j <= fldsizeh[player]; j++){
 						if(fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] != 0){
-							objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
+							objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
 							fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldt[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldi[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
@@ -14322,11 +14320,11 @@ void statLaser(int32_t player) {
 				laserpos[2 + 4 * player ] = laserpos[0 + 4 * player ] + 2;//左から3番目
 				//照準を移動
 				// →	照準は動かしにくくする
-				if(getPushState(player, BTN_RIGHT)){
+				if(getPushState(player, APP_BUTTON_RIGHT)){
 						if(laserpos[0 + 4 * player] < fldsizew[player] - 3) laserpos[0 + 4 * player]++;
 				}
 				// ←	移動入力の受付は一定間隔で
-				if(getPushState(player, BTN_LEFT)){
+				if(getPushState(player, APP_BUTTON_LEFT)){
 						if(laserpos[0 + 4 * player] > 0) laserpos[0 + 4 * player]--;
 				}
 				// 錘を描画
@@ -14339,7 +14337,7 @@ void statLaser(int32_t player) {
 					j = (statusc[player * 10 + 0] - waitA) * 2;
 					if((j - 1 >= 0) && (j - 1 <= fldsizeh[player])){
 						if(fld[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] != 0){
-						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 2) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
+						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 2) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
 							fld[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] = 0;
 							fldt[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] = 0;
 							fldi[laserpos[i + 4 * player] + (j-1) * fldsizew[player] + player * 220] = 0;
@@ -14350,7 +14348,7 @@ void statLaser(int32_t player) {
 					}
 					if((j >= 0) && (j <= fldsizeh[player])){
 						if(fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] != 0){
-						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
+						//	objectCreate(player, 1, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (laserpos[i + 4 * player] - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150), fld[laserpos[i + 4 * player] + j * 10 + player * 220], 100);
 							fld[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldt[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
 							fldi[laserpos[i + 4 * player] + j * fldsizew[player] + player * 220] = 0;
@@ -14490,7 +14488,7 @@ void statShotgun(int32_t player) {
 			thunder_timer = 10;
 			for(i = checkFieldTop(player); i < 22; i++){
 				if(fld[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] != 0){
-					objectCreate(player, 1, (shotgunpos[i + 22 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (shotgunpos[i + 22 * player] - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[shotgunpos[i + 22 * player] + i * 10 + player * 220], 100);
+					objectCreate(player, 1, (shotgunpos[i + 22 * player] + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (shotgunpos[i + 22 * player] - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150), fld[shotgunpos[i + 22 * player] + i * 10 + player * 220], 100);
 					fld[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 					fldt[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
 					fldi[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] = 0;
@@ -14602,7 +14600,7 @@ void statExamination(int32_t player){
 			PlaySE(7);
 			purupuru[player] = 1;
 		} else if((statusc[player * 10 + 0] >= 0) && (statusc[player * 10 + 0] < 110)){
-			ofs_x[player] = YGS2kRand(16) - 8;
+			ofs_x[player] = APP_Rand(16) - 8;
 			ofs_x2[player] = ofs_x[player];
 		} else if(statusc[player * 10 + 0] == 110){//プルプルおわり
 			PlaySE(39);
@@ -14667,7 +14665,7 @@ void statExamination(int32_t player){
 			purupuru[player] = 2;
 			endingcnt[player] = 0;
 		} else if((statusc[player * 10 + 0] >= 0) && (statusc[player * 10 + 0] < 60)){
-			ofs_x[player] = YGS2kRand(8) - 4;
+			ofs_x[player] = APP_Rand(8) - 4;
 			ofs_x2[player] = ofs_x[player];
 		} else if(statusc[player * 10 + 0] == 60){
 			PlaySE(39);
@@ -14706,7 +14704,7 @@ void statExamination(int32_t player){
 				}
 			}
 			if(statusc[player * 10 + 0] == 150){
-				if((abs_YGS2K(exam_grade[player] - grade[player]) > 3) || (grade[player] == 32))	//差が大きければルーレット演出をとばす
+				if((SDL_abs(exam_grade[player] - grade[player]) > 3) || (grade[player] == 32))	//差が大きければルーレット演出をとばす
 					statusc[player * 10 + 0] = 350;
 			}
 			if((statusc[player * 10 + 0] > 150) && (statusc[player * 10 + 0] < 350)){	//ルーレット
@@ -14737,7 +14735,7 @@ void statExamination(int32_t player){
 				if(exam_grade[player] <= grade[player]){	//合格
 					if((statusc[player * 10] % 10 == 0)&&(endingcnt[player] < 20)) {
 						PlaySE(35);
-						objectCreate2(player, 7, YGS2kRand(80) + 72 + 192 * player - 96 * maxPlay, 32 + YGS2kRand(20), 0, 0, YGS2kRand(7)+1, 0);
+						objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 						endingcnt[player]++;
 					}
 					ExBltRect(81, 125+192 * player -96 * maxPlay , 162 , 215, 200 + 25 * (count % 4 / 2), 70, 25);
@@ -14791,7 +14789,7 @@ void statItemRulet(int32_t player) {
 		if(statusc[player * 10 + 0] <= 119){//シャッフル中
 			if(statusc[player * 10 + 0] % 3 == 0){
 				PlaySE(5);
-				statusc[player * 10 + 2] = YGS2kRand(item_num) + 1;
+				statusc[player * 10 + 2] = APP_Rand(item_num) + 1;
 			}
 		}
 		if(statusc[player * 10 + 0] == 120){//決定
@@ -14824,7 +14822,7 @@ void statItemRulet(int32_t player) {
 			}
 		}
 		if((statusc[player * 10 + 0] > 120) && (statusc[player * 10 + 0] <= 150) && (statusc[player * 10 + 2] == 36)){
-			y = YGS2kRand(8);
+			y = APP_Rand(8);
 			ofs_x[player] = y - (8 / 2);
 			ofs_x2[player] = ofs_x[player];
 		}else{
@@ -15092,14 +15090,14 @@ void statFreefall(int32_t player) {
 							if( (fld[x + i * fldsizew[player] + player * 220] >= 11) || (super_breakeffect == 1) ||
 								( ((breaktype == 0)||((breaktype == 3)&&(gameMode[player] == 0))) && (super_breakeffect == 2) ) ||
 								((heboGB[player]) && (super_breakeffect == 2)) ) {
-								objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
+								objectCreate(player, 1, (x + 15 + 24 * player - 12 * maxPlay) * 8, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
 							} else if(Ff_rerise[player] & 1) {
 								if((x & 1) == 1) {
-									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
 								}
 							} else {
 								if((x & 1) == 0) {
-									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
+									objectCreate(player, 1 + (wait1[player] < 6) * 2, (x + 15 + 24 * player - 12 * maxPlay) * 8 + 4, (i + 3) * 8, (x - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150) + Ff_rerise[player] * 250, fld[x + i * 10 + player * 220], 100);
 								}
 							}
 						}
@@ -15401,7 +15399,7 @@ void statDelfromUpper(int32_t player) {
 		if((j >= 0) && (j < 22)) {
 			for(i = 0; i < 10; i++) {
 				if(fld[i + j * 10 + player * 220]) {
-						objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - YGS2kRand(40), - 1900 + YGS2kRand(150), fld[i + j * 10 + player * 220], 100);
+						objectCreate(player, 1, (i + 15 + 24 * player - 12 * maxPlay) * 8, (j + 3) * 8, (i - 5) * 120 + 20 - APP_Rand(40), - 1900 + APP_Rand(150), fld[i + j * 10 + player * 220], 100);
 
 					fld[i + j * 10 + player * 220] = 0;
 					fldt[i + j * 10 + player * 220] = 0;
@@ -15480,7 +15478,7 @@ void statBanana(int32_t player){
 void GiziSRand(int32_t player){
 	int32_t seed;
 
-	seed = YGS2kRand(65536);
+	seed = APP_Rand(65536);
 	randseed[player] = seed;
 	first_seed[player] = seed;
 }
@@ -15491,15 +15489,7 @@ void GiziSRand(int32_t player){
 int32_t gameRand(int32_t max,int32_t player) {
 
 		randseed[player] = ((randseed[player] * 673 + 994) / 10) % 100000;
-		return abs_YGS2K(randseed[player]) % max;
-}
-
-// 絶対値を求める（YGS2Kにはデフォルトでは入っていないので）
-int32_t abs_YGS2K(int32_t i){
-	if(i < 0)
-		return -i;
-	else
-		return i;
+		return SDL_abs(randseed[player]) % max;
 }
 
 // 特定の座標にブロックが存在するか調べる
@@ -15596,16 +15586,16 @@ void scanItem(int32_t player) {
 //  パッドリピート入力処理
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void padRepeat(int32_t player) {
-	if(getPressState(player, BTN_LEFT) && getPressState(player, BTN_RIGHT)) {
+	if(getPressState(player, APP_BUTTON_LEFT) && getPressState(player, APP_BUTTON_RIGHT)) {
 		mp[player] = 0;
 		mpc[player] = 0;
-	} else if(getPressState(player, BTN_LEFT)) {
+	} else if(getPressState(player, APP_BUTTON_LEFT)) {
 		if(mp[player] != 2) {
 			mp[player] = 2;
 			mpc[player] = 0;
 		}
 		mpc[player]++;
-	} else if(getPressState(player, BTN_RIGHT)) {
+	} else if(getPressState(player, APP_BUTTON_RIGHT)) {
 		if(mp[player] != 3) {
 			mp[player] = 3;
 			mpc[player] = 0;
@@ -15617,16 +15607,16 @@ void padRepeat(int32_t player) {
 	}
 }
 void padRepeat2(int32_t player) { // hoge 上下入力バージョン
-	if(getPressState(player, BTN_UP) && getPressState(player, BTN_DOWN)) {
+	if(getPressState(player, APP_BUTTON_UP) && getPressState(player, APP_BUTTON_DOWN)) {
 		mp2[player] = 0;
 		mpc2[player] = 0;
-	} else if(getPressState(player, BTN_UP)) {
+	} else if(getPressState(player, APP_BUTTON_UP)) {
 		if(mp2[player] != 1) {
 			mp2[player] = 1;
 			mpc2[player] = 0;
 		}
 		mpc2[player]++;
-	} else if(getPressState(player, BTN_DOWN)) {
+	} else if(getPressState(player, APP_BUTTON_DOWN)) {
 		if(mp2[player] != 2) {
 			mp2[player] = 2;
 			mpc2[player] = 0;
@@ -15642,7 +15632,7 @@ void nextFourWayFilteredDirection(
 	int32_t player,
 	bool up, bool down, bool left, bool right,
 	bool* lastUp, bool* lastDown, bool* lastLeft, bool* lastRight,
-	EButton* direction
+	APP_Button* direction
 ) {
 	if (fourwaypriorityup == 0 || fourwaypriorityup == player + 1) {
 		bool nextLeft = false;
@@ -15715,19 +15705,19 @@ void nextFourWayFilteredDirection(
 		}
 
 		if (nextUp) {
-			*direction = BTN_UP;
+			*direction = APP_BUTTON_UP;
 		}
 		else if (nextDown) {
-			*direction = BTN_DOWN;
+			*direction = APP_BUTTON_DOWN;
 		}
 		else if (nextLeft) {
-			*direction = BTN_LEFT;
+			*direction = APP_BUTTON_LEFT;
 		}
 		else if (nextRight) {
-			*direction = BTN_RIGHT;
+			*direction = APP_BUTTON_RIGHT;
 		}
 		else {
-			*direction = BTN_NULL;
+			*direction = APP_BUTTON_NULL;
 		}
 	}
 	else {
@@ -15740,34 +15730,34 @@ void nextFourWayFilteredDirection(
 
 		if (numNew == 1) {
 			if (up && !*lastUp) {
-				*direction = BTN_UP;
+				*direction = APP_BUTTON_UP;
 			}
 			else if (down && !*lastDown) {
-				*direction = BTN_DOWN;
+				*direction = APP_BUTTON_DOWN;
 			}
 			else if (left && !*lastLeft) {
-				*direction = BTN_LEFT;
+				*direction = APP_BUTTON_LEFT;
 			}
 			else if (right && !*lastRight) {
-				*direction = BTN_RIGHT;
+				*direction = APP_BUTTON_RIGHT;
 			}
 		}
 		else if (numPressed == 1u) {
 			if (left) {
-				*direction = BTN_LEFT;
+				*direction = APP_BUTTON_LEFT;
 			}
 			else if (right) {
-				*direction = BTN_RIGHT;
+				*direction = APP_BUTTON_RIGHT;
 			}
 			else if (down) {
-				*direction = BTN_DOWN;
+				*direction = APP_BUTTON_DOWN;
 			}
 			else if (up) {
-				*direction = BTN_UP;
+				*direction = APP_BUTTON_UP;
 			}
 		}
 		else if (numPressed == 0u) {
-			*direction = BTN_NULL;
+			*direction = APP_BUTTON_NULL;
 		}
 
 		*lastUp = up;
@@ -15781,14 +15771,14 @@ void nextFourWayFilteredDirection(
 //  キー状態の取得
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // ジョイスティック周りを変更 #1.60c7
-int32_t getPressState(int32_t player, EButton key) { // パッドボタン割り当て対応 #1.60c
-	#ifdef ENABLE_LINUX_GPIO
+int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割り当て対応 #1.60c
+	#ifdef APP_ENABLE_LINUX_GPIO
 	int32_t gtmp;	// GPIO入力
 	#endif
-	#ifdef ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK
 	int32_t jtmp;	// ジョイスティック入力
 	#endif
-	#ifdef ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER
 	int32_t ctmp;
 	#endif
 	int32_t ktmp = 0;	// キーボード入力
@@ -15818,74 +15808,74 @@ int32_t getPressState(int32_t player, EButton key) { // パッドボタン割り
 	else if(cpu_flag[pl]) {
 		return cp_input[key + pl * 10];
 	}
-	else if ((fourwayfilter == 0 || fourwayfilter == pl + 1) && BTN_ISDIR(key)) {
+	else if ((fourwayfilter == 0 || fourwayfilter == pl + 1) && APP_BUTTON_IS_DIR(key)) {
 		return pressDirection[pl] == key;
 	}
 	else {
-		#ifdef ENABLE_LINUX_GPIO
+		#ifdef APP_ENABLE_LINUX_GPIO
 		if ( player == 0 ) {
-			gtmp = YGS2kIsPressGPIO(key);
+			gtmp = APP_IsPressGPIO(key);
 		}
 		else
 			gtmp = 0;
 		#endif
 
-		#ifdef ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
-		ktmp = YGS2kIsPressKey(keyAssign[key + pl * 10]);
+		ktmp = APP_IsPressKey(keyAssign[key + pl * 10]);
 		#endif
 
-		#ifdef ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
-		jtmp = YGS2kIsPressJoyKey(&joyKeyAssign[key + pl * 10]);
+		jtmp = APP_IsPressJoyKey(&joyKeyAssign[key + pl * 10]);
 		#endif
 
-		#ifdef ENABLE_GAME_CONTROLLER
-		YGS2kSConKey conkey;
+		#ifdef APP_ENABLE_GAME_CONTROLLER
+		APP_ConKey conkey;
 		switch (key) {
-		case BTN_GIVEUP:
-			conkey.type = YGS_CONKEY_BUTTON;
+		case APP_BUTTON_GIVE_UP:
+			conkey.type = APP_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
-			ctmp = YGS2kIsPressConKey(pl, &conkey);
+			ctmp = APP_IsPressConKey(pl, &conkey);
 			break;
 
-		case BTN_PAUSE:
-			conkey.type = YGS_CONKEY_BUTTON;
+		case APP_BUTTON_PAUSE:
+			conkey.type = APP_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
-			ctmp = YGS2kIsPressConKey(pl, &conkey);
+			ctmp = APP_IsPressConKey(pl, &conkey);
 			break;
 
 		default:
 			ctmp = inmenu ?
-				IsPressMenu(pl, key, YGS2kGetConType(pl)) :
-				YGS2kIsPressConKey(pl, &conKeyAssign[key + 8 * pl]);
+				IsPressMenu(pl, key, APP_GetConType(pl)) :
+				APP_IsPressConKey(pl, &conKeyAssign[key + 8 * pl]);
 			break;
 		}
 		#endif
 
 		return
 			ktmp
-			#ifdef ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK
 			| jtmp
 			#endif
-			#ifdef ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER
 			| ctmp
 			#endif
-			#ifdef ENABLE_LINUX_GPIO
+			#ifdef APP_ENABLE_LINUX_GPIO
 			| gtmp
 			#endif
 			;
 	}
 }
 
-int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り当て対応 #1.60c
-	#ifdef ENABLE_LINUX_GPIO
+int32_t getPushState(int32_t player, APP_Button key) { // パッドボタン割り当て対応 #1.60c
+	#ifdef APP_ENABLE_LINUX_GPIO
 	int32_t gtmp;		// GPIO入力
 	#endif
-	#ifdef ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK
 	int32_t jtmp;		// ジョイスティック入力
 	#endif
-	#ifdef ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER
 	int32_t ctmp;
 	#endif
 	int32_t ktmp = 0;	// キーボード入力
@@ -15902,7 +15892,7 @@ int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り�
 	// リプレイ
 	if(playback && replayData) {
 		// 入力をリプレイデータから読み取る
-		ktmp = (replayData[time2[pl] / REPLAY_PLAYER_CHUNK][(time2[pl] % REPLAY_PLAYER_CHUNK) + pl * REPLAY_PLAYER_CHUNK] & (1 << (key + NUMGAMEBTNS))) / (1 << (key + NUMGAMEBTNS));
+		ktmp = (replayData[time2[pl] / REPLAY_PLAYER_CHUNK][(time2[pl] % REPLAY_PLAYER_CHUNK) + pl * REPLAY_PLAYER_CHUNK] & (1 << (key + APP_BUTTON_GAME_COUNT))) / (1 << (key + APP_BUTTON_GAME_COUNT));
 
 		if((!pl) || (gameMode[0] == 4))
 			return ktmp;
@@ -15913,118 +15903,118 @@ int32_t getPushState(int32_t player, EButton key) { // パッドボタン割り�
 	else if (cpu_flag[pl]) {
 		return cp_input[key + pl * 10];
 	}
-	else if ((fourwayfilter == 0 || fourwayfilter == pl + 1) && BTN_ISDIR(key)) {
+	else if ((fourwayfilter == 0 || fourwayfilter == pl + 1) && APP_BUTTON_IS_DIR(key)) {
 		return pushDirection[pl] == key;
 	}
 	else {
-		#ifdef ENABLE_LINUX_GPIO
+		#ifdef APP_ENABLE_LINUX_GPIO
 		if ( player == 0 )
-			gtmp = YGS2kIsPushGPIO(key);
+			gtmp = APP_IsPushGPIO(key);
 		else
 			gtmp = 0;
 		#endif
 
-		#ifdef ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD
 		// キーボードの入力を読み取る
-		ktmp = YGS2kIsPushKey(keyAssign[key + pl * 10]);
+		ktmp = APP_IsPushKey(keyAssign[key + pl * 10]);
 		#endif
 
-		#ifdef ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK
 		// ジョイスティックの入力を読み取る
-		jtmp = YGS2kIsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
+		jtmp = APP_IsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
 		#endif
 
-		#ifdef ENABLE_GAME_CONTROLLER
-		YGS2kSConKey conkey;
+		#ifdef APP_ENABLE_GAME_CONTROLLER
+		APP_ConKey conkey;
 		switch (key) {
-		case BTN_GIVEUP:
-			conkey.type = YGS_CONKEY_BUTTON;
+		case APP_BUTTON_GIVE_UP:
+			conkey.type = APP_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
-			ctmp = YGS2kIsPushConKey(pl, &conkey);
+			ctmp = APP_IsPushConKey(pl, &conkey);
 			break;
 
-		case BTN_PAUSE:
-			conkey.type = YGS_CONKEY_BUTTON;
+		case APP_BUTTON_PAUSE:
+			conkey.type = APP_CONKEY_BUTTON;
 			conkey.index = SDL_CONTROLLER_BUTTON_START;
-			ctmp = YGS2kIsPushConKey(pl, &conkey);
+			ctmp = APP_IsPushConKey(pl, &conkey);
 			break;
 
 		default:
 			ctmp = inmenu ?
-				IsPushMenu(pl, key, YGS2kGetConType(pl)) :
-				YGS2kIsPushConKey(pl, &conKeyAssign[key + 8 * pl]);
+				IsPushMenu(pl, key, APP_GetConType(pl)) :
+				APP_IsPushConKey(pl, &conKeyAssign[key + 8 * pl]);
 			break;
 		}
 		#endif
 
 		return
 			ktmp
-			#ifdef ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK
 			| jtmp
 			#endif
-			#ifdef ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER
 			| ctmp
 			#endif
-			#ifdef ENABLE_LINUX_GPIO
+			#ifdef APP_ENABLE_LINUX_GPIO
 			| gtmp
 			#endif
 			;
 	}
 }
 
-int IsPressMenu(int32_t player, EButton button, YGS2kEInputType type)
+int IsPressMenu(int32_t player, APP_Button button, APP_InputType type)
 {
-	#ifdef ENABLE_GAME_CONTROLLER
-	YGS2kSConKey key;
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	APP_ConKey key;
 	int pushed;
 	#endif
-	#ifdef ONLY_CONTROLLER_TYPE
-	switch (ONLY_CONTROLLER_TYPE)
+	#ifdef APP_ONLY_CONTROLLER_TYPE
+	switch (APP_ONLY_CONTROLLER_TYPE)
 	#else
 	switch (type)
 	#endif
 	{
-	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_INPUT_XBOX:
-	case YGS_INPUT_PLAYSTATION:
-	case YGS_INPUT_NINTENDO:
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	case APP_INPUT_XBOX:
+	case APP_INPUT_PLAYSTATION:
+	case APP_INPUT_NINTENDO:
 		switch (button)
 		{
-		case BTN_UP:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
-			pushed = YGS2kIsPressConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || YGS2kIsPressConKey(player, &key);
-		case BTN_DOWN:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
-			pushed = YGS2kIsPressConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || YGS2kIsPressConKey(player, &key);
-		case BTN_LEFT:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
-			pushed = YGS2kIsPressConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || YGS2kIsPressConKey(player, &key);
-		case BTN_RIGHT:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
-			pushed = YGS2kIsPressConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || YGS2kIsPressConKey(player, &key);
-		case BTN_A:
-			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
+		case APP_BUTTON_UP:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 3 };
+			pushed = APP_IsPressConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || APP_IsPressConKey(player, &key);
+		case APP_BUTTON_DOWN:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 2 };
+			pushed = APP_IsPressConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || APP_IsPressConKey(player, &key);
+		case APP_BUTTON_LEFT:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 1 };
+			pushed = APP_IsPressConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || APP_IsPressConKey(player, &key);
+		case APP_BUTTON_RIGHT:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 0 };
+			pushed = APP_IsPressConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || APP_IsPressConKey(player, &key);
+		case APP_BUTTON_A:
+			key.type = APP_CONKEY_BUTTON;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
 			else key.index = SDL_CONTROLLER_BUTTON_A;
-			return YGS2kIsPressConKey(player, &key);
-		case BTN_B:
-			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
+			return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_B:
+			key.type = APP_CONKEY_BUTTON;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
 			else key.index = SDL_CONTROLLER_BUTTON_B;
-			return YGS2kIsPressConKey(player, &key);
+			return APP_IsPressConKey(player, &key);
 			break;
-		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPressConKey(player, &key);
-		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPressConKey(player, &key);
-		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPressConKey(player, &key);
-		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPressConKey(player, &key);
+		case APP_BUTTON_C: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_D: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_GIVE_UP: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_PAUSE: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return APP_IsPressConKey(player, &key);
 		default: return 0;
 		}
 		break;
@@ -16035,59 +16025,59 @@ int IsPressMenu(int32_t player, EButton button, YGS2kEInputType type)
 	}
 }
 
-int IsPushMenu(int32_t player, EButton button, YGS2kEInputType type)
+int IsPushMenu(int32_t player, APP_Button button, APP_InputType type)
 {
-	#ifdef ENABLE_GAME_CONTROLLER
-	YGS2kSConKey key;
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	APP_ConKey key;
 	int pushed;
 	#endif
-	#ifdef ONLY_CONTROLLER_TYPE
-	switch (ONLY_CONTROLLER_TYPE)
+	#ifdef APP_ONLY_CONTROLLER_TYPE
+	switch (APP_ONLY_CONTROLLER_TYPE)
 	#else
 	switch (type)
 	#endif
 	{
-	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_INPUT_XBOX:
-	case YGS_INPUT_PLAYSTATION:
-	case YGS_INPUT_NINTENDO:
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	case APP_INPUT_XBOX:
+	case APP_INPUT_PLAYSTATION:
+	case APP_INPUT_NINTENDO:
 		switch (button)
 		{
-		case BTN_UP:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 3 };
-			pushed = YGS2kIsPushConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
-			return pushed || YGS2kIsPushConKey(player, &key);
-		case BTN_DOWN:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 2 };
-			pushed = YGS2kIsPushConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
-			return pushed || YGS2kIsPushConKey(player, &key);
-		case BTN_LEFT:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 1 };
-			pushed = YGS2kIsPushConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
-			return pushed || YGS2kIsPushConKey(player, &key);
-		case BTN_RIGHT:
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_AXIS, .index = 0 };
-			pushed = YGS2kIsPushConKey(player, &key);
-			key = (YGS2kSConKey) { .type = YGS_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
-			return pushed || YGS2kIsPushConKey(player, &key);
-		case BTN_A:
-			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
+		case APP_BUTTON_UP:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 3 };
+			pushed = APP_IsPushConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			return pushed || APP_IsPushConKey(player, &key);
+		case APP_BUTTON_DOWN:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 2 };
+			pushed = APP_IsPushConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			return pushed || APP_IsPushConKey(player, &key);
+		case APP_BUTTON_LEFT:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 1 };
+			pushed = APP_IsPushConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			return pushed || APP_IsPushConKey(player, &key);
+		case APP_BUTTON_RIGHT:
+			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 0 };
+			pushed = APP_IsPushConKey(player, &key);
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			return pushed || APP_IsPushConKey(player, &key);
+		case APP_BUTTON_A:
+			key.type = APP_CONKEY_BUTTON;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
 			else key.index = SDL_CONTROLLER_BUTTON_A;
-			return YGS2kIsPushConKey(player, &key);
-		case BTN_B:
-			key.type = YGS_CONKEY_BUTTON;
-			if (type == YGS_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
+			return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_B:
+			key.type = APP_CONKEY_BUTTON;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
 			else key.index = SDL_CONTROLLER_BUTTON_B;
-			return YGS2kIsPushConKey(player, &key);
+			return APP_IsPushConKey(player, &key);
 			break;
-		case BTN_C: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return YGS2kIsPushConKey(player, &key);
-		case BTN_D: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return YGS2kIsPushConKey(player, &key);
-		case BTN_GIVEUP: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return YGS2kIsPushConKey(player, &key);
-		case BTN_PAUSE: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return YGS2kIsPushConKey(player, &key);
+		case APP_BUTTON_C: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_D: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_GIVE_UP: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_PAUSE: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return APP_IsPushConKey(player, &key);
 		default: return 0;
 		}
 		break;
@@ -16098,114 +16088,114 @@ int IsPushMenu(int32_t player, EButton button, YGS2kEInputType type)
 	}
 }
 
-#ifdef ENABLE_GAME_CONTROLLER
-int IsPressConTypeKey(YGS2kEInputType type, YGS2kSConKey* key)
+#ifdef APP_ENABLE_GAME_CONTROLLER
+int IsPressConTypeKey(APP_InputType type, APP_ConKey* key)
 {
-	#ifdef ONLY_CONTROLLER_TYPE
-	switch (ONLY_CONTROLLER_TYPE)
+	#ifdef APP_ONLY_CONTROLLER_TYPE
+	switch (APP_ONLY_CONTROLLER_TYPE)
 	#else
 	switch (type)
 	#endif
 	{
-	case YGS_INPUT_XBOX:
-	case YGS_INPUT_PLAYSTATION:
-	case YGS_INPUT_NINTENDO:
+	case APP_INPUT_XBOX:
+	case APP_INPUT_PLAYSTATION:
+	case APP_INPUT_NINTENDO:
 		break;
 
 	default:
 		return 0;
 	}
 
-	for (int player = 0; player < YGS2kGetNumPlayerSlots(); player++) {
-		if (YGS2kGetConType(player) == type && YGS2kIsPressConKey(player, key)) return 1;
+	for (int player = 0; player < APP_GetNumPlayerSlots(); player++) {
+		if (APP_GetConType(player) == type && APP_IsPressConKey(player, key)) return 1;
 	}
 	return 0;
 }
 
-int IsPushConTypeKey(YGS2kEInputType type, YGS2kSConKey* key)
+int IsPushConTypeKey(APP_InputType type, APP_ConKey* key)
 {
 	switch (type) {
-	case YGS_INPUT_XBOX:
-	case YGS_INPUT_PLAYSTATION:
-	case YGS_INPUT_NINTENDO:
+	case APP_INPUT_XBOX:
+	case APP_INPUT_PLAYSTATION:
+	case APP_INPUT_NINTENDO:
 		break;
 
 	default:
 		return 0;
 	}
 
-	for (int player = 0; player < YGS2kGetNumPlayerSlots(); player++) {
-		if (YGS2kGetConType(player) == type && YGS2kIsPushConKey(player, key)) return 1;
+	for (int player = 0; player < APP_GetNumPlayerSlots(); player++) {
+		if (APP_GetConType(player) == type && APP_IsPushConKey(player, key)) return 1;
 	}
 	return 0;
 }
 #endif
 
-int IsPressPrompt(EPrompt prompt)
+int IsPressPrompt(APP_Prompt prompt)
 {
-	switch (YGS2kGetLastInputType())
+	switch (APP_GetLastInputType())
 	{
 	#ifdef ENABLE_LINUXGPIO
-	case YGS_INPUT_LINUXGPIO:
+	case APP_INPUT_LINUXGPIO:
 		switch (input)
 		{
-		case PROMPT_OK: return YGS2kIsPressGPIO(4);
-		case PROMPT_CANCEL: return YGS2kIsPressGPIO(5);
-		case PROMPT_RETRY: return YGS2kIsPressGPIO(6);
+		case APP_PROMPT_OK: return APP_IsPressGPIO(4);
+		case APP_PROMPT_CANCEL: return APP_IsPressGPIO(5);
+		case APP_PROMPT_RETRY: return APP_IsPressGPIO(6);
 		default: return 0;
 		}
 	#endif
 
-	#ifdef ENABLE_KEYBOARD
-	#ifdef ENABLE_JOYSTICK
-	case YGS_INPUT_JOYSTICK:
+	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_JOYSTICK
+	case APP_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case YGS_INPUT_KEYBOARD:
+	case APP_INPUT_KEYBOARD:
 		switch (prompt)
 		{
-		case PROMPT_OK: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-		case PROMPT_CANCEL: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-		case PROMPT_RETRY: return YGS2kIsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case APP_PROMPT_OK: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+		case APP_PROMPT_CANCEL: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
+		case APP_PROMPT_RETRY: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE));
 		default: return 0;
 		}
 	#endif
 
-	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_INPUT_XBOX: {
-		YGS2kSConKey key;
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	case APP_INPUT_XBOX: {
+		APP_ConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPressConTypeKey(YGS_INPUT_XBOX, &key);
+		return IsPressConTypeKey(APP_INPUT_XBOX, &key);
 	}
 
-	case YGS_INPUT_PLAYSTATION: {
-		YGS2kSConKey key;
+	case APP_INPUT_PLAYSTATION: {
+		APP_ConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPressConTypeKey(YGS_INPUT_PLAYSTATION, &key);
+		return IsPressConTypeKey(APP_INPUT_PLAYSTATION, &key);
 	}
 
-	case YGS_INPUT_NINTENDO: {
-		YGS2kSConKey key;
+	case APP_INPUT_NINTENDO: {
+		APP_ConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: break;
 		}
-		return IsPressConTypeKey(YGS_INPUT_NINTENDO, &key);
+		return IsPressConTypeKey(APP_INPUT_NINTENDO, &key);
 	}
 	#endif
 
@@ -16214,71 +16204,71 @@ int IsPressPrompt(EPrompt prompt)
 	}
 }
 
-int IsPushPrompt(EPrompt prompt)
+int IsPushPrompt(APP_Prompt prompt)
 {
-	switch (YGS2kGetLastInputType())
+	switch (APP_GetLastInputType())
 	{
 	#ifdef ENABLE_LINUXGPIO
-	case YGS_INPUT_LINUXGPIO:
+	case APP_INPUT_LINUXGPIO:
 		switch (input)
 		{
-		case PROMPT_OK: return YGS2kIsPushGPIO(4);
-		case PROMPT_CANCEL: return YGS2kIsPushGPIO(5);
-		case PROMPT_RETRY: return YGS2kIsPushGPIO(6);
+		case APP_PROMPT_OK: return APP_IsPushGPIO(4);
+		case APP_PROMPT_CANCEL: return APP_IsPushGPIO(5);
+		case APP_PROMPT_RETRY: return APP_IsPushGPIO(6);
 		default: return 0;
 		}
 	#endif
 
-	#ifdef ENABLE_KEYBOARD
-	#ifdef ENABLE_JOYSTICK
-	case YGS_INPUT_JOYSTICK:
+	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_JOYSTICK
+	case APP_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
-	case YGS_INPUT_KEYBOARD:
+	case APP_INPUT_KEYBOARD:
 		switch (prompt)
 		{
-		case PROMPT_OK: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-		case PROMPT_CANCEL: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-		case PROMPT_RETRY: return YGS2kIsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case APP_PROMPT_OK: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
+		case APP_PROMPT_CANCEL: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
+		case APP_PROMPT_RETRY: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
 		default: return 0;
 		}
 	#endif
 
-	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_INPUT_XBOX: {
-		YGS2kSConKey key;
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	case APP_INPUT_XBOX: {
+		APP_ConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPushConTypeKey(YGS_INPUT_XBOX, &key);
+		return IsPushConTypeKey(APP_INPUT_XBOX, &key);
 	}
 
-	case YGS_INPUT_PLAYSTATION: {
-		YGS2kSConKey key;
+	case APP_INPUT_PLAYSTATION: {
+		APP_ConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: return 0;
 		}
-		return IsPushConTypeKey(YGS_INPUT_PLAYSTATION, &key);
+		return IsPushConTypeKey(APP_INPUT_PLAYSTATION, &key);
 	}
 
-	case YGS_INPUT_NINTENDO: {
-		YGS2kSConKey key;
+	case APP_INPUT_NINTENDO: {
+		APP_ConKey key;
 		switch (prompt)
 		{
-		case PROMPT_OK: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case PROMPT_CANCEL: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case PROMPT_RETRY: key.type = YGS_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
 		default: break;
 		}
-		return IsPushConTypeKey(YGS_INPUT_NINTENDO, &key);
+		return IsPushConTypeKey(APP_INPUT_NINTENDO, &key);
 	}
 	#endif
 
@@ -16287,22 +16277,22 @@ int IsPushPrompt(EPrompt prompt)
 	}
 }
 
-#ifdef ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD
 void updateEscapeFrames() {
 	lastEscapeFrames = escapeFrames;
-	escapeFrames = YGS2kGetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+	escapeFrames = APP_GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE));
 }
 #endif
 
 int quitNow() {
-	#ifdef ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD
 	if (lastEscapeFrames >= 60) {
 		enterResetKeys = true;
 		resetKeysFlag = true;
 		loopFlag = false;
 		mainLoopState = MAIN_RESET_KEYBOARD;
 	}
-	#ifdef ENABLE_GAME_QUIT
+	#ifdef APP_ENABLE_GAME_QUIT
 	return quitNowFlag || (lastEscapeFrames > 0 && lastEscapeFrames < 60 && escapeFrames == 0);
 	#else
 	return quitNowFlag;
@@ -16562,7 +16552,7 @@ void testmenu(void) {
                 init = false;
         }
 
-        YGS2kClearSecondary();
+        APP_ClearSecondary();
 
         // メインメニュー
         if( mode == 0 ) {
@@ -16579,32 +16569,32 @@ void testmenu(void) {
                 padRepeat2(0);
                 // ↑
                 if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-                if( getPressState(0, BTN_UP) ) {
+                if( getPressState(0, APP_BUTTON_UP) ) {
                         PlaySE(5);
                         cursor--;
                         if(cursor < 0) cursor = 2;
                 }
                 // ↓
                 if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-                if( getPressState(0, BTN_DOWN) ) {
+                if( getPressState(0, APP_BUTTON_DOWN) ) {
                         PlaySE(5);
                         cursor++;
                         if(cursor > 2) cursor = 0;
                 }
 
                 // Aで決定
-                if( getPushState(0, BTN_A) ) {
+                if( getPushState(0, APP_BUTTON_A) ) {
                         PlaySE(10);
                         mode = cursor + 1;
                 }
 
                 // Bで戻る
-                if( getPushState(0, BTN_B) ) {
+                if( getPushState(0, APP_BUTTON_B) ) {
                         mainLoopState = MAIN_TITLE;
                         init = true;
 						// stop music.
-						if (YGS2kIsPlayMusic())
-							YGS2kStopMusic();
+						if (APP_IsPlayMusic())
+							APP_StopMusic();
 						StopAllBGM();
                         return;
                 }
@@ -16615,8 +16605,8 @@ void testmenu(void) {
 
                 padRepeat(0);
                 // ←
-                if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, BTN_C)))
-                if( getPressState(0, BTN_LEFT) ) {
+                if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, APP_BUTTON_C)))
+                if( getPressState(0, APP_BUTTON_LEFT) ) {
                         param--;
 
                         // 一時バッファを描画しない
@@ -16630,8 +16620,8 @@ void testmenu(void) {
                         if( param < 0 ) param = 89;
                 }
                 // →
-                if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, BTN_C)))
-                if( getPressState(0, BTN_RIGHT) ) {
+                if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, APP_BUTTON_C)))
+                if( getPressState(0, APP_BUTTON_RIGHT) ) {
                         param++;
 
                         // 未使用プレーンを描画しない
@@ -16645,16 +16635,16 @@ void testmenu(void) {
                         if( param > 89 ) param = 0;
                 }
 
-                if( !getPressState(0, BTN_D) ) {
-                        printMenuButton(6, 29, BTN_B, 0);
-                        printMenuButton(13, 29, BTN_D, 0);
+                if( !getPressState(0, APP_BUTTON_D) ) {
+                        printMenuButton(6, 29, APP_BUTTON_B, 0);
+                        printMenuButton(13, 29, APP_BUTTON_D, 0);
                         sprintf(string[0],"NO.%02d  :EXIT  :HIDE",param);
                         //sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
                         printFont(0, 29, string[0], 0);
                 }
 
                 // Bで戻る
-                if( getPushState(0, BTN_B) ) {
+                if( getPushState(0, APP_BUTTON_B) ) {
                         mode = 0;
                 }
         }
@@ -16674,7 +16664,7 @@ void testmenu(void) {
                 }
 
                 // A+Cで決定
-                if( (!param) && (getPressState(0, BTN_A)) && (getPressState(0, BTN_C)) ) {
+                if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
                         PlaySE(10);
                         RankingInit();
                         RankingInit2();
@@ -16683,7 +16673,7 @@ void testmenu(void) {
                 }
 
                 // Bで戻る
-                if( getPushState(0, BTN_B) ) {
+                if( getPushState(0, APP_BUTTON_B) ) {
                         mode = 0;
                 }
         }
@@ -16704,7 +16694,7 @@ void testmenu(void) {
                 }
 
                 // A+Cで決定 
-                if( (!param) && (getPressState(0, BTN_A)) && (getPressState(0, BTN_C)) ) {
+                if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
                         PlaySE(10);
                         SegaSeed[0]=711800410;     // generates sega's poweron pattern
                         BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
@@ -16714,14 +16704,14 @@ void testmenu(void) {
                 }
 
                 // Bで戻る
-                if( getPushState(0, BTN_B) ) {
+                if( getPushState(0, APP_BUTTON_B) ) {
                         mode = 0;
                         if (param==1) {
                                 mainLoopState = MAIN_TITLE;
                                 init = true;
 								// stop music.
-								if (YGS2kIsPlayMusic())
-									YGS2kStopMusic();
+								if (APP_IsPlayMusic())
+									APP_StopMusic();
 								StopAllBGM();
                                 return;
                         }
@@ -16744,7 +16734,7 @@ void initialize(void) {
 
 	oldScreenMode = screenMode;
 	oldScreenIndex = screenIndex;
-	if ( !YGS2kSetScreen(&screenMode, &screenIndex) )
+	if ( !APP_SetScreen(&screenMode, &screenIndex) )
 	{
 		mainLoopState = MAIN_QUIT;
 		exitStatus = EXIT_FAILURE;
@@ -16755,31 +16745,29 @@ void initialize(void) {
 		SaveConfig();
 	}
 
-	YGS2kBltAlways(true);
-	YGS2kSetFillColor(0);
-	YGS2kClearSecondary();
+	APP_BltAlways(true);
+	APP_SetFillColor(0);
+	APP_ClearSecondary();
 	halt;
-
-	// YGS2kSetConstParam("Caption", "Now Loading...");
 
 	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
 	{
-		YGS2kTextSize(ii, 12);
-		YGS2kTextBackColorDisable(ii);
+		APP_TextSize(ii, 12);
+		APP_TextBackColorDisable(ii);
 	}
 
-	YGS2kTextLayerOn(1, 10, 220);
-	YGS2kTextOut(1, version);
+	APP_TextLayerOn(1, 10, 220);
+	APP_TextOut(1, version);
 	for ( int i = 1 ; i <= 5 ; i ++ )
 	{
-		YGS2kTextBlt(i);
+		APP_TextBlt(i);
 	}
 	halt;
 
 
 	//
-	//YGS2kTextLayerOn(2, 10, 75);
-	//YGS2kTextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
+	//APP_TextLayerOn(2, 10, 75);
+	//APP_TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
 	//halt;
 
 	hnext[0] = dispnext;	// #1.60c7o8
@@ -16788,25 +16776,25 @@ void initialize(void) {
 	versus_rot[1] = rots[1];
 
 	// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-	if ( screenMode & YGS_SCREENMODE_DETAILLEVEL ) {
+	if ( screenMode & APP_SCREENMODE_DETAILLEVEL ) {
 		setDrawRate(2);
 	} else {
 		setDrawRate(1);
 	}
 
 	LoadGraphic("loading.png", 88, 0);		// Loading表示
-		i = YGS2kRand(5);
+		i = APP_Rand(5);
 	if ( getDrawRate() != 1 )
-		j = YGS2kRand(2);
+		j = APP_Rand(2);
 	else
 		j = 0;
 
 	// グラフィック読み込み
-	YGS2kTextLayerOn(4, 10, 23);
-	YGS2kTextOut(4, "Graphics Loading");
+	APP_TextLayerOn(4, 10, 23);
+	APP_TextOut(4, "Graphics Loading");
 	for ( int i = 1 ; i <= 5 ; i ++ )
 	{
-		YGS2kTextBlt(i);
+		APP_TextBlt(i);
 	}
 	ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 	halt;
@@ -16814,11 +16802,11 @@ void initialize(void) {
 
 	// 効果音読み込み
 	if(reinit && se) {
-		YGS2kTextLayerOn(1, 10, 36);
-		YGS2kTextOut(1, "Sound Effect Loading");
+		APP_TextLayerOn(1, 10, 36);
+		APP_TextOut(1, "Sound Effect Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
 		{
-			YGS2kTextBlt(i);
+			APP_TextBlt(i);
 		}
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
@@ -16833,11 +16821,11 @@ void initialize(void) {
 		{
 			bgmload[i] = 1;
 		}
-		YGS2kTextLayerOn(5, 10, 49);
-		YGS2kTextOut(5, "BGM Loading");
+		APP_TextLayerOn(5, 10, 49);
+		APP_TextOut(5, "BGM Loading");
 		for ( int i = 1 ; i <= 5 ; i ++ )
 		{
-			YGS2kTextBlt(i);
+			APP_TextBlt(i);
 		}
 		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
 		halt;
@@ -16850,7 +16838,7 @@ void initialize(void) {
 
 	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
 	{
-		YGS2kTextLayerOff(ii);
+		APP_TextLayerOff(ii);
 	}
 
 	if(ranking_type==0){
@@ -16883,7 +16871,7 @@ void initialize(void) {
 
 	PlayerdataLoad();
 
-	YGS2kBltAlways(false);
+	APP_BltAlways(false);
 }
 
 /* グラフィック読み込み */
@@ -16895,27 +16883,27 @@ void LoadGraphic(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/graphics/highDetail/%s", nameStr);
 
-	YGS2kLoadBitmap(string[0], p1, p2);
+	APP_LoadBitmap(string[0], p1, p2);
 }
 
 void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
 		LoadGraphic("title.png", 8, 0);
 		if ( getDrawRate() == 1 ){
-			YGS2kLoadBitmap("res/graphics/title/logo_low.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
-			YGS2kLoadBitmap("res/graphics/title/logo_hi.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
 		}
-		YGS2kSetColorKeyRGB(7,0,0,0);
+		APP_SetColorKeyRGB(7,0,0,0);
 	}else{					//動画
 		if ( getDrawRate() == 1 ){
-			YGS2kLoadBitmap("res/graphics/title/tmov_low.png", 8,0);
-			YGS2kLoadBitmap("res/graphics/title/logo_low.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/tmov_low.png", 8,0);
+			APP_LoadBitmap("res/graphics/title/logo_low.png", 7,0);
 		}else{
-			YGS2kLoadBitmap("res/graphics/title/tmov_hi.png" , 8,0);
-			YGS2kLoadBitmap("res/graphics/title/logo_hi.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/tmov_hi.png" , 8,0);
+			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
 		}
-		YGS2kSetColorKeyRGB(7,0,0,0);
+		APP_SetColorKeyRGB(7,0,0,0);
 	}
 }
 
@@ -16927,7 +16915,7 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/bg/highDetail/%s", nameStr);
 
-	YGS2kLoadBitmap(string[0], p1, p2);
+	APP_LoadBitmap(string[0], p1, p2);
 }
 
 void loadGraphics(int32_t players) {
@@ -16943,17 +16931,17 @@ void loadGraphics(int32_t players) {
 
 		/* プレーン1にフォントを読み込み */
 		LoadGraphic("hebofont.png", 1, 0);
-		YGS2kSetColorKeyPos(1, 0, 0);
+		APP_SetColorKeyPos(1, 0, 0);
 
 		/* プレーン2にフィールドを読み込み */
 		LoadGraphic("hebofld.png", 2, 0);
-		YGS2kSetColorKeyRGB(2,255,255,255);
+		APP_SetColorKeyRGB(2,255,255,255);
 
 		/* プレーン3に各種スプライトを読み込み */
 		LoadGraphic("hebospr.png", 3, 0);
-		YGS2kSetColorKeyRGB(3,0,0,0);
-	//	YGS2kSetColorKeyPos(3, 0, 0);
-	//	YGS2kEnableBlendColorKey(3, 1);
+		APP_SetColorKeyRGB(3,0,0,0);
+	//	APP_SetColorKeyPos(3, 0, 0);
+	//	APP_EnableBlendColorKey(3, 1);
 
 		/* プレーン4〜6, 24にフィールド背景を読み込み */
 		LoadGraphic("heboflb1.png", 4, 0);
@@ -16967,7 +16955,7 @@ void loadGraphics(int32_t players) {
 
 	/* プレーン7にタイトルロゴを読み込み */
 //	LoadGraphics("logo.png", 7, 0);
-//	YGS2kSetColorKeyPos(7, 0, 0);
+//	APP_SetColorKeyPos(7, 0, 0);
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 	//	/* プレーン8にタイトル背景を読み込み */
@@ -16985,27 +16973,27 @@ void loadGraphics(int32_t players) {
 		/* プレーン25にモード選択時のメッセージを読み込み  */
 		LoadGraphic("text.png", 25, 0);
 
-		YGS2kSetColorKeyRGB(25, 0, 0, 0);
+		APP_SetColorKeyRGB(25, 0, 0, 0);
 
 		/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
 		LoadGraphic("grade.png", 26, 0);
-		YGS2kSetColorKeyRGB(26,255,0,255);
+		APP_SetColorKeyRGB(26,255,0,255);
 
 		/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
 		LoadGraphic("mirror_effect_TAP.png", 27, 0);
-		//YGS2kSetColorKeyRGB(27,255,0,255);
+		//APP_SetColorKeyRGB(27,255,0,255);
 
 		/* プレーン28にアイテム名を読み込み #1.60c7o4 */
 		LoadGraphic("item.png", 28, 0);
-		YGS2kSetColorKeyRGB(28,255,0,255);
+		APP_SetColorKeyRGB(28,255,0,255);
 
 		/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
 		LoadGraphic("guide.png", 29, 0);
-		YGS2kSetColorKeyRGB(29,0,0,0);
+		APP_SetColorKeyRGB(29,0,0,0);
 
 		/* プレーン31にフォント(大)を読み込み */
 		LoadGraphic("hebofont3.png", 31, 0);
-		YGS2kSetColorKeyRGB(31,0,0,0);
+		APP_SetColorKeyRGB(31,0,0,0);
 	}
 
 	/* ブロック消去エフェクトを読み込み */
@@ -17018,14 +17006,14 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("break5.png", 37, 0);
 		LoadGraphic("break6.png", 38, 0);
 		LoadGraphic("break7.png", 39, 0);
-		YGS2kSetColorKeyRGB(32,   0, 0,   0);
-		YGS2kSetColorKeyRGB(33,   0, 0,   0);
-		YGS2kSetColorKeyRGB(34,   0, 0,   0);
-		YGS2kSetColorKeyRGB(35,   0, 0,   0);
-		YGS2kSetColorKeyRGB(36,   0, 0,   0);
-		YGS2kSetColorKeyRGB(37,   0, 0,   0);
-		YGS2kSetColorKeyRGB(38,   0, 0,   0);
-		YGS2kSetColorKeyRGB(39,   0, 0,   0);
+		APP_SetColorKeyRGB(32,   0, 0,   0);
+		APP_SetColorKeyRGB(33,   0, 0,   0);
+		APP_SetColorKeyRGB(34,   0, 0,   0);
+		APP_SetColorKeyRGB(35,   0, 0,   0);
+		APP_SetColorKeyRGB(36,   0, 0,   0);
+		APP_SetColorKeyRGB(37,   0, 0,   0);
+		APP_SetColorKeyRGB(38,   0, 0,   0);
+		APP_SetColorKeyRGB(39,   0, 0,   0);
 	} else if (reinit) {
 		LoadGraphic("break0_tap.png", 32, 0); // 黒ブロック追加 #1.60c7i5
 		LoadGraphic("break1_tap.png", 33, 0);
@@ -17035,14 +17023,14 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("break5_tap.png", 37, 0);
 		LoadGraphic("break6_tap.png", 38, 0);
 		LoadGraphic("break7_tap.png", 39, 0);
-		YGS2kSetColorKeyRGB(32, 255, 0, 255);
-		YGS2kSetColorKeyRGB(33, 255, 0, 255);
-		YGS2kSetColorKeyRGB(34, 255, 0, 255);
-		YGS2kSetColorKeyRGB(35, 255, 0, 255);
-		YGS2kSetColorKeyRGB(36, 255, 0, 255);
-		YGS2kSetColorKeyRGB(37, 255, 0, 255);
-		YGS2kSetColorKeyRGB(38, 255, 0, 255);
-		YGS2kSetColorKeyRGB(39, 255, 0, 255);
+		APP_SetColorKeyRGB(32, 255, 0, 255);
+		APP_SetColorKeyRGB(33, 255, 0, 255);
+		APP_SetColorKeyRGB(34, 255, 0, 255);
+		APP_SetColorKeyRGB(35, 255, 0, 255);
+		APP_SetColorKeyRGB(36, 255, 0, 255);
+		APP_SetColorKeyRGB(37, 255, 0, 255);
+		APP_SetColorKeyRGB(38, 255, 0, 255);
+		APP_SetColorKeyRGB(39, 255, 0, 255);
 	}
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
@@ -17054,11 +17042,11 @@ void loadGraphics(int32_t players) {
 
 		/* プレーン44にミッションモード用画像を読み込み */
 		LoadGraphic("heboris_road.png", 44, 0);
-		YGS2kSetColorKeyRGB(44, 0, 0, 0);
+		APP_SetColorKeyRGB(44, 0, 0, 0);
 
 		/* プレーン45にライン強制消去用画像を読み込み */
 		LoadGraphic("del_field.png", 45, 0);
-		YGS2kSetColorKeyRGB(45, 0, 0, 0);
+		APP_SetColorKeyRGB(45, 0, 0, 0);
 
 		/* プレーン46にプラチナブロックとアイテム絵を読み込み */
 		LoadGraphic("heboblk_sp.png", 46, 0);
@@ -17071,21 +17059,21 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("hanabi_waterblue.png", 51, 0);
 		LoadGraphic("hanabi_blue.png",      52, 0);
 		LoadGraphic("hanabi_purple.png",    53, 0);
-		YGS2kSetColorKeyRGB(47, 0, 0, 0);
-		YGS2kSetColorKeyRGB(48, 0, 0, 0);
-		YGS2kSetColorKeyRGB(49, 0, 0, 0);
-		YGS2kSetColorKeyRGB(50, 0, 0, 0);
-		YGS2kSetColorKeyRGB(51, 0, 0, 0);
-		YGS2kSetColorKeyRGB(52, 0, 0, 0);
-		YGS2kSetColorKeyRGB(53, 0, 0, 0);
+		APP_SetColorKeyRGB(47, 0, 0, 0);
+		APP_SetColorKeyRGB(48, 0, 0, 0);
+		APP_SetColorKeyRGB(49, 0, 0, 0);
+		APP_SetColorKeyRGB(50, 0, 0, 0);
+		APP_SetColorKeyRGB(51, 0, 0, 0);
+		APP_SetColorKeyRGB(52, 0, 0, 0);
+		APP_SetColorKeyRGB(53, 0, 0, 0);
 
 		/* プレーン54にアイテムゲージを読み込み */
 		LoadGraphic("item_guage.png",       54, 0);
-		YGS2kSetColorKeyRGB(54, 255, 0, 255);
+		APP_SetColorKeyRGB(54, 255, 0, 255);
 
 		/* プレーン55に回転ルール性能指標を読み込み */
 		LoadGraphic("rot.png",              55, 0);
-		YGS2kSetColorKeyRGB(55, 255, 0, 255);
+		APP_SetColorKeyRGB(55, 255, 0, 255);
 
 		/* プラチナブロック消去エフェクトを読み込み */
 		LoadGraphic("perase1.png", 57, 0);
@@ -17096,18 +17084,18 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("perase6.png", 62, 0);
 		LoadGraphic("perase7.png", 63, 0);
 
-		YGS2kSetColorKeyRGB(57, 0, 0, 0);
-		YGS2kSetColorKeyRGB(58, 0, 0, 0);
-		YGS2kSetColorKeyRGB(59, 0, 0, 0);
-		YGS2kSetColorKeyRGB(60, 0, 0, 0);
-		YGS2kSetColorKeyRGB(61, 0, 0, 0);
-		YGS2kSetColorKeyRGB(62, 0, 0, 0);
-		YGS2kSetColorKeyRGB(63, 0, 0, 0);
+		APP_SetColorKeyRGB(57, 0, 0, 0);
+		APP_SetColorKeyRGB(58, 0, 0, 0);
+		APP_SetColorKeyRGB(59, 0, 0, 0);
+		APP_SetColorKeyRGB(60, 0, 0, 0);
+		APP_SetColorKeyRGB(61, 0, 0, 0);
+		APP_SetColorKeyRGB(62, 0, 0, 0);
+		APP_SetColorKeyRGB(63, 0, 0, 0);
 
 		LoadGraphic("heboblk0B.png", 64, 0);
 
 		LoadGraphic("shootingstar.png", 65, 0);
-		YGS2kSetColorKeyRGB(65, 0, 0, 0);
+		APP_SetColorKeyRGB(65, 0, 0, 0);
 
 		/* TI式ミラー演出画像を読み込み */
 		LoadGraphic("fldmirror01.png", 66, 0);
@@ -17115,62 +17103,62 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("fldmirror03.png", 68, 0);
 		LoadGraphic("fldmirror04.png", 69, 0);
 
-		YGS2kSetColorKeyRGB(66, 0, 0, 0);
-		YGS2kSetColorKeyRGB(67, 0, 0, 0);
-		YGS2kSetColorKeyRGB(68, 0, 0, 0);
-		YGS2kSetColorKeyRGB(69, 0, 0, 0);
+		APP_SetColorKeyRGB(66, 0, 0, 0);
+		APP_SetColorKeyRGB(67, 0, 0, 0);
+		APP_SetColorKeyRGB(68, 0, 0, 0);
+		APP_SetColorKeyRGB(69, 0, 0, 0);
 
 		/* スタッフロールの画像を読み込み */
 		LoadGraphic("staffroll.png", 70, 0);
-		YGS2kSetColorKeyRGB(70, 0, 0, 0);
+		APP_SetColorKeyRGB(70, 0, 0, 0);
 
 		LoadGraphic("heboblk4_5.png", 73, 0);
 
 		LoadGraphic("fade.png", 72, 0);
-		YGS2kSetColorKeyRGB(72, 255, 255, 255);
+		APP_SetColorKeyRGB(72, 255, 255, 255);
 
 		LoadGraphic("heboblk_old.png", 74, 0);
 
 		LoadGraphic("tomoyo_eh_fade.png", 75, 0);
-		YGS2kSetColorKeyRGB(75, 255, 0, 255);
+		APP_SetColorKeyRGB(75, 255, 0, 255);
 
 		LoadGraphic("heboblk_big.png", 76, 0);
 		LoadGraphic("line.png", 77, 0);//ランキングのライン
-		YGS2kSetColorKeyRGB(77, 0, 0, 0);
+		APP_SetColorKeyRGB(77, 0, 0, 0);
 
 		LoadGraphic("laser.png", 78, 0);
-		YGS2kSetColorKeyRGB(78, 255, 0, 255);
+		APP_SetColorKeyRGB(78, 255, 0, 255);
 
 		LoadGraphic("shuffle_field_effect.png", 79, 0);
-		YGS2kSetColorKeyRGB(79, 255, 0, 255);
+		APP_SetColorKeyRGB(79, 255, 0, 255);
 
 		LoadGraphic("heboblk6.png", 80, 0);
 
 		LoadGraphic("text2.png", 81, 0);
-		YGS2kSetColorKeyRGB(81, 0, 0, 0);
+		APP_SetColorKeyRGB(81, 0, 0, 0);
 
 		LoadGraphic("itemerase.png", 82, 0);
-		YGS2kSetColorKeyRGB(82,0,0,0);
+		APP_SetColorKeyRGB(82,0,0,0);
 
 		LoadGraphic("heboblk_sp2.png", 83, 0);
 
 		LoadGraphic("rotstext.png", 84, 0);
-		YGS2kSetColorKeyRGB(84, 0, 0, 0);
+		APP_SetColorKeyRGB(84, 0, 0, 0);
 		LoadGraphic("hebofont5.png", 85, 0);
-		YGS2kSetColorKeyRGB(85, 172, 136, 199);
+		APP_SetColorKeyRGB(85, 172, 136, 199);
 
 		LoadGraphic("gamemodefont.png", 86, 0);
-		YGS2kSetColorKeyRGB(86, 0, 0, 0);
+		APP_SetColorKeyRGB(86, 0, 0, 0);
 
 		LoadGraphic("rollmark.png", 87, 0);
-		YGS2kSetColorKeyRGB(87, 0, 0, 0);
+		APP_SetColorKeyRGB(87, 0, 0, 0);
 
 		//プレーン88番使用中…
 
 		LoadGraphic("itemGra.png", 89, 0);
 	}
 
-//	YGS2kEnableBlendColorKey(85, 1);
+//	APP_EnableBlendColorKey(85, 1);
 	/* 050825 画面モード拡張改造部分-- ここから */
 	/* x倍拡大用サーフェス*/
 	// snapshot用に、拡大しない場合もダミープレーン作成 #1.60c
@@ -17229,7 +17217,7 @@ void loadBG(int32_t players,int32_t vsmode){
 		LoadBackground("back01.png", 71, 0);
 
 	max = 22;
-	YGS2kEnableBlendColorKey(3, 1);
+	APP_EnableBlendColorKey(3, 1);
 
 	/* 背景半透明処理 */
 	if(!skip_viewbg) {
@@ -17279,140 +17267,140 @@ void loadBG(int32_t players,int32_t vsmode){
 			}
 		}
 	}
-	YGS2kEnableBlendColorKey(3, 0);
+	APP_EnableBlendColorKey(3, 0);
 }
 
 /* 効果音読み込み */
 // initializeから独立 #1.60c7o5
 void loadWaves(void) {
 	/* 効果音を読み込み */
-	YGS2kLoadWave("res/se/shaki.wav", 0);
-	YGS2kLoadWave("res/se/kon.wav", 1);
-	YGS2kLoadWave("res/se/gon.wav", 2);
-	YGS2kLoadWave("res/se/kachi.wav", 3);
-	YGS2kLoadWave("res/se/rotate.wav", 4);
-	YGS2kLoadWave("res/se/move.wav", 5);
-	YGS2kLoadWave("res/se/hold.wav", 6);
-	YGS2kLoadWave("res/se/tumagari.wav", 7);
-	YGS2kLoadWave("res/se/gameover.wav", 8);
-	YGS2kLoadWave("res/se/lvstop.wav", 9);
-	YGS2kLoadWave("res/se/kettei.wav", 10);
+	APP_LoadWave("res/se/shaki.wav", 0);
+	APP_LoadWave("res/se/kon.wav", 1);
+	APP_LoadWave("res/se/gon.wav", 2);
+	APP_LoadWave("res/se/kachi.wav", 3);
+	APP_LoadWave("res/se/rotate.wav", 4);
+	APP_LoadWave("res/se/move.wav", 5);
+	APP_LoadWave("res/se/hold.wav", 6);
+	APP_LoadWave("res/se/tumagari.wav", 7);
+	APP_LoadWave("res/se/gameover.wav", 8);
+	APP_LoadWave("res/se/lvstop.wav", 9);
+	APP_LoadWave("res/se/kettei.wav", 10);
 
-	YGS2kLoadWave("res/se/erase1.wav", 11);
-	YGS2kLoadWave("res/se/erase2.wav", 12);
-	YGS2kLoadWave("res/se/erase3.wav", 13);
-	YGS2kLoadWave("res/se/erase4.wav", 14);
+	APP_LoadWave("res/se/erase1.wav", 11);
+	APP_LoadWave("res/se/erase2.wav", 12);
+	APP_LoadWave("res/se/erase3.wav", 13);
+	APP_LoadWave("res/se/erase4.wav", 14);
 
-	YGS2kLoadWave("res/se/ready.wav", 15);
-	YGS2kLoadWave("res/se/go.wav", 16);
+	APP_LoadWave("res/se/ready.wav", 15);
+	APP_LoadWave("res/se/go.wav", 16);
 
-	YGS2kLoadWave("res/se/applause.wav", 17);
-	YGS2kLoadWave("res/se/cheer.wav", 18);
-	YGS2kLoadWave("res/se/levelup.wav", 19);
+	APP_LoadWave("res/se/applause.wav", 17);
+	APP_LoadWave("res/se/cheer.wav", 18);
+	APP_LoadWave("res/se/levelup.wav", 19);
 
-	YGS2kLoadWave("res/se/up.wav", 20);
-	YGS2kLoadWave("res/se/block1.wav", 21);
-	YGS2kLoadWave("res/se/block2.wav", 22);
-	YGS2kLoadWave("res/se/block3.wav", 23);
-	YGS2kLoadWave("res/se/block4.wav", 24);
-	YGS2kLoadWave("res/se/block5.wav", 25);
-	YGS2kLoadWave("res/se/block6.wav", 26);
-	YGS2kLoadWave("res/se/block7.wav", 27);
+	APP_LoadWave("res/se/up.wav", 20);
+	APP_LoadWave("res/se/block1.wav", 21);
+	APP_LoadWave("res/se/block2.wav", 22);
+	APP_LoadWave("res/se/block3.wav", 23);
+	APP_LoadWave("res/se/block4.wav", 24);
+	APP_LoadWave("res/se/block5.wav", 25);
+	APP_LoadWave("res/se/block6.wav", 26);
+	APP_LoadWave("res/se/block7.wav", 27);
 
-	YGS2kLoadWave("res/se/ttclear.wav", 28);
-	YGS2kLoadWave("res/se/gm.wav", 29);
-	YGS2kLoadWave("res/se/rankup.wav", 30);
-	YGS2kLoadWave("res/se/stageclear.wav", 31);
-	YGS2kLoadWave("res/se/hurryup.wav", 32);
-	YGS2kLoadWave("res/se/timeover.wav", 33);
-	YGS2kLoadWave("res/se/tspin.wav", 34);
-	YGS2kLoadWave("res/se/hanabi.wav", 35);
-	YGS2kLoadWave("res/se/missionclr.wav", 36);
+	APP_LoadWave("res/se/ttclear.wav", 28);
+	APP_LoadWave("res/se/gm.wav", 29);
+	APP_LoadWave("res/se/rankup.wav", 30);
+	APP_LoadWave("res/se/stageclear.wav", 31);
+	APP_LoadWave("res/se/hurryup.wav", 32);
+	APP_LoadWave("res/se/timeover.wav", 33);
+	APP_LoadWave("res/se/tspin.wav", 34);
+	APP_LoadWave("res/se/hanabi.wav", 35);
+	APP_LoadWave("res/se/missionclr.wav", 36);
 
-	YGS2kLoadWave("res/se/thunder.wav", 37);
+	APP_LoadWave("res/se/thunder.wav", 37);
 
-	YGS2kLoadWave("res/se/warning.wav", 38);
+	APP_LoadWave("res/se/warning.wav", 38);
 
-	YGS2kLoadWave("res/se/medal.wav", 39);
-	YGS2kLoadWave("res/se/pinch.wav", 40);
+	APP_LoadWave("res/se/medal.wav", 39);
+	APP_LoadWave("res/se/pinch.wav", 40);
 
-	YGS2kLoadWave("res/se/platinaerase.wav", 41);
-	YGS2kLoadWave("res/se/timeextend.wav", 42);
-	YGS2kLoadWave("res/se/stgstar.wav", 43);
-	YGS2kLoadWave("res/se/ace_sonic_lock.wav", 44);
-	YGS2kLoadWave("res/se/regret.wav", 45);
-	YGS2kLoadWave("res/se/cool.wav", 46);
+	APP_LoadWave("res/se/platinaerase.wav", 41);
+	APP_LoadWave("res/se/timeextend.wav", 42);
+	APP_LoadWave("res/se/stgstar.wav", 43);
+	APP_LoadWave("res/se/ace_sonic_lock.wav", 44);
+	APP_LoadWave("res/se/regret.wav", 45);
+	APP_LoadWave("res/se/cool.wav", 46);
 
-	YGS2kLoadWave("res/se/timestop.wav", 47);
-	YGS2kLoadWave("res/se/tserase.wav", 48);
-	//YGS2kSetLoopModeWave(40, 1);	//#1.60c7l6
+	APP_LoadWave("res/se/timestop.wav", 47);
+	APP_LoadWave("res/se/tserase.wav", 48);
+	//APP_SetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
 /* 拡張子を決める || Decide which extension to use based on the format */
-void strcatExt(char* str, YGS2kEWaveFormat fmt) {
-	switch (fmt & YGS_WAVE_FORMAT) {
-		case YGS_WAVE_MID: YGS2kStrCat(str, ".mid"); break;   // MIDI
+void strcatExt(char* str, APP_WaveFormat fmt) {
+	switch (fmt & APP_WAVE_FORMAT) {
+		case APP_WAVE_MID: APP_StrCat(str, ".mid"); break;   // MIDI
 		default:
-		case YGS_WAVE_WAV: YGS2kStrCat(str, ".wav"); break;   // WAV
-		case YGS_WAVE_OGG: YGS2kStrCat(str, ".ogg"); break;   // OGG
-		case YGS_WAVE_MP3: YGS2kStrCat(str, ".mp3"); break;   // MP3
-		case YGS_WAVE_FLAC: YGS2kStrCat(str, ".flac"); break; // FLAC
-		case YGS_WAVE_OPUS: YGS2kStrCat(str, ".opus"); break; // OPUS
-		case YGS_WAVE_MOD: YGS2kStrCat(str, ".mod"); break;   // Protracker
-		case YGS_WAVE_IT: YGS2kStrCat(str, ".it"); break;     // Impulse Tracker
-		case YGS_WAVE_XM: YGS2kStrCat(str, ".xm"); break;     // FastTracker II
-		case YGS_WAVE_S3M: YGS2kStrCat(str, ".s3m"); break;   // Scream Tracker
+		case APP_WAVE_WAV: APP_StrCat(str, ".wav"); break;   // WAV
+		case APP_WAVE_OGG: APP_StrCat(str, ".ogg"); break;   // OGG
+		case APP_WAVE_MP3: APP_StrCat(str, ".mp3"); break;   // MP3
+		case APP_WAVE_FLAC: APP_StrCat(str, ".flac"); break; // FLAC
+		case APP_WAVE_OPUS: APP_StrCat(str, ".opus"); break; // OPUS
+		case APP_WAVE_MOD: APP_StrCat(str, ".mod"); break;   // Protracker
+		case APP_WAVE_IT: APP_StrCat(str, ".it"); break;     // Impulse Tracker
+		case APP_WAVE_XM: APP_StrCat(str, ".xm"); break;     // FastTracker II
+		case APP_WAVE_S3M: APP_StrCat(str, ".s3m"); break;   // Scream Tracker
 	}
 }
 
 /* BGM読み込み */
 void loadBGM(void) {
-	YGS2kStopMusic();
+	APP_StopMusic();
 
-	if (wavebgm & YGS_WAVE_SIMPLE) {
-		YGS2kStrCpy(string[0], "res/bgm/bgm");
+	if (wavebgm & APP_WAVE_SIMPLE) {
+		APP_StrCpy(string[0], "res/bgm/bgm");
 		strcatExt(string[0], wavebgm);
-		YGS2kLoadMusic(string[0]);
-		YGS2kSetVolumeMusic(bgmvolume);
-		YGS2kPlayMusic();
+		APP_LoadMusic(string[0]);
+		APP_SetVolumeMusic(bgmvolume);
+		APP_PlayMusic();
 	}
 	else {
-		YGS2kStrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
-		YGS2kStrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
-		YGS2kStrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
-		YGS2kStrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
-		YGS2kStrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
-		YGS2kStrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
-		YGS2kStrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
-		YGS2kStrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
-		YGS2kStrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
-		YGS2kStrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
-		YGS2kStrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
-		YGS2kStrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
-		YGS2kStrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
-		YGS2kStrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
-		YGS2kStrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
-		YGS2kStrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
-		YGS2kStrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
-		YGS2kStrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
-		YGS2kStrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
-		YGS2kStrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
+		APP_StrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
+		APP_StrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
+		APP_StrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
+		APP_StrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
+		APP_StrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
+		APP_StrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
+		APP_StrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
+		APP_StrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
+		APP_StrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
+		APP_StrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
+		APP_StrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
+		APP_StrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
+		APP_StrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
+		APP_StrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
+		APP_StrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
+		APP_StrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
+		APP_StrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
+		APP_StrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
+		APP_StrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
+		APP_StrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 
 		for(int32_t i = 0; i <= 19; i++) {
 			if(bgmload[i]){
 				strcatExt(string[i], wavebgm);
 
 				// 読み込み
-				YGS2kLoadWave(string[i], 50 + i);
+				APP_LoadWave(string[i], 50 + i);
 
 				// ループON
-				YGS2kSetLoopModeWave(50 + i, 1);
+				APP_SetLoopModeWave(50 + i, 1);
 			}
 		}
 
 		// エンディング曲ループか
-		YGS2kSetLoopModeWave(56, 0);
-		YGS2kSetLoopModeWave(57, 0);
+		APP_SetLoopModeWave(56, 0);
+		APP_SetLoopModeWave(57, 0);
 	}
 }
 
@@ -17574,25 +17562,25 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	if ( quitNow() || !YGS2kHalt() )
+	if ( quitNow() || !APP_Update() )
 	{
 		shutDown();
 		mainLoopState = MAIN_QUIT;
 		init = true;
 		return;
 	}
-	YGS2kInputsUpdate();
+	APP_InputsUpdate();
 
-	#ifdef ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD
 	updateEscapeFrames();
 	#endif
 
-	switch (lastInputType = YGS2kGetLastInputType()) {
-	#ifdef ENABLE_LINUX_GPIO
-	case YGS_INPUT_LINUXGPIO: {
+	switch (lastInputType = APP_GetLastInputType()) {
+	#ifdef APP_ENABLE_LINUX_GPIO
+	case APP_INPUT_LINUXGPIO: {
 		bool pushed = false;
-		for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
-			pushed = YGS2kIsPushGPIO(button);
+		for (APP_Button button = 0; !pushed && button < NUMBTNS; button++) {
+			pushed = APP_IsPushGPIO(button);
 		}
 		if (pushed) {
 			lastPlayerInputType[0] = lastInputType;
@@ -17600,13 +17588,13 @@ void spriteTime() {
 		break;
 	}
 	#endif
-	#ifdef ENABLE_KEYBOARD
-	case YGS_INPUT_KEYBOARD: {
+	#ifdef APP_ENABLE_KEYBOARD
+	case APP_INPUT_KEYBOARD: {
 		bool pushed = false;
 		int32_t pl;
 		for (pl = 0; pl < 2; pl++) {
-			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
-				pushed = YGS2kIsPushKey(keyAssign[button + 10 * pl]);
+			for (APP_Button button = 0; !pushed && button < APP_BUTTON_COUNT; button++) {
+				pushed = APP_IsPushKey(keyAssign[button + 10 * pl]);
 			}
 			if (pushed) break;
 		}
@@ -17616,13 +17604,13 @@ void spriteTime() {
 		break;
 	}
 	#endif
-	#ifdef ENABLE_JOYSTICK
-	case YGS_INPUT_JOYSTICK: {
+	#ifdef APP_ENABLE_JOYSTICK
+	case APP_INPUT_JOYSTICK: {
 		bool pushed = false;
 		int32_t pl;
 		for (pl = 0; pl < 2; pl++) {
-			for (EButton button = 0; !pushed && button < NUMBTNS; button++) {
-				pushed = YGS2kIsPushJoyKey(&joyKeyAssign[button + 10 * pl]);
+			for (APP_Button button = 0; !pushed && button < APP_BUTTON_COUNT; button++) {
+				pushed = APP_IsPushJoyKey(&joyKeyAssign[button + 10 * pl]);
 			}
 			if (pushed) break;
 		}
@@ -17632,11 +17620,11 @@ void spriteTime() {
 		break;
 	}
 	#endif
-	#ifdef ENABLE_GAME_CONTROLLER
-	case YGS_INPUT_XBOX:
-	case YGS_INPUT_PLAYSTATION:
-	case YGS_INPUT_NINTENDO: {
-		int player = YGS2kGetLastActiveCon();
+	#ifdef APP_ENABLE_GAME_CONTROLLER
+	case APP_INPUT_XBOX:
+	case APP_INPUT_PLAYSTATION:
+	case APP_INPUT_NINTENDO: {
+		int player = APP_GetLastActiveCon();
 		if (player >= 0 && player < 2) {
 			lastPlayerInputType[player] = lastInputType;
 		}
@@ -17667,41 +17655,41 @@ void spriteTime() {
 				left = false;
 				right = false;
 
-				#ifdef ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO
 				if (pl == 0) {
-					up = up || YGS2kIsPushGPIO(BTN_UP);
-					down = down || YGS2kIsPushGPIO(BTN_DOWN);
-					left = left || YGS2kIsPushGPIO(BTN_LEFT);
-					right = right || YGS2kIsPushGPIO(BTN_RIGHT);
+					up = up || APP_IsPushGPIO(APP_BUTTON_UP);
+					down = down || APP_IsPushGPIO(APP_BUTTON_DOWN);
+					left = left || APP_IsPushGPIO(APP_BUTTON_LEFT);
+					right = right || APP_IsPushGPIO(APP_BUTTON_RIGHT);
 				}
 				#endif
 
-				#ifdef ENABLE_KEYBOARD
-				up = up || YGS2kIsPushKey(keyAssign[BTN_UP + pl * 10]);
-				down = down || YGS2kIsPushKey(keyAssign[BTN_DOWN + pl * 10]);
-				left = left || YGS2kIsPushKey(keyAssign[BTN_LEFT + pl * 10]);
-				right = right || YGS2kIsPushKey(keyAssign[BTN_RIGHT + pl * 10]);
+				#ifdef APP_ENABLE_KEYBOARD
+				up = up || APP_IsPushKey(keyAssign[APP_BUTTON_UP + pl * 10]);
+				down = down || APP_IsPushKey(keyAssign[APP_BUTTON_DOWN + pl * 10]);
+				left = left || APP_IsPushKey(keyAssign[APP_BUTTON_LEFT + pl * 10]);
+				right = right || APP_IsPushKey(keyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef ENABLE_JOYSTICK
-				up = up || YGS2kIsPushJoyKey(&joyKeyAssign[BTN_UP + pl * 10]);
-				down = down || YGS2kIsPushJoyKey(&joyKeyAssign[BTN_DOWN + pl * 10]);
-				left = left || YGS2kIsPushJoyKey(&joyKeyAssign[BTN_LEFT + pl * 10]);
-				right = right || YGS2kIsPushJoyKey(&joyKeyAssign[BTN_RIGHT + pl * 10]);
+				#ifdef APP_ENABLE_JOYSTICK
+				up = up || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_UP + pl * 10]);
+				down = down || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_DOWN + pl * 10]);
+				left = left || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_LEFT + pl * 10]);
+				right = right || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef ENABLE_GAME_CONTROLLER
+				#ifdef APP_ENABLE_GAME_CONTROLLER
 				if (inmenu) {
-					up = up || IsPushMenu(pl, BTN_UP, YGS2kGetConType(pl));
-					down = down || IsPushMenu(pl, BTN_DOWN, YGS2kGetConType(pl));
-					left = left || IsPushMenu(pl, BTN_LEFT, YGS2kGetConType(pl));
-					right = right || IsPushMenu(pl, BTN_RIGHT, YGS2kGetConType(pl));
+					up = up || IsPushMenu(pl, APP_BUTTON_UP, APP_GetConType(pl));
+					down = down || IsPushMenu(pl, APP_BUTTON_DOWN, APP_GetConType(pl));
+					left = left || IsPushMenu(pl, APP_BUTTON_LEFT, APP_GetConType(pl));
+					right = right || IsPushMenu(pl, APP_BUTTON_RIGHT, APP_GetConType(pl));
 				}
 				else {
-					up = up || YGS2kIsPushConKey(pl, &conKeyAssign[BTN_UP + 8 * pl]);
-					down = down || YGS2kIsPushConKey(pl, &conKeyAssign[BTN_DOWN + 8 * pl]);
-					left = left || YGS2kIsPushConKey(pl, &conKeyAssign[BTN_LEFT + 8 * pl]);
-					right = right || YGS2kIsPushConKey(pl, &conKeyAssign[BTN_RIGHT + 8 * pl]);
+					up = up || APP_IsPushConKey(pl, &conKeyAssign[APP_BUTTON_UP + 8 * pl]);
+					down = down || APP_IsPushConKey(pl, &conKeyAssign[APP_BUTTON_DOWN + 8 * pl]);
+					left = left || APP_IsPushConKey(pl, &conKeyAssign[APP_BUTTON_LEFT + 8 * pl]);
+					right = right || APP_IsPushConKey(pl, &conKeyAssign[APP_BUTTON_RIGHT + 8 * pl]);
 				}
 				#endif
 
@@ -17717,41 +17705,41 @@ void spriteTime() {
 				left = false;
 				right = false;
 
-				#ifdef ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO
 				if (pl == 0) {
-					up = up || YGS2kIsPressGPIO(BTN_UP);
-					down = down || YGS2kIsPressGPIO(BTN_DOWN);
-					left = left || YGS2kIsPressGPIO(BTN_LEFT);
-					right = right || YGS2kIsPressGPIO(BTN_RIGHT);
+					up = up || APP_IsPressGPIO(APP_BUTTON_UP);
+					down = down || APP_IsPressGPIO(APP_BUTTON_DOWN);
+					left = left || APP_IsPressGPIO(APP_BUTTON_LEFT);
+					right = right || APP_IsPressGPIO(APP_BUTTON_RIGHT);
 				}
 				#endif
 
-				#ifdef ENABLE_KEYBOARD
-				up = up || YGS2kIsPressKey(keyAssign[BTN_UP + pl * 10]);
-				down = down || YGS2kIsPressKey(keyAssign[BTN_DOWN + pl * 10]);
-				left = left || YGS2kIsPressKey(keyAssign[BTN_LEFT + pl * 10]);
-				right = right || YGS2kIsPressKey(keyAssign[BTN_RIGHT + pl * 10]);
+				#ifdef APP_ENABLE_KEYBOARD
+				up = up || APP_IsPressKey(keyAssign[APP_BUTTON_UP + pl * 10]);
+				down = down || APP_IsPressKey(keyAssign[APP_BUTTON_DOWN + pl * 10]);
+				left = left || APP_IsPressKey(keyAssign[APP_BUTTON_LEFT + pl * 10]);
+				right = right || APP_IsPressKey(keyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef ENABLE_JOYSTICK
-				up = up || YGS2kIsPressJoyKey(&joyKeyAssign[BTN_UP + pl * 10]);
-				down = down || YGS2kIsPressJoyKey(&joyKeyAssign[BTN_DOWN + pl * 10]);
-				left = left || YGS2kIsPressJoyKey(&joyKeyAssign[BTN_LEFT + pl * 10]);
-				right = right || YGS2kIsPressJoyKey(&joyKeyAssign[BTN_RIGHT + pl * 10]);
+				#ifdef APP_ENABLE_JOYSTICK
+				up = up || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_UP + pl * 10]);
+				down = down || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_DOWN + pl * 10]);
+				left = left || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_LEFT + pl * 10]);
+				right = right || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef ENABLE_GAME_CONTROLLER
+				#ifdef APP_ENABLE_GAME_CONTROLLER
 				if (inmenu) {
-					up = up || IsPressMenu(pl, BTN_UP, YGS2kGetConType(pl));
-					down = down || IsPressMenu(pl, BTN_DOWN, YGS2kGetConType(pl));
-					left = left || IsPressMenu(pl, BTN_LEFT, YGS2kGetConType(pl));
-					right = right || IsPressMenu(pl, BTN_RIGHT, YGS2kGetConType(pl));
+					up = up || IsPressMenu(pl, APP_BUTTON_UP, APP_GetConType(pl));
+					down = down || IsPressMenu(pl, APP_BUTTON_DOWN, APP_GetConType(pl));
+					left = left || IsPressMenu(pl, APP_BUTTON_LEFT, APP_GetConType(pl));
+					right = right || IsPressMenu(pl, APP_BUTTON_RIGHT, APP_GetConType(pl));
 				}
 				else {
-					up = up || YGS2kIsPressConKey(pl, &conKeyAssign[BTN_UP + 8 * pl]);
-					down = down || YGS2kIsPressConKey(pl, &conKeyAssign[BTN_DOWN + 8 * pl]);
-					left = left || YGS2kIsPressConKey(pl, &conKeyAssign[BTN_LEFT + 8 * pl]);
-					right = right || YGS2kIsPressConKey(pl, &conKeyAssign[BTN_RIGHT + 8 * pl]);
+					up = up || APP_IsPressConKey(pl, &conKeyAssign[APP_BUTTON_UP + 8 * pl]);
+					down = down || APP_IsPressConKey(pl, &conKeyAssign[APP_BUTTON_DOWN + 8 * pl]);
+					left = left || APP_IsPressConKey(pl, &conKeyAssign[APP_BUTTON_LEFT + 8 * pl]);
+					right = right || APP_IsPressConKey(pl, &conKeyAssign[APP_BUTTON_RIGHT + 8 * pl]);
 				}
 				#endif
 

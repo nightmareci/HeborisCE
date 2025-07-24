@@ -1,50 +1,43 @@
-set(FRAMEWORK_VER "WINDOWS SDL2")
+set(APP_FRAMEWORK_TYPE "WINDOWS SDL2")
 
 add_compile_options("/MP")
 add_compile_options("/utf-8")
 
-list(APPEND EXE_SOURCES "${SRC}/src/main_sdl/physfsrwops.c")
-list(APPEND EXE_HEADERS "${SRC}/src/main_sdl/physfsrwops.h")
+list(APPEND APP_SOURCES "${APP_SRC_DIR}/src/app/physfsrwops.c")
+list(APPEND APP_HEADERS "${APP_SRC_DIR}/src/app/physfsrwops.h")
 
-add_executable(${EXE}
-	${EXE_SOURCES} ${EXE_HEADERS}
-	"${SRC}/pkg/windows/icon.rc"
+option(CMAKE_WIN32_EXECUTABLE "Hide the Windows console." OFF)
+
+add_executable(${APP_EXE}
+	${APP_SOURCES} ${APP_HEADERS}
+	"${APP_SRC_DIR}/pkg/windows/icon.rc"
 )
 
-if(USE_VENDOR_LIBRARIES)
-	include("${SRC}/cmake/lib/AddLibrariesVendor.cmake" REQUIRED)
-	AddLibrariesVendor(${EXE} TRUE)
+if(APP_VENDORED)
+	include("${APP_SRC_DIR}/cmake/lib/AddLibrariesVendor.cmake" REQUIRED)
+	AddLibrariesVendor(${APP_EXE} TRUE)
 else()
-	include("${SRC}/cmake/lib/AddLibrariesFindPackage.cmake" REQUIRED)
-	AddLibrariesFindPackage(${EXE})
+	include("${APP_SRC_DIR}/cmake/lib/AddLibrariesFindPackage.cmake" REQUIRED)
+	AddLibrariesFindPackage(${APP_EXE})
 endif()
 
-option(HIDE_WINDOWS_CONSOLE "Hide the Windows console.")
-target_link_options(${EXE}
-	PRIVATE
-		$<$<BOOL:${HIDE_WINDOWS_CONSOLE}>:
-			/ENTRY:mainCRTStartup
-			/SUBSYSTEM:WINDOWS
-		>
-)
-
-if(${PACKAGE_TYPE} STREQUAL "WorkingDir")
+if(${APP_PACKAGE_TYPE} STREQUAL "WorkingDir")
 	message(STATUS "Configuring working directory version; CMake installation is not supported")
 else()
-	if(${PACKAGE_TYPE} STREQUAL "Portable")
+	if(${APP_PACKAGE_TYPE} STREQUAL "Portable")
 		message(STATUS "Configuring portable package")
 		set(FILESYSTEM_TYPE FILESYSTEM_PORTABLE)
-	elseif(${PACKAGE_TYPE} STREQUAL "Installable")
+	elseif(${APP_PACKAGE_TYPE} STREQUAL "Installable")
 		message(STATUS "Configuring installable package")
 		set(FILESYSTEM_TYPE FILESYSTEM_INSTALLABLE)
 	else()
-		message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
+		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
 	endif()
 
-	install(TARGETS ${EXE} DESTINATION ".")
-	install(DIRECTORY "${SRC}/config/mission" "${SRC}/config/stage" DESTINATION "config")
-	install(DIRECTORY "${SRC}/res" DESTINATION ".")
-	install(FILES "${SRC}/changelog.txt" "${SRC}/heboris.txt" "${SRC}/LICENSE-hashmap.txt" "${SRC}/README.md" DESTINATION ".")
-	include("${SRC}/cmake/windows/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
+	install(TARGETS ${APP_EXE} DESTINATION ".")
+	install(DIRECTORY "${APP_SRC_DIR}/config/mission" "${APP_SRC_DIR}/config/stage" DESTINATION "config")
+	install(DIRECTORY "${APP_SRC_DIR}/res" DESTINATION ".")
+	install(FILES "${APP_SRC_DIR}/changelog.txt" "${APP_SRC_DIR}/heboris.txt" "${APP_SRC_DIR}/LICENSE-hashmap.txt" "${APP_SRC_DIR}/README.md" DESTINATION ".")
+	include("${APP_SRC_DIR}/cmake/windows/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
 endif()
-configure_file("${SRC}/src/main_sdl/defs.h.in" "src/main_sdl/defs.h" @ONLY)
+configure_file("${APP_SRC_DIR}/src/app/APP_build_config.h.in" "${APP_BIN_DIR}/src/app/APP_build_config.h" @ONLY)

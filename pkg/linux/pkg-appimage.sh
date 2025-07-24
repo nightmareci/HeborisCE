@@ -19,7 +19,7 @@ NAME="HeborisCE"
 mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY" || exit 1
 
-cmake "$SOURCE_DIRECTORY" -G "$GENERATOR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DPACKAGE_TYPE=Installable -DUSE_VENDOR_LIBRARIES=1 || exit 1
+cmake "$SOURCE_DIRECTORY" -G "$GENERATOR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DAPP_PACKAGE_TYPE=Installable -DAPP_VENDORED=1 || exit 1
 cmake --build build -j `nproc` || exit 1
 DESTDIR=AppDir cmake --install build || exit 1
 

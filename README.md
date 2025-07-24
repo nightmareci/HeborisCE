@@ -205,9 +205,9 @@ Raspberry Pi OS installation:
 sudo apt install libgpiod-dev
 ```
 
-Set `ENABLE_LINUX_GPIO_INPUT` when running CMake, then build:
+Set `APP_ENABLE_LINUX_GPIO_INPUT` when running CMake, then build:
 ```sh
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_LINUX_GPIO_INPUT=1
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DAPP_ENABLE_LINUX_GPIO_INPUT=1
 cmake --build build
 ./build/HeborisCE
 ```
@@ -244,15 +244,16 @@ making the game behave similarly to old Heboris versions, but explicitly
 setting where all files are. This feature can be used to get debugging working
 in IDEs, by setting that command line argument to where the source root is.
 
-An alternative to using the explicit resource/data directory command line
-argument is to use the `WorkingDir` package type when building (the default if
-`PACKAGE_TYPE` isn't provided to the CMake configuration step) and configuring
-your IDE to run the game with its working directory set to the source root.
-This option isn't available in all IDEs, however.
+An alternative to using the explicit resource/data directory command line 
+argument is to use the `WorkingDir` package type when building (the default if 
+`APP_PACKAGE_TYPE` isn't provided to the CMake configuration step) and 
+configuring your IDE to run the game with its working directory set to the 
+source root. This option isn't available in all IDEs, however.
 
 ## Changes
 
- - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported platforms.
+ - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported 
+platforms.
  - Change to a CMake build system.
  - Convert all source code from C++ to C.
  - Convert everything to UTF-8.

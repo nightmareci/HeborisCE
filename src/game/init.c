@@ -92,7 +92,7 @@ void gameInit() {
 	ti_s_go_start = 160;		// TOMOYO go開始
 	ti_s_go_end = 225;		// TOMOYO go終了
 
-#ifdef ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD
 	// TOMOYOモードでのステージスキップキー #1.60c7l8
 	skipKey = SDL_SCANCODE_F5;
 #endif

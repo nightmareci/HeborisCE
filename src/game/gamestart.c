@@ -3299,7 +3299,7 @@ void playerInitial(int32_t player) {
 	misstimer[player] = 0;
 
 	// 旧バージョンのリプレイデータを再生するためのスイッチ #1.60c7H2
-	repversw = 66;	// 0:1.60c7f3以前 1:1.60c7f4以降 3:1.60c7g7以降 4:1.60c7h2以降 5:1.60c7h5以降 6:1.60c7i2以降
+	repversw = 67;	// 0:1.60c7f3以前 1:1.60c7f4以降 3:1.60c7g7以降 4:1.60c7h2以降 5:1.60c7h5以降 6:1.60c7i2以降
 					// 7:1.60c7j3以降 8:1.60c7k5以降 9:1.60c7k8以降 10:1.60c7n6以降 11:1.60c7o9以降 12:1.60c7p1以降
 					// 13:1.60c7p5以降 14:1.60c7q8以降 15:1.60c7r3以降 16:1.60c7r7以降 17:1.60c7s6以降 18:1.60c7t3以降
 					// 19:C7T6.4以降 20:C7T6.8以降 21:C7T7.2以降 22C7T7.7以降 23:C7T8以降 25:C7T9.2以降 26:C7T9.4以降
@@ -7886,6 +7886,11 @@ void doHold(int32_t player, int32_t ihs) {
 		// ゲームオーバーなっていない＆接地している場合は音を鳴らす
 		if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
 			if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(1);
+		}
+
+		// Don't allow rotation on the same frame as hold.
+		if (repversw >= 67) {
+			statusc[player * 10 + 6] = 1;
 		}
 	}
 }

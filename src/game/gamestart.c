@@ -7887,6 +7887,11 @@ void doHold(int32_t player, int32_t ihs) {
 		if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
 			if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(1);
 		}
+
+		// Don't allow rotation on the same frame as hold.
+		if (repversw >= 67) {
+			statusc[player * 10 + 6] = 1;
+		}
 	}
 }
 

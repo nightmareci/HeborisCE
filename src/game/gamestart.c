@@ -7408,12 +7408,12 @@ void setGameOver(int32_t player) {
 		if(gameMode[player] != 4) onRecord[player] = 0;			// リプレイ記録終了
 	}
 
-	if((gameMode[player] <= 1)&&(gameMode[player] >= 2)&&(gmflag_r[0]==1)&&(enable_grade[player] == 2)){//消えロール中に死んだら段位が1上がる
+	if((gameMode[player] >= 1)&&(gameMode[player] <= 2)&&(gmflag_r[0]==1)&&(enable_grade[player] == 2)){//消えロール中に死んだら段位が1上がる
 		grade[player]++;
 		gflash[player]=120;
 	}
 
-	if((gameMode[player] <= 1)&&(gameMode[player] >= 2)&&(gmflag_r[0]==1)&&(enable_grade[player] == 3)){//消えロール中に死んだらM
+	if((gameMode[player] >= 1)&&(gameMode[player] <= 2)&&(gmflag_r[0]==1)&&(enable_grade[player] == 3)){//消えロール中に死んだらM
 		grade[player]=27;
 		gflash[player]=120;
 	}

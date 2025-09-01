@@ -11753,7 +11753,7 @@ void statNameEntry(int32_t player) {
 				ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+120,90,48);
 		}else if( grade[player] >= 28 ) {
 			// MK-MM
-			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+((grade[player]-28)*24),90,24);
+			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216)+((grade[player]-27)*24),90,24);
 		}  else if( grade[player] == 27 ) {
 			//Master
 			ExBltRect(26,115 + 192 * player -96 * maxPlay , 144 - (add * 3), 270 ,((count % 4 / 2)*216),90,24);
@@ -12470,7 +12470,7 @@ void statResult(int32_t player) {
 					}
 				}else if( grade[player] >= 28 ) {
 					// MK-MM
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 135, 270 ,((count % 4 / 2)*216)+((grade[player]-28)*24),90,24);
+					ExBltRect(26,115 + 192 * player -96 * maxPlay , 135, 270 ,((count % 4 / 2)*216)+((grade[player]-27)*24),90,24);
 				}  else if( grade[player] == 27 ) {
 					if((enable_grade[player] == 2)||(enable_grade[player] == 4)){
 						//Master
@@ -14635,7 +14635,7 @@ void statExamination(int32_t player){
 					ExBltRect(26,115 + 192 * player -96 * maxPlay , 115, 270 ,((count % 4 / 2)*216)+120,90,48);
 				} else if( exam_grade[player] >= 28 ) {
 					// MK-MM
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 127, 270 ,((count % 4 / 2)*216)+((exam_grade[player]-28)*24),90,24);
+					ExBltRect(26,115 + 192 * player -96 * maxPlay , 127, 270 ,((count % 4 / 2)*216)+((exam_grade[player]-27)*24),90,24);
 				} else if( exam_grade[player] >= 27 ) {
 					if((enable_grade[player]==2)||(enable_grade[player]==4)){
 						// M
@@ -14687,8 +14687,8 @@ void statExamination(int32_t player){
 					// GM
 					ExBltRect(26,115 + 192 * player -96 * maxPlay , 115, 270 ,((count % 4 / 2)*216)+120,90,48);
 				} else if( exam_grade[player] >= 28 ) {
-					// M-MM
-					ExBltRect(26,115 + 192 * player -96 * maxPlay , 127, 270 ,((count % 4 / 2)*216)+((exam_grade[player]-28)*24),90,24);
+					// MK-MM
+					ExBltRect(26,115 + 192 * player -96 * maxPlay , 127, 270 ,((count % 4 / 2)*216)+((exam_grade[player]-27)*24),90,24);
 				} else if( exam_grade[player] >= 27 ) {
 					if((enable_grade[player]==2)||(enable_grade[player]==4)){
 						// M

@@ -311,7 +311,7 @@ void viewScoreSmall(void) {
 							}
 						} else if( grade[i] >= 28 ) {
 							// MK〜MM
-							ExBltRectR(26,188-zoomx[i]+add + 52 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((grade[i]-28)*25),90,24,k[i],k[i]);
+							ExBltRectR(26,188-zoomx[i]+add + 52 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((grade[i]-26)*24),90,24,k[i],k[i]);
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
 							//M
@@ -359,7 +359,7 @@ void viewScoreSmall(void) {
 							}
 						} else if( grade[i] >= 28 ) {
 							// MK〜MM
-							ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((grade[i]-28)*24),90,24);
+							ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((grade[i]-26)*24),90,24);
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
 							//M
@@ -411,7 +411,7 @@ void viewScoreSmall(void) {
 					}
 				} else if( exam_grade[i] >= 28 ) {
 					// MK〜MM
-					ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((exam_grade[i]-28)*24),90,24);
+					ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((exam_grade[i]-26)*24),90,24);
 				} else if( exam_grade[i] == 27 ) {
 					if((enable_grade[i] == 2)||(enable_grade[i] == 4)){
 					//M

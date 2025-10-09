@@ -74,8 +74,10 @@ static int			APP_OffsetX = 0, APP_OffsetY = 0;
 
 static int			APP_QuitLevel;
 
-#ifndef APP_ONLY_INPUT_TYPE
+#ifdef APP_ONLY_INPUT_TYPE
 static APP_InputType APP_LastInputType = APP_INPUT_NULL;
+#else
+static APP_InputType APP_LastInputType = APP_ONLY_INPUT_TYPE;
 #endif
 
 static void APP_PrivateBDFFontFinalize();
@@ -1707,11 +1709,7 @@ static int APP_NumPlayerSlots = 0;
 
 APP_InputType APP_GetLastInputType ()
 {
-	#ifdef APP_ONLY_INPUT_TYPE
-	return APP_ONLY_INPUT_TYPE;
-	#else
 	return APP_LastInputType;
-	#endif
 }
 
 #ifdef APP_ENABLE_LINUX_GPIO

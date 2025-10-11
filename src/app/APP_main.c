@@ -36,6 +36,7 @@ int main(int argc, char** argv)
 	// the game starts. The pre-startup sync is required, to ensure the writable
 	// directories have been created before the game starts.
 	#ifdef __EMSCRIPTEN__
+	// TODO: This filesystem sync might not be needed with SDL3
 	EM_ASM({
 		FS.syncfs(true, function (err) {
 			assert(!err || err.errno == 10);

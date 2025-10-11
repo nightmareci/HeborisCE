@@ -29,7 +29,8 @@ typedef enum APP_Prompt
 	APP_PROMPT_RETRY
 } APP_Prompt;
 
-#define		APP_DEADZONE_MAX	(32767 / 4)
+#define		APP_DEADZONE_MIN	(SDL_JOYSTICK_AXIS_MIN / 4)
+#define		APP_DEADZONE_MAX	(SDL_JOYSTICK_AXIS_MAX / 4)
 
 void APP_Init(int soundBufferSize);
 void APP_Quit(void);
@@ -86,7 +87,7 @@ typedef enum APP_WaveFormat
 bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex);
 int APP_GetMaxDisplayIndex();
 int APP_GetMaxDisplayMode( int displayIndex );
-bool APP_RenderLevelLowSupported();
+bool APP_GetDisplayMode( int displayIndex, int modeIndex, SDL_DisplayMode *mode );
 
 int APP_Rand ( int max );
 
@@ -95,11 +96,11 @@ void APP_ReplayWave ( int num );
 void APP_StopWave ( int num );
 void APP_PauseWave ( int num );
 void APP_SetVolumeWave( int num, int vol );
-int APP_IsPlayWave( int num );
+bool APP_IsPlayWave( int num );
 void APP_LoadWave( const char* filename, int num );
-void APP_SetLoopModeWave( int num, int mode );
+void APP_SetLoopModeWave( int num, bool looping );
 
-int APP_IsPlayMusic();
+bool APP_IsPlayMusic();
 void APP_PauseMusic();
 void APP_ReplayMusic();
 void APP_LoadMusic( const char* filename );
@@ -108,7 +109,7 @@ void APP_StopMusic();
 void APP_SetVolumeMusic(int vol);
 bool APP_WaveFormatSupported(APP_WaveFormat format);
 
-void APP_LoadBitmap( const char* filename, int plane, int value );
+void APP_LoadBitmap( const char* filename, unsigned plane );
 void APP_SetColorKeyPos(int plane, int x, int y);
 void APP_EnableBlendColorKey(int plane, int key);
 void APP_CreateSurface(int surf, int w, int h);
@@ -152,12 +153,12 @@ int APP_GetRealFPS();
 
 void APP_StrCpy(char *dest, const char *src);
 void APP_StrCat(char *str1, const char *str2);
-int APP_StrLen(const char *stri);
-void APP_MidStr(const char *src, int start, int len, char *dest);
-void APP_LeftStr(const char *src, int len, char *dest);
-char APP_CharAt(const char *stri, int pos);
+size_t APP_StrLen(const char *stri);
+void APP_MidStr(const char *src, size_t start, size_t len, char *dest);
+void APP_LeftStr(const char *src, size_t len, char *dest);
+char APP_CharAt(const char *stri, size_t pos);
 int APP_ValLong(const char *stri);
-void APP_FillMemory(void* buf, int size, int val);
+void APP_FillMemory(void* buf, size_t size, int val);
 
 typedef enum APP_InputType
 {
@@ -167,11 +168,11 @@ typedef enum APP_InputType
 	,APP_INPUT_JOYSTICK
 	#endif
 	#ifdef APP_ENABLE_GAME_CONTROLLER
-	,APP_INPUT_GAMECONTROLLER
 	,APP_INPUT_FIRSTGAMECONTROLLERTYPE
 	,APP_INPUT_XBOX = APP_INPUT_FIRSTGAMECONTROLLERTYPE
 	,APP_INPUT_PLAYSTATION
 	,APP_INPUT_NINTENDO
+	,APP_INPUT_LASTGAMECONTROLLERTYPE = APP_INPUT_NINTENDO
 	#endif
 	#ifdef APP_ENABLE_KEYBOARD
 	,APP_INPUT_KEYBOARD
@@ -194,7 +195,7 @@ int APP_GetGPIORepeat(int key);
 #endif
 
 #ifdef APP_ENABLE_KEYBOARD
-#define APP_KEY_MAX SDL_NUM_SCANCODES
+#define APP_KEY_MAX SDL_SCANCODE_COUNT
 
 bool APP_IsPushKey(int key);
 bool APP_IsPressKey(int key);
@@ -281,7 +282,7 @@ typedef struct APP_ConKey {
 #define APP_CONAXIS_MAX 10
 
 // Button numbers are the same as the SDL_CONTROLLER_BUTTON_* constants.
-#define APP_CONBUTTON_MAX SDL_CONTROLLER_BUTTON_MAX
+#define APP_CONBUTTON_MAX SDL_GAMEPAD_BUTTON_COUNT
 
 bool APP_IsPushConKey(const int player, const APP_ConKey* const key);
 bool APP_IsPressConKey(const int player, const APP_ConKey* const key);

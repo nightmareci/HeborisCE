@@ -135,69 +135,69 @@ static const SConfig DefaultConfig = {
 		// Player 1
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
+			.index = SDL_GAMEPAD_BUTTON_DPAD_UP
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
+			.index = SDL_GAMEPAD_BUTTON_DPAD_DOWN
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_LEFT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_RIGHT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_A
+			.index = SDL_GAMEPAD_BUTTON_SOUTH
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_B
+			.index = SDL_GAMEPAD_BUTTON_EAST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_X
+			.index = SDL_GAMEPAD_BUTTON_WEST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+			.index = SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER
 		},
 
 		// Player 2
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
+			.index = SDL_GAMEPAD_BUTTON_DPAD_UP
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
+			.index = SDL_GAMEPAD_BUTTON_DPAD_DOWN
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_LEFT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_RIGHT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_A
+			.index = SDL_GAMEPAD_BUTTON_SOUTH
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_B
+			.index = SDL_GAMEPAD_BUTTON_EAST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_X
+			.index = SDL_GAMEPAD_BUTTON_WEST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+			.index = SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER
 		}
 	},
 	#endif

@@ -132,9 +132,9 @@ add_executable(${APP_EXE}
 )
 
 set_target_properties(${APP_EXE}
-    PROPERTIES
-        C_STANDARD 99
-        C_STANDARD_REQUIRED TRUE
+	PROPERTIES
+		C_STANDARD 99
+		C_STANDARD_REQUIRED TRUE
 )
 
 if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW)
@@ -142,7 +142,7 @@ if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW)
 endif()
 
 if(VITA)
-	set(APP_FRAMEWORK_TYPE "VITA SDL")
+	set(APP_FRAMEWORK_TYPE "VITA SDL3")
 
 	if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT DEFINED VITASDK)
 		message(FATAL_ERROR "Vita SDK CMake toolchain file must be provided to the CMake configure command.")
@@ -158,10 +158,10 @@ if(VITA)
 	# used in the vendor libraries.
 	set(CMAKE_POSITION_INDEPENDENT_CODE FALSE CACHE BOOL "Override" FORCE)
 
-    target_sources(${APP_EXE} PRIVATE
-        "src/app/physfsrwops.c"
-        "src/app/physfsrwops.h"
-    )
+	target_sources(${APP_EXE} PRIVATE
+		"src/app/physfsrwops.c"
+		"src/app/physfsrwops.h"
+	)
 
 	set(APP_ENABLE_KEYBOARD FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
@@ -218,314 +218,298 @@ if(VITA)
 		FILE "pkg/vita/sce_sys/livearea/contents/template.xml" sce_sys/livearea/contents/template.xml
 	)
 elseif(WIN32 AND MSVC)
-    set(APP_FRAMEWORK_TYPE "WINDOWS SDL")
+	set(APP_FRAMEWORK_TYPE "WINDOWS SDL3")
 
-    add_compile_options("/MP")
-    add_compile_options("/utf-8")
+	add_compile_options("/MP")
+	add_compile_options("/utf-8")
 
-    target_sources(${APP_EXE} PRIVATE
-        "src/app/physfsrwops.c"
-        "src/app/physfsrwops.h"
-    )
+	target_sources(${APP_EXE} PRIVATE
+		"src/app/physfsrwops.c"
+		"src/app/physfsrwops.h"
+	)
 
-    option(CMAKE_WIN32_EXECUTABLE "Hide the Windows console." OFF)
+	option(CMAKE_WIN32_EXECUTABLE "Hide the Windows console." OFF)
 
-    target_sources(${APP_EXE} PRIVATE "pkg/windows/icon.rc")
+	target_sources(${APP_EXE} PRIVATE "pkg/windows/icon.rc")
 
-    if(APP_VENDORED)
-        include("cmake/AddLibrariesVendor.cmake" REQUIRED)
-        AddLibrariesVendor(${APP_EXE} TRUE)
-    else()
-        include("cmake/AddLibrariesFindPackage.cmake" REQUIRED)
-        AddLibrariesFindPackage(${APP_EXE})
-    endif()
+	if(APP_VENDORED)
+		include("cmake/AddLibrariesVendor.cmake" REQUIRED)
+		AddLibrariesVendor(${APP_EXE} TRUE)
+	else()
+		include("cmake/AddLibrariesFindPackage.cmake" REQUIRED)
+		AddLibrariesFindPackage(${APP_EXE})
+	endif()
 
-    if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
-        message(STATUS "Configuring working directory version; CMake installation is not supported")
-    else()
-        if(APP_PACKAGE_TYPE STREQUAL "Portable")
-            message(STATUS "Configuring portable package")
-            set(FILESYSTEM_TYPE "FILESYSTEM_PORTABLE")
-        elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
-            message(STATUS "Configuring installable package")
-            set(FILESYSTEM_TYPE "FILESYSTEM_INSTALLABLE")
-        else()
-            message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
-        endif()
+	if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
+		message(STATUS "Configuring working directory version; CMake installation is not supported")
+	else()
+		if(APP_PACKAGE_TYPE STREQUAL "Portable")
+			message(STATUS "Configuring portable package")
+			set(FILESYSTEM_TYPE "FILESYSTEM_PORTABLE")
+		elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
+			message(STATUS "Configuring installable package")
+			set(FILESYSTEM_TYPE "FILESYSTEM_INSTALLABLE")
+		else()
+			message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
+		endif()
 
-        install(TARGETS ${APP_EXE} DESTINATION ".")
-        install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
-        install(DIRECTORY "res" DESTINATION ".")
-        install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ".")
-        include("cmake/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
-    endif()
+		install(TARGETS ${APP_EXE} DESTINATION ".")
+		install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
+		install(DIRECTORY "res" DESTINATION ".")
+		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ".")
+		include("cmake/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
+	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App")
-    set(APP_FRAMEWORK_TYPE "MACOSX SDL")
+	set(APP_FRAMEWORK_TYPE "MACOSX SDL3")
 
-    # Builds Mac application bundle, packaged into a DMG with CPack by default.
+	# Builds Mac application bundle, packaged into a DMG with CPack by default.
 
-    target_sources(${APP_EXE} PRIVATE
-        "src/app/physfsrwops.c"
-        "src/app/physfsrwops.h"
-        "pkg/macos/${APP_EXE}.icns"
-    )
+	target_sources(${APP_EXE} PRIVATE
+		"src/app/physfsrwops.c"
+		"src/app/physfsrwops.h"
+		"pkg/macos/${APP_EXE}.icns"
+	)
 
-    set_property(TARGET ${APP_EXE} PROPERTY MACOSX_BUNDLE TRUE)
-    set_source_files_properties("pkg/macos/${APP_EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-    set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_EXE})
-    set(MACOSX_BUNDLE_GUI_IDENTIFIER "${APP_PROJECT_NAME}")
-    set(MACOSX_BUNDLE_ICON_FILE ${APP_EXE})
-    if(APP_PACKAGE_TYPE MATCHES "Portable")
-        set(SDL_FILESYSTEM_BASE_DIR_TYPE "parent")
-        set(APP_INSTALL_DIR ${APP_EXE})
-        install(TARGETS ${APP_EXE} BUNDLE DESTINATION "${APP_EXE}")
-        install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION "${APP_EXE}")
-        install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}/config")
-        install(DIRECTORY "res" DESTINATION "${APP_EXE}")
-    elseif(APP_PACKAGE_TYPE MATCHES "Installable")
-        set(SDL_FILESYSTEM_BASE_DIR_TYPE "resource")
-        set(APP_INSTALL_DIR .)
-        install(TARGETS ${APP_EXE} BUNDLE DESTINATION .)
-        install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION .)
-        install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}.app/Contents/Resources/config")
-        install(DIRECTORY "res" DESTINATION "${APP_EXE}.app/Contents/Resources")
-    else()
-        message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building a macOS app")
-    endif()
+	set_property(TARGET ${APP_EXE} PROPERTY MACOSX_BUNDLE TRUE)
+	set_source_files_properties("pkg/macos/${APP_EXE}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_EXE})
+	set(MACOSX_BUNDLE_GUI_IDENTIFIER "${APP_PROJECT_NAME}")
+	set(MACOSX_BUNDLE_ICON_FILE ${APP_EXE})
+	if(APP_PACKAGE_TYPE MATCHES "Portable")
+		set(SDL_FILESYSTEM_BASE_DIR_TYPE "parent")
+		set(APP_INSTALL_DIR ${APP_EXE})
+		install(TARGETS ${APP_EXE} BUNDLE DESTINATION "${APP_EXE}")
+		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION "${APP_EXE}")
+		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}/config")
+		install(DIRECTORY "res" DESTINATION "${APP_EXE}")
+	elseif(APP_PACKAGE_TYPE MATCHES "Installable")
+		set(SDL_FILESYSTEM_BASE_DIR_TYPE "resource")
+		set(APP_INSTALL_DIR .)
+		install(TARGETS ${APP_EXE} BUNDLE DESTINATION .)
+		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION .)
+		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}.app/Contents/Resources/config")
+		install(DIRECTORY "res" DESTINATION "${APP_EXE}.app/Contents/Resources")
+	else()
+		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building a macOS app")
+	endif()
 
-    set_target_properties(${APP_EXE} PROPERTIES
-        MACOSX_BUNDLE_INFO_PLIST "cmake/MacOSXBundleInfo.plist.in"
-        INSTALL_RPATH "@executable_path"
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-    )
+	set_target_properties(${APP_EXE} PROPERTIES
+		MACOSX_BUNDLE_INFO_PLIST "cmake/MacOSXBundleInfo.plist.cmake"
+		INSTALL_RPATH "@executable_path"
+		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
 
-    if(APP_VENDORED)
-        include("cmake/AddLibrariesVendor.cmake" REQUIRED)
-        AddLibrariesVendor(${APP_EXE} TRUE)
-    else()
-        include("cmake/AddLibrariesPkgConfig.cmake" REQUIRED)
-        AddLibrariesPkgConfig(${APP_EXE})
-    endif()
+	if(APP_VENDORED)
+		include("cmake/AddLibrariesVendor.cmake" REQUIRED)
+		AddLibrariesVendor(${APP_EXE} TRUE)
+	else()
+		include("cmake/AddLibrariesPkgConfig.cmake" REQUIRED)
+		AddLibrariesPkgConfig(${APP_EXE})
+	endif()
 
-    set(APP_APPLE_CERT_NAME - CACHE STRING "The name of the Apple supplied code signing certificate to use. Defaults to adhoc signing (\"-\")")
-    include(CMakeFindBinUtils)
-    install(CODE "
-        set(APP_POST_EXCLUDES
-        \"^/usr/lib\"
-        \"^/System/Library/Frameworks\"
-        )
+	set(APP_APPLE_CERT_NAME - CACHE STRING "The name of the Apple supplied code signing certificate to use. Defaults to adhoc signing (\"-\")")
+	include(CMakeFindBinUtils)
+	install(CODE "
+		set(APP_POST_EXCLUDES
+		\"^/usr/lib\"
+		\"^/System/Library/Frameworks\"
+		)
 
-        file(GET_RUNTIME_DEPENDENCIES
-            EXECUTABLES \$<TARGET_FILE:${APP_EXE}>
-            POST_EXCLUDE_REGEXES
-                \${APP_POST_EXCLUDES}
-            RESOLVED_DEPENDENCIES_VAR RESOLVED_DEPENDENCIES
-            UNRESOLVED_DEPENDENCIES_VAR UNRESOLVED_DEPENDENCIES
-        )
+		file(GET_RUNTIME_DEPENDENCIES
+			EXECUTABLES \$<TARGET_FILE:${APP_EXE}>
+			POST_EXCLUDE_REGEXES
+				\${APP_POST_EXCLUDES}
+			RESOLVED_DEPENDENCIES_VAR RESOLVED_DEPENDENCIES
+			UNRESOLVED_DEPENDENCIES_VAR UNRESOLVED_DEPENDENCIES
+		)
 
-        file(INSTALL
-            DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs\"
-            TYPE SHARED_LIBRARY
-            FOLLOW_SYMLINK_CHAIN
-            FILES \${RESOLVED_DEPENDENCIES}
-        )
+		file(INSTALL
+			DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs\"
+			TYPE SHARED_LIBRARY
+			FOLLOW_SYMLINK_CHAIN
+			FILES \${RESOLVED_DEPENDENCIES}
+		)
 
-        set(APP_CHANGES \"\")
-        set(APP_LIBS \"\")
-        foreach(RESOLVED_DEPENDENCY \${RESOLVED_DEPENDENCIES})
-            string(REGEX REPLACE \"^.*/([^/]+)\" \"\\\\1\" LIB \"\${RESOLVED_DEPENDENCY}\")
-            list(APPEND APP_CHANGES -change \"\${RESOLVED_DEPENDENCY}\" \"@rpath/../libs/\${LIB}\")
-            list(APPEND APP_LIBS \"\${LIB}\")
-        endforeach()
+		set(APP_CHANGES \"\")
+		set(APP_LIBS \"\")
+		foreach(RESOLVED_DEPENDENCY \${RESOLVED_DEPENDENCIES})
+			string(REGEX REPLACE \"^.*/([^/]+)\" \"\\\\1\" LIB \"\${RESOLVED_DEPENDENCY}\")
+			list(APPEND APP_CHANGES -change \"\${RESOLVED_DEPENDENCY}\" \"@rpath/../libs/\${LIB}\")
+			list(APPEND APP_LIBS \"\${LIB}\")
+		endforeach()
 
-        if(\"${APP_APPLE_CERT_NAME}\" STREQUAL -)
-            set(APP_ENTITLEMENTS adhoc)
-        else()
-            set(APP_ENTITLEMENTS identity-required)
-        endif()
+		if(\"${APP_APPLE_CERT_NAME}\" STREQUAL -)
+			set(APP_ENTITLEMENTS adhoc)
+		else()
+			set(APP_ENTITLEMENTS identity-required)
+		endif()
 
-        foreach(APP_LIB \${APP_LIBS})
-            execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} \${APP_CHANGES} -id \"@rpath/../libs/\${APP_LIB}\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs/\${APP_LIB}\")
-            execute_process(COMMAND xcrun codesign --remove-signature \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs/\${APP_LIB}\")
-            execute_process(COMMAND xcrun codesign -f -o runtime --timestamp -s \"${APP_APPLE_CERT_NAME}\" --entitlements \"${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-\${APP_ENTITLEMENTS}.xml\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs/\${APP_LIB}\")
-        endforeach()
-        execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} \${APP_CHANGES} \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/MacOS/${APP_EXE}\")
-        execute_process(COMMAND xcrun codesign --remove-signature \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app\")
-        execute_process(COMMAND xcrun codesign -f -o runtime --timestamp -s \"${APP_APPLE_CERT_NAME}\" --entitlements \"${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-\${APP_ENTITLEMENTS}.xml\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app\")
-    ")
+		foreach(APP_LIB \${APP_LIBS})
+			execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} \${APP_CHANGES} -id \"@rpath/../libs/\${APP_LIB}\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs/\${APP_LIB}\")
+			execute_process(COMMAND xcrun codesign --remove-signature \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs/\${APP_LIB}\")
+			execute_process(COMMAND xcrun codesign -f -o runtime --timestamp -s \"${APP_APPLE_CERT_NAME}\" --entitlements \"${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-\${APP_ENTITLEMENTS}.xml\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/libs/\${APP_LIB}\")
+		endforeach()
+		execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} \${APP_CHANGES} \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app/Contents/MacOS/${APP_EXE}\")
+		execute_process(COMMAND xcrun codesign --remove-signature \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app\")
+		execute_process(COMMAND xcrun codesign -f -o runtime --timestamp -s \"${APP_APPLE_CERT_NAME}\" --entitlements \"${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-\${APP_ENTITLEMENTS}.xml\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_EXE}.app\")
+	")
 
-    set(CPACK_DMG_VOLUME_NAME ${APP_EXE})
-    set(CPACK_PACKAGE_VENDOR "${APP_PROJECT_CREATOR}")
-    if(APP_PACKAGE_TYPE MATCHES "Portable")
-        set(CPACK_PACKAGE_FILE_NAME "${APP_EXE}-Portable-App-macOS")
-    elseif(${APP_PACKAGE_TYPE} MATCHES "Installable")
-        set(CPACK_PACKAGE_FILE_NAME "${APP_EXE}-Installable-App-macOS")
-    endif()
-    set(CPACK_GENERATOR "DragNDrop")
-    include(CPack)
+	set(CPACK_DMG_VOLUME_NAME ${APP_EXE})
+	set(CPACK_PACKAGE_VENDOR "${APP_PROJECT_CREATOR}")
+	if(APP_PACKAGE_TYPE MATCHES "Portable")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_EXE}-Portable-App-macOS")
+	elseif(${APP_PACKAGE_TYPE} MATCHES "Installable")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_EXE}-Installable-App-macOS")
+	endif()
+	set(CPACK_GENERATOR "DragNDrop")
+	include(CPack)
 elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
-    if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-        set(APP_FRAMEWORK_TYPE "MACOSX SDL")
-    else()
-        # It's probably a fair assumption that system names are always ASCII,
-        # so it's likely no conversion to ASCII is needed here; the framework
-        # version is displayed using the game font, not the Unicode font, so it
-        # must be ASCII.
-        string(TOUPPER "${CMAKE_SYSTEM_NAME}" APP_FRAMEWORK_TARGET)
-        set(APP_FRAMEWORK_TYPE "${APP_FRAMEWORK_TARGET} SDL")
-    endif()
+	if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+		set(APP_FRAMEWORK_TYPE "MACOSX SDL3")
+	else()
+		# It's probably a fair assumption that system names are always ASCII,
+		# so it's likely no conversion to ASCII is needed here; the framework
+		# version is displayed using the game font, not the Unicode font, so it
+		# must be ASCII.
+		string(TOUPPER "${CMAKE_SYSTEM_NAME}" APP_FRAMEWORK_TARGET)
+		set(APP_FRAMEWORK_TYPE "${APP_FRAMEWORK_TARGET} SDL3")
+	endif()
 
-    # Builds commandline program for some Unix-type platforms. The "Portable" package type supports creating distributable packages with CPack.
+	# Builds commandline program for some Unix-type platforms. The "Portable" package type supports creating distributable packages with CPack.
 
-    target_sources(${APP_EXE} PRIVATE
-        "src/app/physfsrwops.c"
-        "src/app/physfsrwops.h"
-    )
+	option(APP_ENABLE_LINUX_GPIO_INPUT "Enable input via GPIO (Linux only)" OFF)
+	if(APP_ENABLE_LINUX_GPIO_INPUT)
+		if(LINUX)
+			set(APP_ENABLE_LINUX_GPIO TRUE)
+			target_link_libraries(${APP_EXE} PRIVATE gpiod)
+		else()
+			message(FATAL_ERROR "\"APP_ENABLE_LINUX_GPIO_INPUT\" is only supported when targeting Linux")
+		endif()
+	endif()
 
-    option(APP_ENABLE_LINUX_GPIO_INPUT "Enable input via GPIO (Linux only)" OFF)
-    if(APP_ENABLE_LINUX_GPIO_INPUT)
-        if(LINUX)
-            set(APP_ENABLE_LINUX_GPIO TRUE)
-            target_link_libraries(${APP_EXE} PRIVATE gpiod)
-        else()
-            message(FATAL_ERROR "\"APP_ENABLE_LINUX_GPIO_INPUT\" is only supported when targeting Linux")
-        endif()
-    endif()
+	if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
+	elseif(APP_PACKAGE_TYPE STREQUAL "Portable")
+		set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
+		install(TARGETS ${APP_EXE} DESTINATION ${APP_EXE})
+		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}/config")
+		install(DIRECTORY "res" DESTINATION ${APP_EXE})
+		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ${APP_EXE})
+	elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
+		message(STATUS "Configuring installable package")
+		set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
+		include(GNUInstallDirs REQUIRED)
+		set(APP_BASE_PATH_APPEND "../${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}")
+		install(TARGETS ${APP_EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
+		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}/config")
+		install(DIRECTORY "res" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}")
+		install(FILES "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}")
+		if(LINUX)
+			set(APP_LINUX_DESKTOP_ICON ${APP_EXE} CACHE STRING "The file name of the icon to put into the Linux desktop file, without an extension")
+			set(APP_COMMENT "Cross-platform Expansion and continuation of Heboris U.E.")
+			configure_file("cmake/entry.desktop.cmake" "${CMAKE_BINARY_DIR}/${APP_EXE}.desktop" @ONLY)
+			install(FILES "${CMAKE_BINARY_DIR}/${APP_EXE}.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
+			install(FILES "pkg/linux/icon.png" RENAME "${APP_EXE}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
+		endif()
+	else()
+		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
+	endif()
 
-    if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
-    elseif(APP_PACKAGE_TYPE STREQUAL "Portable")
-        set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
-        install(TARGETS ${APP_EXE} DESTINATION ${APP_EXE})
-        install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}/config")
-        install(DIRECTORY "res" DESTINATION ${APP_EXE})
-        install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ${APP_EXE})
-    elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
-        message(STATUS "Configuring installable package")
-        set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
-        include(GNUInstallDirs REQUIRED)
-        set(APP_BASE_PATH_APPEND "../${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}")
-        configure_file("src/app/APP_build_config.h.in" "${CMAKE_BINARY_DIR}/src/app/APP_build_config.h" @ONLY)
-        install(TARGETS ${APP_EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
-        install(DIRECTORY "config/mission" "config/stage" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}/config")
-        install(DIRECTORY "res" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}")
-        install(FILES "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}")
-        if(LINUX)
-            set(APP_LINUX_DESKTOP_ICON ${APP_EXE} CACHE STRING "The file name of the icon to put into the Linux desktop file, without an extension")
-            set(APP_COMMENT "Cross-platform Expansion and continuation of Heboris U.E.")
-            configure_file("cmake/entry.desktop.in" "${CMAKE_BINARY_DIR}/${APP_EXE}.desktop" @ONLY)
-            install(FILES "${CMAKE_BINARY_DIR}/${APP_EXE}.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
-            install(FILES "pkg/linux/icon.png" RENAME "${APP_EXE}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
-        endif()
-    else()
-        message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
-    endif()
+	set_target_properties(${APP_EXE}
+		PROPERTIES
+		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
 
-    set_target_properties(${APP_EXE}
-        PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-    )
-
-    if(APP_VENDORED)
-        include(cmake/AddLibrariesVendor.cmake REQUIRED)
-        AddLibrariesVendor(${APP_EXE} TRUE)
-    else()
-        include(cmake/AddLibrariesPkgConfig.cmake REQUIRED)
-        AddLibrariesPkgConfig(${APP_EXE})
-    endif()
-
-    if(APP_PACKAGE_TYPE STREQUAL "Portable")
-        if(MINGW)
-            include("cmake/InstallRuntimeDependenciesMinGW.cmake" REQUIRED)
-        elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-            include("cmake/InstallRuntimeDependenciesMacOS.cmake" REQUIRED)
-        elseif(LINUX)
-            include("cmake/InstallRuntimeDependenciesLinux.cmake" REQUIRED)
-        endif()
-    endif()
+	if(APP_VENDORED)
+		add_subdirectory(deps/SDL)
+		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3-static)
+	else()
+		find_package(SDL3 REQUIRED)
+		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
+	endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-    # TODO: Add option to not include --emrun in linker flags for actual
-    # releases, so they're suitable for hosting on a real web server.
-    # TODO: Add "favicon.ico".
+	# TODO: Add option to not include --emrun in linker flags for actual
+	# releases, so they're suitable for hosting on a real web server.
+	# TODO: Add "favicon.ico".
 
-    set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-    set(BUILD_SHARED_LIBS FALSE)
+	set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+	set(BUILD_SHARED_LIBS FALSE)
 
-    # Emscripten needs vendor libraries to be handled differently than native
-    # builds, so special handling is done here, instead of in
-    # AddLibrariesVendor.
+	# Emscripten needs vendor libraries to be handled differently than native
+	# builds, so special handling is done here, instead of in
+	# AddLibrariesVendor.
 
-    if(APP_VENDORED)
-        set(SDL_SHARED FALSE)
-        set(SDL_STATIC TRUE)
-        set(SDL_TEST FALSE)
-        set(SDL2_DISABLE_UNINSTALL ON)
-        add_subdirectory("dep/SDL" "${CMAKE_BINARY_DIR}/dep/SDL")
+	if(APP_VENDORED)
+		set(SDL_SHARED FALSE)
+		set(SDL_STATIC TRUE)
+		set(SDL_TEST FALSE)
+		set(SDL2_DISABLE_UNINSTALL ON)
+		add_subdirectory("dep/SDL" "${CMAKE_BINARY_DIR}/dep/SDL")
 
-        set(SDL2IMAGE_VENDORED ON)
-        set(SDL2IMAGE_DEPS_SHARED OFF)
-        add_subdirectory("dep/SDL_image" "${CMAKE_BINARY_DIR}/dep/SDL_image")
+		set(SDL2IMAGE_VENDORED ON)
+		set(SDL2IMAGE_DEPS_SHARED OFF)
+		add_subdirectory("dep/SDL_image" "${CMAKE_BINARY_DIR}/dep/SDL_image")
 
-        set(SDL2MIXER_VENDORED ON)
-        set(SDL2MIXER_DEPS_SHARED OFF)
-        set(SDL2MIXER_FLAC OFF)
-        set(SDL2MIXER_GME OFF)
-        set(SDL2MIXER_MOD OFF)
-        set(SDL2MIXER_MP3 OFF)
-        set(SDL2MIXER_MIDI OFF)
-        set(SDL2MIXER_OPUS OFF)
-        set(SDL2MIXER_VORBIS "VORBISFILE")
-        set(SDL2MIXER_WAVE ON)
-        set(SDL2MIXER_WAVPACK OFF)
-        add_subdirectory("dep/SDL_mixer" "${CMAKE_BINARY_DIR}/dep/SDL_mixer")
-    else()
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s SDL2_IMAGE_FORMATS=[\"png\"]")
-    endif()
+		set(SDL2MIXER_VENDORED ON)
+		set(SDL2MIXER_DEPS_SHARED OFF)
+		set(SDL2MIXER_FLAC OFF)
+		set(SDL2MIXER_GME OFF)
+		set(SDL2MIXER_MOD OFF)
+		set(SDL2MIXER_MP3 OFF)
+		set(SDL2MIXER_MIDI OFF)
+		set(SDL2MIXER_OPUS OFF)
+		set(SDL2MIXER_VORBIS "VORBISFILE")
+		set(SDL2MIXER_WAVE ON)
+		set(SDL2MIXER_WAVPACK OFF)
+		add_subdirectory("dep/SDL_mixer" "${CMAKE_BINARY_DIR}/dep/SDL_mixer")
+	else()
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s SDL2_IMAGE_FORMATS=[\"png\"]")
+	endif()
 
-    set(APP_FRAMEWORK_TYPE "WEB SDL")
+	set(APP_FRAMEWORK_TYPE "WEB SDL3")
 
-    set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
-    set(APP_ENABLE_GAME_CONTROLLER FALSE CACHE BOOL "" FORCE)
-    set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
-    set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
-    set(APP_ENABLE_GAME_QUIT FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_QUIT FALSE CACHE BOOL "" FORCE)
 
-    if(CMAKE_BUILD_TYPE MATCHES "Release")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --shell-file '${CMAKE_SOURCE_DIR}/pkg/emscripten/index.html'")
-    elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
-    endif()
+	if(CMAKE_BUILD_TYPE MATCHES "Release")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --shell-file '${CMAKE_SOURCE_DIR}/pkg/emscripten/index.html'")
+	elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
+	endif()
 
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIME_METHODS=ccall -s EXPORTED_FUNCTIONS=_main,_startup -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/bg/highDetail@basepath/res/bg/highDetail' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/bgm@basepath/res/bgm' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/font@basepath/res/font' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/graphics/highDetail@basepath/res/graphics/highDetail' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/graphics/lowDetail@basepath/res/graphics/lowDetail' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/graphics/title@basepath/res/graphics/title' \
-        --preload-file '${CMAKE_SOURCE_DIR}/res/se@basepath/res/se' \
-        --preload-file '${CMAKE_SOURCE_DIR}/config/mission@basepath/config/mission' \
-        --preload-file '${CMAKE_SOURCE_DIR}/config/stage@basepath/config/stage' \
-    ")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIME_METHODS=ccall -s EXPORTED_FUNCTIONS=_main,_startup -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/highDetail@basepath/res/bg/highDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/bgm@basepath/res/bgm' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/font@basepath/res/font' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/highDetail@basepath/res/graphics/highDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/lowDetail@basepath/res/graphics/lowDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/title@basepath/res/graphics/title' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/se@basepath/res/se' \
+		--preload-file '${CMAKE_SOURCE_DIR}/config/mission@basepath/config/mission' \
+		--preload-file '${CMAKE_SOURCE_DIR}/config/stage@basepath/config/stage' \
+	")
 
-    set_property(TARGET ${APP_EXE} PROPERTY SUFFIX ".html")
+	set_property(TARGET ${APP_EXE} PROPERTY SUFFIX ".html")
 
-    if(APP_VENDORED)
-        if(TARGET SDL2::SDL2main)
-            target_link_libraries(${APP_EXE} PUBLIC SDL2::SDL2main)
-        endif()
-        target_link_libraries(${APP_EXE} PUBLIC
-            SDL2::SDL2-static
-            SDL2_image::SDL2_image-static
-            SDL2_mixer::SDL2_mixer-static
-        )
-    endif()
+	if(APP_VENDORED)
+		if(TARGET SDL2::SDL2main)
+			target_link_libraries(${APP_EXE} PUBLIC SDL2::SDL2main)
+		endif()
+		target_link_libraries(${APP_EXE} PUBLIC
+			SDL2::SDL2-static
+			SDL2_image::SDL2_image-static
+			SDL2_mixer::SDL2_mixer-static
+		)
+	endif()
 else()
-    message(FATAL_ERROR "The current build target is not supported")
+	message(FATAL_ERROR "The current build target is not supported")
 endif()
 
-configure_file("src/app/APP_build_config.h.in" "src/app/APP_build_config.h" @ONLY)
+configure_file("src/app/APP_build_config.h.cmake" "src/app/APP_build_config.h" @ONLY)
 target_sources(${APP_EXE} PRIVATE "${CMAKE_BINARY_DIR}/src/app/APP_build_config.h")
 target_include_directories(${APP_EXE} PRIVATE "src" "${CMAKE_BINARY_DIR}/src")

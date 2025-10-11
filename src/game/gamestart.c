@@ -1461,7 +1461,7 @@ void mainUpdate() {
 		// 文字列バッファの初期化
 		for ( int32_t i = 0 ; i < STRING_MAX ; i ++ )
 		{
-			string[i] = malloc(sizeof(char[512]));
+			string[i] = SDL_malloc(sizeof(char[512]));
 		}
 		goto skipSpriteTime;
 
@@ -1662,7 +1662,7 @@ void mainUpdate() {
 			setDrawRate(1);
 		}
 
-		LoadGraphic("loading.png", 88, 0);		// Loading表示
+		LoadGraphic("loading.png", 88);		// Loading表示
 			x = APP_Rand(5);
 		if ( getDrawRate() != 1 )
 			y = APP_Rand(2);
@@ -1873,8 +1873,8 @@ void mainUpdate() {
 		if (
 			!enterResetKeys &&
 			(
-				(lastEnterPressed && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) ||
-				(lastEscapePressed && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)))
+				(lastEnterPressed && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL))) ||
+				(lastEscapePressed && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)))
 			)
 		) {
 			if (lastEnterPressed && !lastEscapePressed) {
@@ -1891,13 +1891,13 @@ void mainUpdate() {
 			mainLoopState = MAIN_RESTART;
 		}
 		if (enterResetKeys) {
-			if (!APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE)) && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN))) {
+			if (!APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL))) {
 				enterResetKeys = false;
 			}
 		}
 		else {
-			lastEnterPressed = APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-			lastEscapePressed = APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+			lastEnterPressed = APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL));
+			lastEscapePressed = APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL));
 		}
 		break;
 	}
@@ -1906,7 +1906,7 @@ void mainUpdate() {
 	case MAIN_QUIT:
 		for ( int32_t i = 0 ; i < STRING_MAX ; i ++ )
 		{
-			free(string[i]);
+			SDL_free(string[i]);
 		}
 		APP_Exit(exitStatus);
 		break;
@@ -4726,15 +4726,15 @@ void increment_time(int32_t player) {
 				(gameMode[0] == 4 && gameMode[1] == 4 && time2[0] == time2[1] && time2[0] == replayChunkCnt * REPLAY_PLAYER_CHUNK)
 			) {
 				int32_t** oldReplayData = replayData;
-				if (!(replayData = malloc(sizeof(int32_t*) * (replayChunkCnt + 1)))) {
-					abort();
+				if (!(replayData = SDL_malloc(sizeof(int32_t*) * (replayChunkCnt + 1)))) {
+					APP_Exit(EXIT_FAILURE);
 				}
 				if (oldReplayData) {
-					memcpy(replayData, oldReplayData, sizeof(int32_t*) * replayChunkCnt);
-					free(oldReplayData);
+					SDL_memcpy(replayData, oldReplayData, sizeof(int32_t*) * replayChunkCnt);
+					SDL_free(oldReplayData);
 				}
-				if (!(replayData[replayChunkCnt] = calloc(REPLAY_CHUNK_SIZE, 1u))) {
-					abort();
+				if (!(replayData[replayChunkCnt] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
+					APP_Exit(EXIT_FAILURE);
 				}
 				replayChunkCnt++;
 			}
@@ -15840,13 +15840,13 @@ int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割
 		switch (key) {
 		case APP_BUTTON_GIVE_UP:
 			conkey.type = APP_CONKEY_BUTTON;
-			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
+			conkey.index = SDL_GAMEPAD_BUTTON_BACK;
 			ctmp = APP_IsPressConKey(pl, &conkey);
 			break;
 
 		case APP_BUTTON_PAUSE:
 			conkey.type = APP_CONKEY_BUTTON;
-			conkey.index = SDL_CONTROLLER_BUTTON_START;
+			conkey.index = SDL_GAMEPAD_BUTTON_START;
 			ctmp = APP_IsPressConKey(pl, &conkey);
 			break;
 
@@ -15934,13 +15934,13 @@ int32_t getPushState(int32_t player, APP_Button key) { // パッドボタン割�
 		switch (key) {
 		case APP_BUTTON_GIVE_UP:
 			conkey.type = APP_CONKEY_BUTTON;
-			conkey.index = SDL_CONTROLLER_BUTTON_BACK;
+			conkey.index = SDL_GAMEPAD_BUTTON_BACK;
 			ctmp = APP_IsPushConKey(pl, &conkey);
 			break;
 
 		case APP_BUTTON_PAUSE:
 			conkey.type = APP_CONKEY_BUTTON;
-			conkey.index = SDL_CONTROLLER_BUTTON_START;
+			conkey.index = SDL_GAMEPAD_BUTTON_START;
 			ctmp = APP_IsPushConKey(pl, &conkey);
 			break;
 
@@ -15988,38 +15988,38 @@ int IsPressMenu(int32_t player, APP_Button button, APP_InputType type)
 		case APP_BUTTON_UP:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 3 };
 			pushed = APP_IsPressConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_UP };
 			return pushed || APP_IsPressConKey(player, &key);
 		case APP_BUTTON_DOWN:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 2 };
 			pushed = APP_IsPressConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_DOWN };
 			return pushed || APP_IsPressConKey(player, &key);
 		case APP_BUTTON_LEFT:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 1 };
 			pushed = APP_IsPressConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_LEFT };
 			return pushed || APP_IsPressConKey(player, &key);
 		case APP_BUTTON_RIGHT:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 0 };
 			pushed = APP_IsPressConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_RIGHT };
 			return pushed || APP_IsPressConKey(player, &key);
 		case APP_BUTTON_A:
 			key.type = APP_CONKEY_BUTTON;
-			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
-			else key.index = SDL_CONTROLLER_BUTTON_A;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_GAMEPAD_BUTTON_EAST;
+			else key.index = SDL_GAMEPAD_BUTTON_SOUTH;
 			return APP_IsPressConKey(player, &key);
 		case APP_BUTTON_B:
 			key.type = APP_CONKEY_BUTTON;
-			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
-			else key.index = SDL_CONTROLLER_BUTTON_B;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_GAMEPAD_BUTTON_SOUTH;
+			else key.index = SDL_GAMEPAD_BUTTON_EAST;
 			return APP_IsPressConKey(player, &key);
 			break;
-		case APP_BUTTON_C: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return APP_IsPressConKey(player, &key);
-		case APP_BUTTON_D: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return APP_IsPressConKey(player, &key);
-		case APP_BUTTON_GIVE_UP: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return APP_IsPressConKey(player, &key);
-		case APP_BUTTON_PAUSE: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_C: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_D: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_NORTH; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_GIVE_UP: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_BACK; return APP_IsPressConKey(player, &key);
+		case APP_BUTTON_PAUSE: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_START; return APP_IsPressConKey(player, &key);
 		default: return 0;
 		}
 		break;
@@ -16051,38 +16051,38 @@ int IsPushMenu(int32_t player, APP_Button button, APP_InputType type)
 		case APP_BUTTON_UP:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 3 };
 			pushed = APP_IsPushConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_UP };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_UP };
 			return pushed || APP_IsPushConKey(player, &key);
 		case APP_BUTTON_DOWN:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 2 };
 			pushed = APP_IsPushConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_DOWN };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_DOWN };
 			return pushed || APP_IsPushConKey(player, &key);
 		case APP_BUTTON_LEFT:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 1 };
 			pushed = APP_IsPushConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_LEFT };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_LEFT };
 			return pushed || APP_IsPushConKey(player, &key);
 		case APP_BUTTON_RIGHT:
 			key = (APP_ConKey) { .type = APP_CONKEY_AXIS, .index = 0 };
 			pushed = APP_IsPushConKey(player, &key);
-			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT };
+			key = (APP_ConKey) { .type = APP_CONKEY_BUTTON, .index = SDL_GAMEPAD_BUTTON_DPAD_RIGHT };
 			return pushed || APP_IsPushConKey(player, &key);
 		case APP_BUTTON_A:
 			key.type = APP_CONKEY_BUTTON;
-			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_B;
-			else key.index = SDL_CONTROLLER_BUTTON_A;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_GAMEPAD_BUTTON_EAST;
+			else key.index = SDL_GAMEPAD_BUTTON_SOUTH;
 			return APP_IsPushConKey(player, &key);
 		case APP_BUTTON_B:
 			key.type = APP_CONKEY_BUTTON;
-			if (type == APP_INPUT_NINTENDO) key.index = SDL_CONTROLLER_BUTTON_A;
-			else key.index = SDL_CONTROLLER_BUTTON_B;
+			if (type == APP_INPUT_NINTENDO) key.index = SDL_GAMEPAD_BUTTON_SOUTH;
+			else key.index = SDL_GAMEPAD_BUTTON_EAST;
 			return APP_IsPushConKey(player, &key);
 			break;
-		case APP_BUTTON_C: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; return APP_IsPushConKey(player, &key);
-		case APP_BUTTON_D: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_Y; return APP_IsPushConKey(player, &key);
-		case APP_BUTTON_GIVE_UP: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_BACK; return APP_IsPushConKey(player, &key);
-		case APP_BUTTON_PAUSE: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_START; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_C: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_D: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_NORTH; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_GIVE_UP: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_BACK; return APP_IsPushConKey(player, &key);
+		case APP_BUTTON_PAUSE: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_START; return APP_IsPushConKey(player, &key);
 		default: return 0;
 		}
 		break;
@@ -16159,9 +16159,9 @@ int IsPressPrompt(APP_Prompt prompt)
 	case APP_INPUT_KEYBOARD:
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-		case APP_PROMPT_CANCEL: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-		case APP_PROMPT_RETRY: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case APP_PROMPT_OK: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL));
+		case APP_PROMPT_CANCEL: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE, NULL));
+		case APP_PROMPT_RETRY: return APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_DELETE, NULL));
 		default: return 0;
 		}
 	#endif
@@ -16171,9 +16171,9 @@ int IsPressPrompt(APP_Prompt prompt)
 		APP_ConKey key;
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_SOUTH; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_EAST; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; break;
 		default: return 0;
 		}
 		return IsPressConTypeKey(APP_INPUT_XBOX, &key);
@@ -16183,9 +16183,9 @@ int IsPressPrompt(APP_Prompt prompt)
 		APP_ConKey key;
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_SOUTH; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_EAST; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; break;
 		default: return 0;
 		}
 		return IsPressConTypeKey(APP_INPUT_PLAYSTATION, &key);
@@ -16195,9 +16195,9 @@ int IsPressPrompt(APP_Prompt prompt)
 		APP_ConKey key;
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_EAST; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_SOUTH; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; break;
 		default: break;
 		}
 		return IsPressConTypeKey(APP_INPUT_NINTENDO, &key);
@@ -16232,9 +16232,9 @@ int IsPushPrompt(APP_Prompt prompt)
 	case APP_INPUT_KEYBOARD:
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN));
-		case APP_PROMPT_CANCEL: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE));
-		case APP_PROMPT_RETRY: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE));
+		case APP_PROMPT_OK: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL));
+		case APP_PROMPT_CANCEL: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_BACKSPACE, NULL));
+		case APP_PROMPT_RETRY: return APP_IsPushKey(SDL_GetScancodeFromKey(SDLK_DELETE, NULL));
 		default: return 0;
 		}
 	#endif
@@ -16244,9 +16244,9 @@ int IsPushPrompt(APP_Prompt prompt)
 		APP_ConKey key;
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_SOUTH; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_EAST; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; break;
 		default: return 0;
 		}
 		return IsPushConTypeKey(APP_INPUT_XBOX, &key);
@@ -16256,9 +16256,9 @@ int IsPushPrompt(APP_Prompt prompt)
 		APP_ConKey key;
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_SOUTH; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_EAST; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; break;
 		default: return 0;
 		}
 		return IsPushConTypeKey(APP_INPUT_PLAYSTATION, &key);
@@ -16268,9 +16268,9 @@ int IsPushPrompt(APP_Prompt prompt)
 		APP_ConKey key;
 		switch (prompt)
 		{
-		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_B; break;
-		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_A; break;
-		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_CONTROLLER_BUTTON_X; break;
+		case APP_PROMPT_OK: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_EAST; break;
+		case APP_PROMPT_CANCEL: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_SOUTH; break;
+		case APP_PROMPT_RETRY: key.type = APP_CONKEY_BUTTON; key.index = SDL_GAMEPAD_BUTTON_WEST; break;
 		default: break;
 		}
 		return IsPushConTypeKey(APP_INPUT_NINTENDO, &key);
@@ -16285,7 +16285,7 @@ int IsPushPrompt(APP_Prompt prompt)
 #ifdef APP_ENABLE_KEYBOARD
 void updateEscapeFrames() {
 	lastEscapeFrames = escapeFrames;
-	escapeFrames = APP_GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE));
+	escapeFrames = APP_GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL));
 }
 #endif
 
@@ -16787,7 +16787,7 @@ void initialize(void) {
 		setDrawRate(1);
 	}
 
-	LoadGraphic("loading.png", 88, 0);		// Loading表示
+	LoadGraphic("loading.png", 88);		// Loading表示
 		i = APP_Rand(5);
 	if ( getDrawRate() != 1 )
 		j = APP_Rand(2);
@@ -16881,32 +16881,31 @@ void initialize(void) {
 
 /* グラフィック読み込み */
 // initializeから独立 #1.60c7o5
-// players : プレイする人数(maxPlayの代わり)
-void LoadGraphic(const char *nameStr, int32_t p1, int32_t p2) {
+void LoadGraphic(const char *nameStr, int32_t plane) {
 	if ( getDrawRate() == 1 )
 		sprintf(string[0], "res/graphics/lowDetail/%s", nameStr);
 	else
 		sprintf(string[0], "res/graphics/highDetail/%s", nameStr);
 
-	APP_LoadBitmap(string[0], p1, p2);
+	APP_LoadBitmap(string[0], plane);
 }
 
 void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
-		LoadGraphic("title.png", 8, 0);
+		LoadGraphic("title.png", 8);
 		if ( getDrawRate() == 1 ){
-			APP_LoadBitmap("res/graphics/title/logo_low.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/logo_low.png", 7);
 		}else{
-			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7);
 		}
 		APP_SetColorKeyRGB(7,0,0,0);
 	}else{					//動画
 		if ( getDrawRate() == 1 ){
-			APP_LoadBitmap("res/graphics/title/tmov_low.png", 8,0);
-			APP_LoadBitmap("res/graphics/title/logo_low.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/tmov_low.png", 8);
+			APP_LoadBitmap("res/graphics/title/logo_low.png", 7);
 		}else{
-			APP_LoadBitmap("res/graphics/title/tmov_hi.png" , 8,0);
-			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7,0);
+			APP_LoadBitmap("res/graphics/title/tmov_hi.png" , 8);
+			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7);
 		}
 		APP_SetColorKeyRGB(7,0,0,0);
 	}
@@ -16920,7 +16919,7 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/bg/highDetail/%s", nameStr);
 
-	APP_LoadBitmap(string[0], p1, p2);
+	APP_LoadBitmap(string[0], p1);
 }
 
 void loadGraphics(int32_t players) {
@@ -16928,31 +16927,31 @@ void loadGraphics(int32_t players) {
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン0にメダルを読み込み #1.60c7m9 */
-		LoadGraphic("medal.png", 0, 0);
+		LoadGraphic("medal.png", 0);
 		/* プレーン56にTIメダルを読み込み #1.60c7m9 */
-		LoadGraphic("medal_ti.png", 56, 0);
+		LoadGraphic("medal_ti.png", 56);
 
 		// ブロック絵はプレーン40〜43に移転しました #1.60c7o8
 
 		/* プレーン1にフォントを読み込み */
-		LoadGraphic("hebofont.png", 1, 0);
+		LoadGraphic("hebofont.png", 1);
 		APP_SetColorKeyPos(1, 0, 0);
 
 		/* プレーン2にフィールドを読み込み */
-		LoadGraphic("hebofld.png", 2, 0);
+		LoadGraphic("hebofld.png", 2);
 		APP_SetColorKeyRGB(2,255,255,255);
 
 		/* プレーン3に各種スプライトを読み込み */
-		LoadGraphic("hebospr.png", 3, 0);
+		LoadGraphic("hebospr.png", 3);
 		APP_SetColorKeyRGB(3,0,0,0);
 	//	APP_SetColorKeyPos(3, 0, 0);
 	//	APP_EnableBlendColorKey(3, 1);
 
 		/* プレーン4〜6, 24にフィールド背景を読み込み */
-		LoadGraphic("heboflb1.png", 4, 0);
-		LoadGraphic("heboflb2.png", 5, 0);
-		LoadGraphic("heboflb3.png", 6, 0);
-		LoadGraphic("heboflb0.png", 24, 0);
+		LoadGraphic("heboflb1.png", 4);
+		LoadGraphic("heboflb2.png", 5);
+		LoadGraphic("heboflb3.png", 6);
+		LoadGraphic("heboflb0.png", 24);
 	}
 
 	loadBG(players,0); //背景および半透明処理部を独立 C7T2.5EX
@@ -16970,47 +16969,47 @@ void loadGraphics(int32_t players) {
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* Glyphs for showing game controller buttons */
-		LoadGraphic("hebobtn.png", 23, 0);
+		LoadGraphic("hebobtn.png", 23);
 
 		/* プレーン22に小文字大文字フォントを読み込み #1.60c7o4 */
-		LoadGraphic("hebofont4.png", 22, 0);
+		LoadGraphic("hebofont4.png", 22);
 
 		/* プレーン25にモード選択時のメッセージを読み込み  */
-		LoadGraphic("text.png", 25, 0);
+		LoadGraphic("text.png", 25);
 
 		APP_SetColorKeyRGB(25, 0, 0, 0);
 
 		/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
-		LoadGraphic("grade.png", 26, 0);
+		LoadGraphic("grade.png", 26);
 		APP_SetColorKeyRGB(26,255,0,255);
 
 		/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
-		LoadGraphic("mirror_effect_TAP.png", 27, 0);
+		LoadGraphic("mirror_effect_TAP.png", 27);
 		//APP_SetColorKeyRGB(27,255,0,255);
 
 		/* プレーン28にアイテム名を読み込み #1.60c7o4 */
-		LoadGraphic("item.png", 28, 0);
+		LoadGraphic("item.png", 28);
 		APP_SetColorKeyRGB(28,255,0,255);
 
 		/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
-		LoadGraphic("guide.png", 29, 0);
+		LoadGraphic("guide.png", 29);
 		APP_SetColorKeyRGB(29,0,0,0);
 
 		/* プレーン31にフォント(大)を読み込み */
-		LoadGraphic("hebofont3.png", 31, 0);
+		LoadGraphic("hebofont3.png", 31);
 		APP_SetColorKeyRGB(31,0,0,0);
 	}
 
 	/* ブロック消去エフェクトを読み込み */
 	if(reinit && breakti) {
-		LoadGraphic("break0.png", 32, 0);
-		LoadGraphic("break1.png", 33, 0);
-		LoadGraphic("break2.png", 34, 0);
-		LoadGraphic("break3.png", 35, 0);
-		LoadGraphic("break4.png", 36, 0);
-		LoadGraphic("break5.png", 37, 0);
-		LoadGraphic("break6.png", 38, 0);
-		LoadGraphic("break7.png", 39, 0);
+		LoadGraphic("break0.png", 32);
+		LoadGraphic("break1.png", 33);
+		LoadGraphic("break2.png", 34);
+		LoadGraphic("break3.png", 35);
+		LoadGraphic("break4.png", 36);
+		LoadGraphic("break5.png", 37);
+		LoadGraphic("break6.png", 38);
+		LoadGraphic("break7.png", 39);
 		APP_SetColorKeyRGB(32,   0, 0,   0);
 		APP_SetColorKeyRGB(33,   0, 0,   0);
 		APP_SetColorKeyRGB(34,   0, 0,   0);
@@ -17020,14 +17019,14 @@ void loadGraphics(int32_t players) {
 		APP_SetColorKeyRGB(38,   0, 0,   0);
 		APP_SetColorKeyRGB(39,   0, 0,   0);
 	} else if (reinit) {
-		LoadGraphic("break0_tap.png", 32, 0); // 黒ブロック追加 #1.60c7i5
-		LoadGraphic("break1_tap.png", 33, 0);
-		LoadGraphic("break2_tap.png", 34, 0);
-		LoadGraphic("break3_tap.png", 35, 0);
-		LoadGraphic("break4_tap.png", 36, 0);
-		LoadGraphic("break5_tap.png", 37, 0);
-		LoadGraphic("break6_tap.png", 38, 0);
-		LoadGraphic("break7_tap.png", 39, 0);
+		LoadGraphic("break0_tap.png", 32); // 黒ブロック追加 #1.60c7i5
+		LoadGraphic("break1_tap.png", 33);
+		LoadGraphic("break2_tap.png", 34);
+		LoadGraphic("break3_tap.png", 35);
+		LoadGraphic("break4_tap.png", 36);
+		LoadGraphic("break5_tap.png", 37);
+		LoadGraphic("break6_tap.png", 38);
+		LoadGraphic("break7_tap.png", 39);
 		APP_SetColorKeyRGB(32, 255, 0, 255);
 		APP_SetColorKeyRGB(33, 255, 0, 255);
 		APP_SetColorKeyRGB(34, 255, 0, 255);
@@ -17040,30 +17039,30 @@ void loadGraphics(int32_t players) {
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
-		LoadGraphic("heboblk0.png", 40, 0);	// TGM
-		LoadGraphic("heboblk1.png", 41, 0);	// TI & ARS & ARS2
-		LoadGraphic("heboblk2.png", 42, 0);	// WORLD & WORLD2
-		LoadGraphic("heboblk3.png", 43, 0);	// WORLD3
+		LoadGraphic("heboblk0.png", 40);	// TGM
+		LoadGraphic("heboblk1.png", 41);	// TI & ARS & ARS2
+		LoadGraphic("heboblk2.png", 42);	// WORLD & WORLD2
+		LoadGraphic("heboblk3.png", 43);	// WORLD3
 
 		/* プレーン44にミッションモード用画像を読み込み */
-		LoadGraphic("heboris_road.png", 44, 0);
+		LoadGraphic("heboris_road.png", 44);
 		APP_SetColorKeyRGB(44, 0, 0, 0);
 
 		/* プレーン45にライン強制消去用画像を読み込み */
-		LoadGraphic("del_field.png", 45, 0);
+		LoadGraphic("del_field.png", 45);
 		APP_SetColorKeyRGB(45, 0, 0, 0);
 
 		/* プレーン46にプラチナブロックとアイテム絵を読み込み */
-		LoadGraphic("heboblk_sp.png", 46, 0);
+		LoadGraphic("heboblk_sp.png", 46);
 
 		/* プレーン47〜53に花火を読み込み */
-		LoadGraphic("hanabi_red.png",       47, 0);
-		LoadGraphic("hanabi_orange.png",    48, 0);
-		LoadGraphic("hanabi_yellow.png",    49, 0);
-		LoadGraphic("hanabi_green.png",     50, 0);
-		LoadGraphic("hanabi_waterblue.png", 51, 0);
-		LoadGraphic("hanabi_blue.png",      52, 0);
-		LoadGraphic("hanabi_purple.png",    53, 0);
+		LoadGraphic("hanabi_red.png",       47);
+		LoadGraphic("hanabi_orange.png",    48);
+		LoadGraphic("hanabi_yellow.png",    49);
+		LoadGraphic("hanabi_green.png",     50);
+		LoadGraphic("hanabi_waterblue.png", 51);
+		LoadGraphic("hanabi_blue.png",      52);
+		LoadGraphic("hanabi_purple.png",    53);
 		APP_SetColorKeyRGB(47, 0, 0, 0);
 		APP_SetColorKeyRGB(48, 0, 0, 0);
 		APP_SetColorKeyRGB(49, 0, 0, 0);
@@ -17073,21 +17072,21 @@ void loadGraphics(int32_t players) {
 		APP_SetColorKeyRGB(53, 0, 0, 0);
 
 		/* プレーン54にアイテムゲージを読み込み */
-		LoadGraphic("item_guage.png",       54, 0);
+		LoadGraphic("item_guage.png",       54);
 		APP_SetColorKeyRGB(54, 255, 0, 255);
 
 		/* プレーン55に回転ルール性能指標を読み込み */
-		LoadGraphic("rot.png",              55, 0);
+		LoadGraphic("rot.png",              55);
 		APP_SetColorKeyRGB(55, 255, 0, 255);
 
 		/* プラチナブロック消去エフェクトを読み込み */
-		LoadGraphic("perase1.png", 57, 0);
-		LoadGraphic("perase2.png", 58, 0);
-		LoadGraphic("perase3.png", 59, 0);
-		LoadGraphic("perase4.png", 60, 0);
-		LoadGraphic("perase5.png", 61, 0);
-		LoadGraphic("perase6.png", 62, 0);
-		LoadGraphic("perase7.png", 63, 0);
+		LoadGraphic("perase1.png", 57);
+		LoadGraphic("perase2.png", 58);
+		LoadGraphic("perase3.png", 59);
+		LoadGraphic("perase4.png", 60);
+		LoadGraphic("perase5.png", 61);
+		LoadGraphic("perase6.png", 62);
+		LoadGraphic("perase7.png", 63);
 
 		APP_SetColorKeyRGB(57, 0, 0, 0);
 		APP_SetColorKeyRGB(58, 0, 0, 0);
@@ -17097,16 +17096,16 @@ void loadGraphics(int32_t players) {
 		APP_SetColorKeyRGB(62, 0, 0, 0);
 		APP_SetColorKeyRGB(63, 0, 0, 0);
 
-		LoadGraphic("heboblk0B.png", 64, 0);
+		LoadGraphic("heboblk0B.png", 64);
 
-		LoadGraphic("shootingstar.png", 65, 0);
+		LoadGraphic("shootingstar.png", 65);
 		APP_SetColorKeyRGB(65, 0, 0, 0);
 
 		/* TI式ミラー演出画像を読み込み */
-		LoadGraphic("fldmirror01.png", 66, 0);
-		LoadGraphic("fldmirror02.png", 67, 0);
-		LoadGraphic("fldmirror03.png", 68, 0);
-		LoadGraphic("fldmirror04.png", 69, 0);
+		LoadGraphic("fldmirror01.png", 66);
+		LoadGraphic("fldmirror02.png", 67);
+		LoadGraphic("fldmirror03.png", 68);
+		LoadGraphic("fldmirror04.png", 69);
 
 		APP_SetColorKeyRGB(66, 0, 0, 0);
 		APP_SetColorKeyRGB(67, 0, 0, 0);
@@ -17114,53 +17113,53 @@ void loadGraphics(int32_t players) {
 		APP_SetColorKeyRGB(69, 0, 0, 0);
 
 		/* スタッフロールの画像を読み込み */
-		LoadGraphic("staffroll.png", 70, 0);
+		LoadGraphic("staffroll.png", 70);
 		APP_SetColorKeyRGB(70, 0, 0, 0);
 
-		LoadGraphic("heboblk4_5.png", 73, 0);
+		LoadGraphic("heboblk4_5.png", 73);
 
-		LoadGraphic("fade.png", 72, 0);
+		LoadGraphic("fade.png", 72);
 		APP_SetColorKeyRGB(72, 255, 255, 255);
 
-		LoadGraphic("heboblk_old.png", 74, 0);
+		LoadGraphic("heboblk_old.png", 74);
 
-		LoadGraphic("tomoyo_eh_fade.png", 75, 0);
+		LoadGraphic("tomoyo_eh_fade.png", 75);
 		APP_SetColorKeyRGB(75, 255, 0, 255);
 
-		LoadGraphic("heboblk_big.png", 76, 0);
-		LoadGraphic("line.png", 77, 0);//ランキングのライン
+		LoadGraphic("heboblk_big.png", 76);
+		LoadGraphic("line.png", 77);//ランキングのライン
 		APP_SetColorKeyRGB(77, 0, 0, 0);
 
-		LoadGraphic("laser.png", 78, 0);
+		LoadGraphic("laser.png", 78);
 		APP_SetColorKeyRGB(78, 255, 0, 255);
 
-		LoadGraphic("shuffle_field_effect.png", 79, 0);
+		LoadGraphic("shuffle_field_effect.png", 79);
 		APP_SetColorKeyRGB(79, 255, 0, 255);
 
-		LoadGraphic("heboblk6.png", 80, 0);
+		LoadGraphic("heboblk6.png", 80);
 
-		LoadGraphic("text2.png", 81, 0);
+		LoadGraphic("text2.png", 81);
 		APP_SetColorKeyRGB(81, 0, 0, 0);
 
-		LoadGraphic("itemerase.png", 82, 0);
+		LoadGraphic("itemerase.png", 82);
 		APP_SetColorKeyRGB(82,0,0,0);
 
-		LoadGraphic("heboblk_sp2.png", 83, 0);
+		LoadGraphic("heboblk_sp2.png", 83);
 
-		LoadGraphic("rotstext.png", 84, 0);
+		LoadGraphic("rotstext.png", 84);
 		APP_SetColorKeyRGB(84, 0, 0, 0);
-		LoadGraphic("hebofont5.png", 85, 0);
+		LoadGraphic("hebofont5.png", 85);
 		APP_SetColorKeyRGB(85, 172, 136, 199);
 
-		LoadGraphic("gamemodefont.png", 86, 0);
+		LoadGraphic("gamemodefont.png", 86);
 		APP_SetColorKeyRGB(86, 0, 0, 0);
 
-		LoadGraphic("rollmark.png", 87, 0);
+		LoadGraphic("rollmark.png", 87);
 		APP_SetColorKeyRGB(87, 0, 0, 0);
 
 		//プレーン88番使用中…
 
-		LoadGraphic("itemGra.png", 89, 0);
+		LoadGraphic("itemGra.png", 89);
 	}
 
 //	APP_EnableBlendColorKey(85, 1);

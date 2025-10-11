@@ -163,7 +163,7 @@ static const Uint8* BDF_NextUTF8Encoding(const Uint8* text, Uint32* encoding) {
 	}
 }
 
-static int BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** line, char* end, int rshift) {
+static bool BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** line, char* end, int rshift) {
 	BDF_Glyph glyph;
 	char buffer[BDF_LINE_MAX];
 	Uint32 y;
@@ -171,7 +171,7 @@ static int BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** l
 	/* Do not load characters that have already been loaded */
 	glyph.encoding = encoding;
 	if (hashmap_get(font->glyphs, &glyph)) {
-		return 0;
+		return true;
 	}
 
 	glyph.width = width;
@@ -179,7 +179,7 @@ static int BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** l
 	glyph.pixels = SDL_malloc(sizeof(Uint32) * font->size);
 	if (!glyph.pixels) {
 		SDL_SetError("Failed to allocate memory for a character's pixels of a font.");
-		return -1;
+		return false;
 	}
 
 	for (y = 0; y < font->size; y++) {
@@ -188,16 +188,16 @@ static int BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** l
 	}
 
 	if (!hashmap_set(font->glyphs, &glyph)) {
-		return 0;
+		return true;
 	}
 	else {
 		SDL_SetError("Failed to insert a character into a font's hashmap.");
 		SDL_free(glyph.pixels);
-		return -1;
+		return false;
 	}
 }
 
-int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
+bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 	char* src_data;
 	char* end;
 	char* line;
@@ -208,25 +208,25 @@ int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
 	int s;
 	char buffer[BDF_LINE_MAX];
 	Sint64 src_size;
-	SDL_bool found_size;
-	SDL_bool found_encoding;
-	SDL_bool found_width;
+	bool found_size;
+	bool found_encoding;
+	bool found_width;
 
-	src_size = SDL_RWsize(src);
+	src_size = SDL_GetIOSize(src);
 	src_data = SDL_malloc(src_size);
-	if (!src_data) return 1;
-	if (SDL_RWread(src, src_data, src_size, 1) == 0) {
+	if (!src_data) return false;
+	if (SDL_ReadIO(src, src_data, src_size) == 0) {
 		SDL_SetError("Failed to read the font data: %s", SDL_GetError());
 		SDL_free(src_data);
-		return -1;
+		return false;
 	}
 
 	end = src_data + src_size;
 	line = src_data;
 
-	found_size = SDL_FALSE;
-	found_encoding = SDL_FALSE;
-	found_width = SDL_FALSE;
+	found_size = false;
+	found_encoding = false;
+	found_width = false;
 	while (BDF_GetLine(buffer, sizeof(buffer), &line, end) != NULL) {
 		if (SDL_strstr(buffer, "SIZE") == buffer) {
 			if (found_size) {
@@ -244,15 +244,15 @@ int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
 			if (font->size == 0) {
 				font->size = (int)font_size;
 			}
-			found_size = SDL_TRUE;
+			found_size = true;
 		}
 		else if (SDL_strstr(buffer, "STARTCHAR") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
 				return SDL_SetError("SIZE line not found before a STARTCHAR line.");
 			}
-			found_encoding = SDL_FALSE;
-			found_width = SDL_FALSE;
+			found_encoding = false;
+			found_width = false;
 		}
 		else if (SDL_strstr(buffer, "ENCODING") == buffer) {
 			if (!found_size) {
@@ -267,7 +267,7 @@ int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
 				SDL_free(src_data);
 				return SDL_SetError("Character encoding of %ld is invalid, must be nonnegative.", encoding);
 			}
-			found_encoding = SDL_TRUE;
+			found_encoding = true;
 		}
 		else if (SDL_strstr(buffer, "DWIDTH") == buffer) {
 			if (!found_size) {
@@ -282,7 +282,7 @@ int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
 				SDL_free(src_data);
 				return SDL_SetError("Character width of %ld is invalid, must be between 0 and %d.", width, INT_MAX);
 			}
-			found_width = SDL_TRUE;
+			found_width = true;
 		}
 		else if (SDL_strstr(buffer, "BITMAP") == buffer) {
 			int rshift;
@@ -292,7 +292,7 @@ int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
 			}
 			for (s = 8; s < width; s += 8) {}
 			rshift = s - width;
-			if (BDF_ParseChar(font, (Uint32)encoding, width, &line, end, rshift) < 0) {
+			if (!BDF_ParseChar(font, (Uint32)encoding, width, &line, end, rshift)) {
 				SDL_free(src_data);
 				return SDL_SetError("Failed to parse a font character: %s", SDL_GetError());
 			}
@@ -300,10 +300,10 @@ int APP_AddBDFFont(APP_BDFFont* font, SDL_RWops* src) {
 	}
 
 	SDL_free(src_data);
-	return 0;
+	return true;
 }
 
-APP_BDFFont* APP_OpenBDFFont(SDL_RWops* src) {
+APP_BDFFont* APP_OpenBDFFont(SDL_IOStream * src) {
 	APP_BDFFont* font;
 
 	font = SDL_malloc(sizeof(APP_BDFFont));
@@ -324,7 +324,7 @@ APP_BDFFont* APP_OpenBDFFont(SDL_RWops* src) {
 	if (src == NULL) {
 		return font;
 	}
-	else if (APP_AddBDFFont(font, src) < 0) {
+	else if (!APP_AddBDFFont(font, src)) {
 		SDL_free(font);
 		SDL_SetError("Failed to parse the font: %s", SDL_GetError());
 		return NULL;
@@ -429,57 +429,23 @@ int APP_GetBDFTextDimensions(APP_BDFFont* font, const char *text, int* w, int* h
 	return 0;
 }
 
-int APP_PutBDFPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color) {
+bool APP_PutBDFPixelSurface(SDL_Surface *s, int x, int y, float subx, float suby, SDL_Color color) {
 	(void)subx;
 	(void)suby;
-	Uint8* p, bpp;
-	Uint32 mapped_color;
-
-	if (SDL_MUSTLOCK(s)) {
-		if (SDL_LockSurface(s) < 0) {
-			return SDL_SetError("Failed to lock surface for putting a pixel.");
-		}
-	}
-
-	bpp = s->format->BytesPerPixel;
-	if (bpp != 1 && bpp != 2 && bpp != 4) {
-		if(SDL_MUSTLOCK(s)){
-			SDL_UnlockSurface(s);
-		}
-		return SDL_SetError("bpp of surface is not supported (must be 1, 2, or 4).");
-	}
-	p = (Uint8*)(s->pixels) + y * s->pitch + x * bpp;
-	mapped_color = SDL_MapRGB(s->format, color.r, color.g, color.b);
-
-	switch(bpp){
-	case 1:
-		*((Uint8*)p) = (Uint8)mapped_color;
-		break;
-	case 2:
-		*((Uint16*)p) = (Uint16)mapped_color;
-		break;
-	case 4:
-		*((Uint32*)p) = mapped_color;
-		break;
-	}
-
-	if(SDL_MUSTLOCK(s)){
-		SDL_UnlockSurface(s);
-	}
-	return 0;
+	return SDL_WriteSurfacePixel(s, x, y, color.r, color.g, color.b, color.a);
 }
 
-int APP_PutBDFPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
+bool APP_PutBDFPixelRenderer(SDL_Renderer *s, int x, int y, float subx, float suby, SDL_Color pixel) {
 	Uint8 r, g, b, a;
 
-	if (SDL_GetRenderDrawColor(s, &r, &g, &b, &a) < 0) return -1;
-	if (SDL_SetRenderDrawColor(s, pixel.r, pixel.g, pixel.b, pixel.a) < 0) return -1;
-	if (SDL_RenderDrawPointF(s, subx + x, suby + y) < 0) return -1;
-	if (SDL_SetRenderDrawColor(s, r, g, b, a) < 0) return -1;
-	return 0;
+	return
+		SDL_GetRenderDrawColor(s, &r, &g, &b, &a) &&
+		SDL_SetRenderDrawColor(s, pixel.r, pixel.g, pixel.b, pixel.a) &&
+		SDL_RenderPoint(s, subx + x, suby + y) &&
+		SDL_SetRenderDrawColor(s, r, g, b, a);
 }
 
-int APP_PutBDFText(APP_BDFFont* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, APP_PutBDFPixelCallback put_pixel) {
+bool APP_PutBDFText(APP_BDFFont* font, int dx, int dy, float subx, float suby, void* dst, int dw, int dh, const char* txt, SDL_Color fg, APP_PutBDFPixelCallback put_pixel) {
 	int cx, cy;
 	const Uint8* p;
 	Uint32 encoding;
@@ -521,8 +487,8 @@ int APP_PutBDFText(APP_BDFFont* font, int dx, int dy, float subx, float suby, vo
 		for (y = miny; y < maxy; y++) {
 			for (x = minx; x < maxx; x++) {
 				if (got_glyph->pixels[y] & (1 << (got_glyph->width - x - 1))) {
-					if (put_pixel(dst, cx + x, cy + y, subx, suby, fg) < 0) {
-						return -1;
+					if (!put_pixel(dst, cx + x, cy + y, subx, suby, fg)) {
+						return false;
 					}
 				}
 			}
@@ -530,16 +496,17 @@ int APP_PutBDFText(APP_BDFFont* font, int dx, int dy, float subx, float suby, vo
 		cx += got_glyph->width;
 	}
 
-	return 0;
+	return true;
 }
 
-int APP_PutBDFTextSurface(APP_BDFFont* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
+bool APP_PutBDFTextSurface(APP_BDFFont* font, int dx, int dy, float subx, float suby, SDL_Surface* dst, const char* txt, SDL_Color fg) {
 	return APP_PutBDFText(font, dx, dy, subx, suby, dst, dst->w, dst->h, txt, fg, (APP_PutBDFPixelCallback)APP_PutBDFPixelSurface);
 }
 
-int APP_PutBDFTextRenderer(APP_BDFFont* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
+bool APP_PutBDFTextRenderer(APP_BDFFont* font, int dx, int dy, float subx, float suby, SDL_Renderer* dst, const char* txt, SDL_Color fg) {
 	int dw, dh;
-	SDL_RenderGetLogicalSize(dst, &dw, &dh);
+	SDL_RendererLogicalPresentation mode;
+	SDL_GetRenderLogicalPresentation(dst, &dw, &dh, &mode);
 	return APP_PutBDFText(font, dx, dy, subx, suby, dst, dw, dh, txt, fg, (APP_PutBDFPixelCallback)APP_PutBDFPixelRenderer);
 }
 
@@ -567,34 +534,37 @@ SDL_Surface* APP_CreateBDFTextSurface(APP_BDFFont* font, const char* text, SDL_C
 		return NULL;
 	}
 
-	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(0, w, h, depth, format);
+	SDL_Surface* surface = SDL_CreateSurface(w, h, format);
 	if (!surface) {
 		return NULL;
 	}
 
-	const Uint32 alpha = SDL_MapRGBA(surface->format, 0x00, 0x00, 0x00, SDL_ALPHA_TRANSPARENT);
-	if (SDL_FillRect(surface, NULL, alpha) < 0) {
-		SDL_FreeSurface(surface);
+	if (!SDL_ClearSurface(surface, 0.0f, 0.0f, 0.0f, SDL_ALPHA_TRANSPARENT_FLOAT)) {
+		SDL_DestroySurface(surface);
 		return NULL;
 	}
 
-	if (APP_PutBDFTextSurface(font, 0, 0, 0.0f, 0.0f, surface, text, fg) < 0) {
-		SDL_FreeSurface(surface);
+	if (!APP_PutBDFTextSurface(font, 0, 0, 0.0f, 0.0f, surface, text, fg)) {
+		SDL_DestroySurface(surface);
 		return NULL;
 	}
 
 	return surface;
 }
 
-SDL_Texture* APP_CreateBDFTextTexture(APP_BDFFont* font, SDL_Renderer* renderer, const char* text, SDL_Color fg, int depth) {
+SDL_Texture* APP_CreateBDFTextTexture(APP_BDFFont* font, SDL_Renderer* renderer, const char* text, SDL_Color fg, int depth, SDL_ScaleMode mode) {
 	SDL_Surface* surface = APP_CreateBDFTextSurface(font, text, fg, depth);
 	if (!surface) {
 		return NULL;
 	}
 
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
+	SDL_DestroySurface(surface);
 	if (!texture) {
+		return NULL;
+	}
+	if (!SDL_SetTextureScaleMode(texture, mode)) {
+		SDL_DestroyTexture(texture);
 		return NULL;
 	}
 

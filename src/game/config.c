@@ -252,7 +252,7 @@ int32_t LoadConfig(void) {
 
 	#ifdef APP_ENABLE_KEYBOARD
 	for(i = 0; i < 20; i++) {
-		if (cfgbuf[14 + i] == SDL_GetScancodeFromKey(SDLK_ESCAPE)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
+		if (cfgbuf[14 + i] == SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
 		else keyAssign[i] = cfgbuf[14 + i];
 	}
 	#endif
@@ -1427,7 +1427,7 @@ void ConfigMenu() {
 				if(statusc[0] < 10) {
 					printFont(10, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
 					for(i = 0; i < APP_GetMaxKey(); i++) {
-						if(i != SDL_GetScancodeFromKey(SDLK_ESCAPE) && APP_IsPushKey(i)) {
+						if(i != SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL) && APP_IsPushKey(i)) {
 							bool unmapped = true;
 							for (APP_Button button = 0; button < statusc[0]; button++) {
 								if (ncfg[10 + button + pl * 10] == i) {
@@ -2108,7 +2108,7 @@ void ConfigMenu() {
 #endif
 		printFont(2, 5 + MENU_AV_SCALE_MODE, "SCALE MODE  :", (statusc[0] == MENU_AV_SCALE_MODE) * fontc[rots[0]]);
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		if(APP_RenderLevelLowSupported()) printFont(2, 5 + MENU_AV_RENDER_LEVEL, "RENDER LEVEL:", (statusc[0] == MENU_AV_RENDER_LEVEL) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_RENDER_LEVEL, "RENDER LEVEL:", (statusc[0] == MENU_AV_RENDER_LEVEL) * fontc[rots[0]]);
 		if(showScreenModeSetting) printFont(2, 5 + MENU_AV_SCREEN_MODE, "SCREEN MODE :", (statusc[0] == MENU_AV_SCREEN_MODE) * fontc[rots[0]]);
 #endif
 		printFont(2, 5 + MENU_AV_MOVE_SOUND, "MOVE SOUND  :", (statusc[0] == MENU_AV_MOVE_SOUND) * fontc[rots[0]]);
@@ -2159,15 +2159,13 @@ void ConfigMenu() {
 		printFont(15, 5 + MENU_AV_SCALE_MODE, string[0], (statusc[0] == MENU_AV_SCALE_MODE) * (count % 2) * digitc[rots[0]]);
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		if (APP_RenderLevelLowSupported()) {
-			if (ncfg[0] & APP_SCREENMODE_RENDERLEVEL) {
-				sprintf(string[0], "HIGH");
-			}
-			else {
-				sprintf(string[0], "LOW (%s)", ncfg[0] & APP_SCREENMODE_DETAILLEVEL ? "640X480" : "320X240");
-			}
-			printFont(15, 5 + MENU_AV_RENDER_LEVEL, string[0], (statusc[0] == MENU_AV_RENDER_LEVEL) * (count % 2) * digitc[rots[0]]);
+		if (ncfg[0] & APP_SCREENMODE_RENDERLEVEL) {
+			sprintf(string[0], "HIGH");
 		}
+		else {
+			sprintf(string[0], "LOW (%s)", ncfg[0] & APP_SCREENMODE_DETAILLEVEL ? "640X480" : "320X240");
+		}
+		printFont(15, 5 + MENU_AV_RENDER_LEVEL, string[0], (statusc[0] == MENU_AV_RENDER_LEVEL) * (count % 2) * digitc[rots[0]]);
 
 		/* 画面モード */
 		switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
@@ -2183,16 +2181,18 @@ void ConfigMenu() {
 		case APP_SCREENMODE_FULLSCREEN:
 			{
 				SDL_DisplayMode displayMode;
-				SDL_GetDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]), &displayMode);
+				if (!APP_GetDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]), &displayMode)) {
+					APP_Exit(EXIT_FAILURE);
+				}
 				int bpp;
 				Uint32 Rmask, Gmask, Bmask, Amask;
-				if(SDL_PixelFormatEnumToMasks(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))
+				if(SDL_GetMasksForPixelFormat(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))
 				{
-					sprintf(string[0], "%" PRId32 "X%" PRId32 " %" PRId32 "HZ %" PRId32 "BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
+					sprintf(string[0], "%" PRId32 "X%" PRId32 " %.2fHZ %" PRId32 "BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
 				}
 				else
 				{
-					sprintf(string[0], "%" PRId32 "X%" PRId32 " %" PRId32 "HZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
+					sprintf(string[0], "%" PRId32 "X%" PRId32 " %.2fHZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
 				}
 				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (count % 2) * digitc[rots[0]]);
 			}
@@ -2256,7 +2256,6 @@ void ConfigMenu() {
 				int32_t nextChoice = (statusc[0] + m + MENU_AV_MAX) % MENU_AV_MAX;
 				if(m > 0) {
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-					nextChoice +=  nextChoice == MENU_AV_RENDER_LEVEL && !APP_RenderLevelLowSupported();
 					nextChoice +=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
 #endif
 					nextChoice +=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
@@ -2267,7 +2266,6 @@ void ConfigMenu() {
 					nextChoice -=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					nextChoice -=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
-					nextChoice -=  nextChoice == MENU_AV_RENDER_LEVEL && !APP_RenderLevelLowSupported();
 #endif
 				}
 				statusc[0] = (nextChoice + MENU_AV_MAX) % MENU_AV_MAX;
@@ -2321,19 +2319,18 @@ void ConfigMenu() {
 					else if(statusc[0] == MENU_AV_SCREEN_MODE) {
 						switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
 						case APP_SCREENMODE_WINDOW: {
-							SDL_DisplayMode displayMode;
-							SDL_GetDesktopDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), &displayMode);
+							const SDL_DisplayMode* displayMode = SDL_GetDesktopDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
 							int baseW = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 320;
 							int baseH = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 240;
 							int maxMode;
-							if(displayMode.w <= baseW || displayMode.h <= baseH) {
+							if(displayMode->w <= baseW || displayMode->h <= baseH) {
 								maxMode = 1;
 							}
-							else if(displayMode.w > displayMode.h) {
-								maxMode = (displayMode.h / baseH) - (displayMode.h % baseH == 0);
+							else if(displayMode->w > displayMode->h) {
+								maxMode = (displayMode->h / baseH) - (displayMode->h % baseH == 0);
 							}
 							else {
-								maxMode = (displayMode.w / baseW) - (displayMode.w % baseW == 0);
+								maxMode = (displayMode->w / baseW) - (displayMode->w % baseW == 0);
 							}
 							int modeIndex = APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]);
 							modeIndex = (modeIndex + maxMode + m) % maxMode;

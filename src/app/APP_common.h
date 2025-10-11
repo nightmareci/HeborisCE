@@ -2,14 +2,10 @@
 #define APP_common_h_
 
 #include "app/APP_build_config.h"
-#include "SDL.h"
-#include "SDL_image.h"
-#include "SDL_mixer.h"
+#include <SDL3/SDL.h>
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #include <emscripten/html5.h>
-#else
-#include "physfsrwops.h"
 #endif
 #include <stdlib.h>
 #include <time.h>
@@ -25,7 +21,7 @@
 #endif
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include <windows.h>
 #endif
 
 #endif

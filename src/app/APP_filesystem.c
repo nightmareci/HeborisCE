@@ -1,110 +1,21 @@
 #include "APP_filesystem.h"
-#ifndef __EMSCRIPTEN__
-#include "physfsrwops.h"
-#endif
 
-#ifdef __EMSCRIPTEN__
-static char* alloc_strcat_multi(const char* const s, ...) {
-	if (!s) {
-		return NULL;
-	}
-	else {
-		va_list args;
-		va_start(args, s);
-
-		struct str_node;
-		typedef struct str_node {
-			const char* s;
-			size_t length;
-			struct str_node* next;
-		} str_node;
-
-		str_node* head;
-		if ((head = malloc(sizeof(str_node))) == NULL) {
-			abort();
-		}
-
-		*head = (str_node) {
-			.s = s,
-			.length = strlen(s),
-			.next = NULL
-		};
-
-		size_t cat_length = head->length;
-
-		str_node* cur = head;
-		size_t num_nodes = 1u;
-		while (true) {
-			const char* const next_s = va_arg(args, const char*);
-			if (next_s == NULL) {
-				break;
-			}
-
-			if ((cur->next = malloc(sizeof(str_node))) == NULL) {
-				abort();
-			}
-			cur->next->s = next_s;
-			cur->next->length = strlen(next_s);
-			cur->next->next = NULL;
-
-			cat_length += cur->next->length;
-			num_nodes++;
-
-			cur = cur->next;
-		}
-
-		va_end(args);
-
-		char* cat;
-		if ((cat = malloc(cat_length + 1u)) == NULL) {
-			abort();
-		}
-		char* cur_cat = cat;
-		cur = head;
-		for (size_t i = 0u; i < num_nodes; i++) {
-			memcpy(cur_cat, cur->s, cur->length);
-			cur_cat += cur->length;
-			str_node* next = cur->next;
-			free(cur);
-			cur = next;
-		}
-		cat[cat_length] = '\0';
-		return cat;
-	}
-}
-
+static char* APP_BasePath = NULL;
 static char* APP_PrefPath = NULL;
-#endif
 
 bool APP_InitFilesystem(int argc, char** argv) {
-#ifdef __EMSCRIPTEN__
-	char* prefPath = SDL_GetPrefPath(APP_FILESYSTEM_ORG, APP_FILESYSTEM_APP);
-	if ( !prefPath )
+	if ( argc > 1 && SDL_strlen(argv[1]) > 0 )
 	{
-		fprintf(stderr, "Error getting pref path\n");
-	}
-	APP_PrefPath = prefPath;
-
-	return true;
-
-#else
-	if ( !PHYSFS_init(argv[0]) )
-	{
-		fprintf(stderr, "Couldn't initialize file access: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return false;
-	}
-
-	if ( argc > 1 && strlen(argv[1]) > 0 )
-	{
-		char *specifiedPath = argv[1];
-		if ( !PHYSFS_mount(specifiedPath, NULL, 0) )
+		APP_BasePath = SDL_strdup(argv[1]);
+		if ( !APP_BasePath )
 		{
-			fprintf(stderr, "Error mounting specified path \"%s\": %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error duplicating base path string\n");
 			return false;
 		}
-		if ( !PHYSFS_setWriteDir(specifiedPath) )
+		APP_PrefPath = SDL_strdup(argv[1]);
+		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Error setting specified path \"%s\" for writing: %s\n", specifiedPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error duplicating pref path string\n");
 			return false;
 		}
 	}
@@ -112,14 +23,16 @@ bool APP_InitFilesystem(int argc, char** argv) {
 #if APP_FILESYSTEM_TYPE == APP_FILESYSTEM_WORKINGDIR
 	else
 	{
-		if ( !PHYSFS_mount("./", NULL, 0) )
+		APP_BasePath = SDL_GetCurrentDirectory();
+		if ( !APP_BasePath )
 		{
-			fprintf(stderr, "Error mounting working directory: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error getting current directory: %s\n", SDL_GetError());
 			return false;
 		}
-		if ( !PHYSFS_setWriteDir("./") )
+		APP_PrefPath = SDL_strdup(APP_BasePath);
+		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Error setting working directory for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
+			fprintf(stderr, "Error duplicating current directory string\n");
 			return false;
 		}
 	}
@@ -127,89 +40,53 @@ bool APP_InitFilesystem(int argc, char** argv) {
 #elif APP_FILESYSTEM_TYPE == APP_FILESYSTEM_PORTABLE
 	else
 	{
-		char *basePath = SDL_GetBasePath();
+		const char* basePath = SDL_GetBasePath();
 		if ( !basePath )
 		{
 			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
 			return false;
 		}
-		if ( !PHYSFS_mount(basePath, NULL, 0) )
+		APP_BasePath = SDL_strdup(basePath);
+		if ( !APP_BasePath )
 		{
-			fprintf(stderr, "Error mounting base path \"%s\": %s\n", basePath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			free(basePath);
+			fprintf(stderr, "Error duplicating base path string\n");
 			return false;
 		}
-		if ( !PHYSFS_setWriteDir(basePath) )
+		APP_PrefPath = SDL_strdup(APP_BasePath);
+		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Error setting working directory for writing: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(basePath);
+			fprintf(stderr, "Error duplicating base path string\n");
 			return false;
 		}
-		SDL_free(basePath);
 	}
 
 #elif APP_FILESYSTEM_TYPE == APP_FILESYSTEM_INSTALLABLE
 	else
 	{
-		char *basePath = SDL_GetBasePath();
+		const char* basePath = SDL_GetBasePath();
 		if ( !basePath )
 		{
 			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
 			return false;
 		}
-		char* fullBasePath;
-		if ( !(fullBasePath = malloc(strlen(basePath) + strlen(APP_BASE_PATH_APPEND) + 1)) )
-		{
-			fprintf(stderr, "Failed creating full base path.\n");
-			SDL_free(basePath);
+		if (SDL_asprintf(&APP_BasePath, "%s%s", basePath, APP_BASE_PATH_APPEND) < 0) {
+			fprintf(stderr, "Failed creating full base path\n");
 			return false;
 		}
-		sprintf(fullBasePath, "%s%s", basePath, APP_BASE_PATH_APPEND);
-		SDL_free(basePath);
-		if ( !PHYSFS_mount(fullBasePath, NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting full base path \"%s\": %s\n", fullBasePath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			free(fullBasePath);
-			return false;
-		}
-		free(fullBasePath);
-
-		char *prefPath = SDL_GetPrefPath(APP_FILESYSTEM_ORG, APP_FILESYSTEM_APP);
-		if ( !prefPath )
+		APP_PrefPath = SDL_GetPrefPath(APP_FILESYSTEM_ORG, APP_FILESYSTEM_APP);
+		if ( !APP_PrefPath )
 		{
 			fprintf(stderr, "Failed getting pref path: %s\n", SDL_GetError());
 			return false;
 		}
-		if ( !PHYSFS_setWriteDir(prefPath) )
-		{
-			fprintf(stderr, "Error setting pref path \"%s\" for writing: %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(prefPath);
-			return false;
-		}
-		if ( !PHYSFS_mount(prefPath, NULL, 0) )
-		{
-			fprintf(stderr, "Error mounting pref path \"%s\": %s\n", prefPath, PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-			SDL_free(prefPath);
-			return false;
-		}
-		SDL_free(prefPath);
-	}
-
-#elif APP_FILESYSTEM_TYPE == APP_FILESYSTEM_PHYSFS
-	else if ( !PHYSFS_setSaneConfig(APP_FILESYSTEM_ORG, APP_FILESYSTEM_APP, "ZIP", 0, 0) )
-	{
-		fprintf(stderr, "Error setting sane PhysicsFS config: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-		return false;
 	}
 
 #else
-	#error APP_FILESYSTEM_TYPE must be defined as APP_FILESYSTEM_WORKINGDIR, APP_FILESYSTEM_PORTABLE, APP_FILESYSTEM_INSTALLABLE, or APP_FILESYSTEM_PHYSFS.
+	#error APP_FILESYSTEM_TYPE must be defined as APP_FILESYSTEM_WORKINGDIR, APP_FILESYSTEM_PORTABLE, or APP_FILESYSTEM_INSTALLABLE.
 
 #endif
 
 	return true;
-
-#endif
 }
 
 void APP_QuitFilesystem(void) {
@@ -219,23 +96,23 @@ void APP_QuitFilesystem(void) {
 			assert(!err);
 		});
 	});
-	if (APP_PrefPath) {
-		SDL_free(APP_PrefPath);
-		APP_PrefPath = NULL;
-	}
-
-#else
-	if (!PHYSFS_deinit()) {
-		fprintf(stderr, "Failed closing access to files: %s\n", PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()));
-	}
-
 #endif
+
+	SDL_free(APP_BasePath);
+	APP_BasePath = NULL;
+	SDL_free(APP_PrefPath);
+	APP_PrefPath = NULL;
 }
 
 bool APP_CreateDirectory(const char* const directory) {
-	#ifdef __EMSCRIPTEN__
-	char* const prefPathDirectory = alloc_strcat_multi(APP_PrefPath, directory, NULL);
+	char* prefPathDirectory;
+	if (SDL_asprintf(&prefPathDirectory, "%s%s", APP_PrefPath, directory) < 0) {
+		fprintf(stderr, "Failed creating directory string\n");
+		return false;
+	}
 
+	#ifdef __EMSCRIPTEN__
+	// TODO: This might not be needed, SDL_CreateDirectory() might work fine with Emscripten
 	// NOTE: It seems this only really works with one FS.mkdir call in the try
 	// block; putting more than one seems to always cause a fatal error.
 	EM_ASM({
@@ -250,87 +127,114 @@ bool APP_CreateDirectory(const char* const directory) {
 		FS.mount(IDBFS, {}, prefPathDirectory);
 	}, prefPathDirectory);
 
-	free(prefPathDirectory);
+	SDL_free(prefPathDirectory);
 	return true;
 
 	#else
-	if (!PHYSFS_mkdir(directory)) {
+	if (!SDL_CreateDirectory(prefPathDirectory)) {
 		fprintf(stderr, "Failed creating directory \"%s\"\n", directory);
+		SDL_free(prefPathDirectory);
 		return false;
 	}
 	else {
+		SDL_free(prefPathDirectory);
 		return true;
 	}
 
 	#endif
 }
 
-#ifdef __EMSCRIPTEN__
-SDL_RWops* APP_OpenInMode(const char* const filename, const char mode) {
-	const char* mode_str = NULL;
-	bool canWrite = false;
+SDL_IOStream* APP_OpenInMode(const char* const filename, const char* const mode) {
+	char* path;
+	SDL_PathInfo info;
+	SDL_IOStream* file;
 
-	switch (mode) {
-	case 'r':
-		mode_str = "rb";
-		canWrite = false;
-		break;
-	case 'w':
-		mode_str = "wb";
-		canWrite = true;
-		break;
-	case 'a':
-		mode_str = "ab";
-		canWrite = true;
-		break;
-	default:
+	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
 		return NULL;
 	}
-
-	{
-		char* const prefPathFilename = alloc_strcat_multi(APP_PrefPath, filename, NULL);
-		SDL_RWops* const file = SDL_RWFromFile(prefPathFilename, mode_str);
-		free(prefPathFilename);
+	if (!SDL_GetPathInfo(path, &info)) {
+		SDL_free(path);
+		return NULL;
+	}
+	if (info.type == SDL_PATHTYPE_FILE) {
+		file = SDL_IOFromFile(path, mode);
 		if (file) {
+			SDL_free(path);
 			return file;
 		}
-		else if (canWrite) {
+		else {
+			SDL_free(path);
 			return NULL;
 		}
 	}
+	SDL_free(path);
 
-	{
-		char* const basePathFilename = alloc_strcat_multi("basepath/", filename, NULL);
-		SDL_RWops* const file = SDL_RWFromFile(basePathFilename, mode_str);
-		free(basePathFilename);
+	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
+		return NULL;
+	}
+	if (!SDL_GetPathInfo(path, &info)) {
+		SDL_free(path);
+		return NULL;
+	}
+	if (info.type != SDL_PATHTYPE_FILE) {
+		SDL_free(path);
+		return NULL;
+	}
+	file = SDL_IOFromFile(path, mode);
+	if (!file) {
+		SDL_free(path);
+		return NULL;
+	}
+	else {
 		return file;
 	}
 }
 
-#else
-SDL_RWops* APP_OpenInMode(const char* const filename, const char mode) {
-	switch (mode) {
-	case 'r':
-		return PHYSFSRWOPS_openRead(filename);
-	case 'w':
-		return PHYSFSRWOPS_openWrite(filename);
-	case 'a':
-		return PHYSFSRWOPS_openAppend(filename);
-	default:
+SDL_IOStream* APP_OpenRead(const char* const filename) {
+	return APP_OpenInMode(filename, "r");
+}
+
+SDL_IOStream* APP_OpenWrite(const char* const filename) {
+	return APP_OpenInMode(filename, "w");
+}
+
+SDL_IOStream* APP_OpenAppend(const char* const filename) {
+	return APP_OpenInMode(filename, "a");
+}
+
+bool APP_GetPathInfo(const char* const filename, SDL_PathInfo* info)
+{
+	char* path;
+
+	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
+		return false;
+	}
+	if (!SDL_GetPathInfo(path, info)) {
+		SDL_free(path);
+		return false;
+	}
+	if (info->type != SDL_PATHTYPE_NONE) {
+		return true;
+	}
+	SDL_free(path);
+
+	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
+		return false;
+	}
+	if (!SDL_GetPathInfo(path, info)) {
+		SDL_free(path);
+		return false;
+	}
+	SDL_free(path);
+	return true;
+}
+
+void* APP_GetFileBuffer(const char* const filename, size_t* size) {
+	SDL_IOStream* file = APP_OpenInMode(filename, "rb");
+	if (!file) {
 		return NULL;
 	}
-}
-
-#endif
-
-SDL_RWops* APP_OpenRead(const char* const filename) {
-	return APP_OpenInMode(filename, 'r');
-}
-
-SDL_RWops* APP_OpenWrite(const char* const filename) {
-	return APP_OpenInMode(filename, 'w');
-}
-
-SDL_RWops* APP_OpenAppend(const char* const filename) {
-	return APP_OpenInMode(filename, 'a');
+	void* data = SDL_LoadFile(filename, size);
+	SDL_CloseIO(file);
+	return data;
 }

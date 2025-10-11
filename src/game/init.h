@@ -1,7 +1,7 @@
 #ifndef init_h_
 #define init_h_
 
-#include "SDL_scancode.h"
+#include <SDL3/SDL_scancode.h>
 #include <stdint.h>
 
 extern int32_t english;

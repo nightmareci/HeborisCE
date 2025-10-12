@@ -133,16 +133,18 @@ static float APP_GetScreenSubpixelOffset(void)
 	// likely work everywhere; for now, the midpoint, 0.375f, is used, and
 	// seems to work correctly on some systems I've tested.
 	//
-	// Getting the scale from SDL_RenderGetScale is always appropriate here,
-	// being an integer value when integer scaling is in effect, or a
-	// non-integer scale when fill-screen scaling is in effect. Even if the
-	// scale value is below 1.0f, the formula is still correct.
-	//
 	// -Brandon McGriff <nightmareci@gmail.com>
 	if ( APP_ScreenRenderer )
 	{
-		float scale;
-		SDL_GetRenderScale(APP_ScreenRenderer, &scale, NULL);
+		int w;
+		if (!SDL_GetRenderLogicalPresentation(APP_ScreenRenderer, &w, NULL, NULL)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		SDL_FRect rect;
+		if (!SDL_GetRenderLogicalPresentationRect(APP_ScreenRenderer, &rect)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		const float scale = rect.w / w;
 		return 0.375f / scale;
 	}
 	else
@@ -157,6 +159,9 @@ void APP_Init(const int soundBufferSize)
 		APP_Exit(EXIT_FAILURE);
 	}
 
+	if (!APP_InitFast) {
+		APP_WaveFormatsSupported[APP_WAVE_WAV] = true;
+	}
 	APP_QuitLevel = 0;
 
 #ifdef __EMSCRIPTEN__
@@ -304,13 +309,6 @@ void APP_Quit(void)
 	APP_QuitLevel = 0;
 
 	APP_InitFast = false;
-}
-
-void APP_Exit(int exitStatus)
-{
-	APP_Quit();
-	APP_QuitFilesystem();
-	exit(exitStatus);
 }
 
 bool APP_Update(void)
@@ -469,6 +467,12 @@ static EM_BOOL APP_EmscriptenResizeCallback(int eventType, const EmscriptenUiEve
 }
 #endif
 
+#ifdef NDEBUG
+#define SET_SCREEN_ERROR goto fail
+#else
+#define SET_SCREEN_ERROR SDL_Log("APP_SetScreen error: %d", __LINE__); goto fail
+#endif
+
 bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 {
 	int windowX, windowY;
@@ -482,7 +486,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	APP_ScreenModeFlag windowType = *screenMode & APP_SCREENMODE_WINDOWTYPE;
 	if ( windowType < 0 || windowType >= APP_SCREENMODE_NUMWINDOWTYPES )
 	{
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 
 	int displayIndex = APP_SCREENINDEX_DISPLAY_TOVALUE(*screenIndex);
@@ -490,15 +494,15 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	int displayCount;
 	displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
-	    goto fail;
+	    SET_SCREEN_ERROR;
 	}
-	const SDL_DisplayID display = displays[*screenIndex];
+	const SDL_DisplayID display = displays[displayIndex];
 	SDL_free(displays);
 	displays = NULL;
 	int displayModeCount;
 	displayModes = SDL_GetFullscreenDisplayModes(display, &displayModeCount);
 	if (!displayModes) {
-	    goto fail;
+	    SET_SCREEN_ERROR;
 	}
 
 	windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(display);
@@ -510,7 +514,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		*screenMode = APP_DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
 	}
-	bool maximized = !!((windowType & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_WINDOW_MAXIMIZED);
+	const bool maximized = windowType == APP_SCREENMODE_WINDOW_MAXIMIZED;
 
 	if ( *screenMode & APP_SCREENMODE_DETAILLEVEL )
 	{
@@ -536,11 +540,10 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		{
 			SDL_PropertiesID props = SDL_CreateProperties();
 			if (!props) {
-			    goto fail;
+			    SET_SCREEN_ERROR;
 			}
 			if (
 				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_GAME_CAPTION) ||
-				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN, windowType == APP_SCREENMODE_FULLSCREEN_DESKTOP) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN, true) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, windowX) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowY) ||
@@ -549,13 +552,13 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true)
 			) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 			APP_ScreenWindow = SDL_CreateWindowWithProperties(props);
 			SDL_DestroyProperties(props);
 			if ( !APP_ScreenWindow || (windowType == APP_SCREENMODE_FULLSCREEN && !SDL_SetWindowFullscreenMode(APP_ScreenWindow, displayModes[modeIndex])))
 			{
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 		}
 		else
@@ -564,11 +567,12 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 				!SDL_HideWindow(APP_ScreenWindow) ||
 				!SDL_SetWindowFullscreen(APP_ScreenWindow, true) ||
 				!SDL_SetWindowSize(APP_ScreenWindow, logicalWidth, logicalHeight) ||
-				!SDL_SetWindowPosition(APP_ScreenWindow, windowX, windowY) ||
 				!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREENMODE_FULLSCREEN) ? displayModes[modeIndex] : NULL)
 			) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
+			// NOTE: This can fail on some platforms due to not being supported (Wayland), so don't check the return status
+			SDL_SetWindowPosition(APP_ScreenWindow, windowX, windowY);
 		}
 	}
 	else if (
@@ -578,7 +582,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	{
 		const SDL_DisplayMode* const displayMode = SDL_GetDesktopDisplayMode(display);
 		if (!displayMode) {
-			goto fail;
+			SET_SCREEN_ERROR;
 		}
 		int maxScale;
 		if ( displayMode->w <= logicalWidth || displayMode->h <= logicalHeight )
@@ -603,10 +607,9 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		}
 		if ( !APP_ScreenWindow )
 		{
-			//APP_ScreenWindow = SDL_CreateWindow(APP_GAME_CAPTION, windowX, windowY, windowW, windowH, windowFlags);
 			SDL_PropertiesID props = SDL_CreateProperties();
 			if (!props) {
-			    goto fail;
+			    SET_SCREEN_ERROR;
 			}
 			if (
 				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_GAME_CAPTION) ||
@@ -615,38 +618,40 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, windowW) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, windowH) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true) ||
-				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true)
+				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true) ||
+				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN, maximized)
 			) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 			APP_ScreenWindow = SDL_CreateWindowWithProperties(props);
 			SDL_DestroyProperties(props);
 			if ( !APP_ScreenWindow )
 			{
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 		}
 		else
 		{
 			if (!SDL_HideWindow(APP_ScreenWindow)) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 			if ( maximized ) {
 				if (!SDL_MaximizeWindow(APP_ScreenWindow)) {
-					goto fail;
+					SET_SCREEN_ERROR;
 				}
 			}
 			else if (!SDL_RestoreWindow(APP_ScreenWindow)) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 			if (
 				!SDL_SetWindowFullscreen(APP_ScreenWindow, false) ||
-				!SDL_SetWindowPosition(APP_ScreenWindow, windowX, windowY) ||
 				!SDL_SetWindowSize(APP_ScreenWindow, windowW, windowH) ||
 				!SDL_SetWindowResizable(APP_ScreenWindow, true)
 			) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
+			// NOTE: This can fail on some platforms due to not being supported (Wayland), so don't check the return status
+			SDL_SetWindowPosition(APP_ScreenWindow, windowX, windowY);
 		}
 	}
 	SDL_free(displayModes);
@@ -664,7 +669,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		APP_ScreenRenderer = SDL_CreateRenderer(APP_ScreenWindow, NULL);
 		if (!APP_ScreenRenderer)
 		{
-			goto fail;
+			SET_SCREEN_ERROR;
 		}
 	}
 	SDL_RenderClear(APP_ScreenRenderer);
@@ -678,13 +683,13 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	// are made only while the render target is NULL.
 	if ( APP_ScreenRenderTarget && !SDL_SetRenderTarget(APP_ScreenRenderer, NULL))
 	{
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 
 	/* Clear the whole screen, as the framebuffer might be uninitialized */
 	if (!SDL_RenderClear(APP_ScreenRenderer))
 	{
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 
 	// This should be somewhere after the renderer has been created, as
@@ -694,20 +699,20 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 
 	if (!SDL_SetRenderVSync(APP_ScreenRenderer, (*screenMode & APP_SCREENMODE_VSYNC) ? 1 : SDL_RENDERER_VSYNC_DISABLED) )
 	{
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 
 	if ( *screenMode & APP_SCREENMODE_SCALEMODE )
 	{
-		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX))
+		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE))
 		{
-			goto fail;
+			SET_SCREEN_ERROR;
 		}
 	}
 	else {
-		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE))
+		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX))
 		{
-			goto fail;
+			SET_SCREEN_ERROR;
 		}
 	}
 
@@ -725,7 +730,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		if ( APP_ScreenRenderTarget ) {
 			float w, h;
 			if (!SDL_GetTextureSize(APP_ScreenRenderTarget, &w, &h)) {
-				goto fail;
+				SET_SCREEN_ERROR;
 			}
 
 			if ( (int)w == logicalWidth && (int)h == logicalHeight )
@@ -743,7 +748,10 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			APP_ScreenRenderTarget = SDL_CreateTexture(APP_ScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
 			if ( !APP_ScreenRenderTarget )
 			{
-				goto fail;
+				SET_SCREEN_ERROR;
+			}
+			if (!SDL_SetTextureScaleMode(APP_ScreenRenderTarget, SDL_SCALEMODE_NEAREST)) {
+				SET_SCREEN_ERROR;
 			}
 		}
 
@@ -751,7 +759,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			!SDL_RenderClear(APP_ScreenRenderer)
 		)
 		{
-			goto fail;
+			SET_SCREEN_ERROR;
 		}
 	}
 	else if ( APP_ScreenRenderTarget )
@@ -769,7 +777,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	static bool emscriptenCallbackSet = false;
 	if ( !emscriptenCallbackSet && emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, false, APP_EmscriptenResizeCallback) < 0 )
 	{
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 	else
 	{
@@ -790,12 +798,12 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	/* Hide the mouse cursor at first */
 	if (!SDL_HideCursor())
 	{
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 	APP_CursorCounting = 0u;
 
 	if (!SDL_ShowWindow(APP_ScreenWindow)) {
-		goto fail;
+		SET_SCREEN_ERROR;
 	}
 	while (!SDL_SyncWindow(APP_ScreenWindow)) {
 		SDL_Delay(1);
@@ -874,6 +882,24 @@ bool APP_GetDisplayMode( int displayIndex, int modeIndex, SDL_DisplayMode *mode 
 	}
 	*mode = *modes[modeIndex];
 	return true;
+}
+
+const SDL_DisplayMode* APP_GetDesktopDisplayMode(unsigned displayIndex) {
+	int displayCount;
+	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
+	if (!displays) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (displayIndex >= displayCount) {
+		SDL_free(displays);
+		return NULL;
+	}
+	const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(displays[displayIndex]);
+	SDL_free(displays);
+	if (!mode) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	return mode;
 }
 
 int APP_Rand ( int max )
@@ -1015,29 +1041,17 @@ void APP_LoadBitmap( const char* filename, unsigned plane )
 		APP_Exit(EXIT_FAILURE);
 	}
 
-	SDL_PathInfo info;
-	if (!APP_GetPathInfo(filename, &info)) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	if (info.type != SDL_PATHTYPE_FILE) {
-		return;
-	}
-
-	if ( APP_Textures[plane] )
-	{
-		SDL_DestroyTexture(APP_Textures[plane]);
-		APP_Textures[plane] = NULL;
-	}
-
+	// TODO: Use I/O streams instead, as that allows only returning without error if the file doesn't exist, which is an expected behavior, but can exit with error if there's errors while loading an existent file. It also has the benefit of using less memory while loading
 	size_t size;
 	void* data = SDL_LoadFile(filename, &size);
 	if (!data) {
-		APP_Exit(EXIT_FAILURE);
+		return;
 	}
 	if (size > INT_MAX) {
 		SDL_free(data);
 		APP_Exit(EXIT_FAILURE);
 	}
+
 	int w, h;
 	int comp;
 	stbi_uc* pixels = stbi_load_from_memory(data, (int)size, &w, &h, &comp, STBI_rgb_alpha);
@@ -1050,14 +1064,16 @@ void APP_LoadBitmap( const char* filename, unsigned plane )
 		SDL_free(pixels);
 		APP_Exit(EXIT_FAILURE);
 	}
-	APP_Textures[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, surface);
-	if (!APP_Textures[plane]) {
-		SDL_DestroySurface(surface);
-		SDL_free(pixels);
-		APP_Exit(EXIT_FAILURE);
+
+	if (APP_Textures[plane]) {
+		SDL_DestroyTexture(APP_Textures[plane]);
 	}
+	APP_Textures[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, surface);
 	SDL_DestroySurface(surface);
 	SDL_free(pixels);
+	if (!APP_Textures[plane]) {
+		APP_Exit(EXIT_FAILURE);
+	}
 	if (
 		!SDL_SetTextureScaleMode(APP_Textures[plane], SDL_SCALEMODE_NEAREST) ||
 		!SDL_SetTextureBlendMode(APP_Textures[plane], SDL_BLENDMODE_BLEND)
@@ -1175,23 +1191,26 @@ void APP_ReadFile( const char* filename, void* buf, size_t size, size_t offset )
 
 void APP_SaveFile( const char* filename, void* buf, size_t size )
 {
-	/* エンディアン変換 */
-	int32_t* buf2 = (int32_t*)buf;
-	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
-	{
-		buf2[i] = SDL_Swap32LE(buf2[i]);
-	}
-
 	SDL_IOStream	*dst = APP_OpenWrite(filename);
 
 	if ( dst )
 	{
+		#if SDL_BYTEORDER != SDL_LIL_ENDIAN
+		/* エンディアン変換 */
+		int32_t* buf2 = (int32_t*)buf;
+		for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+		{
+			buf2[i] = SDL_Swap32LE(buf2[i]);
+		}
+		#endif
+
 		SDL_WriteIO(dst, buf, size);
 		if (!SDL_CloseIO(dst))
 		{
 			fprintf(stderr, "Error closing: %s\n", SDL_GetError());
 		}
-		// TODO: Create a custom SDL_RWops object type for Emscripten and put this in that.
+
+		// TODO: Create a custom SDL_IOStream object type for Emscripten and put this in that.
 		#ifdef __EMSCRIPTEN__
 		EM_ASM({
 			FS.syncfs(function (err) {
@@ -1199,15 +1218,15 @@ void APP_SaveFile( const char* filename, void* buf, size_t size )
 			});
 		});
 		#endif
-	}
 
-#if SDL_BYTEORDER != SDL_LIL_ENDIAN
-	/* もどす */
-	for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
-	{
-		buf2[i] = SDL_Swap32LE(buf2[i]);
+		#if SDL_BYTEORDER != SDL_LIL_ENDIAN
+		/* もどす */
+		for ( size_t i = 0 ; i < size / sizeof(int32_t) ; i ++ )
+		{
+			buf2[i] = SDL_Swap32LE(buf2[i]);
+		}
+		#endif
 	}
-#endif
 }
 
 void APP_AppendFile( const char* filename, void* buf, size_t size ) {
@@ -3629,4 +3648,12 @@ void APP_InputsUpdate(void)
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	APP_ConInputsUpdate();
 	#endif
+}
+
+#undef APP_Exit
+void APP_Exit(int exitStatus)
+{
+	APP_Quit();
+	APP_QuitFilesystem();
+	exit(exitStatus);
 }

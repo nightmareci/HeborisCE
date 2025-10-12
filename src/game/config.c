@@ -406,8 +406,6 @@ void ConfigMenu() {
 	if (init) {
 		pages = 5;
 
-		// TODO: Add all settings in init.inc to the settings menu.
-
 		ncfg[0]  = screenMode;
 		ncfg[1]  = screenIndex;
 		ncfg[2]  = nextblock;
@@ -2197,6 +2195,8 @@ void ConfigMenu() {
 				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (count % 2) * digitc[rots[0]]);
 			}
 			break;
+		default:
+			break;
 		}
 #endif
 
@@ -2319,7 +2319,7 @@ void ConfigMenu() {
 					else if(statusc[0] == MENU_AV_SCREEN_MODE) {
 						switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
 						case APP_SCREENMODE_WINDOW: {
-							const SDL_DisplayMode* displayMode = SDL_GetDesktopDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
+							const SDL_DisplayMode* displayMode = APP_GetDesktopDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
 							int baseW = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 320;
 							int baseH = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 240;
 							int maxMode;

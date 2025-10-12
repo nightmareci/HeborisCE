@@ -2,15 +2,15 @@
 //
 //   HEBORIS [ヘボリス] 2001 Ver1.60β1 / 2000.11.05 (Sun) 〜 2001.07.29 (Sun)
 //
-//                         (c) 1998-2001 Kenji Hoshimoto
+//			 (c) 1998-2001 Kenji Hoshimoto
 //
 //   Version 1.60 (02/03/31) 横移動を修正、フィールドの背景を消せるように
-//                           ブロックが突然消えるバグを修正
+//			   ブロックが突然消えるバグを修正
 //   Version 1.51 (01/12/04) 落ちてしまうバグを修正
 //   Version 1.50 (01/11/26) ランキング機能追加 (インターネットランキング対応)
-//                           リプレイ・ポース・NEXT隠し機能追加 デモ画面追加
-//                           全消しボーナス追加 デビルモードをもう少し簡単に
-//                           その他いっぱい
+//			   リプレイ・ポース・NEXT隠し機能追加 デモ画面追加
+//			   全消しボーナス追加 デビルモードをもう少し簡単に
+//			   その他いっぱい
 //
 //■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■
 /*
@@ -359,6 +359,10 @@ C7U8EX YGS2K
 #include "speed.h"
 #include "common.h"
 
+#ifndef NDEBUG
+#define MAIN_QUIT (SDL_Log("MAIN_QUIT: %d", __LINE__), MAIN_QUIT)
+#endif
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
@@ -411,8 +415,8 @@ int32_t		edrec[2] = {0, 0};
 // 連続スナップ
 int32_t		capc = 0;		// カウンタ
 int32_t		oncap = 0;		// 取得中フラグ
-int32_t		capKey =	        // 開始/終了キー
-        SDL_SCANCODE_PRINTSCREEN;
+int32_t		capKey =		// 開始/終了キー
+	SDL_SCANCODE_PRINTSCREEN;
 int32_t		capi = 2;		// 取得間隔(フレーム単位)
 int32_t		capx = 0;		// 取得領域の左上X座標
 int32_t		capy = 0;		// 左上Y座標
@@ -598,7 +602,7 @@ char	nextfp_list[4096];		//FP電源パターン
 // GM条件：(999になった時) スコア126000＆13分30秒(48600)以内＆gmflag1成立済＆gmflag2成立済
 
 // 昇段条件スコア
-int32_t		gscore[18] = {         1400,  4200,   8400,  14000,  21000,  29400,  39200,  50400,
+int32_t		gscore[18] = {	 1400,  4200,   8400,  14000,  21000,  29400,  39200,  50400,
 					   63000, 70000, 82400, 100000, 117400, 137000, 158000, 180400, 204200,
 					  220000};
 // 段位の表示名(geade1,3で使う)
@@ -1903,7 +1907,11 @@ void mainUpdate() {
 	}
 	#endif
 
+#undef MAIN_QUIT
 	case MAIN_QUIT:
+#ifndef NDEBUG
+#define MAIN_QUIT (SDL_Log("MAIN_QUIT: %d", __LINE__), MAIN_QUIT)
+#endif
 		for ( int32_t i = 0 ; i < STRING_MAX ; i ++ )
 		{
 			SDL_free(string[i]);
@@ -3459,10 +3467,10 @@ void versusInit(int32_t player) {
 	}else if((nextblock == 13)|| ((p_nextblock ==13)&&(gameMode[player] == 5))) {
 		//SEGA TETRIS
 		for(i = 0; i < 1000; ++i) { // run 1000 times. copy as needed.
-	        uint16_t stemp;
+		uint16_t stemp;
 			SegaSeed[player]*=41;							// multiply seed by 41
-        	stemp = (uint16_t)SegaSeed[player] + (SegaSeed[player] >> 16); 				// sum lower and upper bits. store as 16 bit
-        	SegaSeed[player] = (stemp << 16) | (uint16_t)SegaSeed[player]; // lower bits of sum moved up, and lower bits of original multiplied number saved to new seed
+		stemp = (uint16_t)SegaSeed[player] + (SegaSeed[player] >> 16); 				// sum lower and upper bits. store as 16 bit
+		SegaSeed[player] = (stemp << 16) | (uint16_t)SegaSeed[player]; // lower bits of sum moved up, and lower bits of original multiplied number saved to new seed
 			temp= ((stemp)%64)%7;							 // take lower 6 bits of sum, and mod 7 to return. multiples of 3 bits give closest to uniform for 7 pieces.
 			switch (temp) 									 // convert pieces from sega to heboris ordering
 			{
@@ -3482,20 +3490,20 @@ void versusInit(int32_t player) {
 		//BLOXEED
 		uint32_t BloxeedPieceSeed;				// bloxeed rando is ran once, and then it's RESULT is stored here.
 		uint32_t d0, d1;
-        uint16_t stemp;
+	uint16_t stemp;
 			d1=BloxeedSeed[player];
 			d0 = d1;
-        	d1 = d0*41;
-        	stemp = (uint16_t)d1 + (d1 >> 16);
-        	BloxeedSeed[player] = (stemp << 16) | (uint16_t)d1;
+		d1 = d0*41;
+		stemp = (uint16_t)d1 + (d1 >> 16);
+		BloxeedSeed[player] = (stemp << 16) | (uint16_t)d1;
 			BloxeedPieceSeed= ((d0 & 0xFFFF0000) | stemp); // use this as the seed to generate the sequence.
 
 		for(i = 0; i < 1400; ++i) { // Bloxeed doesn't actually loop at 1000, but hebo does at 1400.
 			d1=BloxeedPieceSeed;
 			d0 = d1;
-        	d1 = d0*41;
-        	stemp = (uint16_t)d1 + (d1 >> 16);
-        	BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
+		d1 = d0*41;
+		stemp = (uint16_t)d1 + (d1 >> 16);
+		BloxeedPieceSeed = (stemp << 16) | (uint16_t)d1;
 			temp= ((((d0 & 0xFFFF0000) | stemp)&0x7F));  // Bad Sega, less suniform distibution than before!
 			bool ConvertSZ=false;						 // Bloxeed converts 1/8th of all S and Z to I piece (roughly)
 			if ((temp&0x70)==0x70) // all three high bits are set
@@ -3515,7 +3523,7 @@ void versusInit(int32_t player) {
 					temp=0;   // convert to i
 				}
 			}
-			switch (temp)          // convert from sega to hebo pieces.
+			switch (temp)	  // convert from sega to hebo pieces.
 			{
 				case 1: temp=3; break;
 				case 2: temp=6; break;
@@ -3821,7 +3829,7 @@ uint32_t LCGRand(uint32_t *lcgseed)
 int32_t TGMConvert(int32_t piece)
 {
 	int32_t retval;
-	switch (piece)          // 
+	switch (piece)	  //
 	{
 	case 1: retval = 3; break;
 	case 2: retval = 6; break;
@@ -5096,7 +5104,7 @@ void statSelectMode(int32_t player) {
 	if(statusc[player * 10 + 2] == 0) {
 		// ルールセレクト
 		printSMALLFont(124 + 192 * player - 96 * maxPlay, 54, "   Rot?Rule", 4);
-		printFont(15 + 24 * player - 12 * maxPlay, 12, "<        >", count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 12, "<	>", count % 9);
 
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 66,  (statusc[player * 10 + 1] % 40) * 3, 28, 30, 8);
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 75,  160 - ((statusc[player * 10 + 1] % 40) * 3), 20, 30, 8);
@@ -5153,13 +5161,13 @@ void statSelectMode(int32_t player) {
 
 		// カーソル
 		printFont(15 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "b", fontc[rots[player]]);
-		printFont(14 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "<          >", count % 9);
+		printFont(14 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "<	  >", count % 9);
 
 		if(gameMode[player]>=9){
-			printFont(15 + 24 * player - 12 * maxPlay, 8, "k        k", count % 9);//↑カーソル
+			printFont(15 + 24 * player - 12 * maxPlay, 8, "k	k", count % 9);//↑カーソル
 		}
 		if(gameMode[player]<10){
-			printFont(15 + 24 * player - 12 * maxPlay, 20, "n        n", count % 9);//↓カーソル
+			printFont(15 + 24 * player - 12 * maxPlay, 20, "n	n", count % 9);//↓カーソル
 		}
 		//biginner
 		if(gameMode[player]<9){
@@ -5850,13 +5858,13 @@ int32_t Admitgradecheck(int32_t player){
 	}
 	//バブルソートしかしらない
 	for (i = 0; i < 4; i++) {
-        	for (j = 4; j > i; j--) {
-        	    if (grade_his_buf[j - 1] > grade_his_buf[j]) {  /* 前の要素の方が大きかったら */
-        	        temp1[player] = grade_his_buf[j];        /* 交換する */
-        	        grade_his_buf[j] = grade_his_buf[j - 1];
-        	        grade_his_buf[j - 1]= temp1[player];
-        	    }
-        	}
+		for (j = 4; j > i; j--) {
+		    if (grade_his_buf[j - 1] > grade_his_buf[j]) {  /* 前の要素の方が大きかったら */
+			temp1[player] = grade_his_buf[j];	/* 交換する */
+			grade_his_buf[j] = grade_his_buf[j - 1];
+			grade_his_buf[j - 1]= temp1[player];
+		    }
+		}
     	}
     	for(i = 0 ; i < 5 ; i++){
 		sort_grade[i] = grade_his_buf[i];//並べ替え
@@ -5869,7 +5877,7 @@ int32_t Admitgradecheck(int32_t player){
 		temp2[player]=5-grade_pasttime[player];
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
 		if((sort_grade[0] == sort_grade[1])&&((sort_grade[0]- admit_grade[player]) >= temp2[player])){  // if best two grades are identical, and enough gametime has passed 
-			exam_grade[player]= sort_grade[0];                                                          // give exam for best grade in history. sooner if it's much better
+			exam_grade[player]= sort_grade[0];							  // give exam for best grade in history. sooner if it's much better
 			return 1;
 		}
 		// check average of best three
@@ -5877,7 +5885,7 @@ int32_t Admitgradecheck(int32_t player){
 		temp2[player]=4-grade_pasttime[player];//試験から経過時間
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
 		if((admit_grade[player] < temp1[player]) && (temp2[player]==1)){ // 1 in 3 chance, and best 3 are better, and at least three since next exam
-			exam_grade[player]=temp1[player];                                            // give exam for average
+			exam_grade[player]=temp1[player];					    // give exam for average
 			return 1;
 		}
 		// check average of best 4
@@ -7420,7 +7428,7 @@ void setGameOver(int32_t player) {
 	if((tc[player] - ((tc[player]/100)*100) > 50)&&(enable_grade[player] == 4)){//各セクションの後半(X50〜X99)で死んだら
 		grade[player] = grade[player] + gup3rank[player];
 
-        // TODO: What should this be set to??
+	// TODO: What should this be set to??
 		//if(grade[player]>32)grade[player];
 	}
 
@@ -9775,29 +9783,29 @@ void LevelUp(int32_t player) {
 			StopSE(32);
 			// only do changes at proper levels
 			if (heboGB[player]==1) // gb
-			bgfadesw = 1;          // change anyway
+			bgfadesw = 1;	  // change anyway
 			if (lv[player]==2)
-			bgfadesw = 1;          // change on level 2
+			bgfadesw = 1;	  // change on level 2
 			if (lv[player]==4)
-			bgfadesw = 1;          // change on level 4
+			bgfadesw = 1;	  // change on level 4
 			if (lv[player]==6)
-			bgfadesw = 1;          // change on level 6
+			bgfadesw = 1;	  // change on level 6
 			if (lv[player]==8)
-			bgfadesw = 1;          // change on level 8
+			bgfadesw = 1;	  // change on level 8
 			if (lv[player]==9)
-			bgfadesw = 1;          // change on level 9
+			bgfadesw = 1;	  // change on level 9
 			if (lv[player]==10)
-			bgfadesw = 1;          // change on level 10
+			bgfadesw = 1;	  // change on level 10
 			if (lv[player]==11)
-			bgfadesw = 1;          // change on level 11
+			bgfadesw = 1;	  // change on level 11
 			if (lv[player]==13)
-			bgfadesw = 1;          // change on level 13
+			bgfadesw = 1;	  // change on level 13
 			if (lv[player]==15)
-			bgfadesw = 1;          // change on level 15
+			bgfadesw = 1;	  // change on level 15
 			if (lv[player]==50)
-			bgfadesw = 1;          // change at level 50, to use background 11.
+			bgfadesw = 1;	  // change at level 50, to use background 11.
 			if (lv[player]==99)
-			bgfadesw = 1;          // change when level counter is "maxed" at 99, to use background 12.
+			bgfadesw = 1;	  // change when level counter is "maxed" at 99, to use background 12.
 			if(fadelv[player] != 0) {
 				ace_bgmchange[player]++;
 				bgmlv = ace_bgmlist[ace_bgmchange[player] + 9];
@@ -13398,7 +13406,7 @@ void winner() {
 								fldt[j + (210 - (block - 1) * 10) + player * 220] = c - 4;
 							}
 						}
-                    }
+		    }
 			} /* if( winr <= (20 + IsBig[player]) ) */
 		}/* for(player = 0; player <= 1; player++) */
 		winr++;
@@ -13518,25 +13526,25 @@ void winner2() {
 		nextc[player]      = sbak[2];	// NEXTカウント
 		next[player]       = sbak[3];	// NEXTブロック
 		use_item[player]   = sbak[4];
-		item_num           = sbak[5];
+		item_num	   = sbak[5];
 		item_interval      = sbak[6];
 		replay_save[player]= sbak[7];	// 記録可能フラグ
 		time2[player]      = sbak[8];	// リプレイ用プレイタイム
-		bgmlv              = sbak[9];	// BGM
-		repversw           = sbak[10];	//
+		bgmlv	      = sbak[9];	// BGM
+		repversw	   = sbak[10];	//
 		rots[player]       = sbak[11];
-		sp[player]         = sbak[12];	// 各種速度
+		sp[player]	 = sbak[12];	// 各種速度
 		wait1[player]      = sbak[13];	//
 		wait2[player]      = sbak[14];	//
 		wait3[player]      = sbak[15];	//
 		waitt[player]      = sbak[16];	//
-		vs_round           = sbak[17];
+		vs_round	   = sbak[17];
 		first_rot[player]  = sbak[18];
 		if(!player)
 		gametime[player]   = sbak[19];
 		vs_points[player]  = sbak[20];
 		replayChunkCnt     = sbak[21];
-		replayData         = sbakReplayData;
+		replayData	 = sbakReplayData;
 
 		b_wait1[player] = wait1[player];
 		b_wait2[player] = wait2[player];
@@ -13600,7 +13608,7 @@ void winner2() {
 								fldt[j + (210 - (block - 1) * 10) + player * 220] = c - 4;
 							}
 						}
-                    }
+		    }
 			} /* if( winr <= (20 + IsBig[player]) ) */
 		}/* for(player = 0; player <= 1; player++) */
 		winr++;
@@ -16550,333 +16558,177 @@ void removeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int3
 void testmenu(void) {
 	static int32_t i, j, cursor, mode, param;
 
-        if (init) {
-                cursor = 0;
-                mode = 0;
-                param = 0;
-                init = false;
-        }
+	if (init) {
+		cursor = 0;
+		mode = 0;
+		param = 0;
+		init = false;
+	}
 
-        APP_ClearSecondary();
+	APP_ClearSecondary();
 
-        // メインメニュー
-        if( mode == 0 ) {
-                param = 0;
+	// メインメニュー
+	if( mode == 0 ) {
+		param = 0;
 
-                // メニュー描画
-                printFont(1, 1, "TEST MENU", 4);
-                printFont(1, 3 + cursor, "b", fontc[rots[0]]);
+		// メニュー描画
+		printFont(1, 1, "TEST MENU", 4);
+		printFont(1, 3 + cursor, "b", fontc[rots[0]]);
 
-                printFont(2, 3, "[GRAPHIC TEST]", (cursor == 0) * fontc[rots[0]]);
-                printFont(2, 4, "[RANKING ERASE]",(cursor == 1) * fontc[rots[0]]);
-                printFont(2, 5, "[RESET SEEDS]",        (cursor == 2) * fontc[rots[0]]);
+		printFont(2, 3, "[GRAPHIC TEST]", (cursor == 0) * fontc[rots[0]]);
+		printFont(2, 4, "[RANKING ERASE]",(cursor == 1) * fontc[rots[0]]);
+		printFont(2, 5, "[RESET SEEDS]",	(cursor == 2) * fontc[rots[0]]);
 
-                padRepeat2(0);
-                // ↑
-                if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-                if( getPressState(0, APP_BUTTON_UP) ) {
-                        PlaySE(5);
-                        cursor--;
-                        if(cursor < 0) cursor = 2;
-                }
-                // ↓
-                if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-                if( getPressState(0, APP_BUTTON_DOWN) ) {
-                        PlaySE(5);
-                        cursor++;
-                        if(cursor > 2) cursor = 0;
-                }
+		padRepeat2(0);
+		// ↑
+		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
+		if( getPressState(0, APP_BUTTON_UP) ) {
+			PlaySE(5);
+			cursor--;
+			if(cursor < 0) cursor = 2;
+		}
+		// ↓
+		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
+		if( getPressState(0, APP_BUTTON_DOWN) ) {
+			PlaySE(5);
+			cursor++;
+			if(cursor > 2) cursor = 0;
+		}
 
-                // Aで決定
-                if( getPushState(0, APP_BUTTON_A) ) {
-                        PlaySE(10);
-                        mode = cursor + 1;
-                }
+		// Aで決定
+		if( getPushState(0, APP_BUTTON_A) ) {
+			PlaySE(10);
+			mode = cursor + 1;
+		}
 
-                // Bで戻る
-                if( getPushState(0, APP_BUTTON_B) ) {
-                        mainLoopState = MAIN_TITLE;
-                        init = true;
+		// Bで戻る
+		if( getPushState(0, APP_BUTTON_B) ) {
+			mainLoopState = MAIN_TITLE;
+			init = true;
 						// stop music.
 						if (APP_IsPlayMusic())
 							APP_StopMusic();
 						StopAllBGM();
-                        return;
-                }
-        }
-        // GRAPHIC TEST
-        else if( mode == 1 ) {
-                ExBltFast(param, 0, 0);
-
-                padRepeat(0);
-                // ←
-                if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, APP_BUTTON_C)))
-                if( getPressState(0, APP_BUTTON_LEFT) ) {
-                        param--;
-
-                        // 一時バッファを描画しない
-                        if( (param == 9) || (param == 23) ) param--;
-
-                        // 未使用プレーンを描画しない
-                        if( param == 30 ) param = 29;
-                        //if( (param == 26) || (param == 27) ) param = 25;
-
-                        // マイナスになっていたら79にする
-                        if( param < 0 ) param = 89;
-                }
-                // →
-                if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, APP_BUTTON_C)))
-                if( getPressState(0, APP_BUTTON_RIGHT) ) {
-                        param++;
-
-                        // 未使用プレーンを描画しない
-                        //if( (param == 26) || (param == 27) ) param = 28;
-                        if( param == 30 ) param = 31;
-
-                        // 一時バッファを描画しない
-                        if( (param == 9) || (param == 23) ) param++;
-
-                        // 79以上になっていたら0にする
-                        if( param > 89 ) param = 0;
-                }
-
-                if( !getPressState(0, APP_BUTTON_D) ) {
-                        printMenuButton(6, 29, APP_BUTTON_B, 0);
-                        printMenuButton(13, 29, APP_BUTTON_D, 0);
-                        sprintf(string[0],"NO.%02d  :EXIT  :HIDE",param);
-                        //sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
-                        printFont(0, 29, string[0], 0);
-                }
-
-                // Bで戻る
-                if( getPushState(0, APP_BUTTON_B) ) {
-                        mode = 0;
-                }
-        }
-        // RANKING ERASE
-        else if( mode == 2 ) {
-                if(param == 0) {
-                        // 確認
-                        printFont(1, 1, "ERASE RANKING?", 4);
-
-                        printFont(1, 3, "A+C : YES", 2);
-                        printFont(1, 4, "B   : NO",  1);
-                } else {
-                        // 消去済み
-                        printFont(1, 1, "ERASED", 4);
-
-                        printFont(1, 4, "B   : EXIT",1);
-                }
-
-                // A+Cで決定
-                if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
-                        PlaySE(10);
-                        RankingInit();
-                        RankingInit2();
-                        RankingInit3();
-                        param = 1;
-                }
-
-                // Bで戻る
-                if( getPushState(0, APP_BUTTON_B) ) {
-                        mode = 0;
-                }
-        }
-        // RESET
-        else if( mode == 3 ) {
-                if(param == 0) {
-                printFont(1, 1, "RESET SEEDS?", 4);
-
-                printFont(1, 3, "A+C : YES", 2);
-                printFont(1, 4, "B   : NO",  1);
-                }
-                else
-                {
-                        printFont(1, 1, "POWERON PATTERNS RESTORED", 4);
-                        
-                        printFont(1, 4, "B   : EXIT",1);
-                        
-                }
-
-                // A+Cで決定 
-                if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
-                        PlaySE(10);
-                        SegaSeed[0]=711800410;     // generates sega's poweron pattern
-                        BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
-                        SegaSeed[1]=711800410;     // generates sega's poweron pattern
-                        BloxeedSeed[1]=711800411;   // generated Bloxeed's poweron pattern.
-                        param=1;
-                }
-
-                // Bで戻る
-                if( getPushState(0, APP_BUTTON_B) ) {
-                        mode = 0;
-                        if (param==1) {
-                                mainLoopState = MAIN_TITLE;
-                                init = true;
-								// stop music.
-								if (APP_IsPlayMusic())
-									APP_StopMusic();
-								StopAllBGM();
-                                return;
-                        }
-                }
-        }
-}
-
-//▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
-//  初期設定
-//▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void initialize(void) {
-	int32_t i, j;
-	int32_t oldScreenMode;
-	int32_t oldScreenIndex;
-
-	if(LoadConfig()) {	//CONFIG.SAVより設定をロード
-		SetDefaultConfig();
-		LoadConfig();
-	}
-
-	oldScreenMode = screenMode;
-	oldScreenIndex = screenIndex;
-	if ( !APP_SetScreen(&screenMode, &screenIndex) )
-	{
-		mainLoopState = MAIN_QUIT;
-		exitStatus = EXIT_FAILURE;
-		return;
-	}
-	if ( screenMode != oldScreenMode || screenIndex != oldScreenIndex )
-	{
-		SaveConfig();
-	}
-
-	APP_BltAlways(true);
-	APP_SetFillColor(0);
-	APP_ClearSecondary();
-	halt;
-
-	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
-	{
-		APP_TextSize(ii, 12);
-		APP_TextBackColorDisable(ii);
-	}
-
-	APP_TextLayerOn(1, 10, 220);
-	APP_TextOut(1, version);
-	for ( int i = 1 ; i <= 5 ; i ++ )
-	{
-		APP_TextBlt(i);
-	}
-	halt;
-
-
-	//
-	//APP_TextLayerOn(2, 10, 75);
-	//APP_TextOut(2, "If you are English\nuser,please read\n[for_english_users.txt]\nwell.");
-	//halt;
-
-	hnext[0] = dispnext;	// #1.60c7o8
-	hnext[1] = dispnext;	// #1.60c7o8
-	versus_rot[0] = rots[0];
-	versus_rot[1] = rots[1];
-
-	// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-	if ( screenMode & APP_SCREENMODE_DETAILLEVEL ) {
-		setDrawRate(2);
-	} else {
-		setDrawRate(1);
-	}
-
-	LoadGraphic("loading.png", 88);		// Loading表示
-		i = APP_Rand(5);
-	if ( getDrawRate() != 1 )
-		j = APP_Rand(2);
-	else
-		j = 0;
-
-	// グラフィック読み込み
-	APP_TextLayerOn(4, 10, 23);
-	APP_TextOut(4, "Graphics Loading");
-	for ( int i = 1 ; i <= 5 ; i ++ )
-	{
-		APP_TextBlt(i);
-	}
-	ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
-	halt;
-	loadGraphics(maxPlay);
-
-	// 効果音読み込み
-	if(reinit && se) {
-		APP_TextLayerOn(1, 10, 36);
-		APP_TextOut(1, "Sound Effect Loading");
-		for ( int i = 1 ; i <= 5 ; i ++ )
-		{
-			APP_TextBlt(i);
+			return;
 		}
-		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
-		halt;
-		loadWaves();	// #1.60c7o5
 	}
+	// GRAPHIC TEST
+	else if( mode == 1 ) {
+		ExBltFast(param, 0, 0);
 
-	for(i = 0; i < 50; i++) se_play[i] = 0;
+		padRepeat(0);
+		// ←
+		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, APP_BUTTON_C)))
+		if( getPressState(0, APP_BUTTON_LEFT) ) {
+			param--;
 
-	// BGM読み込み
-	if(reinit && bgm) {
-		for ( int i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
-		{
-			bgmload[i] = 1;
+			// 一時バッファを描画しない
+			if( (param == 9) || (param == 23) ) param--;
+
+			// 未使用プレーンを描画しない
+			if( param == 30 ) param = 29;
+			//if( (param == 26) || (param == 27) ) param = 25;
+
+			// マイナスになっていたら79にする
+			if( param < 0 ) param = 89;
 		}
-		APP_TextLayerOn(5, 10, 49);
-		APP_TextOut(5, "BGM Loading");
-		for ( int i = 1 ; i <= 5 ; i ++ )
-		{
-			APP_TextBlt(i);
+		// →
+		if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(0, APP_BUTTON_C)))
+		if( getPressState(0, APP_BUTTON_RIGHT) ) {
+			param++;
+
+			// 未使用プレーンを描画しない
+			//if( (param == 26) || (param == 27) ) param = 28;
+			if( param == 30 ) param = 31;
+
+			// 一時バッファを描画しない
+			if( (param == 9) || (param == 23) ) param++;
+
+			// 79以上になっていたら0にする
+			if( param > 89 ) param = 0;
 		}
-		ExBltFastRect(88, 160, 0,160 * i,240 * j,160,240);
-		halt;
 
-		loadBGM();	// #1.60c7s6
+		if( !getPressState(0, APP_BUTTON_D) ) {
+			printMenuButton(6, 29, APP_BUTTON_B, 0);
+			printMenuButton(13, 29, APP_BUTTON_D, 0);
+			sprintf(string[0],"NO.%02d  :EXIT  :HIDE",param);
+			//sprintf(string[0],"NO.%02d B:EXIT D:HIDE",param);
+			printFont(0, 29, string[0], 0);
+		}
+
+		// Bで戻る
+		if( getPushState(0, APP_BUTTON_B) ) {
+			mode = 0;
+		}
 	}
-	else {
-		memset(bgmload, 0, sizeof(bgmload));
+	// RANKING ERASE
+	else if( mode == 2 ) {
+		if(param == 0) {
+			// 確認
+			printFont(1, 1, "ERASE RANKING?", 4);
+
+			printFont(1, 3, "A+C : YES", 2);
+			printFont(1, 4, "B   : NO",  1);
+		} else {
+			// 消去済み
+			printFont(1, 1, "ERASED", 4);
+
+			printFont(1, 4, "B   : EXIT",1);
+		}
+
+		// A+Cで決定
+		if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
+			PlaySE(10);
+			RankingInit();
+			RankingInit2();
+			RankingInit3();
+			param = 1;
+		}
+
+		// Bで戻る
+		if( getPushState(0, APP_BUTTON_B) ) {
+			mode = 0;
+		}
 	}
+	// RESET
+	else if( mode == 3 ) {
+		if(param == 0) {
+		printFont(1, 1, "RESET SEEDS?", 4);
 
-	for ( int32_t ii = 1 ; ii <= 5 ; ii ++ )
-	{
-		APP_TextLayerOff(ii);
+		printFont(1, 3, "A+C : YES", 2);
+		printFont(1, 4, "B   : NO",  1);
+		}
+		else
+		{
+			printFont(1, 1, "POWERON PATTERNS RESTORED", 4);
+
+			printFont(1, 4, "B   : EXIT",1);
+
+		}
+
+		// A+Cで決定
+		if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
+			PlaySE(10);
+			SegaSeed[0]=711800410;     // generates sega's poweron pattern
+			BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
+			SegaSeed[1]=711800410;     // generates sega's poweron pattern
+			BloxeedSeed[1]=711800411;   // generated Bloxeed's poweron pattern.
+			param=1;
+		}
+
+		// Bで戻る
+		if( getPushState(0, APP_BUTTON_B) ) {
+			mode = 0;
+			if (param==1) {
+				mainLoopState = MAIN_TITLE;
+				init = true;
+				// stop music.
+				if (APP_IsPlayMusic()) APP_StopMusic();
+				StopAllBGM();
+				return;
+			}
+		}
 	}
-
-	if(ranking_type==0){
-		i = RankingLoad();
-		if(i == 1) RankingInit();
-		if(i == 2) RankingConvert();
-	}else if(ranking_type==1){
-		i = RankingLoad2();
-		if(i == 1) RankingInit2();
-	}else{
-		i = RankingLoad3();
-		if(i == 1) RankingInit3();
-	}
-
-	// 連続スナップ取得領域設定
-	if((capx < 0) || (capx > 320)) capx = capx % 320;
-	if((capy < 0) || (capy > 240)) capy = capy % 240;
-	if(capw < 1) capw = 1;
-	if(caph < 1) caph = 1;
-	if(capx + capw > 320) capw = 320 - capx;
-	if(capy + caph > 240) caph = 240 - capy;
-
-	// スタッフロール用データを初期化
-//	staffInit();
-
-	// セクションタイムランキング読み込み
-	if( ST_RankingLoad() ) {
-		ST_RankingInit();
-	}
-
-	PlayerdataLoad();
-
-	APP_BltAlways(false);
 }
 
 /* グラフィック読み込み */
@@ -17076,7 +16928,7 @@ void loadGraphics(int32_t players) {
 		APP_SetColorKeyRGB(54, 255, 0, 255);
 
 		/* プレーン55に回転ルール性能指標を読み込み */
-		LoadGraphic("rot.png",              55);
+		LoadGraphic("rot.png",	      55);
 		APP_SetColorKeyRGB(55, 255, 0, 255);
 
 		/* プラチナブロック消去エフェクトを読み込み */
@@ -17446,7 +17298,7 @@ void backupSetups() {
 //  設定内容をバックアップから戻す
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void restoreSetups() {
-	smooth        = setupBak[0];
+	smooth	= setupBak[0];
 	nanameallow   = setupBak[1];
 	sonicdrop     = setupBak[2];
 	fastlrmove    = setupBak[3];
@@ -17459,7 +17311,7 @@ void restoreSetups() {
 	disable_hold  = setupBak[9];		// HOLD禁止 #1.60c7n7
 	disable_irs   = setupBak[10];		// IRS禁止 #1.60c7n7
 	disable_wallkick = setupBak[11];	// 壁蹴り禁止 #1.60c7q2ex
-	r_irs         = setupBak[12];		// IRS基準 #1.60c7q6
+	r_irs	 = setupBak[12];		// IRS基準 #1.60c7q6
 	world_i_rot   = setupBak[13];		// ワールドルールのI型の回転法則 #1.60c7r7
 	spawn_y_type  = setupBak[14];		// 出現位置タイプ #1.60c7s2
 	tspin_type    = setupBak[15];		// T-スピンの種類（DS式でボーナスが追加されたため）C7T6.4
@@ -17472,7 +17324,7 @@ void restoreSetups() {
 	vs_time       = setupBak[22];
 	wintype       = setupBak[23];
 	vs_goal       = setupBak[24];
-	noitem        = setupBak[25];
+	noitem	= setupBak[25];
 	disrise       = setupBak[26];
 	use_item[0]   = 0;
 	use_item[1]   = 0;

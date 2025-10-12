@@ -12,7 +12,6 @@ SDL_IOStream* APP_OpenRead(const char* const filename);
 SDL_IOStream* APP_OpenWrite(const char* const filename);
 SDL_IOStream* APP_OpenAppend(const char* const filename);
 
-bool APP_GetPathInfo(const char* const filename, SDL_PathInfo* info);
 void* APP_GetFileBuffer(const char* const filename, size_t* size);
 
 #endif

@@ -153,7 +153,6 @@ int quitNow();
 
 void title();
 void backupSetups();
-void initialize();
 void mainUpdate();
 void gameExecute();
 void setGamePause(int32_t player, bool pauseSetting);
@@ -187,6 +186,7 @@ typedef enum EMainLoopState {
 	#endif
 	MAIN_QUIT
 } EMainLoopState;
+
 extern bool init;
 extern EMainLoopState mainLoopState;
 extern EMainLoopState lastRankingMainLoopState;

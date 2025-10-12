@@ -35,6 +35,11 @@ typedef enum APP_Prompt
 void APP_Init(int soundBufferSize);
 void APP_Quit(void);
 void APP_Exit(int exitStatus);
+
+#ifndef NDEBUG
+#define APP_Exit(exitStatus) (SDL_Log("Exited in file %s, line %d, status %s", __FILE__, __LINE__, (exitStatus) ? "EXIT_FAILURE" : "EXIT_SUCCESS"), APP_Exit((exitStatus)))
+#endif
+
 bool APP_Update(void);
 
 typedef enum APP_ScreenModeFlag {
@@ -88,6 +93,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex);
 int APP_GetMaxDisplayIndex();
 int APP_GetMaxDisplayMode( int displayIndex );
 bool APP_GetDisplayMode( int displayIndex, int modeIndex, SDL_DisplayMode *mode );
+const SDL_DisplayMode* APP_GetDesktopDisplayMode(unsigned displayIndex);
 
 int APP_Rand ( int max );
 

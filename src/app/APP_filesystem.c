@@ -1,4 +1,5 @@
 #include "APP_filesystem.h"
+#include "APP.h"
 
 static char* APP_BasePath = NULL;
 static char* APP_PrefPath = NULL;
@@ -144,93 +145,40 @@ bool APP_CreateDirectory(const char* const directory) {
 	#endif
 }
 
-SDL_IOStream* APP_OpenInMode(const char* const filename, const char* const mode) {
-	char* path;
-	SDL_PathInfo info;
-	SDL_IOStream* file;
+static SDL_IOStream* APP_OpenFromPath(const char* const path, const char* const filename, const char* const mode) {
+	char* fullPath;
+	if (SDL_asprintf(&fullPath, "%s%s", path, filename) < 0) {
+		APP_Exit(EXIT_FAILURE);
+	}
 
-	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
-		return NULL;
-	}
-	if (!SDL_GetPathInfo(path, &info)) {
-		SDL_free(path);
-		return NULL;
-	}
-	if (info.type == SDL_PATHTYPE_FILE) {
-		file = SDL_IOFromFile(path, mode);
-		if (file) {
-			SDL_free(path);
-			return file;
-		}
-		else {
-			SDL_free(path);
-			return NULL;
-		}
-	}
-	SDL_free(path);
-
-	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
-		return NULL;
-	}
-	if (!SDL_GetPathInfo(path, &info)) {
-		SDL_free(path);
-		return NULL;
-	}
-	if (info.type != SDL_PATHTYPE_FILE) {
-		SDL_free(path);
-		return NULL;
-	}
-	file = SDL_IOFromFile(path, mode);
-	if (!file) {
-		SDL_free(path);
-		return NULL;
+	SDL_IOStream* file = SDL_IOFromFile(fullPath, mode);
+	SDL_free(fullPath);
+	if (file) {
+		return file;
 	}
 	else {
-		return file;
+		return NULL;
 	}
 }
 
 SDL_IOStream* APP_OpenRead(const char* const filename) {
-	return APP_OpenInMode(filename, "r");
+	SDL_IOStream* file = APP_OpenFromPath(APP_PrefPath, filename, "rb");
+	if (file) {
+		return file;
+	}
+	return APP_OpenFromPath(APP_BasePath, filename, "rb");
 }
 
 SDL_IOStream* APP_OpenWrite(const char* const filename) {
-	return APP_OpenInMode(filename, "w");
+	return APP_OpenFromPath(APP_PrefPath, filename, "wb");
 }
 
 SDL_IOStream* APP_OpenAppend(const char* const filename) {
-	return APP_OpenInMode(filename, "a");
-}
-
-bool APP_GetPathInfo(const char* const filename, SDL_PathInfo* info)
-{
-	char* path;
-
-	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
-		return false;
-	}
-	if (!SDL_GetPathInfo(path, info)) {
-		SDL_free(path);
-		return false;
-	}
-	if (info->type != SDL_PATHTYPE_NONE) {
-		return true;
-	}
-	SDL_free(path);
-
-	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
-		return false;
-	}
-	if (!SDL_GetPathInfo(path, info)) {
-		SDL_free(path);
-		return false;
-	}
-	SDL_free(path);
-	return true;
+	return APP_OpenFromPath(APP_PrefPath, filename, "ab");
 }
 
 void* APP_GetFileBuffer(const char* const filename, size_t* size) {
-	SDL_IOStream* file = APP_OpenInMode(filename, "rb");
+	SDL_IOStream* file = APP_OpenRead(filename);
 	if (!file) {
 		return NULL;
 	}

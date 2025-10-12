@@ -1035,31 +1035,78 @@ void APP_LoadMusic( const char* filename )
 #endif
 }
 
-void APP_LoadBitmap( const char* filename, unsigned plane )
+static int APP_STBI_Read(void* user, char* data, int size)
+{
+	return (int)SDL_ReadIO((SDL_IOStream*)user, data, size);
+}
+
+static void APP_STBI_Skip(void* user, int n)
+{
+	if (SDL_SeekIO((SDL_IOStream*)user, n, SDL_IO_SEEK_CUR) < 0) {
+		APP_Exit(EXIT_FAILURE);
+	}
+}
+
+static int APP_STBI_EOF(void* user)
+{
+	switch (SDL_GetIOStatus((SDL_IOStream*)user)) {
+	case SDL_IO_STATUS_READY:
+		return 0;
+
+	case SDL_IO_STATUS_EOF:
+		return 1;
+
+	default:
+		APP_Exit(EXIT_FAILURE);
+		return 1;
+	}
+}
+
+void APP_LoadBitmap(const char* filename, unsigned plane)
 {
 	if (!APP_ScreenRenderer || !filename || plane >= APP_TEXTURE_MAX) {
 		APP_Exit(EXIT_FAILURE);
 	}
 
-	// TODO: Use I/O streams instead, as that allows only returning without error if the file doesn't exist, which is an expected behavior, but can exit with error if there's errors while loading an existent file. It also has the benefit of using less memory while loading
-	size_t size;
-	void* data = SDL_LoadFile(filename, &size);
-	if (!data) {
+	SDL_IOStream* file = APP_OpenRead(filename);
+	if (!file) {
 		return;
-	}
-	if (size > INT_MAX) {
-		SDL_free(data);
-		APP_Exit(EXIT_FAILURE);
 	}
 
 	int w, h;
 	int comp;
-	stbi_uc* pixels = stbi_load_from_memory(data, (int)size, &w, &h, &comp, STBI_rgb_alpha);
-	SDL_free(data);
+	const stbi_io_callbacks callbacks = { APP_STBI_Read, APP_STBI_Skip, APP_STBI_EOF };
+	stbi_uc* pixels = stbi_load_from_callbacks(&callbacks, file, &w, &h, &comp, STBI_default);
 	if (!pixels) {
 		APP_Exit(EXIT_FAILURE);
 	}
-	SDL_Surface* surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_RGBA32, pixels, w * 4);
+	SDL_Surface* surface;
+	const char* compString;
+	switch (comp) {
+	case STBI_rgb:
+		surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_RGB24, pixels, w * 3);
+		break;
+
+	case STBI_rgb_alpha:
+		surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_RGBA32, pixels, w * 4);
+		break;
+
+	case STBI_default:
+		compString = "STBI_default";
+		goto logUnhandledComp;
+
+	case STBI_grey:
+		compString = "STBI_grey";
+		goto logUnhandledComp;
+
+	case STBI_grey_alpha:
+		compString = "STBI_grey_alpha";
+		goto logUnhandledComp;
+
+	default:
+		compString = "UNKNOWN";
+		goto logUnhandledComp;
+	}
 	if (!surface) {
 		SDL_free(pixels);
 		APP_Exit(EXIT_FAILURE);
@@ -1080,6 +1127,11 @@ void APP_LoadBitmap( const char* filename, unsigned plane )
 	) {
 		APP_Exit(EXIT_FAILURE);
 	}
+	return;
+
+logUnhandledComp:
+	SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unhandled stb_image comp of %s", compString);
+	APP_Exit(EXIT_FAILURE);
 }
 
 void APP_PlayMusic(void)

@@ -63,10 +63,16 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 endif()
 
 add_executable(${APP_EXE}
-	"src/app/APP_main.c"
-	"src/app/APP.c"
+	"src/app/APP_audio.c"
 	"src/app/APP_bdf.c"
 	"src/app/APP_filesystem.c"
+	"src/app/APP_global.c"
+	"src/app/APP_input.c"
+	"src/app/APP_main.c"
+	"src/app/APP_stdlib.c"
+	"src/app/APP_update.c"
+	"src/app/APP_video.c"
+
 	"src/app/nanotime.c"
 	"src/app/hashmap.c"
 
@@ -97,11 +103,21 @@ add_executable(${APP_EXE}
 	"src/game/ranking3.c"
 
 	"src/app/APP.h"
-	"src/app/APP_common.h"
-	"src/app/APP_filesystem.h"
+	"src/app/APP_audio.h"
 	"src/app/APP_bdf.h"
-	"src/app/nanotime.h"
+	"src/app/APP_stdinc.h"
+	"src/app/APP_filesystem.h"
+	"src/app/APP_global.h"
+	"src/app/APP_input.h"
+	"src/app/APP_main.h"
+	"src/app/APP_stdinc.h"
+	"src/app/APP_stdlib.h"
+	"src/app/APP_update.h"
+	"src/app/APP_video.h"
+
 	"src/app/hashmap.h"
+	"src/app/nanotime.h"
+	"src/app/stb_image.h"
 
 	"src/game/gamestart.h"
 	"src/game/init.h"
@@ -512,4 +528,4 @@ endif()
 
 configure_file("src/app/APP_build_config.h.cmake" "src/app/APP_build_config.h" @ONLY)
 target_sources(${APP_EXE} PRIVATE "${CMAKE_BINARY_DIR}/src/app/APP_build_config.h")
-target_include_directories(${APP_EXE} PRIVATE "src" "${CMAKE_BINARY_DIR}/src")
+target_include_directories(${APP_EXE} PRIVATE "src" "${CMAKE_BINARY_DIR}/src" "${CMAKE_BINARY_DIR}/src/app")

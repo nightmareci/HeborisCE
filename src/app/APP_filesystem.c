@@ -1,5 +1,5 @@
 #include "APP_filesystem.h"
-#include "APP.h"
+#include "APP_main.h"
 
 static char* APP_BasePath = NULL;
 static char* APP_PrefPath = NULL;
@@ -90,24 +90,9 @@ bool APP_InitFilesystem(int argc, char** argv) {
 	return true;
 }
 
-void APP_QuitFilesystem(void) {
-#ifdef __EMSCRIPTEN__
-	EM_ASM({
-		FS.syncfs(function (err) {
-			assert(!err);
-		});
-	});
-#endif
-
-	SDL_free(APP_BasePath);
-	APP_BasePath = NULL;
-	SDL_free(APP_PrefPath);
-	APP_PrefPath = NULL;
-}
-
-bool APP_CreateDirectory(const char* const directory) {
-	char* prefPathDirectory;
-	if (SDL_asprintf(&prefPathDirectory, "%s%s", APP_PrefPath, directory) < 0) {
+bool APP_CreateDirectory(const char* directory) {
+	char* path;
+	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, directory) < 0) {
 		fprintf(stderr, "Failed creating directory string\n");
 		return false;
 	}
@@ -117,35 +102,61 @@ bool APP_CreateDirectory(const char* const directory) {
 	// NOTE: It seems this only really works with one FS.mkdir call in the try
 	// block; putting more than one seems to always cause a fatal error.
 	EM_ASM({
-		var prefPathDirectory = UTF8ToString($0);
+		var path = UTF8ToString($0);
 
 		try {
-			FS.mkdir(prefPathDirectory);
+			FS.mkdir(path);
 		}
 		catch (err) {
 			assert(!err || err.errno == 20 || err.errno == 10);
 		}
-		FS.mount(IDBFS, {}, prefPathDirectory);
-	}, prefPathDirectory);
+		FS.mount(IDBFS, {}, path);
+	}, path);
 
-	SDL_free(prefPathDirectory);
+	SDL_free(path);
 	return true;
 
 	#else
-	if (!SDL_CreateDirectory(prefPathDirectory)) {
+	if (!SDL_CreateDirectory(path)) {
 		fprintf(stderr, "Failed creating directory \"%s\"\n", directory);
-		SDL_free(prefPathDirectory);
+		SDL_free(path);
 		return false;
 	}
 	else {
-		SDL_free(prefPathDirectory);
+		SDL_free(path);
 		return true;
 	}
 
 	#endif
 }
 
-static SDL_IOStream* APP_OpenFromPath(const char* const path, const char* const filename, const char* const mode) {
+bool APP_FileExists(const char* filename)
+{
+	char* path;
+	SDL_PathInfo info;
+
+	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+		SDL_free(path);
+		return true;
+	}
+	SDL_free(path);
+
+	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+		SDL_free(path);
+		return true;
+	}
+	SDL_free(path);
+
+	return false;
+}
+
+static SDL_IOStream* APP_OpenFromPath(const char* path, const char* filename, const char* mode) {
 	char* fullPath;
 	if (SDL_asprintf(&fullPath, "%s%s", path, filename) < 0) {
 		APP_Exit(EXIT_FAILURE);
@@ -161,7 +172,7 @@ static SDL_IOStream* APP_OpenFromPath(const char* const path, const char* const 
 	}
 }
 
-SDL_IOStream* APP_OpenRead(const char* const filename) {
+SDL_IOStream* APP_OpenRead(const char* filename) {
 	SDL_IOStream* file = APP_OpenFromPath(APP_PrefPath, filename, "rb");
 	if (file) {
 		return file;
@@ -169,20 +180,144 @@ SDL_IOStream* APP_OpenRead(const char* const filename) {
 	return APP_OpenFromPath(APP_BasePath, filename, "rb");
 }
 
-SDL_IOStream* APP_OpenWrite(const char* const filename) {
+SDL_IOStream* APP_OpenWrite(const char* filename) {
 	return APP_OpenFromPath(APP_PrefPath, filename, "wb");
 }
 
-SDL_IOStream* APP_OpenAppend(const char* const filename) {
+SDL_IOStream* APP_OpenAppend(const char* filename) {
 	return APP_OpenFromPath(APP_PrefPath, filename, "ab");
 }
 
-void* APP_GetFileBuffer(const char* const filename, size_t* size) {
-	SDL_IOStream* file = APP_OpenRead(filename);
-	if (!file) {
-		return NULL;
+static void APP_Swap32ArrayNativeToLE(int32_t* arrayNative, size_t size)
+{
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+	(void)arrayNative;
+	(void)size;
+#elif SDL_BYTEORDER == SDL_BIG_ENDIAN
+	for (size_t i = 0; i < size / sizeof(int32_t); i++) {
+		arrayNative[i] = SDL_Swap32(arrayNative[i]);
 	}
-	void* data = SDL_LoadFile(filename, size);
-	SDL_CloseIO(file);
-	return data;
+#else
+	#error Unsupported endianness!
+#endif
+}
+
+static void APP_Swap32ArrayLEToNative(int32_t* arrayLE, size_t size)
+{
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
+	(void)arrayLE;
+	(void)size;
+#elif SDL_BYTEORDER == SDL_BIG_ENDIAN
+	for (size_t i = 0; i < size / sizeof(int32_t); i++) {
+		arrayLE[i] = SDL_Swap32(arrayLE[i]);
+	}
+#else
+	#error Unsupported endianness!
+#endif
+}
+
+void APP_LoadFile(const char* filename, void* buf, size_t size)
+{
+	SDL_IOStream* src = APP_OpenRead(filename);
+	if (!src) {
+		return;
+	}
+
+	if (SDL_ReadIO(src, buf, size) != size || !SDL_CloseIO(src)) {
+		fprintf(stderr, "Error reading: %s\n", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
+	}
+
+	APP_Swap32ArrayLEToNative(buf, size);
+}
+
+void APP_ReadFile(const char* filename, void* buf, size_t size, size_t offset)
+{
+	SDL_IOStream* src = APP_OpenRead(filename);
+	if (!src) {
+		return;
+	}
+
+	if (SDL_SeekIO(src, offset, SDL_IO_SEEK_SET) < 0) {
+		return;
+	}
+	SDL_ReadIO(src, buf, size);
+	SDL_CloseIO(src);
+
+	APP_Swap32ArrayLEToNative(buf, size);
+}
+
+
+void APP_SaveFile(const char* filename, void* buf, size_t size)
+{
+	SDL_IOStream* dst = APP_OpenWrite(filename);
+	if (!dst) {
+		return;
+	}
+
+	APP_Swap32ArrayNativeToLE(buf, size);
+
+	if (SDL_WriteIO(dst, buf, size) != size) {
+		fprintf(stderr, "Error writing: %s\n", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (!SDL_CloseIO(dst))
+	{
+		fprintf(stderr, "Error closing: %s\n", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
+	}
+
+	#ifdef __EMSCRIPTEN__
+	EM_ASM({
+		FS.syncfs(function (err) {
+			assert(!err);
+		});
+	});
+	#endif
+
+	APP_Swap32ArrayLEToNative(buf, size);
+}
+
+void APP_AppendFile(const char* filename, void* buf, size_t size)
+{
+	SDL_IOStream* dst = APP_OpenAppend(filename);
+	if (!dst) {
+		return;
+	}
+
+	APP_Swap32ArrayNativeToLE(buf, size);
+
+	if (SDL_WriteIO(dst, buf, size) != size) {
+		fprintf(stderr, "Error writing: %s\n", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (!SDL_CloseIO(dst)) {
+		fprintf(stderr, "Error closing: %s\n", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
+	}
+
+	#ifdef __EMSCRIPTEN__
+	EM_ASM({
+		FS.syncfs(function (err) {
+			assert(!err);
+		});
+	});
+	#endif
+
+	APP_Swap32ArrayLEToNative(buf, size);
+}
+
+void APP_QuitFilesystem(void) {
+#ifdef __EMSCRIPTEN__
+	EM_ASM({
+		FS.syncfs(function (err) {
+			assert(!err);
+		});
+	});
+#endif
+
+	SDL_free(APP_BasePath);
+	APP_BasePath = NULL;
+	SDL_free(APP_PrefPath);
+	APP_PrefPath = NULL;
 }

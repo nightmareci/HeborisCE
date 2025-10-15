@@ -1481,7 +1481,7 @@ void mainUpdate() {
 			APP_Quit();
 		}
 
-		APP_Init(1024 << soundbuffer);
+		APP_Init();
 		if (APP_IsPlayMusic()) APP_StopMusic();
 		gameInit();
 
@@ -1604,7 +1604,7 @@ void mainUpdate() {
 		init = true;
 		loopFlag = true;
 
-		APP_Init(1024 << soundbuffer);
+		APP_Init();
 		gameInit();
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
 			SetDefaultConfig();

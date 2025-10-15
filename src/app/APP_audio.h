@@ -27,19 +27,19 @@ typedef enum APP_WaveFormat
 	APP_WAVE_MAXFORMAT
 } APP_WaveFormat;
 
-bool APP_InitAudio(unsigned soundBufferSize);
+bool APP_InitAudio(void);
 void APP_QuitAudio(void);
 
 bool APP_WaveFormatSupported(APP_WaveFormat format);
 
-void APP_LoadWave(const char* filename, unsigned num);
-void APP_PlayWave(unsigned num);
-void APP_ReplayWave(unsigned num);
-void APP_StopWave(unsigned num);
-void APP_PauseWave(unsigned num);
-bool APP_IsPlayWave(unsigned num);
-void APP_SetVolumeWave(unsigned num, unsigned vol);
-void APP_SetLoopModeWave(unsigned num, bool looping);
+void APP_LoadWave(const char* filename, int num);
+void APP_PlayWave(int num);
+void APP_ReplayWave(int num);
+void APP_StopWave(int num);
+void APP_PauseWave(int num);
+bool APP_IsPlayWave(int num);
+void APP_SetVolumeWave(int num, int vol);
+void APP_SetLoopModeWave(int num, bool looping);
 
 void APP_LoadMusic(const char* filename);
 void APP_PlayMusic(void);
@@ -47,6 +47,6 @@ void APP_ReplayMusic(void);
 void APP_StopMusic(void);
 void APP_PauseMusic(void);
 bool APP_IsPlayMusic(void);
-void APP_SetVolumeMusic(unsigned volume);
+void APP_SetVolumeMusic(int volume);
 
 #endif

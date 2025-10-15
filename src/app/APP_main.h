@@ -3,7 +3,7 @@
 
 #include "APP_stdinc.h"
 
-void APP_Init(unsigned soundBufferSize);
+void APP_Init(void);
 
 void APP_Quit(void);
 

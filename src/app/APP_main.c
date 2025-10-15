@@ -61,12 +61,8 @@ int main(int argc, char** argv)
 	return EXIT_SUCCESS;
 }
 
-void APP_Init(unsigned soundBufferSize)
+void APP_Init(void)
 {
-	if (soundBufferSize <= 0) {
-		APP_Exit(EXIT_FAILURE);
-	}
-
 	APP_QuitLevel = 0;
 
 #ifdef __EMSCRIPTEN__
@@ -98,7 +94,7 @@ void APP_Init(unsigned soundBufferSize)
 	}
 
 	if (!APP_InitFast) {
-		if (!APP_InitAudio(soundBufferSize)) {
+		if (!APP_InitAudio()) {
 			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", SDL_GetError());
 			APP_Exit(EXIT_FAILURE);
 		}

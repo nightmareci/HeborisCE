@@ -7,7 +7,7 @@ void StopAllWaves(void) {
 	int32_t i;
 	for(i = 0; i <= 49; i++) {
 		APP_StopWave(i);
-		APP_SetVolumeWave(i, sevolume);	// #1.60c7o8
+		APP_SetWaveVolume(i, sevolume);	// #1.60c7o8
 	}
 }
 
@@ -18,21 +18,21 @@ void StopAllBGM(void) {
 	int32_t i;
 	for(i = 50; i <= 69; i++) {
 		APP_StopWave(i);
-		APP_SetVolumeWave(i, bgmvolume);	// #1.60c7o8
+		APP_SetWaveVolume(i, bgmvolume);	// #1.60c7o8
 	}
 }
 
 void SetVolumeAllWaves(int32_t vol) {
 	int32_t i;
 	for(i = 0; i <= 49; i++) {
-		APP_SetVolumeWave(i, vol);
+		APP_SetWaveVolume(i, vol);
 	}
 }
 
 void SetVolumeAllBGM(int32_t vol) {
 	int32_t i;
 	for(i = 50; i <= 69; i++) {
-		APP_SetVolumeWave(i, vol);
+		APP_SetWaveVolume(i, vol);
 	}
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -242,7 +242,7 @@ int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
 void bgmFadeout(void) {
 	int32_t player;
 
-	if(wavebgm & APP_WAVE_SIMPLE) return;
+	if(wavebgm & APP_SOUND_BITS_SIMPLE) return;
 
 	for( player = 0; player <= maxPlay; player++ ) {
 		if((gameMode[player] <= 3) || (gameMode[player] == 7) || (gameMode[player] == 10)) {
@@ -254,7 +254,7 @@ void bgmFadeout(void) {
 		if(fadelv[player] != 0) {
 			fadelv[player] += fade_seed;
 			if(fadelv[player] > 10000) fadelv[player] = 10000;
-			APP_SetVolumeWave(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
+			APP_SetWaveVolume(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
 		}
 	}
 }
@@ -329,7 +329,7 @@ void changeBGM(int32_t player) {
 	if((!isfever[0]) && (!isfever[1]))
 		APP_PlayWave(50 +bgmlv);
 	fadelv[player] = 0;
-	//if((!(wavebgm & APP_WAVE_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
+	//if((!(wavebgm & APP_SOUND_FORMAT_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -413,8 +413,8 @@ void SoundTestProc(void) {
         if(getPushState(0, APP_BUTTON_B)) {
                 StopAllWaves();
                 StopAllBGM();
-                if(wavebgm & APP_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
-                        if(APP_IsPlayMusic()) APP_ReplayMusic();
+                if(wavebgm & APP_SOUND_BITS_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+                        if(APP_IsMusicPlaying()) APP_ResumeMusic();
                 } else APP_PlayWave(61);//タイトルBGM
                 
                 mainLoopState = MAIN_TITLE;

@@ -1088,7 +1088,7 @@ void PracticeDeath() {
 	onRecord[0] = 0;
 
 	// BGM停止 || Stop BGM#1.60c6.2d
-	if(!(wavebgm & APP_WAVE_SIMPLE))
+	if(!(wavebgm & APP_SOUND_BITS_SIMPLE))
 		StopAllBGM();
 
 	// 条件の単純化に合わせ、すべてのブロックの透明を無効化する #1.60c7k6
@@ -1129,7 +1129,7 @@ void PracticeOver(void) {
 	if(APP_GetFPS() != max_fps_2) APP_SetFPS(max_fps_2);
 
 	// BGM停止 || Stop BGM#1.60c6.2d
-	if(!(wavebgm & APP_WAVE_SIMPLE))
+	if(!(wavebgm & APP_SOUND_BITS_SIMPLE))
 		StopAllBGM();
 
 	// 1Pの結果を2Pにコピー (from hogeパッチ)

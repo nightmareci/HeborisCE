@@ -39,8 +39,8 @@ extern int32_t fontsize;
 extern int32_t movesound;
 extern int32_t dispnext;
 
-extern APP_WaveFormat lastWavebgm;
-extern APP_WaveFormat wavebgm;
+extern APP_SoundBits lastWavebgm;
+extern APP_SoundBits wavebgm;
 extern int32_t fldtr;
 extern int32_t dtc;
 #ifdef APP_ENABLE_KEYBOARD

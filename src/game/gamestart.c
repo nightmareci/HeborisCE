@@ -1482,7 +1482,7 @@ void mainUpdate() {
 		}
 
 		APP_Init();
-		if (APP_IsPlayMusic()) APP_StopMusic();
+		if (APP_IsMusicPlaying()) APP_StopMusic();
 		gameInit();
 
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -1963,7 +1963,7 @@ void gameExecute() {
 			mainLoopState = MAIN_TITLE;
 			init = true;
 			// stop music.
-			if (APP_IsPlayMusic())
+			if (APP_IsMusicPlaying())
 				APP_StopMusic();
 			StopAllBGM();
 			return;
@@ -2024,7 +2024,7 @@ void gameExecute() {
 		mainLoopState = MAIN_TITLE;
 		init = true;
 		// stop music.
-		if (APP_IsPlayMusic())
+		if (APP_IsMusicPlaying())
 			APP_StopMusic();
 		StopAllBGM();
 		return;
@@ -2193,7 +2193,7 @@ bool lastProc(void) {
 				// ポーズ解除
 				setGamePause(0, false);
 				
-					APP_ReplayWave(-1); // resuem all paused waves
+					APP_ResumeWave(-1); // resuem all paused waves
 			} else {
 				// ポーズ
 				setGamePause(0, true);
@@ -2219,7 +2219,7 @@ bool lastProc(void) {
 				// ポーズ解除
 				setGamePause(1, false);
 
-				APP_ReplayWave(-1); // same as above
+				APP_ResumeWave(-1); // same as above
 			} else {
 				// ポーズ
 				setGamePause(1, true);
@@ -2336,17 +2336,17 @@ void title(void) {
 		APP_SetSecondaryOffset(0,0);
 
 		if (bgm) {
-			if(wavebgm & APP_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
-				if(!APP_IsPlayMusic()) {
+			if(wavebgm & APP_SOUND_BITS_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+				if(!APP_IsMusicPlaying()) {
 					APP_PlayMusic();
-					APP_SetVolumeMusic(bgmvolume);
+					APP_SetMusicVolume(bgmvolume);
 				}
 			} else {
-				if(!APP_IsPlayWave(61)) APP_PlayWave(61);
+				if(!APP_IsWavePlaying(61)) APP_PlayWave(61);
 			}
 		}
 		else {
-			if (APP_IsPlayMusic()) APP_StopMusic();
+			if (APP_IsMusicPlaying()) APP_StopMusic();
 		}
 
 		init = false;
@@ -4078,7 +4078,7 @@ bool playerExecute(void) {
 	// 窒息しそうなら警告音を鳴らす #1.60c7l5
 	// プレイ中のみ #1.60c7l6
 	if( ((pinch[0])&&(onRecord[0])) || ((pinch[1])&&(onRecord[1])) ) {
-		if( !APP_IsPlayWave(40) ) PlaySE(40);
+		if( !APP_IsWavePlaying(40) ) PlaySE(40);
 	} else {
 		// ピンチから通常状態に戻ったら即止める #1.60c7l6
 		StopSE(40);
@@ -4222,7 +4222,7 @@ bool playerExecute(void) {
 				// フィーバー
 				if(!isfever[1-i])
 					APP_StopWave(65);
-				if((!APP_IsPlayWave(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
+				if((!APP_IsWavePlaying(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
 					APP_PlayWave(50+bgmlv);
 				isfever[i] = 0;
 				item_timer[i] = 0;
@@ -5008,8 +5008,8 @@ void statJoinwait(int32_t player) {
 		StopSE(8);
 		PlaySE(10);
 
-		if(!(wavebgm & APP_WAVE_SIMPLE)) {
-			if(!APP_IsPlayWave(62)) APP_PlayWave(62);
+		if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) {
+			if(!APP_IsWavePlaying(62)) APP_PlayWave(62);
 		}
 		playerInitial(player);
 		randommode[player] = 1;
@@ -5090,10 +5090,10 @@ void statSelectMode(int32_t player) {
 
 	// モードセレクト曲 || Mode select song
 	if (bgm) {
-		if( (!APP_IsPlayMusic()) && (wavebgm & APP_WAVE_SIMPLE) ) {
+		if( (!APP_IsMusicPlaying()) && (wavebgm & APP_SOUND_BITS_SIMPLE) ) {
 			APP_PlayMusic();
-			APP_SetVolumeMusic(bgmvolume);
-		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsPlayWave(62)) && !(wavebgm & APP_WAVE_SIMPLE) ) {
+			APP_SetMusicVolume(bgmvolume);
+		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(62)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) {
 			APP_PlayWave(62);
 		}
 	}
@@ -6608,8 +6608,8 @@ void statReady(int32_t player) {
 			if(repversw >= 47) FP_bonus[player] = 1000 * (((stage[player]-100) / 4) + 1);
 			else FP_bonus[player] = 10800;
 		}
-		if(!(wavebgm & APP_WAVE_SIMPLE)) {
-			if( !APP_IsPlayWave(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
+		if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) {
+			if( !APP_IsWavePlaying(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
 		}
 
 		if((repversw >= 25) && (sp[player] < min_speed[player]) && (enable_minspeed) || (tomoyo_waits[player]))
@@ -6792,8 +6792,8 @@ void statReady(int32_t player) {
 				onRecord[player] = 1;				// リプレイ記録開始
 			}
 		} else {
-			if(!(wavebgm & APP_WAVE_SIMPLE)) {
-				if( !APP_IsPlayWave(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
+			if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) {
+				if( !APP_IsWavePlaying(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
 			}
 
 			status[player] = 4;
@@ -7436,8 +7436,8 @@ void setGameOver(int32_t player) {
 	if(!((fastroll[player]) && (ending[player] == 2)) &&
 		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-			if(wavebgm & APP_WAVE_SIMPLE) {
-				if(APP_IsPlayMusic()) APP_StopMusic();
+			if(wavebgm & APP_SOUND_BITS_SIMPLE) {
+				if(APP_IsMusicPlaying()) APP_StopMusic();
 			} else {
 				StopAllBGM();
 			}
@@ -10053,7 +10053,7 @@ void statGameOver(int32_t player) {
 		winc = 0;
 		winu = - 24;
 		wink = 0;
-		if(APP_IsPlayWave(65)){
+		if(APP_IsWavePlaying(65)){
 			APP_StopWave(65);
 			APP_PlayWave(50 +bgmlv);
 		}
@@ -10086,8 +10086,8 @@ void statGameOver(int32_t player) {
 			//APP_PlayWave(8);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
-				if(wavebgm & APP_WAVE_SIMPLE) {
-					if(APP_IsPlayMusic()) APP_StopMusic();
+				if(wavebgm & APP_SOUND_BITS_SIMPLE) {
+					if(APP_IsMusicPlaying()) APP_StopMusic();
 				} else {
 					StopAllBGM();
 				}
@@ -11728,7 +11728,7 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsPlayWave(63)) && !(wavebgm & APP_WAVE_SIMPLE) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(63)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) )
 		APP_PlayWave(63);
 /*
 	// リプレイセーブ#1.60c7i5
@@ -12331,7 +12331,7 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsPlayWave(63)) && !(wavebgm & APP_WAVE_SIMPLE) )
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(63)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) )
 		APP_PlayWave(63);
 
 	//警告音が鳴っていたら止める
@@ -13248,7 +13248,7 @@ void winner() {
 	int32_t		player, i, j, block, win, obj, c, kosa;
 
 	// BGM停止
-	if(!(wavebgm & APP_WAVE_SIMPLE)) StopAllBGM();
+	if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) StopAllBGM();
 	// 残り時間が少ない時の効果音も停止
 	StopSE(32);
 
@@ -16606,7 +16606,7 @@ void testmenu(void) {
 			mainLoopState = MAIN_TITLE;
 			init = true;
 						// stop music.
-						if (APP_IsPlayMusic())
+						if (APP_IsMusicPlaying())
 							APP_StopMusic();
 						StopAllBGM();
 			return;
@@ -16723,7 +16723,7 @@ void testmenu(void) {
 				mainLoopState = MAIN_TITLE;
 				init = true;
 				// stop music.
-				if (APP_IsPlayMusic()) APP_StopMusic();
+				if (APP_IsMusicPlaying()) APP_StopMusic();
 				StopAllBGM();
 				return;
 			}
@@ -17130,82 +17130,82 @@ void loadBG(int32_t players,int32_t vsmode){
 // initializeから独立 #1.60c7o5
 void loadWaves(void) {
 	/* 効果音を読み込み */
-	APP_LoadWave("res/se/shaki.wav", 0);
-	APP_LoadWave("res/se/kon.wav", 1);
-	APP_LoadWave("res/se/gon.wav", 2);
-	APP_LoadWave("res/se/kachi.wav", 3);
-	APP_LoadWave("res/se/rotate.wav", 4);
-	APP_LoadWave("res/se/move.wav", 5);
-	APP_LoadWave("res/se/hold.wav", 6);
-	APP_LoadWave("res/se/tumagari.wav", 7);
-	APP_LoadWave("res/se/gameover.wav", 8);
-	APP_LoadWave("res/se/lvstop.wav", 9);
-	APP_LoadWave("res/se/kettei.wav", 10);
+	APP_LoadWave(0, "res/se/shaki.wav");
+	APP_LoadWave(1, "res/se/kon.wav");
+	APP_LoadWave(2, "res/se/gon.wav");
+	APP_LoadWave(3, "res/se/kachi.wav");
+	APP_LoadWave(4, "res/se/rotate.wav");
+	APP_LoadWave(5, "res/se/move.wav");
+	APP_LoadWave(6, "res/se/hold.wav");
+	APP_LoadWave(7, "res/se/tumagari.wav");
+	APP_LoadWave(8, "res/se/gameover.wav");
+	APP_LoadWave(9, "res/se/lvstop.wav");
+	APP_LoadWave(10, "res/se/kettei.wav");
 
-	APP_LoadWave("res/se/erase1.wav", 11);
-	APP_LoadWave("res/se/erase2.wav", 12);
-	APP_LoadWave("res/se/erase3.wav", 13);
-	APP_LoadWave("res/se/erase4.wav", 14);
+	APP_LoadWave(11, "res/se/erase1.wav");
+	APP_LoadWave(12, "res/se/erase2.wav");
+	APP_LoadWave(13, "res/se/erase3.wav");
+	APP_LoadWave(14, "res/se/erase4.wav");
 
-	APP_LoadWave("res/se/ready.wav", 15);
-	APP_LoadWave("res/se/go.wav", 16);
+	APP_LoadWave(15, "res/se/ready.wav");
+	APP_LoadWave(16, "res/se/go.wav");
 
-	APP_LoadWave("res/se/applause.wav", 17);
-	APP_LoadWave("res/se/cheer.wav", 18);
-	APP_LoadWave("res/se/levelup.wav", 19);
+	APP_LoadWave(17, "res/se/applause.wav");
+	APP_LoadWave(18, "res/se/cheer.wav");
+	APP_LoadWave(19, "res/se/levelup.wav");
 
-	APP_LoadWave("res/se/up.wav", 20);
-	APP_LoadWave("res/se/block1.wav", 21);
-	APP_LoadWave("res/se/block2.wav", 22);
-	APP_LoadWave("res/se/block3.wav", 23);
-	APP_LoadWave("res/se/block4.wav", 24);
-	APP_LoadWave("res/se/block5.wav", 25);
-	APP_LoadWave("res/se/block6.wav", 26);
-	APP_LoadWave("res/se/block7.wav", 27);
+	APP_LoadWave(20, "res/se/up.wav");
+	APP_LoadWave(21, "res/se/block1.wav");
+	APP_LoadWave(22, "res/se/block2.wav");
+	APP_LoadWave(23, "res/se/block3.wav");
+	APP_LoadWave(24, "res/se/block4.wav");
+	APP_LoadWave(25, "res/se/block5.wav");
+	APP_LoadWave(26, "res/se/block6.wav");
+	APP_LoadWave(27, "res/se/block7.wav");
 
-	APP_LoadWave("res/se/ttclear.wav", 28);
-	APP_LoadWave("res/se/gm.wav", 29);
-	APP_LoadWave("res/se/rankup.wav", 30);
-	APP_LoadWave("res/se/stageclear.wav", 31);
-	APP_LoadWave("res/se/hurryup.wav", 32);
-	APP_LoadWave("res/se/timeover.wav", 33);
-	APP_LoadWave("res/se/tspin.wav", 34);
-	APP_LoadWave("res/se/hanabi.wav", 35);
-	APP_LoadWave("res/se/missionclr.wav", 36);
+	APP_LoadWave(28, "res/se/ttclear.wav");
+	APP_LoadWave(29, "res/se/gm.wav");
+	APP_LoadWave(30, "res/se/rankup.wav");
+	APP_LoadWave(31, "res/se/stageclear.wav");
+	APP_LoadWave(32, "res/se/hurryup.wav");
+	APP_LoadWave(33, "res/se/timeover.wav");
+	APP_LoadWave(34, "res/se/tspin.wav");
+	APP_LoadWave(35, "res/se/hanabi.wav");
+	APP_LoadWave(36, "res/se/missionclr.wav");
 
-	APP_LoadWave("res/se/thunder.wav", 37);
+	APP_LoadWave(37, "res/se/thunder.wav");
 
-	APP_LoadWave("res/se/warning.wav", 38);
+	APP_LoadWave(38, "res/se/warning.wav");
 
-	APP_LoadWave("res/se/medal.wav", 39);
-	APP_LoadWave("res/se/pinch.wav", 40);
+	APP_LoadWave(39, "res/se/medal.wav");
+	APP_LoadWave(40, "res/se/pinch.wav");
 
-	APP_LoadWave("res/se/platinaerase.wav", 41);
-	APP_LoadWave("res/se/timeextend.wav", 42);
-	APP_LoadWave("res/se/stgstar.wav", 43);
-	APP_LoadWave("res/se/ace_sonic_lock.wav", 44);
-	APP_LoadWave("res/se/regret.wav", 45);
-	APP_LoadWave("res/se/cool.wav", 46);
+	APP_LoadWave(41, "res/se/platinaerase.wav");
+	APP_LoadWave(42, "res/se/timeextend.wav");
+	APP_LoadWave(43, "res/se/stgstar.wav");
+	APP_LoadWave(44, "res/se/ace_sonic_lock.wav");
+	APP_LoadWave(45, "res/se/regret.wav");
+	APP_LoadWave(46, "res/se/cool.wav");
 
-	APP_LoadWave("res/se/timestop.wav", 47);
-	APP_LoadWave("res/se/tserase.wav", 48);
+	APP_LoadWave(47, "res/se/timestop.wav");
+	APP_LoadWave(48, "res/se/tserase.wav");
 	//APP_SetLoopModeWave(40, 1);	//#1.60c7l6
 }
 
 /* 拡張子を決める || Decide which extension to use based on the format */
-void strcatExt(char* str, APP_WaveFormat fmt) {
-	switch (fmt & APP_WAVE_FORMAT) {
-		case APP_WAVE_MID: APP_StrCat(str, ".mid"); break;   // MIDI
+void strcatExt(char* str, APP_SoundFormat fmt) {
+	switch (fmt) {
+		case APP_SOUND_FORMAT_MID: APP_StrCat(str, ".mid"); break;   // MIDI
 		default:
-		case APP_WAVE_WAV: APP_StrCat(str, ".wav"); break;   // WAV
-		case APP_WAVE_OGG: APP_StrCat(str, ".ogg"); break;   // OGG
-		case APP_WAVE_MP3: APP_StrCat(str, ".mp3"); break;   // MP3
-		case APP_WAVE_FLAC: APP_StrCat(str, ".flac"); break; // FLAC
-		case APP_WAVE_OPUS: APP_StrCat(str, ".opus"); break; // OPUS
-		case APP_WAVE_MOD: APP_StrCat(str, ".mod"); break;   // Protracker
-		case APP_WAVE_IT: APP_StrCat(str, ".it"); break;     // Impulse Tracker
-		case APP_WAVE_XM: APP_StrCat(str, ".xm"); break;     // FastTracker II
-		case APP_WAVE_S3M: APP_StrCat(str, ".s3m"); break;   // Scream Tracker
+		case APP_SOUND_FORMAT_WAV: APP_StrCat(str, ".wav"); break;   // WAV
+		case APP_SOUND_FORMAT_OGG: APP_StrCat(str, ".ogg"); break;   // OGG
+		case APP_SOUND_FORMAT_MP3: APP_StrCat(str, ".mp3"); break;   // MP3
+		case APP_SOUND_FORMAT_FLAC: APP_StrCat(str, ".flac"); break; // FLAC
+		case APP_SOUND_FORMAT_OPUS: APP_StrCat(str, ".opus"); break; // OPUS
+		case APP_SOUND_FORMAT_MOD: APP_StrCat(str, ".mod"); break;   // Protracker
+		case APP_SOUND_FORMAT_IT: APP_StrCat(str, ".it"); break;     // Impulse Tracker
+		case APP_SOUND_FORMAT_XM: APP_StrCat(str, ".xm"); break;     // FastTracker II
+		case APP_SOUND_FORMAT_S3M: APP_StrCat(str, ".s3m"); break;   // Scream Tracker
 	}
 }
 
@@ -17213,11 +17213,11 @@ void strcatExt(char* str, APP_WaveFormat fmt) {
 void loadBGM(void) {
 	APP_StopMusic();
 
-	if (wavebgm & APP_WAVE_SIMPLE) {
+	if (wavebgm & APP_SOUND_BITS_SIMPLE) {
 		APP_StrCpy(string[0], "res/bgm/bgm");
-		strcatExt(string[0], wavebgm);
+		strcatExt(string[0], (wavebgm & APP_SOUND_BITS_FORMAT) - 1);
 		APP_LoadMusic(string[0]);
-		APP_SetVolumeMusic(bgmvolume);
+		APP_SetMusicVolume(bgmvolume);
 		APP_PlayMusic();
 	}
 	else {
@@ -17244,19 +17244,19 @@ void loadBGM(void) {
 
 		for(int32_t i = 0; i <= 19; i++) {
 			if(bgmload[i]){
-				strcatExt(string[i], wavebgm);
+				strcatExt(string[i], (wavebgm & APP_SOUND_BITS_FORMAT) - 1);
 
 				// 読み込み
-				APP_LoadWave(string[i], 50 + i);
+				APP_LoadWave(50 + i, string[i]);
 
 				// ループON
-				APP_SetLoopModeWave(50 + i, 1);
+				APP_SetWaveLooping(50 + i, 1);
 			}
 		}
 
 		// エンディング曲ループか
-		APP_SetLoopModeWave(56, 0);
-		APP_SetLoopModeWave(57, 0);
+		APP_SetWaveLooping(56, 0);
+		APP_SetWaveLooping(57, 0);
 	}
 }
 

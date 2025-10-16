@@ -3,50 +3,50 @@
 
 #include "APP_stdinc.h"
 
-#define APP_WAVE_MAX 100
+// Increase this if more waves are needed
+#define APP_WAVES_COUNT 100
 
-typedef enum APP_WaveFormat
+typedef Uint8 APP_SoundBits;
+#define APP_SOUND_BITS_MASK 0xFF
+#define APP_SOUND_BITS_SIMPLE 0x80
+#define APP_SOUND_BITS_FORMAT 0x7F
+
+typedef enum APP_SoundFormat
 {
-	APP_WAVE_MASK   = 0xFF,
-
-	// Flag BGM type as "simple", only one bgm.ext for everything.
-	APP_WAVE_SIMPLE = 0x80,
-
-	APP_WAVE_FORMAT = 0x7F,
-	APP_WAVE_MID    =  1,
-	APP_WAVE_WAV,
-	APP_WAVE_OGG,
-	APP_WAVE_MP3,
-	APP_WAVE_FLAC,
-	APP_WAVE_OPUS,
-	APP_WAVE_MOD,
-	APP_WAVE_IT,
-	APP_WAVE_XM,
-	APP_WAVE_S3M,
-	// Add new formats at the end of the list, before MAXFORMAT, don't reorder
-	APP_WAVE_MAXFORMAT
-} APP_WaveFormat;
+	APP_SOUND_FORMAT_MID,
+	APP_SOUND_FORMAT_WAV,
+	APP_SOUND_FORMAT_OGG,
+	APP_SOUND_FORMAT_MP3,
+	APP_SOUND_FORMAT_FLAC,
+	APP_SOUND_FORMAT_OPUS,
+	APP_SOUND_FORMAT_MOD,
+	APP_SOUND_FORMAT_IT,
+	APP_SOUND_FORMAT_XM,
+	APP_SOUND_FORMAT_S3M,
+	// Add new formats at the end of the list, before COUNT, don't reorder
+	APP_SOUND_FORMAT_COUNT
+} APP_SoundFormat;
 
 bool APP_InitAudio(void);
 void APP_QuitAudio(void);
 
-bool APP_WaveFormatSupported(APP_WaveFormat format);
+bool APP_IsSoundFormatSupported(APP_SoundFormat format);
 
-void APP_LoadWave(const char* filename, int num);
+void APP_LoadWave(int num, const char* filename);
 void APP_PlayWave(int num);
-void APP_ReplayWave(int num);
+void APP_ResumeWave(int num);
 void APP_StopWave(int num);
 void APP_PauseWave(int num);
-bool APP_IsPlayWave(int num);
-void APP_SetVolumeWave(int num, int vol);
-void APP_SetLoopModeWave(int num, bool looping);
+bool APP_IsWavePlaying(int num);
+void APP_SetWaveVolume(int num, int volume);
+void APP_SetWaveLooping(int num, bool looping);
 
 void APP_LoadMusic(const char* filename);
 void APP_PlayMusic(void);
-void APP_ReplayMusic(void);
+void APP_ResumeMusic(void);
 void APP_StopMusic(void);
 void APP_PauseMusic(void);
-bool APP_IsPlayMusic(void);
-void APP_SetVolumeMusic(int volume);
+bool APP_IsMusicPlaying(void);
+void APP_SetMusicVolume(int volume);
 
 #endif

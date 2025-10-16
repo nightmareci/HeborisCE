@@ -23,7 +23,7 @@ int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キ�
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-APP_WaveFormat wavebgm;		// BGMの選択 || BGM selection
+APP_SoundBits wavebgm;		// BGMの選択 || BGM selection
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
 int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON
@@ -115,7 +115,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[61] =
 		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 		((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-		(wavebgm & APP_WAVE_MASK);
+		wavebgm;
 	cfgbuf[62] = breakeffect;
 	cfgbuf[63] = showcombo;
 	cfgbuf[64] = top_frame;
@@ -222,7 +222,6 @@ int32_t LoadConfig(void) {
 	if((uint32_t)cfgbuf[7] != CFG_VERSION) return (1);
 	if((uint32_t)cfgbuf[34] != ConfigChecksum(cfgbuf)) return (1);
 
-
 	screenMode = cfgbuf[4];
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
@@ -284,9 +283,9 @@ int32_t LoadConfig(void) {
 	bgm = (cfgbuf[61] >> 15) & 0x1;
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
-	wavebgm = cfgbuf[61] & APP_WAVE_MASK;
-	if ((wavebgm & APP_WAVE_FORMAT) < 1 || (wavebgm & APP_WAVE_FORMAT) >= APP_WAVE_MAXFORMAT || !APP_WaveFormatSupported(wavebgm)) {
-		wavebgm = APP_WAVE_WAV;
+	wavebgm = cfgbuf[61] & APP_SOUND_BITS_MASK;
+	if ((wavebgm & APP_SOUND_BITS_FORMAT) > APP_SOUND_FORMAT_COUNT || !APP_IsSoundFormatSupported((wavebgm & APP_SOUND_BITS_FORMAT) - 1)) {
+		wavebgm = (wavebgm & ~APP_SOUND_BITS_FORMAT) | (APP_SOUND_FORMAT_WAV + 1);
 	}
 
 	breakeffect = cfgbuf[62];
@@ -433,7 +432,7 @@ void ConfigMenu() {
 		ncfg[44] =
 			(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 			((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-			(wavebgm & APP_WAVE_MASK);
+			wavebgm;
 		ncfg[45] = dispnext;
 		ncfg[46] = movesound;
 		ncfg[47] = fontsize;
@@ -824,7 +823,7 @@ void ConfigMenu() {
 				sevolume = (ncfg[44] >> 16) & 0x7F;
 				bgm = (ncfg[44] >> 15) & 0x1;
 				bgmvolume = (ncfg[44] >> 8) & 0x7F;
-				wavebgm = ncfg[44] & APP_WAVE_MASK;
+				wavebgm = ncfg[44] & APP_SOUND_BITS_MASK;
 				dispnext = ncfg[45];
 				movesound = ncfg[46];
 				fontsize = ncfg[47];
@@ -900,7 +899,7 @@ void ConfigMenu() {
 			if(getPushState(pl, APP_BUTTON_B)) {	// B:設定破棄&タイトル画面に戻る
 				SetVolumeAllWaves(sevolume);
 				SetVolumeAllBGM(bgmvolume);
-				APP_SetVolumeMusic(bgmvolume);
+				APP_SetMusicVolume(bgmvolume);
 				status[0] = -1;
 			}
 		}
@@ -2224,22 +2223,22 @@ void ConfigMenu() {
 			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
 			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (count % 2) * digitc[rots[0]]);
 
-			int32_t wavebgm_temp = ncfg[44] & APP_WAVE_MASK;
-			if(wavebgm_temp & APP_WAVE_SIMPLE) sprintf(string[0], "SIMPLE");
+			int32_t wavebgm_temp = ncfg[44] & APP_SOUND_BITS_MASK;
+			if(wavebgm_temp & APP_SOUND_BITS_SIMPLE) sprintf(string[0], "SIMPLE");
 			else sprintf(string[0], "MULTITRACK");
 			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (count % 2) * digitc[rots[0]]);
 
-			switch(wavebgm_temp & APP_WAVE_FORMAT) {
-				case APP_WAVE_MID: sprintf(string[0], "MIDI"); break;
-				case APP_WAVE_WAV: sprintf(string[0], "WAVE"); break;
-				case APP_WAVE_OGG: sprintf(string[0], "OGG"); break;
-				case APP_WAVE_MP3: sprintf(string[0], "MP3"); break;
-				case APP_WAVE_FLAC: sprintf(string[0], "FLAC"); break;
-				case APP_WAVE_OPUS: sprintf(string[0], "OPUS"); break;
-				case APP_WAVE_MOD: sprintf(string[0], "MOD"); break;
-				case APP_WAVE_IT: sprintf(string[0], "IT"); break;
-				case APP_WAVE_XM: sprintf(string[0], "XM"); break;
-				case APP_WAVE_S3M: sprintf(string[0], "S3M"); break;
+			switch((wavebgm_temp & APP_SOUND_BITS_FORMAT) - 1) {
+				case APP_SOUND_FORMAT_MID: sprintf(string[0], "MIDI"); break;
+				case APP_SOUND_FORMAT_WAV: sprintf(string[0], "WAVE"); break;
+				case APP_SOUND_FORMAT_OGG: sprintf(string[0], "OGG"); break;
+				case APP_SOUND_FORMAT_MP3: sprintf(string[0], "MP3"); break;
+				case APP_SOUND_FORMAT_FLAC: sprintf(string[0], "FLAC"); break;
+				case APP_SOUND_FORMAT_OPUS: sprintf(string[0], "OPUS"); break;
+				case APP_SOUND_FORMAT_MOD: sprintf(string[0], "MOD"); break;
+				case APP_SOUND_FORMAT_IT: sprintf(string[0], "IT"); break;
+				case APP_SOUND_FORMAT_XM: sprintf(string[0], "XM"); break;
+				case APP_SOUND_FORMAT_S3M: sprintf(string[0], "S3M"); break;
 				default: sprintf(string[0], "???"); break;
 			}
 			printFont(15, 5 + MENU_AV_BGM_FORMAT, string[0], (statusc[0] == MENU_AV_BGM_FORMAT) * (count % 2) * digitc[rots[0]]);
@@ -2376,24 +2375,24 @@ void ConfigMenu() {
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
-						ncfg[44] ^= APP_WAVE_SIMPLE;
+						ncfg[44] ^= APP_SOUND_BITS_SIMPLE;
 						reinit = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
 						// wavebgm format
-						int32_t wavebgm_format = (ncfg[44] & APP_WAVE_FORMAT) - 1;
+						APP_SoundFormat wavebgm_format = (ncfg[44] & APP_SOUND_BITS_FORMAT) - 1;
 						do {
 							wavebgm_format += m;
 							if (m < 0 && wavebgm_format < 0) {
-								wavebgm_format = APP_WAVE_MAXFORMAT - 2;
+								wavebgm_format = APP_SOUND_FORMAT_COUNT - 1;
 							}
-							else if (m > 0 && wavebgm_format > APP_WAVE_MAXFORMAT - 2) {
+							else if (m > 0 && wavebgm_format > APP_SOUND_FORMAT_COUNT - 1) {
 								wavebgm_format = 0;
 							}
-						} while (!APP_WaveFormatSupported(wavebgm_format + 1));
+						} while (!APP_IsSoundFormatSupported(wavebgm_format));
 
-						ncfg[44] = (ncfg[44] & ~APP_WAVE_FORMAT) | (wavebgm_format + 1);
+						ncfg[44] = (ncfg[44] & ~APP_SOUND_BITS_FORMAT) | (wavebgm_format + 1);
 						reinit = 1;
 						need_reset = 1;
 					}
@@ -2422,7 +2421,7 @@ void ConfigMenu() {
 
 						ncfg[44] = (ncfg[44] & ~(0x7F << 8)) | ((bgmvolume_temp & 0x7F) << 8);
 						SetVolumeAllBGM(bgmvolume_temp);
-						APP_SetVolumeMusic(bgmvolume_temp);
+						APP_SetMusicVolume(bgmvolume_temp);
 					}
 				}
 			}

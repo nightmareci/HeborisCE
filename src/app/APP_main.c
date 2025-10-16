@@ -95,11 +95,13 @@ void APP_Init(void)
 
 	if (!APP_InitFast) {
 		if (!APP_InitAudio()) {
-			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", SDL_GetError());
+			fprintf(stderr, "%s", SDL_GetError());
 			APP_Exit(EXIT_FAILURE);
 		}
+		APP_QuitLevel++;
+		APP_InitVideo();
+		APP_QuitLevel++;
 	}
-	APP_QuitLevel++;
 
 	APP_SetFPS(60);
 
@@ -123,6 +125,7 @@ void APP_Quit(void)
 
 	switch (APP_QuitLevel)
 	{
+	case 3: APP_QuitVideo();
 	case 2: APP_QuitAudio();
 	case 1: SDL_Quit();
 	default: break;

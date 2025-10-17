@@ -7,15 +7,15 @@
 void statMissionSelect(int32_t player) {
 	padRepeat(player);
 	padRepeat2(player);
-	if( (!APP_IsWavePlaying(62)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) {
-		APP_PlayWave(62);
+	if( (!APP_IsWavePlaying(WAVE_BGM_SELECT)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) {
+		APP_PlayWave(WAVE_BGM_SELECT);
 	}
 	if(statusc[player * 10 + 4] > 0){
 		statusc[player * 10 + 4]--;
-		if(statusc[player * 10 + 4] == 0) PlaySE(5);
+		if(statusc[player * 10 + 4] == 0) PlaySE(WAVE_SE_MOVE);
 	} else if(statusc[player * 10 + 4] < 0){
 		statusc[player * 10 + 4]++;
-		if(statusc[player * 10 + 4] == 0) PlaySE(5);
+		if(statusc[player * 10 + 4] == 0) PlaySE(WAVE_SE_MOVE);
 	}
 
 	printFont(15 + 24 * player - 12 * maxPlay, 5, "START!", (vslevel[0] <= 1) * count % 9);
@@ -61,7 +61,7 @@ void statMissionSelect(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_UP) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		vslevel[0]--;
 		if(vslevel[0] < 0) vslevel[0] = 4 - (2 * ((mission_file < 25) && (!debug)));
 	}
@@ -69,7 +69,7 @@ void statMissionSelect(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_DOWN) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		vslevel[0]++;
 		if(vslevel[0] > 4 - (2 * ((mission_file < 25) && (!debug)))) vslevel[0] = 0;
 	}
@@ -77,7 +77,7 @@ void statMissionSelect(int32_t player) {
 	// ←
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if( getPressState(player, APP_BUTTON_LEFT) ) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 
 		if(vslevel[0] == 0) {
 			rots[player]--;
@@ -100,7 +100,7 @@ void statMissionSelect(int32_t player) {
 	// →
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if( getPressState(player, APP_BUTTON_RIGHT) ) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 
 		if(vslevel[0] == 0) {
 			rots[player]++;
@@ -128,12 +128,12 @@ void statMissionSelect(int32_t player) {
 
 	// Aボタン
 	if( getPushState(player, APP_BUTTON_A) ) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 
 		if(vslevel[0] <= 1) {
 			// START!
 			start_mission = c_mission;
-			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(18);
+			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(WAVE_SE_CHEER);
 			StopAllBGM();
 			//背景を設定
 			if(mission_type[c_mission] == 19)
@@ -375,7 +375,7 @@ void statMissionEditor(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_UP) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		statusc[0 + player * 10]--;
 		if(statusc[0 + player * 10] < 0) statusc[0 + player * 10] = 9;
 	}
@@ -383,7 +383,7 @@ void statMissionEditor(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_DOWN) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		statusc[0 + player * 10]++;
 		if(statusc[0 + player * 10] > 9) statusc[0 + player * 10] = 0;
 	}
@@ -391,7 +391,7 @@ void statMissionEditor(int32_t player) {
 	// ←
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if( getPressState(player, APP_BUTTON_LEFT) ) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 
 		// TYPE
 		if(statusc[0 + player * 10] == 0) {
@@ -445,7 +445,7 @@ void statMissionEditor(int32_t player) {
 	// →
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if( getPressState(player, APP_BUTTON_RIGHT) ) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 
 		// TYPE
 		if(statusc[0 + player * 10] == 0) {
@@ -840,7 +840,7 @@ void missionNormUp(int32_t lines) {
 			if(lines == 2)c_norm[0]++;
 			else if(c_norm[0] > 0){
 			c_norm[0] = 0;
-			PlaySE(45);
+			PlaySE(WAVE_SE_REGRET);
 			}
 		}
 		else if(lines == 2) c_norm[0]++;
@@ -854,7 +854,7 @@ void missionNormUp(int32_t lines) {
 			if(lines == 3)c_norm[0]++;
 			else if(c_norm[0] > 0){
 			c_norm[0] = 0;
-			PlaySE(45);
+			PlaySE(WAVE_SE_REGRET);
 			}
 		}
 		else if(lines == 3) c_norm[0]++;
@@ -877,7 +877,7 @@ void missionNormUp(int32_t lines) {
 	if( mission_type[c_mission] == 6 ) {
 		// プラチナブロックが0
 		if(getPlatinumBlock(0) == 0) {
-			PlaySE(31);
+			PlaySE(WAVE_SE_STAGECLEAR);
 			c_norm[0]++;
 
 			// 次のステージへ
@@ -971,7 +971,7 @@ void missionNormUp(int32_t lines) {
 			c_norm[0] = 0;
 			gflash[0] = 120;
 			gup_down[0] = 0;//regret
-			PlaySE(45);
+			PlaySE(WAVE_SE_REGRET);
 		}
 	}
 
@@ -1117,10 +1117,10 @@ void missionNormUp(int32_t lines) {
 
 	// ミッションクリア　EX突入時
 	if((c_norm[0] >= mission_norm[c_mission]) && ((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3)) && (lines == 2)) {
-		PlaySE(43);//levelup.wavの代わりにstgstar.wav
-		StopSE(32);
+		PlaySE(WAVE_SE_STGSTAR);//levelup.wavの代わりにstgstar.wav
+		StopSE(WAVE_SE_HURRYUP);
 		if(mission_end[c_mission] == 3)
-			PlaySE(18);
+			PlaySE(WAVE_SE_CHEER);
 		objectCreate2(0, 8, APP_Rand(20) + 180 + 192 * 0 - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
 		timeOn[0] = 0;
 		c_mission++;
@@ -1135,8 +1135,8 @@ void missionNormUp(int32_t lines) {
 			changeBGM(0);
 		}
 	} else if(c_norm[0] >= mission_norm[c_mission]) { //普通クリア
-		PlaySE(19);
-		StopSE(32);
+		PlaySE(WAVE_SE_LEVELUP);
+		StopSE(WAVE_SE_HURRYUP);
 
 		timeOn[0] = 0;
 		c_mission++;

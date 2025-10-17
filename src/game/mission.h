@@ -9,7 +9,6 @@ void loadTargetStage();
 void viewEraserLines();
 void changeBGM(int32_t player);
 void objectCreate2(int32_t p,int32_t s,int32_t x,int32_t y,int32_t v,int32_t w,int32_t j,int32_t c);
-void StopSE(int32_t no);
 void setEraserLines();
 extern int32_t blkDataY[7 *4 *4];
 extern int32_t blkDDataY[7 *4 *4];
@@ -27,7 +26,6 @@ void missionSetStatus();
 void StopAllBGM(void);
 void loadMissionData(int32_t number);
 void getRoadName(int32_t no);
-void PlaySE(int32_t no);
 void statMissionSelect(int32_t player);
 
 #endif

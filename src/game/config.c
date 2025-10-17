@@ -757,7 +757,7 @@ void ConfigMenu() {
 				if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 			padRepeat(pl);
 			if(m) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = (statusc[0] + m + 21) % 21;
 			}
 			// HOLDボタンでページ切り替え #1.60c7k8
@@ -792,7 +792,7 @@ void ConfigMenu() {
 					else if(statusc[0] == 20) ncfg[37] = (ncfg[37] + 4 + m)%4;	// four way priority up
 
 					else if(statusc[0] == 0) {	// page
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages) % pages;
 						statusc[0] = 0;
 						statusc[1] = 0;
@@ -801,7 +801,7 @@ void ConfigMenu() {
 				}
 			}
 			if(getPushState(pl, APP_BUTTON_A)) {	// A:保存&再起動
-				APP_PlayWave(10);
+				APP_PlayWave(WAVE_SE_KETTEI);
 				screenMode = ncfg[0];
 				screenIndex = ncfg[1];
 				nextblock = ncfg[2];
@@ -897,7 +897,7 @@ void ConfigMenu() {
 			}
 
 			if(getPushState(pl, APP_BUTTON_B)) {	// B:設定破棄&タイトル画面に戻る
-				SetVolumeAllWaves(sevolume);
+				SetVolumeAllSE(sevolume);
 				SetVolumeAllBGM(bgmvolume);
 				APP_SetMusicVolume(bgmvolume);
 				status[0] = -1;
@@ -1055,13 +1055,13 @@ void ConfigMenu() {
 			if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 				if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 			if(m) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = (statusc[0] + m + 21) % 21;
 			}
 
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, APP_BUTTON_D)) {
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1090,7 +1090,7 @@ void ConfigMenu() {
 					else if(statusc[0] ==  20) ncfg[301] = (ncfg[301] + 3 + m) % 3;
 
 					else if(statusc[0] == 0) {
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages)%pages;
 						statusc[0] = 0;
 					}
@@ -1099,7 +1099,7 @@ void ConfigMenu() {
 			}
 
 			if(getPushState(pl, APP_BUTTON_A) || getPushState(pl, APP_BUTTON_B)) {	// A&B:mainに戻る
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = 0;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1215,13 +1215,13 @@ void ConfigMenu() {
 			if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 				if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 			if(m) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = (statusc[0] + m + 27) % 27;
 			}
 
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, APP_BUTTON_D)) {
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1258,7 +1258,7 @@ void ConfigMenu() {
 					if(statusc[0] == 26) ncfg[51] = !ncfg[51];	// top_frame
 
 					if(statusc[0] == 0){
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages)%pages;
 						statusc[0] = 0;
 					}
@@ -1274,7 +1274,7 @@ void ConfigMenu() {
 			}
 
 			if(getPushState(pl, APP_BUTTON_A) || getPushState(pl, APP_BUTTON_B)) {	// A&B:mainに戻る
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = 0;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1321,12 +1321,12 @@ void ConfigMenu() {
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 					if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 				if(m) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = (statusc[0] + m + numOptions + 1) % (numOptions + 1);
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, APP_BUTTON_D)) {
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 					status[0] = (status[0] + 1 + pages)%pages;
 					statusc[0] = 0;
 					statusc[1] = 1;
@@ -1334,7 +1334,7 @@ void ConfigMenu() {
 					m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
 					if(m) {
 						if(statusc[0] == 0){
-							PlaySE(3);
+							PlaySE(WAVE_SE_KACHI);
 							status[0] = (status[0] + m + pages)%pages;
 							statusc[0] = 0;
 							statusc[1] = 1;
@@ -1343,14 +1343,14 @@ void ConfigMenu() {
 				}
 
 				if(getPushState(pl, APP_BUTTON_A) && (statusc[0] != 0)) {
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					statusc[2] = statusc[0];
 					statusc[0] = 0;
 					conPlayer = -1;
 				}
 
 				if(getPushState(pl, APP_BUTTON_B)) {
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 					status[0] = 0;
 					statusc[0] = 0;
 					statusc[1] = 1;
@@ -1366,7 +1366,7 @@ void ConfigMenu() {
 			#ifdef APP_ENABLE_JOYSTICK
 			case APP_INPUT_JOYSTICK:
 				if (statusc[0] < 10 && APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_B])) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = 0;
 					statusc[2] = 0;
 					cancel = true;
@@ -1376,7 +1376,7 @@ void ConfigMenu() {
 			#ifdef APP_ENABLE_LINUX_GPIO
 			case APP_INPUT_LINUXGPIO:
 				if (statusc[0] < 10 && APP_IsPushGPIO(APP_BUTTON_B)) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = 0;
 					statusc[2] = 0;
 					cancel = true;
@@ -1388,7 +1388,7 @@ void ConfigMenu() {
 			case APP_INPUT_PLAYSTATION:
 			case APP_INPUT_NINTENDO:
 				if (statusc[0] < 10 && IsPushMenu(0, APP_BUTTON_B, APP_GetLastInputType())) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = 0;
 					statusc[2] = 0;
 					cancel = true;
@@ -1433,7 +1433,7 @@ void ConfigMenu() {
 								}
 							}
 							if (unmapped) {
-								PlaySE(5);
+								PlaySE(WAVE_SE_MOVE);
 								ncfg[10 + statusc[0] + pl * 10] = i;
 								statusc[0]++;
 							}
@@ -1447,18 +1447,18 @@ void ConfigMenu() {
 					printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
 
 					if(IsPushPrompt(APP_PROMPT_OK)) {
-						PlaySE(10);
+						PlaySE(WAVE_SE_KETTEI);
 						for(i = 0; i < APP_BUTTON_COUNT * 2; i++) keyAssign[i] = ncfg[10 + i];
 						statusc[0] = 0;
 						statusc[2] = 0;
 					}
 					if(IsPushPrompt(APP_PROMPT_RETRY)) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						for(i = 0; i < APP_BUTTON_COUNT * 2; i++) ncfg[10 + i] = keyAssign[i];
 						statusc[0] = 0;
 					}
 					if(IsPushPrompt(APP_PROMPT_CANCEL)) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						for(i = 0; i < APP_BUTTON_COUNT * 2; i++) ncfg[10 + i] = keyAssign[i];
 						statusc[0] = 0;
 						statusc[2] = 0;
@@ -1483,7 +1483,7 @@ void ConfigMenu() {
 				case APP_INPUT_PLAYSTATION:
 				case APP_INPUT_NINTENDO:
 					if (statusc[0] < 10 && IsPushMenu(0, APP_BUTTON_B, APP_GetLastInputType())) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1496,7 +1496,7 @@ void ConfigMenu() {
 				#ifdef APP_ENABLE_KEYBOARD
 				case APP_INPUT_KEYBOARD:
 					if (statusc[0] < 10 && APP_IsPushKey(keyAssign[APP_BUTTON_B])) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1642,7 +1642,7 @@ void ConfigMenu() {
 								if (!unmapped) break;
 							}
 							if (unmapped) {
-								PlaySE(5);
+								PlaySE(WAVE_SE_MOVE);
 								ncfg[j+0+statusc[0]*8] = pushKey.player;
 								for (int32_t i = 0; i < 4; i++) {
 									ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
@@ -1669,7 +1669,7 @@ void ConfigMenu() {
 						printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rots[0]] * (count % 2));
 						printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
 						if(IsPushPrompt(APP_PROMPT_OK)) {
-							PlaySE(10);
+							PlaySE(WAVE_SE_KETTEI);
 							for (APP_Button button = 0; button < APP_BUTTON_COUNT; button++) {
 								APP_JoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
@@ -1697,7 +1697,7 @@ void ConfigMenu() {
 							statusc[2] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_RETRY)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							for (APP_Button button = 0; button < APP_BUTTON_COUNT; button++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
 								APP_JoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
@@ -1723,7 +1723,7 @@ void ConfigMenu() {
 							statusc[0] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_CANCEL)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							for (APP_Button button = 0; button < 10; button++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
 								APP_JoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
@@ -1772,7 +1772,7 @@ void ConfigMenu() {
 				case APP_INPUT_PLAYSTATION:
 				case APP_INPUT_NINTENDO:
 					if (APP_IsPushConKey(-1, &cancelKey)) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1781,7 +1781,7 @@ void ConfigMenu() {
 				#ifdef APP_ENABLE_JOYSTICK
 				case APP_INPUT_JOYSTICK:
 					if (statusc[0] < 8 && APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_B])) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1791,7 +1791,7 @@ void ConfigMenu() {
 				#ifdef APP_ENABLE_LINUX_GPIO
 				case APP_INPUT_LINUXGPIO:
 					if (statusc[0] < 8 && APP_IsPushGPIO(APP_BUTTON_B)) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1801,7 +1801,7 @@ void ConfigMenu() {
 				#ifdef APP_ENABLE_KEYBOARD
 				case APP_INPUT_KEYBOARD:
 					if (statusc[0] < 8 && APP_IsPushKey(keyAssign[APP_BUTTON_B])) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1873,7 +1873,7 @@ void ConfigMenu() {
 						}
 
 						if (pushed) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 0] = pushKey.type;
 							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 1] = pushKey.index;
 							statusc[0]++;
@@ -1884,7 +1884,7 @@ void ConfigMenu() {
 						printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rots[0]] * (count % 2));
 						printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
 						if(IsPushPrompt(APP_PROMPT_OK)) {
-							PlaySE(10);
+							PlaySE(WAVE_SE_KETTEI);
 							for(i = 0; i < 8; i++) {
 								APP_ConKey* key = &conKeyAssign[pl * 8 + i];
 								key->type = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0];
@@ -1894,7 +1894,7 @@ void ConfigMenu() {
 							statusc[2] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_RETRY)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							ncfg[240 + pl * (1 + 2 * 8)] = pl;
 							for (i = 0; i < 8; i++) {
 								APP_ConKey* key = &conKeyAssign[pl * 8 + i];
@@ -1904,7 +1904,7 @@ void ConfigMenu() {
 							statusc[0] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_CANCEL)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							ncfg[240 + pl * (1 + 2 * 8)] = pl;
 							for (i = 0; i < 8; i++) {
 								APP_ConKey* key = &conKeyAssign[pl * 8 + i];
@@ -1958,7 +1958,7 @@ void ConfigMenu() {
 			}
 
 			if( getPressState(0, APP_BUTTON_RIGHT) && getPressState(0, APP_BUTTON_A) ) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = 0;
 				statusc[2] = 0;
 			}
@@ -2060,7 +2060,7 @@ void ConfigMenu() {
 
 			// A/B:戻る
 			if(getPushState(0, APP_BUTTON_A) || getPushState(0, APP_BUTTON_B) || getPushState(1, APP_BUTTON_A) || getPushState(1, APP_BUTTON_B)) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = 0;
 				statusc[2] = 0;
 			}
@@ -2246,12 +2246,12 @@ void ConfigMenu() {
 
 		for(pl = 0; pl < 2; pl++) {
 			if(getPushState(pl, APP_BUTTON_A) || getPushState(pl, APP_BUTTON_B)) {
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = 0;
 				statusc[0] = 0;
 				statusc[1] = 1;
 			} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, APP_BUTTON_DOWN) - getPressState(pl, APP_BUTTON_UP))) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				int32_t nextChoice = (statusc[0] + m + MENU_AV_MAX) % MENU_AV_MAX;
 				if(m > 0) {
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
@@ -2273,7 +2273,7 @@ void ConfigMenu() {
 				m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
 				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SOUND) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE || statusc[0] == MENU_AV_BGM_FORMAT)) {
 					if(statusc[0] == MENU_AV_CHANGE_MENU) {
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages) % pages;
 						statusc[0] = MENU_AV_CHANGE_MENU;
 						statusc[1] = 1;
@@ -2408,7 +2408,7 @@ void ConfigMenu() {
 						if(sevolume_temp > 100) sevolume_temp = 100;
 						
 						ncfg[44] = (ncfg[44] & ~(0x7F << 16)) | ((sevolume_temp & 0x7F) << 16);
-						SetVolumeAllWaves(sevolume_temp);
+						SetVolumeAllSE(sevolume_temp);
 					}
 					else if(statusc[0] == MENU_AV_BGM_VOLUME) {
 						// bgmvolume

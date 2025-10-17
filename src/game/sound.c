@@ -3,9 +3,9 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  全効果音停止 #1.60c7j6
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void StopAllWaves(void) {
+void StopAllSE(void) {
 	int32_t i;
-	for(i = 0; i <= 49; i++) {
+	for(i = 0; i < WAVE_BGM_START; i++) {
 		APP_StopWave(i);
 		APP_SetWaveVolume(i, sevolume);	// #1.60c7o8
 	}
@@ -16,36 +16,36 @@ void StopAllWaves(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void StopAllBGM(void) {
 	int32_t i;
-	for(i = 50; i <= 69; i++) {
+	for(i = WAVE_BGM_START; i < WAVE_BGM_START + WAVE_BGM_COUNT; i++) {
 		APP_StopWave(i);
 		APP_SetWaveVolume(i, bgmvolume);	// #1.60c7o8
 	}
 }
 
-void SetVolumeAllWaves(int32_t vol) {
+void SetVolumeAllSE(int32_t vol) {
 	int32_t i;
-	for(i = 0; i <= 49; i++) {
+	for(i = 0; i < WAVE_BGM_START; i++) {
 		APP_SetWaveVolume(i, vol);
 	}
 }
 
 void SetVolumeAllBGM(int32_t vol) {
 	int32_t i;
-	for(i = 50; i <= 69; i++) {
+	for(i = WAVE_BGM_START; i < WAVE_BGM_START + WAVE_BGM_COUNT; i++) {
 		APP_SetWaveVolume(i, vol);
 	}
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  効果音再生（の予約）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void PlaySE(int32_t no) {
-	if(no < 50) {
+void PlaySE(WaveNum no) {
+	if(no < WAVE_BGM_START) {
 		se_play[no] = 1;
 	}
 }
 
-void StopSE(int32_t no) {
-	if(no < 50) {
+void StopSE(WaveNum no) {
+	if(no < WAVE_BGM_START) {
 		se_play[no] = 2;
 	}
 }
@@ -54,7 +54,7 @@ void StopSE(int32_t no) {
 void PlayAllSE() {
 	int32_t i;
 
-	for(i = 0; i < 50; i++) {
+	for(i = 0; i < WAVE_BGM_START; i++) {
 		if(se_play[i] == 1) {
 			APP_PlayWave(i);
 			se_play[i] = 0;
@@ -254,7 +254,7 @@ void bgmFadeout(void) {
 		if(fadelv[player] != 0) {
 			fadelv[player] += fade_seed;
 			if(fadelv[player] > 10000) fadelv[player] = 10000;
-			APP_SetWaveVolume(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
+			APP_SetWaveVolume(WAVE_BGM_START+bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
 		}
 	}
 }
@@ -327,7 +327,7 @@ void checkMasterFadeout(int32_t player) {
 void changeBGM(int32_t player) {
 	StopAllBGM();
 	if((!isfever[0]) && (!isfever[1]))
-		APP_PlayWave(50 +bgmlv);
+		APP_PlayWave(WAVE_BGM_START+bgmlv);
 	fadelv[player] = 0;
 	//if((!(wavebgm & APP_SOUND_FORMAT_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
 }
@@ -341,7 +341,7 @@ void SoundTestProc(void) {
         if (init) {
                 snd = 0;
 
-                StopAllWaves();
+                StopAllSE();
                 StopAllBGM();
 
                 init = false;
@@ -363,14 +363,14 @@ void SoundTestProc(void) {
         }
 
         printFont(10, 3, "- SOUND TEST MODE -", 4);
-        if(snd < 50){
+        if(snd < WAVE_BGM_START){
                 printFont(17, 6, "SE NO.", 1);
                 sprintf(string[0], "%d", snd);
                 printFont(23, 6, string[0], 2);
         }
         else{
                 printFont(16, 6, "BGM NO.", 1);
-                sprintf(string[0], "%d", snd-50);
+                sprintf(string[0], "%d", snd-WAVE_BGM_START);
                 printFont(23, 6, string[0], 2);
         }
 
@@ -386,36 +386,36 @@ void SoundTestProc(void) {
         if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
         if(getPressState(0, APP_BUTTON_LEFT)) {
                 snd--;
-                if(snd < 0) snd = 69;
+                if(snd < 0) snd = WAVE_BGM_START+WAVE_BGM_COUNT-1;
         }
 
         // →
         if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
         if(getPressState(0, APP_BUTTON_RIGHT)) {
                 snd++;
-                if(snd > 69) snd = 0;
+                if(snd > WAVE_BGM_START+WAVE_BGM_COUNT-1) snd = 0;
         }
 
         // Aボタンで再生
         if(getPushState(0, APP_BUTTON_A)) {
-                StopAllWaves();
+                StopAllSE();
                 StopAllBGM();
                 APP_PlayWave(snd);
         }
 
         // Cボタンで停止
         if(getPushState(0, APP_BUTTON_C)) {
-                StopAllWaves();
+                StopAllSE();
                 StopAllBGM();
         }
 
         // Bボタンでタイトル
         if(getPushState(0, APP_BUTTON_B)) {
-                StopAllWaves();
+                StopAllSE();
                 StopAllBGM();
                 if(wavebgm & APP_SOUND_BITS_SIMPLE) {	// No.30→38に変更 #1.60c7i2
                         if(APP_IsMusicPlaying()) APP_ResumeMusic();
-                } else APP_PlayWave(61);//タイトルBGM
+                } else APP_PlayWave(WAVE_BGM_TITLE);//タイトルBGM
                 
                 mainLoopState = MAIN_TITLE;
                 init = true;

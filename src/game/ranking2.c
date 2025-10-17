@@ -174,27 +174,27 @@ void RankingProc2_2() {
 
 	// ←
 	if( getPushState(0, APP_BUTTON_LEFT) ) {
-		APP_PlayWave( 5 );
+		APP_PlayWave(WAVE_SE_MOVE);
 		category--;//ゲームモード
 		if(category < 0) category = 14;
 	}
 
 	// →
 	if( getPushState(0, APP_BUTTON_RIGHT) ) {
-		APP_PlayWave( 5 );
+		APP_PlayWave(WAVE_SE_MOVE);
 		category++;
 		if(category > 14) category = 0;
 	}
 
 	// ↑
 	if( getPushState(0, APP_BUTTON_UP) ) {
-		APP_PlayWave( 5 );
+		APP_PlayWave(WAVE_SE_MOVE);
 		rankingrule = !(rankingrule);//回転ルール
 	}
 
 	// ↓
 	if( getPushState(0, APP_BUTTON_DOWN) ) {
-		APP_PlayWave( 5 );
+		APP_PlayWave(WAVE_SE_MOVE);
 		rankingrule  = !(rankingrule);
 	}
 

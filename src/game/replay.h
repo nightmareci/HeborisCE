@@ -25,7 +25,6 @@ void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t font
 void getTime(int32_t time);
 int32_t getModeAddRep(void);
 int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg);
-void PlaySE(int32_t no);
 void missionSetStatus();
 void loadMissionData(int32_t number);
 int32_t setstartBGM(int32_t mode,int32_t pl);

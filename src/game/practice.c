@@ -12,7 +12,7 @@ void statSelectLevel(int32_t player) {
 
 	// HOLDボタンでページ切り替え #1.60c7a
 	if(getPushState(player, APP_BUTTON_D)) {
-		APP_PlayWave(5);
+		APP_PlayWave(WAVE_SE_MOVE);
 		if(vslevel[0] < 14)
 			vslevel[0] = 14;
 		else if(vslevel[0] < 29)	// 3ページ目 #1.60c7j5
@@ -384,7 +384,7 @@ void statSelectLevel(int32_t player) {
 	// ↑
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
 		if(getPressState(player, APP_BUTTON_UP)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 
 			vslevel[0]--;
 
@@ -395,7 +395,7 @@ void statSelectLevel(int32_t player) {
 	// ↓
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
 		if(getPressState(player, APP_BUTTON_DOWN)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 
 			vslevel[0]++;
 			if(vslevel[0] > 42) vslevel[0] = 0;	// #1.60c7p9ex改造
@@ -406,7 +406,7 @@ void statSelectLevel(int32_t player) {
 	// ← (Cボタンを押しながらだと高速に数値を変更します)
 	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))){
 	if(getPressState(player, APP_BUTTON_LEFT)) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 		// 数値変更(手抜き)
 
 		// BGM#1.60c6.2d
@@ -668,7 +668,7 @@ void statSelectLevel(int32_t player) {
 	// → (Cボタンを押しながらだと高速に数値を変更します)
 	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))){
 		if(getPressState(player, APP_BUTTON_RIGHT)) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 			// 数値変更(これも手抜き)
 
 			// BGM#1.60c6.2d
@@ -936,10 +936,10 @@ void statSelectLevel(int32_t player) {
 		if(vslevel[0] == 10) {
 			// FAVORITES関連
 			loadWait(0, p_setting); // 対応した設定を読み込む。
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 		} else if(vslevel[0] == 28) {
 			// INIT FLD
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 
 			if(p_stage != -1) {
 				stage[0] = p_stage;			// ステージ設定
@@ -956,7 +956,7 @@ void statSelectLevel(int32_t player) {
 			}
 		} else {
 			// そうでないならゲーム開始
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			PracticeStart();
 			bgmlv = p_bgmlv; // BGM変更#1.60c6.2c
 		}

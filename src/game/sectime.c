@@ -413,13 +413,13 @@ void ST_RankingView() {
 
 	if(getPushState(0, APP_BUTTON_LEFT)) {
 		// ←
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		mode--;
 		if(mode < 1) mode = 5;
 	}
 	if(getPushState(0, APP_BUTTON_RIGHT)) {
 		// →
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		mode++;
 		if(mode > 5) mode = 1;
 	}

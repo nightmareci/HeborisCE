@@ -73,7 +73,7 @@ void statTomoyoNextStage(int32_t player) {
 
 	statusc[player * 10 + 0]++;
 
-	StopSE(32);
+	StopSE(WAVE_SE_HURRYUP);
 	pinch[player] = 0;
 	isxray[player] = 0;			// #1.60c7p9ex
 	iscolor[player] = 0;		// #1.60c7p9ex
@@ -143,7 +143,7 @@ void statTomoyoNextStage(int32_t player) {
 		}
 		// 花火
 		if((statusc[player * 10 + 0] % 10 == 0) && (tomoyo_hanabi[player] < 10)) {
-			PlaySE(35);
+			PlaySE(WAVE_SE_HANABI);
 			objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 			tomoyo_hanabi[player]++;
 		}
@@ -181,7 +181,7 @@ void statTomoyoNextStage(int32_t player) {
 			ext_s[player] = ext_s[player]+4;
 		}
 		if((timeextend_snd_cnt[player] < ext) && ((statusc[player * 10 + 0]-1) % 15 == 0)){
-			PlaySE(42);
+			PlaySE(WAVE_SE_TIMEEXTEND);
 			timeextend_snd_cnt[player]++;
 		}
 
@@ -238,7 +238,7 @@ void statTomoyoNextStage(int32_t player) {
 					laststage[player] = 26;
 					//EX7行きが決まれば流れ星
 					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
-					PlaySE(43);
+					PlaySE(WAVE_SE_STGSTAR);
 				}else {
 					// 5分超えている場合はEX5
 					laststage[player] = 24;
@@ -289,7 +289,7 @@ void statTomoyoNextStage(int32_t player) {
 		if( (stage[player] > laststage[player]) && (!t_training[player])) {
 			// ラストステージクリアでエンディング
 			// ただしトレーニングでは無し #1.60c7o7
-			APP_PlayWave(28);
+			APP_PlayWave(WAVE_SE_TTCLEAR);
 			stage[player] = laststage[player];
 			ending[player] = 1;
 			status[player] = 13;
@@ -383,7 +383,7 @@ void statTomoyoEditor(int32_t player) {
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_UP) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			statusc[player * 10]--;
 			if(statusc[player * 10] < 0) statusc[player * 10] = 14;
 		}
@@ -391,7 +391,7 @@ void statTomoyoEditor(int32_t player) {
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_DOWN) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			statusc[player * 10]++;
 			if(statusc[player * 10] > 14) statusc[player * 10] = 0;
 		}
@@ -399,7 +399,7 @@ void statTomoyoEditor(int32_t player) {
 		// ←
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 		if(getPressState(player, APP_BUTTON_LEFT)) {
-			APP_PlayWave(3);
+			APP_PlayWave(WAVE_SE_KACHI);
 
 			// STAGE
 			if(statusc[player * 10] == 0) {
@@ -453,7 +453,7 @@ void statTomoyoEditor(int32_t player) {
 		// →
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 		if(getPressState(player, APP_BUTTON_RIGHT)) {
-			APP_PlayWave(3);
+			APP_PlayWave(WAVE_SE_KACHI);
 
 			// STAGE
 			if(statusc[player * 10] == 0) {
@@ -504,7 +504,7 @@ void statTomoyoEditor(int32_t player) {
 
 		// Aボタン
 		if( getPushState(player, APP_BUTTON_A) ) {
-			APP_PlayWave(10);
+			APP_PlayWave(WAVE_SE_KETTEI);
 
 			// STAGE
 			if(statusc[player * 10] == 0) {
@@ -590,7 +590,7 @@ void statTomoyoEditor(int32_t player) {
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_UP) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			by[player]--;
 			if(by[player] < 1) by[player] = fldsizeh[player];
 		}
@@ -598,7 +598,7 @@ void statTomoyoEditor(int32_t player) {
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_DOWN) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			by[player]++;
 			if(by[player] > fldsizeh[player]) by[player] = 1;
 		}
@@ -606,7 +606,7 @@ void statTomoyoEditor(int32_t player) {
 		// ←
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, APP_BUTTON_LEFT) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 
 			// ブロック選択
 			if( getPressState(player, APP_BUTTON_C) ) {
@@ -623,7 +623,7 @@ void statTomoyoEditor(int32_t player) {
 		// →
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, APP_BUTTON_RIGHT) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 
 			// ブロック選択
 			if( getPressState(player, APP_BUTTON_C) ) {
@@ -640,7 +640,7 @@ void statTomoyoEditor(int32_t player) {
 		// Aボタンで配置
 		if( getPressState(player, APP_BUTTON_A) && !statusc[player * 10 + 3] ) {
 			if(fld[bx[player] + by[player] * fldsizew[player] + player * 220] != blk[player] + 1) {
-				APP_PlayWave(3);
+				APP_PlayWave(WAVE_SE_KACHI);
 			}
 			fld[bx[player] + by[player] * fldsizew[player] + player * 220] = blk[player] + 1;
 			fldt[bx[player] + by[player] * fldsizew[player] + player * 220] = -1;
@@ -652,7 +652,7 @@ void statTomoyoEditor(int32_t player) {
 		// HOLDボタンでブロック消去
 		if( getPressState(player, APP_BUTTON_D) ) {
 			if(fld[bx[player] + by[player] * fldsizew[player] + player * 220] != 0) {
-				APP_PlayWave(3);
+				APP_PlayWave(WAVE_SE_KACHI);
 			}
 			fld[bx[player] + by[player] * fldsizew[player] + player * 220] = 0;
 			fldt[bx[player] + by[player] * fldsizew[player] + player * 220] = 0;
@@ -674,7 +674,7 @@ void statTomoyoEditor(int32_t player) {
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_UP) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			by[player]--;
 			if(by[player] < 1) by[player] = fldsizeh[player];
 		}
@@ -682,7 +682,7 @@ void statTomoyoEditor(int32_t player) {
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_DOWN) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			by[player]++;
 			if(by[player] > fldsizeh[player]) by[player] = 1;
 		}
@@ -690,7 +690,7 @@ void statTomoyoEditor(int32_t player) {
 		// ←
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, APP_BUTTON_LEFT) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 
 			// ブロック選択
 			if( getPressState(player, APP_BUTTON_C) ) {
@@ -707,7 +707,7 @@ void statTomoyoEditor(int32_t player) {
 		// →
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 		if( getPressState(player, APP_BUTTON_RIGHT) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 
 			// ブロック選択
 			if( getPressState(player, APP_BUTTON_C) ) {
@@ -724,7 +724,7 @@ void statTomoyoEditor(int32_t player) {
 		// Aボタンで配置
 		if( getPressState(player, APP_BUTTON_A) && !statusc[player * 10 + 3] ) {
 			if(tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] != blk[player] + 1) {
-				APP_PlayWave(3);
+				APP_PlayWave(WAVE_SE_KACHI);
 			}
 			tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] = blk[player] + 1;
 //			fldt[bx[player] + by[player] * fldsizew[player] + player * 210] = -1;
@@ -736,7 +736,7 @@ void statTomoyoEditor(int32_t player) {
 		// HOLDボタンでブロック消去
 		if( getPressState(player, APP_BUTTON_D) ) {
 			if(tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] != 0) {
-				APP_PlayWave(3);
+				APP_PlayWave(WAVE_SE_KACHI);
 			}
 			tomoyo_rise_fld[bx[player] + (by[player]-1) * fldsizew[player] + player * 200] = 0;
 //			fldt[bx[player] + by[player] * fldsizew[player] + player * 210] = 0;
@@ -815,7 +815,7 @@ void statTomoyoSelect(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_UP) ) {
-		APP_PlayWave(5);
+		APP_PlayWave(WAVE_SE_MOVE);
 		statusc[player * 10]--;
 		if(statusc[player * 10] < 0) statusc[player * 10] = 4;
 	}
@@ -823,7 +823,7 @@ void statTomoyoSelect(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_DOWN) ) {
-		APP_PlayWave(5);
+		APP_PlayWave(WAVE_SE_MOVE);
 		statusc[player * 10]++;
 		if(statusc[player * 10] > 4) statusc[player * 10] = 0;
 	}
@@ -831,7 +831,7 @@ void statTomoyoSelect(int32_t player) {
 	// ←
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if( getPressState(player, APP_BUTTON_LEFT) ) {
-		APP_PlayWave(3);
+		APP_PlayWave(WAVE_SE_KACHI);
 
 		// 回転法則
 		/*
@@ -871,7 +871,7 @@ void statTomoyoSelect(int32_t player) {
 	// →
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if( getPressState(player, APP_BUTTON_RIGHT) ) {
-		APP_PlayWave(3);
+		APP_PlayWave(WAVE_SE_KACHI);
 
 		// 回転法則
 		/*
@@ -925,13 +925,13 @@ void statTomoyoSelect(int32_t player) {
 
 	// HOLDボタンでnextcを0に戻す
 	if( getPushState(player, APP_BUTTON_D) ) {
-		APP_PlayWave(3);
+		APP_PlayWave(WAVE_SE_KACHI);
 		start_nextc[player] = 0;
 	}
 
 	// Aボタン
 	if( getPushState(player, APP_BUTTON_A) ) {
-		APP_PlayWave(10);
+		APP_PlayWave(WAVE_SE_KETTEI);
 		stage[player] = start_stage[player];
 		if((start_stage[player] >= 27) && (start_stage[player] <= 44) )
 			ltime[player] = 600 * 60;
@@ -989,10 +989,10 @@ void statTomoyoResult(int32_t player) {
 
 	// 音楽を流す
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( (status[1 - player] == 0) && (!APP_IsWavePlaying(63)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) APP_PlayWave(63);
+	if( (status[1 - player] == 0) && (!APP_IsWavePlaying(WAVE_BGM_NAMEENTRY)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) APP_PlayWave(WAVE_BGM_NAMEENTRY);
 
 	// 警告音が鳴っていたら止める
-	StopSE(40);
+	StopSE(WAVE_SE_PINCH);
 
 	// リプレイ保存
 	if((textguide) && (!playback) && (!demo)){
@@ -1071,7 +1071,7 @@ void statTomoyoResult(int32_t player) {
 	// ↑↓
 	if(getPushState(player, APP_BUTTON_UP) || getPushState(player, APP_BUTTON_DOWN)) {
 		if(!ending[player]) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			statusc[player * 10] = !statusc[player * 10];
 		}
 	}
@@ -1085,7 +1085,7 @@ void statTomoyoResult(int32_t player) {
 			status[player] = 0;	// 参加待ち（タイトルへ）
 		} else if( (!statusc[player * 10]) && (statusc[player * 10 + 1] < 10 * 60) && (!ending[player]) ) {
 			// YES
-			APP_PlayWave(10);
+			APP_PlayWave(WAVE_SE_KETTEI);
 
 			if((stage[player] >= 27) && (stage[player] <= 44) )
 				ltime[player] = 600 * 60;
@@ -1172,7 +1172,7 @@ void statTomoyoSelect_FP(int32_t player) {
 		// ←
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 		if( getPressState(player, APP_BUTTON_LEFT) ) {
-			APP_PlayWave(3);
+			APP_PlayWave(WAVE_SE_KACHI);
 
 			// ステージ番号
 			start_stage[player]--;
@@ -1185,7 +1185,7 @@ void statTomoyoSelect_FP(int32_t player) {
 		// →
 		if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 		if( getPressState(player, APP_BUTTON_RIGHT) ) {
-			APP_PlayWave(3);
+			APP_PlayWave(WAVE_SE_KACHI);
 
 			// ステージ番号
 			start_stage[player]++;
@@ -1219,7 +1219,7 @@ void statTomoyoSelect_FP(int32_t player) {
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_UP) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			statusc[player * 10 + 2]--;
 			if(statusc[player * 10 + 2] < 0) statusc[player * 10 + 2] = 3;
 			if(statusc[player * 10 + 3] < 90){
@@ -1240,7 +1240,7 @@ void statTomoyoSelect_FP(int32_t player) {
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 		if( getPressState(player, APP_BUTTON_DOWN) ) {
-			APP_PlayWave(5);
+			APP_PlayWave(WAVE_SE_MOVE);
 			statusc[player * 10 + 2]++;
 			if(statusc[player * 10 + 2] > 3) statusc[player * 10 + 2] = 0;
 			if(statusc[player * 10 + 3] < 90){
@@ -1261,7 +1261,7 @@ void statTomoyoSelect_FP(int32_t player) {
 
 	// Aボタン
 	if( (getPushState(player, APP_BUTTON_A)) || ((statusc[player * 10] != 0) && (statusc[player * 10 + 1] > 600)) ) {
-		APP_PlayWave(10);
+		APP_PlayWave(WAVE_SE_KETTEI);
 		if( statusc[player * 10] == 0 ) {
 			// 最初
 			stage[player] = start_stage[player];
@@ -1294,7 +1294,7 @@ void statTomoyoSelect_FP(int32_t player) {
 	}
 	if(( statusc[player * 10] == 0 ) && (getPushState(player, APP_BUTTON_B))) {		// Bボタンでモード選択画面に戻る
 		sp[player] = 1;
-		APP_PlayWave(5);
+		APP_PlayWave(WAVE_SE_MOVE);
 		randommode[player] = 1;
 		versusInit(player);				// NEXTを生成し直す
 		randommode[player] = 0;

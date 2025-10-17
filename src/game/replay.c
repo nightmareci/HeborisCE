@@ -886,7 +886,7 @@ void ReplaySelectProc(void) {
 			if(backno >= bg_max) backno = bg_max;
 			bgmlv = mission_bgm[c_mission];
 			if(repversw < 54) missionSetStatus();
-			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(18);
+			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(WAVE_SE_CHEER);
 		}
 		if(gameMode[0] == 4){
 			timeOn[1] = 0;
@@ -901,7 +901,7 @@ void ReplaySelectProc(void) {
 			domirror = 0;
 		}
 		if(((gameMode[0] == 3) && (!devil_minus[0])) || ((gameMode[0] == 7) && (anothermode[0] == 2))){
-			PlaySE(18);//歓声
+			PlaySE(WAVE_SE_CHEER);//歓声
 			gflash[0]=120;
 		}
 		mainLoopState = MAIN_GAME_EXECUTE;
@@ -1050,7 +1050,7 @@ void ReplaySelect(void) {
 	// ↑
 	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 	if(getPressState(0, APP_BUTTON_UP)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		do {
 			csr--;
 			if(csr < 0) csr = 39;
@@ -1060,7 +1060,7 @@ void ReplaySelect(void) {
 	// ↓
 	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 	if(getPressState(0, APP_BUTTON_DOWN)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		do {
 			csr++;
 			if(csr > 39) csr = 0;
@@ -1069,7 +1069,7 @@ void ReplaySelect(void) {
 
 	// Aで開始
 	if(getPushState(0, APP_BUTTON_A)) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		flag = csr + 1;
 	}
 
@@ -1100,7 +1100,7 @@ void ReplaySelect(void) {
 
 	// Cで詳細
 	if(getPushState(0, APP_BUTTON_C)) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		mainLoopState = MAIN_REPLAY_DETAIL;
 		init = true;
 	}
@@ -1506,7 +1506,7 @@ void ReplayDetail() {
 	else printFont(33, 14, "19/20", 0);
 
 	if(flag < 0 || getPushState(0, APP_BUTTON_A) || getPushState(0, APP_BUTTON_B)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		freeReplayData();
 		mainLoopState = MAIN_REPLAY_SELECT;
 		init = true;

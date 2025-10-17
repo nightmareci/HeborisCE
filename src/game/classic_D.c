@@ -163,7 +163,7 @@ void statDMove(int32_t player) {
 
 			if(judgeBlock(player, bx[player], by[player], k, bak) == 0) {
 				// 地形に重ならずに回転できる場合
-				if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+				if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 				rt[player] = bak;
 				blk[player] = k;
 				bk_D[player] = 0;
@@ -233,12 +233,12 @@ void statDMove(int32_t player) {
 						}
 					}
 						if((move)||(y_hosei)) {
-							if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+							if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 							bx[player] = bx[player] + move;
 							if(y_hosei) {
 								by[player] = by[player] + y_hosei;
-								PlaySE(1);
-								PlaySE(0);
+								PlaySE(WAVE_SE_KON);
+								PlaySE(WAVE_SE_SHAKI);
 								bk[player] = 0;		// 固定時間リセット
 							}
 							rt[player] = bak;
@@ -259,7 +259,7 @@ void statDMove(int32_t player) {
 						// Ti風水色床蹴り 床蹴りは1回だけ可能 #1.60c3
 						} else if((blk[player] == 4) && (kickc[player] == 0)) {
 							if((bak == 2) && (judgeBlock(player, bx[player], by[player] -1 -i, k, bak) == 0)) {
-								if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+								if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 								by[player] = by[player] -1 -i;
 								rt[player] = bak;
 								blk[player] = k;
@@ -297,7 +297,7 @@ void statDMove(int32_t player) {
 										move = 2 + i;
 
 									if(move) {
-										if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+										if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 										bx[player] = bx[player] + move;
 										rt[player] = bak;
 										blk[player] = k;
@@ -322,7 +322,7 @@ void statDMove(int32_t player) {
 										move = 0;
 
 									if(move) {
-										if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+										if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 										by[player] = by[player] + move;
 										rt[player] = bak;
 										blk[player] = k;
@@ -362,7 +362,7 @@ void statDMove(int32_t player) {
 			if((mpc[player] == 1) || (mpc[player] >= waitt[player]) || ((isremote[player]) && (gameMode[player] != 4)) || (((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)&&(mpc[player] >= 10 - (2 * (repversw >= 64)))))
 				if(judgeBlock(player, bx[player] + move, by[player], blk[player], rt[player]) == 0) {
 					bx[player] = bx[player] + move;
-					if(movesound) PlaySE(5);
+					if(movesound) PlaySE(WAVE_SE_MOVE);
 					bk_D[player] = 0;
 					if(!synchro) tspin_flag[player] = 0;	// T-SPIN権利剥奪 #1.60c7n6
 				}
@@ -432,7 +432,7 @@ void statDMove(int32_t player) {
 				&& (rots[player] != 7) && ( (repversw <= 13) || !up_flag[player] ) && (heboGB[player]==0)
 				&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 				bk[player] = bk[player] + lockT;
-				PlaySE(44);
+				PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 				harddrop[player]=1;
 
 				// 上入れ制限追加 #1.60c7q8
@@ -442,9 +442,9 @@ void statDMove(int32_t player) {
 			// 固定
 			if((bk[player] > lockT) || (bk_D[player] > 30)) {
 				if(heboGB[player]==0)
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 				else if(heboGB[player] == 1)
-					PlaySE(1);
+					PlaySE(WAVE_SE_KON);
 				kickc[player] = 0;	// 永久床蹴り防止用 #1.60c3
 				statusc[player * 10 + 2]++;
 				drawCBlock(player, 0, 0, 0, 10, 0);
@@ -487,9 +487,9 @@ void statDMove(int32_t player) {
 							fsmooth = 0;
 						}
 					}
-					PlaySE(1);
-					PlaySE(3);
-					PlaySE(44);
+					PlaySE(WAVE_SE_KON);
+					PlaySE(WAVE_SE_KACHI);
+					PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 					harddrop[player]=1;
 					kickc[player] = 0;
 					statusc[player * 10 + 2] ++;
@@ -532,9 +532,9 @@ void statDMove(int32_t player) {
 				if( getPressState(player, 1-(1*(isUDreverse[player]))) && (!down_flag[player]) && ((!move || nanamedown) || (repversw < 61))) {
 					if((heboGB[player]==0) && (sp[player] < 60)) bk_D[player] = bk_D[player] + 4;
 					else {
-						PlaySE(1);
+						PlaySE(WAVE_SE_KON);
 						if(heboGB[player]==0)
-							PlaySE(3);
+							PlaySE(WAVE_SE_KACHI);
 						kickc[player] = 0;
 						kickc2[player] = 0;
 						statusc[player * 10 + 2]++;
@@ -549,7 +549,7 @@ void statDMove(int32_t player) {
 					  (getPushState(player , 0+(1*(isUDreverse[player]))) && (repversw < 43)) )
 					&&(!up_flag[player]) && (repversw >= 15) && (heboGB[player]==0)
 					&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 					kickc[player] = 0;
 					harddrop[player]=1;
 					statusc[player * 10 + 2]++;
@@ -568,7 +568,7 @@ void statDMove(int32_t player) {
 
 //		UpLineBlockJudge(player);
 
-		if((don) && (heboGB[player]==0)) PlaySE(1);
+		if((don) && (heboGB[player]==0)) PlaySE(WAVE_SE_KON);
 
 		// ブロックを描く
 		flash = (count % 2) * (blockflash == 0) + (blockflash == 1);
@@ -609,7 +609,7 @@ void statDMove(int32_t player) {
 
 			// T-SPIN獲得 #1.60c7s6
 			if((tspin_flag[player]) && (blk[player] == 4)&& ((tspin_type>=2) || (gameMode[player] == 8)) && (statusc[player * 10 + 5] > 0) && (isTSpin(player) >= 3) ) {
-				PlaySE(34);
+				PlaySE(WAVE_SE_TSPIN);
 				tspin_c[player] = 120;
 				last_tspin[player] = 0;
 				tspin_flag[player] = 2;

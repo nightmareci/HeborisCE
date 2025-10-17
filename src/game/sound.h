@@ -3,22 +3,111 @@
 
 #include "common.h"
 
+typedef enum WaveNum
+{
+	WAVE_SE_SHAKI,
+	WAVE_SE_KON,
+	WAVE_SE_GON,
+	WAVE_SE_KACHI,
+	WAVE_SE_ROTATE,
+	WAVE_SE_MOVE,
+	WAVE_SE_HOLD,
+	WAVE_SE_TUMAGARI,
+	WAVE_SE_GAMEOVER,
+	WAVE_SE_LVSTOP,
+	WAVE_SE_KETTEI,
+
+	WAVE_SE_ERASE1,
+	WAVE_SE_ERASE2,
+	WAVE_SE_ERASE3,
+	WAVE_SE_ERASE4,
+
+	WAVE_SE_READY,
+	WAVE_SE_GO,
+
+	WAVE_SE_APPLAUSE,
+	WAVE_SE_CHEER,
+	WAVE_SE_LEVELUP,
+
+	WAVE_SE_UP,
+	WAVE_SE_BLOCK1,
+	WAVE_SE_BLOCK2,
+	WAVE_SE_BLOCK3,
+	WAVE_SE_BLOCK4,
+	WAVE_SE_BLOCK5,
+	WAVE_SE_BLOCK6,
+	WAVE_SE_BLOCK7,
+
+	WAVE_SE_TTCLEAR,
+	WAVE_SE_GM,
+	WAVE_SE_RANKUP,
+	WAVE_SE_STAGECLEAR,
+	WAVE_SE_HURRYUP,
+	WAVE_SE_TIMEOVER,
+	WAVE_SE_TSPIN,
+	WAVE_SE_HANABI,
+	WAVE_SE_MISSIONCLR,
+
+	WAVE_SE_THUNDER,
+
+	WAVE_SE_WARNING,
+
+	WAVE_SE_MEDAL,
+	WAVE_SE_PINCH,
+
+	WAVE_SE_PLATINAERASE,
+	WAVE_SE_TIMEEXTEND,
+	WAVE_SE_STGSTAR,
+	WAVE_SE_ACE_SONIC_LOCK,
+	WAVE_SE_REGRET,
+	WAVE_SE_COOL,
+
+	WAVE_SE_TIMESTOP,
+	WAVE_SE_TSERASE,
+
+	WAVE_BGM_START = 50,
+
+	WAVE_BGM_BGM01 = WAVE_BGM_START,
+	WAVE_BGM_BGM02,
+	WAVE_BGM_BGM03,
+	WAVE_BGM_BGM04,
+	WAVE_BGM_BGM05,
+	WAVE_BGM_BGM06,
+	WAVE_BGM_ENDING,
+	WAVE_BGM_ENDING_B,
+	WAVE_BGM_TOMOYO,
+	WAVE_BGM_TOMOYO_EX,
+	WAVE_BGM_VSMODE,
+	WAVE_BGM_TITLE,
+	WAVE_BGM_SELECT,
+	WAVE_BGM_NAMEENTRY,
+	WAVE_BGM_TOMOYO_EH,
+	WAVE_BGM_FEVER,
+	WAVE_BGM_MISSION_EX01,
+	WAVE_BGM_MISSION_EX02,
+	WAVE_BGM_MISSION_EX03,
+	WAVE_BGM_TOMOYO_EH_FINAL,
+	WAVE_COUNT,
+	WAVE_BGM_COUNT = WAVE_COUNT - WAVE_BGM_START,
+} WaveNum;
+
 void SoundTestProc(void);
 void changeBGM(int32_t player);
 void checkMasterFadeout(int32_t player);
 void checkFadeout(int32_t pl);
 void bgmFadeout(void);
+int32_t setstartBGM(int32_t mode,int32_t pl);
 int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg);
 int32_t ReplaysetstartBGM(int32_t mode,int32_t pl);
 int32_t setstartBGM_debug(int32_t mode,int32_t pl);
 int32_t BgmModeDecide(int32_t pl,int32_t mode);
 int32_t setstartBGM(int32_t mode,int32_t pl);
 void PlayAllSE();
-void StopSE(int32_t no);
-void PlaySE(int32_t no);
-void StopAllWaves(void);
+void StopSE(WaveNum no);
+void PlaySE(WaveNum no);
+void StopAllSE(void);
 void StopAllBGM(void);
-void SetVolumeAllWaves(int32_t vol);
+void SetVolumeAllSE(int32_t vol);
 void SetVolumeAllBGM(int32_t vol);
 
 #endif

@@ -169,27 +169,27 @@ void RankingProc2_3() {
 
 	// ←
 	if( getPushState(0, APP_BUTTON_LEFT) ) {
-		PlaySE( 5 );
+		PlaySE(WAVE_SE_MOVE);
 		rkpage--;//ゲームモード
 		if(rkpage < 0) rkpage = 11;
 	}
 
 	// →
 	if( getPushState(0, APP_BUTTON_RIGHT) ) {
-		PlaySE( 5 );
+		PlaySE(WAVE_SE_MOVE);
 		rkpage++;
 		if(rkpage > 11) rkpage = 0;
 	}
 
 	// ↑
 	if( getPushState(0, APP_BUTTON_UP) ) {
-		PlaySE( 5 );
+		PlaySE(WAVE_SE_MOVE);
 		rankingrule = !(rankingrule);//回転ルール
 	}
 
 	// ↓
 	if( getPushState(0, APP_BUTTON_DOWN) ) {
-		PlaySE( 5 );
+		PlaySE(WAVE_SE_MOVE);
 		rankingrule  = !(rankingrule);
 	}
 

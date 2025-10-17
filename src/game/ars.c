@@ -95,7 +95,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			if((repversw >= 35) && (judgeBlock (player, bx[player], by[player] + 1, blk[player], rt[player]) != 0)) landing = 1;
 			if(judgeBlock(player, bx[player], by[player], k, bak) == 0) {
 				// 地形に重ならずに回転できる場合
-				if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+				if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 				rt[player] = bak;
 				blk[player] = k;
 				synchro = 1;
@@ -124,7 +124,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 							move = 1 + i;
 
 						if(move) {
-							if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+							if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 							bx[player] = bx[player] + move;
 							rt[player] = bak;
 							blk[player] = k;
@@ -143,7 +143,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 						// Ti風水色床蹴り 床蹴りは1回だけ可能 #1.60c3
 						} else if((blk[player] == 4) && (kickc2[player] == 0)) {
 							if((bak == 2) && (judgeBlock(player, bx[player], by[player] -1 -i, k, bak) == 0)) {
-								if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+								if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 								by[player] = by[player] -1 -i;
 								rt[player] = bak;
 								blk[player] = k;
@@ -179,7 +179,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 							move = 2 + i;
 
 						if(move) {
-							if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+							if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 							bx[player] = bx[player] + move;
 							rt[player] = bak;
 							blk[player] = k;
@@ -203,7 +203,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 							move = 0;
 
 						if(move) {
-							if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+							if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 							by[player] = by[player] + move;
 							rt[player] = bak;
 							blk[player] = k;
@@ -226,7 +226,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				if(repversw < 40) kickc[player]++;	// 接地した状態での回転回数をカウント
 				else kickc3[player]++;
 				if((world_drop_snd != 0) && (world_drop_snd != 3) && (l != 0))
-					PlaySE(1);
+					PlaySE(WAVE_SE_KON);
 				if(((kickc[player] < kickm) && (repversw < 40)) || (kickc3[player] < kickr)){
 				 	bk[player] = 0;		// 固定時間リセット
 				 }
@@ -252,12 +252,12 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			if((mpc[player] == 1) || (mpc[player] >= waitt[player]) || ((isremote[player]) && (gameMode[player] != 4)))
 				if(judgeBlock (player, bx[player] + move, by[player], blk[player], rt[player]) == 0) {
 					bx[player] = bx[player] + move;
-					if(movesound) PlaySE(5);	// 移動音設定が反映されないのを修正#1.60c7f7
+					if(movesound) PlaySE(WAVE_SE_MOVE);	// 移動音設定が反映されないのを修正#1.60c7f7
 					l = judgeBlock (player, bx[player], by[player] + 1, blk[player], rt[player]);
 					if(((l != 0) || ((landing) && (repversw >= 35))) && (heboGB[player]==0)) {	// 横移動でも固定時間リセット
 						if((!synchro) || (repversw < 40))kickc[player]++;
 						if((world_drop_snd != 0) && (world_drop_snd != 3) && (l != 0))
-							PlaySE(1);
+							PlaySE(WAVE_SE_KON);
 						if(kickc[player] < kickm){
 							 bk[player] = 0;
 						 }
@@ -318,7 +318,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			if((getPressState(player , 1-(1*(isUDreverse[player])))) && (!down_flag[player])
 						&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 				if((rots[player] == 5) || (heboGB[player])){	// ARS2では下入れ即接着
-					if(heboGB[player]==0) PlaySE(44);
+					if(heboGB[player]==0) PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 					bk[player] = 100;
 				}
 				else
@@ -331,7 +331,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				&& (rots[player] == 4) && ( (repversw <= 13) || !up_flag[player] ) && (heboGB[player]==0)
 						&& (((statusc[player * 10 + 4]) && (!move || nanamedown)) || (repversw < 27))) {
 				bk[player] = bk[player] + lockT;
-					PlaySE(44);
+					PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 
 				// 上入れ制限追加 #1.60c7q8
 				if( downtype && (repversw >= 14) && (repversw < 54)) up_flag[player] = 1;
@@ -340,9 +340,9 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			// 固定
 			if((bk[player] > lockT) || (kickc[player] > kickm) || (kickc3[player] > kickr)) {
 				if(heboGB[player]==0)
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 				else if(heboGB[player] == 1)
-					PlaySE(1);
+					PlaySE(WAVE_SE_KON);
 				kickc[player] = 0;
 				kickc2[player] = 0;
 				kickc3[player] = 0;
@@ -384,10 +384,10 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 							fsmooth = 0;
 						}
 					}
-					if((world_drop_snd == 1) || (rots[player] == 4)) PlaySE(1);
-					PlaySE(3);
+					if((world_drop_snd == 1) || (rots[player] == 4)) PlaySE(WAVE_SE_KON);
+					PlaySE(WAVE_SE_KACHI);
 					if(rots[player] == 4)	//ACE-ARSは専用のSEを鳴らす
-						PlaySE(44);
+						PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 					kickc[player] = 0;
 					kickc2[player] = 0;
 					kickc3[player] = 0;
@@ -456,10 +456,10 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) && (repversw >= 15)
 							&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
 					if((rots[player] == 5) || (heboGB[player])) {	// ARS2では下入れ即接着
-						PlaySE(1);
+						PlaySE(WAVE_SE_KON);
 						if(heboGB[player]==0){
-							PlaySE(3);
-							PlaySE(44);
+							PlaySE(WAVE_SE_KACHI);
+							PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 						}
 						kickc[player] = 0;
 						kickc2[player] = 0;
@@ -479,8 +479,8 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 					  (getPushState(player , 0+(1*(isUDreverse[player]))) && (repversw < 43)) )
 					&& (rots[player] == 4) && (!up_flag[player]) && (repversw >= 15) && (heboGB[player]==0)
 					&& (((statusc[player * 10 + 4]) && (!move || nanamedown)) || (repversw < 27))) {
-					PlaySE(3);
-					PlaySE(44);
+					PlaySE(WAVE_SE_KACHI);
+					PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 					kickc[player] = 0;
 					kickc2[player] = 0;
 					kickc3[player] = 0;
@@ -500,7 +500,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 
 		// 接地音を鳴らす
 		// world_drop_sndが1の場合のみ #1.60c7m9
-		if( (don) && (world_drop_snd >= 1) && (heboGB[player]==0) ) PlaySE(1);
+		if( (don) && (world_drop_snd >= 1) && (heboGB[player]==0) ) PlaySE(WAVE_SE_KON);
 
 		// ブロックを描く
 		flash = (count % 2) * (blockflash == 0) + (blockflash == 1);
@@ -543,7 +543,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			// T-SPIN獲得 #1.60c7s6
 			//3-コーナーチェック(スライドのやつはすでにチェックされてる)
 			if((tspin_flag[player]) && (blk[player] == 4) && ((tspin_type>=2) || (gameMode[player] == 8)) && (statusc[player * 10 + 5] > 0) && (isTSpin(player) >= 3) ) {
-				PlaySE(34);
+				PlaySE(WAVE_SE_TSPIN);
 				tspin_c[player] = 120;
 				tspin_flag[player] = 2;
 				last_tspin[player] = 0;

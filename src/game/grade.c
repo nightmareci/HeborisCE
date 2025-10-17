@@ -7,7 +7,7 @@ void GradeUp(int32_t player, int32_t lines){
 	if((enable_grade[player] == 1) && (gameMode[player] != 0) && (gameMode[player] != 3)) { // DEVIL以外
 		// (S8までなら)段位上昇判定 #1.60c7g5
 		if((grade[player] < 17) && (sc[player] >= gscore[grade[player]])) {
-			APP_PlayWave(30);	// rankup.wav #1.60c7i2
+			APP_PlayWave(WAVE_SE_RANKUP);
 			grade[player]++;
 			gflash[player]=120;
 			gup_down[player] = 1;
@@ -364,7 +364,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if( (gpoint[player] >= 100) &&(grade[player] <= 28)) {//MV
 				gup_down[player] = 1;
 				gflash[player] = 120;
-				PlaySE(30);//rankup.wav
+				PlaySE(WAVE_SE_RANKUP);//rankup.wav
 				gtime[player] = 0;
 				grade[player]++;
 				gpoint[player] = ((gpoint[player] - 100)/ ((tc[player] / 350) + 1 + (combo2[player] / 2)));//持ち越し
@@ -398,10 +398,10 @@ void GradeUp2(int32_t player, int32_t lines){
 				(grade2[player]==11)||(grade2[player]==14)||(grade2[player]==17)||(grade2[player]==18)||
 				(grade2[player]==19)||(grade2[player]==22)||(grade2[player]==24)||(grade2[player]==26)||
 				(grade2[player]==28)||(grade2[player]==30)){
-					PlaySE(30);//rankup音
+					PlaySE(WAVE_SE_RANKUP);//rankup音
 					gflash[player] = 120;
 				}else {
-					PlaySE(46);//cool音
+					PlaySE(WAVE_SE_COOL);//cool音
 				}
 			}//19段位変換
 			if(grade2[player]==0)
@@ -485,7 +485,7 @@ void GradeUp3(int32_t player) {//ブロックを置く度に
 
 		if(isqcool){//
 			gup_down[player] = 1;//coolの文字を出す
-			PlaySE(46);
+			PlaySE(WAVE_SE_COOL);
 			grade[player]++;	//段位を上げる
 			qualityflag[player] = 1;
 			gflash[player] = 240;
@@ -498,7 +498,7 @@ void GradeUp3(int32_t player) {//ブロックを置く度に
 	if(secinlv[player]<94){//セクションまたぎは無効
 		if((skillflag[player] != 1)){
 			if(((skillg[player] >= 3)&&(tr2[player]<=10))||((skillg[player] >= 4)&&(tr2[player]>10))){//skill cool
-				PlaySE(46);
+				PlaySE(WAVE_SE_COOL);
 				gup_down[player] = 1;
 				skillg[player] = 0;
 				gflash[player] = 240;

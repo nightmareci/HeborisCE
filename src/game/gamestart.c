@@ -1582,7 +1582,7 @@ void mainUpdate() {
 
 		PlayerdataLoad();
 
-		StopAllWaves();
+		StopAllSE();
 		StopAllBGM();
 
 		backupSetups();	// 設定内容をバックアップ #1.60c7o6
@@ -1785,7 +1785,7 @@ void mainUpdate() {
 
 		APP_BltAlways(false);
 
-		StopAllWaves();
+		StopAllSE();
 		StopAllBGM();
 
 		backupSetups();	// 設定内容をバックアップ #1.60c7o6
@@ -2116,7 +2116,7 @@ bool lastProc(void) {
 
 		if(getPushState(0, APP_BUTTON_A) || getPushState(1, APP_BUTTON_A)) {
 			StopAllBGM();
-			StopSE(40);
+			StopSE(WAVE_SE_PINCH);
 			cpu_flag[0] = 0;
 			cpu_flag[1] = 0;
 			rots[0] = setupBak[4] % 10;
@@ -2132,7 +2132,7 @@ bool lastProc(void) {
 
 		if( (gametime[0] > 5400) || (gametime[1] > 5400) || (status[0] == 14) || (status[1] == 14)) {
 			StopAllBGM();
-			StopSE(40);
+			StopSE(WAVE_SE_PINCH);
 			cpu_flag[0] = 0;
 			cpu_flag[1] = 0;
 			rots[0] = setupBak[4] % 10;
@@ -2192,13 +2192,11 @@ bool lastProc(void) {
 			if(pauseGame[0]) {
 				// ポーズ解除
 				setGamePause(0, false);
-				
-					APP_ResumeWave(-1); // resuem all paused waves
+				APP_ResumeWave(APP_WAVE_NUM_ALL);
 			} else {
 				// ポーズ
 				setGamePause(0, true);
-
-					APP_PauseWave(-1); //pause all waves, can't use 50+bgmlevel cuz that wontt get credit music.
+				APP_PauseWave(APP_WAVE_NUM_ALL);
 			}
 
 			if(gameMode[0] == 4)
@@ -2218,13 +2216,11 @@ bool lastProc(void) {
 			if(pauseGame[1]) {
 				// ポーズ解除
 				setGamePause(1, false);
-
-				APP_ResumeWave(-1); // same as above
+				APP_ResumeWave(APP_WAVE_NUM_ALL);
 			} else {
 				// ポーズ
 				setGamePause(1, true);
-
-				APP_PauseWave(-1); // saem as above.
+				APP_PauseWave(APP_WAVE_NUM_ALL);
 			}
 
 			if(gameMode[1] == 4)
@@ -2342,7 +2338,7 @@ void title(void) {
 					APP_SetMusicVolume(bgmvolume);
 				}
 			} else {
-				if(!APP_IsWavePlaying(61)) APP_PlayWave(61);
+				if(!APP_IsWavePlaying(WAVE_BGM_TITLE)) APP_PlayWave(WAVE_BGM_TITLE);
 			}
 		}
 		else {
@@ -2403,7 +2399,7 @@ void title(void) {
 		for(int32_t player = 0; player < 2; player++) {
 			if(getPushState(player, APP_BUTTON_A)) {
 				democ = 0;
-				PlaySE(10);
+				PlaySE(WAVE_SE_KETTEI);
 				mode = 1;
 			}
 		}
@@ -2454,7 +2450,7 @@ void title(void) {
 			// 上へ
 			if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 			if(getPressState(player, APP_BUTTON_UP)) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				game--;
 				if(game < 0) game = maxGame; // 対戦モード追加に従い修正 #1.60c7g1
 			}
@@ -2462,7 +2458,7 @@ void title(void) {
 			// 下へ
 			if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 			if(getPressState(player, APP_BUTTON_DOWN)) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				game++;
 				if(game > maxGame) game = 0; // 対戦モード追加に従い修正 #1.60c7g1
 			}
@@ -2476,7 +2472,7 @@ void title(void) {
 
 			// 決定
 			if(getPushState(player, APP_BUTTON_A)) {
-				APP_PlayWave(10);
+				APP_PlayWave(WAVE_SE_KETTEI);
 				mode = 2;
 				domirror = 0;	//鏡像は最初は無効、必要に応じて1にする
 
@@ -4078,10 +4074,10 @@ bool playerExecute(void) {
 	// 窒息しそうなら警告音を鳴らす #1.60c7l5
 	// プレイ中のみ #1.60c7l6
 	if( ((pinch[0])&&(onRecord[0])) || ((pinch[1])&&(onRecord[1])) ) {
-		if( !APP_IsWavePlaying(40) ) PlaySE(40);
+		if( !APP_IsWavePlaying(WAVE_SE_PINCH) ) PlaySE(WAVE_SE_PINCH);
 	} else {
 		// ピンチから通常状態に戻ったら即止める #1.60c7l6
-		StopSE(40);
+		StopSE(WAVE_SE_PINCH);
 	}
 
 
@@ -4125,13 +4121,13 @@ bool playerExecute(void) {
 					printFont(14 - 12 * maxPlay, 16, "C+<L R>:ITEM", count % 9);
 					if(getPressState(i, APP_BUTTON_C)){
 						if(getPushState(i, APP_BUTTON_LEFT)){
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							item_nblk[0 + i * 6]--;
 							if(item_nblk[0 + i * 6] < 0) item_nblk[0 + i * 6] = item_num;
 							item_name[i] = item_nblk[0 + i * 6];
 						}
 						if(getPushState(i, APP_BUTTON_RIGHT)){
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							item_nblk[0 + i * 6]++;
 							if(item_nblk[0 + i * 6] > item_num) item_nblk[0 + i * 6] = 0;
 							item_name[i] = item_nblk[0 + i * 6];
@@ -4160,7 +4156,7 @@ bool playerExecute(void) {
 
 			if(hanabi_frame[i] >= 30) {
 				hanabi_waiting[i]--;
-				PlaySE(35);
+				PlaySE(WAVE_SE_HANABI);
 				objectCreate2(i, 7, APP_Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + APP_Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, APP_Rand(7)+1, 0);
 				//hanabi_total[i]++;//総数カウント
 				hanabi_frame[i] = 0;
@@ -4170,7 +4166,7 @@ bool playerExecute(void) {
 		}
 		if((ending[i] == 2) && (gameMode[i] == 0)&&(endtime[i] % hanabi_int[i] == 0)&&(!novice_mode[i])){//ロール中花火　staffroll.cから移動
 			hanabi_total[i]++;
-			PlaySE(35);
+			PlaySE(WAVE_SE_HANABI);
 			objectCreate2(i, 7, APP_Rand(80) + 72 + 192 * i - 96 * maxPlay, 16 + APP_Rand(20) + 116 * ((checkFieldTop(i) < 12) && (by[i] < 12)), 0, 0, APP_Rand(7)+1, 0);
 		}
 
@@ -4181,7 +4177,7 @@ bool playerExecute(void) {
 		//プラチナブロック消去サウンド
 		if(platinaerase_cnt[i] != 0){
 			if(platinaerase_cnt[i] % 10 == 0){
-					PlaySE(41);
+				PlaySE(WAVE_SE_PLATINAERASE);
 			}
 		platinaerase_cnt[i]--;
 		}
@@ -4213,7 +4209,7 @@ bool playerExecute(void) {
 				// 時間停止
 				istimestop[i] = 0;
 				item_timer[i] = 0;
-				StopSE(47);
+				StopSE(WAVE_SE_TIMESTOP);
 			} else if( (isboost[i]) && (item_timer[i] <= 0) ) {
 				// BOOST FIRE
 				isboost[i] = 0;
@@ -4221,9 +4217,9 @@ bool playerExecute(void) {
 			} else if( (isfever[i]) && (item_timer[i] <= 0)) {
 				// フィーバー
 				if(!isfever[1-i])
-					APP_StopWave(65);
-				if((!APP_IsWavePlaying(50+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
-					APP_PlayWave(50+bgmlv);
+					APP_StopWave(WAVE_BGM_FEVER);
+				if((!APP_IsWavePlaying(WAVE_BGM_START+bgmlv)) && (!isfever[1-i]) && (!ending[i]) && (timeOn[i]))
+					APP_PlayWave(WAVE_BGM_START+bgmlv);
 				isfever[i] = 0;
 				item_timer[i] = 0;
 			} else if( (isUDreverse[i]) && (item_timer[i] <= 0) ) {
@@ -4255,7 +4251,7 @@ bool playerExecute(void) {
 		// ミッションでは無効 C7T6.6
 		// Removed 15 minute limit for original modes, as they were endless in original heboris.
 
-		if((gameMode[i] <= 4) || ((gameMode[i])==10)&&(limit15==1)) {
+		if((gameMode[i] <= 4) || (((gameMode[i])==10)&&(limit15==1))) {
 			if((gametime[i] > 54000) && (limit15)) {
 				sp[i]    = speed_limit15;
 				wait1[i] = wait1_limit15;
@@ -4506,7 +4502,7 @@ int32_t doGiveup() {
 		freeReplayData();
 
 		// 効果音停止
-		StopAllWaves();
+		StopAllSE();
 		StopAllBGM();
 
 		// 背景を戻す #1.60c7o8
@@ -4613,48 +4609,48 @@ void increment_time(int32_t player) {
 			if(gmflag_r[player]) {
 				grade[player]=32;
 				gflash[player]=120;
-				PlaySE(30);	// rankup.wav
+				PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 			}
 		}else if(enable_grade[player]== 2){
 			if((gmflag_r[player])&&(endlines[player] >= 20)) {//消えロール20列消
 				grade[player]=grade[player] + 3;	//合計+3
 				gflash[player]=120;
-				PlaySE(30);	// rankup.wav
+				PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 
 			}else if((gmflag_r[player])&&(endlines[player] >= 13)) {//13列消
 				grade[player]=grade[player] + 2;	//合計+2
 				gflash[player]=120;
-				PlaySE(30);	// rankup.wav
+				PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 
 			}else if((gmflag_r[player])&&(endlines[player] >= 7)) {//7列消
 				grade[player]=grade[player] + 1;	//合計+1
 				gflash[player]=120;
-				PlaySE(30);	// rankup.wav
+				PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 			}else if((gmflag_r[player])&&(endlines[player] < 3)){//3列しか消してない
 				grade[player]=grade[player] - 1;
 			}else if(!gmflag_r[player]){//見えロール
 				grade[player]=grade[player] + 1;	//合計+1
 				gflash[player]=120;
-				PlaySE(30);	// rankup.wav
+				PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 			}
 		}else if(enable_grade[player] == 3){
 			if((gmflag_r[player])&&(endlines[player] >= 15)) {
 				grade[player]=32;
 				gflash[player]=120;
-				PlaySE(30);	// rankup.wav
+				PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 			}
 		}else if(enable_grade[player] == 4){
 			if((gmflag_r[player])&&(endlines[player] >= 3)) {//消えロール
 				grade[player] = grade[player] + endlines[player] / 4;
 				if((grade[player]>= 30)&& (tr[player] >175)&&(viewgrade(player)>=31)){//MMを取ってないとだめ
 					grade[player] = 32;//GM
-					PlaySE(30);	// rankup.wav
+					PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 				}else if((grade[player]>= 30)&& (tr[player] >155)){
 					grade[player] = 31;//MM
-					PlaySE(30);	// rankup.wav
+					PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 				}else if(grade[player] >= 30){
 					grade[player] = 29;//MV
-					PlaySE(30);	// rankup.wav
+					PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 				}
 				if(grade[player]>32)grade[player]=32;
 			}
@@ -4678,7 +4674,7 @@ void increment_time(int32_t player) {
 				// CLASSIC系列は5:00以内、WORLD系列は5:20以内でGOD昇格
 				if( ((!isWRule(player)) && (gametime[player] <= 18000)) || ((isWRule(player)) && (gametime[player] <= 19200)) ) {
 					grade[player] = 16;
-					PlaySE(30);	// rankup.wav
+					PlaySE(WAVE_SE_RANKUP);	// rankup.wav
 					gflash[player]=120;
 				}
 				else{  //そうでなければS13止まり
@@ -4710,9 +4706,9 @@ void increment_time(int32_t player) {
 
 		onRecord[player] = 0;					// エンディングロール終了と同時にリプレイ記録終了
 		if(gameMode[player] == 8)
-			PlaySE(36);
+			PlaySE(WAVE_SE_MISSIONCLR);
 		else if(ending[player] == 3)
-			PlaySE(29);
+			PlaySE(WAVE_SE_GM);
 
 		// フィールドタイマー解除 #1.60c7k7
 		disableShadowTimer(player);
@@ -4804,7 +4800,7 @@ void increment_time(int32_t player) {
 		ltime[player]--;
 
 		// 10秒前の警告音 #1.60c7r9
-		if(ltime[player] == 10 * 60) PlaySE(32);
+		if(ltime[player] == 10 * 60) PlaySE(WAVE_SE_HURRYUP);
 
 		// タイムオーバー
 		if(ltime[player] <= 0) {
@@ -4814,7 +4810,7 @@ void increment_time(int32_t player) {
 			onRecord[1] = 0;
 			ltime[0] = 0;
 			ltime[1] = 0;
-			PlaySE(33);//タイムオーバー音
+			PlaySE(WAVE_SE_TIMEOVER);//タイムオーバー音
 			if(wintype == 1){
 				if(li[0] == li[1]) {
 					// レベルが同じなら引き分け
@@ -4873,8 +4869,8 @@ void increment_time(int32_t player) {
 		{
 			if(stime[player] > 0) {
 				stime[player]--;	//ステージタイム
-				if(stime[player] == 10 * 60) PlaySE(32);
-				if(stime[player] == 0) PlaySE(33);
+				if(stime[player] == 10 * 60) PlaySE(WAVE_SE_HURRYUP);
+				if(stime[player] == 0) PlaySE(WAVE_SE_TIMEOVER);
 			}
 		}
 	}
@@ -4890,21 +4886,21 @@ void increment_time(int32_t player) {
 		}
 
 		// 10秒前の警告音 #1.60c7r9
-		if(ltime[player] == 10 * 60) PlaySE(32);
+		if(ltime[player] == 10 * 60) PlaySE(WAVE_SE_HURRYUP);
 
 		// 0になったらゲームオーバー（ただし耐久ミッションは除く）
 		if(ltime[player] <= 0) {
 			if(gameMode[player] == 7){	//ACE
-				PlaySE(33);
+				PlaySE(WAVE_SE_TIMEOVER);
 				setGameOver(player);
 			} else if((gameMode[player] == 8) && (mission_type[c_mission] != 23)){	//MISSION
-				PlaySE(33);
+				PlaySE(WAVE_SE_TIMEOVER);
 				setGameOver(player);
 			}
 		}
 	}		//ULTRA
 	if((timeOn[player])&& (ltime[player] > 0)&&(gameMode[player] == 9)&&(std_opt[player] == 1)) {
-		if(ltime[player] == 10 * 60) PlaySE(32);
+		if(ltime[player] == 10 * 60) PlaySE(WAVE_SE_HURRYUP);
 		ltime[player]--;
 
 		if(ltime[player] <= 0){
@@ -4913,7 +4909,7 @@ void increment_time(int32_t player) {
 	}
 	//PRAC
 	if((timeOn[player])&& (ltime[player] > 0)&&(gameMode[player] == 5)&&(p_goaltype == 4)) {
-		if(ltime[player] == 10 * 60) PlaySE(32);
+		if(ltime[player] == 10 * 60) PlaySE(WAVE_SE_HURRYUP);
 		ltime[player]--;
 
 		if(ltime[player] <= 0){
@@ -4951,7 +4947,7 @@ void increment_time(int32_t player) {
 						gpoint[player] = 0;
 						//gflash[player] = 120;
 						gup_down[player] = 0;//regret
-						PlaySE(45);
+						PlaySE(WAVE_SE_REGRET);
 					}
 				}else if(enable_grade[player] == 3){
 					if(gpoint[player] < 0)
@@ -5005,11 +5001,11 @@ void statJoinwait(int32_t player) {
 
 	// ボタンが利きにくいのを修正#1.60cf
 	if((getPushState(player, APP_BUTTON_A)) && (tomoyo_domirror[1-player] == 0) && !((player == 1) && ((domirror) && (mirror)) ) && (!bgfadesw)) {
-		StopSE(8);
-		PlaySE(10);
+		StopSE(WAVE_SE_GAMEOVER);
+		PlaySE(WAVE_SE_KETTEI);
 
 		if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) {
-			if(!APP_IsWavePlaying(62)) APP_PlayWave(62);
+			if(!APP_IsWavePlaying(WAVE_BGM_SELECT)) APP_PlayWave(WAVE_BGM_SELECT);
 		}
 		playerInitial(player);
 		randommode[player] = 1;
@@ -5078,10 +5074,10 @@ void statSelectMode(int32_t player) {
 	//statusc[player * 10 + 1]++;
 	if(statusc[player * 10 + 4] > 0){
 		statusc[player * 10 + 4]--;
-		if(statusc[player * 10 + 4] == 0) PlaySE(5);
+		if(statusc[player * 10 + 4] == 0) PlaySE(WAVE_SE_MOVE);
 	} else if(statusc[player * 10 + 4] < 0){
 		statusc[player * 10 + 4]++;
-		if(statusc[player * 10 + 4] == 0) PlaySE(5);
+		if(statusc[player * 10 + 4] == 0) PlaySE(WAVE_SE_MOVE);
 	}else
 		statusc[player * 10 + 1]++;
 
@@ -5093,8 +5089,8 @@ void statSelectMode(int32_t player) {
 		if( (!APP_IsMusicPlaying()) && (wavebgm & APP_SOUND_BITS_SIMPLE) ) {
 			APP_PlayMusic();
 			APP_SetMusicVolume(bgmvolume);
-		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(62)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) {
-			APP_PlayWave(62);
+		} else if(((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(WAVE_BGM_SELECT)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) ) {
+			APP_PlayWave(WAVE_BGM_SELECT);
 		}
 	}
 
@@ -5361,7 +5357,7 @@ void statSelectMode(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_UP) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 
 		// モードセレクト
 		if(statusc[player * 10 + 2] == 1) {
@@ -5392,7 +5388,7 @@ void statSelectMode(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if( getPressState(player, APP_BUTTON_DOWN) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 
 		// モードセレクト
 		if(statusc[player * 10 + 2] == 1) {
@@ -5423,7 +5419,7 @@ void statSelectMode(int32_t player) {
 	// ←
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 	if( getPressState(player, APP_BUTTON_LEFT) ) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 		// ルールセレクト
 		if(statusc[player * 10 + 2] == 0) {
 			rots[player]--;
@@ -5482,7 +5478,7 @@ void statSelectMode(int32_t player) {
 	// →
 	if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) )
 	if( getPressState(player, APP_BUTTON_RIGHT) ) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 		// ルールセレクト
 		if(statusc[player * 10 + 2] == 0) {
 			rots[player]++;
@@ -5562,7 +5558,7 @@ void statSelectMode(int32_t player) {
 	// HOLDボタン
 	// アイテムモードとか、DEATH+とか
 	if(getPushState(player, APP_BUTTON_D) && (statusc[player * 10 + 2] == 1)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		if((gameMode[player] == 6)&&(tomoyo_opt[player]==4)){
 			if(!fpbas_mode[player])
 			fpbas_mode[player]=1;
@@ -5601,7 +5597,7 @@ void statSelectMode(int32_t player) {
 
 	// Bボタン
 	if( getPushState(player, APP_BUTTON_B) ) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		death_plus[player] = 0;
 		item_mode[player] = 0;
 		hebo_plus[player] = 0;
@@ -5632,7 +5628,7 @@ void statSelectMode(int32_t player) {
 
 	// Aボタン
 	if( getPushState(player, APP_BUTTON_A) ) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		statusc[player * 10 + 1] = 0;
 		statusc[player * 10 + 4] = 0;
 
@@ -5661,7 +5657,7 @@ void statSelectMode(int32_t player) {
 
 				p_shirase[player] = (gameMode[player] == 3);
 				if(((gameMode[player] == 3) && (!devil_minus[player])) || ((gameMode[player] == 7) && (anothermode[player] == 2))) {
-					PlaySE(18);//歓声
+					PlaySE(WAVE_SE_CHEER);//歓声
 					gflash[player]=120;
 					upLineT[player] = 0;
 				}
@@ -5990,7 +5986,7 @@ void statSelectStandardSp(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
 		if(getPressState(player, APP_BUTTON_UP)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 			statusc[player * 10]--;
 			if(statusc[player * 10] < 0) statusc[player * 10] = 6;
 
@@ -6001,7 +5997,7 @@ void statSelectStandardSp(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
 		if(getPressState(player, APP_BUTTON_DOWN)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 			statusc[player * 10]++;
 			if(statusc[player * 10] > 6) statusc[player * 10] = 0;
 
@@ -6011,7 +6007,7 @@ void statSelectStandardSp(int32_t player) {
 	// ← (Cボタンを押しながらだと高速に数値を変更します)
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 		if(getPressState(player, APP_BUTTON_LEFT)) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 					// FAVORITES
 			if(statusc[player * 10] == 0) {
 				statusc[player * 10 + 1]--;
@@ -6053,7 +6049,7 @@ void statSelectStandardSp(int32_t player) {
 		// → (Cボタンを押しながらだと高速に数値を変更します)
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 		if(getPressState(player, APP_BUTTON_RIGHT)) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 			// FAVORITES
 			if(statusc[player * 10] == 0) {
 				statusc[player * 10 + 1]++;
@@ -6096,7 +6092,7 @@ void statSelectStandardSp(int32_t player) {
 
 	if(getPushState(player, APP_BUTTON_B)) {		// Bボタンでモード選択画面に戻る
 		sp[player] = 1;
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		status[player] = 1;				// ブロックシャッター実行
 		statusc[player * 10] = 0;			// ステータスカウンタを0に
 		statusc[player * 10 + 1] = 2;		// シャッター後はステータスNo.2
@@ -6107,9 +6103,9 @@ void statSelectStandardSp(int32_t player) {
 		if(statusc[player * 10] == 0) {
 			// FAVORITES関連
 			loadWait(player, statusc[player * 10 + 1]); // 対応した設定を読み込む。
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 		}else{
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		upLines[player] = 0;
 		if(std_opt[player] == 1){			//TI
 			ltime[player] = 120 * 60;
@@ -6169,7 +6165,7 @@ void statSelectStartLv(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, APP_BUTTON_UP)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		statusc[player * 10]--;
 		if(statusc[player * 10] < 0) statusc[player * 10] = 13;
 
@@ -6179,7 +6175,7 @@ void statSelectStartLv(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, APP_BUTTON_DOWN)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		statusc[player * 10]++;
 		if(statusc[player * 10] > 13) statusc[player * 10] = 0;
 
@@ -6195,7 +6191,7 @@ void statSelectStartLv(int32_t player) {
 
 
 	if(getPushState(player, APP_BUTTON_B)) {		// Bボタンでモード選択画面に戻る
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		status[player] = 2;					// ステータスカウンタを0に
 		statusc[player * 10] = 0;
 		statusc[player * 10 + 1] = 0;
@@ -6203,7 +6199,7 @@ void statSelectStartLv(int32_t player) {
 	}
 
 	if((statusc[player * 10 + 1] > 15 * 60) || (getPushState(player, APP_BUTTON_A))) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		upLines[player] = 0;
 
 		// BGMバグ修正 #1.60c7s6
@@ -6609,10 +6605,10 @@ void statReady(int32_t player) {
 			else FP_bonus[player] = 10800;
 		}
 		if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) {
-			if( !APP_IsWavePlaying(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
+			if( !APP_IsWavePlaying(WAVE_BGM_START+bgmlv) ) APP_PlayWave(WAVE_BGM_START+bgmlv);
 		}
 
-		if((repversw >= 25) && (sp[player] < min_speed[player]) && (enable_minspeed) || (tomoyo_waits[player]))
+		if(((repversw >= 25) && (sp[player] < min_speed[player]) && (enable_minspeed)) || (tomoyo_waits[player]))
 			sp[player] = min_speed[player];
 		if((stage[player] == 44) && (!disable_ehlast_gimmick)){
 			tomoyo_domirror[player] = 1;
@@ -6639,34 +6635,34 @@ void statReady(int32_t player) {
 
 		if(rest_pblock[player] == 0) {
 			// プラチナブロックが1個もない場合は即エンド #1.60c7r7
-			PlaySE(28);
+			PlaySE(WAVE_SE_TTCLEAR);
 			status[player] = 13;
 			ending[player] = 1;
 			return;
 		}
 		if( isfmirror[player] ){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 1, 0);
 		}else if( rollroll_flag[player] ){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 2, 0);
 		}else if( xray_flag[player] ){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 4, 0);
 		}else if( color_flag[player] ){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 5, 0);
 		}else if( IsBig[player] ){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 3, 0);
 		}else if( tomoyo_waits[player] ){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 12, 0);
 		}else if( hnext_flag[player]){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 7, 0);
 		}else if((blind_flag[player]) || (isthunder[player]) || (tomoyo_rise[player])){
-			PlaySE(38);
+			PlaySE(WAVE_SE_WARNING);
 			objectCreate2(player, 10, 0, 0, 0, 0, 0, 0);
 		}
 	}
@@ -6771,13 +6767,13 @@ void statReady(int32_t player) {
 		}
 	}
 
-	if(statusc[player * 10] == r_start[player]) PlaySE(15);
-	if(statusc[player * 10] == g_start[player]) PlaySE(16);
+	if(statusc[player * 10] == r_start[player]) PlaySE(WAVE_SE_READY);
+	if(statusc[player * 10] == g_start[player]) PlaySE(WAVE_SE_GO);
 	if(statusc[player * 10] >= g_end[player]) {
 		// PRACTICEでエンディング中の場合#1.60c6.2d
 		if((gameMode[0] == 5) && (ending[0] != 0)) {
 			if(ending[0] == 1){
-				APP_PlayWave(56);						// BGM流れてなかったorz 差し替え#1.60c7i4
+				APP_PlayWave(WAVE_BGM_ENDING);						// BGM流れてなかったorz 差し替え#1.60c7i4
 				status[player] = 13;					// エンディング開始
 				statusc[player * 10] = 0;				// あとかたづけ
 				// エンディング突入を高速化#1.60c7i4
@@ -6793,7 +6789,7 @@ void statReady(int32_t player) {
 			}
 		} else {
 			if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) {
-				if( !APP_IsWavePlaying(50 +bgmlv) ) APP_PlayWave(50 +bgmlv);
+				if( !APP_IsWavePlaying(WAVE_BGM_START+bgmlv) ) APP_PlayWave(WAVE_BGM_START+bgmlv);
 			}
 
 			status[player] = 4;
@@ -6839,21 +6835,21 @@ void statReady(int32_t player) {
 				if(noitem)	//ITEMに×マーク
 					ExBltRect(3,127 + 192 * player - 96 * maxPlay, 166, 274, 384, 12, 12);
 				if(getPushState(player, APP_BUTTON_DOWN)){
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					vs_style[player] = 0;	//NORMAL
 				}else if(getPushState(player, APP_BUTTON_UP)){
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					vs_style[player] = 1;	//ATTACK
 				}else if(getPushState(player, APP_BUTTON_RIGHT)){
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					vs_style[player] = 2;	//DEFENCE
 				}else if((getPushState(player, APP_BUTTON_LEFT)) && (!noitem)){
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					vs_style[player] = 3;	//ITEM
 				}
 			}else if(statusc[player * 10] == g_start[player]){
 				if(vs_style[player] == -1){	//入力がなかったらランダム
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					do{
 						vs_style[player] = gameRand(4,player);
 					}while((vs_style[player] == 3) && (noitem));
@@ -6881,7 +6877,7 @@ void statReady(int32_t player) {
 		// ツモ送り機能 #1.60c7j5
 		if( (gameMode[player] == 6) || ((gameMode[0] == 5) && (p_nextpass)) ) {
 			if((!pass_flg[player]) && (getPressState(player, APP_BUTTON_D))) {
-				PlaySE(6);	// hold.wav
+				PlaySE(WAVE_SE_HOLD);	// hold.wav
 				// if not in FP-Basic
 				if(!fpbas_mode[player])
 				{
@@ -7015,17 +7011,17 @@ void statBlock(int32_t player) {
 		if((gameMode[player] == 4) && (repversw >= 61) && (wintype==0) && (vs_goal != 0)){
 			if((tc[player] != vs_goal - 1) && ((!start_flag[player]) || (tc[player] < 0))){
 				tc[player]++;
-				if(tc[player] == vs_goal - 1) PlaySE(9);
+				if(tc[player] == vs_goal - 1) PlaySE(WAVE_SE_LVSTOP);
 			}
 		}else if((gameMode[player] == 0) && (novice_mode[player])){
 			if((tc[player]  != 299) && ((!start_flag[player]) || (tc[player] < 0))) {//noviceは299でのみストップ
 				tc[player]++;
-				if(tc[player] == 299) PlaySE(9);
+				if(tc[player] == 299) PlaySE(WAVE_SE_LVSTOP);
 			}
 		}else {
 			if((tc[player] % 100 != i) && ((!start_flag[player]) || (tc[player] < 0))) {
 				tc[player]++;
-				if(tc[player] % 100 == i) PlaySE(9);
+				if(tc[player] % 100 == i) PlaySE(WAVE_SE_LVSTOP);
 			}
 		}
 
@@ -7126,7 +7122,7 @@ void statBlock(int32_t player) {
 	// アイテム出現 #1.60c7n1
 	item_coming[player] = 0;
 	if( ((gameMode[player] == 4) || (item_mode[player])) && (item_g[player] > item_inter[player]) ) {
-		PlaySE(9);
+		PlaySE(WAVE_SE_LVSTOP);
 		itemappear_c[player]=30;
 		if(use_item[player] == 0){//ALL
 			if(repversw >=51){
@@ -7202,13 +7198,13 @@ void statBlock(int32_t player) {
 		item_g[player] = 0;
 	//novice100
 	} else if((gameMode[player] == 0)&&(novice_mode[player])&&(tc[player] >= 100)&&(novice_flag[player]==0)){
-		PlaySE(9);
+		PlaySE(WAVE_SE_LVSTOP);
 		item_coming[player] = 28;
 		item_name[player] = item_coming[player];//
 		novice_flag[player]=1;
 	//novice200
 	} else if((gameMode[player] == 0)&&(novice_mode[player])&&(tc[player] >= 200)&&(novice_flag[player] ==1)){
-		PlaySE(9);
+		PlaySE(WAVE_SE_LVSTOP);
 		item_coming[player] = 19;
 		item_name[player] = item_coming[player];
 		novice_flag[player]=2;
@@ -7318,10 +7314,10 @@ void statBlock(int32_t player) {
 		}
 	}
 	if((ishidenext[player] == 0) && (!isfakenext[player])){//HIDENEXTの時は音も隠す
-		PlaySE(21 + next[player]);
+		PlaySE(WAVE_SE_BLOCK1 + next[player]);
 	}
 	if(isfakenext[player]==1){//FAKENEXTの時は適当な音
-		PlaySE(21 + gameRand(6,player));
+		PlaySE(WAVE_SE_BLOCK1 + gameRand(6,player));
 	}
 	if((!isrotatelock[player]) && (!ace_irs))
 		rt[player] = 0;
@@ -7336,7 +7332,7 @@ void statBlock(int32_t player) {
 
 	//NEXT遅延　1G以上でも出現した時点で接地していれば遅延させる
 	if( (spawn_y_type) && (heboGB[player]==0) && (blk[player] != 0) ){
-	 	if((rots[player] != 6) && (sp[player] < 60) ||
+	 	if(((rots[player] != 6) && (sp[player] < 60)) ||
 	 		(judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0))
 	 		ndelay[player] = 0;
 	}
@@ -7364,7 +7360,7 @@ void statBlock(int32_t player) {
 	// ブロックがめり込んでいたらゲームオーバー
 	// ゲームオーバーなっていない＆接地している場合は音を鳴らす
 	if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
-		if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(1);
+		if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(WAVE_SE_KON);
 	}
 	if(repversw >= 59){				// このバージョンから同一フレーム内に移動処理開始
 		statusc[player * 10 + 6] = 1;	// 同一フレームでは回転＆HOLDさせないYO
@@ -7380,7 +7376,7 @@ int32_t checkGameOver(int32_t player) {
 	// ブロックがめり込んでいたら
 	if(judgeBlock(player, bx[player], by[player], blk[player], rt[player]) != 0) {
 		setBlock(player, bx[player], by[player], blk[player], rt[player]);
-		if((spawn_y_type) && (heboGB[player] == 0) || (heboGB[player] == 1)) ndelay[player] = 0;
+		if(((spawn_y_type) && (heboGB[player] == 0)) || (heboGB[player] == 1)) ndelay[player] = 0;
 		// ゲームオーバー処理
 		setGameOver(player);
 
@@ -7408,10 +7404,10 @@ void setGameOver(int32_t player) {
 
 	if( (gameMode[player] <= 3) || (gameMode[player] == 5) ) {
 		checkSecretGrade(player);	// 裏段位認定 #1.60c7o1
-		if( (sgrade[player] >= min_sgrade) && (gameMode[player] != 5) ) PlaySE(17);
+		if( (sgrade[player] >= min_sgrade) && (gameMode[player] != 5) ) PlaySE(WAVE_SE_APPLAUSE);
 	}
-	if(!((fastroll[player]) && (ending[player] == 2)) &&
-		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
+	if((!((fastroll[player]) && (ending[player] == 2)) &&
+		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player]))) || (gameMode[player] == 5)){
 		timeOn[player] = 0;				// タイマー停止
 		if(gameMode[player] != 4) onRecord[player] = 0;			// リプレイ記録終了
 	}
@@ -7433,8 +7429,7 @@ void setGameOver(int32_t player) {
 	}
 
 	status[player] = 7;				// ゲームオーバー画面へ
-	if(!((fastroll[player]) && (ending[player] == 2)) &&
-		!((gameMode[player] == 9) && (relaymode[player]) && (!ending[player])) || (gameMode[player] == 5)){
+	if((!((fastroll[player]) && (ending[player] == 2)) && !((gameMode[player] == 9) && (relaymode[player]) && (!ending[player]))) || (gameMode[player] == 5)){
 		if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
 			if(wavebgm & APP_SOUND_BITS_SIMPLE) {
 				if(APP_IsMusicPlaying()) APP_StopMusic();
@@ -7497,7 +7492,7 @@ void doIRS(int32_t player) {
 
 	if(repversw >= 43){	//新Ver
 	if( getPressState(player, APP_BUTTON_A) || getPressState(player, APP_BUTTON_B) || getPressState(player, APP_BUTTON_C) ) {
-		PlaySE(0);
+		PlaySE(WAVE_SE_SHAKI);
 
 		// 回転する方向を決める
 		if( !getPressState(player, APP_BUTTON_B) ) {
@@ -7522,12 +7517,12 @@ void doIRS(int32_t player) {
 		// 回転できるかチェック
 		if( judgeBlock(player, bx[player], by[player], blk[player], bak) == 0 ) {
 			// 回転可能
-			if(rotate_snd) PlaySE(4);
+			if(rotate_snd) PlaySE(WAVE_SE_ROTATE);
 			rt[player] = bak;
 		} else if(!blk[player] && !r_irs) {
 			// 赤色ブロックで回転しなかったときは1マス上にずらせるか判定
 			if( judgeBlock(player, bx[player], by[player] - 1, blk[player], bak) == 0 ) {
-				if(rotate_snd) PlaySE(4);
+				if(rotate_snd) PlaySE(WAVE_SE_ROTATE);
 				rt[player] = bak;
 				by[player]--;
 			}
@@ -7536,8 +7531,8 @@ void doIRS(int32_t player) {
 	}else{	//旧Ver
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
 	if(getPressState(player, APP_BUTTON_A) || getPressState(player, APP_BUTTON_C)) {
-		PlaySE(0);
-		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+		PlaySE(WAVE_SE_SHAKI);
+		if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) )
@@ -7561,8 +7556,8 @@ void doIRS(int32_t player) {
 		}
 	}
 	if(getPressState(player, APP_BUTTON_B)) {
-		PlaySE(0);
-		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+		PlaySE(WAVE_SE_SHAKI);
+		if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) )
@@ -7590,8 +7585,8 @@ void doIRS2(int32_t player) {
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
 	if(getPushState(player, APP_BUTTON_A) || getPushState(player, APP_BUTTON_C)) {
-		PlaySE(0);
-		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+		PlaySE(WAVE_SE_SHAKI);
+		if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) ){
@@ -7607,8 +7602,8 @@ void doIRS2(int32_t player) {
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
 	if(getPushState(player, APP_BUTTON_B)) {
-		PlaySE(0);
-		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+		PlaySE(WAVE_SE_SHAKI);
+		if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) )
@@ -7626,8 +7621,8 @@ void doIRS2plus(int32_t player) {
 
 	// 回転方向逆転設定対応 激しく汚いorz #1.60c7f8
 	if(getPressState(player, APP_BUTTON_A) || getPressState(player, APP_BUTTON_C)) {
-		PlaySE(0);
-		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+		PlaySE(WAVE_SE_SHAKI);
+		if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) ){
@@ -7643,8 +7638,8 @@ void doIRS2plus(int32_t player) {
 		if(rt_nblk[0 + 6 * player] < 0) rt_nblk[0 + 6 * player] = rt_nblk[0 + 6 * player] + 4;
 	}
 	if(getPressState(player, APP_BUTTON_B)) {
-		PlaySE(0);
-		if(rotate_snd) PlaySE(4);	// 回転音設定#1.60c7f7
+		PlaySE(WAVE_SE_SHAKI);
+		if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 
 		// 回転逆転 #1.60c7f8
 		if( (isWRule(player)) && (w_reverse) )
@@ -7695,12 +7690,12 @@ void setBlockSpawnPosition(int32_t player) {
 	if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 		if(getPressState(player, APP_BUTTON_LEFT) && (judgeBlock(player, bx[player] - 1 - (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] - 1 - (1 * (IsBig[player] && BigMove[player]));
-			if(movesound) PlaySE(5);
+			if(movesound) PlaySE(WAVE_SE_MOVE);
 		}
 		if((blk[player] != 0) || (!IsBig[player]))
 		if(getPressState(player, APP_BUTTON_RIGHT) && (judgeBlock(player, bx[player] + 1 + (1 * (IsBig[player] && BigMove[player])), by[player], blk[player], rt[player]) == 0)){
 			bx[player] = bx[player] + 1 + (1 * (IsBig[player] && BigMove[player]));
-			if(movesound) PlaySE(5);
+			if(movesound) PlaySE(WAVE_SE_MOVE);
 		}
 	}
 }
@@ -7783,7 +7778,7 @@ void doHold(int32_t player, int32_t ihs) {
 
 	if(getPressState(player, APP_BUTTON_D) && !dhold[player]) {
 		if( (hold_snd != 0) && (((hold_snd == 1) && (ihs)) || (hold_snd == 2)) )
-		PlaySE(6);	// hold.wav #1.60c7f7
+		PlaySE(WAVE_SE_HOLD);	// hold.wav #1.60c7f7
 
 		if(hold[player] == -1) {//空っぽ
 			first = 1;
@@ -7872,10 +7867,10 @@ void doHold(int32_t player, int32_t ihs) {
 
 			// もう一度blockseを鳴らす #1.60c7o1
 			if((ishidenext[player] == 0) && ((repversw < 64) || (isfakenext[player] == 0))){
-				PlaySE(21 + next[player]);
+				PlaySE(WAVE_SE_BLOCK1 + next[player]);
 			}
 			if(isfakenext[player] == 1){//FAKENEXTの時は適当な音
-				PlaySE(21 + gameRand(6,player));
+				PlaySE(WAVE_SE_BLOCK1 + gameRand(6,player));
 			}
 			// 横方向の先行移動を無効にする #1.60c7o9
 			if(repversw >= 11) {
@@ -7893,7 +7888,7 @@ void doHold(int32_t player, int32_t ihs) {
 		// ブロックがめり込んでいたらゲームオーバー #1.60c7l2
 		// ゲームオーバーなっていない＆接地している場合は音を鳴らす
 		if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
-			if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(1);
+			if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(WAVE_SE_KON);
 		}
 
 		// Don't allow rotation on the same frame as hold.
@@ -8219,11 +8214,11 @@ void statRelayselect(int32_t player) {
 
 	if(statusc[player * 10 + 2] == 0){
 		//警告音が鳴っていたら止める
-		StopSE(40);
-		StopSE(32);
+		StopSE(WAVE_SE_PINCH);
+		StopSE(WAVE_SE_HURRYUP);
 		if(statusc[player * 10 + 3] == 0){	//クリア演出
 			if(statusc[player * 10] == 0){
-				PlaySE(18);
+				PlaySE(WAVE_SE_CHEER);
 			}
 			printFont(17 + 24 * player - 12 * maxPlay, 14, "GREAT!", (count % 4 / 2) * digitc[rots[player]]);
 			// ブロックを消す
@@ -8273,8 +8268,8 @@ void statRelayselect(int32_t player) {
 			else if(statusc[player * 10 + 1] > 4) {
 				block = statusc[player * 10];
 				if(block == 0) {
-					PlaySE(45);
-					if((deadtype) || (heboGB[player])) PlaySE(7);	// 下から消去は音はなし #1.60c7h3
+					PlaySE(WAVE_SE_REGRET);
+					if((deadtype) || (heboGB[player])) PlaySE(WAVE_SE_TUMAGARI);	// 下から消去は音はなし #1.60c7h3
 				}
 
 				statusc[player * 10 + 1] = 0;
@@ -8338,7 +8333,7 @@ void statRelayselect(int32_t player) {
 			hold_used[player] = 0;
 			bgfadesw = 1;
 			if(relayround[player] >= 9){	//エンディング
-				PlaySE(28);
+				PlaySE(WAVE_SE_TTCLEAR);
 				c = 0;
 				for(i = 0;i < 9;i++)
 					c = c + relaydata[player * 9 + i];
@@ -8396,7 +8391,7 @@ void statRelayselect(int32_t player) {
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
 		if(getPressState(player, APP_BUTTON_UP)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 			do {
 				rots[player]--;
 				if(rots[player] < 0) rots[player] = 8;
@@ -8408,7 +8403,7 @@ void statRelayselect(int32_t player) {
 		// ↓
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ){
 		if(getPressState(player, APP_BUTTON_DOWN)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 			do {
 				rots[player]++;
 				if(rots[player] > 8) rots[player] = 0;
@@ -8421,7 +8416,7 @@ void statRelayselect(int32_t player) {
 		statusc[player * 10]++;
 
 		if((getPushState(player, APP_BUTTON_A)) || (statusc[player * 10] > 600)){
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			setNextBlockColors(player, 1);
 			status[player] = 3;					// Ready
 			statusc[player * 10] = 0;				// ステータスカウンタを0に
@@ -8471,7 +8466,7 @@ void UpLineBlock(int32_t player) {
 		riseT = 2;
 
 	if((gameMode[player] == 6) || ((gameMode[player] == 8) && (mission_type[c_mission] == 6))){	// TOMOYO
-		PlaySE(20);
+		PlaySE(WAVE_SE_UP);
 		//上にずらす
 		for(i = 1; i <= fldsizeh[player]; i++) {
 			for(j = 0; j < fldsizew[player]; j++) {
@@ -8516,7 +8511,7 @@ void UpLineBlock(int32_t player) {
 		}
 
 	} else if(riseT == 0) { // コピー7
-		PlaySE(20);
+		PlaySE(WAVE_SE_UP);
 
 		// フィールドを上にずらす
 		for(i = 1; i <= fldsizeh[player]; i++) {
@@ -8559,7 +8554,7 @@ void UpLineBlock(int32_t player) {
 			return;
 		}
 
-		PlaySE(20);
+		PlaySE(WAVE_SE_UP);
 
 		// フィールドを上にずらす
 		for(i = 1; i <= fldsizeh[player]; i++) {
@@ -8601,7 +8596,7 @@ void UpLineBlock(int32_t player) {
 			upLineNo[player] = 0;
 
 	} else if(riseT == 2){ // 旧式#1.60c7g2
-		PlaySE(20);
+		PlaySE(WAVE_SE_UP);
 		h1 = hole[player];
 		h2 = hole[player];
 		if(IsBigStart[player]) {
@@ -8647,7 +8642,7 @@ void UpLineBlock(int32_t player) {
 			}
 		}
 	} else if(riseT == 4){ // 穴固定
-		PlaySE(20);
+		PlaySE(WAVE_SE_UP);
 		h1 = hole[player];
 		h2 = hole[player];
 		if(IsBigStart[player]) {
@@ -8677,7 +8672,7 @@ void UpLineBlock(int32_t player) {
 		upLines[player]--;
 
 	} else {
-		PlaySE(20);
+		PlaySE(WAVE_SE_UP);
 		// フィールドを上にずらす
 		for(i = 1; i <= fldsizeh[player]; i++) {
 			for(j = 0; j < fldsizew[player]; j++) {
@@ -8748,12 +8743,12 @@ void statErase(int32_t player) {
 		// tomoyoモードでクリアフラグが1になっていたらステージクリア #1.60c7l8
 		if( sclear[player] ) {
 			thunder_timer = 0;
-			PlaySE(31);				// stageclear.wav
+			PlaySE(WAVE_SE_STAGECLEAR);				// stageclear.wav
 			timeOn[player] = 0;			// タイマーストップ #1.60c7m2
 			clearnum[player]++;			// クリアステージ数増加 #1.60c7m5
 			recStageTime(player);			//ステージクリアタイム
 			if((stage[player] == 44) && (!t_training[player])){
-				PlaySE(28);
+				PlaySE(WAVE_SE_TTCLEAR);
 				ending[player] = 1;
 				status[player] = 13;
 				statusc[player * 10] = 0;
@@ -8786,14 +8781,14 @@ void statErase(int32_t player) {
 		ofs_x[player] = y - (8 / 2);
 		ofs_x2[player] = ofs_x[player];
 		if(statusc[player * 10] == wait1[player])
-			PlaySE(45);
+			PlaySE(WAVE_SE_REGRET);
 	}
 
 	if(((repversw >= 46) && ((repversw < 48))) && (statusc[player * 10] == wait1[player]) && (!ishidenext[player])&& (!isfakenext[player]))
 		dhold[player] = disable_hold;		// hold使用可能に	#1.60c
 
 	if((isthunder[player]) && (statusc[player * 10] == wait1[player])){
-		PlaySE(37);
+		PlaySE(WAVE_SE_THUNDER);
 		thunder_timer = 30;
 	}
 	// 正方形判定
@@ -8807,7 +8802,7 @@ void statErase(int32_t player) {
 	if(gameMode[player] == 8) {
 		if((ltime[player] <= 0) && (mission_type[c_mission] == 23) && (!ending[player])){ //耐久ミッション
 			missionNormUp(2);
-			if( (ending[player] == 1) || (ending[player] == 4) ) PlaySE(28);
+			if( (ending[player] == 1) || (ending[player] == 4) ) PlaySE(WAVE_SE_TTCLEAR);
 			statusc[player * 10 + 3] = 0;
 		}
 		if((mission_type[c_mission] == 29) && (!ending[player]) && (statusc[player * 10] == wait1[player])){	//OOBAKA
@@ -9128,7 +9123,7 @@ void statErase(int32_t player) {
 						 || ( (rescue[player] == 6) && (medal_re[player] == 2) )
 						|| ( (rescue[player] == 8) && (medal_re[player] == 3) ))
 						{
-							PlaySE(39);
+							PlaySE(WAVE_SE_MEDAL);
 							medal_re[player]++;
 							objectCreate2(player, 11,208 + 81 * player - 96 * maxPlay, 148,3,0,0,medal_re[player] - 1);
 						}
@@ -9196,7 +9191,7 @@ int32_t fldMirrorProc(int32_t player) {
 		if( (((gameMode[player] == 4) || (item_mode[player]))&&(bdowncnt[player] % 1 == 0)) || (bdowncnt[player] % p_fmirror_interval == 0) || (gameMode[player] == 8) ) {
 			if(fmirror_cnt[player] <= p_fmirror_timer) {
 				if(((repversw >= 18) && (fmirror_cnt[player] == -20)) || ((repversw <= 17) && (fmirror_cnt[player] == 0))) {
-//					APP_PlayWave(20);
+//					APP_PlayWave(WAVE_SE_UP);
 					// フィールドをバッファに確保
 					for(i = 0; i <= fldsizeh[player]; i++) {
 						for(j = 0; j < fldsizew[player]; j++) {
@@ -9316,7 +9311,7 @@ void LevelUp(int32_t player) {
 					else sp[player] = lvTableBeg[tr[player]];
 				}
 				if(tr[player] % 10 == 0) {
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 					if(fadelv[player] != 0) {
 						bgmlv++;
@@ -9385,7 +9380,7 @@ void LevelUp(int32_t player) {
 							waitt[player] = 15;
 							}
 						}
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 					hebop_interval[player]--;
 						if((fadelv[player] != 0) && (!ending[player])) {
@@ -9457,7 +9452,7 @@ void LevelUp(int32_t player) {
 								}
 							}
 						}
-						PlaySE(19);
+						PlaySE(WAVE_SE_LEVELUP);
 						reset_gradeup3(player);//gradeup3に使う変数を一気にリセット
 						bgfadesw = 1;
 						hebop_interval[player]--;
@@ -9487,7 +9482,7 @@ void LevelUp(int32_t player) {
 							grade[player] = tr[player] / 10; // Grade設定 #1.60c7j7
 							gflash[player]=120;
 					}
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 					if((fadelv[player] != 0) && (!ending[player])) {
 						bgmlv++;
@@ -9511,7 +9506,7 @@ void LevelUp(int32_t player) {
 							grade[player] = tr[player] / 10; // Grade設定 #1.60c7j7
 							gflash[player]=120;
 					}
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 					if((fadelv[player] != 0) && (!ending[player])) {
 						bgmlv++;
@@ -9540,7 +9535,7 @@ void LevelUp(int32_t player) {
 							}else{
 								if(tr[player]==50){//m
 									grade[player]=14;
-									PlaySE(28);
+									PlaySE(WAVE_SE_TTCLEAR);
 									gflash[player]=120;
 								}
 							}
@@ -9581,24 +9576,24 @@ void LevelUp(int32_t player) {
 								gflash[player]=120;
 							}else{
 								if(tr[player]==50){
-									PlaySE(28);
+									PlaySE(WAVE_SE_TTCLEAR);
 									grade[player]=14;
 									gflash[player]=120;
 								}
 								if(tr[player]==100){
-									PlaySE(28);
+									PlaySE(WAVE_SE_TTCLEAR);
 									grade[player]=15;
 									gflash[player]=120;
 								}
 								if(tr[player]==130){
-									PlaySE(28);
+									PlaySE(WAVE_SE_TTCLEAR);
 									grade[player]=16;
 									gflash[player]=120;
 								}
 							}
 						}
 					}
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 					if((devil_randrise) && (repversw >= 44)){
 						if((devil_nextrise[player] <= 0) && (devil_rise_min[tr[player] / 10] > 0) && (devil_rise_max[tr[player] / 10] > 0) && (!devil_minus[player])) {
@@ -9620,7 +9615,7 @@ void LevelUp(int32_t player) {
 			tr[player]++;
 
 			if( (!ending[player]) && (tr[player] % 10 == 0) ) {
-				PlaySE(19);
+				PlaySE(WAVE_SE_LEVELUP);
 			}
 
 		}
@@ -9628,7 +9623,7 @@ void LevelUp(int32_t player) {
 			// ゴールに到達
 			if( (vs_goal != 0) && (tc[player] >= vs_goal) ) {
 				tc[player] = vs_goal;
-				PlaySE(19);
+				PlaySE(WAVE_SE_LEVELUP);
 
 				// 相手をゲームオーバーにさせる
 				status[1 - player] = 7;
@@ -9644,7 +9639,7 @@ void LevelUp(int32_t player) {
 			// ゴールに到達
 			if( (vs_goal != 0) && (li[player] >= vs_goal/10) ) {
 				li[player] = vs_goal/10;
-				PlaySE(30);
+				PlaySE(WAVE_SE_RANKUP);
 				// 相手をゲームオーバーにさせる
 				status[1 - player] = 7;
 				statusc[0 + (1 - player) * 10] = 0;
@@ -9670,7 +9665,7 @@ void LevelUp(int32_t player) {
 				}
 
 				if(tr[player] % 10 == 0) {
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 				}
 			}
@@ -9687,7 +9682,7 @@ void LevelUp(int32_t player) {
 				}
 
 				if(lv[player] % 2 == 0) {
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					bgfadesw = 1;
 				}
 			}
@@ -9702,8 +9697,8 @@ void LevelUp(int32_t player) {
 				sp[player] = lvTableAce[lv[player]-1];
 			ltime[player] = timeLimitAce[lv[player]-1];
 
-			PlaySE(30);
-			StopSE(32);
+			PlaySE(WAVE_SE_RANKUP);
+			StopSE(WAVE_SE_HURRYUP);
 			bgfadesw = 1;
 			timeOn[player] = 0;		// タイムを一時的に止める
 
@@ -9729,8 +9724,8 @@ void LevelUp(int32_t player) {
 				waitt[player] = waitt_Acea_tbl[lv[player] - 1];
 			}
 
-			PlaySE(30);
-			StopSE(32);
+			PlaySE(WAVE_SE_RANKUP);
+			StopSE(WAVE_SE_HURRYUP);
 			bgfadesw = 1;
 
 			if(fadelv[player] != 0) {
@@ -9747,8 +9742,8 @@ void LevelUp(int32_t player) {
 			else hidden[player] = 0;
 			ltime[player] = timeLimitAcea2[lv[player]-1];
 
-			PlaySE(30);
-			StopSE(32);
+			PlaySE(WAVE_SE_RANKUP);
+			StopSE(WAVE_SE_HURRYUP);
 			if((lv[player] >= 11) || (lv[player]%2==1))
 			bgfadesw = 1;
 
@@ -9779,8 +9774,8 @@ void LevelUp(int32_t player) {
 				}
 			}
 
-			PlaySE(30);
-			StopSE(32);
+			PlaySE(WAVE_SE_RANKUP);
+			StopSE(WAVE_SE_HURRYUP);
 			// only do changes at proper levels
 			if (heboGB[player]==1) // gb
 			bgfadesw = 1;	  // change anyway
@@ -9821,8 +9816,8 @@ void LevelUp(int32_t player) {
 			else
 				sp[player] = lvTableAce[lv[player]-1];
 
-			PlaySE(30);
-			StopSE(32);
+			PlaySE(WAVE_SE_RANKUP);
+			StopSE(WAVE_SE_HURRYUP);
 			bgfadesw = 1;
 			timeOn[player] = 0;		// タイムを一時的に止める
 
@@ -9840,8 +9835,8 @@ void LevelUp(int32_t player) {
 			else
 				sp[player] = lvTableAce[lv[player]-1];
 
-			PlaySE(30);
-			StopSE(32);
+			PlaySE(WAVE_SE_RANKUP);
+			StopSE(WAVE_SE_HURRYUP);
 			bgfadesw = 1;
 
 			if(fadelv[player] != 0) {
@@ -9860,7 +9855,7 @@ void LevelUp(int32_t player) {
 					if(lv[player] < 101) sp[player] = lvTableBeg39[lv[player]];
 
 					if(lv[player] % 10 == 0) {
-						PlaySE(19);
+						PlaySE(WAVE_SE_LEVELUP);
 						bgfadesw = 1;
 						if(fadelv[player] != 0) {
 							bgmlv++;
@@ -9876,7 +9871,7 @@ void LevelUp(int32_t player) {
 					if(ori_opt[player]==2)
 						sp[player] = 1200;
 					if(lv[player] % 6 == 0) {
-						PlaySE(19);
+						PlaySE(WAVE_SE_LEVELUP);
 						if((lv[player] >= 30) && (lv[player] <= 60)) {
 							wait1[player] = wait1_orimaster_tbl[(lv[player] - 30) / 3];
 							wait2[player] = wait2_orimaster_tbl[(lv[player] - 30) / 3];
@@ -9893,7 +9888,7 @@ void LevelUp(int32_t player) {
 			}else if(ori_opt[player]==3){
 			sp[player] = 1200;
 				if( (!ending[player]) && (lv[player] % 3 == 0) ) {
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					if(lv[player] <= 30) {		// LV40まで #1.60c7j5 LV30まで #1.60c7j7
 						wait1[player] = wait1_oridevil_tbl[lv[player] / 3];
 						wait2[player] = wait2_oridevil_tbl[lv[player] / 3];
@@ -9908,7 +9903,7 @@ void LevelUp(int32_t player) {
 							bgmlv++;
 							changeBGM(player);
 						}
-//					APP_PlayWave(30);	// rankup.wav
+//					APP_PlayWave(WAVE_SE_RANKUP);
 				}
 			}
 		}
@@ -9919,7 +9914,7 @@ void LevelUp(int32_t player) {
 			recSectionTime(player);
 
 			if( (!ending[player]) && (tr[player] % 10 == 0) ) {
-				PlaySE(19);
+				PlaySE(WAVE_SE_LEVELUP);
 			}
 		}
 	}
@@ -9987,13 +9982,13 @@ void recSectionTime(int32_t player) {
 				if( tmp > medal_st[player] ) {
 					medal_st[player] = tmp;
 				}
-				PlaySE(39);
+				PlaySE(WAVE_SE_MEDAL);
 				objectCreate2(player, 11,233 + 31 * player - 96 * maxPlay, 122,1,0,0,tmp - 1);
 			}
 		}else if(medaltype==1){
 			if( tmp > medal_st[player] ) {//色を更新しないとつかない
 				medal_st[player] = tmp;
-				PlaySE(39);
+				PlaySE(WAVE_SE_MEDAL);
 				objectCreate2(player, 11,233 + 31 * player - 96 * maxPlay, 122,1,0,0,medal_st[player] - 1);
 			}
 		}
@@ -10053,13 +10048,13 @@ void statGameOver(int32_t player) {
 		winc = 0;
 		winu = - 24;
 		wink = 0;
-		if(APP_IsWavePlaying(65)){
-			APP_StopWave(65);
-			APP_PlayWave(50 +bgmlv);
+		if(APP_IsWavePlaying(WAVE_BGM_FEVER)){
+			APP_StopWave(WAVE_BGM_FEVER);
+			APP_PlayWave(WAVE_BGM_START+bgmlv);
 		}
 		if(status[1 - player] != 7){
 			vs_points[1 - player]++;
-			PlaySE(41);
+			PlaySE(WAVE_SE_PLATINAERASE);
 			objectCreate(1 - player, 14, 230 + 20*((hnext[1 - player] >= 4) && (1 - player == 0)) + 44 * (1 - player) - 96,26 + (12 * vs_points[1 - player]),0,0,13,0);
 		}
 		if(vs_points[1 - player] >= winpoint){
@@ -10070,8 +10065,8 @@ void statGameOver(int32_t player) {
 	}
 
 	//警告音が鳴っていたら止める
-	StopSE(40);
-	StopSE(32);
+	StopSE(WAVE_SE_PINCH);
+	StopSE(WAVE_SE_HURRYUP);
 
 	if((gameMode[player]==6)&&(tomoyo_opt[player]==0)){
 		recFaultTime(player);//ステージNOTランキング用タイム
@@ -10083,7 +10078,7 @@ void statGameOver(int32_t player) {
 
 	if( statusc[player * 10] > 22 ) {
 		if(statusc[player * 10 + 1] == 141) {
-			//APP_PlayWave(8);
+			//APP_PlayWave(WAVE_SE_GAMEOVER);
 
 			if( (status[1 - player] == 0) || (status[1 - player] == 10) ) {
 				if(wavebgm & APP_SOUND_BITS_SIMPLE) {
@@ -10141,7 +10136,7 @@ void statGameOver(int32_t player) {
 	if(statusc[player * 10 + 1] > 4) {
 		block = statusc[player * 10];
 		if(block == 0) {
-			if((deadtype) || (heboGB[player])) PlaySE(7);	// 下から消去は音はなし #1.60c7h3
+			if((deadtype) || (heboGB[player])) PlaySE(WAVE_SE_TUMAGARI);	// 下から消去は音はなし #1.60c7h3
 		}
 
 		statusc[player * 10 + 1] = 0;
@@ -10387,7 +10382,7 @@ void statEraseBlock(int32_t player) {
 						 || ( (skill[player] == 18) && (medal_sk[player] == 2) )
 						 || ( (skill[player] == 25) && (medal_sk[player] == 3) ))
 						 {
-							PlaySE(39);
+							PlaySE(WAVE_SE_MEDAL);
 							medal_sk[player]++;
 							objectCreate2(player, 11,208 + 81 * player - 96 * maxPlay,135,2,0,0,medal_sk[player] - 1);
 						}
@@ -10398,7 +10393,7 @@ void statEraseBlock(int32_t player) {
 						 || ( (skill[player] == 37) && (medal_sk[player] == 2) )
 						 || ( (skill[player] == 44) && (medal_sk[player] == 3) ))
 						 {
-							PlaySE(39);
+							PlaySE(WAVE_SE_MEDAL);
 							medal_sk[player]++;
 							objectCreate2(player, 11,208 + 81 * player - 96 * maxPlay, 135,2,0,0,medal_sk[player] - 1);
 						}
@@ -10416,13 +10411,13 @@ void statEraseBlock(int32_t player) {
 					 || ( (comboM[player] == 4) && (medal_co[player] == 1) )
 					 || ( (comboM[player] == 6) && (medal_co[player] == 2) ) )
 					{
-						PlaySE(39);
+						PlaySE(WAVE_SE_MEDAL);
 						medal_co[player]++;
 						objectCreate2(player, 11,233 + 31 * player - 96 * maxPlay, 148,5,0,0,medal_co[player] - 1);
 					}
 				}
 			}
-			if(hebocombo[player]) PlaySE(18);
+			if(hebocombo[player]) PlaySE(WAVE_SE_CHEER);
 			combo[player]++;
 			cmbpts[player] = cmbpts[player] + (lines * 2 - 2);
 			if((lines) >= 2 || gameMode[player]==10 ) { // singles DO count in Original modes.
@@ -10430,7 +10425,7 @@ void statEraseBlock(int32_t player) {
 				combo2[player]++;
 			}
 			if((combo2[player] >= 3) && (ending[player] != 2) && (lines >= 2) && (gameMode[player] <= 4))
-				PlaySE(18);
+				PlaySE(WAVE_SE_CHEER);
 			if((tc[player] < 500)&&(combo2[player] >= 4)&&(lines >= 2)){
 				skillg[player]++;	//ポイントを上げるための倍率
 			}else if((tc[player] >= 500)&&(combo2[player] >= 3)&&(lines >= 2)){
@@ -10461,7 +10456,7 @@ void statEraseBlock(int32_t player) {
 			// T-SPIN獲得 #1.60c7n6
 			// エンディングでも獲得できる #1.60c7n8
 			if(tspin_flag[player]) {
-				PlaySE(34);
+				PlaySE(WAVE_SE_TSPIN);
 				last_tspin[player]=lines * (tspin_flag[player] == 2);
 				tspin_c[player] = 60 * tspin_flag[player];
 			}
@@ -10483,17 +10478,17 @@ void statEraseBlock(int32_t player) {
 						b_to_b_flag[player]=1; //Back to Back判定開始
 					if (heboGB[player]>0)      // old stlye hass no back to back
 						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
-					PlaySE(17);
+					PlaySE(WAVE_SE_APPLAUSE);
 				}
 				else{ //B to B Heboris
 					b_to_b_flag[player]=1;
-					PlaySE(18);
+					PlaySE(WAVE_SE_CHEER);
 				}
 			}
 			if((tspin_flag[player] == 2) && (b2bcheck == 1) && (lines >= 1)){
-				PlaySE(48);
+				PlaySE(WAVE_SE_TSERASE);
 				if(b_to_b_flag[player] == 0){
-					PlaySE(17);
+					PlaySE(WAVE_SE_APPLAUSE);
 					b_to_b_flag[player]=lines+1; //Back to Back判定開始
 					if (heboGB[player]>0)      // old stlye hass no back to back
 						b_to_b_flag[player]=0; // turn it back off, it's not scored anyway.
@@ -10501,11 +10496,11 @@ void statEraseBlock(int32_t player) {
 						b_to_b_flag[player]=0; // this chang actually make t-spins better
 				}
 				else{ //B to B T-Spin erase
-					PlaySE(18);
+					PlaySE(WAVE_SE_CHEER);
 					b_to_b_flag[player]=lines+1;
 				}
 			}
-			if(ismiss[player]) PlaySE(45);
+			if(ismiss[player]) PlaySE(WAVE_SE_REGRET);
 			//ターゲットでステージクリア後に地形が残ってしまうバグを修正(とりあえず応急処置) #C7T9.6EX
 			if((gameMode[player]==8) && (mission_type[c_mission] == 6) && (status[0] == 25)) return;
 		}
@@ -10557,11 +10552,11 @@ void statEraseBlock(int32_t player) {
 		eraseItem(player, item_waiting[player]);
 
 		//エンディング突入音 #1.60c7j9
-		if( (ending[player] == 1) || (ending[player] == 4) ||(ending[player] >= 6)) PlaySE(28);
+		if( (ending[player] == 1) || (ending[player] == 4) ||(ending[player] >= 6)) PlaySE(WAVE_SE_TTCLEAR);
 		status[player] = 6;
 		statusc[player * 10] = wait1[player];
 		statusc[player * 10 + 1] = 15;
-		if((gameMode[player] == 9) && (relaymode[player]) || (gameMode[player] == 5)) StopSE(28);
+		if(((gameMode[player] == 9) && (relaymode[player])) || (gameMode[player] == 5)) StopSE(WAVE_SE_TTCLEAR);
 
 		pinchCheck(player);
 		pinchCheck2(player);
@@ -10582,7 +10577,7 @@ void statEraseBlock(int32_t player) {
 		statusc[player * 10]++;
 	}
 	if((repversw >= 55) && (ending[player] == 4) && (gameMode[player] != 8)){
-		PlaySE(18);
+		PlaySE(WAVE_SE_CHEER);
 		status[player] = 13;
 		for(i = 0; i < 10; i++) statusc[i + player * 10] = 0;
 		return;
@@ -10686,7 +10681,7 @@ int32_t makeSquare(int32_t player) {
 			if(checkSquare(player, j, i, 1)) {
 				// 金色
 				if(result < 2) result = 2;
-				PlaySE(18);
+				PlaySE(WAVE_SE_CHEER);
 				squarecnt[player]=squarecnt[player]+2;
 				// マークを付ける
 				for(k = 0; k < 4; k++) {
@@ -10698,7 +10693,7 @@ int32_t makeSquare(int32_t player) {
 			} else if(checkSquare(player, j, i, 0)) {
 				// 銀色
 				if(result < 1) result = 1;
-				PlaySE(17);
+				PlaySE(WAVE_SE_APPLAUSE);
 				squarecnt[player]++;
 				// マークを付ける
 				for(k = 0; k < 4; k++) {
@@ -10869,7 +10864,7 @@ void calcScore(int32_t player, int32_t lines) {
 					|| ( (allclear[player] == 3) && (medal_ac[player] == 2) )
 					|| ( (allclear[player] == 4) && (medal_ac[player] == 3) ))
 			 		{
-			 			PlaySE(39);
+			 			PlaySE(WAVE_SE_MEDAL);
 						medal_ac[player]++;
 						objectCreate2(player, 11,208 + 81 * player - 96 * maxPlay, 122,0,0,0,medal_ac[player] - 1);
 					}
@@ -11113,14 +11108,14 @@ void calcScore(int32_t player, int32_t lines) {
 
 		// レベルストップ音を鳴らす #1.60c7j8
 		if((gameMode[player] == 4) && (repversw >= 61) && (wintype==0) && (vs_goal != 0)){
-			if(tc[player] == vs_goal - 1) PlaySE(9);
+			if(tc[player] == vs_goal - 1) PlaySE(WAVE_SE_LVSTOP);
 		}else if((!fpbas_mode[player])&&(gameMode[player]<=6)) {
 			if((repversw > 4) && (gameMode[player] >= 3))
 				i = 99;
 			else
 				i = 99 -  (tc[player] > 900);
 
-			if(tc[player] % 100 == i) PlaySE(9);
+			if(tc[player] % 100 == i) PlaySE(WAVE_SE_LVSTOP);
 		}
 	}
 
@@ -11141,21 +11136,21 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		if(enable_grade[player] == 1) {
 			if((sc[player] > gscore[17]) && (gametime[player] <= 810 * 60) && (gmflag1[player]) && (gmflag2[player])) {
 				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
-				PlaySE(43);
+				PlaySE(WAVE_SE_STGSTAR);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		} else if(enable_grade[player] == 2) {
 		//M以上で8分45秒以内
 			if((grade[player] >= 27) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
 				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
-				PlaySE(43);
+				PlaySE(WAVE_SE_STGSTAR);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		}  else if(enable_grade[player] == 3) {
 		//M以上で8分45秒以内
 			if((grade2[player] >= 29) && (gametime[player] <= 525 * 60) && (gmflag1[player]) && (gmflag2[player])) {
 				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
-				PlaySE(43);
+				PlaySE(WAVE_SE_STGSTAR);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		} else if(enable_grade[player] == 4) {
@@ -11163,7 +11158,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		//skillcoolが6個以上、regretが一回も出ていない
 			if((grade[player] >= 22) && (gametime[player] <= 390 * 60) && (gup3rank[player] == 2) && (gmflag1[player]) && (!gmflag2[player])) {
 				objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
-				PlaySE(43);
+				PlaySE(WAVE_SE_STGSTAR);
 				gmflag_r[player] = 1;	// GMになる権利が与えられる #1.60c7i2
 			}
 		} else {
@@ -11212,7 +11207,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		recSectionTime(player);
 	// BEGINNERなら200で終了させる#1.60c7n2
 	} else if((gameMode[player] == 0) && (tc[player] >= 200)&&(!novice_mode[player])) {
-		//APP_PlayWave(28);
+		//APP_PlayWave(WAVE_SE_TTCLEAR);
 		tc[player] = 200;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -11231,13 +11226,13 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
 
-		//APP_PlayWave(19);
+		//APP_PlayWave(WAVE_SE_LEVELUP);
 		if(backno <= 1) {
 			bgfadesw = 1;
 		}
 	// NOVICEなら300で終了させる
 	} else if((gameMode[player] == 0) && (tc[player] >= 300) && (novice_mode[player])) {
-		//APP_PlayWave(28);
+		//APP_PlayWave(WAVE_SE_TTCLEAR);
 
 		// タイムボーナス
 		if((novice_mode[player])&&(gametime[player] < 18000)) {
@@ -11256,14 +11251,14 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		wait3[player] = wait3_beginner_roll;
 		waitt[player] = waitt_beginner_roll;
 
-		//APP_PlayWave(19);
+		//APP_PlayWave(WAVE_SE_LEVELUP);
 		if(backno <= 1) {
 			bgfadesw = 1;
 		}
 	// DEVIL-なら1000で終了させる#1.60c7u0.9
 	} else if((((enable_grade[player] == 1) && (repversw < 42)) || (devil_minus[player]))&&(gameMode[player] == 3)&&(repversw >= 31) && (tc[player] >= 1000)) {
 
-		//APP_PlayWave(28);
+		//APP_PlayWave(WAVE_SE_TTCLEAR);
 		tc[player] = 1000;
 		grade[player] = 10; // Grade設定 #1.60c7j7
 		gflash[player]=120;
@@ -11283,7 +11278,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 		if(( ((!isWRule(player)) && (gametime[player] <= 19200)) || ((isWRule(player)) && (gametime[player] <= 21000)) )&&(APP_GetRealFPS()>40)) {
 			grade[player] = 16;
 			objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
-			APP_PlayWave(43);
+			APP_PlayWave(WAVE_SE_STGSTAR);
 		}//ネ申条件を満たしていたらその時点でS13に
 
 		if(death_plus[player]){
@@ -11335,7 +11330,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 			( ((gametime[player] > timelimitm[player]) && (timelimitm[player] > 0) && ( !isWRule(player) )) ||	// TGM,Ti
 			  ((gametime[player] > timelimitmw[player]) && (timelimitmw[player] > 0) && (isWRule(player) )) )  ) {
 
-		//APP_PlayWave(28);
+		//APP_PlayWave(WAVE_SE_TTCLEAR);
 		tc[player] = 500;
 		lv[player] = tc[player];
 		timeOn[player] = 0;
@@ -11351,7 +11346,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 	} else if(((gameMode[player] == 1) || (gameMode[player] == 2)) && //マスター20G
 				(tc[player] >= 500) && (tcbuf < 500) &&
 				(gametime[player] > timelimit[player]) && (timelimit[player] > 0)) {
-		//APP_PlayWave(28);
+		//APP_PlayWave(WAVE_SE_TTCLEAR);
 		tc[player] = 500;
 		bgfadesw = 1;
 		lv[player] = tc[player];
@@ -11364,7 +11359,7 @@ void checkEnding(int32_t player, int32_t tcbuf) {
 				 ( ( (gametime[player] > timelimit[player]) && (timelimit[player] > 0) && (!isWRule(player)) )||	// TGM,Ti
 				 ( (gametime[player] > timelimitw[player]) && (timelimitw[player] > 0) && (isWRule(player)) ) )	// ワールド系
 				) {
-		//APP_PlayWave(28);
+		//APP_PlayWave(WAVE_SE_TTCLEAR);
 		tc[player] = 500;
 		bgfadesw = 1;
 		grade[player]++;	//S5になる
@@ -11728,8 +11723,8 @@ void statNameEntry(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(63)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) )
-		APP_PlayWave(63);
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(WAVE_BGM_NAMEENTRY)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) )
+		APP_PlayWave(WAVE_BGM_NAMEENTRY);
 /*
 	// リプレイセーブ#1.60c7i5
 	if((textguide) && (!playback) && (!demo)){
@@ -11823,7 +11818,7 @@ void statNameEntry(int32_t player) {
 			if((mpc[player] == 1) || (mpc[player] >= 15)) {
 				if(mpc[player] >= 15) mpc[player] = 12;
 				statusc[player * 10 + 2] = statusc[player * 10 + 2] + move;
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 			}
 
 		if(statusc[player * 10 + 2] > 54)
@@ -11851,7 +11846,7 @@ void statNameEntry(int32_t player) {
 			} else printFont(15 + k + 24 * player - 12 * maxPlay, 12-add, string[0], 0);
 		}
 		if(getPushState(player, APP_BUTTON_A)) {
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			if(statusc[player * 10 + 2] == 53) {
 				if(len) {
 					APP_MidStr(string[player + 2], 1, len - 1, string[player + 2]);
@@ -11868,7 +11863,7 @@ void statNameEntry(int32_t player) {
 	if(statusc[player * 10 + 1] >= 45 * 60) {
 		if(statusc[player * 10 + 1] == 45 * 60) {
 			if(!len) APP_StrCpy(string[player + 2], "NOP");
-			PlaySE(18);
+			PlaySE(WAVE_SE_CHEER);
 		}
 		if(statusc[player * 10 + 1] == (46 * 60) + 30){
 			sprintf(string[player + 2], "%s   ", string[player + 2]);
@@ -11942,7 +11937,7 @@ bgmteisiflg = 1;
 		StopAllBGM();
 		pinch[player] = 0;
 		// ACEでの残り時間が少ない時の効果音も停止
-		StopSE(32);
+		StopSE(WAVE_SE_HURRYUP);
 }
 //sprintf(string[0],"-STOP- %2d %2d",ending[player],gameMode[player]);
 //printFont(0, 1, string[0], (count % 4 / 2) * digitc[rots[i]]);
@@ -11996,13 +11991,13 @@ bgmteisiflg = 1;
 						}
 						ending[player] = 2;
 						// エンディングBGM再生
-						APP_PlayWave(56);
+						APP_PlayWave(WAVE_BGM_ENDING);
 						fadelv[player] = 0;
 					}
 					else if((gameMode[player] == 8) && (mission_end[c_mission ] < 4))
-						PlaySE(36);
+						PlaySE(WAVE_SE_MISSIONCLR);
 					else if(gameMode[player] != 8)
-						PlaySE(29);
+						PlaySE(WAVE_SE_GM);
 					else{	//(mission_end[c_mission ] == 3)
 						// スタッフロール開始
 						ending[player] = 2;
@@ -12026,7 +12021,7 @@ bgmteisiflg = 1;
 							IsBig[player] = 1;
 						}
 						// エンディングBGM再生
-						APP_PlayWave(56);
+						APP_PlayWave(WAVE_BGM_ENDING);
 fadelv[player] = 0;
 					}
 				} else {
@@ -12035,11 +12030,11 @@ fadelv[player] = 0;
 					ending[player] = 2;
 					// エンディングBGM再生
 					if ((gameMode[player] == 0) && (beginner_rollbgm == 0))
-						APP_PlayWave(57);
+						APP_PlayWave(WAVE_BGM_ENDING_B);
 					else if ((gameMode[player] == 0) && (beginner_rollbgm == 1))
-						APP_PlayWave(51);
+						APP_PlayWave(WAVE_BGM_BGM02);
 					else
-						APP_PlayWave(56);
+						APP_PlayWave(WAVE_BGM_ENDING);
 
 fadelv[player] = 0;
 //sprintf(string[0],"-3- %2d %2d PLAY56",ending[player],gameMode[player]);
@@ -12085,7 +12080,7 @@ fadelv[player] = 0;
 
 		// 花火
 		if((statusc[player * 10] % 9 == 0)&&(endingcnt[player] < 30)) {//30発上がるとやめる
-			PlaySE(35);
+			PlaySE(WAVE_SE_HANABI);
 			objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 16 + APP_Rand(24), 0, 0, APP_Rand(7)+1, 0);
 			hanabi_total[player]++;
 			endingcnt[player]++;
@@ -12188,7 +12183,7 @@ fadelv[player] = 0;
 				}
 			}
 			if((statusc[player * 10] % 40 == 0)&&(endingcnt[player] < 4)) {
-				PlaySE(35);
+				PlaySE(WAVE_SE_HANABI);
 				objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 			}
 		} else {
@@ -12240,7 +12235,7 @@ fadelv[player] = 0;
 		StopAllBGM();
 		pinch[player] = 0;
 		// ACEでの残り時間が少ない時の効果音も停止
-		StopSE(32);
+		StopSE(WAVE_SE_HURRYUP);
 
 		// スタッフロール開始
 		ending[player] = 2;
@@ -12256,7 +12251,7 @@ fadelv[player] = 0;
 			bgmlv = p_bgmlv;
 			changeBGM(player);
 		}else
-			APP_PlayWave(56);
+			APP_PlayWave(WAVE_BGM_ENDING);
 
 		statusc[player * 10]++;
 	}else if (ending[player] == 7){//超短縮
@@ -12266,7 +12261,7 @@ fadelv[player] = 0;
 		if((gameMode[player] == 5) && (statusc[player * 10] <= 132)) statusc[player * 10] = 133;	// ブロック消去をスキップ
 		pinch[player] = 0;
 		// ACEでの残り時間が少ない時の効果音も停止
-		StopSE(32);
+		StopSE(WAVE_SE_HURRYUP);
 
 		// ブロックを消す
 		// BIG対応 #1.60c7j5
@@ -12290,7 +12285,7 @@ fadelv[player] = 0;
 			if(stopmirror_flag[player]) fldMirrorProc(player);
 			// 花火
 			if((statusc[player * 10] % 9 == 0)&&(endingcnt[player] < 10)) {
-				PlaySE(35);
+				PlaySE(WAVE_SE_HANABI);
 				objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 				hanabi_total[player]++;
 				endingcnt[player]++;
@@ -12331,11 +12326,11 @@ void statResult(int32_t player) {
 
 	// 音楽を流す #1.60c7l2
 	// 2人同時で重ならないように修正 #1.60c7m1
-	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(63)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) )
-		APP_PlayWave(63);
+	if( ((status[1 - player] == 0) || (status[1 - player] == 10)) && (!APP_IsWavePlaying(WAVE_BGM_NAMEENTRY)) && !(wavebgm & APP_SOUND_BITS_SIMPLE) )
+		APP_PlayWave(WAVE_BGM_NAMEENTRY);
 
 	//警告音が鳴っていたら止める
-	StopSE(40);
+	StopSE(WAVE_SE_PINCH);
 
 	if((statusc[player*10+1]==1)&&(gameMode[player]==1)&&(enable_grade[player]==4)&&(enable_randexam==2)){
 		grade_pasttime[player]++;//試験の間のスパン
@@ -12709,7 +12704,7 @@ void statReplaySave(int32_t player) {
 		// ←
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, APP_BUTTON_C) )
 		if( getPressState(player, APP_BUTTON_LEFT) ) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 			statusc[player * 10 + 0]--;
 			if(statusc[player * 10 + 0] < 1) statusc[player * 10 + 0] = 40;
 			statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
@@ -12717,7 +12712,7 @@ void statReplaySave(int32_t player) {
 		// →
 		if( (mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || getPressState(player, APP_BUTTON_C) )
 		if( getPressState(player, APP_BUTTON_RIGHT) ) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 			statusc[player * 10 + 0]++;
 			if(statusc[player * 10 + 0] > 40) statusc[player * 10 + 0] = 1;
 			statusc[player * 10 + 1] = loadReplayData2(player,statusc[player * 10 + 0]);
@@ -12728,7 +12723,7 @@ void statReplaySave(int32_t player) {
 				statusc[player * 10 + 2] = 120;
 			}else{
 				if(SDL_abs(APP_GetRealFPS() - max_fps_2) < 10){
-					PlaySE(10);
+					PlaySE(WAVE_SE_KETTEI);
 					saveReplayData(player, statusc[player * 10 + 0]);
 					freeReplayData();
 					statusc[player * 10 + 2]++;
@@ -12783,7 +12778,7 @@ void statVersusSelect(int32_t player) {
 	int32_t	i;
 	if(demo){	//デモならタイトルへ
 		StopAllBGM();
-		StopSE(40);
+		StopSE(WAVE_SE_PINCH);
 		cpu_flag[0] = 0;
 		cpu_flag[1] = 0;
 		gameMode[0] = 0;
@@ -12987,7 +12982,7 @@ void statVersusSelect(int32_t player) {
 	// ↑
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, APP_BUTTON_UP)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 
 		if(getPressState(player, APP_BUTTON_D)){
 			winpoint--;
@@ -13001,7 +12996,7 @@ void statVersusSelect(int32_t player) {
 	// ↓
 	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
 	if(getPressState(player, APP_BUTTON_DOWN)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 
 		if(getPressState(player, APP_BUTTON_D)){
 			winpoint++;
@@ -13017,7 +13012,7 @@ void statVersusSelect(int32_t player) {
 	// ←
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if(getPressState(player, APP_BUTTON_LEFT)) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 
 		// 回転法則
 		if(vslevel[player] == 0) {
@@ -13035,7 +13030,7 @@ void statVersusSelect(int32_t player) {
 		if(vslevel[player] == 2) {
 			if(sptmp[player] > -10)
 				sptmp[player]--;
-			else StopSE(3);
+			else StopSE(WAVE_SE_KACHI);
 		}
 		// 落下スピード
 		if(vslevel[player] == 3) {
@@ -13091,7 +13086,7 @@ void statVersusSelect(int32_t player) {
 	// →
 	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
 	if(getPressState(player, APP_BUTTON_RIGHT)) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 		// 回転法則
 		if(vslevel[player] == 0) {
 			versus_rot[player]++;
@@ -13109,7 +13104,7 @@ void statVersusSelect(int32_t player) {
 			if(sptmp[player] < skip_fwait){
 				sptmp[player]++;
 				if(sptmp[player] < 0) sptmp[player] = 0;
-			}else StopSE(3);
+			}else StopSE(WAVE_SE_KACHI);
 		}
 		// 落下スピード
 		if(vslevel[player] == 3) {
@@ -13202,20 +13197,20 @@ void statVersusSelect(int32_t player) {
 	// Aボタン
 	if(getPushState(player, APP_BUTTON_A)) {
 		if(vslevel[player] == 2) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 			if(sptmp[player] == -10){
 				sp[player] = 1200;
 				wait1[player] = 1;
 				wait2[player] = 0;
 				wait3[player] = 0;
 				waitt[player] = 5;
-				PlaySE(18);
+				PlaySE(WAVE_SE_CHEER);
 			}else if((sptmp[player] >= 0) && (sptmp[player] <= skip_fwait))
 				loadWait(player, sptmp[player]); // 対応した設定を読み込む。
 			else if(sptmp[player] > -10)
 				loadWait(player, 0);
 		}else{
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			bgmlv = 10;							// vsmode.wavを鳴らす
 			upLines[player] = 0;
 			hiddenProc(player);
@@ -13250,7 +13245,7 @@ void winner() {
 	// BGM停止
 	if(!(wavebgm & APP_SOUND_BITS_SIMPLE)) StopAllBGM();
 	// 残り時間が少ない時の効果音も停止
-	StopSE(32);
+	StopSE(WAVE_SE_HURRYUP);
 
 	timeOn[0] = 0;
 	timeOn[1] = 0;
@@ -13269,7 +13264,7 @@ void winner() {
 
 	win = (status[1] == 7) + ((status[0] == 7) && (status[1] == 7));//窒息
 
-	StopSE(40);
+	StopSE(WAVE_SE_PINCH);
 //	pinch[0] = 0;
 //	pinch[1] = 0;
 
@@ -13364,7 +13359,7 @@ void winner() {
 		}
 		// 花火
 		if( (statusc[0] % 9 == 0) && (endingcnt[player] <= 30) && (obj == 0)) {
-			PlaySE(35);
+			PlaySE(WAVE_SE_HANABI);
 			objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 			endingcnt[player]++;
 		}
@@ -13376,7 +13371,7 @@ void winner() {
 		block = winr;
 
 		// 下から消去は音なし #1.60c7h3
-		if((winr == 0) && (deadtype)) PlaySE(7);
+		if((winr == 0) && (deadtype)) PlaySE(WAVE_SE_TUMAGARI);
 
 		for(player = 0; player <= 1; player++) {
 			if( winr <= 22	 ) {
@@ -13416,7 +13411,7 @@ void winner() {
 void winner2() {
 	int32_t		player, i, j, block, win, obj, c, kosa, sbak[30];
 
-	StopSE(32);
+	StopSE(WAVE_SE_HURRYUP);
 
 	timeOn[0] = 0;
 	timeOn[1] = 0;
@@ -13432,7 +13427,7 @@ void winner2() {
 
 	win = (status[1] == 7) + ((status[0] == 7) && (status[1] == 7));//窒息
 
-	StopSE(40);
+	StopSE(WAVE_SE_PINCH);
 
 	for(player = 0; player <= 1; player++) {
 		padRepeat(player);
@@ -13578,7 +13573,7 @@ void winner2() {
 		block = winr;
 
 		// 下から消去は音なし #1.60c7h3
-		if((winr == 0) && (deadtype)) PlaySE(7);
+		if((winr == 0) && (deadtype)) PlaySE(WAVE_SE_TUMAGARI);
 
 		for(player = 0; player <= 1; player++) {
 			if( winr <= 22	 ) {
@@ -13643,7 +13638,7 @@ void eraseItem(int32_t player, int32_t type) {
 			item_timer[enemy] = 0;
 		}
 		if((!isfever[enemy]) && (isreflect[enemy]) && (gameMode[enemy] != 4) && (repversw >= 65) && (type != 24) && (type != 37)){
-			PlaySE(41);
+			PlaySE(WAVE_SE_PLATINAERASE);
 			objectCreate2(enemy, 10, 1, 0, 0, 2, 33, 0);
 			isreflect[enemy] = 0;
 			for(i = 0; i < 220; i++) {
@@ -13654,7 +13649,7 @@ void eraseItem(int32_t player, int32_t type) {
 			return;
 		}
 		if(isfever[enemy]){
-			PlaySE(41);
+			PlaySE(WAVE_SE_PLATINAERASE);
 			objectCreate2(enemy, 10, 1, 0, 0, 2, 13, 0);
 		}
 	}
@@ -13691,7 +13686,7 @@ void eraseItem(int32_t player, int32_t type) {
 		//ROTATE LOCK
 		if( type == 6 ) {
 			isrotatelock[enemy] = 1;
-			PlaySE(37);
+			PlaySE(WAVE_SE_THUNDER);
 			// NEXTブロックの向きをランダムに
 			rt_nblk[0 + 6 * enemy] = gameRand(4,enemy);
 			rt_nblk[1 + 6 * enemy] = gameRand(4,enemy);
@@ -13719,7 +13714,7 @@ void eraseItem(int32_t player, int32_t type) {
 		//TIME STOP
 		if( type == 9 ) {
 			istimestop[enemy] = 1;
-			PlaySE(47);
+			PlaySE(WAVE_SE_TIMESTOP);
 			item_timer[enemy] = 300;
 			if(gameMode[enemy] == 3)
 				item_timer[enemy] = 120;
@@ -13834,8 +13829,8 @@ void eraseItem(int32_t player, int32_t type) {
 		misstimer[player] = 0;
 	// 解除ここまで
 		if(!ending[player]){	//ロール中はBGMを変えない
-			APP_StopWave(50 +bgmlv);
-			APP_PlayWave(65);
+			APP_StopWave(WAVE_BGM_START+bgmlv);
+			APP_PlayWave(WAVE_BGM_FEVER);
 		}
 		isfever[player] = 1;
 		item_timer[player] = 600;
@@ -13970,7 +13965,7 @@ void eraseItem(int32_t player, int32_t type) {
 	}
 	if((gameMode[player] == 4) && (attack) && (isreflect[1-player])){
 		objectCreate2(player, 10, 0, 0, 0, 1, 33, 0);
-		PlaySE(38);
+		PlaySE(WAVE_SE_WARNING);
 	}
 
 	if(!isfever[enemy])
@@ -13979,7 +13974,7 @@ void eraseItem(int32_t player, int32_t type) {
 		(type == 34)|| (type == 37)|| (type == 38)|| (type == 39)){
 		if((gameMode[player] != 4) || (!isreflect[1-player]))
 			objectCreate2(enemy, 10, 0, 0, 0, 0, type, 0);//WARNIGのエフェクト
-		PlaySE(38);
+		PlaySE(WAVE_SE_WARNING);
 		if(((type == 3) && (IsBigStart[enemy])) || ((type == 37) && (gameMode[player] != 4)))
 			StopSE(38);
 	}
@@ -14056,7 +14051,7 @@ void statGameOver2(int32_t player) {
 	}
 	*/
 	// ゲームオーバー音
-	if(statusc[player * 10] == 1) PlaySE(8);
+	if(statusc[player * 10] == 1) PlaySE(WAVE_SE_GAMEOVER);
 	if(statusc[player * 10] >= 2) {
 		ExBltRect(81, 110+192 * player -96 * maxPlay , 95 , 0, 0, 100, 50);
 	}
@@ -14070,7 +14065,7 @@ void statGameOver2(int32_t player) {
 	if(statusc[player * 10] >= 480) {
 		ndelay[player] = 1;
 		if(gameMode[player] == 8) {
-			StopSE(8);
+			StopSE(WAVE_SE_GAMEOVER);
 			versusInit(0);
 			playerInitial(player);
 			loadMissionData(mission_file);
@@ -14273,7 +14268,7 @@ void statLaser(int32_t player) {
 		if(statusc[player * 10 + 2] == 0){//レーザー
 			if(statusc[player * 10 + 0] < waitA){	//レーザー発射前
 				if(statusc[player * 10 + 0] % 5 == 0)
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 				if( ( getPushState(player, APP_BUTTON_A)) || ( getPushState(player, APP_BUTTON_B)) || ( getPushState(player, APP_BUTTON_C)) )
 					rapid_c[player]++;
 				if((rapid_c[player] > 4) && (lasernum[player] < 4)){	//レーザーを増やす（最大4本）
@@ -14299,7 +14294,7 @@ void statLaser(int32_t player) {
 					ExBltRect(78, ((laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) - 1) * 8, (4 - 1) * 8, 0, ((statusc[player * 10 + 0] % 36) / 6) * 24, 24, 24);
 				}
 			} else if(statusc[player * 10 + 0] == waitA){	// レーザー発射
-				PlaySE(12);
+				PlaySE(WAVE_SE_ERASE2);
 				for(i = 0; i < lasernum[player]; i++){	// 照準直下のブロックを消去
 					ExBltRect(78, (laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) * 8, 5 * 8, 24, 0, 8, 160);
 					ExBltRect(78, ((laserpos[i + 4 * player] + 15 + 24 * player - 12 * maxPlay) - 1) * 8, (4 - 1) * 8, 0, 0, 24, 24);
@@ -14328,7 +14323,7 @@ void statLaser(int32_t player) {
 		}else{//16t
 			if(statusc[player * 10 + 0] < waitA){	//レーザー発射前
 				if(statusc[player * 10 + 0] % 6 == 0)
-					PlaySE(5);//カチカチ
+					PlaySE(WAVE_SE_MOVE);//カチカチ
 				laserpos[1 + 4 * player ] = laserpos[0 + 4 * player ] + 1;//左から二番目
 				laserpos[2 + 4 * player ] = laserpos[0 + 4 * player ] + 2;//左から3番目
 				//照準を移動
@@ -14420,14 +14415,14 @@ void statNegafield(int32_t player) {
 			y = 22 - (statusc[player * 10 + 0] / 4);
 			for(i = 0;i < 10; i++){
 				if(fld[i + y * fldsizew[player] + player * 220] != 0){	// ブロックを空白に
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					fld[i + y * fldsizew[player] + player * 220] = 0;
 					fldt[i + y * fldsizew[player] + player * 220] = 0;
 					fldi[i + y * fldsizew[player] + player * 220] = 0;
 					grayoutLackedBlock(player, flds[i + y * 10 + player * 220]);
 					flds[i + y * fldsizew[player] + player * 220] = 0;
 				} else if(y >= nega_pos[i + 10 * player]){			// 空白をブロックに
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					fld[i + y * fldsizew[player] + player * 220] = (y % 7) + 2;
 					fldt[i + y * fldsizew[player] + player * 220] = -1;
 					grayoutLackedBlock(player, flds[i + y * 10 + player * 220]);
@@ -14497,7 +14492,7 @@ void statShotgun(int32_t player) {
 		statusc[player * 10 + 0]++;
 	} else {
 		if(statusc[player * 10 + 0] == waitA){
-			PlaySE(14);
+			PlaySE(WAVE_SE_ERASE4);
 			thunder_timer = 10;
 			for(i = checkFieldTop(player); i < 22; i++){
 				if(fld[shotgunpos[i + 22 * player] + i * fldsizew[player] + player * 220] != 0){
@@ -14610,13 +14605,13 @@ void statExamination(int32_t player){
 	int32_t i,k;
 	if(statusc[player * 10 + 1] == 0){		//開始宣言
 		if(statusc[player * 10 + 0] == 0){//プルプル
-			PlaySE(7);
+			PlaySE(WAVE_SE_TUMAGARI);
 			purupuru[player] = 1;
 		} else if((statusc[player * 10 + 0] >= 0) && (statusc[player * 10 + 0] < 110)){
 			ofs_x[player] = APP_Rand(16) - 8;
 			ofs_x2[player] = ofs_x[player];
 		} else if(statusc[player * 10 + 0] == 110){//プルプルおわり
-			PlaySE(39);
+			PlaySE(WAVE_SE_MEDAL);
 			purupuru[player] = 0;
 			ofs_x[player] = 0;
 			ofs_x2[player] = 0;
@@ -14681,7 +14676,7 @@ void statExamination(int32_t player){
 			ofs_x[player] = APP_Rand(8) - 4;
 			ofs_x2[player] = ofs_x[player];
 		} else if(statusc[player * 10 + 0] == 60){
-			PlaySE(39);
+			PlaySE(WAVE_SE_MEDAL);
 			purupuru[player] = 0;
 			ofs_x[player] = 0;
 			ofs_x2[player] = 0;
@@ -14722,7 +14717,7 @@ void statExamination(int32_t player){
 			}
 			if((statusc[player * 10 + 0] > 150) && (statusc[player * 10 + 0] < 350)){	//ルーレット
 				if((statusc[player * 10 + 0] % 5 == 0) && (statusc[player * 10 + 0] < 320))
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 				if((statusc[player * 10 + 0] % 10 < 5) || (statusc[player * 10 + 0] >= 320)){
 					ExBltRect(81, 125+192 * player -96 * maxPlay , 162 , 215, 250, 70, 25);
 					printSMALLFont(125 + 192 * player - 96 * maxPlay, 189, "   FAILED   ",0);
@@ -14733,12 +14728,12 @@ void statExamination(int32_t player){
 			}
 			if(statusc[player * 10 + 0] == 350){
 				if(exam_grade[player] <= grade[player]){	//合格
-					PlaySE(18);
+					PlaySE(WAVE_SE_CHEER);
 					if((examination[player]==1) && (enable_grade[player] == 4) && (!playback)){
 						admit_grade[player]=exam_grade[player];
 					}
 				}else{									//不合格
-					PlaySE(45);
+					PlaySE(WAVE_SE_REGRET);
 					if((examination[player]==2) && (enable_grade[player] == 4) && (!playback)){
 						admit_grade[player]=exam_grade[player];
 					}
@@ -14747,7 +14742,7 @@ void statExamination(int32_t player){
 			if(statusc[player * 10 + 0] >= 350){
 				if(exam_grade[player] <= grade[player]){	//合格
 					if((statusc[player * 10] % 10 == 0)&&(endingcnt[player] < 20)) {
-						PlaySE(35);
+						PlaySE(WAVE_SE_HANABI);
 						objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
 						endingcnt[player]++;
 					}
@@ -14801,18 +14796,18 @@ void statItemRulet(int32_t player) {
 	} else {
 		if(statusc[player * 10 + 0] <= 119){//シャッフル中
 			if(statusc[player * 10 + 0] % 3 == 0){
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[player * 10 + 2] = APP_Rand(item_num) + 1;
 			}
 		}
 		if(statusc[player * 10 + 0] == 120){//決定
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			statusc[player * 10 + 2] = gameRand(item_num,player) + 1;
 			if(repversw < 48)
 				eraseItem(player, statusc[player * 10 + 2]);
 			else if((gameRand(10,player) < 1) || (statusc[player * 10 + 2] == item_num + 1)){	//スカ
 				statusc[player * 10 + 2] = 36;
-				PlaySE(45);
+				PlaySE(WAVE_SE_REGRET);
 				if(repversw >= 54){
 					eraseItem(player, statusc[player * 10 + 2]);
 					item_t[player] = item_interval / 4;
@@ -14820,7 +14815,7 @@ void statItemRulet(int32_t player) {
 			}else{//何かか決定
 				eraseItem(player, statusc[player * 10 + 2]);
 				if((repversw >= 54) && (statusc[player * 10 + 2] == 36)){
-					PlaySE(45);
+					PlaySE(WAVE_SE_REGRET);
 					misstimer[player] = item_interval / 4;
 				}
 			}
@@ -15124,11 +15119,11 @@ void statFreefall(int32_t player) {
 				}
 			}
 			if(gameMode[player] != 4)
-				PlaySE(11);
+				PlaySE(WAVE_SE_ERASE1);
 			else if( Ff_rerise[player] >= 5 )
-				PlaySE(10 + 4);		// 5ライン以上の場合は4ラインの音を出す
+				PlaySE(WAVE_SE_ERASE1-1 + 4);		// 5ライン以上の場合は4ラインの音を出す
 			else
-				PlaySE(10 + Ff_rerise[player]);
+				PlaySE(WAVE_SE_ERASE1-1 + Ff_rerise[player]);
 			if(gameMode[player] == 4){
 				li[player] = li[player] + Ff_rerise[player];
 				if(Ff_rerise[player] >= 2) blockEraseJudgeFf(player,1);
@@ -15172,7 +15167,7 @@ void statFreefall(int32_t player) {
 	statusc[player * 10 + 0]++;
 	if(statusc[player * 10 + 0] < 0){
 		if(Ff_rerise[player] != 0){	//再せり上がり
-			PlaySE(20);
+			PlaySE(WAVE_SE_UP);
 			for(i = 1; i <= fldsizeh[player]; i++) {
 				for(j = 0; j < fldsizew[player]; j++) {
 					fld[j + (i - 1) * fldsizew[player] + player * 220] = fld[j + i * fldsizew[player] + player * 220];
@@ -16583,21 +16578,21 @@ void testmenu(void) {
 		// ↑
 		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 		if( getPressState(0, APP_BUTTON_UP) ) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 			cursor--;
 			if(cursor < 0) cursor = 2;
 		}
 		// ↓
 		if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
 		if( getPressState(0, APP_BUTTON_DOWN) ) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 			cursor++;
 			if(cursor > 2) cursor = 0;
 		}
 
 		// Aで決定
 		if( getPushState(0, APP_BUTTON_A) ) {
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			mode = cursor + 1;
 		}
 
@@ -16678,7 +16673,7 @@ void testmenu(void) {
 
 		// A+Cで決定
 		if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			RankingInit();
 			RankingInit2();
 			RankingInit3();
@@ -16708,7 +16703,7 @@ void testmenu(void) {
 
 		// A+Cで決定
 		if( (!param) && (getPressState(0, APP_BUTTON_A)) && (getPressState(0, APP_BUTTON_C)) ) {
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			SegaSeed[0]=711800410;     // generates sega's poweron pattern
 			BloxeedSeed[0]=711800411;   // generated Bloxeed's poweron pattern.
 			SegaSeed[1]=711800410;     // generates sega's poweron pattern
@@ -17130,66 +17125,66 @@ void loadBG(int32_t players,int32_t vsmode){
 // initializeから独立 #1.60c7o5
 void loadWaves(void) {
 	/* 効果音を読み込み */
-	APP_LoadWave(0, "res/se/shaki.wav");
-	APP_LoadWave(1, "res/se/kon.wav");
-	APP_LoadWave(2, "res/se/gon.wav");
-	APP_LoadWave(3, "res/se/kachi.wav");
-	APP_LoadWave(4, "res/se/rotate.wav");
-	APP_LoadWave(5, "res/se/move.wav");
-	APP_LoadWave(6, "res/se/hold.wav");
-	APP_LoadWave(7, "res/se/tumagari.wav");
-	APP_LoadWave(8, "res/se/gameover.wav");
-	APP_LoadWave(9, "res/se/lvstop.wav");
-	APP_LoadWave(10, "res/se/kettei.wav");
+	APP_LoadWave(WAVE_SE_SHAKI, "res/se/shaki.wav");
+	APP_LoadWave(WAVE_SE_KON, "res/se/kon.wav");
+	APP_LoadWave(WAVE_SE_GON, "res/se/gon.wav");
+	APP_LoadWave(WAVE_SE_KACHI, "res/se/kachi.wav");
+	APP_LoadWave(WAVE_SE_ROTATE, "res/se/rotate.wav");
+	APP_LoadWave(WAVE_SE_MOVE, "res/se/move.wav");
+	APP_LoadWave(WAVE_SE_HOLD, "res/se/hold.wav");
+	APP_LoadWave(WAVE_SE_TUMAGARI, "res/se/tumagari.wav");
+	APP_LoadWave(WAVE_SE_GAMEOVER, "res/se/gameover.wav");
+	APP_LoadWave(WAVE_SE_LVSTOP, "res/se/lvstop.wav");
+	APP_LoadWave(WAVE_SE_KETTEI, "res/se/kettei.wav");
 
-	APP_LoadWave(11, "res/se/erase1.wav");
-	APP_LoadWave(12, "res/se/erase2.wav");
-	APP_LoadWave(13, "res/se/erase3.wav");
-	APP_LoadWave(14, "res/se/erase4.wav");
+	APP_LoadWave(WAVE_SE_ERASE1, "res/se/erase1.wav");
+	APP_LoadWave(WAVE_SE_ERASE2, "res/se/erase2.wav");
+	APP_LoadWave(WAVE_SE_ERASE3, "res/se/erase3.wav");
+	APP_LoadWave(WAVE_SE_ERASE4, "res/se/erase4.wav");
 
-	APP_LoadWave(15, "res/se/ready.wav");
-	APP_LoadWave(16, "res/se/go.wav");
+	APP_LoadWave(WAVE_SE_READY, "res/se/ready.wav");
+	APP_LoadWave(WAVE_SE_GO, "res/se/go.wav");
 
-	APP_LoadWave(17, "res/se/applause.wav");
-	APP_LoadWave(18, "res/se/cheer.wav");
-	APP_LoadWave(19, "res/se/levelup.wav");
+	APP_LoadWave(WAVE_SE_APPLAUSE, "res/se/applause.wav");
+	APP_LoadWave(WAVE_SE_CHEER, "res/se/cheer.wav");
+	APP_LoadWave(WAVE_SE_LEVELUP, "res/se/levelup.wav");
 
-	APP_LoadWave(20, "res/se/up.wav");
-	APP_LoadWave(21, "res/se/block1.wav");
-	APP_LoadWave(22, "res/se/block2.wav");
-	APP_LoadWave(23, "res/se/block3.wav");
-	APP_LoadWave(24, "res/se/block4.wav");
-	APP_LoadWave(25, "res/se/block5.wav");
-	APP_LoadWave(26, "res/se/block6.wav");
-	APP_LoadWave(27, "res/se/block7.wav");
+	APP_LoadWave(WAVE_SE_UP, "res/se/up.wav");
+	APP_LoadWave(WAVE_SE_BLOCK1, "res/se/block1.wav");
+	APP_LoadWave(WAVE_SE_BLOCK2, "res/se/block2.wav");
+	APP_LoadWave(WAVE_SE_BLOCK3, "res/se/block3.wav");
+	APP_LoadWave(WAVE_SE_BLOCK4, "res/se/block4.wav");
+	APP_LoadWave(WAVE_SE_BLOCK5, "res/se/block5.wav");
+	APP_LoadWave(WAVE_SE_BLOCK6, "res/se/block6.wav");
+	APP_LoadWave(WAVE_SE_BLOCK7, "res/se/block7.wav");
 
-	APP_LoadWave(28, "res/se/ttclear.wav");
-	APP_LoadWave(29, "res/se/gm.wav");
-	APP_LoadWave(30, "res/se/rankup.wav");
-	APP_LoadWave(31, "res/se/stageclear.wav");
-	APP_LoadWave(32, "res/se/hurryup.wav");
-	APP_LoadWave(33, "res/se/timeover.wav");
-	APP_LoadWave(34, "res/se/tspin.wav");
-	APP_LoadWave(35, "res/se/hanabi.wav");
-	APP_LoadWave(36, "res/se/missionclr.wav");
+	APP_LoadWave(WAVE_SE_TTCLEAR, "res/se/ttclear.wav");
+	APP_LoadWave(WAVE_SE_GM, "res/se/gm.wav");
+	APP_LoadWave(WAVE_SE_RANKUP, "res/se/rankup.wav");
+	APP_LoadWave(WAVE_SE_STAGECLEAR, "res/se/stageclear.wav");
+	APP_LoadWave(WAVE_SE_HURRYUP, "res/se/hurryup.wav");
+	APP_LoadWave(WAVE_SE_TIMEOVER, "res/se/timeover.wav");
+	APP_LoadWave(WAVE_SE_TSPIN, "res/se/tspin.wav");
+	APP_LoadWave(WAVE_SE_HANABI, "res/se/hanabi.wav");
+	APP_LoadWave(WAVE_SE_MISSIONCLR, "res/se/missionclr.wav");
 
-	APP_LoadWave(37, "res/se/thunder.wav");
+	APP_LoadWave(WAVE_SE_THUNDER, "res/se/thunder.wav");
 
-	APP_LoadWave(38, "res/se/warning.wav");
+	APP_LoadWave(WAVE_SE_WARNING, "res/se/warning.wav");
 
-	APP_LoadWave(39, "res/se/medal.wav");
-	APP_LoadWave(40, "res/se/pinch.wav");
+	APP_LoadWave(WAVE_SE_MEDAL, "res/se/medal.wav");
+	APP_LoadWave(WAVE_SE_PINCH, "res/se/pinch.wav");
 
-	APP_LoadWave(41, "res/se/platinaerase.wav");
-	APP_LoadWave(42, "res/se/timeextend.wav");
-	APP_LoadWave(43, "res/se/stgstar.wav");
-	APP_LoadWave(44, "res/se/ace_sonic_lock.wav");
-	APP_LoadWave(45, "res/se/regret.wav");
-	APP_LoadWave(46, "res/se/cool.wav");
+	APP_LoadWave(WAVE_SE_PLATINAERASE, "res/se/platinaerase.wav");
+	APP_LoadWave(WAVE_SE_TIMEEXTEND, "res/se/timeextend.wav");
+	APP_LoadWave(WAVE_SE_STGSTAR, "res/se/stgstar.wav");
+	APP_LoadWave(WAVE_SE_ACE_SONIC_LOCK, "res/se/ace_sonic_lock.wav");
+	APP_LoadWave(WAVE_SE_REGRET, "res/se/regret.wav");
+	APP_LoadWave(WAVE_SE_COOL, "res/se/cool.wav");
 
-	APP_LoadWave(47, "res/se/timestop.wav");
-	APP_LoadWave(48, "res/se/tserase.wav");
-	//APP_SetLoopModeWave(40, 1);	//#1.60c7l6
+	APP_LoadWave(WAVE_SE_TIMESTOP, "res/se/timestop.wav");
+	APP_LoadWave(WAVE_SE_TSERASE, "res/se/tserase.wav");
+	//APP_SetWaveLooping(WAVE_SE_PINCH, true);	//#1.60c7l6
 }
 
 /* 拡張子を決める || Decide which extension to use based on the format */
@@ -17242,21 +17237,21 @@ void loadBGM(void) {
 		APP_StrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
 		APP_StrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 
-		for(int32_t i = 0; i <= 19; i++) {
+		for(int32_t i = 0; i < WAVE_BGM_COUNT; i++) {
 			if(bgmload[i]){
 				strcatExt(string[i], (wavebgm & APP_SOUND_BITS_FORMAT) - 1);
 
 				// 読み込み
-				APP_LoadWave(50 + i, string[i]);
+				APP_LoadWave(WAVE_BGM_START + i, string[i]);
 
 				// ループON
-				APP_SetWaveLooping(50 + i, 1);
+				APP_SetWaveLooping(WAVE_BGM_START + i, true);
 			}
 		}
 
 		// エンディング曲ループか
-		APP_SetWaveLooping(56, 0);
-		APP_SetWaveLooping(57, 0);
+		APP_SetWaveLooping(WAVE_BGM_ENDING, false);
+		APP_SetWaveLooping(WAVE_BGM_ENDING_B, false);
 	}
 }
 

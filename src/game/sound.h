@@ -65,8 +65,7 @@ typedef enum WaveNum
 	WAVE_SE_TIMESTOP,
 	WAVE_SE_TSERASE,
 
-	WAVE_BGM_START = 50,
-
+	WAVE_BGM_START,
 	WAVE_BGM_BGM01 = WAVE_BGM_START,
 	WAVE_BGM_BGM02,
 	WAVE_BGM_BGM03,
@@ -90,6 +89,8 @@ typedef enum WaveNum
 	WAVE_COUNT,
 	WAVE_BGM_COUNT = WAVE_COUNT - WAVE_BGM_START,
 } WaveNum;
+
+#define WAVE_BGM_SIMPLE 0x80
 
 void SoundTestProc(void);
 void changeBGM(int32_t player);

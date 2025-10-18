@@ -10,7 +10,7 @@
 // ||
 // Version number of the configuration file format.
 // Increase by 1 if a format change breaks compatibility.
-#define CFG_VERSION 3u
+#define CFG_VERSION 4u
 
 void ConfigMenu();
 int32_t LoadConfig(void);

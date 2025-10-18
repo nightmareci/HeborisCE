@@ -14,11 +14,16 @@ typedef struct APP_Sound
 	bool paused;
 } APP_Sound;
 
-static bool APP_SoundFormatsSupported[APP_SOUND_FORMAT_COUNT];
+static const char* APP_SoundFormatsSupported[] =
+{
+	".wav"
+};
+
 static bool APP_WasAudioInit;
 static SDL_AudioDeviceID APP_AudioDevice;
 static SDL_AudioSpec APP_AudioDeviceFormat;
-static APP_Sound APP_Waves[APP_WAVES_COUNT];
+static APP_Sound* APP_Waves;
+static int APP_WavesCount;
 static APP_Sound APP_Music;
 
 static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
@@ -86,14 +91,14 @@ static bool APP_InitSound(APP_Sound* sound)
 	}
 }
 
-bool APP_InitAudio(void)
+bool APP_InitAudio(int wavesCount)
 {
 	if (APP_WasAudioInit) {
 		return true;
 	}
-
-	// Initialize supported formats
-	APP_SoundFormatsSupported[APP_SOUND_FORMAT_WAV] = true;
+	else if (wavesCount == 0 || wavesCount > INT_MAX / sizeof(APP_Sound)) {
+		return false;
+	}
 
 	// Initialize audio device
 	APP_AudioDevice = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
@@ -108,7 +113,12 @@ bool APP_InitAudio(void)
 
 	// サウンドの初期化
 	// Initialize sounds
-	for (int i = 0; i < APP_WAVES_COUNT; i++) {
+	APP_Waves = SDL_malloc(wavesCount * sizeof(APP_Sound));
+	if (!APP_Waves) {
+		return false;
+	}
+	APP_WavesCount = wavesCount;
+	for (int i = 0; i < wavesCount; i++) {
 		if (!APP_InitSound(&APP_Waves[i])) {
 			return false;
 		}
@@ -137,9 +147,12 @@ void APP_QuitAudio(void)
 
 	// サウンドの解放
 	// Free sounds
-	for (int i = 0; i < APP_WAVES_COUNT; i++) {
+	for (int i = 0; i < APP_WavesCount; i++) {
 		APP_QuitSound(&APP_Waves[i]);
 	}
+	APP_WavesCount = 0;
+	SDL_free(APP_Waves);
+	APP_Waves = NULL;
 	APP_QuitSound(&APP_Music);
 
 	SDL_CloseAudioDevice(APP_AudioDevice);
@@ -148,27 +161,34 @@ void APP_QuitAudio(void)
 	APP_WasAudioInit = false;
 }
 
-bool APP_IsSoundFormatSupported(APP_SoundFormat format) {
-	return format >= 0 && format < APP_SOUND_FORMAT_COUNT && APP_SoundFormatsSupported[format];
-}
-
-static void APP_LoadSound(APP_Sound* sound, const char* filename)
+static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext)
 {
-	if (!APP_WasAudioInit || !filename || SDL_strlen(filename) < 5) {
+	if (!APP_WasAudioInit || !filename_no_ext || SDL_strlen(filename_no_ext) < 5) {
 		return;
 	}
 
-	const char* const extension = filename + SDL_strlen(filename) - 4;
-	if (SDL_strcasecmp(extension, ".wav") != 0) {
-		return;
+	bool found = false;
+	char* filename;
+	for (size_t i = 0; i < SDL_arraysize(APP_SoundFormatsSupported); i++) {
+		if (APP_SoundFormatsSupported[i]) {
+			if (SDL_asprintf(&filename, "%s%s", filename_no_ext, APP_SoundFormatsSupported[i]) < 0) {
+				APP_Exit(EXIT_FAILURE);
+			}
+			if (APP_FileExists(filename)) {
+				found = true;
+				break;
+			}
+			SDL_free(filename);
+		}
 	}
-	if (!APP_FileExists(filename)) {
+	if (!found) {
 		return;
 	}
 
 	SDL_UnbindAudioStream(sound->stream);
 
 	SDL_IOStream* const file = APP_OpenRead(filename);
+	SDL_free(filename);
 	if (!file) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -292,25 +312,25 @@ static void APP_SetSoundLooping(APP_Sound* sound, bool looping)
 	SDL_SetAtomicInt(&sound->looping, !!looping);
 }
 
-void APP_LoadWave(int num, const char* filename)
+void APP_LoadWave(int num, const char* filename_no_ext)
 {
-	if (num < 0 || num >= APP_WAVES_COUNT) {
+	if (num < 0 || num >= APP_WavesCount) {
 		return;
 	}
 
-	APP_LoadSound(&APP_Waves[num], filename);
+	APP_LoadSound(&APP_Waves[num], filename_no_ext);
 }
 
 static void APP_StartWave(int num, bool replay)
 {
-	if (!APP_WasAudioInit || num >= APP_WAVES_COUNT) {
+	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
 		APP_StartSound(&APP_Waves[num], replay);
 	}
 	else {
-		for (int i = 0; i < APP_WAVES_COUNT; i++) {
+		for (int i = 0; i < APP_WavesCount; i++) {
 			APP_StartSound(&APP_Waves[i], replay);
 		}
 	}
@@ -327,14 +347,14 @@ void APP_ResumeWave(int num)
 
 void APP_StopWave(int num)
 {
-	if (!APP_WasAudioInit || num >= APP_WAVES_COUNT) {
+	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
 		APP_StopSound(&APP_Waves[num]);
 	}
 	else {
-		for (int i = 0; i < APP_WAVES_COUNT; i++) {
+		for (int i = 0; i < APP_WavesCount; i++) {
 			APP_StopSound(&APP_Waves[i]);
 		}
 	}
@@ -342,14 +362,14 @@ void APP_StopWave(int num)
 
 void APP_PauseWave(int num)
 {
-	if (!APP_WasAudioInit || num >= APP_WAVES_COUNT) {
+	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
 		APP_PauseSound(&APP_Waves[num]);
 	}
 	else {
-		for (int i = 0; i < APP_WAVES_COUNT; i++) {
+		for (int i = 0; i < APP_WavesCount; i++) {
 			APP_PauseSound(&APP_Waves[i]);
 		}
 	}
@@ -357,14 +377,14 @@ void APP_PauseWave(int num)
 
 bool APP_IsWavePlaying(int num)
 {
-	if (!APP_WasAudioInit || num >= APP_WAVES_COUNT) {
+	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return false;
 	}
 	else if (num >= 0) {
 		return APP_IsSoundPlaying(&APP_Waves[num]);
 	}
 	else {
-		for (int i = 0; i < APP_WAVES_COUNT; i++) {
+		for (int i = 0; i < APP_WavesCount; i++) {
 			if (APP_IsSoundPlaying(&APP_Waves[i])) {
 				return true;
 			}
@@ -375,14 +395,14 @@ bool APP_IsWavePlaying(int num)
 
 void APP_SetWaveVolume(int num, int volume)
 {
-	if (!APP_WasAudioInit || num >= APP_WAVES_COUNT) {
+	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
 		APP_SetSoundVolume(&APP_Waves[num], volume);
 	}
 	else {
-		for (int i = 0; i < APP_WAVES_COUNT; i++) {
+		for (int i = 0; i < APP_WavesCount; i++) {
 			APP_SetSoundVolume(&APP_Waves[i], volume);
 		}
 	}
@@ -390,22 +410,22 @@ void APP_SetWaveVolume(int num, int volume)
 
 void APP_SetWaveLooping(int num, bool looping)
 {
-	if (!APP_WasAudioInit || num >= APP_WAVES_COUNT) {
+	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
 		APP_SetSoundLooping(&APP_Waves[num], looping);
 	}
 	else {
-		for (int i = 0; i < APP_WAVES_COUNT; i++) {
+		for (int i = 0; i < APP_WavesCount; i++) {
 			APP_SetSoundLooping(&APP_Waves[i], looping);
 		}
 	}
 }
 
-void APP_LoadMusic(const char* filename)
+void APP_LoadMusic(const char* filename_no_ext)
 {
-	APP_LoadSound(&APP_Music, filename);
+	APP_LoadSound(&APP_Music, filename_no_ext);
 }
 
 void APP_PlayMusic(void)

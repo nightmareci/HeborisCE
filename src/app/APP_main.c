@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 	return EXIT_SUCCESS;
 }
 
-void APP_Init(void)
+void APP_Init(size_t wavesCount)
 {
 	APP_QuitLevel = 0;
 
@@ -94,7 +94,7 @@ void APP_Init(void)
 	}
 
 	if (!APP_InitFast) {
-		if (!APP_InitAudio()) {
+		if (!APP_InitAudio(wavesCount)) {
 			fprintf(stderr, "%s", SDL_GetError());
 			APP_Exit(EXIT_FAILURE);
 		}

@@ -2,8 +2,6 @@
 
 APP_ScreenModeFlag screenMode;	// スクリーンモード
 int32_t screenIndex;		// スクリーンインデックス
-#define SOUND_BUFFER_MAX 4
-int32_t soundbuffer = 0;	// Size of the sound buffer. It's "1024 << soundbuffer" bytes.
 int32_t nextblock;		// ツモ
 uint32_t cfgversion;		// 設定ファイルフォーマットのバージョン番号です。
 int32_t smooth;			// ブロック落下	0:ノーマル 1:スムーズ
@@ -99,8 +97,6 @@ int32_t SaveConfig(void) {
 
 	cfgbuf[35] = fourwayfilter;
 	cfgbuf[37] = fourwaypriorityup;
-
-	cfgbuf[38] = soundbuffer;
 
 	cfgbuf[40] = rots[0];
 	cfgbuf[41] = rots[1];
@@ -259,13 +255,6 @@ int32_t LoadConfig(void) {
 	fourwayfilter = cfgbuf[35];
 	fourwaypriorityup = cfgbuf[37];
 
-	if (cfgbuf[38] < 0 || cfgbuf[38] >= SOUND_BUFFER_MAX) {
-		soundbuffer = 0;
-	}
-	else {
-		soundbuffer = cfgbuf[38];
-	}
-
 	rots[0] = cfgbuf[40];
 	rots[1] = cfgbuf[41];
 	segacheat = cfgbuf[42];
@@ -283,10 +272,7 @@ int32_t LoadConfig(void) {
 	bgm = (cfgbuf[61] >> 15) & 0x1;
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
-	wavebgm = cfgbuf[61] & APP_SOUND_BITS_MASK;
-	if ((wavebgm & APP_SOUND_BITS_FORMAT) > APP_SOUND_FORMAT_COUNT || !APP_IsSoundFormatSupported((wavebgm & APP_SOUND_BITS_FORMAT) - 1)) {
-		wavebgm = (wavebgm & ~APP_SOUND_BITS_FORMAT) | (APP_SOUND_FORMAT_WAV + 1);
-	}
+	wavebgm = cfgbuf[61] & WAVE_BGM_SIMPLE;
 
 	breakeffect = cfgbuf[62];
 	showcombo = cfgbuf[63];
@@ -423,8 +409,6 @@ void ConfigMenu() {
 
 		ncfg[35] = fourwayfilter;
 		ncfg[37] = fourwaypriorityup;
-
-		ncfg[38] = soundbuffer;
 
 		ncfg[36] = dtc;
 		ncfg[42] = segacheat;
@@ -815,7 +799,6 @@ void ConfigMenu() {
 
 				fourwayfilter = ncfg[35];
 				fourwaypriorityup = ncfg[37];
-				soundbuffer = ncfg[38];
 				dtc = ncfg[36];
 				segacheat = ncfg[42];
 				fldtr = ncfg[43];
@@ -823,7 +806,7 @@ void ConfigMenu() {
 				sevolume = (ncfg[44] >> 16) & 0x7F;
 				bgm = (ncfg[44] >> 15) & 0x1;
 				bgmvolume = (ncfg[44] >> 8) & 0x7F;
-				wavebgm = ncfg[44] & APP_SOUND_BITS_MASK;
+				wavebgm = ncfg[44] & WAVE_BGM_SIMPLE;
 				dispnext = ncfg[45];
 				movesound = ncfg[46];
 				fontsize = ncfg[47];
@@ -2084,14 +2067,12 @@ void ConfigMenu() {
 			MENU_AV_RENDER_LEVEL,
 			MENU_AV_SCREEN_MODE,
 #endif
-			MENU_AV_MOVE_SOUND,
-			MENU_AV_SOUND_BUFFER,
-			MENU_AV_PLAY_SOUND,
-			MENU_AV_SOUND_VOLUME,
+			MENU_AV_MOVE_SE,
+			MENU_AV_PLAY_SE,
+			MENU_AV_SE_VOLUME,
 			MENU_AV_PLAY_BGM,
 			MENU_AV_BGM_VOLUME,
 			MENU_AV_BGM_TYPE,
-			MENU_AV_BGM_FORMAT,
 			MENU_AV_MAX
 		};
 		printFont(2, 3, "<< INPUT <<	   >> GAME P.1 >>", digitc[rots[0]] * (statusc[0] == MENU_AV_CHANGE_MENU) * (count % 2));
@@ -2108,14 +2089,12 @@ void ConfigMenu() {
 		printFont(2, 5 + MENU_AV_RENDER_LEVEL, "RENDER LEVEL:", (statusc[0] == MENU_AV_RENDER_LEVEL) * fontc[rots[0]]);
 		if(showScreenModeSetting) printFont(2, 5 + MENU_AV_SCREEN_MODE, "SCREEN MODE :", (statusc[0] == MENU_AV_SCREEN_MODE) * fontc[rots[0]]);
 #endif
-		printFont(2, 5 + MENU_AV_MOVE_SOUND, "MOVE SOUND  :", (statusc[0] == MENU_AV_MOVE_SOUND) * fontc[rots[0]]);
-		printFont(2, 5 + MENU_AV_SOUND_BUFFER, "SOUND BUFFER:", (statusc[0] == MENU_AV_SOUND_BUFFER)* fontc[rots[0]]);
-		printFont(2, 5 + MENU_AV_PLAY_SOUND, "PLAY SOUND  :", (statusc[0] == MENU_AV_PLAY_SOUND) * fontc[rots[0]]);
-		if ((ncfg[44] >> 23) & 0x1) printFont(2, 5 + MENU_AV_SOUND_VOLUME, "SOUND VOLUME:", (statusc[0] == MENU_AV_SOUND_VOLUME) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_MOVE_SE, "MOVE SE     :", (statusc[0] == MENU_AV_MOVE_SE) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_PLAY_SE, "PLAY SE     :", (statusc[0] == MENU_AV_PLAY_SE) * fontc[rots[0]]);
+		if ((ncfg[44] >> 23) & 0x1) printFont(2, 5 + MENU_AV_SE_VOLUME, "SE VOLUME   :", (statusc[0] == MENU_AV_SE_VOLUME) * fontc[rots[0]]);
 		printFont(2, 5 + MENU_AV_PLAY_BGM, "PLAY BGM    :", (statusc[0] == MENU_AV_PLAY_BGM) * fontc[rots[0]]);
 		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_VOLUME, "BGM VOLUME  :", (statusc[0] == MENU_AV_BGM_VOLUME) * fontc[rots[0]]);
 		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_TYPE, "BGM TYPE    :", (statusc[0] == MENU_AV_BGM_TYPE) * fontc[rots[0]]);
-		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_FORMAT, "BGM FORMAT  :", (statusc[0] == MENU_AV_BGM_FORMAT) * fontc[rots[0]]);
 
 		printMenuButton(2, 28, APP_BUTTON_A, 0);
 		printMenuButton(4, 28, APP_BUTTON_B, 0);
@@ -2201,18 +2180,15 @@ void ConfigMenu() {
 
 		if(ncfg[46]) sprintf(string[0], "ON");
 		else sprintf(string[0], "OFF");
-		printFont(15, 5 + MENU_AV_MOVE_SOUND, string[0], (statusc[0] == MENU_AV_MOVE_SOUND) * (count % 2) * digitc[rots[0]]);
-
-		sprintf(string[0], "%d BYTES", 1024 << (int)ncfg[38]);
-		printFont(15, 5 + MENU_AV_SOUND_BUFFER, string[0], (statusc[0] == MENU_AV_SOUND_BUFFER) * (count % 2) * digitc[rots[0]]);
+		printFont(15, 5 + MENU_AV_MOVE_SE, string[0], (statusc[0] == MENU_AV_MOVE_SE) * (count % 2) * digitc[rots[0]]);
 
 		if((ncfg[44] >> 23) & 0x1) sprintf(string[0], "ON");
 		else sprintf(string[0], "OFF");
-		printFont(15, 5 + MENU_AV_PLAY_SOUND, string[0], (statusc[0] == MENU_AV_PLAY_SOUND) * (count % 2) * digitc[rots[0]]);
+		printFont(15, 5 + MENU_AV_PLAY_SE, string[0], (statusc[0] == MENU_AV_PLAY_SE) * (count % 2) * digitc[rots[0]]);
 
 		if((ncfg[44] >> 23) & 0x1) {
 			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 16) & 0x7F));
-			printFont(15, 5 + MENU_AV_SOUND_VOLUME, string[0], (statusc[0] == MENU_AV_SOUND_VOLUME) * (count % 2) * digitc[rots[0]]);
+			printFont(15, 5 + MENU_AV_SE_VOLUME, string[0], (statusc[0] == MENU_AV_SE_VOLUME) * (count % 2) * digitc[rots[0]]);
 		}
 
 		if((ncfg[44] >> 15) & 0x1) sprintf(string[0], "ON");
@@ -2223,25 +2199,10 @@ void ConfigMenu() {
 			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
 			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (count % 2) * digitc[rots[0]]);
 
-			int32_t wavebgm_temp = ncfg[44] & APP_SOUND_BITS_MASK;
-			if(wavebgm_temp & APP_SOUND_BITS_SIMPLE) sprintf(string[0], "SIMPLE");
+			int32_t wavebgm_temp = ncfg[44] & WAVE_BGM_SIMPLE;
+			if(wavebgm_temp & WAVE_BGM_SIMPLE) sprintf(string[0], "SIMPLE");
 			else sprintf(string[0], "MULTITRACK");
 			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (count % 2) * digitc[rots[0]]);
-
-			switch((wavebgm_temp & APP_SOUND_BITS_FORMAT) - 1) {
-				case APP_SOUND_FORMAT_MID: sprintf(string[0], "MIDI"); break;
-				case APP_SOUND_FORMAT_WAV: sprintf(string[0], "WAVE"); break;
-				case APP_SOUND_FORMAT_OGG: sprintf(string[0], "OGG"); break;
-				case APP_SOUND_FORMAT_MP3: sprintf(string[0], "MP3"); break;
-				case APP_SOUND_FORMAT_FLAC: sprintf(string[0], "FLAC"); break;
-				case APP_SOUND_FORMAT_OPUS: sprintf(string[0], "OPUS"); break;
-				case APP_SOUND_FORMAT_MOD: sprintf(string[0], "MOD"); break;
-				case APP_SOUND_FORMAT_IT: sprintf(string[0], "IT"); break;
-				case APP_SOUND_FORMAT_XM: sprintf(string[0], "XM"); break;
-				case APP_SOUND_FORMAT_S3M: sprintf(string[0], "S3M"); break;
-				default: sprintf(string[0], "???"); break;
-			}
-			printFont(15, 5 + MENU_AV_BGM_FORMAT, string[0], (statusc[0] == MENU_AV_BGM_FORMAT) * (count % 2) * digitc[rots[0]]);
 		}
 
 		for(pl = 0; pl < 2; pl++) {
@@ -2257,12 +2218,12 @@ void ConfigMenu() {
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					nextChoice +=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
 #endif
-					nextChoice +=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
-					nextChoice += (nextChoice == MENU_AV_BGM_VOLUME && !((ncfg[44] >> 15) & 0x1)) * 3;
+					nextChoice +=  nextChoice == MENU_AV_SE_VOLUME && !((ncfg[44] >> 23) & 0x1);
+					nextChoice += (nextChoice == MENU_AV_BGM_VOLUME && !((ncfg[44] >> 15) & 0x1)) * 2;
 				}
 				else if(m < 0) {
-					nextChoice -= (nextChoice == MENU_AV_BGM_FORMAT && !((ncfg[44] >> 15) & 0x1)) * 3;
-					nextChoice -=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
+					nextChoice -=  nextChoice == MENU_AV_SE_VOLUME && !((ncfg[44] >> 23) & 0x1);
+					nextChoice -= (nextChoice == MENU_AV_BGM_TYPE && !((ncfg[44] >> 15) & 0x1)) * 2;
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					nextChoice -=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
 #endif
@@ -2271,7 +2232,7 @@ void ConfigMenu() {
 			} else {
 				padRepeat(pl);
 				m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
-				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SOUND) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE || statusc[0] == MENU_AV_BGM_FORMAT)) {
+				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SE) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE)) {
 					if(statusc[0] == MENU_AV_CHANGE_MENU) {
 						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages) % pages;
@@ -2349,19 +2310,8 @@ void ConfigMenu() {
 						need_setScreen = 1;
 					}
 #endif
-					else if(statusc[0] == MENU_AV_MOVE_SOUND) ncfg[46] = !ncfg[46];
-					else if (statusc[0] == MENU_AV_SOUND_BUFFER) {
-						// soundbuffer
-						if (m < 0 && ncfg[38] == 0) {
-							ncfg[38] = SOUND_BUFFER_MAX - 1;
-						}
-						else {
-							ncfg[38] = (ncfg[38] + m) % SOUND_BUFFER_MAX;
-						}
-						reinit = 1;
-						need_reset = 1;
-					}
-					else if(statusc[0] == MENU_AV_PLAY_SOUND) {
+					else if(statusc[0] == MENU_AV_MOVE_SE) ncfg[46] = !ncfg[46];
+					else if(statusc[0] == MENU_AV_PLAY_SE) {
 						// se
 						ncfg[44] ^= 0x1 << 23;
 						reinit = 1;
@@ -2375,30 +2325,13 @@ void ConfigMenu() {
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
-						ncfg[44] ^= APP_SOUND_BITS_SIMPLE;
-						reinit = 1;
-						need_reset = 1;
-					}
-					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
-						// wavebgm format
-						APP_SoundFormat wavebgm_format = (ncfg[44] & APP_SOUND_BITS_FORMAT) - 1;
-						do {
-							wavebgm_format += m;
-							if (m < 0 && wavebgm_format < 0) {
-								wavebgm_format = APP_SOUND_FORMAT_COUNT - 1;
-							}
-							else if (m > 0 && wavebgm_format > APP_SOUND_FORMAT_COUNT - 1) {
-								wavebgm_format = 0;
-							}
-						} while (!APP_IsSoundFormatSupported(wavebgm_format));
-
-						ncfg[44] = (ncfg[44] & ~APP_SOUND_BITS_FORMAT) | (wavebgm_format + 1);
+						ncfg[44] ^= WAVE_BGM_SIMPLE;
 						reinit = 1;
 						need_reset = 1;
 					}
 				}
-				else if((m || (mp[pl] && mpc[pl] > 30)) && (statusc[0] == MENU_AV_SOUND_VOLUME || statusc[0] == MENU_AV_BGM_VOLUME)) {
-					if(statusc[0] == MENU_AV_SOUND_VOLUME) {
+				else if((m || (mp[pl] && mpc[pl] > 30)) && (statusc[0] == MENU_AV_SE_VOLUME || statusc[0] == MENU_AV_BGM_VOLUME)) {
+					if(statusc[0] == MENU_AV_SE_VOLUME) {
 						// sevolume
 						int32_t sevolume_temp = (ncfg[44] >> 16) & 0x7F;
 						if(m) sevolume_temp += m;

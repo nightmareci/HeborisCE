@@ -17192,45 +17192,50 @@ void loadBGM(void) {
 	APP_StopMusic();
 
 	if (wavebgm & WAVE_BGM_SIMPLE) {
+		APP_LoadMusicLeadin("res/bgm/bgm_leadin");
 		APP_LoadMusic("res/bgm/bgm");
 		APP_SetMusicVolume(bgmvolume);
 		APP_PlayMusic();
 	}
 	else {
-		APP_StrCpy(string[0],  "res/bgm/bgm01");		// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
-		APP_StrCpy(string[1],  "res/bgm/bgm02");		// bgmlv 1 プレイ中（MASTER 500〜899）
-		APP_StrCpy(string[2],  "res/bgm/bgm03");		// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
-		APP_StrCpy(string[3],  "res/bgm/bgm04");		// bgmlv 3 プレイ中（DEVIL  500〜699）
-		APP_StrCpy(string[4],  "res/bgm/bgm05");		// bgmlv 4 プレイ中（DEVIL  700〜999）
-		APP_StrCpy(string[5],  "res/bgm/bgm06");		// bgmlv 5 プレイ中（DEVIL  1000以降）
-		APP_StrCpy(string[6],  "res/bgm/ending");		// bgmlv 6 プレイ中（エンディング）
-		APP_StrCpy(string[7],  "res/bgm/ending_b");		// bgmlv 7 プレイ中（BEGINNERエンディング）
-		APP_StrCpy(string[8],  "res/bgm/tomoyo");		// bgmlv 8 プレイ中 通常（TOMOYO）
-		APP_StrCpy(string[9],  "res/bgm/tomoyo_ex");	// bgmlv 9 プレイ中 EXステージ（TOMOYO）
-		APP_StrCpy(string[10], "res/bgm/vsmode");		// bgmlv 10 プレイ中（対戦モード）playwave(60)
-		APP_StrCpy(string[11], "res/bgm/title");		// bgmlv 11 タイトル
-		APP_StrCpy(string[12], "res/bgm/select");		// bgmlv 12 モードセレクト62
-		APP_StrCpy(string[13], "res/bgm/nameentry");	// bgmlv 13 ネームエントリー
-		APP_StrCpy(string[14], "res/bgm/tomoyo_eh");	// bgmlv 14 プレイ中 E-Heart（TOMOYO）
-		APP_StrCpy(string[15], "res/bgm/fever");		// bgmlv 15 FEVER発動中
-		APP_StrCpy(string[16], "res/bgm/mission_ex01");	// bgmlv 16 プレイ中 ミッションその1
-		APP_StrCpy(string[17], "res/bgm/mission_ex02");	// bgmlv 17 プレイ中 ミッションその2
-		APP_StrCpy(string[18], "res/bgm/mission_ex03");	// bgmlv 18 プレイ中 ミッションその3
-		APP_StrCpy(string[19], "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
-
-		for(int32_t i = 0; i < WAVE_BGM_COUNT; i++) {
-			if(bgmload[i]){
-				// 読み込み
-				APP_LoadWave(WAVE_BGM_START + i, string[i]);
-
-				// ループON
-				APP_SetWaveLooping(WAVE_BGM_START + i, true);
-			}
-		}
-
-		// エンディング曲ループか
-		APP_SetWaveLooping(WAVE_BGM_ENDING, false);
-		APP_SetWaveLooping(WAVE_BGM_ENDING_B, false);
+		APP_LoadWaveLeadin(WAVE_BGM_BGM01, "res/bgm/bgm01_leadin");
+		APP_LoadWave(WAVE_BGM_BGM01, "res/bgm/bgm01");				// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
+		APP_LoadWaveLeadin(WAVE_BGM_BGM02, "res/bgm/bgm02_leadin");
+		APP_LoadWave(WAVE_BGM_BGM02, "res/bgm/bgm02");				// bgmlv 1 プレイ中（MASTER 500〜899）
+		APP_LoadWaveLeadin(WAVE_BGM_BGM03, "res/bgm/bgm03_leadin");
+		APP_LoadWave(WAVE_BGM_BGM03, "res/bgm/bgm03");				// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
+		APP_LoadWaveLeadin(WAVE_BGM_BGM04, "res/bgm/bgm04_leadin");
+		APP_LoadWave(WAVE_BGM_BGM04, "res/bgm/bgm04");				// bgmlv 3 プレイ中（DEVIL  500〜699）
+		APP_LoadWaveLeadin(WAVE_BGM_BGM05, "res/bgm/bgm05_leadin");
+		APP_LoadWave(WAVE_BGM_BGM05, "res/bgm/bgm05");				// bgmlv 4 プレイ中（DEVIL  700〜999）
+		APP_LoadWaveLeadin(WAVE_BGM_BGM06, "res/bgm/bgm06_leadin");
+		APP_LoadWave(WAVE_BGM_BGM06, "res/bgm/bgm06");				// bgmlv 5 プレイ中（DEVIL  1000以降）
+		APP_LoadWave(WAVE_BGM_ENDING, "res/bgm/ending");			// bgmlv 6 プレイ中（エンディング）Not looping
+		APP_LoadWave(WAVE_BGM_ENDING_B, "res/bgm/ending_b");			// bgmlv 7 プレイ中（BEGINNERエンディング）Not looping
+		APP_LoadWaveLeadin(WAVE_BGM_TOMOYO, "res/bgm/tomoyo_leadin");
+		APP_LoadWave(WAVE_BGM_TOMOYO, "res/bgm/tomoyo");			// bgmlv 8 プレイ中 通常（TOMOYO）
+		APP_LoadWaveLeadin(WAVE_BGM_TOMOYO_EX, "res/bgm/tomoyo_ex_leadin");
+		APP_LoadWave(WAVE_BGM_TOMOYO_EX, "res/bgm/tomoyo_ex");			// bgmlv 9 プレイ中 EXステージ（TOMOYO）
+		APP_LoadWaveLeadin(WAVE_BGM_VSMODE, "res/bgm/vsmode_leadin");
+		APP_LoadWave(WAVE_BGM_VSMODE, "res/bgm/vsmode");			// bgmlv 10 プレイ中（対戦モード）playwave(60)
+		APP_LoadWaveLeadin(WAVE_BGM_TITLE, "res/bgm/title_leadin");
+		APP_LoadWave(WAVE_BGM_TITLE, "res/bgm/title");				// bgmlv 11 タイトル
+		APP_LoadWaveLeadin(WAVE_BGM_SELECT, "res/bgm/select_leadin");
+		APP_LoadWave(WAVE_BGM_SELECT, "res/bgm/select");			// bgmlv 12 モードセレクト62
+		APP_LoadWaveLeadin(WAVE_BGM_NAMEENTRY, "res/bgm/nameentry_leadin");
+		APP_LoadWave(WAVE_BGM_NAMEENTRY, "res/bgm/nameentry");			// bgmlv 13 ネームエントリー
+		APP_LoadWaveLeadin(WAVE_BGM_TOMOYO_EH, "res/bgm/tomoyo_eh_leadin");
+		APP_LoadWave(WAVE_BGM_TOMOYO_EH, "res/bgm/tomoyo_eh");			// bgmlv 14 プレイ中 E-Heart（TOMOYO）
+		APP_LoadWaveLeadin(WAVE_BGM_FEVER, "res/bgm/fever_leadin");
+		APP_LoadWave(WAVE_BGM_FEVER, "res/bgm/fever");				// bgmlv 15 FEVER発動中
+		APP_LoadWaveLeadin(WAVE_BGM_MISSION_EX01, "res/bgm/mission_ex01_leadin");
+		APP_LoadWave(WAVE_BGM_MISSION_EX01, "res/bgm/mission_ex01");		// bgmlv 16 プレイ中 ミッションその1
+		APP_LoadWaveLeadin(WAVE_BGM_MISSION_EX02, "res/bgm/mission_ex02_leadin");
+		APP_LoadWave(WAVE_BGM_MISSION_EX02, "res/bgm/mission_ex02");		// bgmlv 17 プレイ中 ミッションその2
+		APP_LoadWaveLeadin(WAVE_BGM_MISSION_EX03, "res/bgm/mission_ex03_leadin");
+		APP_LoadWave(WAVE_BGM_MISSION_EX03, "res/bgm/mission_ex03");		// bgmlv 18 プレイ中 ミッションその3
+		APP_LoadWaveLeadin(WAVE_BGM_TOMOYO_EH_FINAL, "res/bgm/tomoyo_eh_final_leadin");
+		APP_LoadWave(WAVE_BGM_TOMOYO_EH_FINAL, "res/bgm/tomoyo_eh_final");	// bgmlv 19 プレイ E-Heartラストplaywave(69)
 	}
 }
 

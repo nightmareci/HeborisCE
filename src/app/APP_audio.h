@@ -20,16 +20,29 @@ bool APP_InitAudio(int wavesCount);
 // Quit the audio system.
 void APP_QuitAudio(void);
 
-// Load a wave. Does not support APP_WAVE_NUM_ALL.
+// Load leadin for a wave. Does not support APP_WAVE_NUM_ALL.
+//
+// Loading a leadin on a wave number also enables looping for the main part,
+// after the leadin has finished playing. But looping can still be disabled,
+// after loading.
+//
+// The filename must have no file extension; the function will try extensions
+// for all supported formats in a priority order.
+void APP_LoadWaveLeadin(int num, const char* filename_no_ext);
+
+// Load a wave. Does not support APP_WAVE_NUM_ALL. For waves with a leadin, this
+// loads into the looping main part.
 //
 // The filename must have no file extension; the function will try extensions
 // for all supported formats in a priority order.
 void APP_LoadWave(int num, const char* filename_no_ext);
 
-// Play waves. APP_WAVE_NUM_ALL plays all waves.
+// Play waves. APP_WAVE_NUM_ALL plays all waves. This initiates playback regardless
+// of whether the wave was paused, from the start of the wave.
 void APP_PlayWave(int num);
 
-// Resume waves. APP_WAVE_NUM_ALL resumes all waves.
+// Resume only waves that are currently paused. APP_WAVE_NUM_ALL resumes all
+// waves.
 void APP_ResumeWave(int num);
 
 // Stop waves. APP_WAVE_NUM_ALL stops all waves.
@@ -48,16 +61,23 @@ void APP_SetWaveVolume(int num, int volume);
 // Set wave looping state. APP_WAVE_NUM_ALL sets all waves' looping state.
 void APP_SetWaveLooping(int num, bool looping);
 
+// Load leadin for music.
+//
+// The filename must have no file extension; the function will try extensions
+// for all supported formats in a priority order.
+void APP_LoadMusicLeadin(const char* filename_no_ext);
+
 // Load music.
 //
 // The filename must have no file extension; the function will try extensions
 // for all supported formats in a priority order.
 void APP_LoadMusic(const char* filename_no_ext);
 
-// Play music.
+// Play music. This initiates playback regardless of whether the music was
+// paused, from the start of the music.
 void APP_PlayMusic(void);
 
-// Resume music.
+// Resume music if it's currently paused.
 void APP_ResumeMusic(void);
 
 // Stop music.

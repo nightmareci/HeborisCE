@@ -5,12 +5,15 @@
 typedef struct APP_Sound
 {
 	SDL_AudioStream* stream;
-	uint8_t* data;
+	uint8_t* leadinData;
+	uint8_t* mainData;
 	SDL_AtomicInt playing;
 	SDL_AtomicInt looping;
 	float gain;
-	uint32_t size;
-	uint32_t pos;
+	uint32_t leadinSize;
+	uint32_t leadinPos;
+	uint32_t mainSize;
+	uint32_t mainPos;
 	bool paused;
 } APP_Sound;
 
@@ -28,57 +31,82 @@ static APP_Sound APP_Music;
 
 static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
 {
+	APP_Sound* const wave = userdata;
 	(void)totalAmount;
+
 	if (additionalAmount == 0) {
 		return;
 	}
-	APP_Sound* const wave = userdata;
+
 	const int playing = SDL_GetAtomicInt(&wave->playing);
 	SDL_MemoryBarrierAcquire();
 	if (!playing) {
 		return;
 	}
-	else if (!SDL_GetAtomicInt(&wave->looping)) {
-		if (additionalAmount >= wave->size - wave->pos) {
-			SDL_PutAudioStreamData(stream, wave->data + wave->pos, wave->size - wave->pos);
-			wave->pos = wave->size;
+
+	if (wave->leadinPos < wave->leadinSize) {
+		if (additionalAmount > wave->leadinSize - wave->leadinPos) {
+			SDL_PutAudioStreamData(stream, wave->leadinData + wave->leadinPos, wave->leadinSize - wave->leadinPos);
+			wave->leadinPos = wave->leadinSize;
+			if (!wave->mainData) {
+				SDL_MemoryBarrierRelease();
+				SDL_SetAtomicInt(&wave->playing, 0);
+				return;
+			}
+			else {
+				additionalAmount -= wave->leadinSize - wave->leadinPos;
+			}
+		}
+		else {
+			SDL_PutAudioStreamData(stream, wave->leadinData + wave->leadinPos, additionalAmount);
+			wave->leadinPos += additionalAmount;
+			if (wave->leadinPos == wave->leadinSize && !wave->mainData) {
+				SDL_MemoryBarrierRelease();
+				SDL_SetAtomicInt(&wave->playing, 0);
+			}
+			return;
+		}
+	}
+
+	if (!SDL_GetAtomicInt(&wave->looping)) {
+		if (additionalAmount >= wave->mainSize - wave->mainPos) {
+			SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, wave->mainSize - wave->mainPos);
+			wave->mainPos = wave->mainSize;
 			SDL_MemoryBarrierRelease();
 			SDL_SetAtomicInt(&wave->playing, 0);
 		}
 		else {
-			SDL_PutAudioStreamData(stream, wave->data + wave->pos, additionalAmount);
-			wave->pos += additionalAmount;
+			SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, additionalAmount);
+			wave->mainPos += additionalAmount;
 		}
 	}
-	else if (additionalAmount >= wave->size - wave->pos) {
+	else if (additionalAmount >= wave->mainSize - wave->mainPos) {
 		int remaining = additionalAmount;
 		while (remaining > 0) {
-			if (remaining >= wave->size - wave->pos) {
-				SDL_PutAudioStreamData(stream, wave->data + wave->pos, wave->size - wave->pos);
-				remaining -= wave->size - wave->pos;
-				wave->pos = 0;
+			if (remaining >= wave->mainSize - wave->mainPos) {
+				SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, wave->mainSize - wave->mainPos);
+				remaining -= wave->mainSize - wave->mainPos;
+				wave->mainPos = 0;
 			}
 			else {
-				SDL_PutAudioStreamData(stream, wave->data + wave->pos, remaining);
-				wave->pos += remaining;
+				SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, remaining);
+				wave->mainPos += remaining;
 				remaining = 0;
 			}
 		}
 	}
 	else {
-		SDL_PutAudioStreamData(stream, wave->data + wave->pos, additionalAmount);
-		wave->pos += additionalAmount;
+		SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, additionalAmount);
+		wave->mainPos += additionalAmount;
 	}
 }
 
 static bool APP_InitSound(APP_Sound* sound)
 {
-	SDL_zero(*sound);
 	sound->gain = 1.0f;
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->playing, 0);
-	const SDL_AudioSpec waveFormat = { SDL_AUDIO_S16, 2, 44100 };
-	sound->stream = SDL_CreateAudioStream(&waveFormat, &APP_AudioDeviceFormat);
+	sound->stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
 	if (
 		!sound->stream ||
 		!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetAudioStreamData, sound) ||
@@ -113,7 +141,7 @@ bool APP_InitAudio(int wavesCount)
 
 	// サウンドの初期化
 	// Initialize sounds
-	APP_Waves = SDL_malloc(wavesCount * sizeof(APP_Sound));
+	APP_Waves = SDL_calloc(sizeof(APP_Sound), wavesCount);
 	if (!APP_Waves) {
 		return false;
 	}
@@ -123,6 +151,7 @@ bool APP_InitAudio(int wavesCount)
 			return false;
 		}
 	}
+	SDL_zero(APP_Music);
 	if (!APP_InitSound(&APP_Music)) {
 		return false;
 	}
@@ -135,8 +164,8 @@ bool APP_InitAudio(int wavesCount)
 static void APP_QuitSound(APP_Sound* sound)
 {
 	SDL_DestroyAudioStream(sound->stream);
-	SDL_free(sound->data);
-	SDL_zero(*sound);
+	SDL_free(sound->mainData);
+	SDL_free(sound->leadinData);
 }
 
 void APP_QuitAudio(void)
@@ -154,6 +183,7 @@ void APP_QuitAudio(void)
 	SDL_free(APP_Waves);
 	APP_Waves = NULL;
 	APP_QuitSound(&APP_Music);
+	SDL_zero(APP_Music);
 
 	SDL_CloseAudioDevice(APP_AudioDevice);
 	APP_AudioDevice = 0;
@@ -161,14 +191,14 @@ void APP_QuitAudio(void)
 	APP_WasAudioInit = false;
 }
 
-static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext)
+static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool leadin)
 {
 	if (!APP_WasAudioInit || !filename_no_ext || SDL_strlen(filename_no_ext) < 5) {
 		return;
 	}
 
 	bool found = false;
-	char* filename;
+	char* filename = NULL;
 	for (size_t i = 0; i < SDL_arraysize(APP_SoundFormatsSupported); i++) {
 		if (APP_SoundFormatsSupported[i]) {
 			if (SDL_asprintf(&filename, "%s%s", filename_no_ext, APP_SoundFormatsSupported[i]) < 0) {
@@ -179,9 +209,11 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext)
 				break;
 			}
 			SDL_free(filename);
+			filename = NULL;
 		}
 	}
 	if (!found) {
+		SDL_free(filename);
 		return;
 	}
 
@@ -192,40 +224,61 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext)
 	if (!file) {
 		APP_Exit(EXIT_FAILURE);
 	}
-	if (sound->data) {
-		SDL_free(sound->data);
-		sound->data = NULL;
+	uint8_t** data = &sound->mainData;
+	uint32_t* size = &sound->mainSize;
+	uint32_t* pos = &sound->mainPos;
+	if (leadin) {
+		data = &sound->leadinData;
+		size = &sound->leadinSize;
+		pos = &sound->leadinPos;
+	}
+	if (*data) {
+		SDL_free(*data);
+		*data = NULL;
 	}
 	SDL_AudioSpec waveFormat;
-	if (!SDL_LoadWAV_IO(file, true, &waveFormat, &sound->data, &sound->size)) {
+	if (!SDL_LoadWAV_IO(file, true, &waveFormat, data, size)) {
 		APP_Exit(EXIT_FAILURE);
 	}
-
-	if (sound != &APP_Music) {
-		SDL_SetAtomicInt(&sound->looping, 0);
+	if (*size > INT_MAX) {
+		SDL_free(*data);
+		*data = NULL;
+		APP_Exit(EXIT_FAILURE);
 	}
-	sound->gain = 1.0f;
-	sound->pos = 0;
+	if (
+		waveFormat.format != APP_AudioDeviceFormat.format ||
+		waveFormat.channels != APP_AudioDeviceFormat.channels ||
+		waveFormat.freq != APP_AudioDeviceFormat.freq
+	) {
+		uint8_t* convertedData;
+		int convertedSize;
+		if (!SDL_ConvertAudioSamples(&waveFormat, *data, (int)*size, &APP_AudioDeviceFormat, &convertedData, &convertedSize)) {
+			SDL_free(*data);
+			APP_Exit(EXIT_FAILURE);
+		}
+		SDL_free(*data);
+		*data = convertedData;
+		*size = convertedSize;
+	}
+
+	*pos = 0;
 	sound->paused = false;
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->playing, 0);
-	if (
-		!SDL_SetAudioStreamFormat(sound->stream, &waveFormat, &APP_AudioDeviceFormat) ||
-		!SDL_SetAudioStreamGain(sound->stream, 1.0f) ||
-		!SDL_BindAudioStream(APP_AudioDevice, sound->stream)
-	) {
+	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }
 
-static void APP_StartSound(APP_Sound* sound, bool replay)
+static void APP_StartSound(APP_Sound* sound, bool resume)
 {
-	if (!APP_WasAudioInit || !sound->data || (replay && !sound->paused)) {
+	if (!APP_WasAudioInit || (!sound->leadinData && !sound->mainData) || (resume && !sound->paused)) {
 		return;
 	}
 	SDL_UnbindAudioStream(sound->stream);
-	if (!replay) {
-		sound->pos = 0;
+	if (!resume) {
+		sound->leadinPos = 0;
+		sound->mainPos = 0;
 	}
 	sound->paused = false;
 	SDL_MemoryBarrierRelease();
@@ -242,7 +295,8 @@ static void APP_StopSound(APP_Sound* sound)
 	}
 
 	SDL_UnbindAudioStream(sound->stream);
-	sound->pos = 0;
+	sound->leadinPos = 0;
+	sound->mainPos = 0;
 	sound->paused = false;
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->playing, 0);
@@ -281,21 +335,21 @@ static bool APP_IsSoundPlaying(APP_Sound* sound)
 	return !!playing;
 }
 
-static void APP_SetSoundVolume(APP_Sound* sound, int vol)
+static void APP_SetSoundVolume(APP_Sound* sound, int volume)
 {
 	if (!APP_WasAudioInit) {
 		return;
 	}
 
 	float gain;
-	if (vol < 0) {
+	if (volume < 0) {
 		gain = 0.0f;
 	}
-	else if (vol > 100) {
+	else if (volume > 100) {
 		gain = 1.0f;
 	}
 	else {
-		gain = vol / 100.0f;
+		gain = volume / 100.0f;
 	}
 	sound->gain = gain;
 	if (!SDL_SetAudioStreamGain(sound->stream, gain)) {
@@ -312,29 +366,40 @@ static void APP_SetSoundLooping(APP_Sound* sound, bool looping)
 	SDL_SetAtomicInt(&sound->looping, !!looping);
 }
 
+void APP_LoadWaveLeadin(int num, const char* filename_no_ext)
+{
+	if (num < 0 || num >= APP_WavesCount) {
+		return;
+	}
+
+	APP_SetSoundLooping(&APP_Waves[num], true);
+	APP_LoadSound(&APP_Waves[num], filename_no_ext, true);
+}
+
 void APP_LoadWave(int num, const char* filename_no_ext)
 {
 	if (num < 0 || num >= APP_WavesCount) {
 		return;
 	}
 
-	APP_LoadSound(&APP_Waves[num], filename_no_ext);
+	APP_LoadSound(&APP_Waves[num], filename_no_ext, false);
 }
 
-static void APP_StartWave(int num, bool replay)
+static void APP_StartWave(int num, bool resume)
 {
 	if (!APP_WasAudioInit || num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
-		APP_StartSound(&APP_Waves[num], replay);
+		APP_StartSound(&APP_Waves[num], resume);
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			APP_StartSound(&APP_Waves[i], replay);
+			APP_StartSound(&APP_Waves[i], resume);
 		}
 	}
 }
+
 void APP_PlayWave(int num)
 {
 	APP_StartWave(num, false);
@@ -423,9 +488,14 @@ void APP_SetWaveLooping(int num, bool looping)
 	}
 }
 
+void APP_LoadMusicLeadin(const char* filename_no_ext)
+{
+	APP_LoadSound(&APP_Music, filename_no_ext, true);
+}
+
 void APP_LoadMusic(const char* filename_no_ext)
 {
-	APP_LoadSound(&APP_Music, filename_no_ext);
+	APP_LoadSound(&APP_Music, filename_no_ext, false);
 }
 
 void APP_PlayMusic(void)

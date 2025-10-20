@@ -270,7 +270,6 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowY) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, logicalWidth) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, logicalHeight) ||
-				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true)
 			) {
 				SET_SCREEN_ERROR;
@@ -285,7 +284,6 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		else
 		{
 			if (
-				!SDL_HideWindow(APP_ScreenWindow) ||
 				!SDL_SetWindowFullscreen(APP_ScreenWindow, true) ||
 				!SDL_SetWindowSize(APP_ScreenWindow, logicalWidth, logicalHeight) ||
 				!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREENMODE_FULLSCREEN) ? displayModes[modeIndex] : NULL)
@@ -338,7 +336,6 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowY) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, windowW) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, windowH) ||
-				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN, maximized)
 			) {
@@ -353,21 +350,15 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		}
 		else
 		{
-			if (!SDL_HideWindow(APP_ScreenWindow)) {
-				SET_SCREEN_ERROR;
-			}
 			if ( maximized ) {
 				if (!SDL_MaximizeWindow(APP_ScreenWindow)) {
 					SET_SCREEN_ERROR;
 				}
 			}
-			else if (!SDL_RestoreWindow(APP_ScreenWindow)) {
-				SET_SCREEN_ERROR;
-			}
 			if (
 				!SDL_SetWindowFullscreen(APP_ScreenWindow, false) ||
-				!SDL_SetWindowSize(APP_ScreenWindow, windowW, windowH) ||
-				!SDL_SetWindowResizable(APP_ScreenWindow, true)
+				!SDL_SetWindowResizable(APP_ScreenWindow, true) ||
+				!SDL_SetWindowSize(APP_ScreenWindow, windowW, windowH)
 			) {
 				SET_SCREEN_ERROR;
 			}
@@ -522,9 +513,6 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		SET_SCREEN_ERROR;
 	}
 
-	if (!SDL_ShowWindow(APP_ScreenWindow)) {
-		SET_SCREEN_ERROR;
-	}
 	while (!SDL_SyncWindow(APP_ScreenWindow)) {
 		SDL_Delay(1);
 	}

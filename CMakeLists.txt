@@ -118,6 +118,7 @@ add_executable(${APP_EXE}
 	"src/app/hashmap.h"
 	"src/app/nanotime.h"
 	"src/app/stb_image.h"
+	"src/app/stb_vorbis.h"
 
 	"src/game/gamestart.h"
 	"src/game/init.h"

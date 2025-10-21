@@ -2,6 +2,50 @@
 #include "APP_filesystem.h"
 #include "APP_main.h"
 
+#define STB_VORBIS_SDL 1
+#define STB_VORBIS_NO_STDIO 1
+#define STB_VORBIS_NO_CRT 1
+#define STB_VORBIS_NO_PUSHDATA_API 1
+#define STB_VORBIS_MAX_CHANNELS 8
+#define STB_FORCEINLINE SDL_FORCE_INLINE
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+#define STB_VORBIS_BIG_ENDIAN 1
+#endif
+#define STBV_CDECL SDLCALL
+#ifdef assert
+#undef assert
+#endif
+#ifdef memset
+#undef memset
+#endif
+#ifdef memcpy
+#undef memcpy
+#endif
+#define assert SDL_assert
+#define memset SDL_memset
+#define memcmp SDL_memcmp
+#define memcpy SDL_memcpy
+#define qsort SDL_qsort
+#define malloc SDL_malloc
+#define realloc SDL_realloc
+#define free SDL_free
+#define pow SDL_pow
+#define floor SDL_floor
+#define ldexp(v, e) SDL_scalbn((v), (e))
+#define abs(x) SDL_abs(x)
+#define cos(x) SDL_cos(x)
+#define sin(x) SDL_sin(x)
+#define log(x) SDL_log(x)
+#define exp(x) SDL_exp(x)
+#define STB_VORBIS_STDINT_DEFINED 1
+typedef Uint8 uint8;
+typedef Sint8 int8;
+typedef Uint16 uint16;
+typedef Sint16 int16;
+typedef Uint32 uint32;
+typedef Sint32 int32;
+#include "stb_vorbis.h"
+
 typedef struct APP_Sound
 {
 	SDL_AudioStream* stream;
@@ -17,17 +61,111 @@ typedef struct APP_Sound
 	bool paused;
 } APP_Sound;
 
-static const char* APP_SoundFormatsSupported[] =
-{
-	".wav"
-};
-
 static bool APP_WasAudioInit;
 static SDL_AudioDeviceID APP_AudioDevice;
 static SDL_AudioSpec APP_AudioDeviceFormat;
 static APP_Sound* APP_Waves;
 static int APP_WavesCount;
 static APP_Sound APP_Music;
+
+static bool APP_LoadWAV(SDL_IOStream* file, uint8_t** data, uint32_t* size);
+static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size);
+
+struct {
+	const char* ext;
+	bool (* load)(SDL_IOStream* file, uint8_t** data, uint32_t* size);
+} APP_AudioDataLoaders[] = {
+	{ ".wav", APP_LoadWAV },
+	{ ".ogg", APP_LoadOGG }
+};
+
+static bool APP_LoadWAV(SDL_IOStream* file, uint8_t** data, uint32_t* size)
+{
+	SDL_AudioSpec waveFormat;
+	if (!SDL_LoadWAV_IO(file, true, &waveFormat, data, size)) {
+		*data = NULL;
+		return false;
+	}
+	if (*size > INT_MAX) {
+		SDL_free(*data);
+		*data = NULL;
+		return false;
+	}
+	if (
+		waveFormat.format != APP_AudioDeviceFormat.format ||
+		waveFormat.channels != APP_AudioDeviceFormat.channels ||
+		waveFormat.freq != APP_AudioDeviceFormat.freq
+	) {
+		uint8_t* convertedData;
+		int convertedSize;
+		if (!SDL_ConvertAudioSamples(&waveFormat, *data, (int)*size, &APP_AudioDeviceFormat, &convertedData, &convertedSize)) {
+			SDL_free(*data);
+			*data = NULL;
+			return false;
+		}
+		SDL_free(*data);
+		*data = convertedData;
+		*size = convertedSize;
+	}
+	return true;
+}
+
+static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size)
+{
+	*data = NULL;
+	int error;
+	stb_vorbis* vorbis = stb_vorbis_open_io(file, 1, &error, NULL);
+	if (!vorbis) {
+		SDL_CloseIO(file);
+		return false;
+	}
+	unsigned samples = stb_vorbis_stream_length_in_samples(vorbis);
+	if (!samples) {
+		stb_vorbis_close(vorbis);
+		return false;
+	}
+	uint8_t* const vorbisData = SDL_malloc(sizeof(float) * vorbis->channels * samples);
+	if (!vorbisData) {
+		stb_vorbis_close(vorbis);
+		return false;
+	}
+	int gotSamples = stb_vorbis_get_samples_float_interleaved(vorbis, vorbis->channels, (float*)vorbisData, vorbis->channels * samples);
+	error = stb_vorbis_get_error(vorbis);
+	if (gotSamples == 0 || error) {
+		stb_vorbis_close(vorbis);
+		SDL_free(vorbisData);
+		return false;
+	}
+	stb_vorbis_close(vorbis);
+	size_t vorbisSize = sizeof(float) * vorbis->channels * gotSamples;
+	const SDL_AudioSpec vorbisFormat = { SDL_AUDIO_F32, vorbis->channels, vorbis->sample_rate };
+	if (
+		vorbisFormat.format != APP_AudioDeviceFormat.format ||
+		vorbisFormat.channels != APP_AudioDeviceFormat.channels ||
+		vorbisFormat.freq != APP_AudioDeviceFormat.freq
+	) {
+		if (vorbisSize > INT_MAX) {
+			SDL_free(vorbisData);
+			return false;
+		}
+		int convertedSize;
+		if (!SDL_ConvertAudioSamples(&vorbisFormat, (uint8_t*)vorbisData, (int)vorbisSize, &APP_AudioDeviceFormat, data, &convertedSize)) {
+			SDL_free(vorbisData);
+			return false;
+		}
+		SDL_free(vorbisData);
+		*size = convertedSize;
+	}
+	else {
+		if (vorbisSize > UINT32_MAX) {
+			SDL_free(vorbisData);
+			return false;
+		}
+		*data = (uint8_t*)vorbisData;
+		*size = (uint32_t)vorbisSize;
+	}
+	return true;
+}
 
 static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
 {
@@ -197,33 +335,6 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool le
 		return;
 	}
 
-	bool found = false;
-	char* filename = NULL;
-	for (size_t i = 0; i < SDL_arraysize(APP_SoundFormatsSupported); i++) {
-		if (APP_SoundFormatsSupported[i]) {
-			if (SDL_asprintf(&filename, "%s%s", filename_no_ext, APP_SoundFormatsSupported[i]) < 0) {
-				APP_Exit(EXIT_FAILURE);
-			}
-			if (APP_FileExists(filename)) {
-				found = true;
-				break;
-			}
-			SDL_free(filename);
-			filename = NULL;
-		}
-	}
-	if (!found) {
-		SDL_free(filename);
-		return;
-	}
-
-	SDL_UnbindAudioStream(sound->stream);
-
-	SDL_IOStream* const file = APP_OpenRead(filename);
-	SDL_free(filename);
-	if (!file) {
-		APP_Exit(EXIT_FAILURE);
-	}
 	uint8_t** data = &sound->mainData;
 	uint32_t* size = &sound->mainSize;
 	uint32_t* pos = &sound->mainPos;
@@ -236,30 +347,32 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool le
 		SDL_free(*data);
 		*data = NULL;
 	}
-	SDL_AudioSpec waveFormat;
-	if (!SDL_LoadWAV_IO(file, true, &waveFormat, data, size)) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	if (*size > INT_MAX) {
-		SDL_free(*data);
-		*data = NULL;
-		APP_Exit(EXIT_FAILURE);
-	}
-	if (
-		waveFormat.format != APP_AudioDeviceFormat.format ||
-		waveFormat.channels != APP_AudioDeviceFormat.channels ||
-		waveFormat.freq != APP_AudioDeviceFormat.freq
-	) {
-		uint8_t* convertedData;
-		int convertedSize;
-		if (!SDL_ConvertAudioSamples(&waveFormat, *data, (int)*size, &APP_AudioDeviceFormat, &convertedData, &convertedSize)) {
-			SDL_free(*data);
+
+	bool found = false;
+	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataLoaders); i++) {
+		char* filename;
+		if (SDL_asprintf(&filename, "%s%s", filename_no_ext, APP_AudioDataLoaders[i].ext) < 0) {
 			APP_Exit(EXIT_FAILURE);
 		}
-		SDL_free(*data);
-		*data = convertedData;
-		*size = convertedSize;
+		if (APP_FileExists(filename)) {
+			SDL_IOStream* const file = APP_OpenRead(filename);
+			SDL_free(filename);
+			if (!file) {
+				APP_Exit(EXIT_FAILURE);
+			}
+			if (!APP_AudioDataLoaders[i].load(file, data, size)) {
+				APP_Exit(EXIT_FAILURE);
+			}
+			found = true;
+			break;
+		}
+		SDL_free(filename);
 	}
+	if (!found) {
+		return;
+	}
+
+	SDL_UnbindAudioStream(sound->stream);
 
 	*pos = 0;
 	sound->paused = false;

@@ -46,6 +46,26 @@ typedef Uint32 uint32;
 typedef Sint32 int32;
 #include "stb_vorbis.h"
 
+#define DR_MP3_IMPLEMENTATION
+#if defined(__GNUC__) && (__GNUC__ >= 4) && \
+!(defined(_WIN32) || defined(__EMX__))
+#define DRMP3_API __attribute__((visibility("hidden")))
+#elif defined(__APPLE__)
+#define DRMP3_API __private_extern__
+#else
+#define DRMP3_API
+#endif
+#define DR_MP3_FLOAT_OUTPUT
+#define DR_MP3_NO_STDIO
+#define DRMP3_ASSERT(expression) SDL_assert((expression))
+#define DRMP3_COPY_MEMORY(dst, src, sz) SDL_memcpy((dst), (src), (sz))
+#define DRMP3_MOVE_MEMORY(dst, src, sz) SDL_memmove((dst), (src), (sz))
+#define DRMP3_ZERO_MEMORY(p, sz) SDL_memset((p), 0, (sz))
+#define DRMP3_MALLOC(sz) SDL_malloc((sz))
+#define DRMP3_REALLOC(p, sz) SDL_realloc((p), (sz))
+#define DRMP3_FREE(p) SDL_free((p))
+#include "dr_mp3.h"
+
 typedef struct APP_Sound
 {
 	SDL_AudioStream* stream;
@@ -70,13 +90,15 @@ static APP_Sound APP_Music;
 
 static bool APP_LoadWAV(SDL_IOStream* file, uint8_t** data, uint32_t* size);
 static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size);
+static bool APP_LoadMP3(SDL_IOStream* file, uint8_t** data, uint32_t* size);
 
 struct {
 	const char* ext;
 	bool (* load)(SDL_IOStream* file, uint8_t** data, uint32_t* size);
 } APP_AudioDataLoaders[] = {
 	{ ".wav", APP_LoadWAV },
-	{ ".ogg", APP_LoadOGG }
+	{ ".ogg", APP_LoadOGG },
+	{ ".mp3", APP_LoadMP3 }
 };
 
 static bool APP_LoadWAV(SDL_IOStream* file, uint8_t** data, uint32_t* size)
@@ -163,6 +185,88 @@ static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size)
 		}
 		*data = (uint8_t*)vorbisData;
 		*size = (uint32_t)vorbisSize;
+	}
+	return true;
+}
+
+static size_t APP_DRMP3_Read(void* pUserData, void* pBufferOut, size_t bytesToRead)
+{
+	return SDL_ReadIO((SDL_IOStream*)pUserData, pBufferOut, bytesToRead);
+}
+
+static drmp3_bool32 APP_DRMP3_Seek(void* pUserData, int offset, drmp3_seek_origin origin)
+{
+	SDL_IOStream* const file = pUserData;
+	switch (origin) {
+	default:
+	case DRMP3_SEEK_SET:
+		return SDL_SeekIO(file, offset, SDL_IO_SEEK_SET) >= 0;
+
+	case DRMP3_SEEK_CUR:
+		return SDL_SeekIO(file, offset, SDL_IO_SEEK_CUR) >= 0;
+
+	case DRMP3_SEEK_END:
+		return SDL_SeekIO(file, offset, SDL_IO_SEEK_END) >= 0;
+	}
+}
+
+static drmp3_bool32 APP_DRMP3_Tell(void* pUserData, drmp3_int64* pCursor)
+{
+	*pCursor = SDL_TellIO((SDL_IOStream*)pUserData);
+	return *pCursor >= 0;
+}
+
+static void* APP_DRMP3_Malloc(size_t sz, void* pUserData)
+{
+	return SDL_malloc(sz);
+}
+
+static void* APP_DRMP3_Realloc(void* p, size_t sz, void* pUserData)
+{
+	return SDL_realloc(p, sz);
+}
+
+static void APP_DRMP3_Free(void* p, void* pUserData)
+{
+	SDL_free(p);
+}
+
+static bool APP_LoadMP3(SDL_IOStream* file, uint8_t** data, uint32_t* size)
+{
+	*data = NULL;
+	const drmp3_allocation_callbacks allocationCallbacks = { NULL, APP_DRMP3_Malloc, APP_DRMP3_Realloc, APP_DRMP3_Free };
+	drmp3_config config;
+	drmp3_uint64 totalFrameCount;
+	float* const mp3Data = drmp3_open_and_read_pcm_frames_f32(APP_DRMP3_Read, APP_DRMP3_Seek, APP_DRMP3_Tell, file, &config, &totalFrameCount, &allocationCallbacks);
+	if (!mp3Data) {
+		return false;
+	}
+	const SDL_AudioSpec mp3Format = { SDL_AUDIO_F32, config.channels, config.sampleRate };
+	const int mp3Size = (int)(sizeof(float) * mp3Format.channels * totalFrameCount);
+	if (
+		mp3Format.format != APP_AudioDeviceFormat.format ||
+		mp3Format.channels != APP_AudioDeviceFormat.channels ||
+		mp3Format.freq != APP_AudioDeviceFormat.freq
+	) {
+		if (totalFrameCount > INT_MAX / (sizeof(float) * mp3Format.channels)) {
+			SDL_free(mp3Data);
+			return false;
+		}
+		int convertedSize;
+		if (!SDL_ConvertAudioSamples(&mp3Format, (uint8_t*)mp3Data, mp3Size, &APP_AudioDeviceFormat, data, &convertedSize)) {
+			SDL_free(mp3Data);
+			return false;
+		}
+		SDL_free(mp3Data);
+		*size = convertedSize;
+	}
+	else {
+		if (totalFrameCount > UINT32_MAX / (sizeof(float) * mp3Format.channels)) {
+			SDL_free(mp3Data);
+			return false;
+		}
+		*data = (uint8_t*)mp3Data;
+		*size = mp3Size;
 	}
 	return true;
 }

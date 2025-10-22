@@ -30,6 +30,7 @@ void APP_QuitAudio(void);
 // for all supported formats in this order:
 // 1. WAV
 // 2. OGG
+// 3. MP3
 void APP_LoadWaveLeadin(int num, const char* filename_no_ext);
 
 // Load a wave. Does not support APP_WAVE_NUM_ALL. For waves with a leadin, this

@@ -9,8 +9,6 @@
 // Volume is a percentage, so a volume value of 100 corresponds to full volume,
 // 0 corresponds to silent.
 
-typedef Uint8 APP_SoundBits;
-
 // A special wave number that causes operations to act upon all waves.
 #define APP_WAVE_NUM_ALL -1
 

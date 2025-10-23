@@ -21,7 +21,7 @@ int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キ�
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-APP_SoundBits wavebgm;		// BGMの選択 || BGM selection
+int32_t wavebgm;		// BGMの選択 || BGM selection
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
 int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON

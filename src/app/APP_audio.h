@@ -8,6 +8,11 @@
 //
 // Volume is a percentage, so a volume value of 100 corresponds to full volume,
 // 0 corresponds to silent.
+//
+// The load functions try the following file types, in the listed order:
+// 1. WAVE (.wav)
+// 2. OGG Vorbis (.ogg)
+// 3. MP3 (.mp3)
 
 // A special wave number that causes operations to act upon all waves.
 #define APP_WAVE_NUM_ALL -1
@@ -20,15 +25,12 @@ void APP_QuitAudio(void);
 
 // Load leadin for a wave. Does not support APP_WAVE_NUM_ALL.
 //
+// The filename must have no extension; the function will try extensions for all
+// supported formats in a priority order.
+//
 // Loading a leadin on a wave number also enables looping for the main part,
 // after the leadin has finished playing. But looping can still be disabled,
 // after loading.
-//
-// The filename must have no file extension. The function will try extensions
-// for all supported formats in this order:
-// 1. WAV
-// 2. OGG
-// 3. MP3
 void APP_LoadWaveLeadin(int num, const char* filename_no_ext);
 
 // Load a wave. Does not support APP_WAVE_NUM_ALL. For waves with a leadin, this

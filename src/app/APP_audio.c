@@ -141,17 +141,18 @@ static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size)
 		SDL_CloseIO(file);
 		return false;
 	}
+	const SDL_AudioSpec vorbisFormat = { SDL_AUDIO_F32, vorbis->channels, vorbis->sample_rate };
 	unsigned samples = stb_vorbis_stream_length_in_samples(vorbis);
 	if (!samples) {
 		stb_vorbis_close(vorbis);
 		return false;
 	}
-	uint8_t* const vorbisData = SDL_malloc(sizeof(float) * vorbis->channels * samples);
+	uint8_t* const vorbisData = SDL_malloc(sizeof(float) * vorbisFormat.channels * samples);
 	if (!vorbisData) {
 		stb_vorbis_close(vorbis);
 		return false;
 	}
-	int gotSamples = stb_vorbis_get_samples_float_interleaved(vorbis, vorbis->channels, (float*)vorbisData, vorbis->channels * samples);
+	int gotSamples = stb_vorbis_get_samples_float_interleaved(vorbis, vorbisFormat.channels, (float*)vorbisData, vorbisFormat.channels * samples);
 	error = stb_vorbis_get_error(vorbis);
 	if (gotSamples == 0 || error) {
 		stb_vorbis_close(vorbis);
@@ -159,8 +160,7 @@ static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size)
 		return false;
 	}
 	stb_vorbis_close(vorbis);
-	size_t vorbisSize = sizeof(float) * vorbis->channels * gotSamples;
-	const SDL_AudioSpec vorbisFormat = { SDL_AUDIO_F32, vorbis->channels, vorbis->sample_rate };
+	size_t vorbisSize = sizeof(float) * vorbisFormat.channels * gotSamples;
 	if (
 		vorbisFormat.format != APP_AudioDeviceFormat.format ||
 		vorbisFormat.channels != APP_AudioDeviceFormat.channels ||

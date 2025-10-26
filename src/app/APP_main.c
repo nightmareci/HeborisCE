@@ -4,6 +4,7 @@
 #include "APP_input.h"
 #include "game/config.h"
 #include "game/gamestart.h"
+#include <SDL3/SDL_main.h>
 
 static bool APP_InitFast = false;
 static int APP_QuitLevel;

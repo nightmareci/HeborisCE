@@ -62,6 +62,17 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set(APP_PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
 endif()
 
+
+if(MSVC)
+	if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+		# Options only for real MSVC, not immitators like ClangCL
+		add_compile_options("/MP")
+	endif()
+
+	# Options for all MSVC-like compilers
+	add_compile_options("/utf-8")
+endif()
+
 add_executable(${APP_EXE}
 	"src/app/APP_audio.c"
 	"src/app/APP_bdf.c"
@@ -238,29 +249,30 @@ if(VITA)
 elseif(WIN32 AND MSVC)
 	set(APP_FRAMEWORK_TYPE "WINDOWS SDL3")
 
-	add_compile_options("/MP")
-	add_compile_options("/utf-8")
-
-	target_sources(${APP_EXE} PRIVATE
-		"src/app/physfsrwops.c"
-		"src/app/physfsrwops.h"
-	)
-
-	option(CMAKE_WIN32_EXECUTABLE "Hide the Windows console." OFF)
+	if(CMAKE_BUILD_TYPE MATCHES "Debug")
+		set(WIN32_EXECUTABLE_DEFAULT OFF)
+	else()
+		set(WIN32_EXECUTABLE_DEFAULT ON)
+	endif()
+	option(CMAKE_WIN32_EXECUTABLE "Hide the Windows console." ${WIN32_EXECUTABLE_DEFAULT})
 
 	target_sources(${APP_EXE} PRIVATE "pkg/windows/icon.rc")
 
 	if(APP_VENDORED)
-		include("cmake/AddLibrariesVendor.cmake" REQUIRED)
-		AddLibrariesVendor(${APP_EXE} TRUE)
+		set(BUILD_SHARED_LIBS OFF)
+		add_subdirectory(dep/SDL)
+		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
 	else()
-		include("cmake/AddLibrariesFindPackage.cmake" REQUIRED)
-		AddLibrariesFindPackage(${APP_EXE})
+		find_package(SDL3 REQUIRED)
+		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
 	endif()
 
 	if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
 		message(STATUS "Configuring working directory version; CMake installation is not supported")
-	else()
+	elseif(
+		APP_PACKAGE_TYPE STREQUAL "Portable" OR
+		APP_PACKAGE_TYPE STREQUAL "Installable"
+	)
 		if(APP_PACKAGE_TYPE STREQUAL "Portable")
 			message(STATUS "Configuring portable package")
 			set(FILESYSTEM_TYPE "FILESYSTEM_PORTABLE")
@@ -275,7 +287,8 @@ elseif(WIN32 AND MSVC)
 		install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 		install(DIRECTORY "res" DESTINATION ".")
 		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ".")
-		include("cmake/InstallRuntimeDependenciesMSVC.cmake" REQUIRED)
+	else()
+		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building for Windows with MSVC")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App")
 	set(APP_FRAMEWORK_TYPE "MACOSX SDL3")
@@ -438,8 +451,9 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 	)
 
 	if(APP_VENDORED)
-		add_subdirectory(deps/SDL)
-		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3-static)
+		set(BUILD_SHARED_LIBS OFF)
+		add_subdirectory(dep/SDL)
+		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
 	else()
 		find_package(SDL3 REQUIRED)
 		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)

@@ -12,9 +12,9 @@
 @if %ARCHITECTURE%==x64 (
 @del "%BUILD_DIRECTORY%\%NAME%-Windows-x64.zip"
 @echo Building for x64
-@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\x64\build" -DAPP_PACKAGE_TYPE=Portable -DCMAKE_WIN32_EXECUTABLE=1 -DAPP_VENDORED=1 -DSDL_LIBC=1 -A x64 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\x64\%NAME%"
+@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\x64\build" -DAPP_PACKAGE_TYPE=Portable -DCMAKE_WIN32_EXECUTABLE=1 -DAPP_VENDORED=1 -A x64 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\x64\%NAME%"
 @if %ERRORLEVEL% NEQ 0 goto error
-@cmake --build "%BUILD_DIRECTORY%\x64\build" --config Release
+@cmake --build "%BUILD_DIRECTORY%\x64\build" --config Release --parallel
 @if %ERRORLEVEL% NEQ 0 goto error
 @cmake --install "%BUILD_DIRECTORY%\x64\build" --config Release
 @if %ERRORLEVEL% NEQ 0 goto error
@@ -23,9 +23,9 @@
 @if %ARCHITECTURE%==x86 (
 @del "%BUILD_DIRECTORY%\%NAME%-Windows-x86.zip"
 @echo Building for x86
-@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\x86\build" -DAPP_PACKAGE_TYPE=Portable -DCMAKE_WIN32_EXECUTABLE=1 -DAPP_VENDORED=1 -DSDL_LIBC=1 -A Win32 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\x86\%NAME%"
+@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\x86\build" -DAPP_PACKAGE_TYPE=Portable -DCMAKE_WIN32_EXECUTABLE=1 -DAPP_VENDORED=1 -A Win32 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\x86\%NAME%"
 @if %ERRORLEVEL% NEQ 0 goto error
-@cmake --build "%BUILD_DIRECTORY%\x86\build" --config Release
+@cmake --build "%BUILD_DIRECTORY%\x86\build" --config Release --parallel
 @if %ERRORLEVEL% NEQ 0 goto error
 @cmake --install "%BUILD_DIRECTORY%\x86\build" --config Release
 @if %ERRORLEVEL% NEQ 0 goto error
@@ -34,9 +34,9 @@
 @if %ARCHITECTURE%==ARM64 (
 @del "%BUILD_DIRECTORY%\%NAME%-Windows-ARM64.zip"
 @echo Building for ARM64
-@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\ARM64\build" -DAPP_PACKAGE_TYPE=Portable -DCMAKE_WIN32_EXECUTABLE=1 -DAPP_VENDORED=1 -DSDL_LIBC=1 -A ARM64 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\ARM64\%NAME%"
+@cmake "%SOURCE_DIRECTORY%" -B "%BUILD_DIRECTORY%\ARM64\build" -DAPP_PACKAGE_TYPE=Portable -DCMAKE_WIN32_EXECUTABLE=1 -DAPP_VENDORED=1 -A ARM64 -DCMAKE_INSTALL_PREFIX="%BUILD_DIRECTORY%\ARM64\%NAME%"
 @if %ERRORLEVEL% NEQ 0 goto error
-@cmake --build "%BUILD_DIRECTORY%\ARM64\build" --config Release
+@cmake --build "%BUILD_DIRECTORY%\ARM64\build" --config Release --parallel
 @if %ERRORLEVEL% NEQ 0 goto error
 @cmake --install "%BUILD_DIRECTORY%\ARM64\build" --config Release
 @if %ERRORLEVEL% NEQ 0 goto error

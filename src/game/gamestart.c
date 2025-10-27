@@ -1447,6 +1447,14 @@ bool	lastPressLeft[2] = { 0 };
 bool	lastPressRight[2] = { 0 };
 APP_Button	pressDirection[2] = { APP_BUTTON_NULL, APP_BUTTON_NULL };
 
+static const char* const writeDirectories[] = {
+	"replay",
+	"config",
+	"config/data",
+	"config/mission",
+	"config/stage"
+};
+
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  The main update function.
 //  One call does one frame update.
@@ -1473,15 +1481,12 @@ void mainUpdate() {
 		restart = 0;
 		mainLoopState = MAIN_TITLE;
 		init = true;
-#ifdef __EMSCRIPTEN__
-		reinit = 1;
-#endif
 
 		if (reinit) {
 			APP_Quit();
 		}
 
-		APP_Init(WAVE_COUNT);
+		APP_Init(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories));
 		if (APP_IsMusicPlaying()) APP_StopMusic();
 		gameInit();
 
@@ -1604,7 +1609,7 @@ void mainUpdate() {
 		init = true;
 		loopFlag = true;
 
-		APP_Init(WAVE_COUNT);
+		APP_Init(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories));
 		gameInit();
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
 			SetDefaultConfig();

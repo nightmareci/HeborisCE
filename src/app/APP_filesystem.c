@@ -97,26 +97,6 @@ bool APP_CreateDirectory(const char* directory) {
 		return false;
 	}
 
-	#ifdef __EMSCRIPTEN__
-	// TODO: This might not be needed, SDL_CreateDirectory() might work fine with Emscripten
-	// NOTE: It seems this only really works with one FS.mkdir call in the try
-	// block; putting more than one seems to always cause a fatal error.
-	EM_ASM({
-		var path = UTF8ToString($0);
-
-		try {
-			FS.mkdir(path);
-		}
-		catch (err) {
-			assert(!err || err.errno == 20 || err.errno == 10);
-		}
-		FS.mount(IDBFS, {}, path);
-	}, path);
-
-	SDL_free(path);
-	return true;
-
-	#else
 	if (!SDL_CreateDirectory(path)) {
 		fprintf(stderr, "Failed creating directory \"%s\"\n", directory);
 		SDL_free(path);
@@ -126,8 +106,6 @@ bool APP_CreateDirectory(const char* directory) {
 		SDL_free(path);
 		return true;
 	}
-
-	#endif
 }
 
 bool APP_FileExists(const char* filename)
@@ -267,14 +245,6 @@ void APP_SaveFile(const char* filename, void* buf, size_t size)
 		APP_Exit(EXIT_FAILURE);
 	}
 
-	#ifdef __EMSCRIPTEN__
-	EM_ASM({
-		FS.syncfs(function (err) {
-			assert(!err);
-		});
-	});
-	#endif
-
 	APP_Swap32ArrayLEToNative(buf, size);
 }
 
@@ -295,14 +265,6 @@ void APP_AppendFile(const char* filename, void* buf, size_t size)
 		fprintf(stderr, "Error closing: %s\n", SDL_GetError());
 		APP_Exit(EXIT_FAILURE);
 	}
-
-	#ifdef __EMSCRIPTEN__
-	EM_ASM({
-		FS.syncfs(function (err) {
-			assert(!err);
-		});
-	});
-	#endif
 
 	APP_Swap32ArrayLEToNative(buf, size);
 }

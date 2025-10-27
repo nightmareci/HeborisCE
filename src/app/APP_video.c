@@ -173,21 +173,6 @@ void APP_QuitVideo(void)
 	APP_PrivateBDFFontFinalize();
 }
 
-#ifdef __EMSCRIPTEN__
-static EM_BOOL APP_EmscriptenResizeCallback(int eventType, const EmscriptenUiEvent* uiEvent, void* userData)
-{
-	if (
-		eventType != EMSCRIPTEN_EVENT_RESIZE ||
-		!APP_ScreenWindow
-	) {
-		return false;
-	}
-
-	SDL_SetWindowSize(APP_ScreenWindow, uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
-	return true;
-}
-#endif
-
 #ifdef NDEBUG
 #define SET_SCREEN_ERROR goto fail
 #else
@@ -429,9 +414,6 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	}
 
 	/* Set up the render target, if required */
-	// TODO: Figure out how to get render targets in Emscripten working with
-	// SDL_BLENDMODE_BLEND textures. This #ifdef is a workaround for now. It's
-	// probably a bug in the Emscripten SDL2 port.
 	if (!(*screenMode & APP_SCREENMODE_RENDERLEVEL))
 	{
 		// There's no need to create a render target texture if the
@@ -484,25 +466,6 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	// the render target has been set, and bugs have been observed when
 	// attempting renderer setting changes while a non-NULL render target is
 	// set.
-
-	#ifdef __EMSCRIPTEN__
-	static bool emscriptenCallbackSet = false;
-	if ( !emscriptenCallbackSet && emscripten_set_resize_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, false, APP_EmscriptenResizeCallback) < 0 )
-	{
-		SET_SCREEN_ERROR;
-	}
-	else
-	{
-		emscriptenCallbackSet = true;
-		int width = -1, height = -1;
-		width = EM_ASM_INT({ return window.innerWidth; });
-		height = EM_ASM_INT({ return window.innerHeight; });
-		if ( width > 0 && height > 0 )
-		{
-			SDL_SetWindowSize(APP_ScreenWindow, width, height);
-		}
-	}
-	#endif
 
 	APP_ScreenMode = *screenMode;
 	APP_ScreenIndex = *screenIndex;

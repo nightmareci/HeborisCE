@@ -3,7 +3,7 @@
 
 #include "APP_stdinc.h"
 
-void APP_Init(size_t wavesCount);
+void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t writeDirectoriesCount);
 
 void APP_Quit(void);
 

@@ -3,10 +3,6 @@
 
 #include "APP_build_config.h"
 #include <SDL3/SDL.h>
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#include <emscripten/html5.h>
-#endif
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>

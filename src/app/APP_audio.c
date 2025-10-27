@@ -1,70 +1,13 @@
 #include "APP_audio.h"
 #include "APP_filesystem.h"
 #include "APP_main.h"
+#include "APP_wav.h"
+#include "APP_ogg.h"
+#include "APP_mp3.h"
 
-#define STB_VORBIS_SDL 1
-#define STB_VORBIS_NO_STDIO 1
-#define STB_VORBIS_NO_CRT 1
-#define STB_VORBIS_NO_PUSHDATA_API 1
-#define STB_VORBIS_MAX_CHANNELS 8
-#define STB_FORCEINLINE SDL_FORCE_INLINE
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-#define STB_VORBIS_BIG_ENDIAN 1
-#endif
-#define STBV_CDECL SDLCALL
-#ifdef assert
-#undef assert
-#endif
-#ifdef memset
-#undef memset
-#endif
-#ifdef memcpy
-#undef memcpy
-#endif
-#define assert SDL_assert
-#define memset SDL_memset
-#define memcmp SDL_memcmp
-#define memcpy SDL_memcpy
-#define qsort SDL_qsort
-#define malloc SDL_malloc
-#define realloc SDL_realloc
-#define free SDL_free
-#define pow SDL_pow
-#define floor SDL_floor
-#define ldexp(v, e) SDL_scalbn((v), (e))
-#define abs(x) SDL_abs(x)
-#define cos(x) SDL_cos(x)
-#define sin(x) SDL_sin(x)
-#define log(x) SDL_log(x)
-#define exp(x) SDL_exp(x)
-#define STB_VORBIS_STDINT_DEFINED 1
-typedef Uint8 uint8;
-typedef Sint8 int8;
-typedef Uint16 uint16;
-typedef Sint16 int16;
-typedef Uint32 uint32;
-typedef Sint32 int32;
-#include "stb_vorbis.h"
-
-#define DR_MP3_IMPLEMENTATION
-#if defined(__GNUC__) && (__GNUC__ >= 4) && \
-!(defined(_WIN32) || defined(__EMX__))
-#define DRMP3_API __attribute__((visibility("hidden")))
-#elif defined(__APPLE__)
-#define DRMP3_API __private_extern__
-#else
-#define DRMP3_API
-#endif
-#define DR_MP3_FLOAT_OUTPUT
-#define DR_MP3_NO_STDIO
-#define DRMP3_ASSERT(expression) SDL_assert((expression))
-#define DRMP3_COPY_MEMORY(dst, src, sz) SDL_memcpy((dst), (src), (sz))
-#define DRMP3_MOVE_MEMORY(dst, src, sz) SDL_memmove((dst), (src), (sz))
-#define DRMP3_ZERO_MEMORY(p, sz) SDL_memset((p), 0, (sz))
-#define DRMP3_MALLOC(sz) SDL_malloc((sz))
-#define DRMP3_REALLOC(p, sz) SDL_realloc((p), (sz))
-#define DRMP3_FREE(p) SDL_free((p))
-#include "dr_mp3.h"
+// TODO: There seems to be a bug in the WASAPI SDL3 audio backend that results
+// in repeated move sound playback during autoshift to produce some crackling,
+// but not with the DirectSound driver, so make an SDL issue/PR to fix that.
 
 typedef struct APP_Sound
 {
@@ -88,188 +31,14 @@ static APP_Sound* APP_Waves;
 static int APP_WavesCount;
 static APP_Sound APP_Music;
 
-static bool APP_LoadWAV(SDL_IOStream* file, uint8_t** data, uint32_t* size);
-static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size);
-static bool APP_LoadMP3(SDL_IOStream* file, uint8_t** data, uint32_t* size);
-
 struct {
 	const char* ext;
-	bool (* load)(SDL_IOStream* file, uint8_t** data, uint32_t* size);
+	bool (* load)(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
 } APP_AudioDataLoaders[] = {
 	{ ".wav", APP_LoadWAV },
 	{ ".ogg", APP_LoadOGG },
 	{ ".mp3", APP_LoadMP3 }
 };
-
-static bool APP_LoadWAV(SDL_IOStream* file, uint8_t** data, uint32_t* size)
-{
-	SDL_AudioSpec waveFormat;
-	if (!SDL_LoadWAV_IO(file, true, &waveFormat, data, size)) {
-		*data = NULL;
-		return false;
-	}
-	if (*size > INT_MAX) {
-		SDL_free(*data);
-		*data = NULL;
-		return false;
-	}
-	if (
-		waveFormat.format != APP_AudioDeviceFormat.format ||
-		waveFormat.channels != APP_AudioDeviceFormat.channels ||
-		waveFormat.freq != APP_AudioDeviceFormat.freq
-	) {
-		uint8_t* convertedData;
-		int convertedSize;
-		if (!SDL_ConvertAudioSamples(&waveFormat, *data, (int)*size, &APP_AudioDeviceFormat, &convertedData, &convertedSize)) {
-			SDL_free(*data);
-			*data = NULL;
-			return false;
-		}
-		SDL_free(*data);
-		*data = convertedData;
-		*size = convertedSize;
-	}
-	return true;
-}
-
-static bool APP_LoadOGG(SDL_IOStream* file, uint8_t** data, uint32_t* size)
-{
-	*data = NULL;
-	int error;
-	stb_vorbis* vorbis = stb_vorbis_open_io(file, 1, &error, NULL);
-	if (!vorbis) {
-		SDL_CloseIO(file);
-		return false;
-	}
-	const SDL_AudioSpec vorbisFormat = { SDL_AUDIO_F32, vorbis->channels, vorbis->sample_rate };
-	unsigned samples = stb_vorbis_stream_length_in_samples(vorbis);
-	if (!samples) {
-		stb_vorbis_close(vorbis);
-		return false;
-	}
-	uint8_t* const vorbisData = SDL_malloc(sizeof(float) * vorbisFormat.channels * samples);
-	if (!vorbisData) {
-		stb_vorbis_close(vorbis);
-		return false;
-	}
-	int gotSamples = stb_vorbis_get_samples_float_interleaved(vorbis, vorbisFormat.channels, (float*)vorbisData, vorbisFormat.channels * samples);
-	error = stb_vorbis_get_error(vorbis);
-	if (gotSamples == 0 || error) {
-		stb_vorbis_close(vorbis);
-		SDL_free(vorbisData);
-		return false;
-	}
-	stb_vorbis_close(vorbis);
-	size_t vorbisSize = sizeof(float) * vorbisFormat.channels * gotSamples;
-	if (
-		vorbisFormat.format != APP_AudioDeviceFormat.format ||
-		vorbisFormat.channels != APP_AudioDeviceFormat.channels ||
-		vorbisFormat.freq != APP_AudioDeviceFormat.freq
-	) {
-		if (vorbisSize > INT_MAX) {
-			SDL_free(vorbisData);
-			return false;
-		}
-		int convertedSize;
-		if (!SDL_ConvertAudioSamples(&vorbisFormat, (uint8_t*)vorbisData, (int)vorbisSize, &APP_AudioDeviceFormat, data, &convertedSize)) {
-			SDL_free(vorbisData);
-			return false;
-		}
-		SDL_free(vorbisData);
-		*size = convertedSize;
-	}
-	else {
-		if (vorbisSize > UINT32_MAX) {
-			SDL_free(vorbisData);
-			return false;
-		}
-		*data = (uint8_t*)vorbisData;
-		*size = (uint32_t)vorbisSize;
-	}
-	return true;
-}
-
-static size_t APP_DRMP3_Read(void* pUserData, void* pBufferOut, size_t bytesToRead)
-{
-	return SDL_ReadIO((SDL_IOStream*)pUserData, pBufferOut, bytesToRead);
-}
-
-static drmp3_bool32 APP_DRMP3_Seek(void* pUserData, int offset, drmp3_seek_origin origin)
-{
-	SDL_IOStream* const file = pUserData;
-	switch (origin) {
-	default:
-	case DRMP3_SEEK_SET:
-		return SDL_SeekIO(file, offset, SDL_IO_SEEK_SET) >= 0;
-
-	case DRMP3_SEEK_CUR:
-		return SDL_SeekIO(file, offset, SDL_IO_SEEK_CUR) >= 0;
-
-	case DRMP3_SEEK_END:
-		return SDL_SeekIO(file, offset, SDL_IO_SEEK_END) >= 0;
-	}
-}
-
-static drmp3_bool32 APP_DRMP3_Tell(void* pUserData, drmp3_int64* pCursor)
-{
-	*pCursor = SDL_TellIO((SDL_IOStream*)pUserData);
-	return *pCursor >= 0;
-}
-
-static void* APP_DRMP3_Malloc(size_t sz, void* pUserData)
-{
-	return SDL_malloc(sz);
-}
-
-static void* APP_DRMP3_Realloc(void* p, size_t sz, void* pUserData)
-{
-	return SDL_realloc(p, sz);
-}
-
-static void APP_DRMP3_Free(void* p, void* pUserData)
-{
-	SDL_free(p);
-}
-
-static bool APP_LoadMP3(SDL_IOStream* file, uint8_t** data, uint32_t* size)
-{
-	*data = NULL;
-	const drmp3_allocation_callbacks allocationCallbacks = { NULL, APP_DRMP3_Malloc, APP_DRMP3_Realloc, APP_DRMP3_Free };
-	drmp3_config config;
-	drmp3_uint64 totalFrameCount;
-	float* const mp3Data = drmp3_open_and_read_pcm_frames_f32(APP_DRMP3_Read, APP_DRMP3_Seek, APP_DRMP3_Tell, file, &config, &totalFrameCount, &allocationCallbacks);
-	if (!mp3Data) {
-		return false;
-	}
-	const SDL_AudioSpec mp3Format = { SDL_AUDIO_F32, config.channels, config.sampleRate };
-	const int mp3Size = (int)(sizeof(float) * mp3Format.channels * totalFrameCount);
-	if (
-		mp3Format.format != APP_AudioDeviceFormat.format ||
-		mp3Format.channels != APP_AudioDeviceFormat.channels ||
-		mp3Format.freq != APP_AudioDeviceFormat.freq
-	) {
-		if (totalFrameCount > INT_MAX / (sizeof(float) * mp3Format.channels)) {
-			SDL_free(mp3Data);
-			return false;
-		}
-		int convertedSize;
-		if (!SDL_ConvertAudioSamples(&mp3Format, (uint8_t*)mp3Data, mp3Size, &APP_AudioDeviceFormat, data, &convertedSize)) {
-			SDL_free(mp3Data);
-			return false;
-		}
-		SDL_free(mp3Data);
-		*size = convertedSize;
-	}
-	else {
-		if (totalFrameCount > UINT32_MAX / (sizeof(float) * mp3Format.channels)) {
-			SDL_free(mp3Data);
-			return false;
-		}
-		*data = (uint8_t*)mp3Data;
-		*size = mp3Size;
-	}
-	return true;
-}
 
 static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
 {
@@ -464,7 +233,7 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool le
 			if (!file) {
 				APP_Exit(EXIT_FAILURE);
 			}
-			if (!APP_AudioDataLoaders[i].load(file, data, size)) {
+			if (!APP_AudioDataLoaders[i].load(file, &APP_AudioDeviceFormat, data, size)) {
 				APP_Exit(EXIT_FAILURE);
 			}
 			found = true;

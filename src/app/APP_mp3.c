@@ -62,6 +62,7 @@ bool APP_LoadMP3(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data
 	drmp3_uint64 totalFrameCount;
 	const drmp3_allocation_callbacks allocationCallbacks = { NULL, APP_DRMP3_Malloc, APP_DRMP3_Realloc, APP_DRMP3_Free };
 	(float*)*data = drmp3_open_and_read_pcm_frames_f32(APP_DRMP3_Read, APP_DRMP3_Seek, APP_DRMP3_Tell, file, &config, &totalFrameCount, &allocationCallbacks);
+	SDL_CloseIO(file);
 	if (!*data) {
 		return false;
 	}

@@ -17,6 +17,14 @@ int main(int argc, char** argv)
 
 	APP_QuitLevel = 0;
 
+	// TODO: Remove this once the issue with WASAPI crackling with the move sound in-game is fixed
+	#ifdef SDL_PLATFORM_WIN32
+	if (!SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "directsound")) {
+		fprintf(stderr, "Couldn't set audio driver to DirectSound: %s\n", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
+	}
+	#endif
+
 	/* SDLの初期化 || SDL initialization */
 	if (!SDL_Init(
 			SDL_INIT_AUDIO | SDL_INIT_VIDEO

@@ -5,22 +5,17 @@
 #include "APP_ogg.h"
 #include "APP_mp3.h"
 
-// TODO: There seems to be a bug in the WASAPI SDL3 audio backend that results
-// in repeated move sound playback during autoshift to produce some crackling,
-// but not with the DirectSound driver, so make an SDL issue/PR to fix that.
-
 typedef struct APP_Sound
 {
 	SDL_AudioStream* stream;
 	uint8_t* leadinData;
 	uint8_t* mainData;
-	SDL_AtomicInt playing;
-	SDL_AtomicInt looping;
-	float gain;
 	uint32_t leadinSize;
 	uint32_t leadinPos;
 	uint32_t mainSize;
 	uint32_t mainPos;
+	bool playing;
+	bool looping;
 	bool paused;
 } APP_Sound;
 
@@ -42,92 +37,74 @@ struct {
 
 static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
 {
-	APP_Sound* const wave = userdata;
+	APP_Sound* const sound = userdata;
 	(void)totalAmount;
 
-	if (additionalAmount == 0) {
+	if (!sound->playing) {
 		return;
 	}
 
-	const int playing = SDL_GetAtomicInt(&wave->playing);
-	SDL_MemoryBarrierAcquire();
-	if (!playing) {
-		return;
-	}
-
-	if (wave->leadinPos < wave->leadinSize) {
-		if (additionalAmount > wave->leadinSize - wave->leadinPos) {
-			SDL_PutAudioStreamData(stream, wave->leadinData + wave->leadinPos, wave->leadinSize - wave->leadinPos);
-			wave->leadinPos = wave->leadinSize;
-			if (!wave->mainData) {
-				SDL_MemoryBarrierRelease();
-				SDL_SetAtomicInt(&wave->playing, 0);
+	if (sound->leadinPos < sound->leadinSize) {
+		if (additionalAmount > sound->leadinSize - sound->leadinPos) {
+			SDL_PutAudioStreamData(stream, sound->leadinData + sound->leadinPos, sound->leadinSize - sound->leadinPos);
+			sound->leadinPos = sound->leadinSize;
+			if (!sound->mainData) {
+				sound->playing = false;
 				return;
 			}
 			else {
-				additionalAmount -= wave->leadinSize - wave->leadinPos;
+				additionalAmount -= sound->leadinSize - sound->leadinPos;
 			}
 		}
 		else {
-			SDL_PutAudioStreamData(stream, wave->leadinData + wave->leadinPos, additionalAmount);
-			wave->leadinPos += additionalAmount;
-			if (wave->leadinPos == wave->leadinSize && !wave->mainData) {
-				SDL_MemoryBarrierRelease();
-				SDL_SetAtomicInt(&wave->playing, 0);
+			SDL_PutAudioStreamData(stream, sound->leadinData + sound->leadinPos, additionalAmount);
+			sound->leadinPos += additionalAmount;
+			if (sound->leadinPos == sound->leadinSize && !sound->mainData) {
+				sound->playing = false;
 			}
 			return;
 		}
 	}
 
-	if (!SDL_GetAtomicInt(&wave->looping)) {
-		if (additionalAmount >= wave->mainSize - wave->mainPos) {
-			SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, wave->mainSize - wave->mainPos);
-			wave->mainPos = wave->mainSize;
-			SDL_MemoryBarrierRelease();
-			SDL_SetAtomicInt(&wave->playing, 0);
+	if (!sound->looping) {
+		if (additionalAmount >= sound->mainSize - sound->mainPos) {
+			SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, sound->mainSize - sound->mainPos);
+			sound->mainPos = sound->mainSize;
+			sound->playing = false;
 		}
 		else {
-			SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, additionalAmount);
-			wave->mainPos += additionalAmount;
+			SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, additionalAmount);
+			sound->mainPos += additionalAmount;
 		}
 	}
-	else if (additionalAmount >= wave->mainSize - wave->mainPos) {
+	else if (additionalAmount >= sound->mainSize - sound->mainPos) {
 		int remaining = additionalAmount;
 		while (remaining > 0) {
-			if (remaining >= wave->mainSize - wave->mainPos) {
-				SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, wave->mainSize - wave->mainPos);
-				remaining -= wave->mainSize - wave->mainPos;
-				wave->mainPos = 0;
+			if (remaining >= sound->mainSize - sound->mainPos) {
+				SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, sound->mainSize - sound->mainPos);
+				remaining -= sound->mainSize - sound->mainPos;
+				sound->mainPos = 0;
 			}
 			else {
-				SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, remaining);
-				wave->mainPos += remaining;
+				SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, remaining);
+				sound->mainPos += remaining;
 				remaining = 0;
 			}
 		}
 	}
 	else {
-		SDL_PutAudioStreamData(stream, wave->mainData + wave->mainPos, additionalAmount);
-		wave->mainPos += additionalAmount;
+		SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, additionalAmount);
+		sound->mainPos += additionalAmount;
 	}
 }
 
 static bool APP_InitSound(APP_Sound* sound)
 {
-	sound->gain = 1.0f;
-	SDL_MemoryBarrierRelease();
-	SDL_SetAtomicInt(&sound->playing, 0);
 	sound->stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
-	if (
-		!sound->stream ||
-		!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetAudioStreamData, sound) ||
-		!SDL_BindAudioStream(APP_AudioDevice, sound->stream)
-	) {
-		return false;
-	}
-	else {
-		return true;
-	}
+	return
+		sound->stream &&
+		SDL_SetAudioStreamGetCallback(sound->stream, APP_GetAudioStreamData, sound) &&
+		SDL_BindAudioStream(APP_AudioDevice, sound->stream);
 }
 
 bool APP_InitAudio(int wavesCount)
@@ -163,10 +140,10 @@ bool APP_InitAudio(int wavesCount)
 		}
 	}
 	SDL_zero(APP_Music);
+	APP_Music.looping = true;
 	if (!APP_InitSound(&APP_Music)) {
 		return false;
 	}
-	SDL_SetAtomicInt(&APP_Music.looping, 1);
 
 	APP_WasAudioInit = true;
 	return true;
@@ -208,52 +185,58 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool le
 		return;
 	}
 
-	uint8_t** data = &sound->mainData;
-	uint32_t* size = &sound->mainSize;
-	uint32_t* pos = &sound->mainPos;
-	if (leadin) {
-		data = &sound->leadinData;
-		size = &sound->leadinSize;
-		pos = &sound->leadinPos;
-	}
-	if (*data) {
-		SDL_free(*data);
-		*data = NULL;
-	}
-
-	bool found = false;
+	bool (* load)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*);
+	char* filename = NULL;
 	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataLoaders); i++) {
-		char* filename;
 		if (SDL_asprintf(&filename, "%s%s", filename_no_ext, APP_AudioDataLoaders[i].ext) < 0) {
 			APP_Exit(EXIT_FAILURE);
 		}
-		if (APP_FileExists(filename)) {
-			SDL_IOStream* const file = APP_OpenRead(filename);
+		if (!APP_FileExists(filename)) {
 			SDL_free(filename);
-			if (!file) {
-				APP_Exit(EXIT_FAILURE);
-			}
-			if (!APP_AudioDataLoaders[i].load(file, &APP_AudioDeviceFormat, data, size)) {
-				APP_Exit(EXIT_FAILURE);
-			}
-			found = true;
+			filename = NULL;
+			continue;
+		}
+		else {
+			load = APP_AudioDataLoaders[i].load;
 			break;
 		}
-		SDL_free(filename);
 	}
-	if (!found) {
+	if (!filename) {
 		return;
 	}
-
-	SDL_UnbindAudioStream(sound->stream);
-
-	*pos = 0;
-	sound->paused = false;
-	SDL_MemoryBarrierRelease();
-	SDL_SetAtomicInt(&sound->playing, 0);
-	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
+	SDL_IOStream* const file = APP_OpenRead(filename);
+	SDL_free(filename);
+	if (!file) {
 		APP_Exit(EXIT_FAILURE);
 	}
+	uint8_t* oldData;
+	uint8_t* data;
+	uint32_t size;
+	if (!load(file, &APP_AudioDeviceFormat, &data, &size)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (!SDL_LockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (leadin) {
+		oldData = sound->leadinData;
+		sound->leadinData = data;
+		sound->leadinSize = size;
+		sound->leadinPos = 0;
+	}
+	else {
+		oldData = sound->mainData;
+		sound->mainData = data;
+		sound->mainSize = size;
+		sound->mainPos = 0;
+	}
+	sound->paused = false;
+	sound->playing = false;
+	if (!SDL_UnlockAudioStream(sound->stream)) {
+		SDL_free(oldData);
+		APP_Exit(EXIT_FAILURE);
+	}
+	SDL_free(oldData);
 }
 
 static void APP_StartSound(APP_Sound* sound, bool resume)
@@ -261,15 +244,17 @@ static void APP_StartSound(APP_Sound* sound, bool resume)
 	if (!APP_WasAudioInit || (!sound->leadinData && !sound->mainData) || (resume && !sound->paused)) {
 		return;
 	}
-	SDL_UnbindAudioStream(sound->stream);
+
+	if (!SDL_LockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
 	if (!resume) {
 		sound->leadinPos = 0;
 		sound->mainPos = 0;
 	}
 	sound->paused = false;
-	SDL_MemoryBarrierRelease();
-	SDL_SetAtomicInt(&sound->playing, 1);
-	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
+	sound->playing = true;
+	if (!SDL_UnlockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }
@@ -280,13 +265,14 @@ static void APP_StopSound(APP_Sound* sound)
 		return;
 	}
 
-	SDL_UnbindAudioStream(sound->stream);
+	if (!SDL_LockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
 	sound->leadinPos = 0;
 	sound->mainPos = 0;
 	sound->paused = false;
-	SDL_MemoryBarrierRelease();
-	SDL_SetAtomicInt(&sound->playing, 0);
-	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
+	sound->playing = false;
+	if (!SDL_UnlockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }
@@ -297,15 +283,13 @@ static void APP_PauseSound(APP_Sound* sound)
 		return;
 	}
 
-	SDL_UnbindAudioStream(sound->stream);
-	const int playing = SDL_GetAtomicInt(&sound->playing);
-	SDL_MemoryBarrierAcquire();
-	if (playing) {
-		sound->paused = true;
-		SDL_MemoryBarrierRelease();
-		SDL_SetAtomicInt(&sound->playing, 0);
+	if (!SDL_LockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
 	}
-	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
+	if (sound->playing) {
+		sound->paused = true;
+	}
+	if (!SDL_UnlockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }
@@ -316,9 +300,14 @@ static bool APP_IsSoundPlaying(APP_Sound* sound)
 		return false;
 	}
 
-	const int playing = SDL_GetAtomicInt(&sound->playing);
-	SDL_MemoryBarrierAcquire();
-	return !!playing;
+	if (!SDL_LockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	const bool playing = sound->playing;
+	if (!SDL_UnlockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	return playing;
 }
 
 static void APP_SetSoundVolume(APP_Sound* sound, int volume)
@@ -327,17 +316,7 @@ static void APP_SetSoundVolume(APP_Sound* sound, int volume)
 		return;
 	}
 
-	float gain;
-	if (volume < 0) {
-		gain = 0.0f;
-	}
-	else if (volume > 100) {
-		gain = 1.0f;
-	}
-	else {
-		gain = volume / 100.0f;
-	}
-	sound->gain = gain;
+	const float gain = SDL_clamp(volume, 0, 100) / 100.0f;
 	if (!SDL_SetAudioStreamGain(sound->stream, gain)) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -349,7 +328,13 @@ static void APP_SetSoundLooping(APP_Sound* sound, bool looping)
 		return;
 	}
 
-	SDL_SetAtomicInt(&sound->looping, !!looping);
+	if (!SDL_LockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	sound->looping = !!looping;
+	if (!SDL_UnlockAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
 }
 
 void APP_LoadWaveLeadin(int num, const char* filename_no_ext)

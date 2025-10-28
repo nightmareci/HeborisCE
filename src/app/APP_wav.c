@@ -60,6 +60,7 @@ bool APP_LoadWAV(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data
 	drwav_uint64 totalFrameCount;
 	const drwav_allocation_callbacks allocationCallbacks = { NULL, APP_DRWAV_Malloc, APP_DRWAV_Realloc, APP_DRWAV_Free };
 	(float*)*data = drwav_open_and_read_pcm_frames_f32(APP_DRWAV_Read, APP_DRWAV_Seek, APP_DRWAV_Tell, file, &channels, &sampleRate, &totalFrameCount, &allocationCallbacks);
+	SDL_CloseIO(file);
 	if (!*data) {
 		return false;
 	}

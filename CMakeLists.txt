@@ -118,6 +118,7 @@ add_executable(${APP_EXE}
 
 	"src/app/APP.h"
 	"src/app/APP_audio.h"
+	"src/app/APP_audio_private.h"
 	"src/app/APP_bdf.h"
 	"src/app/APP_stdinc.h"
 	"src/app/APP_filesystem.h"

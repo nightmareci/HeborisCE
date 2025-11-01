@@ -3,6 +3,6 @@
 
 #include "APP.h"
 
-bool APP_LoadWAV(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
+bool APP_PreloadWAV(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
 
 #endif

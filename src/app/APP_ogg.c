@@ -59,7 +59,7 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 static bool APP_RestartOGGStreamingAudioData(APP_StreamingAudioData* streamingAudioData);
 static void APP_DestroyOGGStreamingAudioData(APP_StreamingAudioData* streamingAudioData);
 
-bool APP_LoadOGG(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size)
+bool APP_PreloadOGG(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size)
 {
 	*data = NULL;
 	int error;

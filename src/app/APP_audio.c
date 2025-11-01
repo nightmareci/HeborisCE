@@ -8,14 +8,24 @@
 typedef struct APP_Sound
 {
 	SDL_AudioStream* stream;
-	uint8_t* leadinData;
-	uint8_t* mainData;
-	uint32_t leadinSize;
-	uint32_t leadinPos;
-	uint32_t mainSize;
-	uint32_t mainPos;
-	bool playing;
+	union {
+		struct {
+			uint8_t* leadinData;
+			uint8_t* mainData;
+			uint32_t leadinSize;
+			uint32_t leadinPos;
+			uint32_t mainSize;
+			uint32_t mainPos;
+		} preloaded;
+		// TODO
+		#if 0
+		struct {
+		} streamed;
+		#endif
+	};
+	bool streaming;
 	bool looping;
+	bool playing;
 	bool paused;
 } APP_Sound;
 
@@ -28,14 +38,14 @@ static APP_Sound APP_Music;
 
 struct {
 	const char* ext;
-	bool (* load)(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
-} APP_AudioDataLoaders[] = {
-	{ ".wav", APP_LoadWAV },
-	{ ".ogg", APP_LoadOGG },
-	{ ".mp3", APP_LoadMP3 }
+	bool (* preload)(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
+} APP_AudioDataPreloaders[] = {
+	{ ".wav", APP_PreloadWAV },
+	{ ".ogg", APP_PreloadOGG },
+	{ ".mp3", APP_PreloadMP3 }
 };
 
-static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
+static void SDLCALL APP_GetPreloadedAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
 {
 	APP_Sound* const sound = userdata;
 	(void)totalAmount;
@@ -44,22 +54,22 @@ static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stre
 		return;
 	}
 
-	if (sound->leadinPos < sound->leadinSize) {
-		if (additionalAmount > sound->leadinSize - sound->leadinPos) {
-			SDL_PutAudioStreamData(stream, sound->leadinData + sound->leadinPos, sound->leadinSize - sound->leadinPos);
-			sound->leadinPos = sound->leadinSize;
-			if (!sound->mainData) {
+	if (sound->preloaded.leadinPos < sound->preloaded.leadinSize) {
+		if (additionalAmount > sound->preloaded.leadinSize - sound->preloaded.leadinPos) {
+			SDL_PutAudioStreamData(stream, sound->preloaded.leadinData + sound->preloaded.leadinPos, sound->preloaded.leadinSize - sound->preloaded.leadinPos);
+			sound->preloaded.leadinPos = sound->preloaded.leadinSize;
+			if (!sound->preloaded.mainData) {
 				sound->playing = false;
 				return;
 			}
 			else {
-				additionalAmount -= sound->leadinSize - sound->leadinPos;
+				additionalAmount -= sound->preloaded.leadinSize - sound->preloaded.leadinPos;
 			}
 		}
 		else {
-			SDL_PutAudioStreamData(stream, sound->leadinData + sound->leadinPos, additionalAmount);
-			sound->leadinPos += additionalAmount;
-			if (sound->leadinPos == sound->leadinSize && !sound->mainData) {
+			SDL_PutAudioStreamData(stream, sound->preloaded.leadinData + sound->preloaded.leadinPos, additionalAmount);
+			sound->preloaded.leadinPos += additionalAmount;
+			if (sound->preloaded.leadinPos == sound->preloaded.leadinSize && !sound->preloaded.mainData) {
 				sound->playing = false;
 			}
 			return;
@@ -67,44 +77,35 @@ static void SDLCALL APP_GetAudioStreamData(void* userdata, SDL_AudioStream* stre
 	}
 
 	if (!sound->looping) {
-		if (additionalAmount >= sound->mainSize - sound->mainPos) {
-			SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, sound->mainSize - sound->mainPos);
-			sound->mainPos = sound->mainSize;
+		if (additionalAmount >= sound->preloaded.mainSize - sound->preloaded.mainPos) {
+			SDL_PutAudioStreamData(stream, sound->preloaded.mainData + sound->preloaded.mainPos, sound->preloaded.mainSize - sound->preloaded.mainPos);
+			sound->preloaded.mainPos = sound->preloaded.mainSize;
 			sound->playing = false;
 		}
 		else {
-			SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, additionalAmount);
-			sound->mainPos += additionalAmount;
+			SDL_PutAudioStreamData(stream, sound->preloaded.mainData + sound->preloaded.mainPos, additionalAmount);
+			sound->preloaded.mainPos += additionalAmount;
 		}
 	}
-	else if (additionalAmount >= sound->mainSize - sound->mainPos) {
+	else if (additionalAmount >= sound->preloaded.mainSize - sound->preloaded.mainPos) {
 		int remaining = additionalAmount;
 		while (remaining > 0) {
-			if (remaining >= sound->mainSize - sound->mainPos) {
-				SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, sound->mainSize - sound->mainPos);
-				remaining -= sound->mainSize - sound->mainPos;
-				sound->mainPos = 0;
+			if (remaining >= sound->preloaded.mainSize - sound->preloaded.mainPos) {
+				SDL_PutAudioStreamData(stream, sound->preloaded.mainData + sound->preloaded.mainPos, sound->preloaded.mainSize - sound->preloaded.mainPos);
+				remaining -= sound->preloaded.mainSize - sound->preloaded.mainPos;
+				sound->preloaded.mainPos = 0;
 			}
 			else {
-				SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, remaining);
-				sound->mainPos += remaining;
+				SDL_PutAudioStreamData(stream, sound->preloaded.mainData + sound->preloaded.mainPos, remaining);
+				sound->preloaded.mainPos += remaining;
 				remaining = 0;
 			}
 		}
 	}
 	else {
-		SDL_PutAudioStreamData(stream, sound->mainData + sound->mainPos, additionalAmount);
-		sound->mainPos += additionalAmount;
+		SDL_PutAudioStreamData(stream, sound->preloaded.mainData + sound->preloaded.mainPos, additionalAmount);
+		sound->preloaded.mainPos += additionalAmount;
 	}
-}
-
-static bool APP_InitSound(APP_Sound* sound)
-{
-	sound->stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
-	return
-		sound->stream &&
-		SDL_SetAudioStreamGetCallback(sound->stream, APP_GetAudioStreamData, sound) &&
-		SDL_BindAudioStream(APP_AudioDevice, sound->stream);
 }
 
 bool APP_InitAudio(int wavesCount)
@@ -112,7 +113,7 @@ bool APP_InitAudio(int wavesCount)
 	if (APP_WasAudioInit) {
 		return true;
 	}
-	else if (wavesCount == 0 || wavesCount > INT_MAX / sizeof(APP_Sound)) {
+	else if (wavesCount > INT_MAX / sizeof(APP_Sound)) {
 		return false;
 	}
 
@@ -129,21 +130,16 @@ bool APP_InitAudio(int wavesCount)
 
 	// サウンドの初期化
 	// Initialize sounds
-	APP_Waves = SDL_calloc(sizeof(APP_Sound), wavesCount);
-	if (!APP_Waves) {
-		return false;
-	}
-	APP_WavesCount = wavesCount;
-	for (int i = 0; i < wavesCount; i++) {
-		if (!APP_InitSound(&APP_Waves[i])) {
+	if (wavesCount > 0) {
+		APP_Waves = SDL_calloc(sizeof(APP_Sound), wavesCount);
+		if (!APP_Waves) {
 			return false;
 		}
 	}
+	APP_WavesCount = wavesCount;
 	SDL_zero(APP_Music);
+	//APP_Music.streaming = true; // TODO
 	APP_Music.looping = true;
-	if (!APP_InitSound(&APP_Music)) {
-		return false;
-	}
 
 	APP_WasAudioInit = true;
 	return true;
@@ -151,9 +147,17 @@ bool APP_InitAudio(int wavesCount)
 
 static void APP_QuitSound(APP_Sound* sound)
 {
-	SDL_DestroyAudioStream(sound->stream);
-	SDL_free(sound->mainData);
-	SDL_free(sound->leadinData);
+	if (!sound->stream) {
+		return;
+	}
+	else if (sound->streaming) {
+		// TODO
+	}
+	else {
+		SDL_DestroyAudioStream(sound->stream);
+		SDL_free(sound->preloaded.mainData);
+		SDL_free(sound->preloaded.leadinData);
+	}
 }
 
 void APP_QuitAudio(void)
@@ -179,33 +183,54 @@ void APP_QuitAudio(void)
 	APP_WasAudioInit = false;
 }
 
-static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool leadin)
+static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadin_filename, const char* main_filename)
 {
-	if (!APP_WasAudioInit || !filename_no_ext || SDL_strlen(filename_no_ext) < 5) {
-		return;
+	if (!leadin_filename || !*leadin_filename || !main_filename || !*main_filename) {
+		return false;
+	}
+
+	if (sound->stream) {
+		APP_QuitSound(sound);
+		sound->streaming = true;
+	}
+
+	// TODO
+
+	return true;
+}
+
+static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool leadin)
+{
+	if (!filename || !*filename) {
+		return false;
+	}
+
+	if (sound->streaming) {
+		APP_QuitSound(sound);
+		sound->streaming = false;
 	}
 
 	bool (* load)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*);
-	char* filename = NULL;
-	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataLoaders); i++) {
-		if (SDL_asprintf(&filename, "%s%s", filename_no_ext, APP_AudioDataLoaders[i].ext) < 0) {
+	char* filename_ext = NULL;
+	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataPreloaders); i++) {
+		if (SDL_asprintf(&filename_ext, "%s%s", filename, APP_AudioDataPreloaders[i].ext) < 0) {
 			APP_Exit(EXIT_FAILURE);
 		}
-		if (!APP_FileExists(filename)) {
-			SDL_free(filename);
-			filename = NULL;
+		if (!APP_FileExists(filename_ext)) {
+			SDL_free(filename_ext);
+			filename_ext = NULL;
 			continue;
 		}
 		else {
-			load = APP_AudioDataLoaders[i].load;
+			load = APP_AudioDataPreloaders[i].preload;
 			break;
 		}
 	}
-	if (!filename) {
-		return;
+	if (!filename_ext) {
+		return false;
 	}
-	SDL_IOStream* const file = APP_OpenRead(filename);
-	SDL_free(filename);
+	SDL_IOStream* const file = APP_OpenRead(filename_ext);
+	SDL_free(filename_ext);
 	if (!file) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -215,20 +240,32 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool le
 	if (!load(file, &APP_AudioDeviceFormat, &data, &size)) {
 		APP_Exit(EXIT_FAILURE);
 	}
+	if (!sound->stream) {
+		sound->stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
+		if (!sound->stream) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetPreloadedAudioStreamData, sound)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+	}
 	if (!SDL_LockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 	if (leadin) {
-		oldData = sound->leadinData;
-		sound->leadinData = data;
-		sound->leadinSize = size;
-		sound->leadinPos = 0;
+		oldData = sound->preloaded.leadinData;
+		sound->preloaded.leadinData = data;
+		sound->preloaded.leadinSize = size;
+		sound->preloaded.leadinPos = 0;
 	}
 	else {
-		oldData = sound->mainData;
-		sound->mainData = data;
-		sound->mainSize = size;
-		sound->mainPos = 0;
+		oldData = sound->preloaded.mainData;
+		sound->preloaded.mainData = data;
+		sound->preloaded.mainSize = size;
+		sound->preloaded.mainPos = 0;
 	}
 	sound->paused = false;
 	sound->playing = false;
@@ -237,11 +274,12 @@ static void APP_LoadSound(APP_Sound* sound, const char* filename_no_ext, bool le
 		APP_Exit(EXIT_FAILURE);
 	}
 	SDL_free(oldData);
+	return true;
 }
 
-static void APP_StartSound(APP_Sound* sound, bool resume)
+static void APP_StartPreloadedSound(APP_Sound* sound, bool resume)
 {
-	if (!APP_WasAudioInit || (!sound->leadinData && !sound->mainData) || (resume && !sound->paused)) {
+	if (resume && !sound->paused) {
 		return;
 	}
 
@@ -249,8 +287,8 @@ static void APP_StartSound(APP_Sound* sound, bool resume)
 		APP_Exit(EXIT_FAILURE);
 	}
 	if (!resume) {
-		sound->leadinPos = 0;
-		sound->mainPos = 0;
+		sound->preloaded.leadinPos = 0;
+		sound->preloaded.mainPos = 0;
 	}
 	sound->paused = false;
 	sound->playing = true;
@@ -259,17 +297,13 @@ static void APP_StartSound(APP_Sound* sound, bool resume)
 	}
 }
 
-static void APP_StopSound(APP_Sound* sound)
+static void APP_StopPreloadedSound(APP_Sound* sound)
 {
-	if (!APP_WasAudioInit) {
-		return;
-	}
-
 	if (!SDL_LockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
-	sound->leadinPos = 0;
-	sound->mainPos = 0;
+	sound->preloaded.leadinPos = 0;
+	sound->preloaded.mainPos = 0;
 	sound->paused = false;
 	sound->playing = false;
 	if (!SDL_UnlockAudioStream(sound->stream)) {
@@ -279,10 +313,6 @@ static void APP_StopSound(APP_Sound* sound)
 
 static void APP_PauseSound(APP_Sound* sound)
 {
-	if (!APP_WasAudioInit) {
-		return;
-	}
-
 	if (!SDL_LockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -296,10 +326,6 @@ static void APP_PauseSound(APP_Sound* sound)
 
 static bool APP_IsSoundPlaying(APP_Sound* sound)
 {
-	if (!APP_WasAudioInit) {
-		return false;
-	}
-
 	if (!SDL_LockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -312,10 +338,6 @@ static bool APP_IsSoundPlaying(APP_Sound* sound)
 
 static void APP_SetSoundVolume(APP_Sound* sound, int volume)
 {
-	if (!APP_WasAudioInit) {
-		return;
-	}
-
 	const float gain = SDL_clamp(volume, 0, 100) / 100.0f;
 	if (!SDL_SetAudioStreamGain(sound->stream, gain)) {
 		APP_Exit(EXIT_FAILURE);
@@ -324,10 +346,6 @@ static void APP_SetSoundVolume(APP_Sound* sound, int volume)
 
 static void APP_SetSoundLooping(APP_Sound* sound, bool looping)
 {
-	if (!APP_WasAudioInit) {
-		return;
-	}
-
 	if (!SDL_LockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -337,91 +355,127 @@ static void APP_SetSoundLooping(APP_Sound* sound, bool looping)
 	}
 }
 
-void APP_LoadWaveLeadin(int num, const char* filename_no_ext)
+void APP_LoadWave(int num, const char* leadin_filename, const char* main_filename, bool looping, bool streaming)
 {
 	if (num < 0 || num >= APP_WavesCount) {
 		return;
 	}
 
-	APP_SetSoundLooping(&APP_Waves[num], true);
-	APP_LoadSound(&APP_Waves[num], filename_no_ext, true);
-}
-
-void APP_LoadWave(int num, const char* filename_no_ext)
-{
-	if (num < 0 || num >= APP_WavesCount) {
-		return;
+	// TODO: Streaming support
+	#if 0
+	if (streaming) {
+		if (APP_LoadStreamedSound(&APP_Waves[num], leadin_filename, main_filename)) {
+			APP_SetSoundLooping(&APP_Waves[num], looping);
+		}
 	}
-
-	APP_LoadSound(&APP_Waves[num], filename_no_ext, false);
+	else {
+	#endif
+		if (APP_LoadPreloadedSound(&APP_Waves[num], leadin_filename, true) || APP_LoadPreloadedSound(&APP_Waves[num], main_filename, false)) {
+			APP_SetSoundLooping(&APP_Waves[num], looping);
+		}
+	#if 0
+	}
+	#endif
 }
 
 static void APP_StartWave(int num, bool resume)
 {
-	if (!APP_WasAudioInit || num >= APP_WavesCount) {
-		return;
-	}
-	else if (num >= 0) {
-		APP_StartSound(&APP_Waves[num], resume);
+	if (num >= 0) {
+		if (!APP_Waves[num].stream) {
+			return;
+		}
+		if (APP_Waves[num].streaming) {
+			// TODO
+		}
+		else {
+			APP_StartPreloadedSound(&APP_Waves[num], resume);
+		}
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			APP_StartSound(&APP_Waves[i], resume);
+			if (!APP_Waves[i].stream) {
+				continue;
+			}
+			if (APP_Waves[i].streaming) {
+				// TODO
+			}
+			else {
+				APP_StartPreloadedSound(&APP_Waves[i], resume);
+			}
 		}
 	}
 }
 
 void APP_PlayWave(int num)
 {
-	APP_StartWave(num, false);
+	if (num < APP_WavesCount) {
+		APP_StartWave(num, false);
+	}
 }
 
 void APP_ResumeWave(int num)
 {
-	APP_StartWave(num, true);
+	if (num < APP_WavesCount) {
+		APP_StartWave(num, true);
+	}
 }
 
 void APP_StopWave(int num)
 {
-	if (!APP_WasAudioInit || num >= APP_WavesCount) {
+	if (num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
-		APP_StopSound(&APP_Waves[num]);
+		if (!APP_Waves[num].stream) {
+			return;
+		}
+		if (APP_Waves[num].streaming) {
+			// TODO
+		}
+		else {
+			APP_StopPreloadedSound(&APP_Waves[num]);
+		}
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			APP_StopSound(&APP_Waves[i]);
+			if (APP_Waves[i].stream) {
+				APP_StopPreloadedSound(&APP_Waves[i]);
+			}
 		}
 	}
 }
 
 void APP_PauseWave(int num)
 {
-	if (!APP_WasAudioInit || num >= APP_WavesCount) {
+	if (num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
+		if (!APP_Waves[num].stream) {
+			return;
+		}
 		APP_PauseSound(&APP_Waves[num]);
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			APP_PauseSound(&APP_Waves[i]);
+			if (APP_Waves[i].stream) {
+				APP_PauseSound(&APP_Waves[i]);
+			}
 		}
 	}
 }
 
 bool APP_IsWavePlaying(int num)
 {
-	if (!APP_WasAudioInit || num >= APP_WavesCount) {
+	if (num >= APP_WavesCount) {
 		return false;
 	}
 	else if (num >= 0) {
-		return APP_IsSoundPlaying(&APP_Waves[num]);
+		return APP_Waves[num].stream != NULL && APP_IsSoundPlaying(&APP_Waves[num]);
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			if (APP_IsSoundPlaying(&APP_Waves[i])) {
+			if (APP_Waves[i].stream && APP_IsSoundPlaying(&APP_Waves[i])) {
 				return true;
 			}
 		}
@@ -431,70 +485,88 @@ bool APP_IsWavePlaying(int num)
 
 void APP_SetWaveVolume(int num, int volume)
 {
-	if (!APP_WasAudioInit || num >= APP_WavesCount) {
+	if (num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
-		APP_SetSoundVolume(&APP_Waves[num], volume);
+		if (APP_Waves[num].stream) {
+			APP_SetSoundVolume(&APP_Waves[num], volume);
+		}
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			APP_SetSoundVolume(&APP_Waves[i], volume);
+			if (APP_Waves[i].stream) {
+				APP_SetSoundVolume(&APP_Waves[i], volume);
+			}
 		}
 	}
 }
 
 void APP_SetWaveLooping(int num, bool looping)
 {
-	if (!APP_WasAudioInit || num >= APP_WavesCount) {
+	if (num >= APP_WavesCount) {
 		return;
 	}
 	else if (num >= 0) {
-		APP_SetSoundLooping(&APP_Waves[num], looping);
+		if (APP_Waves[num].stream) {
+			APP_SetSoundLooping(&APP_Waves[num], looping);
+		}
 	}
 	else {
 		for (int i = 0; i < APP_WavesCount; i++) {
-			APP_SetSoundLooping(&APP_Waves[i], looping);
+			if (APP_Waves[num].stream) {
+				APP_SetSoundLooping(&APP_Waves[i], looping);
+			}
 		}
 	}
 }
 
-void APP_LoadMusicLeadin(const char* filename_no_ext)
+void APP_LoadMusic(const char* leadin_filename, const char* main_filename)
 {
-	APP_LoadSound(&APP_Music, filename_no_ext, true);
-}
-
-void APP_LoadMusic(const char* filename_no_ext)
-{
-	APP_LoadSound(&APP_Music, filename_no_ext, false);
+	// TODO: Streaming support
+	APP_LoadPreloadedSound(&APP_Music, leadin_filename, true);
+	APP_LoadPreloadedSound(&APP_Music, main_filename, false);
 }
 
 void APP_PlayMusic(void)
 {
-	APP_StartSound(&APP_Music, false);
+	// TODO: Streaming support
+	if (APP_Music.stream) {
+		APP_StartPreloadedSound(&APP_Music, false);
+	}
 }
 
 void APP_ResumeMusic(void)
 {
-	APP_StartSound(&APP_Music, true);
+	// TODO: Streaming support
+	if (APP_Music.stream) {
+		APP_StartPreloadedSound(&APP_Music, true);
+	}
 }
 
 void APP_StopMusic(void)
 {
-	APP_StopSound(&APP_Music);
+	// TODO: Streaming support
+	if (APP_Music.stream) {
+		APP_StopPreloadedSound(&APP_Music);
+	}
 }
 
 void APP_PauseMusic(void)
 {
-	APP_PauseSound(&APP_Music);
+	if (APP_Music.stream) {
+		APP_PauseSound(&APP_Music);
+	}
 }
 
 bool APP_IsMusicPlaying(void)
 {
-	return APP_IsSoundPlaying(&APP_Music);
+	return APP_Music.stream != NULL && APP_IsSoundPlaying(&APP_Music);
 }
 
 void APP_SetMusicVolume(int volume)
 {
-	APP_SetSoundVolume(&APP_Music, volume);
+	if (APP_Music.stream) {
+		APP_SetSoundVolume(&APP_Music, volume);
+	}
 }

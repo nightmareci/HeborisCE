@@ -56,12 +56,13 @@ static void APP_DRMP3_Free(void* p, void* pUserData)
 	SDL_free(p);
 }
 
-bool APP_LoadMP3(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size)
+bool APP_PreloadMP3(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size)
 {
 	drmp3_config config;
 	drmp3_uint64 totalFrameCount;
 	const drmp3_allocation_callbacks allocationCallbacks = { NULL, APP_DRMP3_Malloc, APP_DRMP3_Realloc, APP_DRMP3_Free };
-	(float*)*data = drmp3_open_and_read_pcm_frames_f32(APP_DRMP3_Read, APP_DRMP3_Seek, APP_DRMP3_Tell, file, &config, &totalFrameCount, &allocationCallbacks);
+	float** const floatData = (float**)data;
+	*floatData = drmp3_open_and_read_pcm_frames_f32(APP_DRMP3_Read, APP_DRMP3_Seek, APP_DRMP3_Tell, file, &config, &totalFrameCount, &allocationCallbacks);
 	SDL_CloseIO(file);
 	if (!*data) {
 		return false;

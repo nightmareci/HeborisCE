@@ -24,16 +24,8 @@ bool APP_InitAudio(int wavesCount);
 // Quit the audio system.
 void APP_QuitAudio(void);
 
-// Load leadin for a wave. Does not support APP_WAVE_NUM_ALL.
-//
-// Loading a leadin on a wave number also enables looping for the main part,
-// after the leadin has finished playing. But looping can still be disabled,
-// after loading.
-void APP_LoadWaveLeadin(int num, const char* filename_no_ext);
-
-// Load a wave. Does not support APP_WAVE_NUM_ALL. For waves with a leadin, this
-// loads into the looping main part.
-void APP_LoadWave(int num, const char* filename_no_ext);
+// Load a wave. Does not support APP_WAVE_NUM_ALL.
+void APP_LoadWave(int num, const char* leadin_filename, const char* main_filename, bool looping, bool streaming);
 
 // Play waves. APP_WAVE_NUM_ALL plays all waves.
 void APP_PlayWave(int num);
@@ -54,14 +46,11 @@ bool APP_IsWavePlaying(int num);
 // Set wave volume. APP_WAVE_NUM_ALL sets the same volume for all waves.
 void APP_SetWaveVolume(int num, int volume);
 
-// Set wave looping state. APP_WAVE_NUM_ALL sets the same loop state for all waves.
+// Set wave looping state. APP_WAVE_NUM_ALL sets the same looping state for all waves.
 void APP_SetWaveLooping(int num, bool looping);
 
-// Load leadin for music.
-void APP_LoadMusicLeadin(const char* filename_no_ext);
-
 // Load music.
-void APP_LoadMusic(const char* filename_no_ext);
+void APP_LoadMusic(const char* leadin_filename, const char* main_filename);
 
 // Play music.
 void APP_PlayMusic(void);

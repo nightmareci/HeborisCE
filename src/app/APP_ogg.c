@@ -119,6 +119,7 @@ APP_StreamingAudioData* APP_CreateStreamingOGGAudioData(SDL_IOStream* file, SDL_
 {
 	APP_StreamingOGGAudioData* ogg = SDL_calloc(1, sizeof(APP_StreamingOGGAudioData));
 	if (!ogg) {
+		SDL_CloseIO(file);
 		return NULL;
 	}
 	ogg->callbacks.getChunk = APP_GetOGGStreamingAudioDataChunk;
@@ -126,7 +127,7 @@ APP_StreamingAudioData* APP_CreateStreamingOGGAudioData(SDL_IOStream* file, SDL_
 	ogg->callbacks.destroy = APP_DestroyOGGStreamingAudioData;
 
 	int error;
-	ogg->vorbis = stb_vorbis_open_io(file, 0, &error, NULL);
+	ogg->vorbis = stb_vorbis_open_io(file, 1, &error, NULL);
 	if (!ogg->vorbis) {
 		SDL_free(ogg);
 		return NULL;
@@ -248,6 +249,9 @@ static bool APP_RestartOGGStreamingAudioData(APP_StreamingAudioData* streamingAu
 static void APP_DestroyOGGStreamingAudioData(APP_StreamingAudioData* streamingAudioData)
 {
 	APP_StreamingOGGAudioData* ogg = (APP_StreamingOGGAudioData*)streamingAudioData;
+	if (!ogg) {
+		return;
+	}
 
 	SDL_DestroyAudioStream(ogg->converter);
 	SDL_free(ogg->buffer);

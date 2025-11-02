@@ -4,6 +4,7 @@
 #include "APP_wav.h"
 #include "APP_ogg.h"
 #include "APP_mp3.h"
+#include "APP_audio_private.h"
 
 typedef struct APP_Sound
 {
@@ -17,11 +18,15 @@ typedef struct APP_Sound
 			uint32_t mainSize;
 			uint32_t mainPos;
 		} preloaded;
-		// TODO
-		#if 0
 		struct {
+			APP_StreamingAudioData* leadinData;
+			APP_StreamingAudioData* mainData;
+			uint8_t* chunks;
+			int leadinEnd;
+			int mainEnd;
+			int pos;
+			bool leadinFinished;
 		} streamed;
-		#endif
 	};
 	bool streaming;
 	bool looping;
@@ -36,14 +41,103 @@ static APP_Sound* APP_Waves;
 static int APP_WavesCount;
 static APP_Sound APP_Music;
 
-struct {
+struct
+{
 	const char* ext;
 	bool (* preload)(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
-} APP_AudioDataPreloaders[] = {
+} APP_AudioDataPreloaders[] =
+{
 	{ ".wav", APP_PreloadWAV },
 	{ ".ogg", APP_PreloadOGG },
 	{ ".mp3", APP_PreloadMP3 }
 };
+
+struct
+{
+	const char* ext;
+	APP_CreateStreamingAudioDataFunction create;
+} APP_StreamingAudioDataCreators[] =
+{
+	{ ".ogg", APP_CreateStreamingOGGAudioData }
+};
+
+bool APP_InitAudio(int wavesCount)
+{
+	if (APP_WasAudioInit) {
+		return true;
+	}
+	else if (wavesCount > INT_MAX / sizeof(APP_Sound)) {
+		return false;
+	}
+
+	// Initialize audio device
+	APP_AudioDevice = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
+	if (!APP_AudioDevice) {
+		fprintf(stderr, "Couldn't open audio device: %s\n", SDL_GetError());
+		return false;
+	}
+	if (!SDL_GetAudioDeviceFormat(APP_AudioDevice, &APP_AudioDeviceFormat, NULL)) {
+		fprintf(stderr, "Couldn't get audio device format: %s\n", SDL_GetError());
+		return false;
+	}
+
+	// サウンドの初期化
+	// Initialize sounds
+	if (wavesCount > 0) {
+		APP_Waves = SDL_calloc(sizeof(APP_Sound), wavesCount);
+		if (!APP_Waves) {
+			return false;
+		}
+	}
+	APP_WavesCount = wavesCount;
+	SDL_zero(APP_Music);
+	//APP_Music.streaming = true; // TODO
+	APP_Music.looping = true;
+
+	APP_WasAudioInit = true;
+	return true;
+}
+
+static void APP_QuitSound(APP_Sound* sound)
+{
+	if (!sound->stream) {
+		return;
+	}
+	SDL_DestroyAudioStream(sound->stream);
+	if (sound->streaming) {
+		APP_DestroyStreamingAudioData(sound->streamed.leadinData);
+		APP_DestroyStreamingAudioData(sound->streamed.mainData);
+		SDL_free(sound->streamed.chunks);
+	}
+	else {
+		SDL_free(sound->preloaded.mainData);
+		SDL_free(sound->preloaded.leadinData);
+	}
+	*sound = (APP_Sound) { 0 };
+}
+
+void APP_QuitAudio(void)
+{
+	if (!APP_WasAudioInit) {
+		return;
+	}
+
+	// サウンドの解放
+	// Free sounds
+	for (int i = 0; i < APP_WavesCount; i++) {
+		APP_QuitSound(&APP_Waves[i]);
+	}
+	APP_WavesCount = 0;
+	SDL_free(APP_Waves);
+	APP_Waves = NULL;
+	APP_QuitSound(&APP_Music);
+	SDL_zero(APP_Music);
+
+	SDL_CloseAudioDevice(APP_AudioDevice);
+	APP_AudioDevice = 0;
+
+	APP_WasAudioInit = false;
+}
 
 static void SDLCALL APP_GetPreloadedAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
 {
@@ -108,97 +202,6 @@ static void SDLCALL APP_GetPreloadedAudioStreamData(void* userdata, SDL_AudioStr
 	}
 }
 
-bool APP_InitAudio(int wavesCount)
-{
-	if (APP_WasAudioInit) {
-		return true;
-	}
-	else if (wavesCount > INT_MAX / sizeof(APP_Sound)) {
-		return false;
-	}
-
-	// Initialize audio device
-	APP_AudioDevice = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
-	if (!APP_AudioDevice) {
-		fprintf(stderr, "Couldn't open audio device: %s\n", SDL_GetError());
-		return false;
-	}
-	if (!SDL_GetAudioDeviceFormat(APP_AudioDevice, &APP_AudioDeviceFormat, NULL)) {
-		fprintf(stderr, "Couldn't get audio device format: %s\n", SDL_GetError());
-		return false;
-	}
-
-	// サウンドの初期化
-	// Initialize sounds
-	if (wavesCount > 0) {
-		APP_Waves = SDL_calloc(sizeof(APP_Sound), wavesCount);
-		if (!APP_Waves) {
-			return false;
-		}
-	}
-	APP_WavesCount = wavesCount;
-	SDL_zero(APP_Music);
-	//APP_Music.streaming = true; // TODO
-	APP_Music.looping = true;
-
-	APP_WasAudioInit = true;
-	return true;
-}
-
-static void APP_QuitSound(APP_Sound* sound)
-{
-	if (!sound->stream) {
-		return;
-	}
-	else if (sound->streaming) {
-		// TODO
-	}
-	else {
-		SDL_DestroyAudioStream(sound->stream);
-		SDL_free(sound->preloaded.mainData);
-		SDL_free(sound->preloaded.leadinData);
-	}
-}
-
-void APP_QuitAudio(void)
-{
-	if (!APP_WasAudioInit) {
-		return;
-	}
-
-	// サウンドの解放
-	// Free sounds
-	for (int i = 0; i < APP_WavesCount; i++) {
-		APP_QuitSound(&APP_Waves[i]);
-	}
-	APP_WavesCount = 0;
-	SDL_free(APP_Waves);
-	APP_Waves = NULL;
-	APP_QuitSound(&APP_Music);
-	SDL_zero(APP_Music);
-
-	SDL_CloseAudioDevice(APP_AudioDevice);
-	APP_AudioDevice = 0;
-
-	APP_WasAudioInit = false;
-}
-
-static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadin_filename, const char* main_filename)
-{
-	if (!leadin_filename || !*leadin_filename || !main_filename || !*main_filename) {
-		return false;
-	}
-
-	if (sound->stream) {
-		APP_QuitSound(sound);
-		sound->streaming = true;
-	}
-
-	// TODO
-
-	return true;
-}
-
 static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool leadin)
 {
 	if (!filename || !*filename) {
@@ -210,15 +213,15 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 		sound->streaming = false;
 	}
 
-	bool (* load)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*);
-	char* filename_ext = NULL;
+	bool (* load)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*) = NULL;
+	char* filenameExt = NULL;
 	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataPreloaders); i++) {
-		if (SDL_asprintf(&filename_ext, "%s%s", filename, APP_AudioDataPreloaders[i].ext) < 0) {
+		if (SDL_asprintf(&filenameExt, "%s%s", filename, APP_AudioDataPreloaders[i].ext) < 0) {
 			APP_Exit(EXIT_FAILURE);
 		}
-		if (!APP_FileExists(filename_ext)) {
-			SDL_free(filename_ext);
-			filename_ext = NULL;
+		if (!APP_FileExists(filenameExt)) {
+			SDL_free(filenameExt);
+			filenameExt = NULL;
 			continue;
 		}
 		else {
@@ -226,11 +229,11 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 			break;
 		}
 	}
-	if (!filename_ext) {
+	if (!load) {
 		return false;
 	}
-	SDL_IOStream* const file = APP_OpenRead(filename_ext);
-	SDL_free(filename_ext);
+	SDL_IOStream* const file = APP_OpenRead(filenameExt);
+	SDL_free(filenameExt);
 	if (!file) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -309,6 +312,94 @@ static void APP_StopPreloadedSound(APP_Sound* sound)
 	if (!SDL_UnlockAudioStream(sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
+}
+
+static APP_CreateStreamingAudioDataFunction APP_GetCreateStreamingAudioDataFunction(const char* filename, char** filenameExt)
+{
+	*filenameExt = NULL;
+	if (!filename || !*filename) {
+		return NULL;
+	}
+	for (size_t i = 0; i < SDL_arraysize(APP_StreamingAudioDataCreators); i++) {
+		if (SDL_asprintf(filenameExt, "%s%s", filename, APP_StreamingAudioDataCreators[i].ext) < 0) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (APP_FileExists(*filenameExt)) {
+			return APP_StreamingAudioDataCreators[i].create;
+		}
+		SDL_free(*filenameExt);
+	}
+	return NULL;
+}
+
+static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, const char* mainFilename, bool looping)
+{
+	if ((!leadinFilename || !*leadinFilename) && (!mainFilename || !*mainFilename)) {
+		return false;
+	}
+
+	if (sound->stream) {
+		APP_QuitSound(sound);
+		sound->streaming = true;
+	}
+	sound->stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
+	if (!sound->stream) {
+		APP_Exit(EXIT_FAILURE);
+	}
+
+	char* filenameExt;
+	APP_CreateStreamingAudioDataFunction create;
+	SDL_IOStream* file;
+
+	create = APP_GetCreateStreamingAudioDataFunction(leadinFilename, &filenameExt);
+	if (create) {
+		file = APP_OpenRead(filenameExt);
+		if (!file) {
+			SDL_free(filenameExt);
+			APP_Exit(EXIT_FAILURE);
+		}
+		SDL_free(filenameExt);
+		sound->streamed.leadinData = create(file, &APP_AudioDeviceFormat);
+		if (!sound->streamed.leadinData) {
+			APP_Exit(EXIT_FAILURE);
+		}
+	}
+
+	create = APP_GetCreateStreamingAudioDataFunction(mainFilename, &filenameExt);
+	if (create) {
+		file = APP_OpenRead(filenameExt);
+		SDL_free(filenameExt);
+		if (!file) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		sound->streamed.mainData = create(file, &APP_AudioDeviceFormat);
+		if (!sound->streamed.mainData) {
+			APP_Exit(EXIT_FAILURE);
+		}
+	}
+
+	sound->streamed.chunks = SDL_malloc(APP_STREAMED_AUDIO_CHUNK_SIZE * 2);
+	if (!sound->streamed.chunks) {
+		APP_Exit(EXIT_FAILURE);
+	}
+
+	if (sound->streamed.leadinData) {
+		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks, APP_STREAMED_AUDIO_CHUNK_SIZE * 2, &sound->streamed.leadinEnd, false)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+	}
+	else {
+		sound->streamed.leadinFinished = true;
+	}
+	if (sound->streamed.mainData && sound->streamed.leadinEnd < APP_STREAMED_AUDIO_CHUNK_SIZE * 2) {
+		if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + sound->streamed.leadinEnd, APP_STREAMED_AUDIO_CHUNK_SIZE * 2 - sound->streamed.leadinEnd, &sound->streamed.mainEnd, looping)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+	}
+
+	// TODO: Set up the streaming thread and audio stream callback
+
+	return true;
 }
 
 static void APP_PauseSound(APP_Sound* sound)

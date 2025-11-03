@@ -12,13 +12,13 @@ typedef struct APP_StreamingAudioData APP_StreamingAudioData;
 typedef APP_StreamingAudioData* (* APP_CreateStreamingAudioDataFunction)(SDL_IOStream* file, SDL_AudioSpec* dstSpec);
 
 struct APP_StreamingAudioData {
-	bool (* getChunk)(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool looping);
+	bool (* getChunk)(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool* finished, bool looping);
 	bool (* restart)(APP_StreamingAudioData* streamingAudioData);
 	void (* destroy)(APP_StreamingAudioData* streamingAudioData);
 };
 
-#define APP_GetStreamingAudioDataChunk(streamingAudioData, chunk, chunkTotalSize, chunkOutSize, looping) \
-	(streamingAudioData)->getChunk((streamingAudioData), (chunk), (chunkTotalSize), (chunkOutSize), (looping))
+#define APP_GetStreamingAudioDataChunk(streamingAudioData, chunk, chunkTotalSize, chunkOutSize, finished, looping) \
+	(streamingAudioData)->getChunk((streamingAudioData), (chunk), (chunkTotalSize), (chunkOutSize), (finished), (looping))
 
 #define APP_RestartStreamingAudioData(streamingAudioData) \
 	(streamingAudioData)->restart((streamingAudioData))

@@ -55,7 +55,7 @@ typedef struct APP_StreamingOGGAudioData
 	int floatsMax;
 } APP_StreamingOGGAudioData;
 
-static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool looping);
+static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool* finished, bool looping);
 static bool APP_RestartOGGStreamingAudioData(APP_StreamingAudioData* streamingAudioData);
 static void APP_DestroyOGGStreamingAudioData(APP_StreamingAudioData* streamingAudioData);
 
@@ -166,8 +166,9 @@ APP_StreamingAudioData* APP_CreateStreamingOGGAudioData(SDL_IOStream* file, SDL_
 	return (APP_StreamingAudioData*)ogg;
 }
 
-static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool looping)
+static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool* finished, bool looping)
 {
+	*finished = false;
 	*chunkOutSize = 0;
 	if (chunkTotalSize == 0) {
 		return true;
@@ -175,10 +176,9 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 
 	APP_StreamingOGGAudioData* ogg = (APP_StreamingOGGAudioData*)streamingAudioData;
 	uint8_t* pos = chunk;
-	bool finished = false;
 
 	if (ogg->converter) {
-		do {
+		while (true) {
 			const int gotBytes = SDL_GetAudioStreamData(ogg->converter, pos, chunkTotalSize);
 			if (gotBytes < 0) {
 				return false;
@@ -186,7 +186,7 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			pos += gotBytes;
 			*chunkOutSize += gotBytes;
 			chunkTotalSize -= gotBytes;
-			if (chunkTotalSize == 0 || finished) {
+			if (chunkTotalSize == 0 || *finished) {
 				return true;
 			}
 
@@ -206,13 +206,13 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 						}
 					}
 					else {
-						finished = true;
+						*finished = true;
 						break;
 					}
 				}
 				totalSamples += gotSamples;
 			} while (totalSamples * ogg->srcSpec.channels < ogg->floatsMax);
-		} while (true);
+		}
 	}
 	else {
 		do {
@@ -227,14 +227,14 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 					}
 				}
 				else {
-					finished = true;
+					*finished = true;
 				}
 			}
 			const int gotBytes = sizeof(int16_t) * ogg->dstSpec.channels * gotSamples;
 			pos += gotBytes;
 			*chunkOutSize += gotBytes;
 			chunkTotalSize -= gotBytes;
-		} while (chunkTotalSize > 0 && !finished);
+		} while (chunkTotalSize > 0 && !*finished);
 		return true;
 	}
 }

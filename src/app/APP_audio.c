@@ -5,6 +5,8 @@
 #include "APP_ogg.h"
 #include "APP_mp3.h"
 #include "APP_audio_private.h"
+#include <SDL3/SDL_audio.h>
+#include <SDL3/SDL_mutex.h>
 
 typedef struct APP_Sound
 {
@@ -21,11 +23,18 @@ typedef struct APP_Sound
 		struct {
 			APP_StreamingAudioData* leadinData;
 			APP_StreamingAudioData* mainData;
+			SDL_Semaphore* streamNow;
+			SDL_Thread* streamer;
 			uint8_t* chunks;
-			int leadinEnd;
-			int mainEnd;
+			SDL_AtomicInt chunkID;
+			SDL_AtomicInt ready;
+			SDL_AtomicInt error;
+			SDL_AtomicInt quit;
+			int chunkEnds[2];
 			int pos;
+			bool lastChunks[2];
 			bool leadinFinished;
+			bool mainFinished;
 		} streamed;
 	};
 	bool streaming;
@@ -332,6 +341,101 @@ static APP_CreateStreamingAudioDataFunction APP_GetCreateStreamingAudioDataFunct
 	return NULL;
 }
 
+static int SDLCALL APP_StreamAudioData(void* userdata)
+{
+	APP_Sound* const sound = userdata;
+	while (true) {
+		SDL_WaitSemaphore(sound->streamed.streamNow);
+		if (SDL_GetAtomicInt(&sound->streamed.quit)) {
+			return 1;
+		}
+
+		const int chunkID = !SDL_GetAtomicInt(&sound->streamed.chunkID);
+		uint8_t* const chunk = &sound->streamed.chunks[chunkID * APP_STREAMED_AUDIO_CHUNK_SIZE];
+		int* const chunkEnd = &sound->streamed.chunkEnds[chunkID];
+		*chunkEnd = 0;
+		bool* const lastChunk = &sound->streamed.lastChunks[chunkID];
+		*lastChunk = true;
+		if (!SDL_LockAudioStream(sound->stream)) {
+			SDL_SetAtomicInt(&sound->streamed.error, 1);
+			return 0;
+		}
+		const bool looping = sound->looping;
+		if (!SDL_UnlockAudioStream(sound->stream)) {
+			SDL_SetAtomicInt(&sound->streamed.error, 1);
+			return 0;
+		}
+		if (sound->streamed.leadinData && !sound->streamed.leadinFinished) {
+			if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, chunk, APP_STREAMED_AUDIO_CHUNK_SIZE, chunkEnd, &sound->streamed.leadinFinished, false)) {
+				SDL_SetAtomicInt(&sound->streamed.error, 1);
+				return 0;
+			}
+			*lastChunk = !sound->streamed.mainData && sound->streamed.leadinFinished;
+		}
+		if (sound->streamed.mainData && sound->streamed.leadinFinished && (!sound->streamed.mainFinished || sound->looping)) {
+			if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, chunk + *chunkEnd, APP_STREAMED_AUDIO_CHUNK_SIZE - *chunkEnd, chunkEnd, &sound->streamed.mainFinished, looping)) {
+				SDL_SetAtomicInt(&sound->streamed.error, 1);
+				return 0;
+			}
+			*lastChunk = sound->streamed.mainFinished && !sound->looping;
+		}
+
+		SDL_MemoryBarrierRelease();
+		SDL_SetAtomicInt(&sound->streamed.ready, 1);
+	}
+}
+
+static void SDLCALL APP_GetStreamedAudioStreamData(void* userdata, SDL_AudioStream* stream, int additionalAmount, int totalAmount)
+{
+	APP_Sound* const sound = userdata;
+	(void)totalAmount;
+
+	if (!sound->playing) {
+		return;
+	}
+
+	int chunkID = SDL_GetAtomicInt(&sound->streamed.chunkID);
+	int chunkEnd = sound->streamed.chunkEnds[chunkID];
+	bool lastChunk = sound->streamed.lastChunks[chunkID];
+	uint8_t* chunk = &sound->streamed.chunks[chunkID * APP_STREAMED_AUDIO_CHUNK_SIZE];
+	if (sound->streamed.pos + additionalAmount <= chunkEnd) {
+		SDL_PutAudioStreamData(stream, chunk + sound->streamed.pos, additionalAmount);
+		sound->streamed.pos += additionalAmount;
+		if (sound->streamed.pos == chunkEnd && lastChunk) {
+			sound->playing = false;
+		}
+	}
+	else {
+		SDL_PutAudioStreamData(stream, chunk + sound->streamed.pos, chunkEnd - sound->streamed.pos);
+		sound->streamed.pos = chunkEnd;
+		const int ready = SDL_GetAtomicInt(&sound->streamed.ready);
+		SDL_MemoryBarrierAcquire();
+		if (ready) {
+			additionalAmount -= chunkEnd - sound->streamed.pos;
+			chunkID = !chunkID;
+			SDL_SetAtomicInt(&sound->streamed.chunkID, chunkID);
+			SDL_SetAtomicInt(&sound->streamed.ready, 0);
+			chunkEnd = sound->streamed.chunkEnds[chunkID];
+			lastChunk = sound->streamed.lastChunks[chunkID];
+			chunk = &sound->streamed.chunks[chunkID * APP_STREAMED_AUDIO_CHUNK_SIZE];
+			if (additionalAmount <= chunkEnd) {
+				SDL_PutAudioStreamData(stream, chunk, additionalAmount);
+				sound->streamed.pos = additionalAmount;
+			}
+			else {
+				SDL_PutAudioStreamData(stream, chunk, chunkEnd);
+				sound->streamed.pos = chunkEnd;
+			}
+			if (sound->streamed.pos == chunkEnd && lastChunk) {
+				sound->playing = false;
+			}
+		}
+		if (!lastChunk && SDL_GetSemaphoreValue(sound->streamed.streamNow) == 0) {
+			SDL_SignalSemaphore(sound->streamed.streamNow);
+		}
+	}
+}
+
 static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, const char* mainFilename, bool looping)
 {
 	if ((!leadinFilename || !*leadinFilename) && (!mainFilename || !*mainFilename)) {
@@ -346,6 +450,10 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 	if (!sound->stream) {
 		APP_Exit(EXIT_FAILURE);
 	}
+	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetStreamedAudioStreamData, sound)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	sound->looping = looping;
 
 	char* filenameExt;
 	APP_CreateStreamingAudioDataFunction create;
@@ -382,22 +490,66 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 	if (!sound->streamed.chunks) {
 		APP_Exit(EXIT_FAILURE);
 	}
-
 	if (sound->streamed.leadinData) {
-		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks, APP_STREAMED_AUDIO_CHUNK_SIZE * 2, &sound->streamed.leadinEnd, false)) {
+		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks, APP_STREAMED_AUDIO_CHUNK_SIZE, &sound->streamed.chunkEnds[0], &sound->streamed.leadinFinished, false)) {
 			APP_Exit(EXIT_FAILURE);
+		}
+		if (sound->streamed.leadinFinished) {
+			sound->streamed.lastChunks[0] = sound->streamed.chunkEnds[0];
+		}
+		else {
+			sound->streamed.lastChunks[0] = -1;
 		}
 	}
 	else {
 		sound->streamed.leadinFinished = true;
 	}
-	if (sound->streamed.mainData && sound->streamed.leadinEnd < APP_STREAMED_AUDIO_CHUNK_SIZE * 2) {
-		if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + sound->streamed.leadinEnd, APP_STREAMED_AUDIO_CHUNK_SIZE * 2 - sound->streamed.leadinEnd, &sound->streamed.mainEnd, looping)) {
+	if (sound->streamed.mainData && !sound->streamed.leadinFinished) {
+		if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + sound->streamed.chunkEnds[0], APP_STREAMED_AUDIO_CHUNK_SIZE - sound->streamed.chunkEnds[0], &sound->streamed.chunkEnds[0], &sound->streamed.mainFinished, looping)) {
 			APP_Exit(EXIT_FAILURE);
 		}
+		if (sound->streamed.mainFinished && !looping) {
+			sound->streamed.lastChunks[0] = sound->streamed.chunkEnds[0];
+		}
+		else {
+			sound->streamed.lastChunks[0] = -1;
+		}
 	}
-
-	// TODO: Set up the streaming thread and audio stream callback
+	if (!sound->streamed.leadinFinished) {
+		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks + APP_STREAMED_AUDIO_CHUNK_SIZE, APP_STREAMED_AUDIO_CHUNK_SIZE, &sound->streamed.chunkEnds[1], &sound->streamed.leadinFinished, false)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (sound->streamed.leadinFinished) {
+			sound->streamed.lastChunks[1] = sound->streamed.chunkEnds[1];
+		}
+		else {
+			sound->streamed.lastChunks[1] = -1;
+		}
+	}
+	if (sound->streamed.mainData && !sound->streamed.leadinFinished) {
+		if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + APP_STREAMED_AUDIO_CHUNK_SIZE + sound->streamed.chunkEnds[1], APP_STREAMED_AUDIO_CHUNK_SIZE - sound->streamed.chunkEnds[1], &sound->streamed.chunkEnds[1], &sound->streamed.mainFinished, looping)) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (sound->streamed.mainFinished && !looping) {
+			sound->streamed.lastChunks[1] = sound->streamed.chunkEnds[1];
+		}
+		else {
+			sound->streamed.lastChunks[1] = -1;
+		}
+	}
+	SDL_MemoryBarrierRelease();
+	SDL_SetAtomicInt(&sound->streamed.ready, 1);
+	sound->streamed.streamNow = SDL_CreateSemaphore(0);
+	if (!sound->streamed.streamNow) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	sound->streamed.streamer = SDL_CreateThread(APP_StreamAudioData, "APP_StreamAudioData", sound);
+	if (!sound->streamed.streamer) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
 
 	return true;
 }
@@ -452,19 +604,17 @@ void APP_LoadWave(int num, const char* leadin_filename, const char* main_filenam
 		return;
 	}
 
-	// TODO: Streaming support
 	#if 0
 	if (streaming) {
-		if (APP_LoadStreamedSound(&APP_Waves[num], leadin_filename, main_filename)) {
-			APP_SetSoundLooping(&APP_Waves[num], looping);
-		}
+		// TODO
+		APP_LoadStreamedSound(&APP_Waves[num], leadin_filename, main_filename, looping);
 	}
-	else {
-	#endif
-		if (APP_LoadPreloadedSound(&APP_Waves[num], leadin_filename, true) || APP_LoadPreloadedSound(&APP_Waves[num], main_filename, false)) {
-			APP_SetSoundLooping(&APP_Waves[num], looping);
-		}
-	#if 0
+	else if (APP_LoadPreloadedSound(&APP_Waves[num], leadin_filename, true) || APP_LoadPreloadedSound(&APP_Waves[num], main_filename, false)) {
+		APP_SetSoundLooping(&APP_Waves[num], looping);
+	}
+	#else
+	if (APP_LoadPreloadedSound(&APP_Waves[num], leadin_filename, true) || APP_LoadPreloadedSound(&APP_Waves[num], main_filename, false)) {
+		APP_SetSoundLooping(&APP_Waves[num], looping);
 	}
 	#endif
 }

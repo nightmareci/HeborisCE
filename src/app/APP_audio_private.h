@@ -3,6 +3,8 @@
 
 #include "APP_stdinc.h"
 
+typedef bool (* APP_PreloadAudioDataFunction)(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** data, uint32_t* size);
+
 #define APP_STREAMED_AUDIO_CHUNK_SIZE 0x8000
 
 #define APP_STREAMED_AUDIO_CHUNK_FLOATS_MAX(channels) (APP_STREAMED_AUDIO_CHUNK_SIZE / sizeof(float)) - ((APP_STREAMED_AUDIO_CHUNK_SIZE / sizeof(float)) % (channels));

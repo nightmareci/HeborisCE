@@ -25,7 +25,7 @@ bool APP_InitAudio(int wavesCount);
 void APP_QuitAudio(void);
 
 // Load a wave. Does not support APP_WAVE_NUM_ALL.
-void APP_LoadWave(int num, const char* leadin_filename, const char* main_filename, bool looping, bool streaming);
+void APP_LoadWave(int num, const char* leadinFilename, const char* mainFilename, bool looping, bool streaming);
 
 // Play waves. APP_WAVE_NUM_ALL plays all waves.
 void APP_PlayWave(int num);
@@ -50,7 +50,7 @@ void APP_SetWaveVolume(int num, int volume);
 void APP_SetWaveLooping(int num, bool looping);
 
 // Load music.
-void APP_LoadMusic(const char* leadin_filename, const char* main_filename);
+void APP_LoadMusic(const char* leadinFilename, const char* mainFilename);
 
 // Play music.
 void APP_PlayMusic(void);

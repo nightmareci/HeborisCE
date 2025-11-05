@@ -254,7 +254,7 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 		APP_Exit(EXIT_FAILURE);
 	}
 
-	bool (* load)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*) = NULL;
+	bool (* preload)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*) = NULL;
 	char* filenameExt = NULL;
 	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataPreloaders); i++) {
 		if (SDL_asprintf(&filenameExt, "%s%s", filename, APP_AudioDataPreloaders[i].ext) < 0) {
@@ -266,11 +266,11 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 			continue;
 		}
 		else {
-			load = APP_AudioDataPreloaders[i].preload;
+			preload = APP_AudioDataPreloaders[i].preload;
 			break;
 		}
 	}
-	if (!load) {
+	if (!preload) {
 		return false;
 	}
 	SDL_IOStream* const file = APP_OpenRead(filenameExt);
@@ -281,7 +281,7 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	uint8_t* oldData;
 	uint8_t* data;
 	uint32_t size;
-	if (!load(file, &APP_AudioDeviceFormat, &data, &size)) {
+	if (!preload(file, &APP_AudioDeviceFormat, &data, &size)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 	if (leadin) {

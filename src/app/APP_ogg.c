@@ -48,7 +48,7 @@ typedef Sint32 int32;
 typedef struct APP_StreamingOGGAudioData
 {
 	APP_StreamingAudioData callbacks;
-	stb_vorbis* vorbis;
+	stb_vorbis* data;
 	SDL_AudioStream* converter;
 	float* buffer;
 	SDL_AudioSpec srcSpec;
@@ -130,20 +130,20 @@ APP_StreamingAudioData* APP_CreateStreamingOGGAudioData(SDL_IOStream* file, SDL_
 	ogg->callbacks.destroy = APP_DestroyOGGStreamingAudioData;
 
 	int error;
-	ogg->vorbis = stb_vorbis_open_io(file, 1, &error, NULL);
-	if (!ogg->vorbis) {
+	ogg->data = stb_vorbis_open_io(file, 1, &error, NULL);
+	if (!ogg->data) {
 		SDL_free(ogg);
 		return NULL;
 	}
-	ogg->samples = stb_vorbis_stream_length_in_samples(ogg->vorbis);
+	ogg->samples = stb_vorbis_stream_length_in_samples(ogg->data);
 	if (ogg->samples == 0) {
-		stb_vorbis_close(ogg->vorbis);
+		stb_vorbis_close(ogg->data);
 		SDL_free(ogg);
-		return false;
+		return NULL;
 	}
 
-	ogg->srcSpec.channels = ogg->vorbis->channels;
-	ogg->srcSpec.freq = ogg->vorbis->sample_rate;
+	ogg->srcSpec.channels = ogg->data->channels;
+	ogg->srcSpec.freq = ogg->data->sample_rate;
 	ogg->dstSpec = *dstSpec;
 
 	if (
@@ -154,16 +154,17 @@ APP_StreamingAudioData* APP_CreateStreamingOGGAudioData(SDL_IOStream* file, SDL_
 		ogg->srcSpec.format = SDL_AUDIO_F32;
 		ogg->converter = SDL_CreateAudioStream(&ogg->srcSpec, dstSpec);
 		if (!ogg->converter) {
-			stb_vorbis_close(ogg->vorbis);
+			stb_vorbis_close(ogg->data);
 			SDL_free(ogg);
-			return false;
+			return NULL;
 		}
 		ogg->floatsMax = APP_STREAMED_AUDIO_CHUNK_FLOATS_MAX(ogg->srcSpec.channels);
 		ogg->buffer = SDL_malloc(sizeof(float) * ogg->floatsMax);
 		if (!ogg->buffer) {
-			stb_vorbis_close(ogg->vorbis);
+			SDL_DestroyAudioStream(ogg->converter);
+			stb_vorbis_close(ogg->data);
 			SDL_free(ogg);
-			return false;
+			return NULL;
 		}
 	}
 
@@ -201,16 +202,19 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			if (looping || !ogg->finished) {
 				int totalSamples = 0;
 				do {
-					const int gotSamples = stb_vorbis_get_samples_float_interleaved(ogg->vorbis, ogg->srcSpec.channels, ogg->buffer, ogg->floatsMax);
-					if (stb_vorbis_get_error(ogg->vorbis)) {
+					const int gotSamples = stb_vorbis_get_samples_float_interleaved(ogg->data, ogg->srcSpec.channels, ogg->buffer, ogg->floatsMax);
+					if (stb_vorbis_get_error(ogg->data)) {
+						return false;
+					}
+					if (gotSamples > INT_MAX / (sizeof(float) * ogg->srcSpec.channels)) {
 						return false;
 					}
 					if (!SDL_PutAudioStreamData(ogg->converter, ogg->buffer, sizeof(float) * ogg->srcSpec.channels * gotSamples)) {
 						return false;
 					}
-					if (stb_vorbis_get_playback_sample_offset(ogg->vorbis) == ogg->samples) {
+					if (stb_vorbis_get_playback_sample_offset(ogg->data) == ogg->samples) {
 						if (looping) {
-							if (!stb_vorbis_seek_start(ogg->vorbis)) {
+							if (!stb_vorbis_seek_start(ogg->data)) {
 								return false;
 							}
 						}
@@ -226,13 +230,16 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 	}
 	else {
 		do {
-			const int gotSamples = stb_vorbis_get_samples_short_interleaved(ogg->vorbis, ogg->dstSpec.channels, (int16_t*)pos, chunkTotalSize / sizeof(int16_t));
-			if (stb_vorbis_get_error(ogg->vorbis)) {
+			const int gotSamples = stb_vorbis_get_samples_short_interleaved(ogg->data, ogg->dstSpec.channels, (int16_t*)pos, chunkTotalSize / sizeof(int16_t));
+			if (stb_vorbis_get_error(ogg->data)) {
 				return false;
 			}
-			if (stb_vorbis_get_playback_sample_offset(ogg->vorbis) == ogg->samples) {
+			if (gotSamples > INT_MAX / (sizeof(int16_t) * ogg->dstSpec.channels)) {
+				return false;
+			}
+			if (stb_vorbis_get_playback_sample_offset(ogg->data) == ogg->samples) {
 				if (looping) {
-					if (!stb_vorbis_seek_start(ogg->vorbis)) {
+					if (!stb_vorbis_seek_start(ogg->data)) {
 						return false;
 					}
 				}
@@ -260,7 +267,7 @@ static bool APP_RestartOGGStreamingAudioData(APP_StreamingAudioData* streamingAu
 			return false;
 		}
 	}
-	return !!stb_vorbis_seek_start(ogg->vorbis);
+	return !!stb_vorbis_seek_start(ogg->data);
 }
 
 static void APP_DestroyOGGStreamingAudioData(APP_StreamingAudioData* streamingAudioData)
@@ -269,6 +276,6 @@ static void APP_DestroyOGGStreamingAudioData(APP_StreamingAudioData* streamingAu
 
 	SDL_DestroyAudioStream(ogg->converter);
 	SDL_free(ogg->buffer);
-	stb_vorbis_close(ogg->vorbis);
+	stb_vorbis_close(ogg->data);
 	SDL_free(ogg);
 }

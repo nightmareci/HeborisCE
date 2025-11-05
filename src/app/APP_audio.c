@@ -67,7 +67,8 @@ struct
 	APP_CreateStreamingAudioDataFunction create;
 } APP_StreamingAudioDataCreators[] =
 {
-	{ ".ogg", APP_CreateStreamingOGGAudioData }
+	{ ".ogg", APP_CreateStreamingOGGAudioData },
+	{ ".mp3", APP_CreateStreamingMP3AudioData }
 };
 
 bool APP_InitAudio(int wavesCount)
@@ -535,15 +536,22 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 
 static void APP_ReadyStreamedSound(APP_Sound* sound)
 {
+	if (!SDL_ClearAudioStream(sound->stream)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+
 	sound->streamed.pos = 0;
 	sound->streamed.chunkEnd[0] = 0;
+	sound->streamed.chunkEnd[1] = 0;
 	sound->streamed.lastChunk[0] = false;
+	sound->streamed.lastChunk[1] = false;
+
 	if (sound->streamed.leadinData) {
 		if (!APP_RestartStreamingAudioData(sound->streamed.leadinData)) {
-			abort();
+			APP_Exit(EXIT_FAILURE);
 		}
 		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks, APP_STREAMED_AUDIO_CHUNK_SIZE, &sound->streamed.chunkEnd[0], &sound->streamed.leadinFinished, false)) {
-			abort();
+			APP_Exit(EXIT_FAILURE);
 		}
 		sound->streamed.lastChunk[0] = !sound->streamed.mainData && sound->streamed.leadinFinished;
 	}
@@ -552,12 +560,12 @@ static void APP_ReadyStreamedSound(APP_Sound* sound)
 	}
 	if (sound->streamed.mainData) {
 		if (!APP_RestartStreamingAudioData(sound->streamed.mainData)) {
-			abort();
+			APP_Exit(EXIT_FAILURE);
 		}
 		if (sound->streamed.leadinFinished) {
 			int mainSize;
 			if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + sound->streamed.chunkEnd[0], APP_STREAMED_AUDIO_CHUNK_SIZE - sound->streamed.chunkEnd[0], &mainSize, &sound->streamed.mainFinished, sound->looping)) {
-				abort();
+				APP_Exit(EXIT_FAILURE);
 			}
 			sound->streamed.chunkEnd[0] += mainSize;
 			sound->streamed.lastChunk[0] = sound->streamed.mainFinished && !sound->looping;
@@ -566,30 +574,13 @@ static void APP_ReadyStreamedSound(APP_Sound* sound)
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->streamed.ready[0], 1);
 
-	if (sound->streamed.leadinData && !sound->streamed.leadinFinished) {
-		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks + APP_STREAMED_AUDIO_CHUNK_SIZE, APP_STREAMED_AUDIO_CHUNK_SIZE, &sound->streamed.chunkEnd[1], &sound->streamed.leadinFinished, false)) {
-			abort();
-		}
-		sound->streamed.lastChunk[1] = !sound->streamed.mainData && sound->streamed.leadinFinished;
-	}
-	else {
-		sound->streamed.leadinFinished = true;
-	}
-	if (sound->streamed.mainData) {
-		if (sound->streamed.leadinFinished) {
-			int mainSize;
-			if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + APP_STREAMED_AUDIO_CHUNK_SIZE + sound->streamed.chunkEnd[1], APP_STREAMED_AUDIO_CHUNK_SIZE - sound->streamed.chunkEnd[1], &mainSize, &sound->streamed.mainFinished, sound->looping)) {
-				abort();
-			}
-			sound->streamed.chunkEnd[1] += mainSize;
-			sound->streamed.lastChunk[1] = sound->streamed.mainFinished && !sound->looping;
-		}
-	}
 	SDL_MemoryBarrierRelease();
-	SDL_SetAtomicInt(&sound->streamed.ready[1], 1);
-
+	SDL_SetAtomicInt(&sound->streamed.ready[1], 0);
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->streamed.chunkID, 0);
+	if (!sound->streamed.lastChunk[0]) {
+		SDL_SignalSemaphore(sound->streamed.wakeStreamer);
+	}
 }
 
 static void APP_StartStreamedSound(APP_Sound* sound, bool resume)
@@ -598,28 +589,24 @@ static void APP_StartStreamedSound(APP_Sound* sound, bool resume)
 		return;
 	}
 
-	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(EXIT_FAILURE);
-	}
+	SDL_UnbindAudioStream(sound->stream);
 	if (!resume) {
 		APP_ReadyStreamedSound(sound);
 	}
 	sound->paused = false;
 	sound->playing = true;
-	if (!SDL_UnlockAudioStream(sound->stream)) {
+	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }
 
 static void APP_StopStreamedSound(APP_Sound* sound)
 {
-	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(EXIT_FAILURE);
-	}
+	SDL_UnbindAudioStream(sound->stream);
 	APP_ReadyStreamedSound(sound);
 	sound->paused = false;
 	sound->playing = false;
-	if (!SDL_UnlockAudioStream(sound->stream)) {
+	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }

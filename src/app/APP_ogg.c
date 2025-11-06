@@ -180,11 +180,12 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 	}
 
 	APP_StreamingOGGAudioData* ogg = (APP_StreamingOGGAudioData*)streamingAudioData;
+	int chunkRemaining = APP_STREAMED_AUDIO_CHUNK_SPEC_SIZE_MAX(ogg->dstSpec, chunkTotalSize);
 	uint8_t* pos = chunk;
 
 	if (ogg->converter) {
 		while (true) {
-			const int gotBytes = SDL_GetAudioStreamData(ogg->converter, pos, chunkTotalSize);
+			const int gotBytes = SDL_GetAudioStreamData(ogg->converter, pos, chunkRemaining);
 			if (gotBytes < 0) {
 				return false;
 			}
@@ -194,8 +195,8 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 				return true;
 			}
 			pos += gotBytes;
-			chunkTotalSize -= gotBytes;
-			if (chunkTotalSize == 0) {
+			chunkRemaining -= gotBytes;
+			if (chunkRemaining == 0) {
 				return true;
 			}
 
@@ -230,7 +231,7 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 	}
 	else {
 		do {
-			const int gotSamples = stb_vorbis_get_samples_short_interleaved(ogg->data, ogg->dstSpec.channels, (int16_t*)pos, chunkTotalSize / sizeof(int16_t));
+			const int gotSamples = stb_vorbis_get_samples_short_interleaved(ogg->data, ogg->dstSpec.channels, (int16_t*)pos, chunkRemaining / sizeof(int16_t));
 			if (stb_vorbis_get_error(ogg->data)) {
 				return false;
 			}
@@ -251,8 +252,8 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			const int gotBytes = sizeof(int16_t) * ogg->dstSpec.channels * gotSamples;
 			pos += gotBytes;
 			*chunkOutSize += gotBytes;
-			chunkTotalSize -= gotBytes;
-		} while (chunkTotalSize > 0 && !*finished);
+			chunkRemaining -= gotBytes;
+		} while (chunkRemaining > 0 && !*finished);
 		return true;
 	}
 }

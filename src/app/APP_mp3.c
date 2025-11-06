@@ -1,4 +1,5 @@
 #include "APP_mp3.h"
+#include "app/APP_audio_private.h"
 #include <SDL3/SDL_audio.h>
 
 #define DR_MP3_IMPLEMENTATION
@@ -183,11 +184,12 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 	}
 
 	APP_StreamingMP3AudioData* mp3 = (APP_StreamingMP3AudioData*)streamingAudioData;
+	int chunkRemaining = APP_STREAMED_AUDIO_CHUNK_SPEC_SIZE_MAX(mp3->dstSpec, chunkTotalSize);
 	uint8_t* pos = chunk;
 
 	if (mp3->converter) {
 		while (true) {
-			const int gotBytes = SDL_GetAudioStreamData(mp3->converter, pos, chunkTotalSize);
+			const int gotBytes = SDL_GetAudioStreamData(mp3->converter, pos, chunkRemaining);
 			if (gotBytes < 0) {
 				return false;
 			}
@@ -197,8 +199,8 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 				return true;
 			}
 			pos += gotBytes;
-			chunkTotalSize -= gotBytes;
-			if (chunkTotalSize == 0) {
+			chunkRemaining -= gotBytes;
+			if (chunkRemaining == 0) {
 				return true;
 			}
 
@@ -236,7 +238,7 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 	}
 	else {
 		do {
-			const uint64_t gotSamples = drmp3_read_pcm_frames_s16(&mp3->data, chunkTotalSize / (sizeof(int16_t) * mp3->dstSpec.channels), (int16_t*)pos);
+			const uint64_t gotSamples = drmp3_read_pcm_frames_s16(&mp3->data, chunkRemaining / (sizeof(int16_t) * mp3->dstSpec.channels), (int16_t*)pos);
 			switch (SDL_GetIOStatus(mp3->file)) {
 			case SDL_IO_STATUS_ERROR:
 			case SDL_IO_STATUS_NOT_READY:
@@ -263,8 +265,8 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			const int gotBytes = (int)(sizeof(int16_t) * mp3->dstSpec.channels * gotSamples);
 			pos += gotBytes;
 			*chunkOutSize += gotBytes;
-			chunkTotalSize -= gotBytes;
-		} while (chunkTotalSize > 0 && !*finished);
+			chunkRemaining -= gotBytes;
+		} while (chunkRemaining > 0 && !*finished);
 		return true;
 	}
 }

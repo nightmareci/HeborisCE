@@ -11,6 +11,8 @@ typedef bool (* APP_PreloadAudioDataFunction)(SDL_IOStream* file, const SDL_Audi
 
 #define APP_STREAMED_AUDIO_CHUNK_FLOAT_SAMPLES_MAX(channels) (APP_STREAMED_AUDIO_CHUNK_SIZE / (sizeof(float) * (channels)))
 
+#define APP_STREAMED_AUDIO_CHUNK_SPEC_SIZE_MAX(spec, size) ((size) - ((size) % (SDL_AUDIO_BYTESIZE((spec).format) * (spec).channels)))
+
 typedef struct APP_StreamingAudioData APP_StreamingAudioData;
 
 typedef APP_StreamingAudioData* (* APP_CreateStreamingAudioDataFunction)(SDL_IOStream* file, SDL_AudioSpec* dstSpec);

@@ -67,6 +67,7 @@ struct
 	APP_CreateStreamingAudioDataFunction create;
 } APP_StreamingAudioDataCreators[] =
 {
+	{ ".wav", APP_CreateStreamingWAVAudioData },
 	{ ".ogg", APP_CreateStreamingOGGAudioData },
 	{ ".mp3", APP_CreateStreamingMP3AudioData }
 };

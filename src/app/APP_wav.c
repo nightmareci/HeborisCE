@@ -12,6 +12,24 @@
 #define DRWAV_ZERO_MEMORY(p, sz) SDL_memset((p), 0, (sz))
 #include "dr_wav.h"
 
+typedef struct APP_StreamingWAVAudioData
+{
+	APP_StreamingAudioData callbacks;
+	drwav data;
+	drwav_uint64 frames;
+	uint64_t framesMax;
+	SDL_AudioStream* converter;
+	SDL_IOStream* file;
+	float* buffer;
+	SDL_AudioSpec srcSpec;
+	SDL_AudioSpec dstSpec;
+	bool finished;
+} APP_StreamingWAVAudioData;
+
+static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool* finished, bool looping);
+static bool APP_RestartWAVStreamingAudioData(APP_StreamingAudioData* streamingAudioData);
+static void APP_DestroyWAVStreamingAudioData(APP_StreamingAudioData* streamingAudioData);
+
 static size_t APP_DRWAV_Read(void* pUserData, void* pBufferOut, size_t bytesToRead)
 {
 	return SDL_ReadIO((SDL_IOStream*)pUserData, pBufferOut, bytesToRead);
@@ -94,4 +112,183 @@ bool APP_PreloadWAV(SDL_IOStream* file, const SDL_AudioSpec* format, uint8_t** d
 		return false;
 	}
 	return true;
+}
+
+APP_StreamingAudioData* APP_CreateStreamingWAVAudioData(SDL_IOStream* file, SDL_AudioSpec* dstSpec)
+{
+	APP_StreamingWAVAudioData* wav = SDL_calloc(1, sizeof(APP_StreamingWAVAudioData));
+	if (!wav) {
+		SDL_CloseIO(file);
+		return NULL;
+	}
+	wav->callbacks.getChunk = APP_GetWAVStreamingAudioDataChunk;
+	wav->callbacks.restart = APP_RestartWAVStreamingAudioData;
+	wav->callbacks.destroy = APP_DestroyWAVStreamingAudioData;
+
+	const drwav_allocation_callbacks allocationCallbacks = { NULL, APP_DRWAV_Malloc, APP_DRWAV_Realloc, APP_DRWAV_Free };
+	if (!drwav_init(&wav->data, APP_DRWAV_Read, APP_DRWAV_Seek, APP_DRWAV_Tell, file, &allocationCallbacks)) {
+		SDL_free(wav);
+		SDL_CloseIO(file);
+		return NULL;
+	}
+	if (drwav_get_length_in_pcm_frames(&wav->data, &wav->frames) != DRWAV_SUCCESS || wav->frames == 0) {
+		drwav_uninit(&wav->data);
+		SDL_free(wav);
+		SDL_CloseIO(file);
+		return NULL;
+	}
+
+	wav->srcSpec.channels = wav->data.channels;
+	wav->srcSpec.freq = wav->data.sampleRate;
+	wav->dstSpec = *dstSpec;
+
+	if (
+		dstSpec->format != SDL_AUDIO_S16 ||
+		dstSpec->channels != wav->srcSpec.channels ||
+		dstSpec->freq != wav->srcSpec.freq
+	) {
+		wav->srcSpec.format = SDL_AUDIO_F32;
+		wav->converter = SDL_CreateAudioStream(&wav->srcSpec, dstSpec);
+		if (!wav->converter) {
+			drwav_uninit(&wav->data);
+			SDL_free(wav);
+			SDL_CloseIO(file);
+			return NULL;
+		}
+		wav->framesMax = APP_STREAMED_AUDIO_CHUNK_FLOAT_SAMPLES_MAX(wav->srcSpec.channels);
+		wav->buffer = SDL_malloc(sizeof(float) * wav->srcSpec.channels * wav->framesMax);
+		if (!wav->buffer) {
+			SDL_DestroyAudioStream(wav->converter);
+			drwav_uninit(&wav->data);
+			SDL_free(wav);
+			SDL_CloseIO(file);
+			return NULL;
+		}
+	}
+	wav->file = file;
+
+	return (APP_StreamingAudioData*)wav;
+}
+
+static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingAudioData, uint8_t* chunk, int chunkTotalSize, int* chunkOutSize, bool* finished, bool looping)
+{
+	*finished = false;
+	*chunkOutSize = 0;
+	if (chunkTotalSize == 0) {
+		return true;
+	}
+
+	APP_StreamingWAVAudioData* wav = (APP_StreamingWAVAudioData*)streamingAudioData;
+	int chunkRemaining = APP_STREAMED_AUDIO_CHUNK_SPEC_SIZE_MAX(wav->dstSpec, chunkTotalSize);
+	uint8_t* pos = chunk;
+
+	if (wav->converter) {
+		while (true) {
+			const int gotBytes = SDL_GetAudioStreamData(wav->converter, pos, chunkRemaining);
+			if (gotBytes < 0) {
+				return false;
+			}
+			*chunkOutSize += gotBytes;
+			if (SDL_GetAudioStreamAvailable(wav->converter) == 0 && wav->finished) {
+				*finished = true;
+				return true;
+			}
+			pos += gotBytes;
+			chunkRemaining -= gotBytes;
+			if (chunkRemaining == 0) {
+				return true;
+			}
+
+			if (looping || !wav->finished) {
+				uint64_t totalSamples = 0;
+				do {
+					const uint64_t gotSamples = drwav_read_pcm_frames_f32(&wav->data, wav->framesMax, wav->buffer);
+					switch (SDL_GetIOStatus(wav->file)) {
+					case SDL_IO_STATUS_ERROR:
+					case SDL_IO_STATUS_NOT_READY:
+					case SDL_IO_STATUS_WRITEONLY:
+						return false;
+
+					default:
+						break;
+					}
+					if (!SDL_PutAudioStreamData(wav->converter, wav->buffer, sizeof(float) * wav->srcSpec.channels * gotSamples)) {
+						return false;
+					}
+					drwav_uint64 cursor;
+					if (drwav_get_cursor_in_pcm_frames(&wav->data, &cursor) != DRWAV_SUCCESS) {
+						return false;
+					}
+					if (cursor == wav->frames) {
+						if (looping) {
+							if (!drwav_seek_to_pcm_frame(&wav->data, 0)) {
+								return false;
+							}
+						}
+						else {
+							wav->finished = true;
+							break;
+						}
+					}
+					totalSamples += gotSamples;
+				} while (totalSamples < wav->framesMax);
+			}
+		}
+	}
+	else {
+		do {
+			const uint64_t gotSamples = drwav_read_pcm_frames_s16(&wav->data, chunkRemaining / (sizeof(int16_t) * wav->dstSpec.channels), (int16_t*)pos);
+			switch (SDL_GetIOStatus(wav->file)) {
+			case SDL_IO_STATUS_ERROR:
+			case SDL_IO_STATUS_NOT_READY:
+			case SDL_IO_STATUS_WRITEONLY:
+				return false;
+
+			default:
+				break;
+			}
+			if (gotSamples > INT_MAX / (sizeof(int16_t) * wav->dstSpec.channels)) {
+				return false;
+			}
+			if (wav->data.readCursorInPCMFrames == wav->data.totalPCMFrameCount) {
+				if (looping) {
+					if (!drwav_seek_to_pcm_frame(&wav->data, 0)) {
+						return false;
+					}
+				}
+				else {
+					wav->finished = true;
+					*finished = true;
+				}
+			}
+			const int gotBytes = (int)(sizeof(int16_t) * wav->dstSpec.channels * gotSamples);
+			pos += gotBytes;
+			*chunkOutSize += gotBytes;
+			chunkRemaining -= gotBytes;
+		} while (chunkRemaining > 0 && !*finished);
+		return true;
+	}
+}
+
+static bool APP_RestartWAVStreamingAudioData(APP_StreamingAudioData* streamingAudioData)
+{
+	APP_StreamingWAVAudioData* wav = (APP_StreamingWAVAudioData*)streamingAudioData;
+
+	wav->finished = false;
+	if (wav->converter) {
+		if (!SDL_ClearAudioStream(wav->converter)) {
+			return false;
+		}
+	}
+	return !!drwav_seek_to_pcm_frame(&wav->data, 0);
+}
+
+static void APP_DestroyWAVStreamingAudioData(APP_StreamingAudioData* streamingAudioData)
+{
+	APP_StreamingWAVAudioData* wav = (APP_StreamingWAVAudioData*)streamingAudioData;
+
+	SDL_DestroyAudioStream(wav->converter);
+	SDL_free(wav->buffer);
+	drwav_uninit(&wav->data);
+	SDL_free(wav);
 }

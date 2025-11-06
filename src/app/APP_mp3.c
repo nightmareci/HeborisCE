@@ -20,8 +20,8 @@ typedef struct APP_StreamingMP3AudioData
 {
 	APP_StreamingAudioData callbacks;
 	drmp3 data;
-	uint64_t samples;
-	uint64_t samplesMax;
+	uint64_t frames;
+	uint64_t framesMax;
 	SDL_AudioStream* converter;
 	SDL_IOStream* file;
 	float* buffer;
@@ -135,8 +135,8 @@ APP_StreamingAudioData* APP_CreateStreamingMP3AudioData(SDL_IOStream* file, SDL_
 		SDL_CloseIO(file);
 		return NULL;
 	}
-	mp3->samples = drmp3_get_pcm_frame_count(&mp3->data);
-	if (mp3->samples == 0) {
+	mp3->frames = drmp3_get_pcm_frame_count(&mp3->data);
+	if (mp3->frames == 0) {
 		drmp3_uninit(&mp3->data);
 		SDL_free(mp3);
 		SDL_CloseIO(file);
@@ -160,8 +160,8 @@ APP_StreamingAudioData* APP_CreateStreamingMP3AudioData(SDL_IOStream* file, SDL_
 			SDL_CloseIO(file);
 			return NULL;
 		}
-		mp3->samplesMax = APP_STREAMED_AUDIO_CHUNK_FLOAT_SAMPLES_MAX(mp3->srcSpec.channels);
-		mp3->buffer = SDL_malloc(sizeof(float) * mp3->srcSpec.channels * mp3->samplesMax);
+		mp3->framesMax = APP_STREAMED_AUDIO_CHUNK_FLOAT_SAMPLES_MAX(mp3->srcSpec.channels);
+		mp3->buffer = SDL_malloc(sizeof(float) * mp3->srcSpec.channels * mp3->framesMax);
 		if (!mp3->buffer) {
 			SDL_DestroyAudioStream(mp3->converter);
 			drmp3_uninit(&mp3->data);
@@ -207,7 +207,7 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			if (looping || !mp3->finished) {
 				uint64_t totalSamples = 0;
 				do {
-					const uint64_t gotSamples = drmp3_read_pcm_frames_f32(&mp3->data, mp3->samplesMax, mp3->buffer);
+					const uint64_t gotSamples = drmp3_read_pcm_frames_f32(&mp3->data, mp3->framesMax, mp3->buffer);
 					switch (SDL_GetIOStatus(mp3->file)) {
 					case SDL_IO_STATUS_ERROR:
 					case SDL_IO_STATUS_NOT_READY:
@@ -220,7 +220,7 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 					if (!SDL_PutAudioStreamData(mp3->converter, mp3->buffer, sizeof(float) * mp3->srcSpec.channels * gotSamples)) {
 						return false;
 					}
-					if (mp3->data.currentPCMFrame == mp3->samples) {
+					if (mp3->data.currentPCMFrame == mp3->frames) {
 						if (looping) {
 							if (!drmp3_seek_to_pcm_frame(&mp3->data, 0)) {
 								return false;
@@ -232,7 +232,7 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 						}
 					}
 					totalSamples += gotSamples;
-				} while (totalSamples < mp3->samplesMax);
+				} while (totalSamples < mp3->framesMax);
 			}
 		}
 	}
@@ -251,7 +251,7 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			if (gotSamples > INT_MAX / (sizeof(int16_t) * mp3->dstSpec.channels)) {
 				return false;
 			}
-			if (mp3->data.currentPCMFrame == mp3->samples) {
+			if (mp3->data.currentPCMFrame == mp3->frames) {
 				if (looping) {
 					if (!drmp3_seek_to_pcm_frame(&mp3->data, 0)) {
 						return false;

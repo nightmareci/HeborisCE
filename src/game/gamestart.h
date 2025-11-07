@@ -4,7 +4,7 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  外部ライブラリのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "common.h"
+#include "app/APP.h"
 
 #define		STRING_MAX		200
 #define		loop			while ( loopFlag )

@@ -1,7 +1,7 @@
 #ifndef ranking2_h_
 #define ranking2_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewbesttimes(int32_t player);

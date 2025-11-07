@@ -1,7 +1,7 @@
 #ifndef mission_h_
 #define mission_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void randPlatinum(int32_t player,int32_t tgtnum);
 void loadTomoyoStage(int32_t player,int32_t number);

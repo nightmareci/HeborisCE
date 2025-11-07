@@ -1,7 +1,7 @@
 #ifndef replay_h_
 #define replay_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 #define REPLAY_PLAYER_CHUNK (60 * 60 * 20)
 #define REPLAY_CHUNK_SIZE (REPLAY_PLAYER_CHUNK * 2 * sizeof(int32_t))

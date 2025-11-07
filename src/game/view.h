@@ -1,7 +1,7 @@
 #ifndef view_h_
 #define view_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void drawTLSBlock(int32_t player,int32_t bottom);
 void drawCBlock(int32_t player,int32_t color,int32_t bright,int32_t offset,int32_t flash,int32_t not3D);

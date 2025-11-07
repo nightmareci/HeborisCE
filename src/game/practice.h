@@ -1,7 +1,8 @@
 #ifndef practice_h_
 #define practice_h_
 
-#include "common.h"
+#include "app/APP.h"
+#include "sound.h"
 
 void PracticeOver(void);
 void viewLineInfo(void);

@@ -1,7 +1,7 @@
 #ifndef tomoyo_h_
 #define tomoyo_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void randPlatinum(int32_t player,int32_t tgtnum);
 void statTomoyoSelect_FP(int32_t player);

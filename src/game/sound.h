@@ -1,7 +1,7 @@
 #ifndef sound_h_
 #define sound_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 typedef enum WaveNum
 {

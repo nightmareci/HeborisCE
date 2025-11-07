@@ -1,7 +1,7 @@
 #ifndef grade_h_
 #define grade_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void reset_gradeup3(int32_t player);
 void isregret(int32_t player);

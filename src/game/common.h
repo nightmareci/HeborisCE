@@ -1,8 +1,6 @@
 #ifndef common_h_
 #define common_h_
 
-#include "app/APP.h"
-
 #include "gamestart.h"
 #include "init.h"
 #include "speed.h"			// レベル調整

@@ -1,7 +1,7 @@
 #ifndef flexdraw_h_
 #define flexdraw_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 extern int32_t lastZoomRate;
 extern int32_t zoomRate;

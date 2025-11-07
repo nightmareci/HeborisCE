@@ -1,7 +1,7 @@
 #ifndef classic_h_
 #define classic_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 int32_t judgeBigBlockRotate(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
 void effect(int32_t player);

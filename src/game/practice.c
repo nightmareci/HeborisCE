@@ -968,7 +968,7 @@ void PracticeStart(void){
 	playerInitial(1); // 2Pを初期化して結果を消去
 	status[1] = 10; // 2Pの動きを停止
 
-	APP_TextLayerOff(0);
+	APP_DisableTextLayer(0);
 	upLines[0] = 0;
 	shirase[0] = raise_shirase_interval;	// 最初のせり上がりカウントを設定 #1.60c7i2
 

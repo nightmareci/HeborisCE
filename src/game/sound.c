@@ -352,14 +352,14 @@ void SoundTestProc(void) {
         // 背景描画 #1.60c7o5
         if(background == 0) {
                 for(int32_t i = 0; i <= 4; i++) {
-                        ExBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+                        ExBltRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
                 }
         } else if(background == 1) {
                 for(int32_t i = 0; i <= 4; i++) {
-                        ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+                        ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
                 }
         } else {
-                ExBltFast(30, 0, 0);
+                ExBlt(30, 0, 0);
         }
 
         printFont(10, 3, "- SOUND TEST MODE -", 4);
@@ -416,7 +416,7 @@ void SoundTestProc(void) {
                 if(wavebgm & WAVE_BGM_SIMPLE) {	// No.30→38に変更 #1.60c7i2
                         if(APP_IsMusicPlaying()) APP_ResumeMusic();
                 } else APP_PlayWave(WAVE_BGM_TITLE);//タイトルBGM
-                
+
                 mainLoopState = MAIN_TITLE;
                 init = true;
         }

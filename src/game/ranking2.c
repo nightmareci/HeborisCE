@@ -215,16 +215,16 @@ void RankingView2() {//5位まで
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 
 	// ルール名表示

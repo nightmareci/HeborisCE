@@ -515,26 +515,25 @@ void viewMission() {
 
 	// 枠
 	if(getDrawRate() == 1) {
-		if(mission_file <= 24) APP_BltFastRect(44, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
-		APP_BltFastRect(44, 208 * maxPlay, 112, 288, 368, 112, 128);
+		if(mission_file <= 24) APP_DrawPlaneRect(44, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
+		APP_DrawPlaneRect(44, 208 * maxPlay, 112, 288, 368, 112, 128);
 	} else {
-		if(mission_file <= 24) APP_BltFastRect(44, 8 + maxPlay * 408, 24, 32, (32 * mission_file) + (16 * (english)), 128, 16);
-		APP_BltFastRect(44, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
+		if(mission_file <= 24) APP_DrawPlaneRect(44, 8 + maxPlay * 408, 24, 32, (32 * mission_file) + (16 * (english)), 128, 16);
+		APP_DrawPlaneRect(44, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
 	}
 
 	// 問題の種類
 	if((ending[0] <= 1) || (ending[0] >= 4)){
 		int textSize;
 		if(getDrawRate() == 1) {
-			APP_TextLayerOn(0, 6 + 208 * maxPlay, 8 + 112);
+			APP_EnableTextLayer(0, 6 + 208 * maxPlay, 8 + 112);
 			textSize = 10;
 		} else {
-			APP_TextLayerOn(0, 10 + 16 + maxPlay * 400, 8 + 228);
+			APP_EnableTextLayer(0, 10 + 16 + maxPlay * 400, 8 + 228);
 			textSize = 16;
 		}
-		APP_TextSize(0, textSize);
-		APP_TextColor(0, 0, 0, 0);
-		APP_TextBackColorDisable(0);
+		APP_SetTextLayerSize(0, textSize);
+		APP_SetTextLayerColor(0, 0, 0, 0);
 
 		getMissionName(mission_type[c_mission],c_mission);
 
@@ -550,17 +549,17 @@ void viewMission() {
 		}
 
 		// 描画
-		APP_TextOut(0, string[0]);
-		APP_TextBlt(0);
+		APP_PutTextLayerString(0, string[0]);
+		APP_DrawTextLayer(0);
 
 		// 制限時間
-		APP_TextLayerOn(1, 0, 0);
-		APP_TextSize(1, textSize);
-		APP_TextColor(1, 0, 0, 0);
+		APP_EnableTextLayer(1, 0, 0);
+		APP_SetTextLayerSize(1, textSize);
+		APP_SetTextLayerColor(1, 0, 0, 0);
 		if(getDrawRate() == 1) {
-			APP_TextMove(1, 6 + 208 * maxPlay, 30 + 112);
+			APP_SetTextLayerDrawPosition(1, 6 + 208 * maxPlay, 30 + 112);
 		} else {
-			APP_TextMove(1, 10 + 16 + maxPlay * 400, 30 + 228);
+			APP_SetTextLayerDrawPosition(1, 10 + 16 + maxPlay * 400, 30 + 228);
 		}
 
 		if(!english) strcpy(string[70], "制限時間 ");
@@ -575,17 +574,17 @@ void viewMission() {
 		}
 
 		// 描画
-		APP_TextOut(1, string[70]);
-		APP_TextBlt(1);
+		APP_PutTextLayerString(1, string[70]);
+		APP_DrawTextLayer(1);
 
 		// 指令文
-		APP_TextLayerOn(2, 0, 0);
-		APP_TextSize(2, textSize);
-		APP_TextColor(2, 0, 0, 0);
+		APP_EnableTextLayer(2, 0, 0);
+		APP_SetTextLayerSize(2, textSize);
+		APP_SetTextLayerColor(2, 0, 0, 0);
 		if(getDrawRate() == 1) {
-			APP_TextMove(2, 6 + 208 * maxPlay, 52 + 112);
+			APP_SetTextLayerDrawPosition(2, 6 + 208 * maxPlay, 52 + 112);
 		} else {
-			APP_TextMove(2, 10 + 16 + maxPlay * 400, 52 + 228);
+			APP_SetTextLayerDrawPosition(2, 10 + 16 + maxPlay * 400, 52 + 228);
 		}
 		// LITE版を参考に整理
 		if(!english) {//"\n\nを使って\n%dライン消せ！",
@@ -728,13 +727,13 @@ void viewMission() {
 		}
 
 		// 描画
-		APP_TextOut(2, string[0]);
-		APP_TextBlt(2);
+		APP_PutTextLayerString(2, string[0]);
+		APP_DrawTextLayer(2);
 
 		// 使用終了
-		APP_TextLayerOff(0);
-		APP_TextLayerOff(1);
-		APP_TextLayerOff(2);
+		APP_DisableTextLayer(0);
+		APP_DisableTextLayer(1);
+		APP_DisableTextLayer(2);
 		while(c_mission - tmp > 4){
 			tmp = tmp + 5;
 		}
@@ -743,25 +742,24 @@ void viewMission() {
 		int layer = 3;
 		for(i = tmp; i < (tmp+5); i++, layer++) {
 			if(getDrawRate() == 1) {
-				APP_BltFastRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
-				APP_TextLayerOn(layer, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
-				APP_TextSize(layer, 10);
+				APP_DrawPlaneRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
+				APP_EnableTextLayer(layer, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
+				APP_SetTextLayerSize(layer, 10);
 			} else {
-				APP_BltFastRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
-				APP_TextLayerOn(layer, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
-				APP_TextSize(layer, 14);
+				APP_DrawPlaneRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
+				APP_EnableTextLayer(layer, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
+				APP_SetTextLayerSize(layer, 14);
 			}
-			APP_TextColor(layer, 0, 0, 0);
-			APP_TextBackColorDisable(layer);
+			APP_SetTextLayerColor(layer, 0, 0, 0);
 
 			getMissionName(mission_type[i],i);
 
 			// 描画
-			APP_TextOut(layer, string[0]);
-			APP_TextBlt(layer);
+			APP_PutTextLayerString(layer, string[0]);
+			APP_DrawTextLayer(layer);
 
 			// 使用終了
-			APP_TextLayerOff(layer);
+			APP_DisableTextLayer(layer);
 
 			// 終了フラグがある場合はここでループを抜ける
 			if(mission_end[i]) break;
@@ -1509,9 +1507,9 @@ void viewEraserLines() {
 		if(i >= 4) break;	// 最大で4本まで
 
 		if(getDrawRate() == 1)
-			APP_BltRect(44, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
+			APP_DrawPlaneRect(44, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
 		else
-			APP_BltRect(44, (14 - 12 * maxPlay) * 16, (eraser_lines[i] + 3) * 16, 448, 160 - 64 * (mission_type[c_mission] == 39)+ eraser_cleared[i] * 32, 192, 16);
+			APP_DrawPlaneRect(44, (14 - 12 * maxPlay) * 16, (eraser_lines[i] + 3) * 16, 448, 160 - 64 * (mission_type[c_mission] == 39)+ eraser_cleared[i] * 32, 192, 16);
 	}
 }
 

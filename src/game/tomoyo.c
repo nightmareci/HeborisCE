@@ -584,8 +584,8 @@ void statTomoyoEditor(int32_t player) {
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 3) * 8;
 
-		ExBltFastRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
-		ExBltFastRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
+		ExBltRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
+		ExBltRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
 
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
@@ -668,8 +668,8 @@ void statTomoyoEditor(int32_t player) {
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 4) * 8;
 
-		ExBltFastRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
-		ExBltFastRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
+		ExBltRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
+		ExBltRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
 
 		// ↑
 		if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
@@ -891,7 +891,7 @@ void statTomoyoSelect(int32_t player) {
 		if(statusc[player * 10] == 1) {
 			start_nextc[player]++;
 			// check randomizer
-			
+
 			if(start_nextc[player] > 1399) start_nextc[player] = 0;
 		}
 		// モード

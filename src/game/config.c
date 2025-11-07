@@ -154,7 +154,7 @@ int32_t SaveConfig(void) {
 		}
 	}
 	#endif
-	
+
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
@@ -325,7 +325,7 @@ int32_t LoadConfig(void) {
 		}
 	}
 	#endif
-	
+
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
@@ -478,7 +478,7 @@ void ConfigMenu() {
 			}
 		}
 		#endif
-		
+
 		#ifdef APP_ENABLE_GAME_CONTROLLER
 		int32_t* conkeybuf = &ncfg[240];
 		for (int32_t pl = 0; pl < 2; pl++) {
@@ -532,7 +532,7 @@ void ConfigMenu() {
 
 		need_reset = 0;
 		need_reloadBG = 1;
-		
+
 		init = false;
 	}
 
@@ -542,16 +542,16 @@ void ConfigMenu() {
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 	ExBltRect(77, 0, 212,  count % 320, 20, 320 - (count % 320), 8);
 	ExBltRect(77, 320 - (count % 320), 212,  0, 20, count % 320, 8);
@@ -943,22 +943,22 @@ void ConfigMenu() {
 		if(ncfg[285] == 0) sprintf(string[0], "JAPANESE");
 		else sprintf(string[0], "ENGLISH");
 		printFont(21, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
-		
+
 		// mini select
 		if(ncfg[286] == 0) sprintf(string[0], "OFF");
 		else sprintf(string[0], "ON");
 		printFont(21, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
-		
+
 		// big move type
 		if(ncfg[287] == 0) sprintf(string[0], "1CELL");
 		else if(ncfg[287] == 1)sprintf(string[0], "2CELL");
 		else sprintf(string[0], "TOMOYO:1/OTHER:2");
 		printFont(21, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
-		
+
 		// item interval
 		sprintf(string[0], "%" PRId32, ncfg[288]);
 		printFont(21, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
-		
+
 		// hide waits
 		if(ncfg[289] == 0) sprintf(string[0], "NOT HIDE");
 		else sprintf(string[0], "HIDE");
@@ -967,59 +967,59 @@ void ConfigMenu() {
 		// versus limit time (seconds)
 		sprintf(string[0], "%" PRId32, ncfg[290] / 60);
 		printFont(21, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
-		
+
 		// medal graphics
 		if(ncfg[291] == 0) sprintf(string[0], "f");	//□
 		else if(ncfg[291] == 1) sprintf(string[0], "c");//○
 		else sprintf(string[0], "OFF");
 		printFont(21, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
-		
+
 		// devil rise start level
 		sprintf(string[0], "%" PRId32, ncfg[292]);
 		printFont(21, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
-		
+
 		// rise type
 		if(ncfg[293] == 0) sprintf(string[0], "COPY");
 		else if(ncfg[293] == 1)sprintf(string[0], "PATTERN");
 		else if(ncfg[293] == 2)sprintf(string[0], "RANDOM");
 		else sprintf(string[0], "REVERSE ERASE FIELD");
 		printFont(21, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
-		
+
 		// hold
 		if(ncfg[294] == 0) sprintf(string[0], "ENABLE");
 		else sprintf(string[0], "DISABLE");
 		printFont(21, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
-		
+
 		// irs
 		if(ncfg[295] == 0) sprintf(string[0], "ENABLE");
 		else sprintf(string[0], "DISABLE");
 		printFont(21, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
-		
+
 		// use cpu (1p)
 		if(ncfg[296] == 0) sprintf(string[0], "OFF");
 		else sprintf(string[0], "ON");
 		printFont(21, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
-		
+
 		// use cpu (2p)
 		if(ncfg[297] == 0) sprintf(string[0], "OFF");
 		else sprintf(string[0], "ON");
 		printFont(21, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
-		
+
 		// cpu type
 		if(ncfg[298] == 0) sprintf(string[0], "ERASE SOON");
 		else sprintf(string[0], "ERASE STORE");
 		printFont(21, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
-		
+
 		// block rotate frame
 		if(ncfg[299] == 0) sprintf(string[0], "OFF");
 		else sprintf(string[0], "ON");
 		printFont(21, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
-		
+
 		// wall kick
 		if(ncfg[300] == 0) sprintf(string[0], "ENABLE");
 		else sprintf(string[0], "DISABLE");
 		printFont(21, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
-		
+
 		// show 1p control
 		if(ncfg[301] == 0) sprintf(string[0], "REPLAY ONLY");
 		else if(ncfg[301] == 1) sprintf(string[0], "ALWAYS ON");
@@ -2020,7 +2020,7 @@ void ConfigMenu() {
 
 					}
 					#endif
-					
+
 					#ifdef APP_ENABLE_GAME_CONTROLLER
 					APP_ConKey conKey = conKeyAssign[i + pl * 8];
 					if (APP_GetPlayerSlotType(pl) == APP_PLAYERSLOT_CON && (conKey.type == APP_CONKEY_AXIS || conKey.type == APP_CONKEY_BUTTON)) {
@@ -2050,7 +2050,7 @@ void ConfigMenu() {
 		}
 	} else if(status[0] == 4) {
 		// video setting
-		bool showScreenModeSetting = (ncfg[0] & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_FULLSCREEN || (ncfg[0] & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_WINDOW;
+		bool showScreenModeSetting = (ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_FULLSCREEN || (ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_WINDOW;
 		printFont(23, 1, "- A/V SETTING", fontc[rots[0]]);
 		enum {
 			MENU_AV_CHANGE_MENU,
@@ -2109,24 +2109,24 @@ void ConfigMenu() {
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 		/* 画面モード */
-		switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
-		case APP_SCREENMODE_WINDOW: sprintf(string[0], "WINDOW"); break;
-		case APP_SCREENMODE_WINDOW_MAXIMIZED: sprintf(string[0], "WINDOW MAXIMIZED"); break;
-		case APP_SCREENMODE_FULLSCREEN_DESKTOP: sprintf(string[0], "FULL SCREEN DESKTOP"); break;
-		case APP_SCREENMODE_FULLSCREEN: sprintf(string[0], "FULL SCREEN"); break;
+		switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
+		case APP_SCREEN_MODE_WINDOW: sprintf(string[0], "WINDOW"); break;
+		case APP_SCREEN_MODE_WINDOW_MAXIMIZED: sprintf(string[0], "WINDOW MAXIMIZED"); break;
+		case APP_SCREEN_MODE_FULLSCREEN_DESKTOP: sprintf(string[0], "FULL SCREEN DESKTOP"); break;
+		case APP_SCREEN_MODE_FULLSCREEN: sprintf(string[0], "FULL SCREEN"); break;
 		default: sprintf(string[0], "???"); break;
 		}
 		printFont(15, 5 + MENU_AV_WINDOW_TYPE, string[0], (statusc[0] == MENU_AV_WINDOW_TYPE) * (count % 2) * digitc[rots[0]]);
-		sprintf(string[0], "%" PRId32, APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
+		sprintf(string[0], "%" PRId32, APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
 		printFont(15, 5 + MENU_AV_SCREEN_INDEX, string[0], (statusc[0] == MENU_AV_SCREEN_INDEX) * (count % 2) * digitc[rots[0]]);
-		if(ncfg[0] & APP_SCREENMODE_VSYNC) sprintf(string[0], "ON");
+		if(ncfg[0] & APP_SCREEN_MODE_VSYNC) sprintf(string[0], "ON");
 		else sprintf(string[0], "OFF");
 		printFont(15, 5 + MENU_AV_VSYNC, string[0], (statusc[0] == MENU_AV_VSYNC) * (count % 2) * digitc[rots[0]]);
 #endif
-		sprintf(string[0], "%s", ncfg[0] & APP_SCREENMODE_DETAILLEVEL ? "HIGH (640X480)" : "LOW (320X240)");
+		sprintf(string[0], "%s", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "HIGH (640X480)" : "LOW (320X240)");
 		printFont(15, 5 + MENU_AV_DETAIL_LEVEL, string[0], (statusc[0] == MENU_AV_DETAIL_LEVEL) * (count % 2) * digitc[rots[0]]);
 
-		if (ncfg[0] & APP_SCREENMODE_SCALEMODE) {
+		if (ncfg[0] & APP_SCREEN_MODE_SCALE_MODE) {
 			sprintf(string[0], "INTEGER");
 		}
 		else {
@@ -2135,29 +2135,29 @@ void ConfigMenu() {
 		printFont(15, 5 + MENU_AV_SCALE_MODE, string[0], (statusc[0] == MENU_AV_SCALE_MODE) * (count % 2) * digitc[rots[0]]);
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		if (ncfg[0] & APP_SCREENMODE_RENDERLEVEL) {
+		if (ncfg[0] & APP_SCREEN_MODE_RENDER_LEVEL) {
 			sprintf(string[0], "HIGH");
 		}
 		else {
-			sprintf(string[0], "LOW (%s)", ncfg[0] & APP_SCREENMODE_DETAILLEVEL ? "640X480" : "320X240");
+			sprintf(string[0], "LOW (%s)", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "640X480" : "320X240");
 		}
 		printFont(15, 5 + MENU_AV_RENDER_LEVEL, string[0], (statusc[0] == MENU_AV_RENDER_LEVEL) * (count % 2) * digitc[rots[0]]);
 
 		/* 画面モード */
-		switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
-		case APP_SCREENMODE_WINDOW:
+		switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
+		case APP_SCREEN_MODE_WINDOW:
 			{
 			        sprintf(string[0], "%" PRId32 "X%" PRId32,
-					(!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 320 * (APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]) + 1),
-					(!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 240 * (APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]) + 1)
+					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 320 * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1),
+					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 240 * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1)
 				);
 				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (count % 2) * digitc[rots[0]]);
 			}
 			break;
-		case APP_SCREENMODE_FULLSCREEN:
+		case APP_SCREEN_MODE_FULLSCREEN:
 			{
 				SDL_DisplayMode displayMode;
-				if (!APP_GetDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]), &displayMode)) {
+				if (!APP_GetDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]), APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]), &displayMode)) {
 					APP_Exit(EXIT_FAILURE);
 				}
 				int bpp;
@@ -2241,47 +2241,47 @@ void ConfigMenu() {
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_WINDOW_TYPE) {
-						ncfg[1] &= ~APP_SCREENINDEX_MODE;
-						ncfg[0] = (ncfg[0] & ~APP_SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & APP_SCREENMODE_WINDOWTYPE) + APP_SCREENMODE_NUMWINDOWTYPES + m)) % APP_SCREENMODE_NUMWINDOWTYPES);
+						ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
+						ncfg[0] = (ncfg[0] & ~APP_SCREEN_MODE_WINDOW_TYPE) | ((((ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) + APP_SCREEN_MODE_WINDOW_TYPES_COUNT + m)) % APP_SCREEN_MODE_WINDOW_TYPES_COUNT);
 						need_reset = 1;
 						if (screenMode != ncfg[0]) {
 							need_setScreen = 1;
 						}
 					}
 					else if(statusc[0] == MENU_AV_SCREEN_INDEX) {
-						ncfg[1] &= ~APP_SCREENINDEX_MODE;
-						ncfg[1] = (ncfg[1] & ~APP_SCREENINDEX_DISPLAY) | APP_SCREENINDEX_DISPLAY_TOSETTING((APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]) + APP_GetMaxDisplayIndex() + m) % APP_GetMaxDisplayIndex());	// displayIndex
+						ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
+						ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_DISPLAY) | APP_SCREEN_INDEX_DISPLAY_TO_SETTING((APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]) + APP_GetMaxDisplayIndex() + m) % APP_GetMaxDisplayIndex());	// displayIndex
 						need_reset = 1;
 						need_setScreen = 1;
 					}
 #endif
 					else if(statusc[0] == MENU_AV_DETAIL_LEVEL) {
-						if((ncfg[0] & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_WINDOW) ncfg[1] &= ~APP_SCREENINDEX_MODE;
-						ncfg[0] ^= APP_SCREENMODE_DETAILLEVEL;
+						if((ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_WINDOW) ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
+						ncfg[0] ^= APP_SCREEN_MODE_DETAIL_LEVEL;
 						reinit = 1;
 						need_reset = 1;
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_VSYNC) {
-						ncfg[0] ^= APP_SCREENMODE_VSYNC;
+						ncfg[0] ^= APP_SCREEN_MODE_VSYNC;
 						need_reset = 1;
 					}
 #endif
 					else if(statusc[0] == MENU_AV_SCALE_MODE) {
-						ncfg[0] ^= APP_SCREENMODE_SCALEMODE;
+						ncfg[0] ^= APP_SCREEN_MODE_SCALE_MODE;
 						need_reset = 1;
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_RENDER_LEVEL) {
-						ncfg[0] ^= APP_SCREENMODE_RENDERLEVEL;
+						ncfg[0] ^= APP_SCREEN_MODE_RENDER_LEVEL;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_SCREEN_MODE) {
-						switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
-						case APP_SCREENMODE_WINDOW: {
-							const SDL_DisplayMode* displayMode = APP_GetDesktopDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
-							int baseW = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 320;
-							int baseH = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 240;
+						switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
+						case APP_SCREEN_MODE_WINDOW: {
+							const SDL_DisplayMode* displayMode = APP_GetDesktopDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
+							int baseW = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 320;
+							int baseH = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 240;
 							int maxMode;
 							if(displayMode->w <= baseW || displayMode->h <= baseH) {
 								maxMode = 1;
@@ -2292,16 +2292,16 @@ void ConfigMenu() {
 							else {
 								maxMode = (displayMode->w / baseW) - (displayMode->w % baseW == 0);
 							}
-							int modeIndex = APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]);
+							int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]);
 							modeIndex = (modeIndex + maxMode + m) % maxMode;
-							ncfg[1] = (ncfg[1] & ~APP_SCREENINDEX_MODE) | APP_SCREENINDEX_MODE_TOSETTING(modeIndex);
+							ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_MODE) | APP_SCREEN_INDEX_MODE_TO_SETTING(modeIndex);
 							break;
 						}
-						case APP_SCREENMODE_FULLSCREEN: {
-							int modeIndex = APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]);
-							int maxDisplayMode = APP_GetMaxDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
+						case APP_SCREEN_MODE_FULLSCREEN: {
+							int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]);
+							int maxDisplayMode = APP_GetMaxDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
 							modeIndex = (modeIndex + maxDisplayMode + m) % maxDisplayMode;
-							ncfg[1] = (ncfg[1] & ~APP_SCREENINDEX_MODE) | APP_SCREENINDEX_MODE_TOSETTING(modeIndex);
+							ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_MODE) | APP_SCREEN_INDEX_MODE_TO_SETTING(modeIndex);
 							break;
 						}
 						default: break;
@@ -2336,10 +2336,10 @@ void ConfigMenu() {
 						int32_t sevolume_temp = (ncfg[44] >> 16) & 0x7F;
 						if(m) sevolume_temp += m;
 						else if(mp[pl] && mpc[pl] > 30) sevolume_temp += mp[pl] * 2 - 5;
-						
+
 						if(sevolume_temp < 0) sevolume_temp = 0;
 						if(sevolume_temp > 100) sevolume_temp = 100;
-						
+
 						ncfg[44] = (ncfg[44] & ~(0x7F << 16)) | ((sevolume_temp & 0x7F) << 16);
 						SetVolumeAllSE(sevolume_temp);
 					}

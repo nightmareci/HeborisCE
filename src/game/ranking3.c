@@ -210,16 +210,16 @@ void RankingView3() {//3位まで
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 	ExBltRect(77, 0, 24,  count % 320, 20, 320 - (count % 320), 8);
 	ExBltRect(77, 320 - (count % 320), 24,  0, 20, count % 320, 8);
@@ -437,7 +437,7 @@ void RankingView3() {//3位まで
 
 			// ライン
 			if(rkclear3[j + i] == 1) {
-				ExBltFastRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
+				ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
 			}else if(rkclear3[j + i] == 2) {
 				ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
 			}

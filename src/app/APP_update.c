@@ -1,22 +1,20 @@
 #include "APP_update.h"
 #include "APP_video.h"
 #include "APP_input.h"
-#include "APP_main.h"
 #include "APP_global.h"
-#include "nanotime.h"
 
-static uint64_t			APP_FPSCount;
-static unsigned int		APP_FPSCounting;
-static unsigned int		APP_FPS;
-static unsigned int		APP_NowFPS;
-static unsigned int		APP_CursorCounting;
+static uint64_t			APP_LastNS;
+static unsigned int		APP_FramesThisSecond;
+static unsigned int		APP_RealFPS;
+static unsigned int		APP_FPS = 1;
+static unsigned int		APP_CursorFrames;
 
 void APP_Start(void)
 {
-	APP_FPSCount = 0;
-	APP_FPS = 0;
+	APP_LastNS = SDL_GetTicksNS();
+	APP_RealFPS = 0;
 
-	SDL_srand(SDL_GetTicksNS());
+	SDL_srand(0);
 }
 
 bool APP_Update(void)
@@ -27,12 +25,12 @@ bool APP_Update(void)
 
 	// フレームレート計算
 	// Frame rate calculation
-	APP_FPSCounting++;
-	if ( nanotime_interval(APP_FPSCount, nanotime_now(), APP_StepData.now_max) >= NANOTIME_NSEC_PER_SEC )
-	{
-		APP_FPS = APP_FPSCounting;
-		APP_FPSCounting = 0;
-		APP_FPSCount = nanotime_now();
+	const uint64_t now = SDL_GetTicksNS();
+	APP_FramesThisSecond++;
+	if (now - APP_LastNS >= SDL_NS_PER_SECOND) {
+		APP_RealFPS = APP_FramesThisSecond;
+		APP_FramesThisSecond = 0;
+		APP_LastNS = now;
 	}
 
 	// イベント処理
@@ -43,9 +41,8 @@ bool APP_Update(void)
 	#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
 	bool slotsChanged = false;
 	#endif
-	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_EVENT_LAST) == 1)
-	{
-		switch(ev.type){
+	while (SDL_PeepEvents(&ev, 1, SDL_GETEVENT, 0, SDL_EVENT_LAST) == 1) {
+		switch (ev.type) {
 			// ウィンドウの×ボタンが押された時など
 			// When the window's X-button was pressed, etc.
 			case SDL_EVENT_QUIT:
@@ -80,16 +77,14 @@ bool APP_Update(void)
 		}
 	}
 
-	if (showCursor)
-	{
+	if (showCursor) {
 		if (!SDL_ShowCursor()) {
 			return false;
 		}
-		APP_CursorCounting = 0u;
+		APP_CursorFrames = 0u;
 	}
 
-	if (SDL_CursorVisible() && APP_CursorCounting++ >= APP_NowFPS)
-	{
+	if (SDL_CursorVisible() && APP_CursorFrames++ >= APP_FPS) {
 		if (!SDL_HideCursor()) {
 			return false;
 		}
@@ -106,28 +101,23 @@ bool APP_Update(void)
 	return true;
 }
 
-void APP_ResetFrameStep(void)
-{
-	nanotime_step_init(&APP_StepData, NANOTIME_NSEC_PER_SEC / APP_NowFPS, nanotime_now_max(), nanotime_now, nanotime_sleep);
-}
-
 void APP_SetFPS(unsigned fps)
 {
 	if (fps == 0) {
-		APP_NowFPS = 1u;
+		APP_FPS = 1u;
 	}
 	else {
-		APP_NowFPS = fps;
+		APP_FPS = fps;
 	}
 	APP_ResetFrameStep();
 }
 
 int APP_GetFPS(void)
 {
-	return APP_NowFPS;
+	return APP_FPS;
 }
 
 int APP_GetRealFPS(void)
 {
-	return APP_FPS;
+	return APP_RealFPS;
 }

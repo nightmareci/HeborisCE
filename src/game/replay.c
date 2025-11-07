@@ -772,7 +772,7 @@ int32_t loadReplay_VS(int32_t number) {
 	}
 
 	#else
-	
+
 	length = (saveBuf[4] / sizeof(int32_t) - 300);
 	max = ((length % SAVEBUF_2P_CHUNK) + (length / (SAVEBUF_2P_CHUNK * 2)) * SAVEBUF_2P_CHUNK) * 2;
 
@@ -804,7 +804,7 @@ int32_t loadReplay_VS(int32_t number) {
 			setNextBlockColors(pl, 1);	// #1.60c7n2
 		}
 	}
-	
+
 	#endif
 	SavedSeed[0]= saveBuf[269]; // harmless if it's zero anyway
 	SavedSeed[1]= saveBuf[270]; // harmless if it's zero anyway
@@ -1006,16 +1006,16 @@ void ReplaySelect(void) {
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 
 	// Bで戻る
@@ -1119,16 +1119,16 @@ void ReplayDetail() {
 	if(background == 0) {
 		for(int32_t i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 	ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
 	ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);

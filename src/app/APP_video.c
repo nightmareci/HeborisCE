@@ -1,8 +1,11 @@
 #include "APP_video.h"
+#include "APP_build_config.h"
+#include "APP_update.h"
 #include "APP_filesystem.h"
 #include "APP_main.h"
 #include "APP_global.h"
 #include "APP_bdf.h"
+#include <SDL3/SDL_timer.h>
 
 #define STB_IMAGE_STATIC
 #define STBI_NO_THREAD_LOCALS
@@ -21,21 +24,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define		APP_GAME_CAPTION		"Heboris C.E."
+#define APP_WINDOW_TITLE "Heboris C.E."
 
-#define		APP_TEXTURE_MAX		100
-#define		APP_TEXTLAYER_MAX	16
+#define APP_WIDE_SCREEN (4.0f / 3.0f)
+#define APP_NARROW_SCREEN (3.0f / 4.0f)
 
-#if 0
-// TODO: Implement audio
-#define 	APP_VOLUME_MAX		MIX_MAX_VOLUME
-#endif
-
-#define		APP_WIDE_SCREEN (4.0f / 3.0f)
-#define		APP_NARROW_SCREEN (3.0f / 4.0f)
-
-#define APP_TEXTLAYER_STRING_MAX 256
-
+#define APP_TEXT_LAYER_STRING_LENGTH 256
 typedef struct APP_TextLayer
 {
 	bool enable;
@@ -43,7 +37,7 @@ typedef struct APP_TextLayer
 	int y;
 	SDL_Color color;
 	int size;
-	char string[APP_TEXTLAYER_STRING_MAX];
+	char string[APP_TEXT_LAYER_STRING_LENGTH];
 	bool updateTexture;
 	SDL_Texture* texture;
 	float textureW;
@@ -54,27 +48,57 @@ SDL_Window* APP_ScreenWindow = NULL;
 SDL_Renderer* APP_ScreenRenderer = NULL;
 SDL_Texture* APP_ScreenRenderTarget = NULL;
 
-static SDL_Texture		*APP_Textures[APP_TEXTURE_MAX];
+#define APP_PLANE_COUNT 100
+static SDL_Texture* APP_Planes[APP_PLANE_COUNT];
 
-#define		APP_BDFFONTFILE_MAX	3
-static APP_BDFFont		*APP_BDFFonts[APP_BDFFONTFILE_MAX];
+#define APP_BDF_FONT_FILE_COUNT	3
+static APP_BDFFont* APP_BDFFonts[APP_BDF_FONT_FILE_COUNT];
 
-static int			APP_LogicalWidth;
-static int			APP_LogicalHeight;
+static int APP_LogicalWidth;
+static int APP_LogicalHeight;
 
-static APP_TextLayer		APP_TextLayers[APP_TEXTLAYER_MAX];
-static int32_t			APP_ScreenMode;
-static int32_t			APP_ScreenIndex;
+#define APP_TEXT_LAYER_COUNT 16
+static APP_TextLayer APP_TextLayers[APP_TEXT_LAYER_COUNT];
 
-static int			APP_NewOffsetX = 0, APP_NewOffsetY = 0;
-static int			APP_OffsetX = 0, APP_OffsetY = 0;
+static int32_t APP_ScreenMode;
+static int32_t APP_ScreenIndex;
 
-static bool APP_NoFrameskip;
+static int APP_NewPlaneDrawOffsetX = 0, APP_NewPlaneDrawOffsetY = 0;
+static int APP_PlaneDrawOffsetX = 0, APP_PlaneDrawOffsetY = 0;
+
+static bool APP_DrawWhileSkippingFrames;
 static bool APP_LastFrameSkipped;
+static uint64_t APP_FrameNS;
+static int64_t APP_AccumulatedNS = 0;
+static uint64_t APP_LastFrameStepNS;
+
+void APP_ResetFrameStep(void)
+{
+	APP_FrameNS = SDL_NS_PER_SECOND / APP_GetFPS();
+	APP_AccumulatedNS = 0;
+	APP_LastFrameStepNS = SDL_GetTicksNS();
+}
+
+static bool APP_FrameStep(void)
+{
+	const bool skipped = APP_AccumulatedNS >= APP_FrameNS;
+	uint64_t now;
+	if (skipped) {
+		now = SDL_GetTicksNS();
+		APP_AccumulatedNS -= APP_FrameNS;
+	}
+	else {
+		SDL_DelayNS(APP_FrameNS - APP_AccumulatedNS);
+		now = SDL_GetTicksNS();
+		APP_AccumulatedNS += now - APP_LastFrameStepNS - APP_FrameNS;
+	}
+	APP_LastFrameStepNS = now;
+	return skipped;
+}
 
 static void APP_PrivateBDFFontInitialize(void)
 {
-	const char* const filenames[APP_BDFFONTFILE_MAX] = {
+	const char* const filenames[APP_BDF_FONT_FILE_COUNT] = {
 		"res/font/font10.bdf",
 		"res/font/font12.bdf",
 		"res/font/font16.bdf"
@@ -82,19 +106,19 @@ static void APP_PrivateBDFFontInitialize(void)
 
 	/* フォント読み込み */
 	/* Load fonts */
-	for (int i = 0; i < APP_BDFFONTFILE_MAX; i++) {
+	for (int i = 0; i < APP_BDF_FONT_FILE_COUNT; i++) {
 		if (APP_BDFFonts[i]) {
 			continue;
 		}
-		SDL_IOStream *src = APP_OpenRead(filenames[i]);
-		if ( !src ) {
+		SDL_IOStream* const src = APP_OpenRead(filenames[i]);
+		if (!src) {
 			SDL_Log("Failed to open file for font \"%s\"; continuing without it.", filenames[i]);
 			APP_BDFFonts[i] = NULL;
 			continue;
 		}
 		APP_BDFFonts[i] = APP_OpenBDFFont(src);
-		if ( !APP_BDFFonts[i] ) {
-			SDL_Log("Failed to load font \"%s\": %s\n", filenames[i], SDL_GetError());
+		if (!APP_BDFFonts[i]) {
+			SDL_Log("Failed to load font \"%s\": %s", filenames[i], SDL_GetError());
 			SDL_CloseIO(src);
 			APP_Exit(EXIT_FAILURE);
 		}
@@ -104,7 +128,7 @@ static void APP_PrivateBDFFontInitialize(void)
 
 static void APP_PrivateBDFFontFinalize(void)
 {
-	for (int i = 0; i < APP_BDFFONTFILE_MAX; i++) {
+	for (int i = 0; i < APP_BDF_FONT_FILE_COUNT; i++) {
 		if (APP_BDFFonts[i]) {
 			APP_CloseBDFFont(APP_BDFFonts[i]);
 		}
@@ -115,12 +139,11 @@ static void APP_PrivateBDFFontFinalize(void)
 void APP_InitVideo(void)
 {
 	/* テクスチャ領域の初期化 || Initialize the texture pointers */
-	SDL_zero(APP_Textures);
+	SDL_zero(APP_Planes);
 
 	/* テキストレイヤーの初期化 || Initialize the text layers */
 	SDL_zero(APP_TextLayers);
-	for ( int i = 0 ; i < APP_TEXTLAYER_MAX ; i ++ )
-	{
+	for (int i = 0; i < APP_TEXT_LAYER_COUNT; i++) {
 		APP_TextLayers[i].color.r = APP_TextLayers[i].color.g = APP_TextLayers[i].color.b = 255;
 		APP_TextLayers[i].color.a = SDL_ALPHA_OPAQUE;
 		APP_TextLayers[i].size = 16;
@@ -128,14 +151,14 @@ void APP_InitVideo(void)
 
 	APP_PrivateBDFFontInitialize();
 
-	APP_NoFrameskip = false;
+	APP_DrawWhileSkippingFrames = false;
 	APP_LastFrameSkipped = false;
 }
 
 void APP_QuitVideo(void)
 {
 	if (APP_ScreenRenderer) {
-		for (int i = 0; i < APP_TEXTLAYER_MAX; i++) {
+		for (int i = 0; i < APP_TEXT_LAYER_COUNT; i++) {
 			if (APP_TextLayers[i].texture) {
 				SDL_DestroyTexture(APP_TextLayers[i].texture);
 				APP_TextLayers[i].texture = NULL;
@@ -145,10 +168,10 @@ void APP_QuitVideo(void)
 
 		// テクスチャメモリの解放
 		// Free texture memory
-		for (int i = 0; i < APP_TEXTURE_MAX; i++) {
-			if (APP_Textures[i]) {
-				SDL_DestroyTexture(APP_Textures[i]);
-				APP_Textures[i] = NULL;
+		for (int i = 0; i < APP_PLANE_COUNT; i++) {
+			if (APP_Planes[i]) {
+				SDL_DestroyTexture(APP_Planes[i]);
+				APP_Planes[i] = NULL;
 			}
 		}
 	}
@@ -179,7 +202,7 @@ void APP_QuitVideo(void)
 #define SET_SCREEN_ERROR SDL_Log("APP_SetScreen error: %d", __LINE__); goto fail
 #endif
 
-bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
+bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 {
 	int windowX, windowY;
 	int logicalWidth, logicalHeight;
@@ -189,14 +212,13 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	/* 画面の設定 || Set up the screen */
 
 	/* Validate the window type */
-	APP_ScreenModeFlag windowType = *screenMode & APP_SCREENMODE_WINDOWTYPE;
-	if ( windowType < 0 || windowType >= APP_SCREENMODE_NUMWINDOWTYPES )
-	{
+	APP_ScreenModeFlag windowType = *screenMode & APP_SCREEN_MODE_WINDOW_TYPE;
+	if (windowType < 0 || windowType >= APP_SCREEN_MODE_WINDOW_TYPES_COUNT) {
 		SET_SCREEN_ERROR;
 	}
 
-	int displayIndex = APP_SCREENINDEX_DISPLAY_TOVALUE(*screenIndex);
-	int modeIndex = APP_SCREENINDEX_MODE_TOVALUE(*screenIndex);
+	int displayIndex = APP_SCREEN_INDEX_DISPLAY_TO_VALUE(*screenIndex);
+	int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(*screenIndex);
 	int displayCount;
 	displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
@@ -215,15 +237,14 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(display);
 	if (
 		displayIndex >= displayCount ||
-		((windowType == APP_SCREENMODE_FULLSCREEN || windowType == APP_SCREENMODE_FULLSCREEN_DESKTOP) && modeIndex >= displayModeCount)
+		((windowType == APP_SCREEN_MODE_FULLSCREEN || windowType == APP_SCREEN_MODE_FULLSCREEN_DESKTOP) && modeIndex >= displayModeCount)
 	) {
 		*screenMode = APP_DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
 	}
-	const bool maximized = windowType == APP_SCREENMODE_WINDOW_MAXIMIZED;
+	const bool maximized = windowType == APP_SCREEN_MODE_WINDOW_MAXIMIZED;
 
-	if ( *screenMode & APP_SCREENMODE_DETAILLEVEL )
-	{
+	if (*screenMode & APP_SCREEN_MODE_DETAIL_LEVEL) {
 		logicalWidth  = 640;
 		logicalHeight = 480;
 	}
@@ -238,18 +259,17 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 
 	/* ウィンドウの作成 || Create and set up the window */
 	if (
-		windowType == APP_SCREENMODE_FULLSCREEN ||
-		windowType == APP_SCREENMODE_FULLSCREEN_DESKTOP
+		windowType == APP_SCREEN_MODE_FULLSCREEN ||
+		windowType == APP_SCREEN_MODE_FULLSCREEN_DESKTOP
 	)
 	{
-		if ( !APP_ScreenWindow )
-		{
+		if (!APP_ScreenWindow) {
 			SDL_PropertiesID props = SDL_CreateProperties();
 			if (!props) {
 			    SET_SCREEN_ERROR;
 			}
 			if (
-				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_GAME_CAPTION) ||
+				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_WINDOW_TITLE) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN, true) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, windowX) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowY) ||
@@ -261,8 +281,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			}
 			APP_ScreenWindow = SDL_CreateWindowWithProperties(props);
 			SDL_DestroyProperties(props);
-			if ( !APP_ScreenWindow || (windowType == APP_SCREENMODE_FULLSCREEN && !SDL_SetWindowFullscreenMode(APP_ScreenWindow, displayModes[modeIndex])))
-			{
+			if (!APP_ScreenWindow || (windowType == APP_SCREEN_MODE_FULLSCREEN && !SDL_SetWindowFullscreenMode(APP_ScreenWindow, displayModes[modeIndex]))) {
 				SET_SCREEN_ERROR;
 			}
 		}
@@ -271,7 +290,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			if (
 				!SDL_SetWindowFullscreen(APP_ScreenWindow, true) ||
 				!SDL_SetWindowSize(APP_ScreenWindow, logicalWidth, logicalHeight) ||
-				!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREENMODE_FULLSCREEN) ? displayModes[modeIndex] : NULL)
+				!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREEN_MODE_FULLSCREEN) ? displayModes[modeIndex] : NULL)
 			) {
 				SET_SCREEN_ERROR;
 			}
@@ -280,8 +299,8 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 		}
 	}
 	else if (
-		windowType == APP_SCREENMODE_WINDOW ||
-		windowType == APP_SCREENMODE_WINDOW_MAXIMIZED
+		windowType == APP_SCREEN_MODE_WINDOW ||
+		windowType == APP_SCREEN_MODE_WINDOW_MAXIMIZED
 	)
 	{
 		const SDL_DisplayMode* const displayMode = SDL_GetDesktopDisplayMode(display);
@@ -289,34 +308,30 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			SET_SCREEN_ERROR;
 		}
 		int maxScale;
-		if ( displayMode->w <= logicalWidth || displayMode->h <= logicalHeight )
-		{
+		if (displayMode->w <= logicalWidth || displayMode->h <= logicalHeight) {
 			maxScale = 1;
 		}
-		else if ( displayMode->w > displayMode->h )
-		{
+		else if (displayMode->w > displayMode->h) {
 			maxScale = (displayMode->h / logicalHeight) - (displayMode->h % logicalHeight == 0);
 		}
-		else
-		{
+		else {
 			maxScale = (displayMode->w / logicalWidth) - (displayMode->w % logicalWidth == 0);
 		}
 		int scale = modeIndex + 1;
 		int windowW = scale * logicalWidth;
 		int windowH = scale * logicalHeight;
-		if ( scale > maxScale) {
+		if (scale > maxScale) {
 			windowW = logicalWidth;
 			windowH = logicalHeight;
-			*screenIndex = APP_SCREENINDEX_TOSETTING(displayIndex, 0);
+			*screenIndex = APP_SCREEN_INDEX_TO_SETTING(displayIndex, 0);
 		}
-		if ( !APP_ScreenWindow )
-		{
+		if (!APP_ScreenWindow) {
 			SDL_PropertiesID props = SDL_CreateProperties();
 			if (!props) {
 			    SET_SCREEN_ERROR;
 			}
 			if (
-				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_GAME_CAPTION) ||
+				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_WINDOW_TITLE) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, windowX) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowY) ||
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, windowW) ||
@@ -328,14 +343,12 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			}
 			APP_ScreenWindow = SDL_CreateWindowWithProperties(props);
 			SDL_DestroyProperties(props);
-			if ( !APP_ScreenWindow )
-			{
+			if (!APP_ScreenWindow) {
 				SET_SCREEN_ERROR;
 			}
 		}
-		else
-		{
-			if ( maximized ) {
+		else {
+			if (maximized) {
 				if (!SDL_MaximizeWindow(APP_ScreenWindow)) {
 					SET_SCREEN_ERROR;
 				}
@@ -361,8 +374,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	// to reload the graphics every restart, even when detail level isn't
 	// changed.
 	// TODO: fix to allow rendering to the texture.
-	if ( !APP_ScreenRenderer )
-	{
+	if (!APP_ScreenRenderer) {
 		APP_ScreenRenderer = SDL_CreateRenderer(APP_ScreenWindow, NULL);
 		if (!APP_ScreenRenderer)
 		{
@@ -378,57 +390,44 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	// various bugs have been observed when attempting setting changes while the
 	// render target is non-NULL, such bugs disappearing when setting changes
 	// are made only while the render target is NULL.
-	if ( APP_ScreenRenderTarget && !SDL_SetRenderTarget(APP_ScreenRenderer, NULL))
-	{
+	if (APP_ScreenRenderTarget && !SDL_SetRenderTarget(APP_ScreenRenderer, NULL)) {
 		SET_SCREEN_ERROR;
 	}
 
 	/* Clear the whole screen, as the framebuffer might be uninitialized */
-	if (!SDL_RenderClear(APP_ScreenRenderer))
-	{
+	if (!SDL_RenderClear(APP_ScreenRenderer)) {
 		SET_SCREEN_ERROR;
 	}
 
-	// This should be somewhere after the renderer has been created, as
-	// APP_SCREEN_SUBPIXEL_OFFSET queries the renderer when a given platform uses
-	// nonzero offsets.
-	APP_ScreenSubpixelOffset = APP_SCREEN_SUBPIXEL_OFFSET;
-
-	if (!SDL_SetRenderVSync(APP_ScreenRenderer, (*screenMode & APP_SCREENMODE_VSYNC) ? 1 : SDL_RENDERER_VSYNC_DISABLED) )
-	{
+	if (!SDL_SetRenderVSync(APP_ScreenRenderer, (*screenMode & APP_SCREEN_MODE_VSYNC) ? 1 : SDL_RENDERER_VSYNC_DISABLED) ) {
 		SET_SCREEN_ERROR;
 	}
 
-	if ( *screenMode & APP_SCREENMODE_SCALEMODE )
-	{
-		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE))
-		{
+	if (*screenMode & APP_SCREEN_MODE_SCALE_MODE) {
+		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE)) {
 			SET_SCREEN_ERROR;
 		}
 	}
 	else {
-		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX))
-		{
+		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
 			SET_SCREEN_ERROR;
 		}
 	}
 
 	/* Set up the render target, if required */
-	if (!(*screenMode & APP_SCREENMODE_RENDERLEVEL))
-	{
+	if (!(*screenMode & APP_SCREEN_MODE_RENDER_LEVEL)) {
 		// There's no need to create a render target texture if the
 		// currently created render target texture is already the current
 		// logicalWidth x logicalHeight.
 		bool createNewRenderTarget = true;
 
-		if ( APP_ScreenRenderTarget ) {
+		if (APP_ScreenRenderTarget) {
 			float w, h;
 			if (!SDL_GetTextureSize(APP_ScreenRenderTarget, &w, &h)) {
 				SET_SCREEN_ERROR;
 			}
 
-			if ( (int)w == logicalWidth && (int)h == logicalHeight )
-			{
+			if ((int)w == logicalWidth && (int)h == logicalHeight) {
 				createNewRenderTarget = false;
 			}
 			else {
@@ -437,11 +436,9 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			}
 		}
 
-		if ( createNewRenderTarget )
-		{
+		if (createNewRenderTarget) {
 			APP_ScreenRenderTarget = SDL_CreateTexture(APP_ScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
-			if ( !APP_ScreenRenderTarget )
-			{
+			if (!APP_ScreenRenderTarget) {
 				SET_SCREEN_ERROR;
 			}
 			if (!SDL_SetTextureScaleMode(APP_ScreenRenderTarget, SDL_SCALEMODE_NEAREST)) {
@@ -449,18 +446,22 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 			}
 		}
 
-		if (!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget) ||
+		if (
+			!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget) ||
 			!SDL_RenderClear(APP_ScreenRenderer)
-		)
-		{
+		) {
 			SET_SCREEN_ERROR;
 		}
 	}
-	else if ( APP_ScreenRenderTarget )
-	{
+	else if (APP_ScreenRenderTarget) {
 		SDL_DestroyTexture(APP_ScreenRenderTarget);
 		APP_ScreenRenderTarget = NULL;
 	}
+
+	// This should be after the renderer has been set up, as
+	// APP_SCREEN_SUBPIXEL_OFFSET queries the renderer when a given platform
+	// uses nonzero offsets.
+	APP_ScreenSubpixelOffset = APP_SCREEN_SUBPIXEL_OFFSET;
 
 	// WARNING: Make no changes to the renderer settings from here on down, as
 	// the render target has been set, and bugs have been observed when
@@ -471,8 +472,7 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 	APP_ScreenIndex = *screenIndex;
 
 	/* Hide the mouse cursor at first */
-	if (!SDL_HideCursor())
-	{
+	if (!SDL_HideCursor()) {
 		SET_SCREEN_ERROR;
 	}
 
@@ -485,13 +485,16 @@ bool APP_SetScreen(APP_ScreenModeFlag *screenMode, int32_t *screenIndex)
 
 	/* A failure condition was encountered, so clean up and return with error */
 	fail:
-	if ( APP_ScreenRenderTarget )
-	{
+	if (APP_ScreenRenderTarget) {
 		SDL_SetRenderTarget(APP_ScreenRenderer, NULL);
 		SDL_DestroyTexture(APP_ScreenRenderTarget);
 	}
-	if ( APP_ScreenRenderer ) SDL_DestroyRenderer(APP_ScreenRenderer);
-	if ( APP_ScreenWindow ) SDL_DestroyWindow(APP_ScreenWindow);
+	if (APP_ScreenRenderer) {
+		SDL_DestroyRenderer(APP_ScreenRenderer);
+	}
+	if (APP_ScreenWindow) {
+		SDL_DestroyWindow(APP_ScreenWindow);
+	}
 	SDL_free(displayModes);
 	SDL_free(displays);
 	APP_ScreenRenderTarget = NULL;
@@ -505,60 +508,69 @@ bool APP_RenderScreen(void)
 	if (!APP_ScreenRenderer) {
 		return true;
 	}
-	SDL_FlushRenderer(APP_ScreenRenderer);
+	if (!SDL_FlushRenderer(APP_ScreenRenderer)) {
+		return false;
+	}
 
 	#ifndef NDEBUG
-	APP_NoFrameskip = true;
+	APP_DrawWhileSkippingFrames = true;
 	#endif
-	if ( APP_NoFrameskip )
-	{
+	if (APP_DrawWhileSkippingFrames) {
 		/* バックサーフェスをフロントに転送 */
-		if ( APP_ScreenRenderTarget )
-		{
-			SDL_SetRenderTarget(APP_ScreenRenderer, NULL);
-			SDL_RenderClear( APP_ScreenRenderer );
-			SDL_RenderTexture(APP_ScreenRenderer, APP_ScreenRenderTarget, NULL, NULL);
-			SDL_RenderPresent(APP_ScreenRenderer);
-			SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget);
+		if (APP_ScreenRenderTarget) {
+			if (
+				!SDL_SetRenderTarget(APP_ScreenRenderer, NULL) ||
+				!SDL_RenderClear(APP_ScreenRenderer) ||
+				!SDL_RenderTexture(APP_ScreenRenderer, APP_ScreenRenderTarget, NULL, NULL) ||
+				!SDL_RenderPresent(APP_ScreenRenderer) ||
+				!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget)
+			) {
+				return false;
+			}
 		}
-		else {
-			SDL_RenderPresent(APP_ScreenRenderer);
+		else if (!SDL_RenderPresent(APP_ScreenRenderer)) {
+			return false;
 		}
 
 		/* フレームレート待ち || Frame rate waiting */
-		APP_LastFrameSkipped = !nanotime_step(&APP_StepData);
+		APP_LastFrameSkipped = APP_FrameStep();
 
 		/* 画面塗りつぶし || Fill screen */
-		SDL_RenderClear( APP_ScreenRenderer );
+		if (!SDL_RenderClear(APP_ScreenRenderer)) {
+			return false;
+		}
 	}
-	else
-	{
-		if ( !APP_LastFrameSkipped )
-		{
+	else {
+		if (!APP_LastFrameSkipped) {
 			/* バックサーフェスをフロントに転送 */
-			if ( APP_ScreenRenderTarget )
-			{
-				SDL_SetRenderTarget(APP_ScreenRenderer, NULL);
-				SDL_RenderClear( APP_ScreenRenderer );
-				SDL_RenderTexture(APP_ScreenRenderer, APP_ScreenRenderTarget, NULL, NULL);
-				SDL_RenderPresent(APP_ScreenRenderer);
-				SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget);
+			if (APP_ScreenRenderTarget) {
+				if (
+					!SDL_SetRenderTarget(APP_ScreenRenderer, NULL) ||
+					!SDL_RenderClear(APP_ScreenRenderer) ||
+					!SDL_RenderTexture(APP_ScreenRenderer, APP_ScreenRenderTarget, NULL, NULL) ||
+					!SDL_RenderPresent(APP_ScreenRenderer) ||
+					!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget)
+				) {
+					return false;
+				}
 			}
-			else {
-				SDL_RenderPresent(APP_ScreenRenderer);
+			else if(!SDL_RenderPresent(APP_ScreenRenderer)) {
+				return false;
 			}
 
 			/* 画面塗りつぶし */
-			SDL_RenderClear( APP_ScreenRenderer );
+			if (!SDL_RenderClear(APP_ScreenRenderer)) {
+				return false;
+			}
 		}
 
 		/* フレームレート待ち || Frame rate waiting */
-		APP_LastFrameSkipped = !nanotime_step(&APP_StepData);
+		APP_LastFrameSkipped = APP_FrameStep();
 	}
 
 	/* 画面ずらし量の反映 */
-	APP_OffsetX = APP_NewOffsetX;
-	APP_OffsetY = APP_NewOffsetY;
+	APP_PlaneDrawOffsetX = APP_NewPlaneDrawOffsetX;
+	APP_PlaneDrawOffsetY = APP_NewPlaneDrawOffsetY;
 	return true;
 }
 
@@ -573,8 +585,11 @@ int APP_GetMaxDisplayIndex(void)
 	return displayCount;
 }
 
-int APP_GetMaxDisplayMode( int displayIndex )
+int APP_GetMaxDisplayMode(int displayIndex)
 {
+	if (displayIndex < 0) {
+		return -1;
+	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
@@ -595,12 +610,15 @@ int APP_GetMaxDisplayMode( int displayIndex )
 	return modeCount;
 }
 
-bool APP_GetDisplayMode( int displayIndex, int modeIndex, SDL_DisplayMode *mode )
+bool APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode)
 {
+	if (displayIndex < 0 || modeIndex < 0 || !mode) {
+		return false;
+	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
-		APP_Exit(EXIT_FAILURE);
+		return false;
 	}
 	if (displayIndex >= displayCount) {
 		SDL_free(displays);
@@ -617,7 +635,11 @@ bool APP_GetDisplayMode( int displayIndex, int modeIndex, SDL_DisplayMode *mode 
 	return true;
 }
 
-const SDL_DisplayMode* APP_GetDesktopDisplayMode(unsigned displayIndex) {
+const SDL_DisplayMode* APP_GetDesktopDisplayMode(int displayIndex)
+{
+	if (displayIndex < 0) {
+		APP_Exit(EXIT_FAILURE);
+	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
@@ -633,6 +655,128 @@ const SDL_DisplayMode* APP_GetDesktopDisplayMode(unsigned displayIndex) {
 		APP_Exit(EXIT_FAILURE);
 	}
 	return mode;
+}
+
+void APP_EnableTextLayer(int layer, int x, int y)
+{
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	APP_TextLayers[layer].enable = true;
+	APP_TextLayers[layer].x = x;
+	APP_TextLayers[layer].y = y;
+}
+
+void APP_SetTextLayerDrawPosition(int layer, int x, int y)
+{
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	APP_TextLayers[layer].x = x;
+	APP_TextLayers[layer].y = y;
+}
+
+void APP_SetTextLayerColor(int layer, int r, int g, int b)
+{
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (
+		APP_TextLayers[layer].color.r != r ||
+		APP_TextLayers[layer].color.g != g ||
+		APP_TextLayers[layer].color.b != b
+	) {
+		APP_TextLayers[layer].color.r = r;
+		APP_TextLayers[layer].color.g = g;
+		APP_TextLayers[layer].color.b = b;
+		APP_TextLayers[layer].color.a = SDL_ALPHA_OPAQUE;
+		APP_TextLayers[layer].updateTexture = true;
+	}
+}
+
+void APP_SetTextLayerSize(int layer, int size)
+{
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (APP_TextLayers[layer].size != size) {
+		APP_TextLayers[layer].size = size;
+		APP_TextLayers[layer].updateTexture = true;
+	}
+}
+
+void APP_PutTextLayerString(int layer, const char* string)
+{
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (SDL_strcmp(string, APP_TextLayers[layer].string) != 0) {
+		SDL_strlcpy(APP_TextLayers[layer].string, string, APP_TEXT_LAYER_STRING_LENGTH - 1);
+		APP_TextLayers[layer].updateTexture = true;
+	}
+}
+
+void APP_DrawTextLayer(int layer)
+{
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	if (!APP_ScreenRenderer || !APP_TextLayers[layer].enable) {
+		return;
+	}
+
+	int font = 0;
+
+	if (APP_TextLayers[layer].size >= 12) {
+		font++;
+	}
+	if (APP_TextLayers[layer].size >= 16) {
+		font++;
+	}
+
+	if (!APP_BDFFonts[font]) {
+		return;
+	}
+
+	if (APP_TextLayers[layer].updateTexture) {
+		if (APP_TextLayers[layer].texture) {
+			SDL_DestroyTexture(APP_TextLayers[layer].texture);
+		}
+		APP_TextLayers[layer].texture = APP_CreateBDFTextTexture(APP_BDFFonts[font], APP_ScreenRenderer, APP_TextLayers[layer].string, APP_TextLayers[layer].color, 32, SDL_SCALEMODE_NEAREST);
+		if (!APP_TextLayers[layer].texture) {
+			SDL_Log("Error creating texture to blit text: %s", SDL_GetError());
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (!SDL_GetTextureSize(APP_TextLayers[layer].texture, &APP_TextLayers[layer].textureW, &APP_TextLayers[layer].textureH)) {
+			SDL_Log("Error getting size of a text layer texture: %s", SDL_GetError());
+			APP_Exit(EXIT_FAILURE);
+		}
+		APP_TextLayers[layer].updateTexture = false;
+	}
+
+	if (APP_TextLayers[layer].texture) {
+		SDL_FRect dstRect = {
+			APP_TextLayers[layer].x + APP_PlaneDrawOffsetX,
+			APP_TextLayers[layer].y + APP_PlaneDrawOffsetY,
+			APP_TextLayers[layer].textureW,
+			APP_TextLayers[layer].textureH
+		};
+		if (!APP_ScreenRenderTarget) {
+			dstRect.x += APP_ScreenSubpixelOffset;
+			dstRect.y += APP_ScreenSubpixelOffset;
+		}
+		if (!SDL_RenderTexture(APP_ScreenRenderer, APP_TextLayers[layer].texture, NULL, &dstRect)) {
+			SDL_Log("Error rendering text layer: %s", SDL_GetError());
+			APP_Exit(EXIT_FAILURE);
+		}
+	}
+}
+
+void APP_DisableTextLayer(int layer) {
+	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	APP_TextLayers[layer].enable = false;
 }
 
 static int APP_STBI_Read(void* user, char* data, int size)
@@ -662,10 +806,10 @@ static int APP_STBI_EOF(void* user)
 	}
 }
 
-void APP_LoadBitmap(const char* filename, unsigned plane)
+void APP_LoadPlane(int plane, const char* filename)
 {
-	if (!APP_ScreenRenderer || !filename || plane >= APP_TEXTURE_MAX) {
-		APP_Exit(EXIT_FAILURE);
+	if (!APP_ScreenRenderer || !filename || !*filename || plane < 0 || plane >= APP_PLANE_COUNT) {
+		return;
 	}
 
 	SDL_IOStream* file = APP_OpenRead(filename);
@@ -712,18 +856,18 @@ void APP_LoadBitmap(const char* filename, unsigned plane)
 		APP_Exit(EXIT_FAILURE);
 	}
 
-	if (APP_Textures[plane]) {
-		SDL_DestroyTexture(APP_Textures[plane]);
+	if (APP_Planes[plane]) {
+		SDL_DestroyTexture(APP_Planes[plane]);
 	}
-	APP_Textures[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, surface);
+	APP_Planes[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, surface);
 	SDL_DestroySurface(surface);
 	SDL_free(pixels);
-	if (!APP_Textures[plane]) {
+	if (!APP_Planes[plane]) {
 		APP_Exit(EXIT_FAILURE);
 	}
 	if (
-		!SDL_SetTextureScaleMode(APP_Textures[plane], SDL_SCALEMODE_NEAREST) ||
-		!SDL_SetTextureBlendMode(APP_Textures[plane], SDL_BLENDMODE_BLEND)
+		!SDL_SetTextureScaleMode(APP_Planes[plane], SDL_SCALEMODE_NEAREST) ||
+		!SDL_SetTextureBlendMode(APP_Planes[plane], SDL_BLENDMODE_BLEND)
 	) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -734,393 +878,134 @@ logUnhandledComp:
 	APP_Exit(EXIT_FAILURE);
 }
 
-void APP_SetColorKeyPos(int plane, int x, int y)
-{
-	// TODO
-	// sets transparent color to the specified pixel.  Since we use actual alpha channel in our assets, this is a no-oop
-}
-
-void APP_EnableBlendColorKey(int plane, int key)
-{
-	// TODO
-	// alows for parial transparency.   again, because we use real transparency, it's a no-op.
-}
-
-void APP_CreateSurface(int surf, int w, int h)
-{
-	// TODO
-	// required for orignal YGS2K engine. not needed at all for SDL2 renderer.
-}
-
-void APP_ClearSecondary(void)
-{
-	// TODO
-	// used to write the listed color to all pixels of the rendering area.
-	// with SDL2 renderer, we never need to do this, so it's a no-op
-}
-
-void APP_SetFillColor(int col)
-{
-	// TODO
-	// sets the color that APP_ClearSecondary uses to fill the render target. since APP_ClearSecondary is a no-op, so is this.
-}
-
-void APP_TextLayerOn ( int layer, int x, int y )
-{
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
+void APP_DrawPlane(int plane, int dstX, int dstY) {
+	if (plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane]) {
+		return;
+	}
+	float w, h;
+	if (!SDL_GetTextureSize(APP_Planes[plane], &w, &h)) {
 		APP_Exit(EXIT_FAILURE);
 	}
-	APP_TextLayers[layer].enable = true;
-	APP_TextLayers[layer].x = x;
-	APP_TextLayers[layer].y = y;
+	APP_DrawPlaneRect(plane, dstX, dstY, 0, 0, (int)w, (int)h);
 }
 
-void APP_TextMove ( int layer, int x, int y )
+void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h)
 {
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
+	if (plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane] || w == 0 || h == 0) {
+		return;
+	}
+
+	const SDL_FRect src = { srcX, srcY, w, h };
+	SDL_FRect dst = {
+		dstX + APP_PlaneDrawOffsetX,
+		dstY + APP_PlaneDrawOffsetY,
+		w,
+		h
+	};
+	if (!APP_ScreenRenderTarget) {
+		dst.x += APP_ScreenSubpixelOffset;
+		dst.y += APP_ScreenSubpixelOffset;
+	}
+
+	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst)) {
 		APP_Exit(EXIT_FAILURE);
 	}
-	APP_TextLayers[layer].x = x;
-	APP_TextLayers[layer].y = y;
 }
 
-void APP_TextColor ( int layer, int r, int g, int b )
+void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, int a)
 {
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
+	if (plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane]) {
+		return;
+	}
+
+	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], a)) {
 		APP_Exit(EXIT_FAILURE);
+	}
+	APP_DrawPlane(plane, dstX, dstY);
+	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+}
+
+void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a)
+{
+	if (plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane] || w == 0 || h == 0) {
+		return;
+	}
+
+	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], a)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	APP_DrawPlaneRect(plane, dstX, dstY, srcX, srcY, w, h);
+	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+}
+
+void APP_DrawPlaneScaled(int plane, int dstX, int dstY, int scaleW, int scaleH)
+{
+	APP_DrawPlaneRectScaled(plane, dstX, dstY, 0, 0, APP_LogicalWidth, APP_LogicalHeight, scaleW, scaleH);
+}
+
+void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int scaleW, int scaleH)
+{
+	if (plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane] || w == 0 || h == 0) {
+		return;
+	}
+
+	// ちゃんと拡大して描画する
+	const SDL_FRect src = { srcX, srcY, w, h };
+	SDL_FRect dst = {
+		dstX + APP_PlaneDrawOffsetX,
+		dstY + APP_PlaneDrawOffsetY,
+		(int)(w * (scaleW / 65536.0f)),
+		(int)(h * (scaleH / 65536.0f))
+	};
+	if (!APP_ScreenRenderTarget) {
+		dst.x += APP_ScreenSubpixelOffset;
+		dst.y += APP_ScreenSubpixelOffset;
+	}
+	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+}
+
+void APP_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, int a, int scaleW, int scaleH)
+{
+	APP_DrawPlaneRectTransparentScaled(plane, dstX, dstY, 0, 0, APP_LogicalWidth, APP_LogicalHeight, a, scaleW, scaleH);
+}
+
+void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a, int scaleW, int scaleH)
+{
+	if (plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane] || w == 0 || h == 0) {
+		return;
+	}
+
+	// ちゃんと拡大して描画する
+	const SDL_FRect src = { srcX, srcY, w, h };
+	SDL_FRect dst = {
+		dstX + APP_PlaneDrawOffsetX,
+		dstY + APP_PlaneDrawOffsetX,
+		w * (scaleW / 65536.0f),
+		h * (scaleH / 65536.0f)
+	};
+	if (!APP_ScreenRenderTarget) {
+		dst.x += APP_ScreenSubpixelOffset;
+		dst.y += APP_ScreenSubpixelOffset;
 	}
 	if (
-		APP_TextLayers[layer].color.r != r ||
-		APP_TextLayers[layer].color.g != g ||
-		APP_TextLayers[layer].color.b != b
+		!SDL_SetTextureAlphaMod(APP_Planes[plane], a) ||
+		!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst) ||
+		!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)
 	) {
-		APP_TextLayers[layer].color.r = r;
-		APP_TextLayers[layer].color.g = g;
-		APP_TextLayers[layer].color.b = b;
-		APP_TextLayers[layer].color.a = SDL_ALPHA_OPAQUE;
-		APP_TextLayers[layer].updateTexture = true;
-	}
-}
-
-void APP_TextBackColorDisable ( int layer )
-{
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	// TODO
-	// turns off the shadow effect for text in the listed layer. since we don't even use said shadow effect to begin with, it's a no-op.
-}
-
-void APP_TextSize ( int layer, int size )
-{
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	if (APP_TextLayers[layer].size != size) {
-		APP_TextLayers[layer].size = size;
-		APP_TextLayers[layer].updateTexture = true;
-	}
-}
-
-void APP_TextHeight ( int layer, int height )
-{
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	// TODO
-	// only used in flexdraw.c for ExTextHeight. But since ExTextHeight is unused, we don't need to bother implementing it.
-}
-
-void APP_TextOut ( int layer, const char* text )
-{
-	if (layer < 0 || layer >= APP_TEXTLAYER_MAX) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	if ( SDL_strcmp(text, APP_TextLayers[layer].string) != 0 )
-	{
-		SDL_strlcpy(APP_TextLayers[layer].string, text, APP_TEXTLAYER_STRING_MAX - 1);
-		APP_TextLayers[layer].updateTexture = true;
-	}
-}
-
-void APP_TextBlt ( int layer )
-{
-	if ( !APP_ScreenRenderer || !APP_TextLayers[layer].enable)
-	{
-		return;
-	}
-
-	int font = 0;
-
-	if ( APP_TextLayers[layer].size >= 12 )
-	{
-		font ++;
-	}
-	if ( APP_TextLayers[layer].size >= 16 )
-	{
-		font ++;
-	}
-
-	if ( !APP_BDFFonts[font] )
-	{
-		return;
-	}
-
-	if ( APP_TextLayers[layer].updateTexture )
-	{
-		if ( APP_TextLayers[layer].texture )
-		{
-			SDL_DestroyTexture(APP_TextLayers[layer].texture);
-		}
-		APP_TextLayers[layer].texture = APP_CreateBDFTextTexture(APP_BDFFonts[font], APP_ScreenRenderer, APP_TextLayers[layer].string, APP_TextLayers[layer].color, 32, SDL_SCALEMODE_NEAREST);
-		if ( !APP_TextLayers[layer].texture )
-		{
-			SDL_Log("Error creating texture to blit text: %s\n", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
-		}
-		if ( !SDL_GetTextureSize(APP_TextLayers[layer].texture, &APP_TextLayers[layer].textureW, &APP_TextLayers[layer].textureH) )
-		{
-			SDL_Log("Error getting size of a text layer texture: %s\n", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
-		}
-		APP_TextLayers[layer].updateTexture = false;
-	}
-
-	if ( APP_TextLayers[layer].texture )
-	{
-		if ( APP_ScreenRenderTarget )
-		{
-			const SDL_FRect dstRect =
-			{
-				APP_TextLayers[layer].x + APP_OffsetX,
-				APP_TextLayers[layer].y + APP_OffsetY,
-				APP_TextLayers[layer].textureW,
-				APP_TextLayers[layer].textureH
-			};
-			if (!SDL_RenderTexture(APP_ScreenRenderer, APP_TextLayers[layer].texture, NULL, &dstRect))
-			{
-				SDL_Log("Error rendering text layer: %s\n", SDL_GetError());
-				APP_Exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			const SDL_FRect dstRect =
-			{
-				APP_TextLayers[layer].x + APP_OffsetX + APP_ScreenSubpixelOffset,
-				APP_TextLayers[layer].y + APP_OffsetY + APP_ScreenSubpixelOffset,
-				APP_TextLayers[layer].textureW,
-				APP_TextLayers[layer].textureH
-			};
-			if (!SDL_RenderTexture(APP_ScreenRenderer, APP_TextLayers[layer].texture, NULL, &dstRect))
-			{
-				SDL_Log("Error rendering text layer: %s\n", SDL_GetError());
-				APP_Exit(EXIT_FAILURE);
-			}
-		}
-	}
-}
-
-void APP_TextLayerOff ( int layer )
-{
-	APP_TextLayers[layer].enable = false;
-}
-
-void APP_Blt(int pno, int dx, int dy)
-{
-	if ( APP_Textures[pno] == NULL ) { return; }
-	float w, h;
-	if (!SDL_GetTextureSize(APP_Textures[pno], &w, &h)) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	APP_BltRect(pno, dx, dy, 0, 0, (int)w, (int)h);
-}
-
-void APP_BltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
-{
-	if ( !APP_ScreenRenderer )
-	{
-		return;
-	}
-
-	if ( APP_Textures[pno] == NULL ) return;
-
-	SDL_FRect	src = { 0 };
-	SDL_FRect	dst = { 0 };
-	if ( APP_ScreenRenderTarget )
-	{
-		src.x = sx;			src.y = sy;
-		src.w = hx;			src.h = hy;
-		dst.x = dx + APP_OffsetX;	dst.y = dy + APP_OffsetY;
-		dst.w = hx;			dst.h = hy;
-	}
-	else
-	{
-		src.x  = sx;			src.y  = sy;
-		src.w  = hx;			src.h  = hy;
-		dst.x = dx + APP_OffsetX + APP_SCREEN_SUBPIXEL_OFFSET;
-		dst.y = dy + APP_OffsetY + APP_SCREEN_SUBPIXEL_OFFSET;
-		dst.w  = hx;			dst.h  = hy;
-	}
-
-	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Textures[pno], &src, &dst)) {
 		APP_Exit(EXIT_FAILURE);
 	}
 }
 
-void APP_BltFast(int pno, int dx, int dy)
+void APP_SetPlaneDrawOffset(int x, int y)
 {
-	APP_Blt(pno, dx, dy);
-}
-
-void APP_BltFastRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy)
-{
-	APP_BltRect(pno, dx, dy, sx, sy, hx, hy);
-}
-
-void APP_BlendBlt(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb)
-{
-	if ( APP_Textures[pno] == NULL ) return;
-
-	if (!SDL_SetTextureAlphaMod(APP_Textures[pno], ar)) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	APP_Blt(pno, dx, dy);
-	if (!SDL_SetTextureAlphaMod(APP_Textures[pno], SDL_ALPHA_OPAQUE)) {
-		APP_Exit(EXIT_FAILURE);
-	}
-}
-
-void APP_BlendBltRect(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb)
-{
-	if ( APP_Textures[pno] == NULL ) return;
-
-	SDL_SetTextureAlphaMod(APP_Textures[pno], ar);
-	APP_BltRect(pno, dx, dy, sx, sy, hx, hy);
-	SDL_SetTextureAlphaMod(APP_Textures[pno], SDL_ALPHA_OPAQUE);
-}
-
-void APP_BltR(int pno, int dx, int dy, int scx, int scy)
-{
-	APP_BltRectR(pno, dx, dy, 0, 0, APP_LogicalWidth, APP_LogicalHeight, scx, scy);
-}
-
-void APP_BltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
-{
-	if ( !APP_ScreenRenderer )
-	{
-		return;
-	}
-	if ( APP_Textures[pno] == NULL ) return;
-
-	// ちゃんと拡大して描画する
-	if ( APP_ScreenRenderTarget )
-	{
-		SDL_FRect	src = { 0 };
-		SDL_FRect	dst = { 0 };
-
-		src.x = sx;					src.y = sy;
-		src.w = hx;					src.h = hy;
-		dst.x = dx + APP_OffsetX;	dst.y = dy + APP_OffsetY;
-		dst.w = hx * (int)(scx / 65536.0f);
-		dst.h = hy * (int)(scy / 65536.0f);
-
-		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
-
-		SDL_RenderTexture( APP_ScreenRenderer, APP_Textures[pno], &src, &dst );
-	}
-	else
-	{
-		SDL_FRect	src = { 0 };
-		SDL_FRect	dst = { APP_ScreenSubpixelOffset, APP_ScreenSubpixelOffset };
-
-		src.x  = sx;			src.y  = sy;
-		src.w  = hx;			src.h  = hy;
-		dst.x += dx + APP_OffsetX;	dst.y += dy + APP_OffsetY;
-		dst.w  = (int)(hx * (scx / 65536.0f));
-		dst.h  = (int)(hy * (scy / 65536.0f));
-
-		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
-
-		SDL_RenderTexture( APP_ScreenRenderer, APP_Textures[pno], &src, &dst );
-	}
-}
-
-void APP_BltFastR(int pno, int dx, int dy, int scx, int scy)
-{
-	APP_BltR(pno, dx, dy, scx, scy);
-}
-
-void APP_BltFastRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int scx, int scy)
-{
-	APP_BltRectR(pno, dx, dy, sx, sy, hx, hy, scx, scy);
-}
-
-void APP_BltTrans(int pno, int dx, int dy)
-{
-	// TODO
-	// completely unused.  so we don't need to care what it even does.
-}
-
-void APP_BlendBltR(int pno, int dx, int dy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
-{
-	APP_BlendBltRectR(pno, dx, dy, 0, 0, APP_LogicalWidth, APP_LogicalHeight, ar, ag, ab, br, bg, bb, scx, scy);
-}
-
-void APP_BlendBltRectR(int pno, int dx, int dy, int sx, int sy, int hx, int hy, int ar, int ag, int ab, int br, int bg, int bb, int scx, int scy)
-{
-	if ( !APP_ScreenRenderer )
-	{
-		return;
-	}
-
-	if ( APP_Textures[pno] == NULL ) return;
-
-	SDL_FRect	src = { 0 };
-	SDL_FRect	dst = { 0 };
-
-	// ちゃんと拡大して描画する
-	if ( APP_ScreenRenderTarget )
-	{
-		src.x = sx;					src.y = sy;
-		src.w = hx;					src.h = hy;
-		dst.x = dx + APP_OffsetX;	dst.y = dy + APP_OffsetY;
-		dst.w = hx * (int)(scx / 65536.0f);
-		dst.h = hy * (int)(scy / 65536.0f);
-
-		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
-
-		SDL_SetTextureAlphaMod(APP_Textures[pno], ar);
-		SDL_RenderTexture( APP_ScreenRenderer, APP_Textures[pno], &src, &dst );
-		SDL_SetTextureAlphaMod(APP_Textures[pno], SDL_ALPHA_OPAQUE);
-	}
-	else
-	{
-		src.x  = sx;			src.y  = sy;
-		src.w  = hx;			src.h  = hy;
-		dst.x = dx + APP_OffsetX + APP_SCREEN_SUBPIXEL_OFFSET;
-		dst.y = dy + APP_OffsetY + APP_SCREEN_SUBPIXEL_OFFSET;
-		dst.w  = hx * (int)(scx / 65536.0f);
-		dst.h  = hy * (int)(scy / 65536.0f);
-
-		if ( src.w == 0 || src.h == 0 || dst.w == 0 || dst.h == 0 ) { return; }
-
-		SDL_SetTextureAlphaMod(APP_Textures[pno], ar);
-		SDL_RenderTexture( APP_ScreenRenderer, APP_Textures[pno], &src, &dst );
-		SDL_SetTextureAlphaMod(APP_Textures[pno], SDL_ALPHA_OPAQUE);
-	}
-}
-
-void APP_SetSecondaryOffset(int x, int y)
-{
-	APP_NewOffsetX = x;
-	APP_NewOffsetY = y;
-}
-
-void APP_SetColorKeyRGB(int pno, int r, int g, int b)
-{
-	// TODO
-	//  again because we have actual transparency in our assets, this is a no-op.
+	APP_NewPlaneDrawOffsetX = x;
+	APP_NewPlaneDrawOffsetY = y;
 }
 
 float APP_GetScreenSubpixelOffset(void)
@@ -1152,15 +1037,11 @@ float APP_GetScreenSubpixelOffset(void)
 	//
 	// -Brandon McGriff <nightmareci@gmail.com>
 	if (APP_ScreenRenderer && !APP_ScreenRenderTarget) {
-		int w;
-		if (!SDL_GetRenderLogicalPresentation(APP_ScreenRenderer, &w, NULL, NULL)) {
-			APP_Exit(EXIT_FAILURE);
-		}
 		SDL_FRect rect;
 		if (!SDL_GetRenderLogicalPresentationRect(APP_ScreenRenderer, &rect)) {
 			APP_Exit(EXIT_FAILURE);
 		}
-		const float scale = rect.w / w;
+		const float scale = rect.w / APP_LogicalWidth;
 		return 0.49f / scale;
 	}
 	else {
@@ -1168,7 +1049,7 @@ float APP_GetScreenSubpixelOffset(void)
 	}
 }
 
-void APP_BltAlways(bool always)
+void APP_SetDrawWhileSkippingFrames(bool draw)
 {
-	APP_NoFrameskip = always;
+	APP_DrawWhileSkippingFrames = draw;
 }

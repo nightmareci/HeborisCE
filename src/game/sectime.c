@@ -242,14 +242,14 @@ void ST_RankingView() {
 	count++;
 	if(background == 0) {
 		for(int32_t i = 0; i <= 6; i++) {
-			ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+			ExBltRect(4 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 6; i++) {
-			ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 	ExBltRect(77, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
 	ExBltRect(77, 320 - (count % 320), 208,  0, 20, count % 320, 8);

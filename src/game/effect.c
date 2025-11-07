@@ -119,7 +119,7 @@ void objectStatBlock(int32_t no) {
 	int32_t		zoom, offset, rate ,k, l;
 
 	if((objj[no] < 0) && (rots[objp[no]] == 6)){
-		ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
+		ExBltRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		obj[no] = 0;
 		return;
 	}
@@ -133,13 +133,13 @@ void objectStatBlock(int32_t no) {
 	rate = (obj[no] == 3) + 1;
 	if(heboGB[objp[no]]==1){
 		if(obja[no] % 30 < 15)
-			ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
+			ExBltRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		else if(obja[no] < 40)
-			ExBltFastRect(74,objx[no] / 100, objy[no] / 100,objj[no] * 8,0,8,8);
+			ExBltRect(74,objx[no] / 100, objy[no] / 100,objj[no] * 8,0,8,8);
 		if(obja[no] >= 59) obj[no] = 0;
 		obja[no] = obja[no] + 1;
 	}else if(heboGB[objp[no]]==2){
-		ExBltFastRect(64,objx[no] / 100, objy[no] / 100,0,56 + (8*(obja[no] / 2)),8,8);
+		ExBltRect(64,objx[no] / 100, objy[no] / 100,0,56 + (8*(obja[no] / 2)),8,8);
 		if(obja[no] >= 20) obj[no] = 0;
 		obja[no] = obja[no] + 1;
 	//breaktypeを3にするとBEGINNERのみ旧エフェクト、それ以外新エフェクト #1.60c7l1
@@ -215,7 +215,7 @@ void objectStatBlock2(int32_t no) {
 	int32_t		zoom, offset, rate, k, l;
 
 	if((objj[no] < 0) && (rots[objp[no]] == 6)){
-		ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
+		ExBltRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		obj[no] = 0;
 		return;
 	}
@@ -226,13 +226,13 @@ void objectStatBlock2(int32_t no) {
 	}
 	if(heboGB[objp[no]]==1){
 		if(obja[no] % 30 < 15)
-			ExBltFastRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
+			ExBltRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		else if(obja[no] < 40)
-			ExBltFastRect(74,objx[no] / 100, objy[no] / 100,objj[no] * 8,0,8,8);
+			ExBltRect(74,objx[no] / 100, objy[no] / 100,objj[no] * 8,0,8,8);
 		if(obja[no] >= 59) obj[no] = 0;
 		obja[no] = obja[no] + 1;
 	}else if(heboGB[objp[no]]==2){
-		ExBltFastRect(64,objx[no] / 100, objy[no] / 100,0,56 + (8*(obja[no] / 2)),8,8);
+		ExBltRect(64,objx[no] / 100, objy[no] / 100,0,56 + (8*(obja[no] / 2)),8,8);
 		if(obja[no] >= 20) obj[no] = 0;
 		obja[no] = obja[no] + 1;
 	//breaktypeを3にするとBEGINNERのみ旧エフェクト、それ以外新エフェクト #1.60c7l1
@@ -445,18 +445,18 @@ void objectItemWarning(int32_t no){
 
 		if(objj[no] >= 0){
 			if(objc[no] == 1)
-				BlendExBltRect(89, 120+192 * objp[no] -96 * maxPlay , 86 , 80 * (objj[no] / 10), 36 * (objj[no] % 10), 80, 36,87,87,87,170,170,170);
+				BlendExBltRect(89, 120+192 * objp[no] -96 * maxPlay , 86 , 80 * (objj[no] / 10), 36 * (objj[no] % 10), 80, 36,87);
 			else if((objc[no] == 0) || ((objc[no] == 2) && (obja[no] % 2 == 0)))
-				ExBltFastRect(89, 120+192 * objp[no] -96 * maxPlay , 86 , 80 * (objj[no] / 10), 36 * (objj[no] % 10), 80, 36);
+				ExBltRect(89, 120+192 * objp[no] -96 * maxPlay , 86 , 80 * (objj[no] / 10), 36 * (objj[no] % 10), 80, 36);
 
 			if(objw[no] == 1)
 				printFont(15 + 24 * objp[no] - 12 * maxPlay, 16,"REFLECTED!", 2 * (count % 4 / 2));
 			else if(objw[no] == 2)
 				printFont(15 + 24 * objp[no] - 12 * maxPlay, 16,"  GUARD!", 6 * (count % 4 / 2));
 			else{
-				ExBltFastRect(46,(4 + 24 * objp[no] + 12 * (!maxPlay))*8, 128,(8*(objj[no]))+56,0,8,8);
+				ExBltRect(46,(4 + 24 * objp[no] + 12 * (!maxPlay))*8, 128,(8*(objj[no]))+56,0,8,8);
 				ExBltRect(28,(5 + 24 * objp[no] + 12 * (!maxPlay))*8, 124, 0, (objj[no]) * 16, 48, 16);
-				ExBltFastRect(46,(11 + 24 * objp[no] + 12 * (!maxPlay))*8, 128,(8*(objj[no]))+56,0,8,8);
+				ExBltRect(46,(11 + 24 * objp[no] + 12 * (!maxPlay))*8, 128,(8*(objj[no]))+56,0,8,8);
 			}
 		}
 	}

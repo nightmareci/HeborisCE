@@ -127,7 +127,7 @@ void RankingProc_1() {
 	}
 
 	if (!flag) flag = RankingView();
-	
+
 	if (flag) {
 		mainLoopState = lastRankingMainLoopState;
 		resumeAfterRanking = 1;
@@ -201,14 +201,14 @@ int32_t RankingView(void) {
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
+			ExBltRect(4 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4 + (category >= 2) + (category == 3), 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(4 + (category >= 2) + (category == 3), 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(30, 0, 0);
 	}
 
 	if(category == 0)

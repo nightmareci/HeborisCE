@@ -195,10 +195,10 @@ void viewBack(void) {
 
 		if(back_mov_f[tmp] == 0) {
 			// 静止画
-			ExBltFastRect(10 + backno, 0, 0, 0, 0, 320, 240);
+			ExBltRect(10 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
 			// 動画
-			ExBltFastRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
+			ExBltRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
 
 			if(count % back_mov_inter[tmp] == 0)
 				back_acnt++;
@@ -224,10 +224,10 @@ void viewBack(void) {
 
 		if(back_mov_f[tmp] == 0) {
 			// 静止画
-			ExBltFastRect(10 + backno, 0, 0, 0, 0, 320, 240);
+			ExBltRect(10 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
 			// 動画
-			ExBltFastRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
+			ExBltRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
 
 			if(count % back_mov_inter[tmp] == 0)
 				back_acnt++;
@@ -241,7 +241,7 @@ void viewBack(void) {
 			bgfade_cnt++;
 			for(i=0;i<5*getDrawRate();i++){
 				for(j=0;j<5*getDrawRate();j++){
-					APP_BltRect(72,i*64,j*48,0,bgfade_cnt*48,64,48); // accounts for draw rate, so correct to call directly.
+					APP_DrawPlaneRect(72,i*64,j*48,0,bgfade_cnt*48,64,48); // accounts for draw rate, so correct to call directly.
 				}
 			}
 			if(bgfade_cnt == 6) {
@@ -895,9 +895,9 @@ void viewScoreSmall(void) {
 							/* 横線 */
 							ExBltRect(3,218 + 61 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 							if((sp[i] <= 600) && (!isboost[i])) {
-								ExBltFastRect(3,219 + 61 * i - 96 * maxPlay,181, 60- (( sp[i] * 24 ) / 660 ),37 ,22,1);
+								ExBltRect(3,219 + 61 * i - 96 * maxPlay,181, 60- (( sp[i] * 24 ) / 660 ),37 ,22,1);
 							}else{
-								ExBltFastRect(3,219 + 62 * i - 96 * maxPlay,181, 38,37 ,22,1);
+								ExBltRect(3,219 + 62 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
 							/* 分ぼ */
 							if((gameMode[i] == 7)&&(anothermode[i]!=3)) sprintf(string[0], "%3d", lv[i] * 10);
@@ -920,9 +920,9 @@ void viewScoreSmall(void) {
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
-							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
+							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
-							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
+							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
 						sprintf(string[0], "%3d", vs_goal/10);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
@@ -943,9 +943,9 @@ void viewScoreSmall(void) {
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
-							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
+							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
-							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
+							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
 
 						/* 分母 */
@@ -1004,9 +1004,9 @@ void viewScoreSmall(void) {
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
-							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
+							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
-							ExBltFastRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
+							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
 
 						/* 分母 */
@@ -1567,10 +1567,10 @@ void viewField(void) {
 							if((disable_giji3D < 3) && (getFieldBlock3(i, k + (1-2*i), j) == 0)){
 								if(fi < 8) tmp[0]=getBigBlock_add(i);
 								else tmp[0] = 8;
-								ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j+5+(21*(gameMode[i] == 4))) * 8,
+								ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j+5+(21*(gameMode[i] == 4))) * 8,
 										(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4*8, 2, 8 );
 							}
-							ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+5+(21*(gameMode[i] == 4))) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
+							ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+5+(21*(gameMode[i] == 4))) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
 						}
 					}
 		}
@@ -1584,16 +1584,16 @@ void viewField(void) {
 								if(fi < 8) tmp[0]=getBigBlock_add(i);
 								else tmp[0] = 8;
 								if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-									ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
+									ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
 									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8);
 								if (tomoyo_domirror[0] && (i==0))
-								ExBltFastRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
+								ExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
 									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8);
 							}
 							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-								ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j + 1 + 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
+								ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j + 1 + 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
 							if (tomoyo_domirror[0] && (i==0))
-							ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * (1) - 12 * maxPlay) * 8, (j + 1 + 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
+							ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * (1) - 12 * maxPlay) * 8, (j + 1 + 4) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
 						}
 					}
 		//通常
@@ -1659,34 +1659,34 @@ void viewField(void) {
 												else tmp[0] = 8;
 												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 													BlendExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
-														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
+														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4);
 												if (tomoyo_domirror[0] && (i == 0))
 												BlendExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
-													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
+													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4);
 											}
 											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
 											BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
-												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
+												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
 											if (tomoyo_domirror[0] && (i == 0))
 											BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
-												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4, fldt4, fldt4, fldt5, fldt5, fldt5);
+												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
 										} else if((fldt3 != 0) && (fldt3 > -10)) {
 											// タイマーが0なら無視する #1.60c7k4
 											if((disable_giji3D < 4) && (!iscolor[i]) && (getFieldBlock(i, k + (1-2*i), j, 0) == 0) && (add == 0) && (fi != 8) && (fi != 9) && (heboGB[i]==0)){
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
 												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-												ExBltFastRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+												ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
 													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 												if (tomoyo_domirror[0] && (i == 0))
-												ExBltFastRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+												ExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
 													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 											}
 											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-											ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i],
+											ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i],
 												(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
 											if (tomoyo_domirror[0] && (i == 0))
-											ExBltFastRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i],
+											ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i],
 												(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
 										}
 									}
@@ -1772,7 +1772,7 @@ void viewField(void) {
 			if(hidden[i] != 8) {
 				for(j = hiddeny[i]; j < 22; j++) {
 					for(k = 0; k < 10; k++) {
-						ExBltFastRect(getBlockPlaneNo(i, 0), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+ 3) * 8, 0, color * 8, 8, 8);
+						ExBltRect(getBlockPlaneNo(i, 0), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+ 3) * 8, 0, color * 8, 8, 8);
 					}
 					color = 5;
 				}
@@ -1983,7 +1983,7 @@ void viewFldBackground(void) {
 		int32_t		tr;
 
 		if(background == 2) {
-			BlendExBltRect(24, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+			BlendExBltRect(24, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160, 256 - fldtr);
 		}
 
 		// GBモードでなければ上を描画
@@ -1992,15 +1992,15 @@ void viewFldBackground(void) {
 		{
 			// グラデーション部分をなめらかに#1.60c7p9ex
 			if(!top_frame){
-				BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100 - 20, 32, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100 - 20, 32, 256 - fldtr);
 				for(k = 0; k < 20; k++) {
 					tr = (256 - fldtr) * (19 - k) / 20;
 					tr = 256 - tr;
-					BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay + (80 + k), 0, 101 + (80 + k), 128, 1, 32, 256 - tr, 256 - tr, 256 - tr, tr, tr, tr);
+					BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay + (80 + k), 0, 101 + (80 + k), 128, 1, 32, 256 - tr);
 				}
 			}
 			else{
-				BlendExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				BlendExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35, 256 - fldtr);
 			}
 		}
 
@@ -2014,27 +2014,27 @@ void viewFldBackground(void) {
 
 		if((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))){
 		//フィールド背景を白く
-			ExBltFastRect(2, 112 + ofs_x[i] + 192 * i - 96 * maxPlay, 32, 96 * 7, 0, 96, 176);
+			ExBltRect(2, 112 + ofs_x[i] + 192 * i - 96 * maxPlay, 32, 96 * 7, 0, 96, 176);
 			ExBltRect(3, 110 + 192 * i - 96 * maxPlay, 8, 184, 275 + (24 * top_frame), 107, 24);
 		}
 		// XRAY・COLORのときに黒背景を描く
 		else if ( ( xray_flag[i] && !xray_bgblack ) || ( color_flag[i] && !color_bgblack ) || (heboGB[i] == 2))
 		{
-			ExBltFastRect(24, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160);
+			ExBltRect(24, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160);
 		}
 		else if(background == 0)
 		{
 				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
 				if (tomoyo_domirror[0] && (i == 0))
-				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
 		}
 		else if(background == 1)
 		{
 			if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
 			if (tomoyo_domirror[0] && (i == 0))
-			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
 		}
 	}
 }
@@ -2457,20 +2457,20 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 				}
 				if(getFieldBlock(player, bx5 + 1 - (2 * player), by5, 1) == 0){
 					if(flash == 999)
-						BlendExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8, 112, 112, 112, 154, 154, 154);
+						BlendExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8, 112);
 					else
-						ExBltFastRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
+						ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 				}
 			}else if(flash == 1)
-				ExBltFastRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
+				ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 		}
 
 		// TLS用#1.60c7j3
 		if(flash == 999) {
-			if(j) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154);
+			if(j) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112);
 		// 普通
 		} else {
-			ExBltFastRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8);
+			ExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8);
 		}
 	}
 }
@@ -2527,14 +2527,14 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 				if((pos[0] == 0) || (pos[1] == 0)){
 					if(flash == 999){
 						if(color > 10)
-							BlendExBltRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) ,  112, 112, 112, 154, 154, 154, 65536*2,65536*2);
+							BlendExBltRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) ,  112, 65536*2,65536*2);
 						else
-							BlendExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))), 112, 112, 112, 154, 154, 154  );
+							BlendExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))), 112  );
 					}else{
 						if(color > 10)
 							ExBltFastRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) , 65536*2,65536*2);
 						else
-							ExBltFastRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 					}
 				}
 		}
@@ -2542,9 +2542,9 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 		if(flash == 999) {
 			if(j){
 				if(color > 10)
-					BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154, 65536*2,65536*2);
+					BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 65536*2,65536*2);
 				else
-					BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112, 112, 112, 154, 154, 154);
+					BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112);
 			}
 		// 不透明TLS
 		} else {
@@ -2552,7 +2552,7 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 				if(color > 10)
 					ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 65536*2,65536*2);
 				else
-					ExBltFastRect(83, bx2, by2 + offset,((color+add) * 16), 272 + (k * 16), 16, 16);
+					ExBltRect(83, bx2, by2 + offset,((color+add) * 16), 272 + (k * 16), 16, 16);
 			}
 		}
 	}
@@ -2613,12 +2613,12 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					if(color < 8) tmp = getBigBlock_add(player);
 					else tmp = 8;
 					if(flash != 10)
-						ExBltFastRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
+						ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 					else if(hidden[player] != 8){
 						if( (color < 8) && (rots[player] != 6)) {
-							ExBltFastRect(83, bx2 + 8 - (10 * player), by2 + offset, 20 * tmp, 0, 2, 8 );
+							ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, 20 * tmp, 0, 2, 8 );
 						} else {
-							ExBltFastRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), 0, 2, 8 );
+							ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), 0, 2, 8 );
 						}
 					}
 				}
@@ -2629,34 +2629,34 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					// PRACTICE対応 #1.60c7e
 					// playerごと #1.60c7h8
 					if((flash > 0) && (flash < 999) && (color <= 7) && (add == 0))
-						ExBltFastRect(29, bx2 - 1, by2 - 1 + offset, 60, 80, 10, 10);
+						ExBltRect(29, bx2 - 1, by2 - 1 + offset, 60, 80, 10, 10);
 				}
 				// HOLDは個別設定#1.60c7i1
 				if((enable_hold_frame) && (hold_used[player] == 2) && (dhold[player] == 1) && (flash != 10)) {
 					// 点滅させる#1.60c7p9ex
 					if (count % 16 < 8)
-						ExBltFastRect(29, bx2 - 1, by2 - 1 + offset, 80, 80, 10, 10);
+						ExBltRect(29, bx2 - 1, by2 - 1 + offset, 80, 80, 10, 10);
 					else
-						ExBltFastRect(29, bx2 - 1, by2 - 1 + offset, 70, 80, 10, 10);
+						ExBltRect(29, bx2 - 1, by2 - 1 + offset, 70, 80, 10, 10);
 				}
 			} else {
-				if(flash == 999) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154);
+				if(flash == 999) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112);
 				else if(flash == 10) {
 					// []ブロックの時は固定時の点滅をしない #1.60c7f
 					// playerごと #1.60c7h8
 					// 条件を簡略化#1.60c7i3
 					if((hidden[player] == 8) && (m_roll_blockframe)){
-						ExBltFastRect(24, bx2, by2 + offset, 0, 0, 8, 8);
+						ExBltRect(24, bx2, by2 + offset, 0, 0, 8, 8);
 					} else if( (color < 8) && ((rots[player] != 6) && (add == 0))) {
-						ExBltFastRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 0, 0, 8, 8);
+						ExBltRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 0, 0, 8, 8);
 					} else if((rots[player] != 6) && (color < 10)) {
-						ExBltFastRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 64, 0, 8, 8);
+						ExBltRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 64, 0, 8, 8);
 					} else {
-						ExBltFastRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8);
+						ExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8);
 					}
 				}
 				else if(flash < 2){
-					ExBltFastRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8);
+					ExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8);
 				}
 			}
 		}
@@ -2734,12 +2734,12 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 						if(color > 10)
 							ExBltFastRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) , 65536*2,65536*2);
 						else
-							ExBltFastRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 					}else if((hidden[player] != 8) && (color <= 10)){
 						if( (color < 8) && (rots[player] != 6)) {
-							ExBltFastRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), 40 * tmp, 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), 40 * tmp, 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 						} else {
-							ExBltFastRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 						}
 					}
 				}
@@ -2761,7 +2761,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 				}
 			} else {
 				if(color > 10){	//アイテムブロック
-					if(flash == 999) BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 112, 112, 154, 154, 154, 65536*2,65536*2);
+					if(flash == 999) BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 65536*2,65536*2);
 					else if(flash == 10) {
 						// 固定時の点滅
 						ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8, 65536*2,65536*2);
@@ -2773,20 +2773,20 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 						k = k-4;
 						l = 1;
 					}
-					if(flash == 999) BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112, 112, 112, 154, 154, 154);
+					if(flash == 999) BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112);
 					else if(flash == 10) {
 						// 固定時の点滅
 						if((hidden[player] == 8) && (m_roll_blockframe)){
-							ExBltFastRect(24, bx2, by2 + offset, 0, 0, 16, 16);
+							ExBltRect(24, bx2, by2 + offset, 0, 0, 16, 16);
 						} else if( (color < 8) && ((rots[player] != 6) && (add == 0))) {
-							ExBltFastRect(76, bx2, by2 + offset,0 + (l * 160), 0 + (k * 112), 16, 16);
+							ExBltRect(76, bx2, by2 + offset,0 + (l * 160), 0 + (k * 112), 16, 16);
 						} else if((rots[player] != 6) && (color < 10)) {
-							ExBltFastRect(76, bx2, by2 + offset,128 + (l * 160), 0 + (k * 112), 16, 16);
+							ExBltRect(76, bx2, by2 + offset,128 + (l * 160), 0 + (k * 112), 16, 16);
 						} else {
-							ExBltFastRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
+							ExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
 						}
 					}
-					else if(flash < 2) ExBltFastRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
+					else if(flash < 2) ExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
 				}
 			}
 		}
@@ -2887,33 +2887,33 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 	for(i = 0; i < 4; i++)
 		if(!j){
 			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
-				ExBltFastRect(83,
+				ExBltRect(83,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 			else if( isWRule(player) )		// WorldType用 #1.60c5
-				ExBltFastRect(83,
+				ExBltRect(83,
 				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 			else
-				ExBltFastRect(83,
+				ExBltRect(83,
 				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 		}else{
 			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
-				ExBltFastRect(76,
+				ExBltRect(76,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
 			else if( isWRule(player) )		// WorldType用 #1.60c5
-				ExBltFastRect(76,
+				ExBltRect(76,
 				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
 			else
-				ExBltFastRect(76,
+				ExBltRect(76,
 				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);

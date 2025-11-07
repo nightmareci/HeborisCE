@@ -1509,13 +1509,9 @@ void mainUpdate() {
 			SaveConfig();
 		}
 
-		APP_SetFillColor(0);
-		APP_ClearSecondary();
-
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			APP_TextSize(layer, 12);
-			APP_TextBackColorDisable(layer);
+			APP_SetTextLayerSize(layer, 12);
 		}
 
 		hnext[0] = dispnext;	// #1.60c7o8
@@ -1524,7 +1520,7 @@ void mainUpdate() {
 		versus_rot[1] = rots[1];
 
 		// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-		if ( screenMode & APP_SCREENMODE_DETAILLEVEL ) {
+		if ( screenMode & APP_SCREEN_MODE_DETAIL_LEVEL ) {
 			setDrawRate(2);
 		} else {
 			setDrawRate(1);
@@ -1551,7 +1547,7 @@ void mainUpdate() {
 
 		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			APP_TextLayerOff(layer);
+			APP_DisableTextLayer(layer);
 		}
 
 		if (ranking_type != last_ranking_type) {
@@ -1630,9 +1626,7 @@ void mainUpdate() {
 			SaveConfig();
 		}
 
-		APP_BltAlways(true);
-		APP_SetFillColor(0);
-		APP_ClearSecondary();
+		APP_SetDrawWhileSkippingFrames(true);
 		APP_ResetFrameStep();
 		break;
 	}
@@ -1643,15 +1637,14 @@ void mainUpdate() {
 
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			APP_TextSize(layer, 12);
-			APP_TextBackColorDisable(layer);
+			APP_SetTextLayerSize(layer, 12);
 		}
 
-		APP_TextLayerOn(1, 10, 220);
-		APP_TextOut(1, version);
+		APP_EnableTextLayer(1, 10, 220);
+		APP_PutTextLayerString(1, version);
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			APP_TextBlt(layer);
+			APP_DrawTextLayer(layer);
 		}
 		break;
 
@@ -1665,7 +1658,7 @@ void mainUpdate() {
 		versus_rot[1] = rots[1];
 
 		// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-		if ( screenMode & APP_SCREENMODE_DETAILLEVEL ) {
+		if ( screenMode & APP_SCREEN_MODE_DETAIL_LEVEL ) {
 			setDrawRate(2);
 		} else {
 			setDrawRate(1);
@@ -1679,13 +1672,13 @@ void mainUpdate() {
 			y = 0;
 
 		// グラフィック読み込み
-		APP_TextLayerOn(4, 10, 23);
-		APP_TextOut(4, "Graphics Loading");
+		APP_EnableTextLayer(4, 10, 23);
+		APP_PutTextLayerString(4, "Graphics Loading");
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			APP_TextBlt(layer);
+			APP_DrawTextLayer(layer);
 		}
-		ExBltFastRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
+		ExBltRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
 		break;
 	}
 
@@ -1697,13 +1690,13 @@ void mainUpdate() {
 
 		// 効果音読み込み
 		if(se) {
-			APP_TextLayerOn(1, 10, 36);
-			APP_TextOut(1, "Sound Effect Loading");
+			APP_EnableTextLayer(1, 10, 36);
+			APP_PutTextLayerString(1, "Sound Effect Loading");
 			for ( int layer = 1 ; layer <= 5 ; layer ++ )
 			{
-				APP_TextBlt(layer);
+				APP_DrawTextLayer(layer);
 			}
-			ExBltFastRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
+			ExBltRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
 		}
 		else {
 			goto skipSpriteTime;
@@ -1727,13 +1720,13 @@ void mainUpdate() {
 			{
 				bgmload[i] = 1;
 			}
-			APP_TextLayerOn(5, 10, 49);
-			APP_TextOut(5, "BGM Loading");
+			APP_EnableTextLayer(5, 10, 49);
+			APP_PutTextLayerString(5, "BGM Loading");
 			for ( int i = 1 ; i <= 5 ; i ++ )
 			{
-				APP_TextBlt(i);
+				APP_DrawTextLayer(i);
 			}
-			ExBltFastRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
+			ExBltRect(88, 160, 0, 160 * x, 240 * y, 160, 240);
 		}
 		else {
 			goto skipSpriteTime;
@@ -1754,7 +1747,7 @@ void mainUpdate() {
 
 		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
 		{
-			APP_TextLayerOff(layer);
+			APP_DisableTextLayer(layer);
 		}
 
 		int32_t i;
@@ -1788,7 +1781,7 @@ void mainUpdate() {
 
 		PlayerdataLoad();
 
-		APP_BltAlways(false);
+		APP_SetDrawWhileSkippingFrames(false);
 
 		StopAllSE();
 		StopAllBGM();
@@ -2269,10 +2262,10 @@ bool lastProc(void) {
 	if(thunder_timer){
 		i = (10 - APP_Rand(20))*getDrawRate();
 		j = (10 - APP_Rand(20))*getDrawRate();
-		APP_SetSecondaryOffset(i-(i/2),j-(j/2));
+		APP_SetPlaneDrawOffset(i-(i/2),j-(j/2));
 		thunder_timer--;
 	}else{
-		APP_SetSecondaryOffset(0,0);
+		APP_SetPlaneDrawOffset(0,0);
 	}
 
 	/* FPS表示 */
@@ -2334,7 +2327,7 @@ void title(void) {
 		tmp_maxPlay = maxPlay;	// プレイ人数をバックアップ
 
 		// 画面位置修正 via C++ Port
-		APP_SetSecondaryOffset(0,0);
+		APP_SetPlaneDrawOffset(0,0);
 
 		if (bgm) {
 			if(wavebgm & WAVE_BGM_SIMPLE) {	// No.30→38に変更 #1.60c7i2
@@ -2360,10 +2353,10 @@ void title(void) {
 
 	// 背景を描く
 	if (!title_mov_f) {
-		ExBltFast(8, 0, 0);
+		ExBlt(8, 0, 0);
 	}
 	else {
-		ExBltFastRect(8,0,0,(title_acnt / 10) * 320,(title_acnt % 10) * 240, 320, 240);
+		ExBltRect(8,0,0,(title_acnt / 10) * 320,(title_acnt % 10) * 240, 320, 240);
 		if(count % mov_inter == 0) title_acnt++;
 		if(title_acnt > title_mov_f -1) title_acnt = 0;
 	}
@@ -9224,7 +9217,7 @@ int32_t fldMirrorProc(int32_t player) {
 							if((gameMode[player] == 4) || (item_mode[player]))
 								fldi[(fldsizew[player] - j - 1) + i * fldsizew[player] + player * 220] = fldibuf[j + i * fldsizew[player] + player * 220];
 						}
-					ExBltFast(27, 120+ ((fldsizew[player] - j - 1) * 8) + 192 * player - 96 * maxPlay, 40);
+					ExBlt(27, 120+ ((fldsizew[player] - j - 1) * 8) + 192 * player - 96 * maxPlay, 40);
 					}
 				}
 				fmirror_cnt[player]++;
@@ -14580,7 +14573,7 @@ void statExchangefield(int32_t player) {
 				if((fld[j + i * 10 + player * 220] < 0) && (rots[player] != 6))
 					fld[j + i * 10 + player * 220] = 8;
 			}
-		ExBltFast(27, 120+ ((statusc[player * 10 + 0] - 60) * 8) + 192 * player - 96 * maxPlay, 40);
+		ExBlt(27, 120+ ((statusc[player * 10 + 0] - 60) * 8) + 192 * player - 96 * maxPlay, 40);
 		scanItem(player);
 		}
 		if(gameMode[player] != 4)		// 1人用アイテムモードでは効果なし
@@ -14842,9 +14835,9 @@ void statItemRulet(int32_t player) {
 			ofs_x[player] = 0;
 			ofs_x2[player] = 0;
 		}
-		if(statusc[player * 10 + 0] <= 150)ExBltFastRect(89, 120+192 * player -96 * maxPlay , 142 , 80 * ((statusc[player * 10 + 2] - 1) / 10), 36 * ((statusc[player * 10 + 2] - 1) % 10), 80, 36);
-		ExBltFastRect(46,(4 + 24 * player + 12 * (!maxPlay))*8, 182,(8*(statusc[player * 10 + 2] - 1))+56,0,8,8);
-		ExBltFastRect(46,(11 + 24 * player + 12 * (!maxPlay))*8, 182,(8*(statusc[player * 10 + 2] - 1))+56,0,8,8);
+		if(statusc[player * 10 + 0] <= 150)ExBltRect(89, 120+192 * player -96 * maxPlay , 142 , 80 * ((statusc[player * 10 + 2] - 1) / 10), 36 * ((statusc[player * 10 + 2] - 1) % 10), 80, 36);
+		ExBltRect(46,(4 + 24 * player + 12 * (!maxPlay))*8, 182,(8*(statusc[player * 10 + 2] - 1))+56,0,8,8);
+		ExBltRect(46,(11 + 24 * player + 12 * (!maxPlay))*8, 182,(8*(statusc[player * 10 + 2] - 1))+56,0,8,8);
 		ExBltRect(28,(5 + 24 * player + 12 * (!maxPlay))*8, 178, 0, (statusc[player * 10 + 2] - 1) * 16, 48, 16);
 		statusc[player * 10 + 0]++;
 		if(statusc[player * 10 + 0] >= waitA){
@@ -16565,8 +16558,6 @@ void testmenu(void) {
 		init = false;
 	}
 
-	APP_ClearSecondary();
-
 	// メインメニュー
 	if( mode == 0 ) {
 		param = 0;
@@ -16614,7 +16605,7 @@ void testmenu(void) {
 	}
 	// GRAPHIC TEST
 	else if( mode == 1 ) {
-		ExBltFast(param, 0, 0);
+		ExBlt(param, 0, 0);
 
 		padRepeat(0);
 		// ←
@@ -16739,27 +16730,25 @@ void LoadGraphic(const char *nameStr, int32_t plane) {
 	else
 		sprintf(string[0], "res/graphics/highDetail/%s", nameStr);
 
-	APP_LoadBitmap(string[0], plane);
+	APP_LoadPlane(plane, string[0]);
 }
 
 void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
 		LoadGraphic("title.png", 8);
 		if ( getDrawRate() == 1 ){
-			APP_LoadBitmap("res/graphics/title/logo_low.png", 7);
+			APP_LoadPlane(7, "res/graphics/title/logo_low.png");
 		}else{
-			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7);
+			APP_LoadPlane(7, "res/graphics/title/logo_hi.png");
 		}
-		APP_SetColorKeyRGB(7,0,0,0);
 	}else{					//動画
 		if ( getDrawRate() == 1 ){
-			APP_LoadBitmap("res/graphics/title/tmov_low.png", 8);
-			APP_LoadBitmap("res/graphics/title/logo_low.png", 7);
+			APP_LoadPlane(8, "res/graphics/title/tmov_low.png");
+			APP_LoadPlane(7, "res/graphics/title/logo_low.png");
 		}else{
-			APP_LoadBitmap("res/graphics/title/tmov_hi.png" , 8);
-			APP_LoadBitmap("res/graphics/title/logo_hi.png", 7);
+			APP_LoadPlane(8, "res/graphics/title/tmov_hi.png");
+			APP_LoadPlane(7, "res/graphics/title/logo_hi.png");
 		}
-		APP_SetColorKeyRGB(7,0,0,0);
 	}
 }
 
@@ -16771,7 +16760,7 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/bg/highDetail/%s", nameStr);
 
-	APP_LoadBitmap(string[0], p1);
+	APP_LoadPlane(p1, string[0]);
 }
 
 void loadGraphics(int32_t players) {
@@ -16787,17 +16776,13 @@ void loadGraphics(int32_t players) {
 
 		/* プレーン1にフォントを読み込み */
 		LoadGraphic("hebofont.png", 1);
-		APP_SetColorKeyPos(1, 0, 0);
 
 		/* プレーン2にフィールドを読み込み */
 		LoadGraphic("hebofld.png", 2);
-		APP_SetColorKeyRGB(2,255,255,255);
 
 		/* プレーン3に各種スプライトを読み込み */
 		LoadGraphic("hebospr.png", 3);
-		APP_SetColorKeyRGB(3,0,0,0);
-	//	APP_SetColorKeyPos(3, 0, 0);
-	//	APP_EnableBlendColorKey(3, 1);
+
 
 		/* プレーン4〜6, 24にフィールド背景を読み込み */
 		LoadGraphic("heboflb1.png", 4);
@@ -16829,11 +16814,8 @@ void loadGraphics(int32_t players) {
 		/* プレーン25にモード選択時のメッセージを読み込み  */
 		LoadGraphic("text.png", 25);
 
-		APP_SetColorKeyRGB(25, 0, 0, 0);
-
 		/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
 		LoadGraphic("grade.png", 26);
-		APP_SetColorKeyRGB(26,255,0,255);
 
 		/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
 		LoadGraphic("mirror_effect_TAP.png", 27);
@@ -16841,15 +16823,12 @@ void loadGraphics(int32_t players) {
 
 		/* プレーン28にアイテム名を読み込み #1.60c7o4 */
 		LoadGraphic("item.png", 28);
-		APP_SetColorKeyRGB(28,255,0,255);
 
 		/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
 		LoadGraphic("guide.png", 29);
-		APP_SetColorKeyRGB(29,0,0,0);
 
 		/* プレーン31にフォント(大)を読み込み */
 		LoadGraphic("hebofont3.png", 31);
-		APP_SetColorKeyRGB(31,0,0,0);
 	}
 
 	/* ブロック消去エフェクトを読み込み */
@@ -16862,14 +16841,6 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("break5.png", 37);
 		LoadGraphic("break6.png", 38);
 		LoadGraphic("break7.png", 39);
-		APP_SetColorKeyRGB(32,   0, 0,   0);
-		APP_SetColorKeyRGB(33,   0, 0,   0);
-		APP_SetColorKeyRGB(34,   0, 0,   0);
-		APP_SetColorKeyRGB(35,   0, 0,   0);
-		APP_SetColorKeyRGB(36,   0, 0,   0);
-		APP_SetColorKeyRGB(37,   0, 0,   0);
-		APP_SetColorKeyRGB(38,   0, 0,   0);
-		APP_SetColorKeyRGB(39,   0, 0,   0);
 	} else if (reinit) {
 		LoadGraphic("break0_tap.png", 32); // 黒ブロック追加 #1.60c7i5
 		LoadGraphic("break1_tap.png", 33);
@@ -16879,14 +16850,6 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("break5_tap.png", 37);
 		LoadGraphic("break6_tap.png", 38);
 		LoadGraphic("break7_tap.png", 39);
-		APP_SetColorKeyRGB(32, 255, 0, 255);
-		APP_SetColorKeyRGB(33, 255, 0, 255);
-		APP_SetColorKeyRGB(34, 255, 0, 255);
-		APP_SetColorKeyRGB(35, 255, 0, 255);
-		APP_SetColorKeyRGB(36, 255, 0, 255);
-		APP_SetColorKeyRGB(37, 255, 0, 255);
-		APP_SetColorKeyRGB(38, 255, 0, 255);
-		APP_SetColorKeyRGB(39, 255, 0, 255);
 	}
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
@@ -16898,11 +16861,9 @@ void loadGraphics(int32_t players) {
 
 		/* プレーン44にミッションモード用画像を読み込み */
 		LoadGraphic("heboris_road.png", 44);
-		APP_SetColorKeyRGB(44, 0, 0, 0);
 
 		/* プレーン45にライン強制消去用画像を読み込み */
 		LoadGraphic("del_field.png", 45);
-		APP_SetColorKeyRGB(45, 0, 0, 0);
 
 		/* プレーン46にプラチナブロックとアイテム絵を読み込み */
 		LoadGraphic("heboblk_sp.png", 46);
@@ -16915,21 +16876,12 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("hanabi_waterblue.png", 51);
 		LoadGraphic("hanabi_blue.png",      52);
 		LoadGraphic("hanabi_purple.png",    53);
-		APP_SetColorKeyRGB(47, 0, 0, 0);
-		APP_SetColorKeyRGB(48, 0, 0, 0);
-		APP_SetColorKeyRGB(49, 0, 0, 0);
-		APP_SetColorKeyRGB(50, 0, 0, 0);
-		APP_SetColorKeyRGB(51, 0, 0, 0);
-		APP_SetColorKeyRGB(52, 0, 0, 0);
-		APP_SetColorKeyRGB(53, 0, 0, 0);
 
 		/* プレーン54にアイテムゲージを読み込み */
 		LoadGraphic("item_guage.png",       54);
-		APP_SetColorKeyRGB(54, 255, 0, 255);
 
 		/* プレーン55に回転ルール性能指標を読み込み */
 		LoadGraphic("rot.png",	      55);
-		APP_SetColorKeyRGB(55, 255, 0, 255);
 
 		/* プラチナブロック消去エフェクトを読み込み */
 		LoadGraphic("perase1.png", 57);
@@ -16940,18 +16892,9 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("perase6.png", 62);
 		LoadGraphic("perase7.png", 63);
 
-		APP_SetColorKeyRGB(57, 0, 0, 0);
-		APP_SetColorKeyRGB(58, 0, 0, 0);
-		APP_SetColorKeyRGB(59, 0, 0, 0);
-		APP_SetColorKeyRGB(60, 0, 0, 0);
-		APP_SetColorKeyRGB(61, 0, 0, 0);
-		APP_SetColorKeyRGB(62, 0, 0, 0);
-		APP_SetColorKeyRGB(63, 0, 0, 0);
-
 		LoadGraphic("heboblk0B.png", 64);
 
 		LoadGraphic("shootingstar.png", 65);
-		APP_SetColorKeyRGB(65, 0, 0, 0);
 
 		/* TI式ミラー演出画像を読み込み */
 		LoadGraphic("fldmirror01.png", 66);
@@ -16959,55 +16902,38 @@ void loadGraphics(int32_t players) {
 		LoadGraphic("fldmirror03.png", 68);
 		LoadGraphic("fldmirror04.png", 69);
 
-		APP_SetColorKeyRGB(66, 0, 0, 0);
-		APP_SetColorKeyRGB(67, 0, 0, 0);
-		APP_SetColorKeyRGB(68, 0, 0, 0);
-		APP_SetColorKeyRGB(69, 0, 0, 0);
-
 		/* スタッフロールの画像を読み込み */
 		LoadGraphic("staffroll.png", 70);
-		APP_SetColorKeyRGB(70, 0, 0, 0);
 
 		LoadGraphic("heboblk4_5.png", 73);
 
 		LoadGraphic("fade.png", 72);
-		APP_SetColorKeyRGB(72, 255, 255, 255);
 
 		LoadGraphic("heboblk_old.png", 74);
 
 		LoadGraphic("tomoyo_eh_fade.png", 75);
-		APP_SetColorKeyRGB(75, 255, 0, 255);
 
 		LoadGraphic("heboblk_big.png", 76);
 		LoadGraphic("line.png", 77);//ランキングのライン
-		APP_SetColorKeyRGB(77, 0, 0, 0);
 
 		LoadGraphic("laser.png", 78);
-		APP_SetColorKeyRGB(78, 255, 0, 255);
 
 		LoadGraphic("shuffle_field_effect.png", 79);
-		APP_SetColorKeyRGB(79, 255, 0, 255);
 
 		LoadGraphic("heboblk6.png", 80);
 
 		LoadGraphic("text2.png", 81);
-		APP_SetColorKeyRGB(81, 0, 0, 0);
 
 		LoadGraphic("itemerase.png", 82);
-		APP_SetColorKeyRGB(82,0,0,0);
 
 		LoadGraphic("heboblk_sp2.png", 83);
 
 		LoadGraphic("rotstext.png", 84);
-		APP_SetColorKeyRGB(84, 0, 0, 0);
 		LoadGraphic("hebofont5.png", 85);
-		APP_SetColorKeyRGB(85, 172, 136, 199);
 
 		LoadGraphic("gamemodefont.png", 86);
-		APP_SetColorKeyRGB(86, 0, 0, 0);
 
 		LoadGraphic("rollmark.png", 87);
-		APP_SetColorKeyRGB(87, 0, 0, 0);
 
 		//プレーン88番使用中…
 
@@ -17024,11 +16950,10 @@ void loadGraphics(int32_t players) {
 	else if(screenMode == 6) { sw = 1280; sh = 960; }
 	else if((screenMode == 2) || (screenMode == 3) || (screenMode > 6)) { sw = 640; sh = 480; }
 	/* ここまで */
-	ExCreateSurface(9, sw, sh);
 
 	/* プレーン23に鏡像のためのバッファ */
 //	if(mirror) {
-		ExCreateSurface(23, 320, 240);
+		// TODO
 //	}
 
 	/* 背景半透明処理		…はloadBGへ移動 C7T2.5EX */
@@ -17036,11 +16961,10 @@ void loadGraphics(int32_t players) {
 
 	// タイトル画像を暗くする #1.60c7o5
 	if(background == 2) {
-		ExCreateSurface(30, 320, 240);
-		ExBltFastRect(8, 0, 0,0,0,320,240);
+		ExBltRect(8, 0, 0,0,0,320,240);
 
 		for(i = 0; i < 3; i++)
-			BlendExBlt(24, (i % 3) * 120, 0, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+			BlendExBlt(24, (i % 3) * 120, 0, 256 - fldtr);
 
 	}
 }
@@ -17073,7 +16997,6 @@ void loadBG(int32_t players,int32_t vsmode){
 		LoadBackground("back01.png", 71, 0);
 
 	max = 22;
-	APP_EnableBlendColorKey(3, 1);
 
 	/* 背景半透明処理 */
 	if(!skip_viewbg) {
@@ -17103,27 +17026,26 @@ void loadBG(int32_t players,int32_t vsmode){
 
 				for(j = 0; j < 1 +players; j++) {
 					if(background == 2) {
-						BlendExBltRect(24, (120 + 192 * j - 96 * players) + tmp1, 40 + tmp2, 0, 0, 80, 160, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+						BlendExBltRect(24, (120 + 192 * j - 96 * players) + tmp1, 40 + tmp2, 0, 0, 80, 160, 256 - fldtr);
 					}
 
 					// グラデーション部分をなめらかに#1.60c7p9ex
 					if(!top_frame){
-						BlendExBltRect(3, (112 + 192 * j - 96 * players) + tmp1, tmp2, 101, 128, 100 - 20, 33, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+						BlendExBltRect(3, (112 + 192 * j - 96 * players) + tmp1, tmp2, 101, 128, 100 - 20, 33, 256 - fldtr);
 						for(k = 0; k < 20; k++) {
 							tr = (256 - fldtr) * (19 - k) / 20;
 							tr = 256 - tr;
-							BlendExBltRect(3, (112 + 192 * j - 96 * players) + (80 + k) + tmp1, tmp2, 101 + (80 + k), 128, 1, 33, 256 - tr, 256 - tr, 256 - tr, tr, tr, tr);
+							BlendExBltRect(3, (112 + 192 * j - 96 * players) + (80 + k) + tmp1, tmp2, 101 + (80 + k), 128, 1, 33, 256 - tr);
 						}
 					}
 					else
 					{
-						BlendExBltRect(3, (97 + 192 * j - 96 * players) + tmp1, tmp2, 127, 423, 126, 35, 256 - fldtr, 256 - fldtr, 256 - fldtr, fldtr, fldtr, fldtr);
+						BlendExBltRect(3, (97 + 192 * j - 96 * players) + tmp1, tmp2, 127, 423, 126, 35, 256 - fldtr);
 					}
 				}
 			}
 		}
 	}
-	APP_EnableBlendColorKey(3, 0);
 }
 
 /* 効果音読み込み */

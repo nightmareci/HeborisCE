@@ -87,7 +87,6 @@ add_executable(${APP_EXE}
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
 
-	"src/app/nanotime.c"
 	"src/app/hashmap.c"
 
 	"src/game/gamestart.c"
@@ -136,7 +135,6 @@ add_executable(${APP_EXE}
 	"src/app/dr_mp3.h"
 	"src/app/dr_wav.h"
 	"src/app/hashmap.h"
-	"src/app/nanotime.h"
 	"src/app/stb_image.h"
 	"src/app/stb_vorbis.h"
 

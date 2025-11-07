@@ -5,7 +5,6 @@
 
 void APP_Start(void);
 bool APP_Update(void);
-void APP_ResetFrameStep(void);
 void APP_SetFPS(unsigned fps);
 int APP_GetFPS(void);
 int APP_GetRealFPS(void);

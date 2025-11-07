@@ -1930,7 +1930,7 @@ void mainUpdate() {
 
 void gameExecute() {
 	static int32_t i;
-	
+
 	switch (resumeAfterRanking) {
 	case 1:
 		lastProc();
@@ -2301,7 +2301,7 @@ bool lastProc(void) {
 		setGamePause(0, false);
 		setGamePause(1, false);
 	}
-	
+
 	return false;
 }
 
@@ -3397,7 +3397,7 @@ void versusInit(int32_t player) {
 	if( (!getPushState(player, APP_BUTTON_B) && (gameMode[player] == 6) && (!randommode[player])) || (nextblock ==11)|| ((p_nextblock ==11)&&(gameMode[player] == 5))) {
 		if(start_stage[player] < 100){	//通常
 			// use sakura bag.
-			len = APP_StrLen(nextb_list);			
+			len = APP_StrLen(nextb_list);
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
@@ -3622,7 +3622,7 @@ void tgmNextInit(int32_t player) {
 			// 4つの履歴に無かったらその場で抜ける
 			if ((block != history[0]) && (block != history[1]) && (block != history[2]) && (block != history[3]))
 				break;
-			block = TGMPiece(&PieceSeed); // the actual intended reroll.   
+			block = TGMPiece(&PieceSeed); // the actual intended reroll.
 		}
 
 		// 履歴をずらす
@@ -3660,7 +3660,7 @@ void tgm3NextInit(int32_t player) {
 	int32_t history[4] = { 3,6,3,6 }; 	// init history to Z S Z S
 	int32_t block,bagpos,bugdrought,droughtlength,maxdroughtlength;
 	int32_t dp_bag[35]= { 0,0,0,0,0,3,3,3,3,3,6,6,6,6,6,5,5,5,5,5,1,1,1,1,1,2,2,2,2,2,4,4,4,4,4 }; // used to tryand prevent droughts  i,z,s,j,l,o,t
-	int32_t histogram[7] = { 4,4,4,4,4,4,4 }; // 
+	int32_t histogram[7] = { 4,4,4,4,4,4,4 }; //
 	// next_adjust
 	if (((gameMode[player] != 5) && (next_adjust)) || ((gameMode[player] == 5) && (p_next_adjust))) {
 		do {
@@ -3688,7 +3688,7 @@ void tgm3NextInit(int32_t player) {
 	histogram[5]++;
 	histogram[6]++;
 	histogram[nextb[0 + player * 1400]] = 0; // zero the piece we just saw. will be duplicated later
-    
+
 	// fill the rest.
 	for (i = 1; i < 1400; i++) {
 		for (j = 0; j < 6; j++) {
@@ -3720,7 +3720,7 @@ void tgm3NextInit(int32_t player) {
 			}
 		}
 		maxdroughtlength = droughtlength;  // remember for later check.
-		
+
 		// update histogram
 	    // increment all seven
 		histogram[0]++;
@@ -3765,10 +3765,10 @@ void SakuraNextInit(int32_t player) {
 	int32_t i, j;
 	int32_t history[6];  // history size SIX for this one.
 	int32_t block;
-    
+
 
 	// empty history. piece can never be a seven, so that's placeholder.
-		history[0] = 7; 
+		history[0] = 7;
 		history[1] = 7;
 		history[2] = 7;
 		history[3] = 7;
@@ -4478,7 +4478,7 @@ bool playerExecute(void) {
 	} else {
 		overcount = 0;
 	}
-	
+
 	return false;
 }
 
@@ -5105,7 +5105,7 @@ void statSelectMode(int32_t player) {
 	if(statusc[player * 10 + 2] == 0) {
 		// ルールセレクト
 		printSMALLFont(124 + 192 * player - 96 * maxPlay, 54, "   Rot?Rule", 4);
-		printFont(15 + 24 * player - 12 * maxPlay, 12, "<	>", count % 9);
+		printFont(15 + 24 * player - 12 * maxPlay, 12, "<        >", count % 9);
 
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 66,  (statusc[player * 10 + 1] % 40) * 3, 28, 30, 8);
 		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 75,  160 - ((statusc[player * 10 + 1] % 40) * 3), 20, 30, 8);
@@ -5162,13 +5162,13 @@ void statSelectMode(int32_t player) {
 
 		// カーソル
 		printFont(15 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "b", fontc[rots[player]]);
-		printFont(14 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "<	  >", count % 9);
+		printFont(14 + 24 * player - 12 * maxPlay, 9 + (gameMode[player] - ((gameMode[player] >= 6 ) +(gameMode[player] >= 9) )*2-(gameMode[player] >= 10))*2, "<          >", count % 9);
 
 		if(gameMode[player]>=9){
-			printFont(15 + 24 * player - 12 * maxPlay, 8, "k	k", count % 9);//↑カーソル
+			printFont(15 + 24 * player - 12 * maxPlay, 8, "k        k", count % 9);//↑カーソル
 		}
 		if(gameMode[player]<10){
-			printFont(15 + 24 * player - 12 * maxPlay, 20, "n	n", count % 9);//↓カーソル
+			printFont(15 + 24 * player - 12 * maxPlay, 20, "n        n", count % 9);//↓カーソル
 		}
 		//biginner
 		if(gameMode[player]<9){
@@ -5545,7 +5545,7 @@ void statSelectMode(int32_t player) {
 		printMenuButton(26 + 10 * player - 12 * maxPlay, 15, APP_BUTTON_C, player);
 		printFont(27 + 10 * player - 12 * maxPlay, 15, ":", 0);
 		printFont(26 + 9 * player - 12 * maxPlay, 16, "BIG", 7);
-	}	
+	}
 	if( getPressState(player, APP_BUTTON_C) ) {
 		if(statusc[player * 10 + 2] == 1){
 			if(gameMode[player] == 6)//RANDOM
@@ -5877,7 +5877,7 @@ int32_t Admitgradecheck(int32_t player){
 		//昇格
 		temp2[player]=5-grade_pasttime[player];
 		if(temp2[player]<1)temp2[player]=1;//0にはしない
-		if((sort_grade[0] == sort_grade[1])&&((sort_grade[0]- admit_grade[player]) >= temp2[player])){  // if best two grades are identical, and enough gametime has passed 
+		if((sort_grade[0] == sort_grade[1])&&((sort_grade[0]- admit_grade[player]) >= temp2[player])){  // if best two grades are identical, and enough gametime has passed
 			exam_grade[player]= sort_grade[0];							  // give exam for best grade in history. sooner if it's much better
 			return 1;
 		}
@@ -7098,8 +7098,8 @@ void statBlock(int32_t player) {
 	dhold2[player] = 0;
 
 	nextc[player] = (nextc[player] + 1) % 1400;
-	// correction for shorter sequences. 
-	// safe because it will never reach 1400 before these hit. 
+	// correction for shorter sequences.
+	// safe because it will never reach 1400 before these hit.
 	if ((repversw>65) && ((gameMode[player]!=6) || (randommode[player]))) // exception fo tomoyo mode, because it loves to replace the piece sequence without telling you.
 	{
 		if (nextblock==10) // sega poweron pattern
@@ -7114,7 +7114,7 @@ void statBlock(int32_t player) {
 		{
 			nextc[player] = (nextc[player]) % APP_StrLen(nextfp_list); // actual size of it. should be 1000
 		}
-		if (nextblock==13) // actual sega randomizer. 
+		if (nextblock==13) // actual sega randomizer.
 		{
 			nextc[player] = (nextc[player]) % 1000;  // loops at 1000. no string length to check
 		}

@@ -51,7 +51,7 @@ option(APP_ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any
 
 set(APP_DEFAULT_JOYKEY_ASSIGN "{ 0 }")
 set(APP_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
-set(APP_DEFAULT_SCREEN_MODE "(APP_SCREENMODE_WINDOW | APP_SCREENMODE_DETAILLEVEL)")
+set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL)")
 
 set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_WORKINGDIR")
 set(APP_BASE_PATH_APPEND "")
@@ -135,7 +135,6 @@ add_executable(${APP_EXE}
 	"src/app/dr_mp3.h"
 	"src/app/dr_wav.h"
 	"src/app/hashmap.h"
-	"src/app/stb_image.h"
 	"src/app/stb_vorbis.h"
 
 	"src/game/gamestart.h"
@@ -205,7 +204,7 @@ if(VITA)
 	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
 	set(APP_FILESYSTEM_TYPE APP_FILESYSTEM_PHYSFS CACHE STRING "" FORCE)
-	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREENMODE_FULLSCREEN | APP_SCREENMODE_DETAILLEVEL | APP_SCREENMODE_VSYNC)" CACHE STRING "" FORCE)
+	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
 	set(APP_SCREEN_SUBPIXEL_OFFSET "0.0f" CACHE STRING "" FORCE)
 
 	# The upstream PhysFS doesn't have Vita SDK support, so we need to use Vita
@@ -266,11 +265,22 @@ elseif(WIN32 AND MSVC)
 
 	if(APP_VENDORED)
 		set(BUILD_SHARED_LIBS OFF)
-		add_subdirectory(dep/SDL)
-		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
+		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
+		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_VENDORED ON)
+		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
 	else()
 		find_package(SDL3 REQUIRED)
-		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
+		find_package(SDL3_image REQUIRED)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
 	endif()
 
 	if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
@@ -458,11 +468,22 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 
 	if(APP_VENDORED)
 		set(BUILD_SHARED_LIBS OFF)
-		add_subdirectory(dep/SDL)
-		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
+		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
+		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_VENDORED ON)
+		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
 	else()
 		find_package(SDL3 REQUIRED)
-		target_link_libraries(${APP_EXE} PRIVATE SDL3::SDL3)
+		find_package(SDL3_image REQUIRED)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
 	endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	# TODO: Add option to not include --emrun in linker flags for actual

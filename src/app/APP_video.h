@@ -48,6 +48,9 @@ void APP_PutTextLayerString(int layer, const char* string);
 void APP_DrawTextLayer(int layer);
 void APP_DisableTextLayer(int layer);
 
+// Load an image file into a drawing plane.
+// filename must not have a file extension. All supported file types/extensions
+// are tried until a file is found.
 void APP_LoadPlane(int plane, const char* filename);
 void APP_DrawPlane(int plane, int dstX, int dstY);
 void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h);

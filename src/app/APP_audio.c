@@ -72,6 +72,20 @@ struct
 	{ ".mp3", APP_CreateStreamingMP3AudioData }
 };
 
+static void APP_ShowSoundLoadErrorMessage(const char* filenameExt)
+{
+	char* message;
+	if (SDL_asprintf(&message,
+		"Audio file \"%s\" failed to load.\n"
+		"It might be corrupt, so you would need to replace it.",
+		filenameExt
+	) < 0) {
+		return;
+	}
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error loading audio file", message, NULL);
+	SDL_free(message);
+}
+
 bool APP_InitAudio(int wavesCount)
 {
 	if (APP_WasAudioInit) {
@@ -249,11 +263,6 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	}
 
 	APP_QuitSound(sound);
-	sound->streaming = false;
-
-	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetPreloadedAudioStreamData, sound)) {
-		APP_Exit(EXIT_FAILURE);
-	}
 
 	bool (* preload)(SDL_IOStream*, const SDL_AudioSpec*, uint8_t**, uint32_t*) = NULL;
 	char* filenameExt = NULL;
@@ -275,7 +284,6 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 		return false;
 	}
 	SDL_IOStream* const file = APP_OpenRead(filenameExt);
-	SDL_free(filenameExt);
 	if (!file) {
 		APP_Exit(EXIT_FAILURE);
 	}
@@ -283,8 +291,18 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	uint8_t* data;
 	uint32_t size;
 	if (!preload(file, &APP_AudioDeviceFormat, &data, &size)) {
+		APP_ShowSoundLoadErrorMessage(filenameExt);
+		SDL_free(filenameExt);
 		APP_Exit(EXIT_FAILURE);
 	}
+	SDL_free(filenameExt);
+
+	sound->streaming = false;
+
+	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetPreloadedAudioStreamData, sound)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+
 	if (leadin) {
 		oldData = sound->preloaded.leadinData;
 		sound->preloaded.leadinData = data;
@@ -478,12 +496,6 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 	}
 
 	APP_QuitSound(sound);
-	sound->streaming = true;
-
-	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetStreamedAudioStreamData, sound)) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	sound->looping = looping;
 
 	char* filenameExt;
 	APP_CreateStreamingAudioDataFunction create;
@@ -496,25 +508,41 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 			SDL_free(filenameExt);
 			APP_Exit(EXIT_FAILURE);
 		}
-		SDL_free(filenameExt);
 		sound->streamed.leadinData = create(file, &APP_AudioDeviceFormat);
 		if (!sound->streamed.leadinData) {
+			APP_ShowSoundLoadErrorMessage(filenameExt);
+			SDL_free(filenameExt);
 			APP_Exit(EXIT_FAILURE);
 		}
+		SDL_free(filenameExt);
 	}
 
 	create = APP_GetCreateStreamingAudioDataFunction(mainFilename, &filenameExt);
 	if (create) {
 		file = APP_OpenRead(filenameExt);
-		SDL_free(filenameExt);
 		if (!file) {
+			SDL_free(filenameExt);
 			APP_Exit(EXIT_FAILURE);
 		}
 		sound->streamed.mainData = create(file, &APP_AudioDeviceFormat);
 		if (!sound->streamed.mainData) {
+			APP_ShowSoundLoadErrorMessage(filenameExt);
+			SDL_free(filenameExt);
 			APP_Exit(EXIT_FAILURE);
 		}
+		SDL_free(filenameExt);
 	}
+
+	if (!create) {
+		return false;
+	}
+
+	sound->streaming = true;
+
+	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetStreamedAudioStreamData, sound)) {
+		APP_Exit(EXIT_FAILURE);
+	}
+	sound->looping = looping;
 
 	sound->streamed.chunks = SDL_malloc(APP_STREAMED_AUDIO_CHUNK_SIZE * 2);
 	if (!sound->streamed.chunks) {

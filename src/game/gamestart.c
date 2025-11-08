@@ -1664,7 +1664,7 @@ void mainUpdate() {
 			setDrawRate(1);
 		}
 
-		LoadGraphic("loading.png", 88);		// Loading表示
+		LoadGraphic(88, "loading");		// Loading表示
 			x = APP_Rand(5);
 		if ( getDrawRate() != 1 )
 			y = APP_Rand(2);
@@ -16724,7 +16724,7 @@ void testmenu(void) {
 
 /* グラフィック読み込み */
 // initializeから独立 #1.60c7o5
-void LoadGraphic(const char *nameStr, int32_t plane) {
+void LoadGraphic(int32_t plane, const char *nameStr) {
 	if ( getDrawRate() == 1 )
 		sprintf(string[0], "res/graphics/lowDetail/%s", nameStr);
 	else
@@ -16735,24 +16735,24 @@ void LoadGraphic(const char *nameStr, int32_t plane) {
 
 void LoadTitle(){
 	if(!title_mov_f){		//タイトルは静止画
-		LoadGraphic("title.png", 8);
+		LoadGraphic(8, "title");
 		if ( getDrawRate() == 1 ){
-			APP_LoadPlane(7, "res/graphics/title/logo_low.png");
+			APP_LoadPlane(7, "res/graphics/title/logo_low");
 		}else{
-			APP_LoadPlane(7, "res/graphics/title/logo_hi.png");
+			APP_LoadPlane(7, "res/graphics/title/logo_hi");
 		}
 	}else{					//動画
 		if ( getDrawRate() == 1 ){
-			APP_LoadPlane(8, "res/graphics/title/tmov_low.png");
-			APP_LoadPlane(7, "res/graphics/title/logo_low.png");
+			APP_LoadPlane(8, "res/graphics/title/tmov_low");
+			APP_LoadPlane(7, "res/graphics/title/logo_low");
 		}else{
-			APP_LoadPlane(8, "res/graphics/title/tmov_hi.png");
-			APP_LoadPlane(7, "res/graphics/title/logo_hi.png");
+			APP_LoadPlane(8, "res/graphics/title/tmov_hi");
+			APP_LoadPlane(7, "res/graphics/title/logo_hi");
 		}
 	}
 }
 
-void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
+void LoadBackground(int32_t plane, const char *nameStr) {
 	if(skip_viewbg) return;
 
 	if ( getDrawRate() == 1 )
@@ -16760,7 +16760,7 @@ void LoadBackground(const char *nameStr, int32_t p1, int32_t p2) {
 	else
 		sprintf(string[0], "res/bg/highDetail/%s", nameStr);
 
-	APP_LoadPlane(p1, string[0]);
+	APP_LoadPlane(plane, string[0]);
 }
 
 void loadGraphics(int32_t players) {
@@ -16768,176 +16768,176 @@ void loadGraphics(int32_t players) {
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン0にメダルを読み込み #1.60c7m9 */
-		LoadGraphic("medal.png", 0);
+		LoadGraphic(0, "medal");
 		/* プレーン56にTIメダルを読み込み #1.60c7m9 */
-		LoadGraphic("medal_ti.png", 56);
+		LoadGraphic(56, "medal_ti");
 
 		// ブロック絵はプレーン40〜43に移転しました #1.60c7o8
 
 		/* プレーン1にフォントを読み込み */
-		LoadGraphic("hebofont.png", 1);
+		LoadGraphic(1, "hebofont");
 
 		/* プレーン2にフィールドを読み込み */
-		LoadGraphic("hebofld.png", 2);
+		LoadGraphic(2, "hebofld");
 
 		/* プレーン3に各種スプライトを読み込み */
-		LoadGraphic("hebospr.png", 3);
+		LoadGraphic(3, "hebospr");
 
 
 		/* プレーン4〜6, 24にフィールド背景を読み込み */
-		LoadGraphic("heboflb1.png", 4);
-		LoadGraphic("heboflb2.png", 5);
-		LoadGraphic("heboflb3.png", 6);
-		LoadGraphic("heboflb0.png", 24);
+		LoadGraphic(4, "heboflb1");
+		LoadGraphic(5, "heboflb2");
+		LoadGraphic(6, "heboflb3");
+		LoadGraphic(24, "heboflb0");
 	}
 
 	loadBG(players,0); //背景および半透明処理部を独立 C7T2.5EX
 	/* プレーン10〜にバックを読み込み */
 
 	/* プレーン7にタイトルロゴを読み込み */
-//	LoadGraphics("logo.png", 7, 0);
+//	LoadGraphics("logo", 7, 0);
 //	APP_SetColorKeyPos(7, 0, 0);
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 	//	/* プレーン8にタイトル背景を読み込み */
 		LoadTitle();
-	//	LoadGraphics("title.png", 8, 0);
+	//	LoadGraphics("title", 8, 0);
 	}
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* Glyphs for showing game controller buttons */
-		LoadGraphic("hebobtn.png", 23);
+		LoadGraphic(23, "hebobtn");
 
 		/* プレーン22に小文字大文字フォントを読み込み #1.60c7o4 */
-		LoadGraphic("hebofont4.png", 22);
+		LoadGraphic(22, "hebofont4");
 
 		/* プレーン25にモード選択時のメッセージを読み込み  */
-		LoadGraphic("text.png", 25);
+		LoadGraphic(25, "text");
 
 		/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
-		LoadGraphic("grade.png", 26);
+		LoadGraphic(26, "grade");
 
 		/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
-		LoadGraphic("mirror_effect_TAP.png", 27);
+		LoadGraphic(27, "mirror_effect_TAP");
 		//APP_SetColorKeyRGB(27,255,0,255);
 
 		/* プレーン28にアイテム名を読み込み #1.60c7o4 */
-		LoadGraphic("item.png", 28);
+		LoadGraphic(28, "item");
 
 		/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
-		LoadGraphic("guide.png", 29);
+		LoadGraphic(29, "guide");
 
 		/* プレーン31にフォント(大)を読み込み */
-		LoadGraphic("hebofont3.png", 31);
+		LoadGraphic(31, "hebofont3");
 	}
 
 	/* ブロック消去エフェクトを読み込み */
 	if(reinit && breakti) {
-		LoadGraphic("break0.png", 32);
-		LoadGraphic("break1.png", 33);
-		LoadGraphic("break2.png", 34);
-		LoadGraphic("break3.png", 35);
-		LoadGraphic("break4.png", 36);
-		LoadGraphic("break5.png", 37);
-		LoadGraphic("break6.png", 38);
-		LoadGraphic("break7.png", 39);
+		LoadGraphic(32, "break0");
+		LoadGraphic(33, "break1");
+		LoadGraphic(34, "break2");
+		LoadGraphic(35, "break3");
+		LoadGraphic(36, "break4");
+		LoadGraphic(37, "break5");
+		LoadGraphic(38, "break6");
+		LoadGraphic(39, "break7");
 	} else if (reinit) {
-		LoadGraphic("break0_tap.png", 32); // 黒ブロック追加 #1.60c7i5
-		LoadGraphic("break1_tap.png", 33);
-		LoadGraphic("break2_tap.png", 34);
-		LoadGraphic("break3_tap.png", 35);
-		LoadGraphic("break4_tap.png", 36);
-		LoadGraphic("break5_tap.png", 37);
-		LoadGraphic("break6_tap.png", 38);
-		LoadGraphic("break7_tap.png", 39);
+		LoadGraphic(32, "break0_tap"); // 黒ブロック追加 #1.60c7i5
+		LoadGraphic(33, "break1_tap");
+		LoadGraphic(34, "break2_tap");
+		LoadGraphic(35, "break3_tap");
+		LoadGraphic(36, "break4_tap");
+		LoadGraphic(37, "break5_tap");
+		LoadGraphic(38, "break6_tap");
+		LoadGraphic(39, "break7_tap");
 	}
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
-		LoadGraphic("heboblk0.png", 40);	// TGM
-		LoadGraphic("heboblk1.png", 41);	// TI & ARS & ARS2
-		LoadGraphic("heboblk2.png", 42);	// WORLD & WORLD2
-		LoadGraphic("heboblk3.png", 43);	// WORLD3
+		LoadGraphic(40, "heboblk0");	// TGM
+		LoadGraphic(41, "heboblk1");	// TI & ARS & ARS2
+		LoadGraphic(42, "heboblk2");	// WORLD & WORLD2
+		LoadGraphic(43, "heboblk3");	// WORLD3
 
 		/* プレーン44にミッションモード用画像を読み込み */
-		LoadGraphic("heboris_road.png", 44);
+		LoadGraphic(44, "heboris_road");
 
 		/* プレーン45にライン強制消去用画像を読み込み */
-		LoadGraphic("del_field.png", 45);
+		LoadGraphic(45, "del_field");
 
 		/* プレーン46にプラチナブロックとアイテム絵を読み込み */
-		LoadGraphic("heboblk_sp.png", 46);
+		LoadGraphic(46, "heboblk_sp");
 
 		/* プレーン47〜53に花火を読み込み */
-		LoadGraphic("hanabi_red.png",       47);
-		LoadGraphic("hanabi_orange.png",    48);
-		LoadGraphic("hanabi_yellow.png",    49);
-		LoadGraphic("hanabi_green.png",     50);
-		LoadGraphic("hanabi_waterblue.png", 51);
-		LoadGraphic("hanabi_blue.png",      52);
-		LoadGraphic("hanabi_purple.png",    53);
+		LoadGraphic(47,       "hanabi_red");
+		LoadGraphic(48,    "hanabi_orange");
+		LoadGraphic(49,    "hanabi_yellow");
+		LoadGraphic(50,     "hanabi_green");
+		LoadGraphic(51, "hanabi_waterblue");
+		LoadGraphic(52,      "hanabi_blue");
+		LoadGraphic(53,    "hanabi_purple");
 
 		/* プレーン54にアイテムゲージを読み込み */
-		LoadGraphic("item_guage.png",       54);
+		LoadGraphic(54,       "item_guage");
 
 		/* プレーン55に回転ルール性能指標を読み込み */
-		LoadGraphic("rot.png",	      55);
+		LoadGraphic(55,	      "rot");
 
 		/* プラチナブロック消去エフェクトを読み込み */
-		LoadGraphic("perase1.png", 57);
-		LoadGraphic("perase2.png", 58);
-		LoadGraphic("perase3.png", 59);
-		LoadGraphic("perase4.png", 60);
-		LoadGraphic("perase5.png", 61);
-		LoadGraphic("perase6.png", 62);
-		LoadGraphic("perase7.png", 63);
+		LoadGraphic(57, "perase1");
+		LoadGraphic(58, "perase2");
+		LoadGraphic(59, "perase3");
+		LoadGraphic(60, "perase4");
+		LoadGraphic(61, "perase5");
+		LoadGraphic(62, "perase6");
+		LoadGraphic(63, "perase7");
 
-		LoadGraphic("heboblk0B.png", 64);
+		LoadGraphic(64, "heboblk0B");
 
-		LoadGraphic("shootingstar.png", 65);
+		LoadGraphic(65, "shootingstar");
 
 		/* TI式ミラー演出画像を読み込み */
-		LoadGraphic("fldmirror01.png", 66);
-		LoadGraphic("fldmirror02.png", 67);
-		LoadGraphic("fldmirror03.png", 68);
-		LoadGraphic("fldmirror04.png", 69);
+		LoadGraphic(66, "fldmirror01");
+		LoadGraphic(67, "fldmirror02");
+		LoadGraphic(68, "fldmirror03");
+		LoadGraphic(69, "fldmirror04");
 
 		/* スタッフロールの画像を読み込み */
-		LoadGraphic("staffroll.png", 70);
+		LoadGraphic(70, "staffroll");
 
-		LoadGraphic("heboblk4_5.png", 73);
+		LoadGraphic(73, "heboblk4_5");
 
-		LoadGraphic("fade.png", 72);
+		LoadGraphic(72, "fade");
 
-		LoadGraphic("heboblk_old.png", 74);
+		LoadGraphic(74, "heboblk_old");
 
-		LoadGraphic("tomoyo_eh_fade.png", 75);
+		LoadGraphic(75, "tomoyo_eh_fade");
 
-		LoadGraphic("heboblk_big.png", 76);
-		LoadGraphic("line.png", 77);//ランキングのライン
+		LoadGraphic(76, "heboblk_big");
+		LoadGraphic(77, "line");//ランキングのライン
 
-		LoadGraphic("laser.png", 78);
+		LoadGraphic(78, "laser");
 
-		LoadGraphic("shuffle_field_effect.png", 79);
+		LoadGraphic(79, "shuffle_field_effect");
 
-		LoadGraphic("heboblk6.png", 80);
+		LoadGraphic(80, "heboblk6");
 
-		LoadGraphic("text2.png", 81);
+		LoadGraphic(81, "text2");
 
-		LoadGraphic("itemerase.png", 82);
+		LoadGraphic(82, "itemerase");
 
-		LoadGraphic("heboblk_sp2.png", 83);
+		LoadGraphic(83, "heboblk_sp2");
 
-		LoadGraphic("rotstext.png", 84);
-		LoadGraphic("hebofont5.png", 85);
+		LoadGraphic(84, "rotstext");
+		LoadGraphic(85, "hebofont5");
 
-		LoadGraphic("gamemodefont.png", 86);
+		LoadGraphic(86, "gamemodefont");
 
-		LoadGraphic("rollmark.png", 87);
+		LoadGraphic(87, "rollmark");
 
 		//プレーン88番使用中…
 
-		LoadGraphic("itemGra.png", 89);
+		LoadGraphic(89, "itemGra");
 	}
 
 //	APP_EnableBlendColorKey(85, 1);
@@ -16977,24 +16977,24 @@ void loadBG(int32_t players,int32_t vsmode){
 
 	if (reinit || getLastDrawRate() != getDrawRate()) {
 		/* プレーン10〜にバックを読み込み */
-		LoadBackground("back01.png", 10, 0);
-		LoadBackground("back02.png", 11, 0);
-		LoadBackground("back03.png", 12, 0);
-		LoadBackground("back04.png", 13, 0);
-		LoadBackground("back05.png", 14, 0);
-		LoadBackground("back06.png", 15, 0);
-		LoadBackground("back07.png", 16, 0);
-		LoadBackground("back08.png", 17, 0);
-		LoadBackground("back09.png", 18, 0);
-		LoadBackground("back10.png", 19, 0);
-		LoadBackground("back11.png", 20, 0);
-		LoadBackground("back12.png", 21, 0);
+		LoadBackground(10, "back01");
+		LoadBackground(11, "back02");
+		LoadBackground(12, "back03");
+		LoadBackground(13, "back04");
+		LoadBackground(14, "back05");
+		LoadBackground(15, "back06");
+		LoadBackground(16, "back07");
+		LoadBackground(17, "back08");
+		LoadBackground(18, "back09");
+		LoadBackground(19, "back10");
+		LoadBackground(20, "back11");
+		LoadBackground(21, "back12");
 	}
 
 	if(vsbg == 1)
-		LoadBackground("back_vs.png", 71, 0);
+		LoadBackground(71, "back_vs");
 	else
-		LoadBackground("back01.png", 71, 0);
+		LoadBackground(71, "back01");
 
 	max = 22;
 

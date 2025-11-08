@@ -5,24 +5,7 @@
 #include "APP_main.h"
 #include "APP_global.h"
 #include "APP_bdf.h"
-#include <SDL3/SDL_timer.h>
-
-#define STB_IMAGE_STATIC
-#define STBI_NO_THREAD_LOCALS
-#define STBI_FAILURE_USERMSG
-#if defined(SDL_NEON_INTRINSICS)
-#define STBI_NEON
-#endif
-#define STBI_ONLY_PNG
-#define STBI_NO_HDR
-#define STBI_NO_LINEAR
-#define STBI_NO_STDIO
-#define STBI_ASSERT SDL_assert
-#define STBI_MALLOC SDL_malloc
-#define STBI_REALLOC SDL_realloc
-#define STBI_FREE SDL_free
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <SDL3_image/SDL_image.h>
 
 #define APP_WINDOW_TITLE "Heboris C.E."
 
@@ -779,90 +762,73 @@ void APP_DisableTextLayer(int layer) {
 	APP_TextLayers[layer].enable = false;
 }
 
-static int APP_STBI_Read(void* user, char* data, int size)
-{
-	return (int)SDL_ReadIO((SDL_IOStream*)user, data, size);
-}
-
-static void APP_STBI_Skip(void* user, int n)
-{
-	if (SDL_SeekIO((SDL_IOStream*)user, n, SDL_IO_SEEK_CUR) < 0) {
-		APP_Exit(EXIT_FAILURE);
-	}
-}
-
-static int APP_STBI_EOF(void* user)
-{
-	switch (SDL_GetIOStatus((SDL_IOStream*)user)) {
-	case SDL_IO_STATUS_READY:
-		return 0;
-
-	case SDL_IO_STATUS_EOF:
-		return 1;
-
-	default:
-		APP_Exit(EXIT_FAILURE);
-		return 1;
-	}
-}
-
 void APP_LoadPlane(int plane, const char* filename)
 {
 	if (!APP_ScreenRenderer || !filename || !*filename || plane < 0 || plane >= APP_PLANE_COUNT) {
 		return;
 	}
 
-	SDL_IOStream* file = APP_OpenRead(filename);
+	const char* const types[] = {
+		"png",
+		"gif",
+		"bmp",
+		"tga",
+		"webp",
+		"qoi",
+		"svg",
+		"jpg",
+		"avif",
+		"jxl",
+		"tif",
+		"xcf",
+		"pcx",
+		"ico",
+		"cur",
+		"ani",
+		"lbm",
+		"pnm",
+		"xpm",
+		"xv",
+	};
+	SDL_IOStream* file = NULL;
+	char* filenameExt;
+	const char* type;
+	for (size_t i = 0; i < SDL_arraysize(types); i++) {
+		if (SDL_asprintf(&filenameExt, "%s.%s", filename, types[i]) < 0) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		if (!APP_FileExists(filenameExt)) {
+			SDL_free(filenameExt);
+			continue;
+		}
+		file = APP_OpenRead(filenameExt);
+		if (!file) {
+			SDL_free(filenameExt);
+			APP_Exit(EXIT_FAILURE);
+		}
+		type = types[i];
+		break;
+	}
 	if (!file) {
 		return;
-	}
-
-	int w, h;
-	int comp;
-	const stbi_io_callbacks callbacks = { APP_STBI_Read, APP_STBI_Skip, APP_STBI_EOF };
-	stbi_uc* pixels = stbi_load_from_callbacks(&callbacks, file, &w, &h, &comp, STBI_default);
-	if (!pixels) {
-		APP_Exit(EXIT_FAILURE);
-	}
-	SDL_Surface* surface;
-	const char* compString;
-	switch (comp) {
-	case STBI_rgb:
-		surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_RGB24, pixels, w * 3);
-		break;
-
-	case STBI_rgb_alpha:
-		surface = SDL_CreateSurfaceFrom(w, h, SDL_PIXELFORMAT_RGBA32, pixels, w * 4);
-		break;
-
-	case STBI_default:
-		compString = "STBI_default";
-		goto logUnhandledComp;
-
-	case STBI_grey:
-		compString = "STBI_grey";
-		goto logUnhandledComp;
-
-	case STBI_grey_alpha:
-		compString = "STBI_grey_alpha";
-		goto logUnhandledComp;
-
-	default:
-		compString = "UNKNOWN";
-		goto logUnhandledComp;
-	}
-	if (!surface) {
-		SDL_free(pixels);
-		APP_Exit(EXIT_FAILURE);
 	}
 
 	if (APP_Planes[plane]) {
 		SDL_DestroyTexture(APP_Planes[plane]);
 	}
-	APP_Planes[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, surface);
-	SDL_DestroySurface(surface);
-	SDL_free(pixels);
+	APP_Planes[plane] = IMG_LoadTextureTyped_IO(APP_ScreenRenderer, file, true, type);
 	if (!APP_Planes[plane]) {
+		char* message;
+		if (SDL_asprintf(&message,
+			"Image file \"%s\" failed to load.\n"
+			"It might be corrupt, so you would need to replace it.\n"
+			"Or the build of SDL_image in use might not support its format, so try another format.",
+			filenameExt
+		) < 0) {
+			APP_Exit(EXIT_FAILURE);
+		}
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error loading image file", message, APP_ScreenWindow);
+		SDL_free(message);
 		APP_Exit(EXIT_FAILURE);
 	}
 	if (
@@ -871,11 +837,6 @@ void APP_LoadPlane(int plane, const char* filename)
 	) {
 		APP_Exit(EXIT_FAILURE);
 	}
-	return;
-
-logUnhandledComp:
-	SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unhandled stb_image comp of %s", compString);
-	APP_Exit(EXIT_FAILURE);
 }
 
 void APP_DrawPlane(int plane, int dstX, int dstY) {

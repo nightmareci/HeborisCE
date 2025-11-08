@@ -17,12 +17,12 @@
 #define		waitt			gamewaitt
 
 void loadBG(int32_t players,int32_t vsmode);
-void LoadBackground(const char *nameStr,int32_t p1,int32_t p2);
+void LoadBackground(int32_t plane,const char *nameStr);
 void LoadTitle();
 void loadBGM(void);
 void loadWaves(void);
 void loadGraphics(int32_t players);
-void LoadGraphic(const char *nameStr,int32_t plane);
+void LoadGraphic(int32_t plane,const char *nameStr);
 void removeBigBlock(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
 void setBigBlock(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
 int32_t judgeBigBlock(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);

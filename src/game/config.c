@@ -224,14 +224,14 @@ int32_t LoadConfig(void) {
 	screenIndex = cfgbuf[5];
 
 #else
-	screenMode &= ~APP_SCREENMODE_WINDOWTYPE;
+	screenMode &= ~APP_SCREEN_MODE_WINDOW_TYPE;
 	screenMode |=
 #ifdef __vita__
-		APP_SCREENMODE_FULLSCREEN
+		APP_SCREEN_MODE_FULLSCREEN
 #else
-		APP_SCREENMODE_WINDOW
+		APP_SCREEN_MODE_WINDOW
 #endif
-		| APP_SCREENMODE_VSYNC | APP_SCREENMODE_RENDERLEVEL;
+		| APP_SCREEN_MODE_VSYNC | APP_SCREEN_MODE_RENDER_LEVEL;
 	screenIndex = 0;
 
 #endif

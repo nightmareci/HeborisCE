@@ -56,7 +56,9 @@ set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LE
 set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_WORKINGDIR")
 set(APP_BASE_PATH_APPEND "")
 
-if(WIN32 OR LINUX)
+if(VITA)
+	set(APP_PACKAGE_TYPE "Installable" CACHE STRING "Package type" FORCE)
+elseif(WIN32 OR LINUX)
 	set(APP_PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set(APP_PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
@@ -192,50 +194,43 @@ if(VITA)
 	# used in the vendor libraries.
 	set(CMAKE_POSITION_INDEPENDENT_CODE FALSE CACHE BOOL "Override" FORCE)
 
-	target_sources(${APP_EXE} PRIVATE
-		"src/app/physfsrwops.c"
-		"src/app/physfsrwops.h"
-	)
-
 	set(APP_ENABLE_KEYBOARD FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
 	set(APP_ONLY_INPUT_TYPE APP_INPUT_PLAYSTATION CACHE STRING "" FORCE)
-	set(APP_ONLY_SDL_CONTROLLER_TYPE SDL_CONTROLLER_TYPE_PS4 CACHE STRING "" FORCE)
+	set(APP_ONLY_SDL_CONTROLLER_TYPE SDL_GAMEPAD_TYPE_PS4 CACHE STRING "" FORCE)
 	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
 	set(APP_FILESYSTEM_TYPE APP_FILESYSTEM_PHYSFS CACHE STRING "" FORCE)
 	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
 	set(APP_SCREEN_SUBPIXEL_OFFSET "0.0f" CACHE STRING "" FORCE)
 
-	# The upstream PhysFS doesn't have Vita SDK support, so we need to use Vita
-	# SDK's included PhysFS, not the vendor version, thus the need for FALSE passed
-	# to AddLibrariesVendor and finding the PhysFS package.
-	#
-	# Also, as of last attempting Vita SDK builds, SDL2_mixer was broken with
-	# find_package, as it tries to link to libxmp-lite, which was missing in the
-	# Vita SDK packages; using the vendor version works fine, though.
-	include("cmake/AddLibrariesVendor.cmake")
-	AddLibrariesVendor(${APP_EXE} FALSE)
-	find_package(PhysFS REQUIRED)
-	target_link_libraries(${APP_EXE} PUBLIC ${PHYSFS_LIBRARY})
-	target_include_directories(${APP_EXE} PUBLIC ${PHYSFS_INCLUDE_DIR})
-
-	file(ARCHIVE_CREATE OUTPUT "${CMAKE_BINARY_DIR}/assets.zip"
-		PATHS
-			"res/bg"
-			"res/bgm"
-			"res/font"
-			"res/graphics"
-			"res/se"
-			"config/mission"
-			"config/stage"
-		FORMAT zip
-	)
-
 	set(VITA_APP_NAME ${APP_EXE})
 	set(VITA_TITLEID "NMCI00000")
 	set(VITA_VERSION "01.00")
 	set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1 -d ATTRIBUTE2=12")
+
+
+	if(APP_VENDORED)
+		set(BUILD_SHARED_LIBS OFF)
+		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
+		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_VENDORED ON)
+		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
+	else()
+		find_package(SDL3 REQUIRED)
+		find_package(SDL3_image REQUIRED)
+		find_package(Threads REQUIRED)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+			Threads::Threads
+		)
+	endif()
 
 	vita_create_self(${APP_EXE}.self ${APP_EXE})
 	vita_create_vpk(${APP_EXE}.vpk ${VITA_TITLEID} ${APP_EXE}.self
@@ -243,7 +238,9 @@ if(VITA)
 		NAME "${VITA_APP_NAME}"
 
 		# Game assets.
-		FILE "${CMAKE_BINARY_DIR}/assets.zip" assets.zip
+		FILE "res" "res"
+		FILE "config/mission" "config/mission"
+		FILE "config/stage" "config/stage"
 
 		# Files for LiveArea and boot.
 		FILE "pkg/vita/sce_sys/icon0.png" sce_sys/icon0.png

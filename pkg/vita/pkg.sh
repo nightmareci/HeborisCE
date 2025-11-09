@@ -16,5 +16,5 @@ SOURCE_DIRECTORY=`readlink -f "$1"`
 BUILD_DIRECTORY=`readlink -f "$2"`
 
 cd "$SOURCE_DIRECTORY"
-cmake -B "$BUILD_DIRECTORY" -G Ninja -DCMAKE_BUILD_TYPE=Release -DAPP_VENDORED=1 --toolchain "$VITASDK/share/vita.toolchain.cmake" || exit 1
+cmake -B "$BUILD_DIRECTORY" -G Ninja -DCMAKE_BUILD_TYPE=Release --toolchain "$VITASDK/share/vita.toolchain.cmake" || exit 1
 cmake --build "$BUILD_DIRECTORY" || exit 1

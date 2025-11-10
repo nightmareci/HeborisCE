@@ -359,16 +359,14 @@ C7U8EX YGS2K
 #include "speed.h"
 #include "common.h"
 
-#ifndef NDEBUG
-#define MAIN_QUIT (SDL_Log("MAIN_QUIT: %d", __LINE__), MAIN_QUIT)
-#endif
-
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 bool		init = true;				// Indicates if the current frame should do initialization for its FSM state. Once initialization is done, the FSM state should set this false; when it's time to transition to the next state, this should be set to true.
 EMainLoopState	mainLoopState = MAIN_INIT;		// The FSM state controlling the main loop.
 int		exitStatus = EXIT_SUCCESS;		// The exit status of the program used when quitting the game.
+const char*	errorFunction;				// The function in which an error occurred.
+int		errorLine;				// The line at which an error occurred.
 
 int32_t		bgmteisiflg = 0;			//bgm teisi
 int32_t		count;					// グローバルカウンタ (フレーム単位、65535まで)
@@ -1497,8 +1495,7 @@ void mainUpdate() {
 
 		int32_t oldScreenMode = screenMode;
 		int32_t oldScreenIndex = screenIndex;
-		if ( !APP_SetScreen(&screenMode, &screenIndex) )
-		{
+		if (!APP_SetScreen(&screenMode, &screenIndex)) { errorFunction = __FUNCTION__, errorLine = __LINE__;
 			loopFlag = 0;
 			mainLoopState = MAIN_QUIT;
 			exitStatus = EXIT_FAILURE;
@@ -1614,8 +1611,7 @@ void mainUpdate() {
 
 		int32_t oldScreenMode = screenMode;
 		int32_t oldScreenIndex = screenIndex;
-		if ( !APP_SetScreen(&screenMode, &screenIndex) )
-		{
+		if (!APP_SetScreen(&screenMode, &screenIndex)) { errorFunction = __FUNCTION__, errorLine = __LINE__;
 			loopFlag = 0;
 			mainLoopState = MAIN_QUIT;
 			exitStatus = EXIT_FAILURE;
@@ -1905,16 +1901,17 @@ void mainUpdate() {
 	}
 	#endif
 
-#undef MAIN_QUIT
 	case MAIN_QUIT:
-#ifndef NDEBUG
-#define MAIN_QUIT (SDL_Log("MAIN_QUIT: %d", __LINE__), MAIN_QUIT)
-#endif
 		for ( int32_t i = 0 ; i < STRING_MAX ; i ++ )
 		{
 			SDL_free(string[i]);
 		}
-		APP_Exit(exitStatus);
+		if (exitStatus == EXIT_SUCCESS) {
+			APP_Exit(NULL, 0, NULL);
+		}
+		else {
+			APP_Exit(errorFunction, errorLine, SDL_GetError());
+		}
 		break;
 	}
 
@@ -2632,7 +2629,7 @@ void title(void) {
 		}
 	} else {
 		// モード2: ループから抜ける
-		APP_Exit(EXIT_SUCCESS);
+		APP_Exit(__FUNCTION__, __LINE__, NULL);
 	}
 }
 
@@ -4729,14 +4726,14 @@ void increment_time(int32_t player) {
 			) {
 				int32_t** oldReplayData = replayData;
 				if (!(replayData = SDL_malloc(sizeof(int32_t*) * (replayChunkCnt + 1)))) {
-					APP_Exit(EXIT_FAILURE);
+					APP_Exit(__FUNCTION__, __LINE__, "Could not allocate memory for replay");
 				}
 				if (oldReplayData) {
 					SDL_memcpy(replayData, oldReplayData, sizeof(int32_t*) * replayChunkCnt);
 					SDL_free(oldReplayData);
 				}
 				if (!(replayData[replayChunkCnt] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
-					APP_Exit(EXIT_FAILURE);
+					APP_Exit(__FUNCTION__, __LINE__, "Could not allocate memory for replay");
 				}
 				replayChunkCnt++;
 			}
@@ -17305,8 +17302,18 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	if ( quitNow() || !APP_Update() )
-	{
+	if (quitNow()) {
+		exitStatus = EXIT_SUCCESS;
+		goto quit;
+	}
+	else {
+		exitStatus = APP_Update() ? EXIT_SUCCESS : EXIT_FAILURE; if (exitStatus == EXIT_FAILURE) errorLine = __LINE__;
+		if (exitStatus == EXIT_FAILURE) {
+			goto quit;
+		}
+	}
+	while (false) {
+	quit:
 		shutDown();
 		mainLoopState = MAIN_QUIT;
 		init = true;

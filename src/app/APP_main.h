@@ -7,10 +7,6 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 
 void APP_Quit(void);
 
-void APP_Exit(int status);
-
-#ifndef NDEBUG
-#define APP_Exit(exitStatus) (SDL_Log("Exited in file %s, line %d, status %s", __FILE__, __LINE__, (exitStatus) ? "EXIT_FAILURE" : "EXIT_SUCCESS"), APP_Exit((exitStatus)))
-#endif
+SDL_NORETURN void APP_Exit(const char* function, int line, const char* format, ...);
 
 #endif

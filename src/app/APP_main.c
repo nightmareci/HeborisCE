@@ -5,6 +5,7 @@
 #include "game/config.h"
 #include "game/gamestart.h"
 #include <SDL3/SDL_main.h>
+#include <stdarg.h>
 
 static int APP_argc;
 static char** APP_argv;
@@ -20,8 +21,7 @@ int main(int argc, char** argv)
 	// TODO: Remove this once the issue with WASAPI crackling with the move sound in-game is fixed
 	#ifdef SDL_PLATFORM_WIN32
 	if (!SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "directsound")) {
-		fprintf(stderr, "Couldn't set audio driver to DirectSound: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Couldn't set audio driver to DirectSound: %s", SDL_GetError());
 	}
 	#endif
 
@@ -36,8 +36,7 @@ int main(int argc, char** argv)
 			#endif
 		)
 	) {
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Couldn't initialize SDL: %s", SDL_GetError());
 	}
 
 	while (true) {
@@ -55,29 +54,25 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 		SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 
 		if (!APP_InitFilesystem(APP_argc, APP_argv)) {
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "%s", SDL_GetError());
 		}
 		APP_QuitLevel++;
 
 		for (size_t i = 0u; i < writeDirectoriesCount; i++) {
 			if (!APP_CreateDirectory(writeDirectories[i])) {
-				APP_Exit(EXIT_FAILURE);
+				APP_Exit(__FUNCTION__, __LINE__, "%s", SDL_GetError());
 			}
 		}
 
 		if (!APP_InitAudio(wavesCount)) {
-			fprintf(stderr, "%s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "%s", SDL_GetError());
 		}
 		APP_QuitLevel++;
 
 		APP_InitVideo();
 		APP_QuitLevel++;
 
-		if (!APP_OpenInputs()) {
-			fprintf(stderr, "%s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
-		}
+		APP_OpenInputs();
 		APP_QuitLevel++;
 	}
 
@@ -100,10 +95,25 @@ void APP_Quit(void)
 	APP_QuitLevel = 0;
 }
 
-#undef APP_Exit
-void APP_Exit(int status)
+SDL_NORETURN void APP_Exit(const char* function, int line, const char* format, ...)
 {
+	va_list args;
+	va_start(args, format);
+	if (format) {
+		char* errorTitle;
+		if (SDL_asprintf(&errorTitle, "Error in %s, line %d", function, line) < 0) {
+			goto quit;
+		}
+		char* errorMessage;
+		if (SDL_vasprintf(&errorMessage, format, args) >= 0) {
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, errorTitle, errorMessage, NULL);
+			SDL_free(errorMessage);
+		}
+		SDL_free(errorTitle);
+	}
+quit:
+	va_end(args);
 	APP_Quit();
 	SDL_Quit();
-	exit(status);
+	exit(function ? EXIT_FAILURE : EXIT_SUCCESS);
 }

@@ -54,7 +54,7 @@ typedef enum APP_InputType
 	#endif
 } APP_InputType;
 
-bool APP_OpenInputs(void);
+void APP_OpenInputs(void);
 void APP_CloseInputs(void);
 
 APP_InputType APP_GetLastInputType();

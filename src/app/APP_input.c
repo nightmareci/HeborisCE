@@ -164,9 +164,8 @@ static bool APP_ResizePlayerSlots(int numSlots) {
 		APP_PlayerSlots = SDL_malloc(sizeof(APP_PlayerSlot) * numSlots);
 	}
 	if (!APP_PlayerSlots) {
-		fprintf(stderr, "Failed to resize joysticks/controllers array\n");
 		APP_PlayerSlots = oldSlots;
-		return false;
+		return SDL_SetError("Failed to resize joysticks/controllers array");
 	}
 	for (int player = APP_NumPlayerSlots; player < numSlots; player++) {
 		APP_PlayerSlots[player] = (APP_PlayerSlot) { 0 };
@@ -226,8 +225,7 @@ bool APP_PlayerSlotsChanged(void) {
 	int numJoys;
 	SDL_JoystickID* const joys = SDL_GetJoysticks(&numJoys);
 	if (!joys) {
-		fprintf(stderr, "Failed to get joysticks list: %s\n", SDL_GetError());
-		return false;
+		return SDL_SetError("Failed to get joysticks list: %s", SDL_GetError());
 	}
 
 	#ifdef APP_ENABLE_GAME_CONTROLLER
@@ -238,9 +236,8 @@ bool APP_PlayerSlotsChanged(void) {
 
 		SDL_Gamepad * const controller = SDL_OpenGamepad(joys[device]);
 		if (!controller) {
-			fprintf(stderr, "Failed to open controller: %s\n", SDL_GetError());
 			SDL_free(joys);
-			return false;
+			return SDL_SetError("Failed to open controller: %s", SDL_GetError());
 		}
 		if (!APP_BuiltinCon.controller && APP_ConIsBuiltin(controller)) {
 			APP_BuiltinCon.controller = controller;
@@ -256,10 +253,9 @@ bool APP_PlayerSlotsChanged(void) {
 		}
 		if (!playerIndexFound) {
 			if (!APP_ResizePlayerSlots(APP_NumPlayerSlots + 1)) {
-				fprintf(stderr, "Failed to open controller: %s\n", SDL_GetError());
 				SDL_CloseGamepad(controller);
 				SDL_free(joys);
-				return false;
+				return SDL_SetError("Failed to open controller: %s", SDL_GetError());
 			}
 			player = APP_NumPlayerSlots - 1;
 		}
@@ -276,7 +272,7 @@ bool APP_PlayerSlotsChanged(void) {
 
 		SDL_Joystick* const joystick = SDL_OpenJoystick(joys[device]);
 		if (!joystick) {
-			fprintf(stderr, "Failed to open joystick: %s\n", SDL_GetError());
+			SDL_SetError("Failed to open joystick: %s", SDL_GetError());
 			goto fail;
 		}
 		bool playerIndexFound = false;
@@ -300,15 +296,15 @@ bool APP_PlayerSlotsChanged(void) {
 			(APP_PlayerSlots[player].joy.numButtons = SDL_GetNumJoystickButtons(joystick)) >= 0
 		) {
 			if (APP_PlayerSlots[player].joy.numAxes > 0 && !(APP_PlayerSlots[player].joy.axesRepeat = (int*)SDL_calloc((size_t)APP_PlayerSlots[player].joy.numAxes * 2, sizeof(int)))) {
-				fprintf(stderr, "Failed to allocate axes repeat array for joystick\n");
+				SDL_SetError("Failed to allocate axes repeat array for joystick");
 				goto fail;
 			}
 			if (APP_PlayerSlots[player].joy.numHats > 0 && !(APP_PlayerSlots[player].joy.hatsRepeat = (int*)SDL_calloc((size_t)APP_PlayerSlots[player].joy.numHats * 4, sizeof(int)))) {
-				fprintf(stderr, "Failed to allocate hats repeat array for joystick\n");
+				SDL_SetError("Failed to allocate hats repeat array for joystick");
 				goto fail;
 			}
 			if (APP_PlayerSlots[player].joy.numButtons > 0 && !(APP_PlayerSlots[player].joy.buttonsRepeat = (int*)SDL_calloc((size_t)APP_PlayerSlots[player].joy.numButtons, sizeof(int)))) {
-				fprintf(stderr, "Failed to allocate buttons repeat array for joystick\n");
+				SDL_SetError("Failed to allocate buttons repeat array for joystick");
 				goto fail;
 			}
 		}
@@ -1763,7 +1759,7 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 }
 #endif
 
-bool APP_OpenInputs(void)
+void APP_OpenInputs(void)
 {
 	#ifdef ENABLE_LINUXGPIO
 	const char* chipName = "gpiochip0";
@@ -1771,7 +1767,7 @@ bool APP_OpenInputs(void)
 	APP_GPIOChip = gpiod_chip_open_by_name(chipName);
 	if ( !APP_GPIOChip )
 	{
-		fprintf(stderr, "Failed opening GPIO chip \"%s\". Continuing without GPIO input support.\n", chipName);
+		SDL_Log("Failed opening GPIO chip \"%s\". Continuing without GPIO input support", chipName);
 	}
 	else
 	{
@@ -1800,7 +1796,7 @@ bool APP_OpenInputs(void)
 			}
 			gpiod_chip_close(APP_GPIOChip);
 			APP_GPIOChip = NULL;
-			fprintf(stderr, "Failed opening GPIO lines. Continuing without GPIO input support.\n");
+			SDL_Log("Failed opening GPIO lines. Continuing without GPIO input support");
 		}
 		else
 		{
@@ -1815,7 +1811,7 @@ bool APP_OpenInputs(void)
 					}
 					gpiod_chip_close(APP_GPIOChip);
 					APP_GPIOChip = NULL;
-					fprintf(stderr, "Failed setting GPIO lines for input. Continuing without GPIO input support.\n");
+					SDL_Log("Failed setting GPIO lines for input. Continuing without GPIO input support");
 					break;
 				}
 			}
@@ -1839,8 +1835,6 @@ bool APP_OpenInputs(void)
 		SDL_CloseIO(db);
 	}
 	#endif
-
-	return true;
 }
 
 void APP_CloseInputs(void)

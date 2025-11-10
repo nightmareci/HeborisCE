@@ -5,6 +5,7 @@
 #include "APP_main.h"
 #include "APP_global.h"
 #include "APP_bdf.h"
+#include <SDL3/SDL_error.h>
 #include <SDL3_image/SDL_image.h>
 
 #define APP_WINDOW_TITLE "Heboris C.E."
@@ -95,15 +96,14 @@ static void APP_PrivateBDFFontInitialize(void)
 		}
 		SDL_IOStream* const src = APP_OpenRead(filenames[i]);
 		if (!src) {
-			SDL_Log("Failed to open file for font \"%s\"; continuing without it.", filenames[i]);
+			SDL_Log("Failed to open font file \"%s\"; continuing without it.", filenames[i]);
 			APP_BDFFonts[i] = NULL;
 			continue;
 		}
 		APP_BDFFonts[i] = APP_OpenBDFFont(src);
 		if (!APP_BDFFonts[i]) {
-			SDL_Log("Failed to load font \"%s\": %s", filenames[i], SDL_GetError());
 			SDL_CloseIO(src);
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Failed to load font file \"%s\": %s", filenames[i], SDL_GetError());
 		}
 		SDL_CloseIO(src);
 	}
@@ -179,12 +179,6 @@ void APP_QuitVideo(void)
 	APP_PrivateBDFFontFinalize();
 }
 
-#ifdef NDEBUG
-#define SET_SCREEN_ERROR goto fail
-#else
-#define SET_SCREEN_ERROR SDL_Log("APP_SetScreen error: %d", __LINE__); goto fail
-#endif
-
 bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 {
 	int windowX, windowY;
@@ -197,7 +191,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	/* Validate the window type */
 	APP_ScreenModeFlag windowType = *screenMode & APP_SCREEN_MODE_WINDOW_TYPE;
 	if (windowType < 0 || windowType >= APP_SCREEN_MODE_WINDOW_TYPES_COUNT) {
-		SET_SCREEN_ERROR;
+		SDL_SetError("Invalid window type value of %d", (int)windowType);
+		goto fail;
 	}
 
 	int displayIndex = APP_SCREEN_INDEX_DISPLAY_TO_VALUE(*screenIndex);
@@ -205,7 +200,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	int displayCount;
 	displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
-	    SET_SCREEN_ERROR;
+		SDL_SetError("Could not get list of displays: %s", SDL_GetError());
+		goto fail;
 	}
 	const SDL_DisplayID display = displays[displayIndex];
 	SDL_free(displays);
@@ -213,7 +209,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	int displayModeCount;
 	displayModes = SDL_GetFullscreenDisplayModes(display, &displayModeCount);
 	if (!displayModes) {
-	    SET_SCREEN_ERROR;
+		SDL_SetError("Could not get list of fullscreen display modes: %s", SDL_GetError());
+		goto fail;
 	}
 
 	windowX = SDL_WINDOWPOS_CENTERED_DISPLAY(display);
@@ -249,7 +246,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 		if (!APP_ScreenWindow) {
 			SDL_PropertiesID props = SDL_CreateProperties();
 			if (!props) {
-			    SET_SCREEN_ERROR;
+				SDL_SetError("Could not create properties object: %s", SDL_GetError());
+				goto fail;
 			}
 			if (
 				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_WINDOW_TITLE) ||
@@ -260,12 +258,14 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				!SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, logicalHeight) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true)
 			) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not set up properties object: %s", SDL_GetError());
+				goto fail;
 			}
 			APP_ScreenWindow = SDL_CreateWindowWithProperties(props);
 			SDL_DestroyProperties(props);
 			if (!APP_ScreenWindow || (windowType == APP_SCREEN_MODE_FULLSCREEN && !SDL_SetWindowFullscreenMode(APP_ScreenWindow, displayModes[modeIndex]))) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not set up window: %s", SDL_GetError());
+				goto fail;
 			}
 		}
 		else
@@ -275,7 +275,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				!SDL_SetWindowSize(APP_ScreenWindow, logicalWidth, logicalHeight) ||
 				!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREEN_MODE_FULLSCREEN) ? displayModes[modeIndex] : NULL)
 			) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not set up window: %s", SDL_GetError());
+				goto fail;
 			}
 			// NOTE: This can fail on some platforms due to not being supported (Wayland), so don't check the return status
 			SDL_SetWindowPosition(APP_ScreenWindow, windowX, windowY);
@@ -288,7 +289,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	{
 		const SDL_DisplayMode* const displayMode = SDL_GetDesktopDisplayMode(display);
 		if (!displayMode) {
-			SET_SCREEN_ERROR;
+			SDL_SetError("Could not get desktop display mode: %s", SDL_GetError());
+			goto fail;
 		}
 		int maxScale;
 		if (displayMode->w <= logicalWidth || displayMode->h <= logicalHeight) {
@@ -311,7 +313,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 		if (!APP_ScreenWindow) {
 			SDL_PropertiesID props = SDL_CreateProperties();
 			if (!props) {
-			    SET_SCREEN_ERROR;
+				SDL_SetError("Could not create properties object: %s", SDL_GetError());
+				goto fail;
 			}
 			if (
 				!SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, APP_WINDOW_TITLE) ||
@@ -322,18 +325,21 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true) ||
 				!SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN, maximized)
 			) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not set up properties object: %s", SDL_GetError());
+				goto fail;
 			}
 			APP_ScreenWindow = SDL_CreateWindowWithProperties(props);
 			SDL_DestroyProperties(props);
 			if (!APP_ScreenWindow) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not create window: %s", SDL_GetError());
+				goto fail;
 			}
 		}
 		else {
 			if (maximized) {
 				if (!SDL_MaximizeWindow(APP_ScreenWindow)) {
-					SET_SCREEN_ERROR;
+					SDL_SetError("Could not maximize window: %s", SDL_GetError());
+					goto fail;
 				}
 			}
 			if (
@@ -341,7 +347,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				!SDL_SetWindowResizable(APP_ScreenWindow, true) ||
 				!SDL_SetWindowSize(APP_ScreenWindow, windowW, windowH)
 			) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not set up window: %s", SDL_GetError());
+				goto fail;
 			}
 			// NOTE: This can fail on some platforms due to not being supported (Wayland), so don't check the return status
 			SDL_SetWindowPosition(APP_ScreenWindow, windowX, windowY);
@@ -361,11 +368,17 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 		APP_ScreenRenderer = SDL_CreateRenderer(APP_ScreenWindow, NULL);
 		if (!APP_ScreenRenderer)
 		{
-			SET_SCREEN_ERROR;
+			SDL_SetError("Could not create renderer: %s", SDL_GetError());
+			goto fail;
 		}
 	}
-	SDL_RenderClear(APP_ScreenRenderer);
-	SDL_RenderPresent(APP_ScreenRenderer);
+	if (
+		!SDL_RenderClear(APP_ScreenRenderer) ||
+		!SDL_RenderPresent(APP_ScreenRenderer)
+	) {
+		SDL_SetError("Could not do initial render clear of screen: %s", SDL_GetError());
+		goto fail;
+	}
 
 	// Unset the render target, if currently set, for making renderer setting
 	// changes. The render target should only be set once all settings have been
@@ -374,26 +387,31 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	// render target is non-NULL, such bugs disappearing when setting changes
 	// are made only while the render target is NULL.
 	if (APP_ScreenRenderTarget && !SDL_SetRenderTarget(APP_ScreenRenderer, NULL)) {
-		SET_SCREEN_ERROR;
+		SDL_SetError("Could not unset render target: %s", SDL_GetError());
+		goto fail;
 	}
 
 	/* Clear the whole screen, as the framebuffer might be uninitialized */
 	if (!SDL_RenderClear(APP_ScreenRenderer)) {
-		SET_SCREEN_ERROR;
+		SDL_SetError("Could not do initial render clear of screen: %s", SDL_GetError());
+		goto fail;
 	}
 
 	if (!SDL_SetRenderVSync(APP_ScreenRenderer, (*screenMode & APP_SCREEN_MODE_VSYNC) ? 1 : SDL_RENDERER_VSYNC_DISABLED) ) {
-		SET_SCREEN_ERROR;
+		SDL_SetError("Could not set render vsync mode: %s", SDL_GetError());
+		goto fail;
 	}
 
 	if (*screenMode & APP_SCREEN_MODE_SCALE_MODE) {
 		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE)) {
-			SET_SCREEN_ERROR;
+			SDL_SetError("Could not set render dimensions: %s", SDL_GetError());
+			goto fail;
 		}
 	}
 	else {
 		if (!SDL_SetRenderLogicalPresentation(APP_ScreenRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
-			SET_SCREEN_ERROR;
+			SDL_SetError("Could not set render dimensions: %s", SDL_GetError());
+			goto fail;
 		}
 	}
 
@@ -407,7 +425,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 		if (APP_ScreenRenderTarget) {
 			float w, h;
 			if (!SDL_GetTextureSize(APP_ScreenRenderTarget, &w, &h)) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not get render target texture size: %s", SDL_GetError());
+				goto fail;
 			}
 
 			if ((int)w == logicalWidth && (int)h == logicalHeight) {
@@ -422,10 +441,12 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 		if (createNewRenderTarget) {
 			APP_ScreenRenderTarget = SDL_CreateTexture(APP_ScreenRenderer, SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_TARGET, logicalWidth, logicalHeight);
 			if (!APP_ScreenRenderTarget) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not create render target texture: %s", SDL_GetError());
+				goto fail;
 			}
 			if (!SDL_SetTextureScaleMode(APP_ScreenRenderTarget, SDL_SCALEMODE_NEAREST)) {
-				SET_SCREEN_ERROR;
+				SDL_SetError("Could not set render target to nearest neighbor texture filtering: %s", SDL_GetError());
+				goto fail;
 			}
 		}
 
@@ -433,7 +454,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 			!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget) ||
 			!SDL_RenderClear(APP_ScreenRenderer)
 		) {
-			SET_SCREEN_ERROR;
+			SDL_SetError("Could not set up render target: %s", SDL_GetError());
+			goto fail;
 		}
 	}
 	else if (APP_ScreenRenderTarget) {
@@ -456,7 +478,8 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 
 	/* Hide the mouse cursor at first */
 	if (!SDL_HideCursor()) {
-		SET_SCREEN_ERROR;
+		SDL_SetError("Could not hide mouse cursor: %s", SDL_GetError());
+		goto fail;
 	}
 
 	while (!SDL_SyncWindow(APP_ScreenWindow)) {
@@ -593,40 +616,45 @@ int APP_GetMaxDisplayMode(int displayIndex)
 	return modeCount;
 }
 
-bool APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode)
+void APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode)
 {
-	if (displayIndex < 0 || modeIndex < 0 || !mode) {
-		return false;
+	if (displayIndex < 0) {
+		APP_Exit(__FUNCTION__, __LINE__, "%s", SDL_InvalidParamError("displayIndex"));
+	}
+	else if (modeIndex < 0) {
+		APP_Exit(__FUNCTION__, __LINE__, "%s", SDL_InvalidParamError("modeIndex"));
+	}
+	else if (!mode) {
+		APP_Exit(__FUNCTION__, __LINE__, "%s", SDL_InvalidParamError("mode"));
 	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
-		return false;
+		APP_Exit(__FUNCTION__, __LINE__, "Could not get list of displays: %s", SDL_GetError());
 	}
 	if (displayIndex >= displayCount) {
 		SDL_free(displays);
-		return false;
+		APP_Exit(__FUNCTION__, __LINE__, "Number of displays is %d but requested display index is too high at %d", displayCount, displayIndex);
 	}
 	int modeCount;
 	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(displays[displayIndex], &modeCount);
 	SDL_free(displays);
 	if (modeIndex >= modeCount) {
 		SDL_free(modes);
-		return false;
+		APP_Exit(__FUNCTION__, __LINE__, "Number of display modes is %d but requested display mode index is too high at %d", modeCount, modeIndex);
 	}
 	*mode = *modes[modeIndex];
-	return true;
 }
 
 const SDL_DisplayMode* APP_GetDesktopDisplayMode(int displayIndex)
 {
 	if (displayIndex < 0) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid display index of %d, must be at least 0", displayIndex);
 	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error getting list of displays: %s", SDL_GetError());
 	}
 	if (displayIndex >= displayCount) {
 		SDL_free(displays);
@@ -635,7 +663,7 @@ const SDL_DisplayMode* APP_GetDesktopDisplayMode(int displayIndex)
 	const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(displays[displayIndex]);
 	SDL_free(displays);
 	if (!mode) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error getting desktop display mode: %s", SDL_GetError());
 	}
 	return mode;
 }
@@ -643,7 +671,7 @@ const SDL_DisplayMode* APP_GetDesktopDisplayMode(int displayIndex)
 void APP_EnableTextLayer(int layer, int x, int y)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to enable, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	APP_TextLayers[layer].enable = true;
 	APP_TextLayers[layer].x = x;
@@ -653,7 +681,7 @@ void APP_EnableTextLayer(int layer, int x, int y)
 void APP_SetTextLayerDrawPosition(int layer, int x, int y)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to set draw position, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	APP_TextLayers[layer].x = x;
 	APP_TextLayers[layer].y = y;
@@ -662,7 +690,7 @@ void APP_SetTextLayerDrawPosition(int layer, int x, int y)
 void APP_SetTextLayerColor(int layer, int r, int g, int b)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to set text color, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	if (
 		APP_TextLayers[layer].color.r != r ||
@@ -680,7 +708,7 @@ void APP_SetTextLayerColor(int layer, int r, int g, int b)
 void APP_SetTextLayerSize(int layer, int size)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to set text size, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	if (APP_TextLayers[layer].size != size) {
 		APP_TextLayers[layer].size = size;
@@ -691,7 +719,7 @@ void APP_SetTextLayerSize(int layer, int size)
 void APP_PutTextLayerString(int layer, const char* string)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to put text into, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	if (SDL_strcmp(string, APP_TextLayers[layer].string) != 0) {
 		SDL_strlcpy(APP_TextLayers[layer].string, string, APP_TEXT_LAYER_STRING_LENGTH - 1);
@@ -702,7 +730,7 @@ void APP_PutTextLayerString(int layer, const char* string)
 void APP_DrawTextLayer(int layer)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to draw, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	if (!APP_ScreenRenderer || !APP_TextLayers[layer].enable) {
 		return;
@@ -727,12 +755,10 @@ void APP_DrawTextLayer(int layer)
 		}
 		APP_TextLayers[layer].texture = APP_CreateBDFTextTexture(APP_BDFFonts[font], APP_ScreenRenderer, APP_TextLayers[layer].string, APP_TextLayers[layer].color, 32, SDL_SCALEMODE_NEAREST);
 		if (!APP_TextLayers[layer].texture) {
-			SDL_Log("Error creating texture to blit text: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Error creating texture to blit text: %s", SDL_GetError());
 		}
 		if (!SDL_GetTextureSize(APP_TextLayers[layer].texture, &APP_TextLayers[layer].textureW, &APP_TextLayers[layer].textureH)) {
-			SDL_Log("Error getting size of a text layer texture: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Error getting size of a text layer texture: %s", SDL_GetError());
 		}
 		APP_TextLayers[layer].updateTexture = false;
 	}
@@ -749,15 +775,14 @@ void APP_DrawTextLayer(int layer)
 			dstRect.y += APP_ScreenSubpixelOffset;
 		}
 		if (!SDL_RenderTexture(APP_ScreenRenderer, APP_TextLayers[layer].texture, NULL, &dstRect)) {
-			SDL_Log("Error rendering text layer: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Error rendering text layer: %s", SDL_GetError());
 		}
 	}
 }
 
 void APP_DisableTextLayer(int layer) {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Invalid layer number requested to disable, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
 	}
 	APP_TextLayers[layer].enable = false;
 }
@@ -795,7 +820,7 @@ void APP_LoadPlane(int plane, const char* filename)
 	const char* type;
 	for (size_t i = 0; i < SDL_arraysize(types); i++) {
 		if (SDL_asprintf(&filenameExt, "%s.%s", filename, types[i]) < 0) {
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Error loading image");
 		}
 		if (!APP_FileExists(filenameExt)) {
 			SDL_free(filenameExt);
@@ -804,7 +829,7 @@ void APP_LoadPlane(int plane, const char* filename)
 		file = APP_OpenRead(filenameExt);
 		if (!file) {
 			SDL_free(filenameExt);
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Error loading image");
 		}
 		type = types[i];
 		break;
@@ -825,17 +850,15 @@ void APP_LoadPlane(int plane, const char* filename)
 			"Or the build of SDL_image in use might not support its format, so try another format.",
 			filenameExt
 		) < 0) {
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Error loading image");
 		}
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error loading image file", message, APP_ScreenWindow);
-		SDL_free(message);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "%s", message);
 	}
 	if (
 		!SDL_SetTextureScaleMode(APP_Planes[plane], SDL_SCALEMODE_NEAREST) ||
 		!SDL_SetTextureBlendMode(APP_Planes[plane], SDL_BLENDMODE_BLEND)
 	) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error loading image: %s", SDL_GetError());
 	}
 }
 
@@ -845,7 +868,7 @@ void APP_DrawPlane(int plane, int dstX, int dstY) {
 	}
 	float w, h;
 	if (!SDL_GetTextureSize(APP_Planes[plane], &w, &h)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 	APP_DrawPlaneRect(plane, dstX, dstY, 0, 0, (int)w, (int)h);
 }
@@ -869,7 +892,7 @@ void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w,
 	}
 
 	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 }
 
@@ -880,11 +903,11 @@ void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, int a)
 	}
 
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], a)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 	APP_DrawPlane(plane, dstX, dstY);
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 }
 
@@ -895,11 +918,11 @@ void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int s
 	}
 
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], a)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 	APP_DrawPlaneRect(plane, dstX, dstY, srcX, srcY, w, h);
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 }
 
@@ -927,7 +950,7 @@ void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, 
 		dst.y += APP_ScreenSubpixelOffset;
 	}
 	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst)) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 }
 
@@ -959,7 +982,7 @@ void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX,
 		!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst) ||
 		!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)
 	) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
 }
 
@@ -1000,7 +1023,7 @@ float APP_GetScreenSubpixelOffset(void)
 	if (APP_ScreenRenderer && !APP_ScreenRenderTarget) {
 		SDL_FRect rect;
 		if (!SDL_GetRenderLogicalPresentationRect(APP_ScreenRenderer, &rect)) {
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(__FUNCTION__, __LINE__, "Graphics error: %s", SDL_GetError());
 		}
 		const float scale = rect.w / APP_LogicalWidth;
 		return 0.49f / scale;

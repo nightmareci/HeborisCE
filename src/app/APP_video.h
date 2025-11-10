@@ -37,7 +37,7 @@ bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex);
 bool APP_RenderScreen(void);
 int APP_GetMaxDisplayIndex();
 int APP_GetMaxDisplayMode(int displayIndex);
-bool APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode);
+void APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode);
 const SDL_DisplayMode* APP_GetDesktopDisplayMode(int displayIndex);
 
 void APP_EnableTextLayer(int layer, int x, int y);

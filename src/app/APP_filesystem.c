@@ -10,14 +10,12 @@ bool APP_InitFilesystem(int argc, char** argv) {
 		APP_BasePath = SDL_strdup(argv[1]);
 		if ( !APP_BasePath )
 		{
-			fprintf(stderr, "Error duplicating base path string\n");
-			return false;
+			return SDL_SetError("Error duplicating base path string");
 		}
 		APP_PrefPath = SDL_strdup(argv[1]);
 		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Error duplicating pref path string\n");
-			return false;
+			return SDL_SetError("Error duplicating pref path string");
 		}
 	}
 
@@ -27,14 +25,12 @@ bool APP_InitFilesystem(int argc, char** argv) {
 		APP_BasePath = SDL_GetCurrentDirectory();
 		if ( !APP_BasePath )
 		{
-			fprintf(stderr, "Error getting current directory: %s\n", SDL_GetError());
-			return false;
+			return SDL_SetError("Error getting current directory: %s", SDL_GetError());
 		}
 		APP_PrefPath = SDL_strdup(APP_BasePath);
 		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Error duplicating current directory string\n");
-			return false;
+			return SDL_SetError("Error duplicating current directory string");
 		}
 	}
 
@@ -44,20 +40,17 @@ bool APP_InitFilesystem(int argc, char** argv) {
 		const char* basePath = SDL_GetBasePath();
 		if ( !basePath )
 		{
-			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
-			return false;
+			return SDL_SetError("Failed getting base path: %s", SDL_GetError());
 		}
 		APP_BasePath = SDL_strdup(basePath);
 		if ( !APP_BasePath )
 		{
-			fprintf(stderr, "Error duplicating base path string\n");
-			return false;
+			return SDL_SetError("Error duplicating base path string");
 		}
 		APP_PrefPath = SDL_strdup(APP_BasePath);
 		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Error duplicating base path string\n");
-			return false;
+			return SDL_SetError("Error duplicating base path string");
 		}
 	}
 
@@ -67,18 +60,15 @@ bool APP_InitFilesystem(int argc, char** argv) {
 		const char* basePath = SDL_GetBasePath();
 		if ( !basePath )
 		{
-			fprintf(stderr, "Failed getting base path: %s\n", SDL_GetError());
-			return false;
+			return SDL_SetError("Failed getting base path: %s", SDL_GetError());
 		}
 		if (SDL_asprintf(&APP_BasePath, "%s%s", basePath, APP_BASE_PATH_APPEND) < 0) {
-			fprintf(stderr, "Failed creating full base path\n");
-			return false;
+			return SDL_SetError("Failed creating full base path");
 		}
 		APP_PrefPath = SDL_GetPrefPath(APP_FILESYSTEM_ORG, APP_FILESYSTEM_APP);
 		if ( !APP_PrefPath )
 		{
-			fprintf(stderr, "Failed getting pref path: %s\n", SDL_GetError());
-			return false;
+			return SDL_SetError("Failed getting pref path: %s", SDL_GetError());
 		}
 	}
 
@@ -93,14 +83,12 @@ bool APP_InitFilesystem(int argc, char** argv) {
 bool APP_CreateDirectory(const char* directory) {
 	char* path;
 	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, directory) < 0) {
-		fprintf(stderr, "Failed creating directory string\n");
-		return false;
+		return SDL_SetError("Failed creating directory string");
 	}
 
 	if (!SDL_CreateDirectory(path)) {
-		fprintf(stderr, "Failed creating directory \"%s\"\n", directory);
 		SDL_free(path);
-		return false;
+		return SDL_SetError("Failed creating directory \"%s\"", directory);
 	}
 	else {
 		SDL_free(path);
@@ -114,7 +102,7 @@ bool APP_FileExists(const char* filename)
 	SDL_PathInfo info;
 
 	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error allocating string to check if file exists");
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
 		SDL_free(path);
@@ -123,7 +111,7 @@ bool APP_FileExists(const char* filename)
 	SDL_free(path);
 
 	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error allocating string to check if file exists");
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
 		SDL_free(path);
@@ -137,7 +125,7 @@ bool APP_FileExists(const char* filename)
 static SDL_IOStream* APP_OpenFromPath(const char* path, const char* filename, const char* mode) {
 	char* fullPath;
 	if (SDL_asprintf(&fullPath, "%s%s", path, filename) < 0) {
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error allocating string to open a file");
 	}
 
 	SDL_IOStream* file = SDL_IOFromFile(fullPath, mode);
@@ -202,8 +190,7 @@ void APP_LoadFile(const char* filename, void* buf, size_t size)
 	}
 
 	if (SDL_ReadIO(src, buf, size) != size || !SDL_CloseIO(src)) {
-		fprintf(stderr, "Error reading: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error reading file: %s", SDL_GetError());
 	}
 
 	APP_Swap32ArrayLEToNative(buf, size);
@@ -236,13 +223,11 @@ void APP_SaveFile(const char* filename, void* buf, size_t size)
 	APP_Swap32ArrayNativeToLE(buf, size);
 
 	if (SDL_WriteIO(dst, buf, size) != size) {
-		fprintf(stderr, "Error writing: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error writing file: %s", SDL_GetError());
 	}
 	if (!SDL_CloseIO(dst))
 	{
-		fprintf(stderr, "Error closing: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error closing file: %s", SDL_GetError());
 	}
 
 	APP_Swap32ArrayLEToNative(buf, size);
@@ -258,12 +243,10 @@ void APP_AppendFile(const char* filename, void* buf, size_t size)
 	APP_Swap32ArrayNativeToLE(buf, size);
 
 	if (SDL_WriteIO(dst, buf, size) != size) {
-		fprintf(stderr, "Error writing: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error writing file: %s", SDL_GetError());
 	}
 	if (!SDL_CloseIO(dst)) {
-		fprintf(stderr, "Error closing: %s\n", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(__FUNCTION__, __LINE__, "Error closing file: %s", SDL_GetError());
 	}
 
 	APP_Swap32ArrayLEToNative(buf, size);

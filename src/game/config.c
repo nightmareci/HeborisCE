@@ -2157,9 +2157,7 @@ void ConfigMenu() {
 		case APP_SCREEN_MODE_FULLSCREEN:
 			{
 				SDL_DisplayMode displayMode;
-				if (!APP_GetDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]), APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]), &displayMode)) {
-					APP_Exit(EXIT_FAILURE);
-				}
+				APP_GetDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]), APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]), &displayMode);
 				int bpp;
 				Uint32 Rmask, Gmask, Bmask, Amask;
 				if(SDL_GetMasksForPixelFormat(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))

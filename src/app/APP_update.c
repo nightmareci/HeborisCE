@@ -1,4 +1,5 @@
 #include "APP_update.h"
+#include "APP_main.h"
 #include "APP_video.h"
 #include "APP_input.h"
 #include "APP_global.h"
@@ -20,7 +21,7 @@ void APP_Start(void)
 bool APP_Update(void)
 {
 	if (!APP_RenderScreen()) {
-		return false;
+		APP_Exit(__FUNCTION__, __LINE__, "Failed updating: %s", SDL_GetError());
 	}
 
 	// フレームレート計算
@@ -79,21 +80,21 @@ bool APP_Update(void)
 
 	if (showCursor) {
 		if (!SDL_ShowCursor()) {
-			return false;
+			APP_Exit(__FUNCTION__, __LINE__, "Failed showing mouse cursor: %s", SDL_GetError());
 		}
 		APP_CursorFrames = 0u;
 	}
 
 	if (SDL_CursorVisible() && APP_CursorFrames++ >= APP_FPS) {
 		if (!SDL_HideCursor()) {
-			return false;
+			APP_Exit(__FUNCTION__, __LINE__, "Failed hiding mouse cursor: %s", SDL_GetError());
 		}
 	}
 
 	#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
 	if (slotsChanged) {
 		if (!APP_PlayerSlotsChanged()) {
-			return false;
+			APP_Exit(__FUNCTION__, __LINE__, "Failed changing player joystick/controller device slots: %s", SDL_GetError());
 		}
 	}
 	#endif

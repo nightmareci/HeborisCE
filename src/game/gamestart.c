@@ -1493,7 +1493,7 @@ void mainUpdate() {
 			LoadConfig();
 		}
 
-		int32_t oldScreenMode = screenMode;
+		APP_ScreenModeFlag oldScreenMode = screenMode;
 		int32_t oldScreenIndex = screenIndex;
 		if (!APP_SetScreen(&screenMode, &screenIndex)) { errorFunction = __FUNCTION__, errorLine = __LINE__;
 			loopFlag = 0;
@@ -1609,7 +1609,7 @@ void mainUpdate() {
 			LoadConfig();
 		}
 
-		int32_t oldScreenMode = screenMode;
+		APP_ScreenModeFlag oldScreenMode = screenMode;
 		int32_t oldScreenIndex = screenIndex;
 		if (!APP_SetScreen(&screenMode, &screenIndex)) { errorFunction = __FUNCTION__, errorLine = __LINE__;
 			loopFlag = 0;
@@ -17302,18 +17302,7 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	if (quitNow()) {
-		exitStatus = EXIT_SUCCESS;
-		goto quit;
-	}
-	else {
-		exitStatus = APP_Update() ? EXIT_SUCCESS : EXIT_FAILURE; if (exitStatus == EXIT_FAILURE) errorLine = __LINE__;
-		if (exitStatus == EXIT_FAILURE) {
-			goto quit;
-		}
-	}
-	while (false) {
-	quit:
+	if (quitNow() || !APP_Update()) {
 		shutDown();
 		mainLoopState = MAIN_QUIT;
 		init = true;

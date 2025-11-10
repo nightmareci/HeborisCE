@@ -207,8 +207,7 @@ int32_t SaveConfig(void) {
 
 // 設定をバイナリデータから読み込み 1.60c5
 int32_t LoadConfig(void) {
-	int32_t i, j, cfgbuf[CFG_LENGTH];
-
+	int32_t cfgbuf[CFG_LENGTH];
 	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
 	APP_LoadFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 	if(cfgbuf[0] != 0x4F424550) return (1);
@@ -224,7 +223,7 @@ int32_t LoadConfig(void) {
 	screenIndex = cfgbuf[5];
 
 #else
-	screenMode &= ~APP_SCREEN_MODE_WINDOW_TYPE;
+	screenMode &= ~(APP_SCREEN_MODE_WINDOW_TYPE | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE);
 	screenMode |=
 #ifdef __vita__
 		APP_SCREEN_MODE_FULLSCREEN
@@ -246,7 +245,7 @@ int32_t LoadConfig(void) {
 	background = cfgbuf[13];
 
 	#ifdef APP_ENABLE_KEYBOARD
-	for(i = 0; i < 20; i++) {
+	for(int32_t i = 0; i < 20; i++) {
 		if (cfgbuf[14 + i] == SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
 		else keyAssign[i] = cfgbuf[14 + i];
 	}
@@ -285,15 +284,15 @@ int32_t LoadConfig(void) {
 
 	/* 72〜74はジョイスティック用 */
 
-	for(i = 0; i <= 3; i++) {
+	for(int32_t i = 0; i <= 3; i++) {
 		fontc[i] = (cfgbuf[74] >> (i * 8)) & 0xff;
 		digitc[i] = (cfgbuf[75] >> (i * 8)) & 0xff;
 	}
-	for(i = 0; i <= 3; i++) {
+	for(int32_t i = 0; i <= 3; i++) {
 		fontc[i + 4] = (cfgbuf[76] >> (i * 8)) & 0xff;
 		digitc[i + 4] = (cfgbuf[77] >> (i * 8)) & 0xff;
 	}
-	for(i = 0; i <= 3; i++) {
+	for(int32_t i = 0; i <= 3; i++) {
 		fontc[i + 8] = (cfgbuf[78] >> (i * 8)) & 0xff;
 		digitc[i + 8] = (cfgbuf[79] >> (i * 8)) & 0xff;
 	}

@@ -8,6 +8,13 @@
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_mutex.h>
 
+// TODO: In the case of skips in audio playback, advance the playback position
+// by the right amount. Currently, if playback gets interrupted, the playback
+// position will advance too slowly, getting out of sync with the expected
+// result. This is needed in the case of the ending music, as the ending music
+// is expected to finish after a fixed amount of game time, right at game
+// completion.
+
 typedef struct APP_Sound
 {
 	SDL_AudioStream* stream;

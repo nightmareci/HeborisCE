@@ -444,6 +444,7 @@ static void SDLCALL APP_GetStreamedAudioStreamData(void* userdata, SDL_AudioStre
 		ready = SDL_GetAtomicInt(&sound->streamed.ready[chunkID]);
 		SDL_MemoryBarrierAcquire();
 		if (!ready) {
+			SDL_SignalSemaphore(sound->streamed.wakeStreamer);
 			return;
 		}
 	}

@@ -31,6 +31,7 @@ typedef struct APP_Sound
 			SDL_AtomicInt quit;
 			int chunkEnd[2];
 			int pos;
+			bool waiting[2];
 			bool lastChunk[2];
 			bool leadinFinished;
 			bool mainFinished;
@@ -437,16 +438,26 @@ static void SDLCALL APP_GetStreamedAudioStreamData(void* userdata, SDL_AudioStre
 	}
 
 	int chunkID = SDL_GetAtomicInt(&sound->streamed.chunkID);
+	SDL_MemoryBarrierAcquire();
 	int ready = SDL_GetAtomicInt(&sound->streamed.ready[chunkID]);
 	SDL_MemoryBarrierAcquire();
 	if (!ready) {
-		chunkID = !chunkID;
-		ready = SDL_GetAtomicInt(&sound->streamed.ready[chunkID]);
+		ready = SDL_GetAtomicInt(&sound->streamed.ready[!chunkID]);
 		SDL_MemoryBarrierAcquire();
 		if (!ready) {
-			SDL_SignalSemaphore(sound->streamed.wakeStreamer);
+			if (!sound->streamed.waiting[chunkID]) {
+				sound->streamed.waiting[chunkID] = true;
+				SDL_SignalSemaphore(sound->streamed.wakeStreamer);
+			}
 			return;
 		}
+		SDL_MemoryBarrierRelease();
+		SDL_SetAtomicInt(&sound->streamed.chunkID, !chunkID);
+		sound->streamed.waiting[!chunkID] = false;
+		chunkID = !chunkID;
+	}
+	else {
+		sound->streamed.waiting[chunkID] = false;
 	}
 	int chunkEnd = sound->streamed.chunkEnd[chunkID];
 	bool lastChunk = sound->streamed.lastChunk[chunkID];
@@ -463,15 +474,15 @@ static void SDLCALL APP_GetStreamedAudioStreamData(void* userdata, SDL_AudioStre
 		additionalAmount -= chunkEnd - sound->streamed.pos;
 		ready = SDL_GetAtomicInt(&sound->streamed.ready[!chunkID]);
 		SDL_MemoryBarrierAcquire();
+		SDL_MemoryBarrierRelease();
+		SDL_SetAtomicInt(&sound->streamed.ready[chunkID], 0);
+		SDL_MemoryBarrierRelease();
+		SDL_SetAtomicInt(&sound->streamed.chunkID, !chunkID);
+		lastChunk = false;
 		if (ready) {
-			SDL_MemoryBarrierRelease();
-			SDL_SetAtomicInt(&sound->streamed.ready[chunkID], 0);
-			chunkID = !chunkID;
-			SDL_MemoryBarrierRelease();
-			SDL_SetAtomicInt(&sound->streamed.chunkID, chunkID);
-			chunkEnd = sound->streamed.chunkEnd[chunkID];
-			lastChunk = sound->streamed.lastChunk[chunkID];
-			chunk = &sound->streamed.chunks[chunkID * APP_STREAMED_AUDIO_CHUNK_SIZE];
+			chunkEnd = sound->streamed.chunkEnd[!chunkID];
+			lastChunk = sound->streamed.lastChunk[!chunkID];
+			chunk = &sound->streamed.chunks[!chunkID * APP_STREAMED_AUDIO_CHUNK_SIZE];
 			if (additionalAmount <= chunkEnd) {
 				SDL_PutAudioStreamData(stream, chunk, additionalAmount);
 				sound->streamed.pos = additionalAmount;
@@ -484,8 +495,14 @@ static void SDLCALL APP_GetStreamedAudioStreamData(void* userdata, SDL_AudioStre
 				sound->playing = false;
 			}
 		}
+		else {
+			sound->streamed.pos = 0;
+		}
 		if (!lastChunk) {
-			SDL_SignalSemaphore(sound->streamed.wakeStreamer);
+			if (!sound->streamed.waiting[chunkID]) {
+				sound->streamed.waiting[chunkID] = true;
+				SDL_SignalSemaphore(sound->streamed.wakeStreamer);
+			}
 		}
 	}
 }
@@ -604,6 +621,7 @@ static void APP_ReadyStreamedSound(APP_Sound* sound)
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->streamed.ready[0], 1);
 
+	sound->streamed.waiting[1] = true;
 	SDL_MemoryBarrierRelease();
 	SDL_SetAtomicInt(&sound->streamed.ready[1], 0);
 	SDL_MemoryBarrierRelease();

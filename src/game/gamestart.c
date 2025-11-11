@@ -5219,7 +5219,7 @@ void statSelectMode(int32_t player) {
 			ExBltRect(85, (18 + 24 * player - 12 * maxPlay)*8, (20 -(gameMode[player] >= 10)* 2)*8, 0, 7*(25 + std_opt[player]), 50, 7);
 			if(relaymode[player]){
 				if(statusc[player * 10 + 2] == 1)
-					printFontEx(15 + 24 * player - 12 * maxPlay, 143, "ROT.RELAY", 7);
+					printFont(15 + 24 * player - 12 * maxPlay, 143, "ROT.RELAY", 7);
 				else if(statusc[player * 10 + 2] == 2)
 					printFont(15 + 24 * player - 12 * maxPlay, 19 , "ROT.RELAY", 7);
 			}

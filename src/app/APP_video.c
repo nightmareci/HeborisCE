@@ -6,6 +6,7 @@
 #include "APP_global.h"
 #include "APP_bdf.h"
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_render.h>
 #include <SDL3_image/SDL_image.h>
 
 #define APP_WINDOW_TITLE "Heboris C.E."
@@ -46,6 +47,10 @@ static APP_TextLayer APP_TextLayers[APP_TEXT_LAYER_COUNT];
 
 static int32_t APP_ScreenMode;
 static int32_t APP_ScreenIndex;
+
+static size_t APP_TextDataLength = 0;
+static SDL_Vertex* APP_TextVertices = NULL;
+static int* APP_TextIndices = NULL;
 
 static int APP_NewPlaneDrawOffsetX = 0, APP_NewPlaneDrawOffsetY = 0;
 static int APP_PlaneDrawOffsetX = 0, APP_PlaneDrawOffsetY = 0;
@@ -175,6 +180,12 @@ void APP_QuitVideo(void)
 		SDL_DestroyWindow(APP_ScreenWindow);
 		APP_ScreenWindow = NULL;
 	}
+
+	SDL_free(APP_TextVertices);
+	APP_TextVertices = NULL;
+	SDL_free(APP_TextIndices);
+	APP_TextIndices = NULL;
+	APP_TextDataLength = 0;
 
 	APP_PrivateBDFFontFinalize();
 }
@@ -984,6 +995,104 @@ void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX,
 	) {
 		APP_Exit(__FUNCTION__, __LINE__, "Error rendering graphics: %s", SDL_GetError());
 	}
+}
+
+void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int srcX, int srcY, int srcW)
+{
+	if (
+		plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane] ||
+		!text || !*text || charW <= 0 || charH <= 0 || dstX >= APP_LogicalWidth || dstY >= APP_LogicalHeight || dstY + charH <= 0
+	) {
+		return;
+	}
+	const size_t length = SDL_strlen(text);
+	if (dstX + length * charW <= 0) {
+		return;
+	}
+
+	if (length > APP_TextDataLength) {
+		SDL_Vertex* const vertices = SDL_realloc(APP_TextVertices, length * 4 * sizeof(SDL_Vertex));
+		if (!vertices) {
+			SDL_SetError("Could not allocate vertex array");
+			goto fail;
+		}
+		APP_TextVertices = vertices;
+		for (
+			SDL_Vertex* vertex = APP_TextVertices + APP_TextDataLength * 4, * const verticesEnd = APP_TextVertices + length * 4;
+			vertex < verticesEnd;
+			vertex++
+		) {
+			vertex->color = (SDL_FColor) { 1.0f, 1.0f, 1.0f, SDL_ALPHA_OPAQUE_FLOAT };
+		}
+
+		int* const indices = SDL_realloc(APP_TextIndices, length * 6 * sizeof(int));
+		if (!indices) {
+			SDL_SetError("Could not allocate index array");
+			goto fail;
+		}
+		APP_TextIndices = indices;
+		int* index = APP_TextIndices + APP_TextDataLength * 6;
+		int* const indicesEnd = APP_TextIndices + length * 6;
+		int i = APP_TextDataLength * 4;
+		while (index < indicesEnd) {
+			index[0] = i + 0;
+			index[1] = i + 1;
+			index[2] = i + 2;
+
+			index[3] = i + 1;
+			index[4] = i + 2;
+			index[5] = i + 3;
+
+			index += 6;
+			i += 4;
+		}
+
+		APP_TextDataLength = length;
+	}
+
+	SDL_Vertex* vertex = APP_TextVertices;
+	const char* c = text;
+	SDL_Vertex* const verticesEnd = APP_TextVertices + length * 4;
+	float x = dstX + APP_PlaneDrawOffsetX;
+	float y = dstY + APP_PlaneDrawOffsetY;
+	if (!APP_ScreenRenderTarget) {
+		x += APP_ScreenSubpixelOffset;
+		y += APP_ScreenSubpixelOffset;
+	}
+	float texW, texH;
+	if (!SDL_GetTextureSize(APP_Planes[plane], &texW, &texH)) {
+		goto fail;
+	}
+	const float texCharW = (float)charW / texW;
+	const float texCharH = (float)charH / texH;
+	while (vertex < verticesEnd) {
+		float texX = (srcX + ((*c - firstChar) * charW) % srcW) / texW;
+		float texY = (srcY + (((*c - firstChar) * charW) / srcW) * charH) / texH;
+
+		vertex[0].position = (SDL_FPoint) { x, y };
+		vertex[0].tex_coord = (SDL_FPoint) { texX, texY };
+
+		vertex[1].position = (SDL_FPoint) { x + charW, y };
+		vertex[1].tex_coord = (SDL_FPoint) { texX + texCharW, texY };
+
+		vertex[2].position = (SDL_FPoint) { x, y + charH };
+		vertex[2].tex_coord = (SDL_FPoint) { texX, texY + texCharH };
+
+		vertex[3].position = (SDL_FPoint) { x + charW, y + charH };
+		vertex[3].tex_coord = (SDL_FPoint) { texX + texCharW, texY + texCharH };
+
+		vertex += 4;
+		c++;
+		x += charW;
+	}
+
+	if (!SDL_RenderGeometry(APP_ScreenRenderer, APP_Planes[plane], APP_TextVertices, length * 4, APP_TextIndices, length * 6)) {
+		goto fail;
+	}
+	return;
+
+	fail:
+	APP_Exit(__FUNCTION__, __LINE__, "Error rendering text: %s", SDL_GetError());
 }
 
 void APP_SetPlaneDrawOffset(int x, int y)

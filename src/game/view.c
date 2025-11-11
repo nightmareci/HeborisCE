@@ -2222,28 +2222,7 @@ void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, APP_ConKey* ke
 //  フォントを表示する
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
-	int32_t		i, sx, sy, stringLength, stringChar;
-
-	stringLength = APP_StrLen(fontStr);
-	for(i = 0; i < stringLength; i++) {
-		stringChar = APP_CharAt(fontStr, i);
-		sx = ((stringChar - 32) % 32) * 8;
-		sy = ((stringChar - 32) / 32) * 8 + fontColor * 24;
-		ExBltRect(1, (fontX + i) * 8, fontY * 8, sx, sy, 8, 8);
-	}
-}
-
-// 1ドットずつY座標を指定できるバージョン #1.60c7k3
-void printFontEx(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
-	int32_t		i, sx, sy, stringLength, stringChar;
-
-	stringLength = APP_StrLen(fontStr);
-	for(i = 0; i < stringLength; i++) {
-		stringChar = APP_CharAt(fontStr, i);
-		sx = ((stringChar - 32) % 32) * 8;
-		sy = ((stringChar - 32) / 32) * 8 + fontColor * 24;
-		ExBltRect(1, (fontX + i) * 8, fontY, sx, sy, 8, 8);
-	}
+	ExBltSpriteText(1, fontStr, ' ', 8, 8, fontX * 8, fontY * 8, 0, fontColor * 24, 256);
 }
 
 // 小さいバージョン
@@ -2317,28 +2296,13 @@ void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t
 
 // 大きいバージョン（数字のみ）
 void printBIGFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
-	int32_t		i, sx, sy, stringLength, stringChar;
-
-	stringLength = APP_StrLen(fontStr);
-	for(i = 0; i < stringLength; i++) {
-		stringChar = APP_CharAt(fontStr, i);
-		sx = (stringChar -48) * 12;
-		sy = fontColor * 16;
-		if(sx >= 0) ExBltRect(31, fontX + 12 * i, fontY, sx, sy + (160 * fontsize), 12, 16);
-	}
+	ExBltSpriteText(31, fontStr, '0', 12, 16, fontX, fontY, 0, fontColor * 16 + 160 * fontsize, 12 * 11);
 }
+
 // とっても小さいバージョン　6x7
 // 数字、/ : < > 、アルファベット大文字が使用可能　ただし字詰め無し
 void printTinyFont(int32_t fontX, int32_t fontY, const char *fontStr) {
-	int32_t		i, sx, sy, stringLength, stringChar;
-
-	stringLength = APP_StrLen(fontStr);
-	for(i = 0; i < stringLength; i++) {
-		stringChar = APP_CharAt(fontStr, i);
-		sx = ((stringChar - 32) % 32) * 6;
-		sy = ((stringChar - 32) / 32) * 7;
-		ExBltRect(85, fontX + i * 6, fontY, sx, 287 + sy, 6, 7);
-	}
+	ExBltSpriteText(85, fontStr, ' ', 6, 7, fontX, fontY, 0, 287, 192);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

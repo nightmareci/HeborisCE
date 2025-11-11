@@ -52,14 +52,21 @@ void APP_DisableTextLayer(int layer);
 // filename must not have a file extension. All supported file types/extensions
 // are tried until a file is found.
 void APP_LoadPlane(int plane, const char* filename);
+
 void APP_DrawPlane(int plane, int dstX, int dstY);
 void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h);
+
 void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, int a);
 void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a);
+
 void APP_DrawPlaneScaled(int plane, int dstX, int dstY, int scaleW, int scaleH);
 void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int scaleW, int scaleH);
+
 void APP_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, int a, int scaleW, int scaleH);
 void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a, int scaleW, int scaleH);
+
+void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int srcX, int srcY, int srcW);
+
 void APP_SetPlaneDrawOffset(int x, int y);
 
 float APP_GetScreenSubpixelOffset(void);

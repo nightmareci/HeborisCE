@@ -13,7 +13,6 @@ extern int32_t blkDataX[7 *4 *4];
 extern int32_t blkDDataY[7 *4 *4];
 extern int32_t blkDDataX[7 *4 *4];
 void printSMALLFontEX(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
-void printFontEx(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewFldBackground(void);
 void drawhBlock(int32_t bx1,int32_t by1,int32_t kind,int32_t color,int32_t r,int32_t player,int32_t rotate,int32_t use3D);
 void drawBlockFast(int32_t bx1,int32_t by1,int32_t kind,int32_t rotate,int32_t color,int32_t bright,int32_t offset,int32_t flash,int32_t player,int32_t use3D);

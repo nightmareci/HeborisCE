@@ -108,5 +108,7 @@ SDL_NORETURN void APP_Exit(int exitStatus)
 	if (exitStatus != EXIT_SUCCESS) {
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
 	}
+	APP_Quit();
+	SDL_Quit();
 	exit(exitStatus);
 }

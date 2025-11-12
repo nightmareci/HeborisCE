@@ -2,6 +2,7 @@
 #include "APP_main.h"
 #include "APP_video.h"
 #include "APP_input.h"
+#include "APP_error.h"
 #include "APP_global.h"
 
 static uint64_t			APP_LastNS;
@@ -20,9 +21,7 @@ void APP_Start(void)
 
 bool APP_Update(void)
 {
-	if (!APP_RenderScreen()) {
-		APP_Exit(__FUNCTION__, __LINE__, "Failed updating: %s", SDL_GetError());
-	}
+	APP_RenderScreen();
 
 	// フレームレート計算
 	// Frame rate calculation
@@ -80,21 +79,24 @@ bool APP_Update(void)
 
 	if (showCursor) {
 		if (!SDL_ShowCursor()) {
-			APP_Exit(__FUNCTION__, __LINE__, "Failed showing mouse cursor: %s", SDL_GetError());
+			APP_SetError("Failed showing mouse cursor: %s", SDL_GetError());
+			APP_Exit(EXIT_FAILURE);
 		}
 		APP_CursorFrames = 0u;
 	}
 
 	if (SDL_CursorVisible() && APP_CursorFrames++ >= APP_FPS) {
 		if (!SDL_HideCursor()) {
-			APP_Exit(__FUNCTION__, __LINE__, "Failed hiding mouse cursor: %s", SDL_GetError());
+			APP_SetError("Failed hiding mouse cursor: %s", SDL_GetError());
+			APP_Exit(EXIT_FAILURE);
 		}
 	}
 
 	#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
 	if (slotsChanged) {
 		if (!APP_PlayerSlotsChanged()) {
-			APP_Exit(__FUNCTION__, __LINE__, "Failed changing player joystick/controller device slots: %s", SDL_GetError());
+			APP_SetError("Failed changing player joystick/controller device slots: %s", SDL_GetError());
+			APP_Exit(EXIT_FAILURE);
 		}
 	}
 	#endif

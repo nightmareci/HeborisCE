@@ -2,6 +2,7 @@
 #define APP_h_
 
 #include "APP_stdinc.h"
+#include "APP_error.h"
 #include "APP_stdlib.h"
 #include "APP_main.h"
 #include "APP_filesystem.h"

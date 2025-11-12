@@ -33,8 +33,8 @@ void APP_InitVideo(void);
 void APP_QuitVideo(void);
 
 void APP_ResetFrameStep(void);
-bool APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex);
-bool APP_RenderScreen(void);
+void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex);
+void APP_RenderScreen(void);
 int APP_GetMaxDisplayIndex();
 int APP_GetMaxDisplayMode(int displayIndex);
 void APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode);

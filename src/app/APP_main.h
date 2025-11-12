@@ -7,6 +7,6 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 
 void APP_Quit(void);
 
-SDL_NORETURN void APP_Exit(const char* function, int line, const char* format, ...);
+SDL_NORETURN void APP_Exit(int exitStatus);
 
 #endif

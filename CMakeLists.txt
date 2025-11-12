@@ -44,24 +44,22 @@ option(APP_VENDORED "Use vendor libraries (the version of libraries bundled with
 # override these settings.
 option(APP_ENABLE_KEYBOARD "Enable input via keyboard" TRUE)
 option(APP_ENABLE_GAME_CONTROLLER "Enable input via game controllers (not the same as classic joystick input)" TRUE)
-option(APP_APP_ENABLE_GAME_CONTROLLER_DB "Enable loading gamecontrollerdb.txt for supporting more game controllers" TRUE)
+option(APP_ENABLE_GAME_CONTROLLER_DB "Enable loading gamecontrollerdb.txt for supporting more game controllers" TRUE)
 option(APP_ENABLE_JOYSTICK "Enable input via any joystick device" TRUE)
 option(APP_ENABLE_ALL_VIDEO_SETTINGS "Enable all video settings; disabling this option hides some \"unsafe\" settings" TRUE)
 option(APP_ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any time or selecting the \"QUIT\" main menu entry" TRUE)
-
 set(APP_DEFAULT_JOYKEY_ASSIGN "{ 0 }")
 set(APP_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
-set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL)")
-
-set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_WORKINGDIR")
+set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
+set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_CURRENT_DIRECTORY")
 set(APP_BASE_PATH_APPEND "")
 
 if(VITA)
 	set(APP_PACKAGE_TYPE "Installable" CACHE STRING "Package type" FORCE)
 elseif(WIN32 OR LINUX)
-	set(APP_PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", or \"Portable\"")
+	set(APP_PACKAGE_TYPE "Current Directory" CACHE STRING "Package type; must be \"Current Directory\", \"Installable\", or \"Portable\"")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-	set(APP_PACKAGE_TYPE "WorkingDir" CACHE STRING "Package type; must be \"WorkingDir\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
+	set(APP_PACKAGE_TYPE "Current Directory" CACHE STRING "Package type; must be \"Current Directory\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
 endif()
 
 
@@ -122,6 +120,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_audio_private.h"
 	"src/app/APP_bdf.h"
 	"src/app/APP_stdinc.h"
+	"src/app/APP_error.h"
 	"src/app/APP_filesystem.h"
 	"src/app/APP_global.h"
 	"src/app/APP_input.h"
@@ -202,7 +201,6 @@ if(VITA)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
 	set(APP_FILESYSTEM_TYPE APP_FILESYSTEM_INSTALLABLE CACHE STRING "" FORCE)
 	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
-	set(APP_SCREEN_SUBPIXEL_OFFSET "0.0f" CACHE STRING "" FORCE)
 
 	set(VITA_APP_NAME ${APP_EXE})
 	set(VITA_TITLEID "NMCI00000")
@@ -282,8 +280,8 @@ elseif(WIN32 AND MSVC)
 		)
 	endif()
 
-	if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
-		message(STATUS "Configuring working directory version; CMake installation is not supported")
+	if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
+		message(STATUS "Configuring current directory version; CMake installation is not supported")
 	elseif(
 		APP_PACKAGE_TYPE STREQUAL "Portable" OR
 		APP_PACKAGE_TYPE STREQUAL "Installable"
@@ -295,7 +293,7 @@ elseif(WIN32 AND MSVC)
 			message(STATUS "Configuring installable package")
 			set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
 		else()
-			message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
+			message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"Current Directory\", \"Portable\", or \"Installable\"")
 		endif()
 
 		install(TARGETS ${APP_EXE} DESTINATION ".")
@@ -433,7 +431,7 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 		endif()
 	endif()
 
-	if(APP_PACKAGE_TYPE STREQUAL "WorkingDir")
+	if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
 	elseif(APP_PACKAGE_TYPE STREQUAL "Portable")
 		set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
 		install(TARGETS ${APP_EXE} DESTINATION ${APP_EXE})
@@ -457,7 +455,7 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 			install(FILES "pkg/linux/icon.png" RENAME "${APP_EXE}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
 		endif()
 	else()
-		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"WorkingDir\", \"Portable\", or \"Installable\"")
+		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"Current Directory\", \"Portable\", or \"Installable\"")
 	endif()
 
 	set_target_properties(${APP_EXE}

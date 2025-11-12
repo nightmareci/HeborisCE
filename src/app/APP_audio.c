@@ -4,6 +4,7 @@
 #include "APP_wav.h"
 #include "APP_ogg.h"
 #include "APP_mp3.h"
+#include "APP_error.h"
 #include "APP_audio_private.h"
 #include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_mutex.h>
@@ -272,7 +273,8 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	char* filenameExt = NULL;
 	for (size_t i = 0; i < SDL_arraysize(APP_AudioDataPreloaders); i++) {
 		if (SDL_asprintf(&filenameExt, "%s%s", filename, APP_AudioDataPreloaders[i].ext) < 0) {
-			APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+			APP_SetError("Could not load sound file");
+			APP_Exit(EXIT_FAILURE);
 		}
 		if (!APP_FileExists(filenameExt)) {
 			SDL_free(filenameExt);
@@ -290,7 +292,8 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	SDL_IOStream* const file = APP_OpenRead(filenameExt);
 	if (!file) {
 		SDL_free(filenameExt);
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	uint8_t* oldData;
 	uint8_t* data;
@@ -298,14 +301,16 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	if (!preload(file, &APP_AudioDeviceFormat, &data, &size)) {
 		APP_ShowSoundLoadErrorMessage(filenameExt);
 		SDL_free(filenameExt);
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	SDL_free(filenameExt);
 
 	sound->streaming = false;
 
 	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetPreloadedAudioStreamData, sound)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file: %s", SDL_GetError());
+		APP_SetError("Could not load sound file: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 
 	if (leadin) {
@@ -325,7 +330,8 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	SDL_free(oldData);
 	sound->loaded = true;
 	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file: %s", SDL_GetError());
+		APP_SetError("Could not load sound file: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	return true;
 }
@@ -337,7 +343,8 @@ static void APP_StartPreloadedSound(APP_Sound* sound, bool resume)
 	}
 
 	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not start sound playback: %s", SDL_GetError());
+		APP_SetError("Could not start sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	if (!resume) {
 		sound->preloaded.leadinPos = 0;
@@ -346,21 +353,24 @@ static void APP_StartPreloadedSound(APP_Sound* sound, bool resume)
 	sound->paused = false;
 	sound->playing = true;
 	if (!SDL_UnlockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not start sound playback: %s", SDL_GetError());
+		APP_SetError("Could not start sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 
 static void APP_StopPreloadedSound(APP_Sound* sound)
 {
 	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not stop sound playback: %s", SDL_GetError());
+		APP_SetError("Could not stop sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	sound->preloaded.leadinPos = 0;
 	sound->preloaded.mainPos = 0;
 	sound->paused = false;
 	sound->playing = false;
 	if (!SDL_UnlockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not stop sound playback: %s", SDL_GetError());
+		APP_SetError("Could not stop sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 
@@ -372,7 +382,8 @@ static APP_CreateStreamingAudioDataFunction APP_GetCreateStreamingAudioDataFunct
 	}
 	for (size_t i = 0; i < SDL_arraysize(APP_StreamingAudioDataCreators); i++) {
 		if (SDL_asprintf(filenameExt, "%s%s", filename, APP_StreamingAudioDataCreators[i].ext) < 0) {
-			APP_Exit(__FUNCTION__, __LINE__, "Could not set up streaming for an audio file");
+			APP_SetError("Could not set up streaming for an audio file");
+			APP_Exit(EXIT_FAILURE);
 		}
 		if (APP_FileExists(*filenameExt)) {
 			return APP_StreamingAudioDataCreators[i].create;
@@ -528,13 +539,15 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 		file = APP_OpenRead(filenameExt);
 		if (!file) {
 			SDL_free(filenameExt);
-			APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+			APP_SetError("Could not load sound file");
+			APP_Exit(EXIT_FAILURE);
 		}
 		sound->streamed.leadinData = create(file, &APP_AudioDeviceFormat);
 		if (!sound->streamed.leadinData) {
 			APP_ShowSoundLoadErrorMessage(filenameExt);
 			SDL_free(filenameExt);
-			APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+			APP_SetError("Could not load sound file");
+			APP_Exit(EXIT_FAILURE);
 		}
 		SDL_free(filenameExt);
 	}
@@ -544,13 +557,15 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 		file = APP_OpenRead(filenameExt);
 		if (!file) {
 			SDL_free(filenameExt);
-			APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+			APP_SetError("Could not load sound file");
+			APP_Exit(EXIT_FAILURE);
 		}
 		sound->streamed.mainData = create(file, &APP_AudioDeviceFormat);
 		if (!sound->streamed.mainData) {
 			APP_ShowSoundLoadErrorMessage(filenameExt);
 			SDL_free(filenameExt);
-			APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+			APP_SetError("Could not load sound file");
+			APP_Exit(EXIT_FAILURE);
 		}
 		SDL_free(filenameExt);
 	}
@@ -562,24 +577,29 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 	sound->streaming = true;
 
 	if (!SDL_SetAudioStreamGetCallback(sound->stream, APP_GetStreamedAudioStreamData, sound)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	sound->looping = looping;
 
 	sound->streamed.chunks = SDL_malloc(APP_STREAMED_AUDIO_CHUNK_SIZE * 2);
 	if (!sound->streamed.chunks) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	sound->streamed.wakeStreamer = SDL_CreateSemaphore(0);
 	if (!sound->streamed.wakeStreamer) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	sound->streamed.streamer = SDL_CreateThread(APP_StreamAudioData, "APP_StreamAudioData", sound);
 	if (!sound->streamed.streamer) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not load sound file");
+		APP_SetError("Could not load sound file");
+		APP_Exit(EXIT_FAILURE);
 	}
 	sound->loaded = true;
 	return true;
@@ -588,7 +608,8 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 static void APP_ReadyStreamedSound(APP_Sound* sound)
 {
 	if (!SDL_ClearAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not get sound ready for streamed playback");
+		APP_SetError("Could not get sound ready for streamed playback");
+		APP_Exit(EXIT_FAILURE);
 	}
 
 	sound->streamed.pos = 0;
@@ -599,10 +620,12 @@ static void APP_ReadyStreamedSound(APP_Sound* sound)
 
 	if (sound->streamed.leadinData) {
 		if (!APP_RestartStreamingAudioData(sound->streamed.leadinData)) {
-			APP_Exit(__FUNCTION__, __LINE__, "Could not get sound ready for streamed playback");
+			APP_SetError("Could not get sound ready for streamed playback");
+			APP_Exit(EXIT_FAILURE);
 		}
 		if (!APP_GetStreamingAudioDataChunk(sound->streamed.leadinData, sound->streamed.chunks, APP_STREAMED_AUDIO_CHUNK_SIZE, &sound->streamed.chunkEnd[0], &sound->streamed.leadinFinished, false)) {
-			APP_Exit(__FUNCTION__, __LINE__, "Could not get sound ready for streamed playback");
+			APP_SetError("Could not get sound ready for streamed playback");
+			APP_Exit(EXIT_FAILURE);
 		}
 		sound->streamed.lastChunk[0] = !sound->streamed.mainData && sound->streamed.leadinFinished;
 	}
@@ -611,12 +634,14 @@ static void APP_ReadyStreamedSound(APP_Sound* sound)
 	}
 	if (sound->streamed.mainData) {
 		if (!APP_RestartStreamingAudioData(sound->streamed.mainData)) {
-			APP_Exit(__FUNCTION__, __LINE__, "Could not get sound ready for streamed playback");
+			APP_SetError("Could not get sound ready for streamed playback");
+			APP_Exit(EXIT_FAILURE);
 		}
 		if (sound->streamed.leadinFinished) {
 			int mainSize;
 			if (!APP_GetStreamingAudioDataChunk(sound->streamed.mainData, sound->streamed.chunks + sound->streamed.chunkEnd[0], APP_STREAMED_AUDIO_CHUNK_SIZE - sound->streamed.chunkEnd[0], &mainSize, &sound->streamed.mainFinished, sound->looping)) {
-				APP_Exit(__FUNCTION__, __LINE__, "Could not get sound ready for streamed playback");
+				APP_SetError("Could not get sound ready for streamed playback");
+				APP_Exit(EXIT_FAILURE);
 			}
 			sound->streamed.chunkEnd[0] += mainSize;
 			sound->streamed.lastChunk[0] = sound->streamed.mainFinished && !sound->looping;
@@ -648,7 +673,8 @@ static void APP_StartStreamedSound(APP_Sound* sound, bool resume)
 	sound->paused = false;
 	sound->playing = true;
 	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not start sound playback: %s", SDL_GetError());
+		APP_SetError("Could not start sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 
@@ -659,32 +685,37 @@ static void APP_StopStreamedSound(APP_Sound* sound)
 	sound->paused = false;
 	sound->playing = false;
 	if (!SDL_BindAudioStream(APP_AudioDevice, sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not stop sound playback: %s", SDL_GetError());
+		APP_SetError("Could not stop sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 
 static void APP_PauseSound(APP_Sound* sound)
 {
 	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not pause sound playback: %s", SDL_GetError());
+		APP_SetError("Could not pause sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	if (sound->playing) {
 		sound->playing = false;
 		sound->paused = true;
 	}
 	if (!SDL_UnlockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not pause sound playback: %s", SDL_GetError());
+		APP_SetError("Could not pause sound playback: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 
 static bool APP_IsSoundPlaying(APP_Sound* sound)
 {
 	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not check if sound is playing: %s", SDL_GetError());
+		APP_SetError("Could not check if sound is playing: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	const bool playing = sound->playing;
 	if (!SDL_UnlockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not check if sound is playing: %s", SDL_GetError());
+		APP_SetError("Could not check if sound is playing: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	return playing;
 }
@@ -693,18 +724,21 @@ static void APP_SetSoundVolume(APP_Sound* sound, int volume)
 {
 	const float gain = SDL_clamp(volume, 0, 100) / 100.0f;
 	if (!SDL_SetAudioStreamGain(sound->stream, gain)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not set sound volume: %s", SDL_GetError());
+		APP_SetError("Could not set sound volume: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 
 static void APP_SetSoundLooping(APP_Sound* sound, bool looping)
 {
 	if (!SDL_LockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not set sound looping state: %s", SDL_GetError());
+		APP_SetError("Could not set sound looping state: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 	sound->looping = !!looping;
 	if (!SDL_UnlockAudioStream(sound->stream)) {
-		APP_Exit(__FUNCTION__, __LINE__, "Could not set sound looping state: %s", SDL_GetError());
+		APP_SetError("Could not set sound looping state: %s", SDL_GetError());
+		APP_Exit(EXIT_FAILURE);
 	}
 }
 

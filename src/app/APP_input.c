@@ -1,4 +1,7 @@
 #include "APP_input.h"
+#ifdef APP_ENABLE_GAME_CONTROLLER_DB
+#include "APP_filesystem.h"
+#endif
 
 #ifdef APP_ONLY_INPUT_TYPE
 static APP_InputType APP_LastInputType = APP_ONLY_INPUT_TYPE;
@@ -1820,14 +1823,17 @@ void APP_OpenInputs(void)
 	#endif
 
 	#ifdef APP_ENABLE_KEYBOARD
-	/* キーリピートバッファ初期化 */
+	// キーリピートバッファ初期化
+	// Key repeat buffer init
 	SDL_memset(APP_KeyRepeat, 0, sizeof(APP_KeyRepeat));
 	#endif
 
-	/* パッドの初期化 */
+	// ゲームコントローラーデータベースの初期化
+	// Game controller database init
 	#ifdef APP_ENABLE_GAME_CONTROLLER_DB
-	// The game will just go without the database if it's missing or fails to load.
 	SDL_IOStream* db = APP_OpenRead("gamecontrollerdb.txt");
+	// データベースがなくても問題ありません
+	// If we don't have the database, it's fine
 	if (db) {
 		if (SDL_GetIOSize(db) > 0) {
 			SDL_AddGamepadMappingsFromIO(db, false);

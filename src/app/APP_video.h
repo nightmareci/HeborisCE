@@ -34,7 +34,6 @@ void APP_QuitVideo(void);
 
 void APP_ResetFrameStep(void);
 void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex);
-void APP_RenderScreen(void);
 int APP_GetMaxDisplayIndex();
 int APP_GetMaxDisplayMode(int displayIndex);
 void APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode);
@@ -70,7 +69,5 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 void APP_SetPlaneDrawOffset(int x, int y);
 
 float APP_GetScreenSubpixelOffset(void);
-
-void APP_SetDrawWhileSkippingFrames(bool draw);
 
 #endif

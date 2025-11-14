@@ -85,8 +85,6 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 	}
 
 	APP_SetPlaneDrawOffset(0, 0);
-	APP_SetFPS(60);
-
 	APP_Start();
 }
 

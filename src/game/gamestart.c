@@ -1609,7 +1609,7 @@ void mainUpdate() {
 			SaveConfig();
 		}
 
-		APP_SetDrawWhileSkippingFrames(true);
+		APP_SetRenderWhileSkippingFrames(true);
 		APP_ResetFrameStep();
 		break;
 	}
@@ -1764,7 +1764,7 @@ void mainUpdate() {
 
 		PlayerdataLoad();
 
-		APP_SetDrawWhileSkippingFrames(false);
+		APP_SetRenderWhileSkippingFrames(false);
 
 		StopAllSE();
 		StopAllBGM();

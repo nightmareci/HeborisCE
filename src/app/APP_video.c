@@ -1,6 +1,5 @@
 #include "APP_video.h"
 #include "APP_build_config.h"
-#include "APP_update.h"
 #include "APP_filesystem.h"
 #include "APP_main.h"
 #include "APP_global.h"
@@ -30,10 +29,6 @@ typedef struct APP_TextLayer
 	float textureH;
 } APP_TextLayer;
 
-SDL_Window* APP_ScreenWindow = NULL;
-static SDL_Renderer* APP_ScreenRenderer = NULL;
-static SDL_Texture* APP_ScreenRenderTarget = NULL;
-
 #define APP_PLANE_COUNT 100
 static SDL_Texture* APP_Planes[APP_PLANE_COUNT];
 
@@ -53,38 +48,8 @@ static size_t APP_TextDataLength = 0;
 static SDL_Vertex* APP_TextVertices = NULL;
 static int* APP_TextIndices = NULL;
 
-static int APP_NewPlaneDrawOffsetX = 0, APP_NewPlaneDrawOffsetY = 0;
-static int APP_PlaneDrawOffsetX = 0, APP_PlaneDrawOffsetY = 0;
-
-static bool APP_DrawWhileSkippingFrames;
-static bool APP_LastFrameSkipped;
-static uint64_t APP_FrameNS;
-static int64_t APP_AccumulatedNS = 0;
-static uint64_t APP_LastFrameStepNS;
-
-void APP_ResetFrameStep(void)
-{
-	APP_FrameNS = SDL_NS_PER_SECOND / APP_GetFPS();
-	APP_AccumulatedNS = 0;
-	APP_LastFrameStepNS = SDL_GetTicksNS();
-}
-
-static bool APP_FrameStep(void)
-{
-	const bool skipped = APP_AccumulatedNS >= APP_FrameNS;
-	uint64_t now;
-	if (skipped) {
-		now = SDL_GetTicksNS();
-		APP_AccumulatedNS -= APP_FrameNS;
-	}
-	else {
-		SDL_DelayNS(APP_FrameNS - APP_AccumulatedNS);
-		now = SDL_GetTicksNS();
-		APP_AccumulatedNS += now - APP_LastFrameStepNS - APP_FrameNS;
-	}
-	APP_LastFrameStepNS = now;
-	return skipped;
-}
+static int APP_PlaneDrawOffsetX = 0;
+static int APP_PlaneDrawOffsetY = 0;
 
 static void APP_PrivateBDFFontInitialize(void)
 {
@@ -140,9 +105,6 @@ void APP_InitVideo(void)
 	}
 
 	APP_PrivateBDFFontInitialize();
-
-	APP_DrawWhileSkippingFrames = false;
-	APP_LastFrameSkipped = false;
 }
 
 void APP_QuitVideo(void)
@@ -519,82 +481,6 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	APP_ScreenRenderTarget = NULL;
 	APP_ScreenRenderer = NULL;
 	APP_ScreenWindow = NULL;
-	APP_Exit(EXIT_FAILURE);
-}
-
-void APP_RenderScreen(void)
-{
-	if (!APP_ScreenRenderer) {
-		APP_SetError("Tried rendering when renderer isn't available");
-		APP_Exit(EXIT_FAILURE);
-	}
-	if (!SDL_FlushRenderer(APP_ScreenRenderer)) {
-		goto fail;
-	}
-
-	#ifndef NDEBUG
-	APP_DrawWhileSkippingFrames = true;
-	#endif
-	if (APP_DrawWhileSkippingFrames) {
-		/* バックサーフェスをフロントに転送 */
-		if (APP_ScreenRenderTarget) {
-			if (
-				!SDL_SetRenderTarget(APP_ScreenRenderer, NULL) ||
-				!SDL_RenderClear(APP_ScreenRenderer) ||
-				!SDL_RenderTexture(APP_ScreenRenderer, APP_ScreenRenderTarget, NULL, NULL) ||
-				!SDL_RenderPresent(APP_ScreenRenderer) ||
-				!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget)
-			) {
-				goto fail;
-			}
-		}
-		else if (!SDL_RenderPresent(APP_ScreenRenderer)) {
-			goto fail;
-		}
-
-		/* フレームレート待ち || Frame rate waiting */
-		APP_LastFrameSkipped = APP_FrameStep();
-
-		/* 画面塗りつぶし || Fill screen */
-		if (!SDL_RenderClear(APP_ScreenRenderer)) {
-			goto fail;
-		}
-	}
-	else {
-		if (!APP_LastFrameSkipped) {
-			/* バックサーフェスをフロントに転送 */
-			if (APP_ScreenRenderTarget) {
-				if (
-					!SDL_SetRenderTarget(APP_ScreenRenderer, NULL) ||
-					!SDL_RenderClear(APP_ScreenRenderer) ||
-					!SDL_RenderTexture(APP_ScreenRenderer, APP_ScreenRenderTarget, NULL, NULL) ||
-					!SDL_RenderPresent(APP_ScreenRenderer) ||
-					!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget)
-				) {
-					goto fail;
-				}
-			}
-			else if(!SDL_RenderPresent(APP_ScreenRenderer)) {
-				goto fail;
-			}
-
-			/* 画面塗りつぶし */
-			if (!SDL_RenderClear(APP_ScreenRenderer)) {
-				goto fail;
-			}
-		}
-
-		/* フレームレート待ち || Frame rate waiting */
-		APP_LastFrameSkipped = APP_FrameStep();
-	}
-
-	/* 画面ずらし量の反映 */
-	APP_PlaneDrawOffsetX = APP_NewPlaneDrawOffsetX;
-	APP_PlaneDrawOffsetY = APP_NewPlaneDrawOffsetY;
-	return;
-
-	fail:
-	APP_SetError("Failed rendering: %s", SDL_GetError());
 	APP_Exit(EXIT_FAILURE);
 }
 
@@ -1143,8 +1029,8 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 
 void APP_SetPlaneDrawOffset(int x, int y)
 {
-	APP_NewPlaneDrawOffsetX = x;
-	APP_NewPlaneDrawOffsetY = y;
+	APP_PlaneDrawOffsetX = x;
+	APP_PlaneDrawOffsetY = y;
 }
 
 float APP_GetScreenSubpixelOffset(void)
@@ -1187,9 +1073,4 @@ float APP_GetScreenSubpixelOffset(void)
 	else {
 		return 0.0f;
 	}
-}
-
-void APP_SetDrawWhileSkippingFrames(bool draw)
-{
-	APP_DrawWhileSkippingFrames = draw;
 }

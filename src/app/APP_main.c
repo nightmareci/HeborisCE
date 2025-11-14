@@ -298,6 +298,7 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 			APP_SetError("Failed changing player joystick/controller device slots: %s", SDL_GetError());
 			return SDL_APP_FAILURE;
 		}
+		APP_UpdatePlayerSlotsNow = false;
 	}
 	#endif
 

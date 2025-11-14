@@ -88,7 +88,7 @@ typedef enum APP_PlayerSlotType
 
 int APP_GetNumPlayerSlots(void);
 APP_PlayerSlotType APP_GetPlayerSlotType(int player);
-bool APP_PlayerSlotsChanged(void);
+bool APP_UpdatePlayerSlots(void);
 #endif
 
 #ifdef APP_ENABLE_JOYSTICK

@@ -9,7 +9,6 @@
 #include "APP_input.h"
 #include "APP_audio.h"
 #include "APP_video.h"
-#include "APP_update.h"
 #include "APP_global.h"
 
 #endif

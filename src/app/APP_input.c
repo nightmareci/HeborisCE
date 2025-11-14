@@ -189,7 +189,7 @@ static bool APP_ConIsBuiltin(SDL_Gamepad * const controller) {
 	return false;
 }
 
-bool APP_PlayerSlotsChanged(void) {
+bool APP_UpdatePlayerSlots(void) {
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	// This should never be needed, as the builtin controller most likely will
 	// always be connected, but you never know, maybe a modder detached it.

@@ -83,7 +83,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_mp3.c"
 	"src/app/APP_ogg.c"
 	"src/app/APP_stdlib.c"
-	"src/app/APP_update.c"
+	
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
 
@@ -129,7 +129,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_ogg.h"
 	"src/app/APP_stdinc.h"
 	"src/app/APP_stdlib.h"
-	"src/app/APP_update.h"
+	
 	"src/app/APP_video.h"
 	"src/app/APP_wav.h"
 

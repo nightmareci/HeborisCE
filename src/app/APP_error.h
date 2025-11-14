@@ -24,6 +24,6 @@ static inline bool APP_SetErrorFunctionLine(const char* function, int line, cons
 	return false;
 }
 
-#define APP_SetError(...) APP_SetErrorFunctionLine(__FUNCTION__, __LINE__, __VA_ARGS__)
+#define APP_SetError(...) APP_SetErrorFunctionLine(__func__, __LINE__, __VA_ARGS__)
 
 #endif

@@ -15,5 +15,8 @@
 #ifdef APP_ENABLE_LINUX_GPIO
 #include <gpiod.h>
 #endif
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #endif

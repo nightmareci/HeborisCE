@@ -62,6 +62,14 @@ bool APP_InitFilesystem(int argc, char** argv) {
 
 #endif
 
+#ifdef __EMSCRIPTEN__
+		EM_ASM({
+			FS.syncfs(function (err) {
+				assert(!err);
+			});
+		});
+#endif
+
 	return true;
 }
 
@@ -76,6 +84,15 @@ bool APP_CreateDirectory(const char* directory) {
 		return APP_SetError("Failed creating directory \"%s\"", directory);
 	}
 	SDL_free(path);
+
+#ifdef __EMSCRIPTEN__
+		EM_ASM({
+			FS.syncfs(function (err) {
+				assert(!err);
+			});
+		});
+#endif
+
 	return true;
 }
 

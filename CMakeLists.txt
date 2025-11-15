@@ -37,7 +37,11 @@ else()
 	set(APP_EXE ${CMAKE_PROJECT_NAME})
 endif()
 
-option(APP_VENDORED "Use vendor libraries (the version of libraries bundled with the code)" OFF)
+if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+	set(APP_VENDORED TRUE CACHE BOOL "Override" FORCE)
+else()
+	option(APP_VENDORED "Use vendor libraries (the version of libraries bundled with the code)" OFF)
+endif()
 
 # Override these defaults for platforms as required. These defaults work on a
 # lot of platforms, but some platforms, like game consoles, have to completely
@@ -51,10 +55,9 @@ option(APP_ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any
 set(APP_DEFAULT_JOYKEY_ASSIGN "{ 0 }")
 set(APP_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
 set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
-set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_CURRENT_DIRECTORY")
 set(APP_BASE_PATH_APPEND "")
 
-if(VITA)
+if(VITA OR CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	set(APP_PACKAGE_TYPE "Installable" CACHE STRING "Package type" FORCE)
 elseif(WIN32 OR LINUX)
 	set(APP_PACKAGE_TYPE "Current Directory" CACHE STRING "Package type; must be \"Current Directory\", \"Installable\", or \"Portable\"")
@@ -62,6 +65,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 	set(APP_PACKAGE_TYPE "Current Directory" CACHE STRING "Package type; must be \"Current Directory\", \"Installable\", \"Portable\", \"Installable Mac App\", or \"Portable Mac App\"")
 endif()
 
+if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
+	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_CURRENT_DIRECTORY")
+elseif(APP_PACKAGE_TYPE MATCHES "Installable")
+	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
+elseif(APP_PACKAGE_TYPE MATCHES "Portable")
+	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
+endif()
 
 if(MSVC)
 	if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
@@ -199,7 +209,6 @@ if(VITA)
 	set(APP_ONLY_SDL_CONTROLLER_TYPE SDL_GAMEPAD_TYPE_PS4 CACHE STRING "" FORCE)
 	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
-	set(APP_FILESYSTEM_TYPE APP_FILESYSTEM_INSTALLABLE CACHE STRING "" FORCE)
 	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
 
 	set(VITA_APP_NAME ${APP_EXE})
@@ -248,6 +257,63 @@ if(VITA)
 		FILE "pkg/vita/sce_sys/livearea/contents/bg0.png" sce_sys/livearea/contents/bg0.png
 		FILE "pkg/vita/sce_sys/livearea/contents/template.xml" sce_sys/livearea/contents/template.xml
 	)
+elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+	# TODO: Add option to not include --emrun in linker flags for actual
+	# releases, so they're suitable for hosting on a real web server.
+	# TODO: Add "favicon.ico".
+
+	if(APP_VENDORED)
+		set(BUILD_SHARED_LIBS OFF)
+
+		set(SDL_PTHREADS ON CACHE BOOL "" FORCE)
+		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
+
+		set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_TIF OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_VENDORED ON)
+		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
+
+		# TODO: Support non-vendored, when possible. emsdk doesn't provide SDL3_image yet, so only vendored works
+		# However, if the emsdk SDL3 package doesn't have SDL_PTHREADS, then vendored will always be required
+	endif()
+
+	set(APP_FRAMEWORK_TYPE "WEB SDL3")
+
+	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_QUIT FALSE CACHE BOOL "" FORCE)
+
+	if(CMAKE_BUILD_TYPE MATCHES "Release")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --shell-file '${CMAKE_SOURCE_DIR}/pkg/emscripten/index.html'")
+	elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
+	endif()
+
+	set(APP_BASE_PATH_APPEND "basepath/")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/highDetail@basepath/res/bg/highDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/bgm@basepath/res/bgm' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/font@basepath/res/font' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/highDetail@basepath/res/graphics/highDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/lowDetail@basepath/res/graphics/lowDetail' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/title@basepath/res/graphics/title' \
+		--preload-file '${CMAKE_SOURCE_DIR}/res/se@basepath/res/se' \
+		--preload-file '${CMAKE_SOURCE_DIR}/config/mission@basepath/config/mission' \
+		--preload-file '${CMAKE_SOURCE_DIR}/config/stage@basepath/config/stage' \
+	")
+
+	set_property(TARGET ${APP_EXE} PROPERTY SUFFIX ".html")
 elseif(WIN32 AND MSVC)
 	set(APP_FRAMEWORK_TYPE "WINDOWS SDL3")
 
@@ -288,10 +354,8 @@ elseif(WIN32 AND MSVC)
 	)
 		if(APP_PACKAGE_TYPE STREQUAL "Portable")
 			message(STATUS "Configuring portable package")
-			set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
 		elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
 			message(STATUS "Configuring installable package")
-			set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
 		else()
 			message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"Current Directory\", \"Portable\", or \"Installable\"")
 		endif()
@@ -433,14 +497,12 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 
 	if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
 	elseif(APP_PACKAGE_TYPE STREQUAL "Portable")
-		set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
 		install(TARGETS ${APP_EXE} DESTINATION ${APP_EXE})
 		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_EXE}/config")
 		install(DIRECTORY "res" DESTINATION ${APP_EXE})
 		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ${APP_EXE})
 	elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
 		message(STATUS "Configuring installable package")
-		set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
 		include(GNUInstallDirs REQUIRED)
 		set(APP_BASE_PATH_APPEND "../${CMAKE_INSTALL_DATAROOTDIR}/${APP_EXE}/")
 		install(TARGETS ${APP_EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
@@ -480,86 +542,6 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
-		)
-	endif()
-elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-	# TODO: Add option to not include --emrun in linker flags for actual
-	# releases, so they're suitable for hosting on a real web server.
-	# TODO: Add "favicon.ico".
-
-	set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-	set(BUILD_SHARED_LIBS FALSE)
-
-	# Emscripten needs vendor libraries to be handled differently than native
-	# builds, so special handling is done here, instead of in
-	# AddLibrariesVendor.
-
-	if(APP_VENDORED)
-		set(SDL_SHARED FALSE)
-		set(SDL_STATIC TRUE)
-		set(SDL_TEST FALSE)
-		set(SDL2_DISABLE_UNINSTALL ON)
-		add_subdirectory("dep/SDL" "${CMAKE_BINARY_DIR}/dep/SDL")
-
-		set(SDL2IMAGE_VENDORED ON)
-		set(SDL2IMAGE_DEPS_SHARED OFF)
-		add_subdirectory("dep/SDL_image" "${CMAKE_BINARY_DIR}/dep/SDL_image")
-
-		set(SDL2MIXER_VENDORED ON)
-		set(SDL2MIXER_DEPS_SHARED OFF)
-		set(SDL2MIXER_FLAC OFF)
-		set(SDL2MIXER_GME OFF)
-		set(SDL2MIXER_MOD OFF)
-		set(SDL2MIXER_MP3 OFF)
-		set(SDL2MIXER_MIDI OFF)
-		set(SDL2MIXER_OPUS OFF)
-		set(SDL2MIXER_VORBIS "VORBISFILE")
-		set(SDL2MIXER_WAVE ON)
-		set(SDL2MIXER_WAVPACK OFF)
-		add_subdirectory("dep/SDL_mixer" "${CMAKE_BINARY_DIR}/dep/SDL_mixer")
-	else()
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s SDL2_IMAGE_FORMATS=[\"png\"]")
-	endif()
-
-	set(APP_FRAMEWORK_TYPE "WEB SDL3")
-
-	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_GAME_CONTROLLER FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_GAME_QUIT FALSE CACHE BOOL "" FORCE)
-
-	if(CMAKE_BUILD_TYPE MATCHES "Release")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --shell-file '${CMAKE_SOURCE_DIR}/pkg/emscripten/index.html'")
-	elseif(CMAKE_BUILD_TYPE MATCHES "Debug")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
-	endif()
-
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s EXPORTED_RUNTIME_METHODS=ccall -s EXPORTED_FUNCTIONS=_main,_startup -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/highDetail@basepath/res/bg/highDetail' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/bgm@basepath/res/bgm' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/font@basepath/res/font' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/highDetail@basepath/res/graphics/highDetail' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/lowDetail@basepath/res/graphics/lowDetail' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/title@basepath/res/graphics/title' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/se@basepath/res/se' \
-		--preload-file '${CMAKE_SOURCE_DIR}/config/mission@basepath/config/mission' \
-		--preload-file '${CMAKE_SOURCE_DIR}/config/stage@basepath/config/stage' \
-	")
-
-	set_property(TARGET ${APP_EXE} PROPERTY SUFFIX ".html")
-
-	if(APP_VENDORED)
-		if(TARGET SDL2::SDL2main)
-			target_link_libraries(${APP_EXE} PUBLIC SDL2::SDL2main)
-		endif()
-		target_link_libraries(${APP_EXE} PUBLIC
-			SDL2::SDL2-static
-			SDL2_image::SDL2_image-static
-			SDL2_mixer::SDL2_mixer-static
 		)
 	endif()
 else()

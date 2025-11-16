@@ -72,7 +72,7 @@ int32_t reinit = 1;		// Indicates if resources should be loaded.
 int32_t SaveConfig(void) {
 	int32_t i, j, cfgbuf[CFG_LENGTH];
 
-	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -208,7 +208,7 @@ int32_t SaveConfig(void) {
 // 設定をバイナリデータから読み込み 1.60c5
 int32_t LoadConfig(void) {
 	int32_t cfgbuf[CFG_LENGTH];
-	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	APP_LoadFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
@@ -600,129 +600,129 @@ void ConfigMenu() {
 
 		// next pattern
 		if((ncfg[2] > 1)&&(ncfg[2] < 8))
-		sprintf(string[0], "HEBO%" PRId32, ncfg[2]);
+		SDL_snprintf(string[0], STRING_LENGTH, "HEBO%" PRId32, ncfg[2]);
 		else if(ncfg[2] == 0)
-		sprintf(string[0], "RANDOM");
+		SDL_snprintf(string[0], STRING_LENGTH, "RANDOM");
 		else if(ncfg[2] == 1)
-		sprintf(string[0], "MEMORY1");
+		SDL_snprintf(string[0], STRING_LENGTH, "MEMORY1");
 		else if(ncfg[2] == 8)
-		sprintf(string[0], "MEMORY4");
+		SDL_snprintf(string[0], STRING_LENGTH, "MEMORY4");
 		else if(ncfg[2] == 9)
-		sprintf(string[0], "GUIDELINE");
+		SDL_snprintf(string[0], STRING_LENGTH, "GUIDELINE");
 		else if(ncfg[2] == 10)
-		sprintf(string[0], "DENGEN");
+		SDL_snprintf(string[0], STRING_LENGTH, "DENGEN");
 		else if(ncfg[2] == 11)
-		sprintf(string[0], "TOMOYO");
+		SDL_snprintf(string[0], STRING_LENGTH, "TOMOYO");
 		else if(ncfg[2] == 12)
-		sprintf(string[0], "FP");
+		SDL_snprintf(string[0], STRING_LENGTH, "FP");
 		else if(ncfg[2] == 13)
-		sprintf(string[0], "SEGA");
+		SDL_snprintf(string[0], STRING_LENGTH, "SEGA");
 		else if(ncfg[2] == 14)
-		sprintf(string[0], "BLOXEED");
+		SDL_snprintf(string[0], STRING_LENGTH, "BLOXEED");
 		else if (ncfg[2] == 15)
-			sprintf(string[0], "EH-MEMORY6");
+			SDL_snprintf(string[0], STRING_LENGTH, "EH-MEMORY6");
 		else if (ncfg[2] == 16)
-			sprintf(string[0], "MEMORY4-DP");
+			SDL_snprintf(string[0], STRING_LENGTH, "MEMORY4-DP");
 		printFont(20, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
 		// next display
-		sprintf(string[0], "%" PRId32, ncfg[45]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[45]);
 		printFont(20, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
 		// 8way input
-		if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
-		else sprintf(string[0], "c");		// ○
+		if(ncfg[5]) SDL_snprintf(string[0], STRING_LENGTH, "e"); // × 斜め入力
+		else SDL_snprintf(string[0], STRING_LENGTH, "c");		// ○
 		printFont(20, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
 
 		// sonic drop
-		if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
-		else sprintf(string[0], "c");		// ○
+		if(ncfg[6]) SDL_snprintf(string[0], STRING_LENGTH, "e");	// × 高速落下
+		else SDL_snprintf(string[0], STRING_LENGTH, "c");		// ○
 		printFont(20, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
 
 		// init lr move
-		if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
-		else sprintf(string[0], "c");		// ○
+		if(ncfg[7]) SDL_snprintf(string[0], STRING_LENGTH, "e");	// × 横先行入力
+		else SDL_snprintf(string[0], STRING_LENGTH, "c");		// ○
 		printFont(20, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
 		// block fall
-		if(ncfg[4]) sprintf(string[0], "SMOOTH");
-		else sprintf(string[0], "NORMAL");
+		if(ncfg[4]) SDL_snprintf(string[0], STRING_LENGTH, "SMOOTH");
+		else SDL_snprintf(string[0], STRING_LENGTH, "NORMAL");
 		printFont(20, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
 
 		// show level
-		if(ncfg[36]) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
+		if(ncfg[36]) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(20, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
 		// WORLDREVERSE
-		if(ncfg[52]) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
+		if(ncfg[52]) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(20, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 		// downtype
-		if(ncfg[53]) sprintf(string[0], "DOWN RESET");
-		else sprintf(string[0], "NO RESET(HEBORIS)");
+		if(ncfg[53]) SDL_snprintf(string[0], STRING_LENGTH, "DOWN RESET");
+		else SDL_snprintf(string[0], STRING_LENGTH, "NO RESET(HEBORIS)");
 		printFont(20, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
 
 		// lvupbonus
-		if(ncfg[54]==0) sprintf(string[0], "ON");
-		else if(ncfg[54] ==1)sprintf(string[0], "OFF");
-		else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
+		if(ncfg[54]==0) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else if(ncfg[54] ==1)SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else if(ncfg[54] ==2)SDL_snprintf(string[0], STRING_LENGTH, "ADJUST");
 		printFont(20, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
 
 		// segacheat
-		if (ncfg[42]==0) sprintf(string[0], "CCW ONLY");
-		else if (ncfg[42] == 1)sprintf(string[0], "CW AND 180 ALLOW");
-		else if (ncfg[42] == 2)sprintf(string[0], "D.R.S. 3STATE+CW+180");
+		if (ncfg[42]==0) SDL_snprintf(string[0], STRING_LENGTH, "CCW ONLY");
+		else if (ncfg[42] == 1)SDL_snprintf(string[0], STRING_LENGTH, "CW AND 180 ALLOW");
+		else if (ncfg[42] == 2)SDL_snprintf(string[0], STRING_LENGTH, "D.R.S. 3STATE+CW+180");
 		printFont(20, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
 		// spawn y type
-		if(ncfg[274] == 0) sprintf(string[0], "FIELD IN");
-		else sprintf(string[0], "FIELD OUT");
+		if(ncfg[274] == 0) SDL_snprintf(string[0], STRING_LENGTH, "FIELD IN");
+		else SDL_snprintf(string[0], STRING_LENGTH, "FIELD OUT");
 		printFont(20, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
 
 		// hide info (tomoyo)
-		if(ncfg[275] == 0) sprintf(string[0], "NOT HIDE");
-		else sprintf(string[0], "HIDE");
+		if(ncfg[275] == 0) SDL_snprintf(string[0], STRING_LENGTH, "NOT HIDE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "HIDE");
 		printFont(20, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
 
 		// t-spin type
-		     if(ncfg[276] == 0) sprintf(string[0], "NO CHECK");
-		else if(ncfg[276] == 1) sprintf(string[0], "ERASE(NO BONUS)");
-		else if(ncfg[276] == 2) sprintf(string[0], "3-C(BONUS)");
-		else if(ncfg[276] == 3) sprintf(string[0], "BOTH(BONUS:3-C)");
+		     if(ncfg[276] == 0) SDL_snprintf(string[0], STRING_LENGTH, "NO CHECK");
+		else if(ncfg[276] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ERASE(NO BONUS)");
+		else if(ncfg[276] == 2) SDL_snprintf(string[0], STRING_LENGTH, "3-C(BONUS)");
+		else if(ncfg[276] == 3) SDL_snprintf(string[0], STRING_LENGTH, "BOTH(BONUS:3-C)");
 		printFont(20, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
 
 		// block spectrum
-		if(ncfg[277] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[277] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(20, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
 
 		// next adjust
-		if(ncfg[278] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON(NOT FIRST OSZ)");
+		if(ncfg[278] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON(NOT FIRST OSZ)");
 		printFont(20, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
 
 		// view best time
-		if(ncfg[279] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[279] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(20, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
 
 		// back to back
-		if(ncfg[280] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[280] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(20, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
 
-		     if(ncfg[35] == 0) sprintf(string[0], "1P&2P");
-		else if(ncfg[35] == 1) sprintf(string[0], "ONLY 1P");
-		else if(ncfg[35] == 2) sprintf(string[0], "ONLY 2P");
-		else if(ncfg[35] == 3) sprintf(string[0], "OFF");
+		     if(ncfg[35] == 0) SDL_snprintf(string[0], STRING_LENGTH, "1P&2P");
+		else if(ncfg[35] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 1P");
+		else if(ncfg[35] == 2) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 2P");
+		else if(ncfg[35] == 3) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(20, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
 
-		     if(ncfg[37] == 0) sprintf(string[0], "1P&2P");
-		else if(ncfg[37] == 1) sprintf(string[0], "ONLY 1P");
-		else if(ncfg[37] == 2) sprintf(string[0], "ONLY 2P");
-		else if(ncfg[37] == 3) sprintf(string[0], "OFF");
+		     if(ncfg[37] == 0) SDL_snprintf(string[0], STRING_LENGTH, "1P&2P");
+		else if(ncfg[37] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 1P");
+		else if(ncfg[37] == 2) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 2P");
+		else if(ncfg[37] == 3) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(20, 25, string[0], (statusc[0] == 20) * (count % 2) * digitc[rots[0]]);
 
 		statusc[1] = 0;
@@ -745,7 +745,7 @@ void ConfigMenu() {
 			}
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, APP_BUTTON_D)) {
-				assert(pages > 0);
+				SDL_assert(pages > 0);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -924,105 +924,105 @@ void ConfigMenu() {
 		}
 
 		// debug mode
-		if(ncfg[281] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[281] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(21, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
 		// grade type
-		sprintf(string[0], "%" PRId32, ncfg[282]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[282]);
 		printFont(21, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
 		// irs type
-		if(ncfg[284] == 0) sprintf(string[0], "CLASSIC");
-		else if(ncfg[284] == 1)sprintf(string[0], "ACE");
-		else sprintf(string[0], "ACE+");
+		if(ncfg[284] == 0) SDL_snprintf(string[0], STRING_LENGTH, "CLASSIC");
+		else if(ncfg[284] == 1)SDL_snprintf(string[0], STRING_LENGTH, "ACE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ACE+");
 		printFont(21, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
 
 		// language
-		if(ncfg[285] == 0) sprintf(string[0], "JAPANESE");
-		else sprintf(string[0], "ENGLISH");
+		if(ncfg[285] == 0) SDL_snprintf(string[0], STRING_LENGTH, "JAPANESE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ENGLISH");
 		printFont(21, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
 
 		// mini select
-		if(ncfg[286] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[286] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(21, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
 
 		// big move type
-		if(ncfg[287] == 0) sprintf(string[0], "1CELL");
-		else if(ncfg[287] == 1)sprintf(string[0], "2CELL");
-		else sprintf(string[0], "TOMOYO:1/OTHER:2");
+		if(ncfg[287] == 0) SDL_snprintf(string[0], STRING_LENGTH, "1CELL");
+		else if(ncfg[287] == 1)SDL_snprintf(string[0], STRING_LENGTH, "2CELL");
+		else SDL_snprintf(string[0], STRING_LENGTH, "TOMOYO:1/OTHER:2");
 		printFont(21, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
 
 		// item interval
-		sprintf(string[0], "%" PRId32, ncfg[288]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[288]);
 		printFont(21, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
 
 		// hide waits
-		if(ncfg[289] == 0) sprintf(string[0], "NOT HIDE");
-		else sprintf(string[0], "HIDE");
+		if(ncfg[289] == 0) SDL_snprintf(string[0], STRING_LENGTH, "NOT HIDE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "HIDE");
 		printFont(21, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
 
 		// versus limit time (seconds)
-		sprintf(string[0], "%" PRId32, ncfg[290] / 60);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[290] / 60);
 		printFont(21, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
 
 		// medal graphics
-		if(ncfg[291] == 0) sprintf(string[0], "f");	//□
-		else if(ncfg[291] == 1) sprintf(string[0], "c");//○
-		else sprintf(string[0], "OFF");
+		if(ncfg[291] == 0) SDL_snprintf(string[0], STRING_LENGTH, "f");	//□
+		else if(ncfg[291] == 1) SDL_snprintf(string[0], STRING_LENGTH, "c");//○
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(21, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
 
 		// devil rise start level
-		sprintf(string[0], "%" PRId32, ncfg[292]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[292]);
 		printFont(21, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
 
 		// rise type
-		if(ncfg[293] == 0) sprintf(string[0], "COPY");
-		else if(ncfg[293] == 1)sprintf(string[0], "PATTERN");
-		else if(ncfg[293] == 2)sprintf(string[0], "RANDOM");
-		else sprintf(string[0], "REVERSE ERASE FIELD");
+		if(ncfg[293] == 0) SDL_snprintf(string[0], STRING_LENGTH, "COPY");
+		else if(ncfg[293] == 1)SDL_snprintf(string[0], STRING_LENGTH, "PATTERN");
+		else if(ncfg[293] == 2)SDL_snprintf(string[0], STRING_LENGTH, "RANDOM");
+		else SDL_snprintf(string[0], STRING_LENGTH, "REVERSE ERASE FIELD");
 		printFont(21, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
 
 		// hold
-		if(ncfg[294] == 0) sprintf(string[0], "ENABLE");
-		else sprintf(string[0], "DISABLE");
+		if(ncfg[294] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ENABLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DISABLE");
 		printFont(21, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
 
 		// irs
-		if(ncfg[295] == 0) sprintf(string[0], "ENABLE");
-		else sprintf(string[0], "DISABLE");
+		if(ncfg[295] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ENABLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DISABLE");
 		printFont(21, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
 
 		// use cpu (1p)
-		if(ncfg[296] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[296] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(21, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
 
 		// use cpu (2p)
-		if(ncfg[297] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[297] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(21, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
 
 		// cpu type
-		if(ncfg[298] == 0) sprintf(string[0], "ERASE SOON");
-		else sprintf(string[0], "ERASE STORE");
+		if(ncfg[298] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ERASE SOON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ERASE STORE");
 		printFont(21, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
 
 		// block rotate frame
-		if(ncfg[299] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[299] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(21, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
 
 		// wall kick
-		if(ncfg[300] == 0) sprintf(string[0], "ENABLE");
-		else sprintf(string[0], "DISABLE");
+		if(ncfg[300] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ENABLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DISABLE");
 		printFont(21, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
 
 		// show 1p control
-		if(ncfg[301] == 0) sprintf(string[0], "REPLAY ONLY");
-		else if(ncfg[301] == 1) sprintf(string[0], "ALWAYS ON");
-		else sprintf(string[0], "ALWAYS OFF");
+		if(ncfg[301] == 0) SDL_snprintf(string[0], STRING_LENGTH, "REPLAY ONLY");
+		else if(ncfg[301] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ALWAYS ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ALWAYS OFF");
 		printFont(21, 25, string[0], (statusc[0] == 20) * (count % 2) * digitc[rots[0]]);
 
 		for(pl = 0; pl < 2; pl++) {
@@ -1137,50 +1137,50 @@ void ConfigMenu() {
 			printFont(1, 5 + i, "b", fontc[rots[0]]);
 		}
 
-		if(ncfg[8] == 0) sprintf(string[0], "BLINK");
-		else if(ncfg[8] == 1) sprintf(string[0], "ON");
-		else if(ncfg[8] == 2) sprintf(string[0], "OFF");
-		else if(ncfg[8] == 3) sprintf(string[0], "DRAW ONLY FIELD BLOCKS");
+		if(ncfg[8] == 0) SDL_snprintf(string[0], STRING_LENGTH, "BLINK");
+		else if(ncfg[8] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else if(ncfg[8] == 2) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else if(ncfg[8] == 3) SDL_snprintf(string[0], STRING_LENGTH, "DRAW ONLY FIELD BLOCKS");
 		printFont(18, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
 
-		if(ncfg[9] == 0) sprintf(string[0], "GRID (SCROLLING)");
-		else if(ncfg[9] == 1) sprintf(string[0], "GRID");
-		else sprintf(string[0], "BLACK");
+		if(ncfg[9] == 0) SDL_snprintf(string[0], STRING_LENGTH, "GRID (SCROLLING)");
+		else if(ncfg[9] == 1) SDL_snprintf(string[0], STRING_LENGTH, "GRID");
+		else SDL_snprintf(string[0], STRING_LENGTH, "BLACK");
 		printFont(18, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
 
-		sprintf(string[0], "%" PRId32, ncfg[43]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[43]);
 		printFont(18, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
 
 		for(i = 0; i < 9; i++) { //FONT
-			sprintf(string[0], "%" PRId32, ncfg[62+(2*i)]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[62+(2*i)]);
 			printFont(18, 9+i, string[0], ncfg[62+(2*i)]);
 		}
 		for(i = 0; i < 9; i++) {//DIGIT
-			sprintf(string[0], "%" PRId32, ncfg[63+(2*i)]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[63+(2*i)]);
 			printFont(38, 9+i, string[0], ncfg[63+(2*i)]);
 		}
 
-		if(ncfg[47] == 0) sprintf(string[0], "DEFAULT");
-		else sprintf(string[0], "SHARP");
+		if(ncfg[47] == 0) SDL_snprintf(string[0], STRING_LENGTH, "DEFAULT");
+		else SDL_snprintf(string[0], STRING_LENGTH, "SHARP");
 		printFont(18, 19, string[0], (statusc[0] == 22) * (count % 2) * digitc[rots[0]]);
 
-		if(ncfg[48] == 0) sprintf(string[0], "SINGLE");
-		else sprintf(string[0], "DUAL");
+		if(ncfg[48] == 0) SDL_snprintf(string[0], STRING_LENGTH, "SINGLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DUAL");
 		printFont(18, 20, string[0], (statusc[0] == 23) * (count % 2) * digitc[rots[0]]);
 
 		//breakefect
-		if(ncfg[49] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[49] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(18, 21, string[0], (statusc[0] == 24) * (count % 2) * digitc[rots[0]]);
 
 		//showcombo
-		if(ncfg[50] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
+		if(ncfg[50] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
 		printFont(18, 22, string[0], (statusc[0] == 25) * (count % 2) * digitc[rots[0]]);
 
 		//top frame
-		if(ncfg[51] == 0) sprintf(string[0], "TI");
-		else sprintf(string[0], "ACE");
+		if(ncfg[51] == 0) SDL_snprintf(string[0], STRING_LENGTH, "TI");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ACE");
 		printFont(18, 23, string[0], (statusc[0] == 26) * (count % 2) * digitc[rots[0]]);
 
 		statusc[1] = 0;
@@ -1384,7 +1384,7 @@ void ConfigMenu() {
 			#endif
 			if (!cancel) {
 				pl = statusc[2] - optionIndex + 2;
-				sprintf(string[0], "KEYBOARD %" PRId32 "P SETTING", pl + 1);
+				SDL_snprintf(string[0], STRING_LENGTH, "KEYBOARD %" PRId32 "P SETTING", pl + 1);
 				printFont(2, 3, string[0], digitc[rots[0]]);
 
 				printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
@@ -1399,7 +1399,7 @@ void ConfigMenu() {
 				printFont(3, 15, "PAUSE :", fontc[rots[0]] * (statusc[0] == 9));
 
 				for(i = 0; i < statusc[0]; i++) {
-					sprintf(string[0], "%03X", (unsigned)ncfg[10 + i + pl * 10]);
+					SDL_snprintf(string[0], STRING_LENGTH, "%03X", (unsigned)ncfg[10 + i + pl * 10]);
 					printFont(10, 6 + i, string[0], digitc[rots[0]]);
 				}
 
@@ -1492,7 +1492,7 @@ void ConfigMenu() {
 				#endif
 				if (!cancel) {
 					pl = statusc[2] - optionIndex + 2;
-					sprintf(string[0], "JOYSTICK %" PRId32 "P SETTING", pl + 1);
+					SDL_snprintf(string[0], STRING_LENGTH, "JOYSTICK %" PRId32 "P SETTING", pl + 1);
 					printFont(2, 3, string[0], digitc[rots[0]]);
 
 					printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
@@ -1510,16 +1510,16 @@ void ConfigMenu() {
 					for(i = 0; i < statusc[0]; i++) {
 						switch((APP_JoyKeyType)ncfg[j+5+i*8]) {
 						case APP_JOYKEY_AXIS:
-							sprintf(string[0], "JOY%dP:A%d%c", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
+							SDL_snprintf(string[0], STRING_LENGTH, "JOY%dP:A%d%c", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
 							break;
 						case APP_JOYKEY_HAT:
-							sprintf(string[0], "JOY%dP:H%d,%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], (int)ncfg[j+7+i*8]);
+							SDL_snprintf(string[0], STRING_LENGTH, "JOY%dP:H%d,%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], (int)ncfg[j+7+i*8]);
 							break;
 						case APP_JOYKEY_BUTTON:
-							sprintf(string[0], "JOY%dP:B%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8]);
+							SDL_snprintf(string[0], STRING_LENGTH, "JOY%dP:B%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8]);
 							break;
 						default:
-							sprintf(string[0], "???");
+							SDL_snprintf(string[0], STRING_LENGTH, "???");
 							break;
 						}
 						printFont(10, 6 + i, string[0], digitc[rots[0]]);
@@ -1797,7 +1797,7 @@ void ConfigMenu() {
 
 				if (!cancel) {
 					pl = statusc[2] - optionIndex + 2;
-					sprintf(string[0], "CONTROLLER %" PRId32 "P SETTING", pl + 1);
+					SDL_snprintf(string[0], STRING_LENGTH, "CONTROLLER %" PRId32 "P SETTING", pl + 1);
 					printFont(2, 3, string[0], digitc[rots[0]]);
 
 					printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
@@ -1826,7 +1826,7 @@ void ConfigMenu() {
 								.type  = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0],
 								.index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1]
 							};
-							sprintf(string[0], "%" PRId32 "P:", conPlayer + 1);
+							SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "P:", conPlayer + 1);
 							printFont(5, 6 + i, string[0], digitc[rots[0]]);
 							printConKey(5 + strlen(string[0]), 6 + i, conPlayer, &key, digitc[rots[0]]);
 						}
@@ -1909,7 +1909,7 @@ void ConfigMenu() {
 			printMenuButton(9, 28, APP_BUTTON_A, 0);
 
 			for(pl=0; pl<2; pl++) {
-				sprintf(string[0],"%" PRId32 "P", pl + 1);
+				SDL_snprintf(string[0], STRING_LENGTH,"%" PRId32 "P", pl + 1);
 				printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
 				for(i=0; i<=7; i++) {
@@ -1933,8 +1933,8 @@ void ConfigMenu() {
 						|| APP_IsPressConKey(pl, &conKeyAssign[i + 8 * pl])
 						#endif
 						;
-					if(j) sprintf(string[0],"d");
-					else  sprintf(string[0],"c");
+					if(j) SDL_snprintf(string[0], STRING_LENGTH,"d");
+					else  SDL_snprintf(string[0], STRING_LENGTH,"c");
 					printFont(5, 7 + i + pl * 10, string[0], j+1);
 				}
 			}
@@ -1953,7 +1953,7 @@ void ConfigMenu() {
 
 			for(pl=0; pl<2; pl++) {
 				string[0][0] = '\0';
-				sprintf(string[0],"%" PRId32 "P", pl + 1);
+				SDL_snprintf(string[0], STRING_LENGTH,"%" PRId32 "P", pl + 1);
 				printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
 				for(i=0; i<=7; i++) {
@@ -1973,7 +1973,7 @@ void ConfigMenu() {
 					#ifdef APP_ENABLE_KEYBOARD
 					if (keyAssign[i + pl * 10] != SDL_SCANCODE_UNKNOWN)
 					{
-						sprintf(string[1]," KB:%03X", (unsigned)keyAssign[i + pl * 10]);
+						SDL_snprintf(string[1], STRING_LENGTH," KB:%03X", (unsigned)keyAssign[i + pl * 10]);
 						strcat(string[0], string[1]);
 					}
 					#endif
@@ -1990,21 +1990,21 @@ void ConfigMenu() {
 					) {
 						switch(key->type) {
 						case APP_JOYKEY_AXIS:
-							sprintf(string[1], " JOY%dP:A%d%c",
+							SDL_snprintf(string[1], STRING_LENGTH, " JOY%dP:A%d%c",
 								key->player + 1,
 								key->setting.index,
 								key->setting.value >= 0 ? '+' : '-'
 							);
 							break;
 						case APP_JOYKEY_HAT:
-							sprintf(string[1], " JOY%dP:H%d,%d",
+							SDL_snprintf(string[1], STRING_LENGTH, " JOY%dP:H%d,%d",
 								key->player + 1,
 								key->setting.index,
 								key->setting.value
 							);
 							break;
 						case APP_JOYKEY_BUTTON:
-							sprintf(string[1], " JOY%dP:B%d",
+							SDL_snprintf(string[1], STRING_LENGTH, " JOY%dP:B%d",
 								key->player + 1,
 								key->setting.button
 							);
@@ -2024,17 +2024,17 @@ void ConfigMenu() {
 					APP_ConKey conKey = conKeyAssign[i + pl * 8];
 					if (APP_GetPlayerSlotType(pl) == APP_PLAYERSLOT_CON && (conKey.type == APP_CONKEY_AXIS || conKey.type == APP_CONKEY_BUTTON)) {
 						if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);
-						sprintf(string[1], " CON%" PRId32 "P:", pl + 1);
+						SDL_snprintf(string[1], STRING_LENGTH, " CON%" PRId32 "P:", pl + 1);
 						int32_t x = 5 + strlen(string[0]);
 						printFont(x, 7 + i + pl * 10, string[1], 0);
 						printConKey(x + strlen(string[1]), 7 + i + pl * 10, pl, &conKey, 0);
 					}
 					else {
-						if (string[0][0] == '\0') sprintf(string[0], " NO ASSIGN");
+						if (string[0][0] == '\0') SDL_snprintf(string[0], STRING_LENGTH, " NO ASSIGN");
 						printFont(5, 7 + i + pl * 10, string[0], 0);
 					}
 					#else
-					if (string[0][0] == '\0') sprintf(string[0], " NO ASSIGN");
+					if (string[0][0] == '\0') SDL_snprintf(string[0], STRING_LENGTH, " NO ASSIGN");
 					printFont(5, 7 + i + pl * 10, string[0], 0);
 					#endif
 				}
@@ -2109,36 +2109,36 @@ void ConfigMenu() {
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 		/* 画面モード */
 		switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
-		case APP_SCREEN_MODE_WINDOW: sprintf(string[0], "WINDOW"); break;
-		case APP_SCREEN_MODE_WINDOW_MAXIMIZED: sprintf(string[0], "WINDOW MAXIMIZED"); break;
-		case APP_SCREEN_MODE_FULLSCREEN_DESKTOP: sprintf(string[0], "FULL SCREEN DESKTOP"); break;
-		case APP_SCREEN_MODE_FULLSCREEN: sprintf(string[0], "FULL SCREEN"); break;
-		default: sprintf(string[0], "???"); break;
+		case APP_SCREEN_MODE_WINDOW: SDL_snprintf(string[0], STRING_LENGTH, "WINDOW"); break;
+		case APP_SCREEN_MODE_WINDOW_MAXIMIZED: SDL_snprintf(string[0], STRING_LENGTH, "WINDOW MAXIMIZED"); break;
+		case APP_SCREEN_MODE_FULLSCREEN_DESKTOP: SDL_snprintf(string[0], STRING_LENGTH, "FULL SCREEN DESKTOP"); break;
+		case APP_SCREEN_MODE_FULLSCREEN: SDL_snprintf(string[0], STRING_LENGTH, "FULL SCREEN"); break;
+		default: SDL_snprintf(string[0], STRING_LENGTH, "???"); break;
 		}
 		printFont(15, 5 + MENU_AV_WINDOW_TYPE, string[0], (statusc[0] == MENU_AV_WINDOW_TYPE) * (count % 2) * digitc[rots[0]]);
-		sprintf(string[0], "%" PRId32, APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
 		printFont(15, 5 + MENU_AV_SCREEN_INDEX, string[0], (statusc[0] == MENU_AV_SCREEN_INDEX) * (count % 2) * digitc[rots[0]]);
-		if(ncfg[0] & APP_SCREEN_MODE_VSYNC) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
+		if(ncfg[0] & APP_SCREEN_MODE_VSYNC) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(15, 5 + MENU_AV_VSYNC, string[0], (statusc[0] == MENU_AV_VSYNC) * (count % 2) * digitc[rots[0]]);
 #endif
-		sprintf(string[0], "%s", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "HIGH (640X480)" : "LOW (320X240)");
+		SDL_snprintf(string[0], STRING_LENGTH, "%s", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "HIGH (640X480)" : "LOW (320X240)");
 		printFont(15, 5 + MENU_AV_DETAIL_LEVEL, string[0], (statusc[0] == MENU_AV_DETAIL_LEVEL) * (count % 2) * digitc[rots[0]]);
 
 		if (ncfg[0] & APP_SCREEN_MODE_SCALE_MODE) {
-			sprintf(string[0], "INTEGER");
+			SDL_snprintf(string[0], STRING_LENGTH, "INTEGER");
 		}
 		else {
-			sprintf(string[0], "FILL SCREEN");
+			SDL_snprintf(string[0], STRING_LENGTH, "FILL SCREEN");
 		}
 		printFont(15, 5 + MENU_AV_SCALE_MODE, string[0], (statusc[0] == MENU_AV_SCALE_MODE) * (count % 2) * digitc[rots[0]]);
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 		if (ncfg[0] & APP_SCREEN_MODE_RENDER_LEVEL) {
-			sprintf(string[0], "HIGH");
+			SDL_snprintf(string[0], STRING_LENGTH, "HIGH");
 		}
 		else {
-			sprintf(string[0], "LOW (%s)", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "640X480" : "320X240");
+			SDL_snprintf(string[0], STRING_LENGTH, "LOW (%s)", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "640X480" : "320X240");
 		}
 		printFont(15, 5 + MENU_AV_RENDER_LEVEL, string[0], (statusc[0] == MENU_AV_RENDER_LEVEL) * (count % 2) * digitc[rots[0]]);
 
@@ -2146,7 +2146,7 @@ void ConfigMenu() {
 		switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
 		case APP_SCREEN_MODE_WINDOW:
 			{
-			        sprintf(string[0], "%" PRId32 "X%" PRId32,
+			        SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32,
 					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 320 * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1),
 					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 240 * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1)
 				);
@@ -2161,11 +2161,11 @@ void ConfigMenu() {
 				Uint32 Rmask, Gmask, Bmask, Amask;
 				if(SDL_GetMasksForPixelFormat(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))
 				{
-					sprintf(string[0], "%" PRId32 "X%" PRId32 " %.2fHZ %" PRId32 "BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
+					SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32 " %.2fHZ %" PRId32 "BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
 				}
 				else
 				{
-					sprintf(string[0], "%" PRId32 "X%" PRId32 " %.2fHZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
+					SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32 " %.2fHZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
 				}
 				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (count % 2) * digitc[rots[0]]);
 			}
@@ -2175,30 +2175,30 @@ void ConfigMenu() {
 		}
 #endif
 
-		if(ncfg[46]) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
+		if(ncfg[46]) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(15, 5 + MENU_AV_MOVE_SE, string[0], (statusc[0] == MENU_AV_MOVE_SE) * (count % 2) * digitc[rots[0]]);
 
-		if((ncfg[44] >> 23) & 0x1) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
+		if((ncfg[44] >> 23) & 0x1) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(15, 5 + MENU_AV_PLAY_SE, string[0], (statusc[0] == MENU_AV_PLAY_SE) * (count % 2) * digitc[rots[0]]);
 
 		if((ncfg[44] >> 23) & 0x1) {
-			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 16) & 0x7F));
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, (int)((ncfg[44] >> 16) & 0x7F));
 			printFont(15, 5 + MENU_AV_SE_VOLUME, string[0], (statusc[0] == MENU_AV_SE_VOLUME) * (count % 2) * digitc[rots[0]]);
 		}
 
-		if((ncfg[44] >> 15) & 0x1) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
+		if((ncfg[44] >> 15) & 0x1) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
 		printFont(15, 5 + MENU_AV_PLAY_BGM, string[0], (statusc[0] == MENU_AV_PLAY_BGM) * (count % 2) * digitc[rots[0]]);
 
 		if((ncfg[44] >> 15) & 0x1) {
-			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
 			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (count % 2) * digitc[rots[0]]);
 
 			int32_t wavebgm_temp = ncfg[44] & WAVE_BGM_SIMPLE;
-			if(wavebgm_temp & WAVE_BGM_SIMPLE) sprintf(string[0], "SIMPLE");
-			else sprintf(string[0], "MULTITRACK");
+			if(wavebgm_temp & WAVE_BGM_SIMPLE) SDL_snprintf(string[0], STRING_LENGTH, "SIMPLE");
+			else SDL_snprintf(string[0], STRING_LENGTH, "MULTITRACK");
 			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (count % 2) * digitc[rots[0]]);
 		}
 

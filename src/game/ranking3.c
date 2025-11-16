@@ -30,7 +30,7 @@ void RankingInit3() {
 	int32_t i;
 
 	for(i = 0; i < ( 6*14*2); i++) {
-		APP_StrCpy(rkname3[i], "NOP");
+		SDL_strlcpy(rkname3[i], "NOP", sizeof(*rkname));
 		rkdata3[i] = 0;
 		rktime3[i] = 1200*60;
 		rkclear3[i] = 0;
@@ -79,7 +79,7 @@ void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int
 
 	// ランキングをずらす
 	for(i = 2+((rmode==9)*3); i > rank ; i--) {
-		APP_StrCpy(rkname3[j + i], rkname3[j + i - 1]);
+		SDL_strlcpy(rkname3[j + i], rkname3[j + i - 1], sizeof(*rkname3));
 		rkdata3[j + i] = rkdata3[j + i - 1];
 		rktime3[j + i] = rktime3[j + i - 1];
 		rkclear3[j + i] = rkclear3[j + i - 1];
@@ -93,7 +93,7 @@ void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int
 	}
 
 	// 順位のデータを元に新しいデータを登録
-	APP_StrCpy(rkname3[j + rank], rname);
+	SDL_strlcpy(rkname3[j + rank], rname, sizeof(*rkname3));
 	rkdata3[j + rank] = rdata;
 	rktime3[j + rank] = rtime;
 	rkclear3[j + rank] = rclear;
@@ -229,13 +229,13 @@ void RankingView3() {//3位まで
 
 	// ルール名表示
 	getRuleNameEx3(rankingrule, 0);
-	APP_StrCat(string[0], " TYPE RULE - ");
+	SDL_strlcat(string[0], " TYPE RULE - ", STRING_LENGTH);
 
 	// モード名表示
 	getModeNameEx3(rkpage, 1);
-	APP_StrCat(string[1], " MODE");
+	SDL_strlcat(string[1], " MODE", STRING_LENGTH);
 
-	APP_StrCat(string[0], string[1]);
+	SDL_strlcat(string[0], string[1], STRING_LENGTH);
 	printFont(1, 1, string[0], modecolor3[rkpage]);
 
 	// ランキング表示
@@ -285,24 +285,24 @@ void RankingView3() {//3位まで
 	for(l = 0; l < 2 ; l++){//l==0上の3段 l==1下の3段
 		// 順位
 		if(rkpage!=9){//オリ以外
-			sprintf(string[0], "1ST");
+			SDL_snprintf(string[0], STRING_LENGTH, "1ST");
 			printFont(1, 5 + (l * 13)  , string[0], 2);
-			sprintf(string[0], "2ND");
+			SDL_snprintf(string[0], STRING_LENGTH, "2ND");
 			printFont(1, 9 + (l * 13), string[0], 9);
-			sprintf(string[0], "3RD");
+			SDL_snprintf(string[0], STRING_LENGTH, "3RD");
 			printFont(1, 13+ (l * 13) , string[0], 4);
 		}else if(rkpage==9){
-			sprintf(string[0], "1ST");
+			SDL_snprintf(string[0], STRING_LENGTH, "1ST");
 			printFont(1, 5  , string[0], 2);
-			sprintf(string[0], "2ND");
+			SDL_snprintf(string[0], STRING_LENGTH, "2ND");
 			printFont(1, 9, string[0], 9);
-			sprintf(string[0], "3RD");
+			SDL_snprintf(string[0], STRING_LENGTH, "3RD");
 			printFont(1, 13 , string[0], 4);
-			sprintf(string[0], "4TH");
+			SDL_snprintf(string[0], STRING_LENGTH, "4TH");
 			printFont(1, 18   , string[0], 0);
-			sprintf(string[0], "5TH");
+			SDL_snprintf(string[0], STRING_LENGTH, "5TH");
 			printFont(1, 22, string[0], 0);
-			sprintf(string[0], "6TH");
+			SDL_snprintf(string[0], STRING_LENGTH, "6TH");
 			printFont(1, 26 , string[0], 0);
 		}
 			ExBltRect(85, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANKの文字
@@ -354,24 +354,24 @@ void RankingView3() {//3位まで
 
 			if(rkpage == 0) {
 				// スコア
-				sprintf(string[0], "%d", rkdata3[j + i]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]);
 				printFont(10, 5 + (i * 4) + (l * 13), string[0],digitc[rkrots3[j + i]]);
 
 				// レベル
-				sprintf(string[0], "%d", rkother3[j + i]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkother3[j + i]);
 				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 			} else if( (rkpage >= 1) && (rkpage <= 4) ) {
 				if(rkpage == 4){//devil
 					//devilは先に段位を表示
 					// 段位
-					sprintf(string[0], "%d", rkother3[j + i]);
+					SDL_snprintf(string[0], STRING_LENGTH, "%d", rkother3[j + i]);
 					printFont(10, 5 + (i * 4) + l * 13, dgname[rkother3[j + i]], digitc[rkrots3[j + i]]);
-					sprintf(string[0], "%d", rkdata3[j + i]); //devilレベル
+					SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]); //devilレベル
 				}else{
-					sprintf(string[0], "%d", rkdata3[j + i]); //mas 20G段位
+					SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]); //mas 20G段位
 					printFont(10, 5 + (i * 4) + (l * 13), gname2[rkdata3[j + i]], digitc[rkrots3[j + i]]);
 					// 段位
-					sprintf(string[0], "%d", rkother3[j + i]);
+					SDL_snprintf(string[0], STRING_LENGTH, "%d", rkother3[j + i]);
 				}
 				// レベル
 				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
@@ -380,54 +380,54 @@ void RankingView3() {//3位まで
 				if(rkpage == 5){
 					// ステージ
 					if(rkclear3[j + i] == 2){
-						sprintf(string[0], "ALL");
+						SDL_snprintf(string[0], STRING_LENGTH, "ALL");
 					}else{
 						if(rkdata3[j + i] <= 19)
-							sprintf(string[0], "%d", rkdata3[j + i] + 1);
+							SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i] + 1);
 						else if((rkdata3[j + i] <= 26)&&(rkdata3[j + i] >= 20))
-							sprintf(string[0], "EX%d", rkdata3[j + i] - 19);
+							SDL_snprintf(string[0], STRING_LENGTH, "EX%d", rkdata3[j + i] - 19);
 						else if(rkdata3[j + i] >=27 )
-							sprintf(string[0], "%d", rkdata3[j + i] - 26);
+							SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i] - 26);
 					}
 					printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
-					sprintf(string[0], "%d%%", rkother3[j + i]);
+					SDL_snprintf(string[0], STRING_LENGTH, "%d%%", rkother3[j + i]);
 					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 				}else if(rkpage == 6){
 					if(rkdata3[j+i]>100){
-						sprintf(string[0], "%d", rkdata3[j + i] - 99);
+						SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i] - 99);
 						printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 					}else{
-						sprintf(string[0], "%d", rkdata3[j + i]);
+						SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]);
 						printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 					}
-					sprintf(string[0], "%d", rkother3[j + i]);
+					SDL_snprintf(string[0], STRING_LENGTH, "%d", rkother3[j + i]);
 					printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 				}
 			} else if((rkpage == 7)||(rkpage == 8)){//ace系
 				// ライン
-				sprintf(string[0], "%d", rkdata3[j + i]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]);
 				printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
 				// レベル
-				sprintf(string[0], "%d", rkother3[j + i] + 1);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkother3[j + i] + 1);
 				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 			} else if((rkpage == 10)||(rkpage == 11)){//STANDARD系
 				// ライン
-				sprintf(string[0], "%d", rkdata3[j + i]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]);
 				printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
 				// レベル
-				sprintf(string[0], "%d", rkother3[j + i] + 1);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkother3[j + i] + 1);
 				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 			}else {
 			// スコア
-				sprintf(string[0], "%d", rkdata3[j + i]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[j + i]);
 				printFont(10, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 
-				if(rkother3[j + i]==0)sprintf(string[0], "BEG");
-				if(rkother3[j + i]==1)sprintf(string[0], "MAS");
-				if(rkother3[j + i]==2)sprintf(string[0], "20G");
-				if(rkother3[j + i]==3)sprintf(string[0], "DEV");
+				if(rkother3[j + i]==0)SDL_snprintf(string[0], STRING_LENGTH, "BEG");
+				if(rkother3[j + i]==1)SDL_snprintf(string[0], STRING_LENGTH, "MAS");
+				if(rkother3[j + i]==2)SDL_snprintf(string[0], STRING_LENGTH, "20G");
+				if(rkother3[j + i]==3)SDL_snprintf(string[0], STRING_LENGTH, "DEV");
 				printFont(16, 5 + (i * 4) + (l * 13), string[0], digitc[rkrots3[j + i]]);
 			}
 
@@ -442,15 +442,15 @@ void RankingView3() {//3位まで
 				ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
 			}
 				// 回転
-			if(rkrots3[j + i]==0)sprintf(string[0], "HEBORIS");
-			if(rkrots3[j + i]==1)sprintf(string[0], "TI-ARS");
-			if(rkrots3[j + i]==2)sprintf(string[0], "TI-WORLD");
-			if(rkrots3[j + i]==3)sprintf(string[0], "ACE-SRS");
-			if(rkrots3[j + i]==4)sprintf(string[0], "ACE-ARS");
-			if(rkrots3[j + i]==5)sprintf(string[0], "ACE-ARS2");
-			if(rkrots3[j + i]==6)sprintf(string[0], "DS-WORLD");
-			if(rkrots3[j + i]==7)sprintf(string[0], "SRS-X");
-			if(rkrots3[j + i]==8)sprintf(string[0], "D.R.S");
+			if(rkrots3[j + i]==0)SDL_snprintf(string[0], STRING_LENGTH, "HEBORIS");
+			if(rkrots3[j + i]==1)SDL_snprintf(string[0], STRING_LENGTH, "TI-ARS");
+			if(rkrots3[j + i]==2)SDL_snprintf(string[0], STRING_LENGTH, "TI-WORLD");
+			if(rkrots3[j + i]==3)SDL_snprintf(string[0], STRING_LENGTH, "ACE-SRS");
+			if(rkrots3[j + i]==4)SDL_snprintf(string[0], STRING_LENGTH, "ACE-ARS");
+			if(rkrots3[j + i]==5)SDL_snprintf(string[0], STRING_LENGTH, "ACE-ARS2");
+			if(rkrots3[j + i]==6)SDL_snprintf(string[0], STRING_LENGTH, "DS-WORLD");
+			if(rkrots3[j + i]==7)SDL_snprintf(string[0], STRING_LENGTH, "SRS-X");
+			if(rkrots3[j + i]==8)SDL_snprintf(string[0], STRING_LENGTH, "D.R.S");
 			printFont(31, 5 + (i * 4) + (l * 13), string[0], fontc[rkrots3[j + i]]);
 
 			// メダル
@@ -474,7 +474,7 @@ void RankingView3() {//3位まで
 void RankingSave3() {
 	int32_t i;
 
-	APP_FillMemory(saveBuf, 5000 * 4, 0);
+	SDL_memset(saveBuf, 0, 5000 * 4);
 
 	// ヘッダ
 	saveBuf[0] = 0x4F424501;
@@ -521,7 +521,7 @@ int32_t RankingLoad3() {
 	int32_t i;
 
 	// ヘッダだけ読み込み
-	APP_FillMemory(saveBuf, 5000 * 4, 0);
+	SDL_memset(saveBuf, 0, 5000 * 4);
 	APP_LoadFile("config/data/RANKING3.SAV", saveBuf, 16);
 	//
 	if(saveBuf[0] != 0x4F424501) return 1;
@@ -571,37 +571,37 @@ int32_t RankingGet3(int32_t rmode, int32_t rrots, int32_t rex) {//5*15*2*11,3*2*
 
 void getModeNameEx3( int32_t mode, int32_t number ) {
 	if(mode == 0)
-		sprintf(string[number], "BEGINNER");
+		SDL_snprintf(string[number], STRING_LENGTH, "BEGINNER");
 	else if(mode == 1)
-		sprintf(string[number], "MASTER ");
+		SDL_snprintf(string[number], STRING_LENGTH, "MASTER ");
 	else if(mode == 2)
-		sprintf(string[number], "MASTER ");
+		SDL_snprintf(string[number], STRING_LENGTH, "MASTER ");
 	else if(mode == 3)
-		sprintf(string[number], "20G");
+		SDL_snprintf(string[number], STRING_LENGTH, "20G");
 	else if(mode == 4)
-		sprintf(string[number], "DEVIL");
+		SDL_snprintf(string[number], STRING_LENGTH, "DEVIL");
 	else if(mode == 5)
-		sprintf(string[number], "TOMOYO");
+		SDL_snprintf(string[number], STRING_LENGTH, "TOMOYO");
 	else if(mode == 6)
-		sprintf(string[number], "TOMOYO");
+		SDL_snprintf(string[number], STRING_LENGTH, "TOMOYO");
 	else if(mode == 7)
-		sprintf(string[number], "ACE");
+		SDL_snprintf(string[number], STRING_LENGTH, "ACE");
 	else if(mode == 8)
-		sprintf(string[number], "ACE");
+		SDL_snprintf(string[number], STRING_LENGTH, "ACE");
 	else if(mode == 9)
-		sprintf(string[number], "ORIGINAL");
+		SDL_snprintf(string[number], STRING_LENGTH, "ORIGINAL");
 	else if(mode == 10)
-		sprintf(string[number], "SIMPLE");
+		SDL_snprintf(string[number], STRING_LENGTH, "SIMPLE");
 	else if(mode == 11)
-		sprintf(string[number], "SIMPLE");
+		SDL_snprintf(string[number], STRING_LENGTH, "SIMPLE");
 }
 
 void getRuleNameEx3( int32_t rule, int32_t number ) {
 
 		if(rule == 0)
-			sprintf(string[number], "ARS");
+			SDL_snprintf(string[number], STRING_LENGTH, "ARS");
 		else if(rule == 1)
-			sprintf(string[number], "SRS");
+			SDL_snprintf(string[number], STRING_LENGTH, "SRS");
 }
 
 void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type){
@@ -670,7 +670,7 @@ void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type){
 			//データ
 			ExBltRect(85, x-(player*12),y, 0, 0,35, 7);//bestの文字
 			ExBltRect(85, x+22-(player*16),y, 35,7*4,35, 7);//
-			sprintf(string[0], "%d", rkdata3[tmp]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[tmp]);
 
 			printSMALLFont(x-(player*8), y+8, string[0], color[player]);
 			ExBltRect(85, x+24-(player*12),y+8, 0,7*10,35, 7);//LINES
@@ -743,7 +743,7 @@ void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type){
 			}
 			if(type==1){//タイムかデータか？
 				printFont(x, y-1, "BEST SCORE", fontc[rots[player]]);
-				sprintf(string[0], "%d", rkdata3[tmp]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[tmp]);
 				printFont(x+3, y, "LINES", fontc[rots[player]]);
 			}else{
 				printFont(x, y-1, "BEST TIME", fontc[rots[player]]);

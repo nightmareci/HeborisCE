@@ -7,7 +7,7 @@ void APP_ResetFrameStep(void);
 
 bool APP_Update(void);
 
-void APP_SetFPS(unsigned fps);
+void APP_SetFPS(uint32_t fps);
 
 int APP_GetFPS(void);
 
@@ -19,6 +19,6 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 
 void APP_Quit(void);
 
-SDL_NORETURN void APP_Exit(int exitStatus);
+SDL_NORETURN void APP_Exit(SDL_AppResult result);
 
 #endif

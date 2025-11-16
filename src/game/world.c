@@ -285,7 +285,7 @@ void statWMove(int32_t player, int32_t kickm, int32_t kickr) {
 							sx[i] = iBlockKickTable[ (i * 2) + (rt[player] * 8) + j ];
 							sy[i] = iBlockKickTable[ (i * 2) + (rt[player] * 8) + j + 1 ];
 
-							//sprintf(string[0], "move:%d no:%d rt:%d sx:%d sy:%d", move, i, rt[player], sx[i], sy[i]);
+							//SDL_snprintf(string[0], STRING_LENGTH, "move:%d no:%d rt:%d sx:%d sy:%d", move, i, rt[player], sx[i], sy[i]);
 							//InnerLogMes(string[0]);
 						}
 					} else {

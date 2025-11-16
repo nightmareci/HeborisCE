@@ -6,7 +6,8 @@
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 #include "app/APP.h"
 
-#define		STRING_MAX		200
+#define		STRING_LENGTH		512
+#define		STRING_COUNT		200
 #define		loop			while ( loopFlag )
 #define		halt			spriteTime()
 #define		ctime			cgametime
@@ -198,7 +199,7 @@ extern uint32_t PieceSeed;
 extern bool inmenu;
 extern APP_InputType lastInputType;
 extern APP_InputType lastPlayerInputType[2];
-extern char *string[STRING_MAX];
+extern char string[STRING_COUNT][STRING_LENGTH];
 extern int32_t fldihardno;
 extern int32_t fldigsno;
 extern int32_t fldisno;

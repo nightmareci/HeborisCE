@@ -75,7 +75,7 @@ static void APP_PrivateBDFFontInitialize(void)
 		if (!APP_BDFFonts[i]) {
 			SDL_CloseIO(src);
 			APP_SetError("Failed to load font file \"%s\": %s", filenames[i], SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		SDL_CloseIO(src);
 	}
@@ -481,7 +481,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	APP_ScreenRenderTarget = NULL;
 	APP_ScreenRenderer = NULL;
 	APP_ScreenWindow = NULL;
-	APP_Exit(EXIT_FAILURE);
+	APP_Exit(SDL_APP_FAILURE);
 }
 
 int APP_GetMaxDisplayIndex(void)
@@ -529,26 +529,26 @@ void APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode)
 {
 	if (displayIndex < 0) {
 		APP_SetError("%s", SDL_InvalidParamError("displayIndex"));
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	else if (modeIndex < 0) {
 		APP_SetError("%s", SDL_InvalidParamError("modeIndex"));
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	else if (!mode) {
 		APP_SetError("%s", SDL_InvalidParamError("mode"));
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
 		APP_SetError("Could not get list of displays: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (displayIndex >= displayCount) {
 		SDL_free(displays);
 		APP_SetError("Number of displays is %d but requested display index is too high at %d", displayCount, displayIndex);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	int modeCount;
 	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(displays[displayIndex], &modeCount);
@@ -556,7 +556,7 @@ void APP_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode)
 	if (modeIndex >= modeCount) {
 		SDL_free(modes);
 		APP_SetError("Number of display modes is %d but requested display mode index is too high at %d", modeCount, modeIndex);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	*mode = *modes[modeIndex];
 }
@@ -565,24 +565,24 @@ const SDL_DisplayMode* APP_GetDesktopDisplayMode(int displayIndex)
 {
 	if (displayIndex < 0) {
 		APP_SetError("Invalid display index of %d, must be at least 0", displayIndex);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	int displayCount;
 	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
 		APP_SetError("Error getting list of displays: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (displayIndex >= displayCount) {
 		SDL_free(displays);
 		APP_SetError("Display index is too high");
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	const SDL_DisplayMode* mode = SDL_GetDesktopDisplayMode(displays[displayIndex]);
 	SDL_free(displays);
 	if (!mode) {
 		APP_SetError("Error getting desktop display mode: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	return mode;
 }
@@ -591,7 +591,7 @@ void APP_EnableTextLayer(int layer, int x, int y)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to enable, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	APP_TextLayers[layer].enable = true;
 	APP_TextLayers[layer].x = x;
@@ -602,7 +602,7 @@ void APP_SetTextLayerDrawPosition(int layer, int x, int y)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to set draw position, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	APP_TextLayers[layer].x = x;
 	APP_TextLayers[layer].y = y;
@@ -612,7 +612,7 @@ void APP_SetTextLayerColor(int layer, int r, int g, int b)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to set text color, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (
 		APP_TextLayers[layer].color.r != r ||
@@ -631,7 +631,7 @@ void APP_SetTextLayerSize(int layer, int size)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to set text size, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (APP_TextLayers[layer].size != size) {
 		APP_TextLayers[layer].size = size;
@@ -643,7 +643,7 @@ void APP_PutTextLayerString(int layer, const char* string)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to put text into, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_strcmp(string, APP_TextLayers[layer].string) != 0) {
 		SDL_strlcpy(APP_TextLayers[layer].string, string, APP_TEXT_LAYER_STRING_LENGTH - 1);
@@ -655,7 +655,7 @@ void APP_DrawTextLayer(int layer)
 {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to draw, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (!APP_ScreenRenderer || !APP_TextLayers[layer].enable) {
 		return;
@@ -681,11 +681,11 @@ void APP_DrawTextLayer(int layer)
 		APP_TextLayers[layer].texture = APP_CreateBDFTextTexture(APP_BDFFonts[font], APP_ScreenRenderer, APP_TextLayers[layer].string, APP_TextLayers[layer].color, 32, SDL_SCALEMODE_NEAREST);
 		if (!APP_TextLayers[layer].texture) {
 			APP_SetError("Error creating texture to blit text: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		if (!SDL_GetTextureSize(APP_TextLayers[layer].texture, &APP_TextLayers[layer].textureW, &APP_TextLayers[layer].textureH)) {
 			APP_SetError("Error getting size of a text layer texture: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_TextLayers[layer].updateTexture = false;
 	}
@@ -703,7 +703,7 @@ void APP_DrawTextLayer(int layer)
 		}
 		if (!SDL_RenderTexture(APP_ScreenRenderer, APP_TextLayers[layer].texture, NULL, &dstRect)) {
 			APP_SetError("Error rendering text layer: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 	}
 }
@@ -711,7 +711,7 @@ void APP_DrawTextLayer(int layer)
 void APP_DisableTextLayer(int layer) {
 	if (layer < 0 || layer >= APP_TEXT_LAYER_COUNT) {
 		APP_SetError("Invalid layer number requested to disable, must be in range 0 to %d", APP_TEXT_LAYER_COUNT);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	APP_TextLayers[layer].enable = false;
 }
@@ -750,7 +750,7 @@ void APP_LoadPlane(int plane, const char* filename)
 	for (size_t i = 0; i < SDL_arraysize(types); i++) {
 		if (SDL_asprintf(&filenameExt, "%s.%s", filename, types[i]) < 0) {
 			APP_SetError("Error loading image");
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		if (!APP_FileExists(filenameExt)) {
 			SDL_free(filenameExt);
@@ -760,7 +760,7 @@ void APP_LoadPlane(int plane, const char* filename)
 		if (!file) {
 			SDL_free(filenameExt);
 			APP_SetError("Error loading image");
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		type = types[i];
 		break;
@@ -782,17 +782,17 @@ void APP_LoadPlane(int plane, const char* filename)
 			filenameExt
 		) < 0) {
 			APP_SetError("Error loading image");
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_SetError("%s", message);
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (
 		!SDL_SetTextureScaleMode(APP_Planes[plane], SDL_SCALEMODE_NEAREST) ||
 		!SDL_SetTextureBlendMode(APP_Planes[plane], SDL_BLENDMODE_BLEND)
 	) {
 		APP_SetError("Error loading image: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 }
 
@@ -803,7 +803,7 @@ void APP_DrawPlane(int plane, int dstX, int dstY) {
 	float w, h;
 	if (!SDL_GetTextureSize(APP_Planes[plane], &w, &h)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	APP_DrawPlaneRect(plane, dstX, dstY, 0, 0, (int)w, (int)h);
 }
@@ -828,7 +828,7 @@ void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w,
 
 	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 }
 
@@ -840,12 +840,12 @@ void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, int a)
 
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], a)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	APP_DrawPlane(plane, dstX, dstY);
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 }
 
@@ -857,12 +857,12 @@ void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int s
 
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], a)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	APP_DrawPlaneRect(plane, dstX, dstY, srcX, srcY, w, h);
 	if (!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 }
 
@@ -891,7 +891,7 @@ void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, 
 	}
 	if (!SDL_RenderTexture(APP_ScreenRenderer, APP_Planes[plane], &src, &dst)) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 }
 
@@ -924,7 +924,7 @@ void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX,
 		!SDL_SetTextureAlphaMod(APP_Planes[plane], SDL_ALPHA_OPAQUE)
 	) {
 		APP_SetError("Error rendering graphics: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 }
 
@@ -1024,7 +1024,7 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 	return;
 
 	fail:
-	APP_Exit(EXIT_FAILURE);
+	APP_Exit(SDL_APP_FAILURE);
 }
 
 void APP_SetPlaneDrawOffset(int x, int y)
@@ -1065,7 +1065,7 @@ float APP_GetScreenSubpixelOffset(void)
 		SDL_FRect rect;
 		if (!SDL_GetRenderLogicalPresentationRect(APP_ScreenRenderer, &rect)) {
 			APP_SetError("Graphics error: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		const float scale = rect.w / APP_LogicalWidth;
 		return 0.49f / scale;

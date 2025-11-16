@@ -62,7 +62,7 @@ bool APP_InitFilesystem(int argc, char** argv) {
 
 #endif
 
-#ifdef __EMSCRIPTEN__
+#ifdef SDL_PLATFORM_EMSCRIPTEN
 		EM_ASM({
 			FS.syncfs(function (err) {
 				assert(!err);
@@ -85,7 +85,7 @@ bool APP_CreateDirectory(const char* directory) {
 	}
 	SDL_free(path);
 
-#ifdef __EMSCRIPTEN__
+#ifdef SDL_PLATFORM_EMSCRIPTEN
 		EM_ASM({
 			FS.syncfs(function (err) {
 				assert(!err);
@@ -103,7 +103,7 @@ bool APP_FileExists(const char* filename)
 
 	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
 		APP_SetError("Error allocating string to check if file exists");
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
 		SDL_free(path);
@@ -113,7 +113,7 @@ bool APP_FileExists(const char* filename)
 
 	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
 		APP_SetError("Error allocating string to check if file exists");
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
 		SDL_free(path);
@@ -128,7 +128,7 @@ static SDL_IOStream* APP_OpenFromPath(const char* path, const char* filename, co
 	char* fullPath;
 	if (SDL_asprintf(&fullPath, "%s%s", path, filename) < 0) {
 		APP_SetError("Error allocating string to open a file");
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 
 	SDL_IOStream* file = SDL_IOFromFile(fullPath, mode);
@@ -194,7 +194,7 @@ void APP_LoadFile(const char* filename, void* buf, size_t size)
 
 	if (SDL_ReadIO(src, buf, size) != size || !SDL_CloseIO(src)) {
 		APP_SetError("Error reading file: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 
 	APP_Swap32ArrayLEToNative(buf, size);
@@ -228,12 +228,12 @@ void APP_SaveFile(const char* filename, void* buf, size_t size)
 
 	if (SDL_WriteIO(dst, buf, size) != size) {
 		APP_SetError("Error writing file: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (!SDL_CloseIO(dst))
 	{
 		APP_SetError("Error closing file: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 
 	APP_Swap32ArrayLEToNative(buf, size);
@@ -250,18 +250,18 @@ void APP_AppendFile(const char* filename, void* buf, size_t size)
 
 	if (SDL_WriteIO(dst, buf, size) != size) {
 		APP_SetError("Error writing file: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (!SDL_CloseIO(dst)) {
 		APP_SetError("Error closing file: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 
 	APP_Swap32ArrayLEToNative(buf, size);
 }
 
 void APP_QuitFilesystem(void) {
-#ifdef __EMSCRIPTEN__
+#ifdef SDL_PLATFORM_EMSCRIPTEN
 	EM_ASM({
 		FS.syncfs(function (err) {
 			assert(!err);

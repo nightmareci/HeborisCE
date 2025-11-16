@@ -365,12 +365,12 @@ void SoundTestProc(void) {
         printFont(10, 3, "- SOUND TEST MODE -", 4);
         if(snd < WAVE_BGM_START){
                 printFont(17, 6, "SE NO.", 1);
-                sprintf(string[0], "%d", snd);
+                SDL_snprintf(string[0], STRING_LENGTH, "%d", snd);
                 printFont(23, 6, string[0], 2);
         }
         else{
                 printFont(16, 6, "BGM NO.", 1);
-                sprintf(string[0], "%d", snd-WAVE_BGM_START);
+                SDL_snprintf(string[0], STRING_LENGTH, "%d", snd-WAVE_BGM_START);
                 printFont(23, 6, string[0], 2);
         }
 

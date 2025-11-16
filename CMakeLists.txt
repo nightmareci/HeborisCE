@@ -92,8 +92,8 @@ add_executable(${APP_EXE}
 	"src/app/APP_main.c"
 	"src/app/APP_mp3.c"
 	"src/app/APP_ogg.c"
-	"src/app/APP_stdlib.c"
-	
+	"src/app/APP_string.c"
+
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
 
@@ -138,8 +138,8 @@ add_executable(${APP_EXE}
 	"src/app/APP_mp3.c"
 	"src/app/APP_ogg.h"
 	"src/app/APP_stdinc.h"
-	"src/app/APP_stdlib.h"
-	
+	"src/app/APP_string.h"
+
 	"src/app/APP_video.h"
 	"src/app/APP_wav.h"
 
@@ -269,7 +269,24 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 
 		set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_BMP OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_GIF OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_JPG OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_JXL OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_LBM OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_PCX OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_PNM OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_QOI OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_SVG OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_TGA OFF CACHE BOOL "" FORCE)
 		set(SDLIMAGE_TIF OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_WEBP OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_XCF OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_XPM OFF CACHE BOOL "" FORCE)
+		set(SDLIMAGE_XV OFF CACHE BOOL "" FORCE)
+
+		set(SDLIMAGE_PNG ON CACHE BOOL "" FORCE)
+
 		set(SDLIMAGE_DEPS_SHARED OFF)
 		set(SDLIMAGE_VENDORED ON)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
@@ -286,11 +303,14 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	set(APP_FRAMEWORK_TYPE "WEB SDL3")
 
 	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_GAME_CONTROLLER FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER TRUE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
+	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
 	set(APP_ENABLE_GAME_QUIT FALSE CACHE BOOL "" FORCE)
+	set(APP_BASE_PATH_APPEND "basepath/")
 
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 	if(CMAKE_BUILD_TYPE MATCHES "Release")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --shell-file '${CMAKE_SOURCE_DIR}/pkg/emscripten/index.html'")
@@ -298,9 +318,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
 	endif()
-
-	set(APP_BASE_PATH_APPEND "basepath/")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -s ALLOW_MEMORY_GROWTH -lidbfs.js -s FORCE_FILESYSTEM=1 \
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -pthread -lidbfs.js -s PTHREAD_POOL_SIZE=30 -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1 \
 		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/highDetail@basepath/res/bg/highDetail' \
 		--preload-file '${CMAKE_SOURCE_DIR}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
 		--preload-file '${CMAKE_SOURCE_DIR}/res/bgm@basepath/res/bgm' \

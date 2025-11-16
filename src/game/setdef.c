@@ -33,7 +33,7 @@ typedef struct {
 	#ifdef APP_ENABLE_JOYSTICK
 	APP_JoyKey	joyKeyAssign[10 * 2];
 	#endif
-	
+
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	int32_t playerCons[2];
 	APP_ConKey conKeyAssign[8 * 2];
@@ -41,7 +41,7 @@ typedef struct {
 
 	int32_t fourwayfilter;
 	int32_t fourwaypriorityup;
-	
+
 	int32_t rots[2];
 	int32_t segacheat;
 
@@ -128,7 +128,7 @@ static const SConfig DefaultConfig = {
 	#ifdef APP_ENABLE_JOYSTICK
 	.joyKeyAssign = APP_DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
 	#endif
-	
+
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	.playerCons = { 0, 1 },
 	.conKeyAssign = {
@@ -204,7 +204,7 @@ static const SConfig DefaultConfig = {
 
 	.fourwayfilter = 0,
 	.fourwaypriorityup = 0,
-	
+
 	.rots = {2, 1},
 	.segacheat = 0,
 
@@ -339,7 +339,7 @@ void SetDefaultConfig()
 {
 	int32_t i,j, cfgbuf[CFG_LENGTH];
 
-	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -423,7 +423,7 @@ void SetDefaultConfig()
 		}
 	}
 	#endif
-	
+
 	#ifdef APP_ENABLE_GAME_CONTROLLER
 	int32_t *conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {

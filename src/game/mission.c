@@ -48,7 +48,7 @@ void statMissionSelect(int32_t player) {
 	printFont(14 + 24 * player - 12 * maxPlay, 17, string[0], (vslevel[0] == 1) * count % 9 );
 
 	printFont(15 + 24 * player - 12 * maxPlay, 19, "STAGE", fontc[rots[player]]);
-	sprintf(string[0], "NO.%02d", c_mission);
+	SDL_snprintf(string[0], STRING_LENGTH, "NO.%02d", c_mission);
 	printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (vslevel[0] == 2) * count % 9 );
 
 	if((mission_file >= 25) || (debug)){
@@ -187,7 +187,7 @@ void statMissionEditor(int32_t player) {
 
 	// ノルマ
 	printFont(15 + 24 * player - 12 * maxPlay, 7, "NORM", fontc[rots[player]]);
-	sprintf(string[0], "%d", mission_norm[c_mission]);
+	SDL_snprintf(string[0], STRING_LENGTH, "%d", mission_norm[c_mission]);
 	printFont(15 + 24 * player - 12 * maxPlay, 8, string[0], (statusc[0 + player * 10] == 1) * count % 9);
 
 	// 制限時間
@@ -198,178 +198,178 @@ void statMissionEditor(int32_t player) {
 	// レベル
 	printFont(15 + 24 * player - 12 * maxPlay, 11, "LEVEL", fontc[rots[player]]);
 	if(mission_lv[c_mission] >= 15)
-		sprintf(string[0], "PLUS %d", mission_lv[c_mission] + 1 - 15);
+		SDL_snprintf(string[0], STRING_LENGTH, "PLUS %d", mission_lv[c_mission] + 1 - 15);
 	else
-		sprintf(string[0], "%d", mission_lv[c_mission] + 1);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", mission_lv[c_mission] + 1);
 	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0], (statusc[0 + player * 10] == 3) * count % 9);
 
 	// エンディング
 	printFont(15 + 24 * player - 12 * maxPlay, 13, "ENDING", fontc[rots[player]]);
 	if(mission_end[c_mission] == 0) {
-		sprintf(string[0], "NO");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO");
 	} else if(mission_end[c_mission] == 1) {
-		sprintf(string[0], "END");
+		SDL_snprintf(string[0], STRING_LENGTH, "END");
 	} else if(mission_end[c_mission] == 2) {
-		sprintf(string[0], "EXTRA");
+		SDL_snprintf(string[0], STRING_LENGTH, "EXTRA");
 	} else if(mission_end[c_mission] == 3) {
-		sprintf(string[0], "EXTRA+");
+		SDL_snprintf(string[0], STRING_LENGTH, "EXTRA+");
 	} else if(mission_end[c_mission] == 4) {
-		sprintf(string[0], "STAFF ROLL");
+		SDL_snprintf(string[0], STRING_LENGTH, "STAFF ROLL");
 	} else if(mission_end[c_mission] == 5) {
-		sprintf(string[0], "M ROLL");
+		SDL_snprintf(string[0], STRING_LENGTH, "M ROLL");
 	} else if(mission_end[c_mission] == 6) {
-		sprintf(string[0], "DEVIL+M ROLL");
+		SDL_snprintf(string[0], STRING_LENGTH, "DEVIL+M ROLL");
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], (statusc[0 + player * 10] == 4) * count % 9);
 
 	// 消去ライン数
 	if(mission_erase[c_mission] < -20){
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEE LINE", fontc[rots[player]]);
-		sprintf(string[0], "%d", SDL_abs(mission_erase[c_mission]+20));
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", SDL_abs(mission_erase[c_mission]+20));
 	}else if(mission_erase[c_mission] < 0){
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEH LINE", fontc[rots[player]]);
-		sprintf(string[0], "%d", SDL_abs(mission_erase[c_mission]));
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", SDL_abs(mission_erase[c_mission]));
 	}else{
 		printFont(15 + 24 * player - 12 * maxPlay, 15, "ERASE LINE", fontc[rots[player]]);
-		sprintf(string[0], "%d", mission_erase[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", mission_erase[c_mission]);
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 16, string[0], (statusc[0 + player * 10] == 5) * count % 9);
 	// 追加情報
 	// 18行目MAX 19行目MIN 20行目OPT(ターゲットだと解説)　21行目解説
 	printFont(15 + 24 * player - 12 * maxPlay, 17, "OPTIONS", fontc[rots[player]]);
 	if((mission_type[c_mission] == 2)||(mission_type[c_mission] == 3)){
-		sprintf(string[0], "GRADE:%d",mission_opt_1[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "GRADE:%d",mission_opt_1[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "0=N1=E2=H");
+		SDL_snprintf(string[0], STRING_LENGTH, "0=N1=E2=H");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 
 	}
 	else if(mission_type[c_mission] == 6){   //ターゲット
-		sprintf(string[0], "MINSTAGE:%d", mission_opt_1[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "MINSTAGE:%d", mission_opt_1[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "MAXSTAGE:%d", mission_opt_2[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "MAXSTAGE:%d", mission_opt_2[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
 		if((statusc[0 + player * 10] == 6) || (statusc[0 + player * 10] == 7)){
-			sprintf(string[0], "0-26=TI ");
+			SDL_snprintf(string[0], STRING_LENGTH, "0-26=TI ");
 			printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], 3);
-			sprintf(string[0], "27-44=EH");
+			SDL_snprintf(string[0], STRING_LENGTH, "27-44=EH");
 			printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], 3);
-			sprintf(string[0], "45-71=ACE");
+			SDL_snprintf(string[0], STRING_LENGTH, "45-71=ACE");
 			printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], 3);
-			sprintf(string[0], "100-199=FP");
+			SDL_snprintf(string[0], STRING_LENGTH, "100-199=FP");
 			printFont(15 + 24 * player - 12 * maxPlay, 23, string[0], 3);
 		}else{
 			if(!mission_opt_3[c_mission]){
-				sprintf(string[0], "RANDTGT:OFF");
+				SDL_snprintf(string[0], STRING_LENGTH, "RANDTGT:OFF");
 			}else if(mission_opt_3[c_mission] == 99){
-				sprintf(string[0], "RANDTGT:FULL");
+				SDL_snprintf(string[0], STRING_LENGTH, "RANDTGT:FULL");
 			}else{
-				sprintf(string[0], "RANDTGT:%d", mission_opt_3[c_mission]);
+				SDL_snprintf(string[0], STRING_LENGTH, "RANDTGT:%d", mission_opt_3[c_mission]);
 			}
 			printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		}
 	}
 	else if((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39)){   //イレイさー
-		sprintf(string[0], "MINLINE:%d", mission_opt_1[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "MINLINE:%d", mission_opt_1[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "MAXLINE:%d", mission_opt_2[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "MAXLINE:%d", mission_opt_2[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "VIEWLINE:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "VIEWLINE:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "MAX:3");
+		SDL_snprintf(string[0], STRING_LENGTH, "MAX:3");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "MIN:0");
+		SDL_snprintf(string[0], STRING_LENGTH, "MIN:0");
 		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 10){  //アナザー
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "BLINDON:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "BLINDON:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "0:OFF 1:ON");
+		SDL_snprintf(string[0], STRING_LENGTH, "0:OFF 1:ON");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 19){  //DEVIL 800
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "RISEPACE:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "RISEPACE:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "MAX:20");
+		SDL_snprintf(string[0], STRING_LENGTH, "MAX:20");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "MIN:1");
+		SDL_snprintf(string[0], STRING_LENGTH, "MIN:1");
 		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 20){  //DEVIL 1200
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "SPEED:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "SPEED:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "0:OLD");
+		SDL_snprintf(string[0], STRING_LENGTH, "0:OLD");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "1:DOOM");
+		SDL_snprintf(string[0], STRING_LENGTH, "1:DOOM");
 		printFont(15 + 24 * player - 12 * maxPlay, 22, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 21){  //GARBAGE
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "RISELINE:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "RISELINE:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "MAX:18");
+		SDL_snprintf(string[0], STRING_LENGTH, "MAX:18");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 26){  //ALLCLEAR
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "NOBIG:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NOBIG:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "0:OFF 1:ON");
+		SDL_snprintf(string[0], STRING_LENGTH, "0:OFF 1:ON");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if(mission_type[c_mission] == 27){  //COMBO
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "NOT1LINE:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NOT1LINE:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
-		sprintf(string[0], "0:OFF 1:ON");
+		SDL_snprintf(string[0], STRING_LENGTH, "0:OFF 1:ON");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	else if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "HOLD USE:%d",mission_opt_2[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "HOLD USE:%d",mission_opt_2[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "BLOCK:%d", mission_opt_3[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "BLOCK:%d", mission_opt_3[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 		printFont(15 + 24 * player - 12 * maxPlay, 21, "(0-8)", (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	// その他
 	else {
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 19, string[0], (statusc[0 + player * 10] == 7) * count % 9);
-		sprintf(string[0], "NO OPTION");
+		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 24, "BGM", fontc[rots[player]]);
 	if(mission_bgm[c_mission] == -1)
-		sprintf(string[0], "FADE");
+		SDL_snprintf(string[0], STRING_LENGTH, "FADE");
 	else
-		sprintf(string[0], "%d", mission_bgm[c_mission]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", mission_bgm[c_mission]);
 	printFont(19 + 24 * player - 12 * maxPlay, 24, string[0], (statusc[0 + player * 10] == 9) * count % 9);
 
 	// ↑
@@ -539,7 +539,7 @@ void viewMission() {
 
 		// 落下速度レベル
 		if((mission_type[c_mission] != 19) && (mission_type[c_mission] != 20) && (mission_type[c_mission] != 29)){
-			sprintf(string[70], " LV%02d", mission_lv[c_mission] + 1 - 15 * (mission_lv[c_mission] >= 15));
+			SDL_snprintf(string[70], STRING_LENGTH, " LV%02d", mission_lv[c_mission] + 1 - 15 * (mission_lv[c_mission] >= 15));
 			strcat(string[0], string[70]);
 		}else if(mission_type[c_mission] == 20){
 			if(!mission_opt_3[c_mission])
@@ -588,13 +588,13 @@ void viewMission() {
 		}
 		// LITE版を参考に整理
 		if(!english) {//"\n\nを使って\n%dライン消せ！",
-			sprintf(string[0], mission_info_jp[mission_type[c_mission]], mission_norm[c_mission]);
+			SDL_snprintf(string[0], STRING_LENGTH, mission_info_jp[mission_type[c_mission]], mission_norm[c_mission]);
 			if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\n消す前にそのブロック\nを一度ホールドに入れろ");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\n指定以上でもカウント!");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\n指定以外で\nノルマリセット!");
 			if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\n最後のラインは\nダブルで消せ！");
 		} else {
-			sprintf(string[0], mission_info_en[mission_type[c_mission]], mission_norm[c_mission]);
+			SDL_snprintf(string[0], STRING_LENGTH, mission_info_en[mission_type[c_mission]], mission_norm[c_mission]);
 			if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nBefore Erase \ninto HOLD");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\nErase over lines count");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\nDo not erase\n other lines!");
@@ -780,39 +780,39 @@ void getMissionName(int32_t mtype,int32_t number) {
 // ロード名を取得
 void getRoadName(int32_t no){
 	if(no == 0)
-		sprintf(string[0], " BIG ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, " BIG ROAD");
 	else if(no == 1)
-		sprintf(string[0], " TRICKY ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, " TRICKY ROAD");
 	else if(no == 2)
-		sprintf(string[0], " GRAND ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, " GRAND ROAD");
 	else if(no == 3)
-		sprintf(string[0], " STAR ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, " STAR ROAD");
 	else if(no == 4)
-		sprintf(string[0], "ANOTHER ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, "ANOTHER ROAD");
 	else if(no == 5)
-		sprintf(string[0], " DS ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, " DS ROAD");
 	else if(no == 6)
-		sprintf(string[0], " DEVIL ROAD");
+		SDL_snprintf(string[0], STRING_LENGTH, " DEVIL ROAD");
 	else if(no <= 16)
-		sprintf(string[0], " TRIAL S%d", no - 6);
+		SDL_snprintf(string[0], STRING_LENGTH, " TRIAL S%d", no - 6);
 	else if(no == 17)
-		sprintf(string[0], " TRIAL HM");
+		SDL_snprintf(string[0], STRING_LENGTH, " TRIAL HM");
 	else if(no == 18)
-		sprintf(string[0], " TRIAL GOD");
+		SDL_snprintf(string[0], STRING_LENGTH, " TRIAL GOD");
 	else if(no == 19)
-		sprintf(string[0], "HEBO AMATEUR");
+		SDL_snprintf(string[0], STRING_LENGTH, "HEBO AMATEUR");
 	else if(no == 20)
-		sprintf(string[0], " HEBO PRO");
+		SDL_snprintf(string[0], STRING_LENGTH, " HEBO PRO");
 	else if(no == 21)
-		sprintf(string[0], " HEBO BRONZE");
+		SDL_snprintf(string[0], STRING_LENGTH, " HEBO BRONZE");
 	else if(no == 22)
-		sprintf(string[0], " HEBO SILVER ");
+		SDL_snprintf(string[0], STRING_LENGTH, " HEBO SILVER ");
 	else if(no == 23)
-		sprintf(string[0], " HEBO GOLD");
+		SDL_snprintf(string[0], STRING_LENGTH, " HEBO GOLD");
 	else if(no == 24)
-		sprintf(string[0], "HEBO PLATINUM");
+		SDL_snprintf(string[0], STRING_LENGTH, "HEBO PLATINUM");
 	else
-		sprintf(string[0], " NO.%02d", no);
+		SDL_snprintf(string[0], STRING_LENGTH, " NO.%02d", no);
 }
 /* ミッションモードのノルマ上昇 */
 void missionNormUp(int32_t lines) {
@@ -1119,7 +1119,7 @@ void missionNormUp(int32_t lines) {
 		StopSE(WAVE_SE_HURRYUP);
 		if(mission_end[c_mission] == 3)
 			PlaySE(WAVE_SE_CHEER);
-		objectCreate2(0, 8, APP_Rand(20) + 180 + 192 * 0 - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+		objectCreate2(0, 8, SDL_rand(20) + 180 + 192 * 0 - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 		timeOn[0] = 0;
 		c_mission++;
 		clear_mission++;
@@ -1545,9 +1545,9 @@ statusc[0 * 10 + 6] = mission_opt_3[c_mission];
 void loadMissionData(int32_t number) {
 	int32_t i;
 
-	APP_FillMemory(saveBuf, 50000 * 4, 0);
+	SDL_memset(saveBuf, 0, 50000 * 4);
 
-	sprintf(string[0], "config/mission/mission%02d.sav", number);
+	SDL_snprintf(string[0], STRING_LENGTH, "config/mission/mission%02d.sav", number);
 
 	APP_LoadFile(string[0], saveBuf, 930 * 4);
 
@@ -1570,7 +1570,7 @@ void loadMissionData(int32_t number) {
 void saveMissionData(int32_t number) {
 	int32_t i;
 
-	APP_FillMemory(saveBuf, 50000 * 4, 0);
+	SDL_memset(saveBuf, 0, 50000 * 4);
 
 	// ヘッダ
 	saveBuf[0] = 1;
@@ -1589,6 +1589,6 @@ void saveMissionData(int32_t number) {
 		saveBuf[(i + 1) * 20 + 9] = mission_bgm[i];		// BGM
 	}
 
-	sprintf(string[0], "config/mission/mission%02d.sav", number);
+	SDL_snprintf(string[0], STRING_LENGTH, "config/mission/mission%02d.sav", number);
 	APP_SaveFile(string[0], saveBuf, 930 * 4);
 }

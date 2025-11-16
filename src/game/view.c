@@ -139,14 +139,14 @@ void disableShadowTimer(int32_t player) {
 //  タイムを時間表記にする (string[0]に格納してくれます)
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void getTime(int32_t time) {
-	sprintf(string[0], "%02d:%02d:%02d", time / 3600, (time / 60) % 60, (time % 60) * 5 / 3);
+	SDL_snprintf(string[0], STRING_LENGTH, "%02d:%02d:%02d", time / 3600, (time / 60) % 60, (time % 60) * 5 / 3);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  タイムを秒までの時間表記にする (string[0]に格納してくれます)
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void getSTime(int32_t time) {
-	sprintf(string[0], "%02d:%02d", (time / 60) % 60, (time % 60) * 5 / 3);
+	SDL_snprintf(string[0], STRING_LENGTH, "%02d:%02d", (time / 60) % 60, (time % 60) * 5 / 3);
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ピンチかどうかチェック
@@ -436,19 +436,19 @@ void viewScoreSmall(void) {
 				//TAMAYA
 				if(!novice_mode[i]){
 					ExBltRect(85, 208+add + 65 * i - 96 * maxPlay, 32, 35, 7*11, 35, 7);
-					if(i) sprintf(string[0], "%7d", hanabi_total[i]);
-					else sprintf(string[0], "%d", hanabi_total[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", hanabi_total[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", hanabi_total[i]);
 					printSMALLFont(208+add + 52 * i - 96 * maxPlay, 40, string[0], color);
 				}
 				//SCORE
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 50, 154, 112, 26, 7);
-				if(i) sprintf(string[0], "%7d", sc[i]);
-				else sprintf(string[0], "%d", sc[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 58, string[0], color);
 				//LINES
 				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 68, 0, 10*7, 35, 7);
-				if(i) sprintf(string[0], "%7d", li[i]);
-				else sprintf(string[0], "%d", li[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 			}
 
@@ -458,17 +458,17 @@ void viewScoreSmall(void) {
 				if(enable_grade[i]==1){
 					ExBltRect(85, 208+add + 48 * i - 96 * maxPlay, 86, 0, 7*29, 100, 14);
 					if(grade[i] < 17){	// 次の段位
-						if(i) sprintf(string[0], "%6d", gscore[grade[i]]);
-						else sprintf(string[0], "%d", gscore[grade[i]]);
+						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%6d", gscore[grade[i]]);
+						else SDL_snprintf(string[0], STRING_LENGTH, "%d", gscore[grade[i]]);
 						printSMALLFont(220+add + 48 * i - 96 * maxPlay, 94, string[0], color);
 					}else {	// 次の段位
-						sprintf(string[0], ";;;;;;");
+						SDL_snprintf(string[0], STRING_LENGTH, ";;;;;;");
 						printSMALLFont(220+add + 48 * i - 96 * maxPlay, 94, string[0], color);
 					}
 				}else if(enable_grade[i] == 2){	// 現在のポイント
 					ExBltRect(85, 208+add + 61 * i - 96 * maxPlay, 86, 70, 12*7, 35, 7);
-					if(i) {sprintf(string[0], "%7d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
-					}else{ sprintf(string[0], "%d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
+					if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%7d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
+					}else{ SDL_snprintf(string[0], STRING_LENGTH, "%d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
 					}
 					if(gpoint[i]>=0){
 						printSMALLFont(208+add + 52 * i - 96 * maxPlay, 94, string[0], color);
@@ -477,19 +477,19 @@ void viewScoreSmall(void) {
 					}
 				}else if(enable_grade[i] == 4){	// 現在のスピード
 					ExBltRect(85, 208+add + 62 * i - 96 * maxPlay, 86, 70, 11*7, 35, 7);
-					if(i) sprintf(string[0], "%7d", tr2[i]);
-					else sprintf(string[0], "%d", tr2[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", tr2[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", tr2[i]);
 					printSMALLFont(208+add +52 * i - 96 * maxPlay, 94, string[0], color);
 				}
 				//SCORE
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
-				if(i) sprintf(string[0], "%7d", sc[i]);
-				else sprintf(string[0], "%d", sc[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 				//LINES
 				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 104, 0, 10*7, 35, 7);
-				if(i) sprintf(string[0], "%7d", li[i]);
-				else sprintf(string[0], "%d", li[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 112, string[0], color);
 			}
 
@@ -497,13 +497,13 @@ void viewScoreSmall(void) {
 			if(gameMode[i]==3){
 				//SCORE
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
-				if(i) sprintf(string[0], "%7d", sc[i]);
-				else sprintf(string[0], "%d", sc[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 				//LINES
 				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 86, 0, 10*7, 35, 7);
-				if(i) sprintf(string[0], "%7d", li[i]);
-				else sprintf(string[0], "%d", li[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 94, string[0], color);
 			}
 
@@ -514,8 +514,8 @@ void viewScoreSmall(void) {
 				if(gameMode[i] == 4){
 					//WINS
 					ExBltRect(85, 208+add + 82 * i - 96, 32, 70, 7*13, 25, 7);
-					if(i) sprintf(string[0], "%2d", vs_win[i]);
-					else sprintf(string[0], "%d", vs_win[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", vs_win[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", vs_win[i]);
 					printSMALLFont(208+add + 84 * i - 96, 40, string[0], color);
 					//POINTS
 					for(j = 1; j <= winpoint; j++)
@@ -524,8 +524,8 @@ void viewScoreSmall(void) {
 					if(!noitem) {
 						//ITEM
 						ExBltRect(85, 208+add + 78 * i - 96, 57, 0, 56, 18, 7);
-						if(i) sprintf(string[0], "%2d", item_inter[i] - item_g[i] );
-						else sprintf(string[0], "%d", item_inter[i] - item_g[i] );
+						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", item_inter[i] - item_g[i] );
+						else SDL_snprintf(string[0], STRING_LENGTH, "%d", item_inter[i] - item_g[i] );
 						printSMALLFont(208+add + 84 * i - 96, 65, string[0], color);
 						ExBltRect(54,210 + 79 * i - 96,80,0,0,12,75);//中身
 						ExBltRect(54,210 + 79 * i - 96,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//目隠し
@@ -558,13 +558,13 @@ void viewScoreSmall(void) {
 			if(gameMode[i] == 5){
 				//SCORE
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 32, 154, 112, 26, 7);
-				if(i) sprintf(string[0], "%7d", sc[i]);
-				else sprintf(string[0], "%d", sc[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 40, string[0], color);
 				//LINES
 				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
-				if(i) sprintf(string[0], "%7d", li[i]);
-				else sprintf(string[0], "%d", li[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 58, string[0], color);
 			}
 // TOMOYO
@@ -577,47 +577,47 @@ void viewScoreSmall(void) {
 					printSMALLFont(208+add + 78 * i - 96 * maxPlay, 40, "ALL", count % 9);
 				} else if ((stage[i] > 19) && (stage[i] <= 26)) {
 					// EX
-					sprintf(string[0], "EX%d", stage[i] - 19);
+					SDL_snprintf(string[0], STRING_LENGTH, "EX%d", stage[i] - 19);
 					printSMALLFont(208+add + 78 * i - 96 * maxPlay, 40, string[0], color);
 				} else if ((stage[i] > 26) && (stage[i] <= 44)) {
 					// EHeart C7T3.2
-					sprintf(string[0], "EH%d", stage[i] - 26);
+					SDL_snprintf(string[0], STRING_LENGTH, "EH%d", stage[i] - 26);
 					printSMALLFont(208+add + 78 * i - 96 * maxPlay, 40, string[0], color);
 				} else if ((stage[i] > 44) && (stage[i] <= 71)) {
 					// ACE-TGT C7T3.2
-					sprintf(string[0], "TGT%d", stage[i] - 44);
+					SDL_snprintf(string[0], STRING_LENGTH, "TGT%d", stage[i] - 44);
 					printSMALLFont(208+add-(6*(i)) + 78 * i - 96 * maxPlay, 40, string[0], color);
 				} else if (stage[i] >= 99) {
 					// F-Point
-					sprintf(string[0], "FP%d", stage[i] - 99);
+					SDL_snprintf(string[0], STRING_LENGTH, "FP%d", stage[i] - 99);
 					printSMALLFont(208+add-(6*(i)) + 78 * i - 96 * maxPlay, 40, string[0], color);
 				} else {
 					// 通常
-					if(i) sprintf(string[0], "%2d", stage[i] + 1);
-					else sprintf(string[0], "%d", stage[i] + 1);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", stage[i] + 1);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", stage[i] + 1);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				}
 				ExBltRect(85, 208+add + 75 * i - 96 * maxPlay, 50, 35, 5*7, 21, 7);
-				sprintf(string[0], "%d", rest_pblock[i] );
+				SDL_snprintf(string[0], STRING_LENGTH, "%d", rest_pblock[i] );
 				printSMALLFont(208+add + 90 * i - 96 * maxPlay, 58, string[0], color);
 				if(stage[i] <= 26){
 				// CLEAR率
 					if((!t_training[i]) && (stage[i] <= 26)) {
 						ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 68, 0, 4*7, 26, 7);
-						if(i) sprintf(string[0], "%3d>", clearp[i] );
-						else sprintf(string[0], "%d>", clearp[i] );
+						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%3d>", clearp[i] );
+						else SDL_snprintf(string[0], STRING_LENGTH, "%d>", clearp[i] );
 						printSMALLFont(208+add + 72 * i - 96 * maxPlay, 76, string[0], color);
 					}
 				}
 				// SCORE(F-Point)
 				if(stage[i] >= 99){
 					ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 68, 35, 7*7, 26, 7);
-					if(i) sprintf(string[0], "%7d", sc[i]);
-					else sprintf(string[0], "%d", sc[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 					printSMALLFont(208+add + 55 * i - 96 * maxPlay, 76, string[0], color);
 					//枠の下に表示してあるボーナス
 					printFont(14 + 24 * i - 12 * maxPlay, 25, "BONUS", fontc[rots[i]]);
-					sprintf(string[0], "%5d", FP_bonus[i] );
+					SDL_snprintf(string[0], STRING_LENGTH, "%5d", FP_bonus[i] );
 					printFont(20 + 24 * i - 12 * maxPlay, 25, string[0], color);
 				}
 				if((!maxPlay)&&(!ending[i])) {
@@ -648,17 +648,17 @@ void viewScoreSmall(void) {
 				if(!hide_tomoyoinf && (status[i] >= 3) && (status[i] < 18) || (status[i] == 19) || (status[i] == 20)) {
 					// NEXTC
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 14, "NEXTC", fontc[rots[i]]);
-					sprintf(string[0],"%d",nextc[i]);
+					SDL_snprintf(string[0], STRING_LENGTH,"%d",nextc[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 15, string[0], color);
 
 					// 固定した回数
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 16, "BDOWN", fontc[rots[i]]);
-					sprintf(string[0],"%d",bdowncnt[i]);
+					SDL_snprintf(string[0], STRING_LENGTH,"%d",bdowncnt[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 17, string[0], color);
 
 					// 消去した回数
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 18, "ERASE", fontc[rots[i]]);
-					sprintf(string[0],"%d",erasecnt[i]);
+					SDL_snprintf(string[0], STRING_LENGTH,"%d",erasecnt[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 19, string[0], color);
 				}
 			}
@@ -666,8 +666,8 @@ void viewScoreSmall(void) {
 			if(gameMode[i]==7){
 				//LEVEL
 				ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
-				if(i) sprintf(string[0], "%2d", lv[i]);
-				else sprintf(string[0], "%d", lv[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", lv[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 				printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				if(anothermode[i] != 3){
 					//TOTAL TIME
@@ -683,13 +683,13 @@ void viewScoreSmall(void) {
 					}
 				}else{	//OLD STYLE
 					ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
-					if(i) sprintf(string[0], "%7d", li[i]);
-					else sprintf(string[0], "%d", li[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 					printSMALLFont(208+add +52 * i - 96 * maxPlay, 58, string[0], color);
 
 					ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
-					if(i) sprintf(string[0], "%7d", sc[i]);
-					else sprintf(string[0], "%d", sc[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 					printSMALLFont(208+add +52 * i - 96 * maxPlay, 76, string[0], color);
 				}
 			}
@@ -705,8 +705,8 @@ void viewScoreSmall(void) {
 				if(std_opt[i]<=1){
 					if((relaymode[i]) && (!playback)){
 						ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 70, 105, 26, 7);
-						if(i) sprintf(string[0], "%2d", relayround[i] + (1 * (relayround[i] < 9)));
-						else sprintf(string[0], "%d", relayround[i] + (1 * (relayround[i] < 9)));
+						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", relayround[i] + (1 * (relayround[i] < 9)));
+						else SDL_snprintf(string[0], STRING_LENGTH, "%d", relayround[i] + (1 * (relayround[i] < 9)));
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 						if(status[i] != 2){
 							ExBltRect(87,208 + 48 * i - 96 * maxPlay, 102, (gametime[i]%6)*48 ,(gametime[i]%30/6)*48,48,48);
@@ -734,24 +734,24 @@ void viewScoreSmall(void) {
 						bps[i] = (li[i] * 100 *60*60) / (gametime[i]);
 						bps1[i] = bps[i] / 100;//整数
 						bps2[i] = bps[i] % 100;//下三桁
-						if(i) {sprintf(string[0], "%3d?", bps1[i]);
-						}else {sprintf(string[0], "%d?", bps1[i]);
+						if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%3d?", bps1[i]);
+						}else {SDL_snprintf(string[0], STRING_LENGTH, "%d?", bps1[i]);
 						}
 						printSMALLFont(208+add + 62 * i - 96 * maxPlay, 58+10*i, string[0], color);
 						//下2桁
 						if(bps2[i]>=10){
-							if(i) {sprintf(string[0], "%2d", bps2[i]);
-							}else {sprintf(string[0], "%d", bps2[i]);
+							if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%2d", bps2[i]);
+							}else {SDL_snprintf(string[0], STRING_LENGTH, "%d", bps2[i]);
 							}
 						}else{
-							if(i) {sprintf(string[0], "0%d", bps2[i]);
-							}else {sprintf(string[0], "0%d", bps2[i]);
+							if(i) {SDL_snprintf(string[0], STRING_LENGTH, "0%d", bps2[i]);
+							}else {SDL_snprintf(string[0], STRING_LENGTH, "0%d", bps2[i]);
 							}
 						}
 						printSMALLFont(218+((bps1[i]>=10)*8)+add + 52 * i - 96 * maxPlay, 58+10*i, string[0], color);
 					}else{
-						if(i) sprintf(string[0], "%2d", 0);
-						else sprintf(string[0], "%d", 0);
+						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", 0);
+						else SDL_snprintf(string[0], STRING_LENGTH, "%d", 0);
 						printSMALLFont(208+add + 52 * i - 96 * maxPlay, 58+10*i, string[0], color);
 
 					}
@@ -770,47 +770,47 @@ void viewScoreSmall(void) {
 						bps1[i] = bps[i] / 10000;//整数
 						bps2[i] = bps[i] % 10000;//下三桁
 						if(i) {
-							sprintf(string[0], "%2d?", bps1[i]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%2d?", bps1[i]);
 						}else {
-							sprintf(string[0], "%d?", bps1[i]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%d?", bps1[i]);
 						}
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 78+8*i, string[0], color);
 						//下4桁
 						if(bps2[i]>=1000){
-							if(i) {sprintf(string[0], "%4d", bps2[i]);
-							}else {sprintf(string[0], "%d", bps2[i]);
+							if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%4d", bps2[i]);
+							}else {SDL_snprintf(string[0], STRING_LENGTH, "%d", bps2[i]);
 							}
 						}else if(bps2[i]>=100){
-							if(i) {sprintf(string[0], "0%3d", bps2[i]);
-							}else {sprintf(string[0], "0%d", bps2[i]);
+							if(i) {SDL_snprintf(string[0], STRING_LENGTH, "0%3d", bps2[i]);
+							}else {SDL_snprintf(string[0], STRING_LENGTH, "0%d", bps2[i]);
 							}
 						}else if(bps2[i]>=10){
-							if(i) {sprintf(string[0], "00%2d", bps2[i]);
-							}else {sprintf(string[0], "00%d", bps2[i]);
+							if(i) {SDL_snprintf(string[0], STRING_LENGTH, "00%2d", bps2[i]);
+							}else {SDL_snprintf(string[0], STRING_LENGTH, "00%d", bps2[i]);
 							}
 						}else{
-							if(i) {sprintf(string[0], "000%d", bps2[i]);
-							}else {sprintf(string[0], "000%d", bps2[i]);
+							if(i) {SDL_snprintf(string[0], STRING_LENGTH, "000%d", bps2[i]);
+							}else {SDL_snprintf(string[0], STRING_LENGTH, "000%d", bps2[i]);
 							}
 						}
 					printSMALLFont(218+add + 84 * i - 96 * maxPlay, 78+8*i, string[0], color);
 					}else{
-						if(i) sprintf(string[0], "%2d", 0);
-						else sprintf(string[0], "%d", 0);
+						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", 0);
+						else SDL_snprintf(string[0], STRING_LENGTH, "%d", 0);
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 78+8*i, string[0], color);
 					}
 				}else{
 					//LEVEL
 					ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
-					if(i) sprintf(string[0], "%2d", lv[i]);
-					else sprintf(string[0], "%d", lv[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", lv[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				}
 				if(std_opt[i]==2){
 				//SQUARE
 					ExBltRect(85, 208+add + 64 * i - 96 * maxPlay, 50, 35, 7*9,33, 7);
-					if(i) sprintf(string[0], "%2d", squarecnt[i]);
-					else sprintf(string[0], "%d", squarecnt[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", squarecnt[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", squarecnt[i]);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 58, string[0], color);
 				} else if(std_opt[i]==3){
 					if(i) {
@@ -825,24 +825,24 @@ void viewScoreSmall(void) {
 					if((gametime[i]>120)&&(li[i]>0)){
 						bps1[i] = sc[i] / li[i];//整数
 						bps2[i] = sc[i] % li[i];//下三桁
-						if(i) {sprintf(string[0], "%2d?", bps1[i]);
-						}else {sprintf(string[0], "%d?", bps1[i]);
+						if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%2d?", bps1[i]);
+						}else {SDL_snprintf(string[0], STRING_LENGTH, "%d?", bps1[i]);
 						}
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 58+8*i, string[0], color);
 
 							if(bps2[i]>=10){
-								if(i) {sprintf(string[0], "%2d", bps2[i]);
-								}else {sprintf(string[0], "%d", bps2[i]);
+								if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%2d", bps2[i]);
+								}else {SDL_snprintf(string[0], STRING_LENGTH, "%d", bps2[i]);
 								}
 							}else{
-								if(i) {sprintf(string[0], "0%d", bps2[i]);
-								}else {sprintf(string[0], "0%d", bps2[i]);
+								if(i) {SDL_snprintf(string[0], STRING_LENGTH, "0%d", bps2[i]);
+								}else {SDL_snprintf(string[0], STRING_LENGTH, "0%d", bps2[i]);
 								}
 							}//整数の値によって下三桁をずら
 							printSMALLFont(218+(8*(bps1[i]>=10))+(8*(bps1[i]>=100))+(8*(bps1[i]>=1000))+add + 84 * i - 96 * maxPlay, 58+8*i, string[0], color);
 						}else{
-							if(i) sprintf(string[0], "%2d", 0);
-							else sprintf(string[0], "%d", 0);
+							if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", 0);
+							else SDL_snprintf(string[0], STRING_LENGTH, "%d", 0);
 							printSMALLFont(208+add + 84 * i - 96 * maxPlay, 58+8*i, string[0], color);
 						}
 					}
@@ -852,18 +852,18 @@ void viewScoreSmall(void) {
 			if(gameMode[i] == 10){
 				//LEVEL
 				ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
-				if(i) sprintf(string[0], "%2d", lv[i]);
-				else sprintf(string[0], "%d", lv[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", lv[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 				printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				//LINES
 				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
-				if(i) sprintf(string[0], "%7d", li[i]);
-				else sprintf(string[0], "%d", li[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +52 * i - 96 * maxPlay, 58, string[0], color);
 				//SCORE
 				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
-				if(i) sprintf(string[0], "%7d", sc[i]);
-				else sprintf(string[0], "%d", sc[i]);
+				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 			}
 
@@ -881,13 +881,13 @@ void viewScoreSmall(void) {
 								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 0, 7*5, 25, 7);//GOALの文字
 							}
 							/* 分し */
-							if(gameMode[i] == 7) sprintf(string[0], "%3d", li[i]);
-							else if(gameMode[i] == 8)sprintf(string[0], "%3d", c_norm[i]);
+							if(gameMode[i] == 7) SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
+							else if(gameMode[i] == 8)SDL_snprintf(string[0], STRING_LENGTH, "%3d", c_norm[i]);
 							else if(gameMode[i] == 9) {
                                 if(std_opt[i]<2){
-                                    sprintf(string[0], "%3d", li[i]);
+                                    SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
                                 }else{
-                                    sprintf(string[0], "%3d", c_norm[i]);
+                                    SDL_snprintf(string[0], STRING_LENGTH, "%3d", c_norm[i]);
                                 }
                             }
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 169, string[0], color);
@@ -900,21 +900,21 @@ void viewScoreSmall(void) {
 								ExBltRect(3,219 + 62 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
 							/* 分ぼ */
-							if((gameMode[i] == 7)&&(anothermode[i]!=3)) sprintf(string[0], "%3d", lv[i] * 10);
-							else if((gameMode[i] == 7)&&(anothermode[i]==3)) sprintf(string[0], ";;;");
-							else if(gameMode[i] == 8)sprintf(string[0], "%3d", mission_norm[c_mission]);
+							if((gameMode[i] == 7)&&(anothermode[i]!=3)) SDL_snprintf(string[0], STRING_LENGTH, "%3d", lv[i] * 10);
+							else if((gameMode[i] == 7)&&(anothermode[i]==3)) SDL_snprintf(string[0], STRING_LENGTH, ";;;");
+							else if(gameMode[i] == 8)SDL_snprintf(string[0], STRING_LENGTH, "%3d", mission_norm[c_mission]);
 							else if(gameMode[i] == 9){
-								if(std_opt[i] == 0)sprintf(string[0], "%3d", 40);
-								else if(std_opt[i] == 1)sprintf(string[0], ";;;");
-								else if(std_opt[i] == 2)sprintf(string[0], "%3d", lv[i]*10);
-								else if(std_opt[i] == 3)sprintf(string[0], "%3d",lv[i]*5);
+								if(std_opt[i] == 0)SDL_snprintf(string[0], STRING_LENGTH, "%3d", 40);
+								else if(std_opt[i] == 1)SDL_snprintf(string[0], STRING_LENGTH, ";;;");
+								else if(std_opt[i] == 2)SDL_snprintf(string[0], STRING_LENGTH, "%3d", lv[i]*10);
+								else if(std_opt[i] == 3)SDL_snprintf(string[0], STRING_LENGTH, "%3d",lv[i]*5);
 							}
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 185, string[0], color);
 						}
 					}else if((gameMode[i]==4)&&(wintype==1)){//line
 						ExBltRect(85, 208 + 75 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
 						/* 分子 */
-						sprintf(string[0], "%3d", li[i]);
+						SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
 
 						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
@@ -924,17 +924,17 @@ void viewScoreSmall(void) {
 						} else {
 							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
-						sprintf(string[0], "%3d", vs_goal/10);
+						SDL_snprintf(string[0], STRING_LENGTH, "%3d", vs_goal/10);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 					}else{//LINE
 
 						ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 63 + (210 * ((gameMode[i] == 3) && (!devil_minus[i]))), 26, 7);//LEVELの文字画像
 						/* 分子 */
-						sprintf(string[0], "%3d", tc[i]);
+						SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i]);
 
 						// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 						if(tc[i] == -1) {
-							sprintf(string[0], "%3d", 0);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", 0);
 						}
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
 
@@ -952,18 +952,18 @@ void viewScoreSmall(void) {
 						if(ending[i]) {
 							// BEGINNERとDEVILに対応したつもり#1.60c7g4
 							// とりカンにも対応したつもり#1.60c7g7
-							sprintf(string[0], "%3d", tc[i]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i]);
 						} else if((gameMode[i]==0)&&(novice_mode[i])){
-							sprintf(string[0], "%3d", 300);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", 300);
 						} else if((gameMode[i]==0)&&(!novice_mode[i])){
-							sprintf(string[0], "%3d", 200);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", 200);
 						} else if((gameMode[i]==4)&&(wintype==0)){
-							sprintf(string[0], "%3d", vs_goal);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", vs_goal);
 						} else if((gameMode[i]==4)&&(wintype==1)){
-							sprintf(string[0], "%3d", vs_goal/10);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", vs_goal/10);
 						}else {
 							// DEVILでの表示修正#1.60c7h5
-							sprintf(string[0], "%3d", tc[i] / 100 * 100 + 100 - (tc[i] >= 900) *(gameMode[i] <= 2));
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i] / 100 * 100 + 100 - (tc[i] >= 900) *(gameMode[i] <= 2));
 						}
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 					}
@@ -971,29 +971,29 @@ void viewScoreSmall(void) {
 						if(p_goaltype==2){//ライン
 							ExBltRect(85, 208 + 68 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
 							/* 分子 */
-							sprintf(string[0], "%3d", li[i]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
 
 							// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 							if(li[i] == -1) {
-								sprintf(string[0], "%3d", 0);
+								SDL_snprintf(string[0], STRING_LENGTH, "%3d", 0);
 							}
 						}else if(p_goaltype==3){//ブロック
 							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*2, 30, 7);//BLOCKの文字画像
 							/* 分子 */
-							sprintf(string[0], "%3d", bdowncnt[i]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", bdowncnt[i]);
 
 								// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 							if(tc[i] == -1) {
-								sprintf(string[0], "%3d", 0);
+								SDL_snprintf(string[0], STRING_LENGTH, "%3d", 0);
 							}
 						}else{
 							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
 							/* 分子 */
-							sprintf(string[0], "%3d", tc[i]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i]);
 
 							// -1なら0と表示する(内部的には最初は-1になっている)#1.60c7i7
 							if(tc[i] == -1) {
-								sprintf(string[0], "%3d", 0);
+								SDL_snprintf(string[0], STRING_LENGTH, "%3d", 0);
 							}
 						}
 
@@ -1011,19 +1011,19 @@ void viewScoreSmall(void) {
 
 						/* 分母 */
 						if(p_goaltype==1) {
-							sprintf(string[0], "%3d", p_goaltypenumlist[p_goaltypenum]*10);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", p_goaltypenumlist[p_goaltypenum]*10);
 						} else if((p_goaltype==2)||(p_goaltype==3)){
-							sprintf(string[0], "%3d", p_goaltypenumlist[p_goaltypenum]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", p_goaltypenumlist[p_goaltypenum]);
 						} else {
 							// DEVILでの表示修正#1.60c7h5
-							sprintf(string[0], "%3d", tc[i] / 100 * 100 + 100 - (tc[i] >= 900) *(gameMode[i] <= 2));
+							SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i] / 100 * 100 + 100 - (tc[i] >= 900) *(gameMode[i] <= 2));
 						}
 							printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 				}else{
 					// HEBORISレベルの表示位置をTGMレベルと同じにした #1.60c7i2
 					ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
-					if(i) sprintf(string[0], "%4d", lv[i]);
-					else sprintf(string[0], "%d", lv[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%4d", lv[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 					printSMALLFont(208 + 72 * i - 96 * maxPlay, 169, string[0], color);
 				}
 			}
@@ -1104,33 +1104,33 @@ void viewScoreSmall(void) {
 			/* メダル回数表示 */
 				// AC
 				if( medal_info ) {
-					if(i) sprintf(string[0],"%2d",allclear[i]);
-					else sprintf(string[0],"%d",allclear[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",allclear[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",allclear[i]);
 					printTinyFont(225 + 51 * i - 96 * maxPlay, 127, string[0]);
 				// SK
-					if(i) sprintf(string[0],"%2d",skill[i]);
-					else sprintf(string[0],"%d",skill[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",skill[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",skill[i]);
 					printTinyFont(225 + 51 * i - 96 * maxPlay, 140, string[0]);
 				// CO
-					if(i) sprintf(string[0],"%2d",combo2[i]);
-					else sprintf(string[0],"%d",combo2[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",combo2[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",combo2[i]);
 					printTinyFont(249 + 3 * i - 96 * maxPlay, 154, string[0]);
 				// RE
-					if(i) sprintf(string[0],"%2d",rescue[i]);
-					else sprintf(string[0],"%d",rescue[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",rescue[i]);
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",rescue[i]);
 					printTinyFont(225 + 51 * i - 96 * maxPlay, 153, string[0]);
 				// ST
-					if(i) sprintf(string[0],"%2d",stp[i]);//プラチナ
-					else sprintf(string[0],"%d",stp[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",stp[i]);//プラチナ
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",stp[i]);
 					printTinyFont(233 + 18 * i - 96 * maxPlay, 134, string[0]);
-					if(i) sprintf(string[0],"%2d",stg[i]);//金
-					else sprintf(string[0],"%d",stg[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",stg[i]);//金
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",stg[i]);
 					printTinyFont(239 + 18 * i - 96 * maxPlay, 134, string[0]);
-					if(i) sprintf(string[0],"%2d",sts[i]);//銀
-					else sprintf(string[0],"%d",sts[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",sts[i]);//銀
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",sts[i]);
 					printTinyFont(245 + 18 * i - 96 * maxPlay, 134, string[0]);
-					if(i) sprintf(string[0],"%2d",stb[i]);//銅
-					else sprintf(string[0],"%d",stb[i]);
+					if(i) SDL_snprintf(string[0], STRING_LENGTH,"%2d",stb[i]);//銅
+					else SDL_snprintf(string[0], STRING_LENGTH,"%d",stb[i]);
 					printTinyFont(251 + 18 * i - 96 * maxPlay, 134, string[0]);
 				}
 			}
@@ -1138,20 +1138,20 @@ void viewScoreSmall(void) {
 			// WAIT値表示
 			// SMALL対応 #1.60c7m9
 			if((!hide_wait) || ((gameMode[i] == 9) && (std_opt[i] <= 1))) {
-				sprintf(string[0], "%3d", wait1[i]);				// wait1
+				SDL_snprintf(string[0], STRING_LENGTH, "%3d", wait1[i]);				// wait1
 				printSMALLFont(202 + 68 * i - 96 * maxPlay, 208, string[0], color);
 
-				sprintf(string[0], "%3d", wait2[i]);				// wait2
+				SDL_snprintf(string[0], STRING_LENGTH, "%3d", wait2[i]);				// wait2
 				printSMALLFont(218 + 68 * i - 96 * maxPlay, 208, string[0], color);
 
-				sprintf(string[0], "%3d", wait3[i]);				// wait3
+				SDL_snprintf(string[0], STRING_LENGTH, "%3d", wait3[i]);				// wait3
 				printSMALLFont(202 + 68 * i - 96 * maxPlay, 217, string[0], color);
 
-				sprintf(string[0], "%3d", waitt[i]);				// waitt
+				SDL_snprintf(string[0], STRING_LENGTH, "%3d", waitt[i]);				// waitt
 				printSMALLFont(218 + 68 * i - 96 * maxPlay, 217, string[0], color);
 
 				// speed
-				sprintf(string[0], "%4d", sp[i]);
+				SDL_snprintf(string[0], STRING_LENGTH, "%4d", sp[i]);
 				printSMALLFont(212 + 68 * i - 96 * maxPlay, 226, string[0], color);
 			}
 		}
@@ -1180,7 +1180,7 @@ void viewTime(void) {
 					if((!maxPlay)&&(!st_record_force_viewright)) {
 						for(j = 0; j < (tc[i] / (st_record_interval_tgm * 10)); j++) {
 							if( (lap_time[j] != 0) && (split_time[j] != 0) ) {
-								sprintf(string[0], "%4d", (j + 1) * st_record_interval_tgm * 10);
+								SDL_snprintf(string[0], STRING_LENGTH, "%4d", (j + 1) * st_record_interval_tgm * 10);
 								printFont(0, j, string[0], fontc[rots[i]]);
 								getTime(lap_time[j]);
 								printFont(5, j, string[0], st_new[j + i * 13]);
@@ -1236,7 +1236,7 @@ void viewTime(void) {
 					if((!maxPlay)&&(!st_record_force_viewright)) {
 						for(j = 0; j < (lv[i] / st_record_interval_heb); j++) {
 							if( (lap_time[j] != 0) && (split_time[j] != 0) ) {
-								sprintf(string[0], "%4d", (j + 1) * st_record_interval_heb);
+								SDL_snprintf(string[0], STRING_LENGTH, "%4d", (j + 1) * st_record_interval_heb);
 								printFont(0, j, string[0], fontc[rots[i]]);
 								getTime(lap_time[j]);
 								printFont(5, j, string[0], color);
@@ -1354,7 +1354,7 @@ void viewTime(void) {
 		} else if((hidden[i] > 0) && (!hide_hidden)&&(hidden[i]<8)) {
 			// HIDDEN LV表示 (隠す設定を追加#1.60c7i9)
 			printFont(15 + 24 * i - 12 * maxPlay, 26, "HIDDEN LV", 2);
-			sprintf(string[0], "%1d", hidden[i]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%1d", hidden[i]);
 			printFont(24 + 24 * i - 12 * maxPlay, 26, string[0], 0);
 		}else if( (gflash[i] > 0) && (((gameMode[i] == 1) ||(gameMode[i] == 2))&&(enable_grade[i]==4))) {
 		// COOL / REGRET
@@ -1374,7 +1374,7 @@ void viewTime(void) {
 
 		if(upLines[i]) {//lineup
 			if((!hebo_plus[i]) && (gameMode[i] != 5) && (gameMode[i] >= 4) && ((timeOn[i]) || (gameMode[i] == 8))){
-				sprintf(string[0], "%2dLINE UP", upLines[i] );	// せりあがるライン数
+				SDL_snprintf(string[0], STRING_LENGTH, "%2dLINE UP", upLines[i] );	// せりあがるライン数
 				printFont(15 + 24 * i - 12 * maxPlay, 28-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), string[0], fontc[rots[i]]);
 				tmp1 = 0;
 				if(gameMode[i] != 6)
@@ -1418,31 +1418,31 @@ void viewTime(void) {
 		if(istimestop[i]){
 			printFont(18 + 24 * i - 12 * maxPlay, 10, "TIME", 0);
 			printFont(18 + 24 * i - 12 * maxPlay, 11, "STOP", 0);
-			sprintf(string[0], "%d", item_timer[i] / 60 );
+			SDL_snprintf(string[0], STRING_LENGTH, "%d", item_timer[i] / 60 );
 			printBIGFont(152 + 192 * i - 96 * maxPlay, 96, string[0], 0);
 		}
 		if(debug){		// 数値チェック用スペース	バグチェックにどうぞ。
-			sprintf(string[0], "STAT:%2d", status[i] );
+			SDL_snprintf(string[0], STRING_LENGTH, "STAT:%2d", status[i] );
 			printFont(25 + 7 * i - 12 * maxPlay, 0, string[0], 1);
-			sprintf(string[0], "0:%3d", statusc[i * 10] );
+			SDL_snprintf(string[0], STRING_LENGTH, "0:%3d", statusc[i * 10] );
 			printFont(26 + 7 * i - 12 * maxPlay, 1, string[0], 0);
-			sprintf(string[0], "1:%3d", statusc[i * 10 + 1] );
+			SDL_snprintf(string[0], STRING_LENGTH, "1:%3d", statusc[i * 10 + 1] );
 			printFont(26 + 7 * i - 12 * maxPlay, 2, string[0], 0);
-			sprintf(string[0], "2:%3d", statusc[i * 10 + 2] );
+			SDL_snprintf(string[0], STRING_LENGTH, "2:%3d", statusc[i * 10 + 2] );
 			printFont(26 + 7 * i - 12 * maxPlay, 3, string[0], 0);
-			sprintf(string[0], "3:%3d", statusc[i * 10 + 3] );
+			SDL_snprintf(string[0], STRING_LENGTH, "3:%3d", statusc[i * 10 + 3] );
 			printFont(26 + 7 * i - 12 * maxPlay, 4, string[0], 0);
-			sprintf(string[0], "4:%3d", statusc[i * 10 + 4] );
+			SDL_snprintf(string[0], STRING_LENGTH, "4:%3d", statusc[i * 10 + 4] );
 			printFont(26 + 7 * i - 12 * maxPlay, 5, string[0], 0);
-			sprintf(string[0], "5:%3d", statusc[i * 10 + 5] );
+			SDL_snprintf(string[0], STRING_LENGTH, "5:%3d", statusc[i * 10 + 5] );
 			printFont(26 + 7 * i - 12 * maxPlay, 6, string[0], 0);
-			sprintf(string[0], "6:%3d", statusc[i * 10 + 6] );
+			SDL_snprintf(string[0], STRING_LENGTH, "6:%3d", statusc[i * 10 + 6] );
 			printFont(26 + 7 * i - 12 * maxPlay, 7, string[0], 0);
-			sprintf(string[0], "7:%3d", statusc[i * 10 + 7] );
+			SDL_snprintf(string[0], STRING_LENGTH, "7:%3d", statusc[i * 10 + 7] );
 			printFont(26 + 7 * i - 12 * maxPlay, 8, string[0], 0);
-			sprintf(string[0], "8:%3d", statusc[i * 10 + 8] );
+			SDL_snprintf(string[0], STRING_LENGTH, "8:%3d", statusc[i * 10 + 8] );
 			printFont(26 + 7 * i - 12 * maxPlay, 9, string[0], 0);
-			sprintf(string[0], "9:%3d", statusc[i * 10 + 9] );
+			SDL_snprintf(string[0], STRING_LENGTH, "9:%3d", statusc[i * 10 + 9] );
 			printFont(26 + 7 * i - 12 * maxPlay, 10, string[0], 0);
 		}
 	}
@@ -1472,46 +1472,46 @@ void viewTime(void) {
 //PRACTICE終了時のライン消去情報
 void viewLineInfo(void){
 
-	sprintf(string[0], "SINGLE %3d", p_erase_c[0]);
+	SDL_snprintf(string[0], STRING_LENGTH, "SINGLE %3d", p_erase_c[0]);
 	printFont(27 + (3 * (!maxPlay)), 6, string[0], 1);
 
-	sprintf(string[0], "DOUBLE %3d", p_erase_c[1]);
+	SDL_snprintf(string[0], STRING_LENGTH, "DOUBLE %3d", p_erase_c[1]);
 	printFont(27 + (3 * (!maxPlay)), 7, string[0], 4);
 
-	sprintf(string[0], "TRIPLE %3d", p_erase_c[2]);
+	SDL_snprintf(string[0], STRING_LENGTH, "TRIPLE %3d", p_erase_c[2]);
 	printFont(27 + (3 * (!maxPlay)), 8, string[0], 5);
 
-	sprintf(string[0], "HEBORIS%3d", p_erase_c[3]);
+	SDL_snprintf(string[0], STRING_LENGTH, "HEBORIS%3d", p_erase_c[3]);
 	printFont(27 + (3 * (!maxPlay)), 9, string[0], 2);
 
 	if(tspin_type > 1){
 		printFont(27 + (3 * (!maxPlay)), 10, "T-SPIN", 6);
-		sprintf(string[0], " SINGLE%3d", p_erase_c[5]);
+		SDL_snprintf(string[0], STRING_LENGTH, " SINGLE%3d", p_erase_c[5]);
 		printFont(27 + (3 * (!maxPlay)), 11, string[0], 6);
 
 		printFont(27 + (3 * (!maxPlay)), 12, "T-SPIN", 9);
-		sprintf(string[0], " DOUBLE%3d", p_erase_c[6]);
+		SDL_snprintf(string[0], STRING_LENGTH, " DOUBLE%3d", p_erase_c[6]);
 		printFont(27 + (3 * (!maxPlay)), 13, string[0], 9);
 
 		printFont(27 + (3 * (!maxPlay)), 14, "T-SPIN", 7);
-		sprintf(string[0], " TRIPLE%3d", p_erase_c[7]);
+		SDL_snprintf(string[0], STRING_LENGTH, " TRIPLE%3d", p_erase_c[7]);
 		printFont(27 + (3 * (!maxPlay)), 15, string[0], 7);
 	}
 	if(b2bcheck){
 		printFont(26 + (2 * (!maxPlay)), 17, "BACK TO BACK", 3);
-		sprintf(string[0], "HEBORIS%3d", p_erase_c[4]);
+		SDL_snprintf(string[0], STRING_LENGTH, "HEBORIS%3d", p_erase_c[4]);
 		printFont(27 + (3 * (!maxPlay)), 18, string[0], 2);
 		if(tspin_type > 1){
 			printFont(27 + (3 * (!maxPlay)), 19, "T-SPIN", 6);
-			sprintf(string[0], " SINGLE%3d", p_erase_c[8]);
+			SDL_snprintf(string[0], STRING_LENGTH, " SINGLE%3d", p_erase_c[8]);
 			printFont(27 + (3 * (!maxPlay)), 20, string[0], 6);
 
 			printFont(27 + (3 * (!maxPlay)), 21, "T-SPIN", 9);
-			sprintf(string[0], " DOUBLE%3d", p_erase_c[9]);
+			SDL_snprintf(string[0], STRING_LENGTH, " DOUBLE%3d", p_erase_c[9]);
 			printFont(27 + (3 * (!maxPlay)), 22, string[0], 9);
 
 			printFont(27 + (3 * (!maxPlay)), 23, "T-SPIN", 7);
-			sprintf(string[0], " TRIPLE%3d", p_erase_c[10]);
+			SDL_snprintf(string[0], STRING_LENGTH, " TRIPLE%3d", p_erase_c[10]);
 			printFont(27 + (3 * (!maxPlay)), 24, string[0], 7);
 		}
 	}
@@ -1628,7 +1628,7 @@ void viewField(void) {
 									color = color_tbl_max - ( (((20 - j) + color) * 4 + color_counter[i]) % color_tbl_max );
 									color = (erase[j + i * 22] == 0) * (7 + 10 - color_tbl[color]);
 								} else if(thunder_timer){
-									color = APP_Rand(8)+6;
+									color = SDL_rand(8)+6;
 								} else if((fldi[k + j * 10 + i * 220] == fldisno) || (fldi[k + j * 10 + i * 220] == fldigsno)) {
 								// 正方形
 									if(flds[k + j * 10 + i * 220] >= -10) {
@@ -2235,9 +2235,9 @@ void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontCo
 void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = APP_StrLen(fontStr);
+	stringLength = SDL_strlen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = APP_CharAt(fontStr, i);
+		stringChar = fontStr[i];
 
 		// スペースでない場合
 		if(stringChar != 32) {
@@ -2266,9 +2266,9 @@ void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t f
 void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = APP_StrLen(fontStr);
+	stringLength = SDL_strlen(fontStr);
 	for(i = 0; i < stringLength; i++) {
-		stringChar = APP_CharAt(fontStr, i);
+		stringChar = fontStr[i];
 
 		// スペースでない場合
 		if(stringChar != 32) {
@@ -2633,7 +2633,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					ExBltRect(29, bx1*8 - 1, by1*8 - 1 + offset, 0, 0, 26, 26);
 				else
 					ExBltRect(29, bx1*8 - 1, by1*8 - 1 + offset - 8 * ((isWRule(player)) && (kind == 2)), 27, 0, 34, 34);
-				sprintf(string[0],"%2d",wait3[player] - bk[player]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%2d",wait3[player] - bk[player]);
 				printTinyFont(bx1*8 - 1 + 16 + (8 * ((kind == 0) || (kind == 2))),(by1 - 3)*8 - 1 + offset + 50 + (8 * ( (kind == 0) || ((kind == 2) && (!isWRule(player))) ) ) ,string[0]);
 			}
 		}
@@ -2763,7 +2763,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 					ExBltRectR(29, bx1*8 - 2, by1*8 - 2 + offset, 0, 0, 26, 26, 65536*2,65536*2);
 				else
 					ExBltRectR(29, bx1*8 - 2, by1*8 - 2 + offset - 16 * ((isWRule(player)) && (kind == 2)), 27, 0, 34, 34, 65536*2,65536*2);
-				sprintf(string[0],"%2d",wait3[player] - bk[player]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%2d",wait3[player] - bk[player]);
 				printTinyFont(bx1*8 - 2 + 40 + (16 * ((kind == 0) || (kind == 2))),(by1 - 3)*8 - 2 + offset + 75 + (16 * ( (kind == 0) || ((kind == 2) && (!isWRule(player))) ) ) ,string[0]);
 			}
 		}

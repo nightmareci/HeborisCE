@@ -131,7 +131,7 @@ void ST_RankingUpdate(int32_t player, int32_t rmode, int32_t end,int32_t enable_
 void ST_RankingSave(void) {//12345 6789
 	int32_t i,j, temp2[3];
 
-	APP_FillMemory(saveBuf, 5000 * 4, 0);
+	SDL_memset(saveBuf, 0, 5000 * 4);
 
 	saveBuf[0] = st_version;
 
@@ -149,7 +149,7 @@ void ST_RankingSave(void) {//12345 6789
 int32_t ST_RankingLoad(void) {
 	int32_t i,j, temp2[3];
 
-	APP_FillMemory(saveBuf, 5000 * 4, 0);
+	SDL_memset(saveBuf, 0, 5000 * 4);
 
 	// バージョンを見る
 	APP_LoadFile("config/data/STRANKING.SAV", saveBuf, 4);
@@ -325,9 +325,9 @@ void ST_RankingView() {
 
 		if(mode != 5){//その他
 			if( ((mode == 1) || (mode == 2)|| (mode == 3)) && (i == 9) ){
-				sprintf(string[0], " 900-999");
+				SDL_snprintf(string[0], STRING_LENGTH, " 900-999");
 			} else if(mode <= 4){
-				sprintf(string[0], "%4d-%3d", i*100, (i+1)*100);
+				SDL_snprintf(string[0], STRING_LENGTH, "%4d-%3d", i*100, (i+1)*100);
 			}
 
 			printFont(1, 4+i, string[0], tmp);
@@ -341,35 +341,35 @@ void ST_RankingView() {
 			printFont(21, 4+i, string[0], tmp);
 
 			//USEブロック数
-			sprintf(string[0],"%d",st_others[i + tmp5]);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d",st_others[i + tmp5]);
 			printFont(29, 4+i, string[0], tmp);
 
 			//BPS
 			int32_t bps = (st_others[i + tmp5] * 1000) / (st_time[i + tmp5] / 60);
 			int32_t bps1 = bps / 1000;//整数
 			int32_t bps2 = bps % 1000;//下三桁
-			sprintf(string[0],"%d.",bps1);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d.",bps1);
 			printFont(32, 4+i, string[0], tmp);
 			if(bps2>=100){
-			sprintf(string[0],"%3d",bps2);
+			SDL_snprintf(string[0], STRING_LENGTH,"%3d",bps2);
 			printFont(34, 4+i, string[0], tmp);
 			}else if(bps2>=10){
-			sprintf(string[0],"0%2d",bps2);
+			SDL_snprintf(string[0], STRING_LENGTH,"0%2d",bps2);
 			printFont(34, 4+i, string[0], tmp);
 			}else{
-			sprintf(string[0],"00%d",bps2);
+			SDL_snprintf(string[0], STRING_LENGTH,"00%d",bps2);
 			printFont(34, 4+i, string[0], tmp);
 			}
 			if(mode==2){
 				printFont(2, 28, "GRADE HISTORY", 2);
 				for(int32_t s=0;s<5;s++){
-				sprintf(string[0],"%d",grade_his[s]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%d",grade_his[s]);
 				printFont(3*s, 29, string[0], tmp);
 				}
 			}
 		}else{ //TOMOYO
 			if(i <= 19){
-				sprintf(string[0], "%d",i+1);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d",i+1);
 				printFont(2, 4+i, string[0], tmp);
 
 				//タイム
@@ -377,11 +377,11 @@ void ST_RankingView() {
 				printFont(6, 4+i, string[0], tmp);
 
 				//使用ブロック数
-				sprintf(string[0],"%d",st_others[i + tmp5]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%d",st_others[i + tmp5]);
 				printFont(16, 4+i, string[0], tmp);
 
 			}else if(i > 19){
-				sprintf(string[0], "EX%d",i - 19);
+				SDL_snprintf(string[0], STRING_LENGTH, "EX%d",i - 19);
 				printFont(20, i - 16, string[0], tmp);
 
 				//タイム
@@ -389,7 +389,7 @@ void ST_RankingView() {
 				printFont(26, i - 16, string[0], tmp);
 
 				//使用ブロック数
-				sprintf(string[0],"%d",st_others[i + tmp5]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%d",st_others[i + tmp5]);
 				printFont(36, i-16, string[0], tmp);
 			}
 		}
@@ -436,7 +436,7 @@ void ST_RankingView() {
 void PlayerdataSave(void) {//12345 6789
 	int32_t i,j, temp2[3];
 
-	APP_FillMemory(saveBuf, 500 * 4, 0);
+	SDL_memset(saveBuf, 0, 500 * 4);
 
 	saveBuf[0] = 0x4F424503;
 
@@ -459,7 +459,7 @@ void PlayerdataSave(void) {//12345 6789
 int32_t PlayerdataLoad(void) {
 	int32_t i,j, temp2[3];
 
-	APP_FillMemory(saveBuf, 500 * 4, 0);
+	SDL_memset(saveBuf, 0, 500 * 4);
 
 	// バージョンを見る
 	APP_LoadFile("config/data/PLAYERDATA.SAV", saveBuf, 4);

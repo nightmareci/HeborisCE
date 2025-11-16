@@ -9,6 +9,7 @@
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL_main.h>
 #include <stdarg.h>
+#include <setjmp.h>
 
 static int APP_argc;
 static char** APP_argv;
@@ -28,6 +29,7 @@ static bool APP_UpdatePlayerSlotsNow = false;
 static bool APP_ShowCursorNow = false;
 static int APP_QuitLevel;
 static bool APP_QuitNow = false;
+static jmp_buf APP_QuitPoint;
 
 void APP_ResetFrameStep(void)
 {
@@ -55,7 +57,13 @@ static bool APP_FrameStep(void)
 		APP_AccumulatedNS += now - APP_NowNS - APP_FrameNS;
 	}
 	APP_NowNS = now;
+	#ifdef SDL_PLATFORM_EMSCRIPTEN
+	// Browser timing is pretty bad, but the game is playable if we pretend
+	// frame skips never happen.
+	return false;
+	#else
 	return skipped;
+	#endif
 }
 
 void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t writeDirectoriesCount)
@@ -67,20 +75,20 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 
 		if (!APP_InitFilesystem(APP_argc, APP_argv)) {
 			APP_SetError("%s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_QuitLevel++;
 
 		for (size_t i = 0u; i < writeDirectoriesCount; i++) {
 			if (!APP_CreateDirectory(writeDirectories[i])) {
 				APP_SetError("%s", SDL_GetError());
-				APP_Exit(EXIT_FAILURE);
+				APP_Exit(SDL_APP_FAILURE);
 			}
 		}
 
 		if (!APP_InitAudio(wavesCount)) {
 			APP_SetError("%s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_QuitLevel++;
 
@@ -116,11 +124,11 @@ bool APP_Update(void)
 {
 	if (!APP_ScreenRenderer) {
 		APP_SetError("Renderer is not initialized");
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (!SDL_FlushRenderer(APP_ScreenRenderer)) {
 		APP_SetError("Failed flushing renderer: %s", SDL_GetError());
-		APP_Exit(EXIT_FAILURE);
+		APP_Exit(SDL_APP_FAILURE);
 	}
 
 	#ifdef NDEBUG
@@ -137,12 +145,12 @@ bool APP_Update(void)
 				!SDL_SetRenderTarget(APP_ScreenRenderer, APP_ScreenRenderTarget)
 			) {
 				APP_SetError("Failed render present with render target: %s", SDL_GetError());
-				APP_Exit(EXIT_FAILURE);
+				APP_Exit(SDL_APP_FAILURE);
 			}
 		}
 		else if (!SDL_RenderPresent(APP_ScreenRenderer)) {
 			APP_SetError("Failed render present with no render target: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 
 		/* フレームレート待ち || Frame rate waiting */
@@ -151,7 +159,7 @@ bool APP_Update(void)
 		/* 画面塗りつぶし || Fill screen */
 		if (!SDL_RenderClear(APP_ScreenRenderer)) {
 			APP_SetError("Failed render clear: %s", SDL_GetError());
-			APP_Exit(EXIT_FAILURE);
+			APP_Exit(SDL_APP_FAILURE);
 		}
 	}
 
@@ -167,14 +175,14 @@ bool APP_Update(void)
 	return !APP_QuitNow;
 }
 
-SDL_NORETURN void APP_Exit(int exitStatus)
+SDL_NORETURN void APP_Exit(SDL_AppResult result)
 {
-	if (exitStatus != EXIT_SUCCESS) {
+	if (result == SDL_APP_FAILURE) {
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
 	}
 	APP_Quit();
 	SDL_Quit();
-	exit(exitStatus);
+	longjmp(APP_QuitPoint, result);
 }
 
 void APP_SetFPS(unsigned fps)
@@ -278,6 +286,23 @@ SDL_AppResult SDLCALL SDL_AppEvent(void* appstate, SDL_Event* event)
 
 SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 {
+	switch (setjmp(APP_QuitPoint)) {
+	case SDL_APP_CONTINUE:
+	default:
+		break;
+
+	case SDL_APP_SUCCESS:
+		return SDL_APP_SUCCESS;
+
+	case SDL_APP_FAILURE:
+		return SDL_APP_FAILURE;
+	}
+
+	if (APP_WasAudioStreamingError()) {
+		APP_SetError("Failed streaming audio from storage");
+		return SDL_APP_FAILURE;
+	}
+
 	if (APP_ShowCursorNow) {
 		if (!SDL_ShowCursor()) {
 			APP_SetError("Failed showing mouse cursor: %s", SDL_GetError());
@@ -309,7 +334,7 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 
 void SDLCALL SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
-	if (result != SDL_APP_SUCCESS) {
+	if (result == SDL_APP_FAILURE) {
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
 	}
 	APP_Quit();

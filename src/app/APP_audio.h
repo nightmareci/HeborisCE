@@ -24,6 +24,9 @@ bool APP_InitAudio(int wavesCount);
 // Quit the audio system.
 void APP_QuitAudio(void);
 
+// Get whether a fatal audio system error occurred.
+bool APP_WasAudioStreamingError(void);
+
 // Load a wave. Does not support APP_WAVE_NUM_ALL.
 void APP_LoadWave(int num, const char* leadinFilename, const char* mainFilename, bool looping, bool streaming);
 

@@ -21,7 +21,7 @@ void GradeUp(int32_t player, int32_t lines){
 		if((tc[player]+bonuslines >= 300) && (!gmflag1_e[player])) {
 			if((grade[player] >= 6) && (gametime[player] <= 255 * 60)){
 					gmflag1[player] = 1;
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 				}
 			gmflag1_e[player] = 1;
 		}
@@ -30,7 +30,7 @@ void GradeUp(int32_t player, int32_t lines){
 		if((tc[player]+bonuslines >= 500) && (!gmflag2_e[player])) {
 			if((grade[player] >= 9) && (gametime[player] <= 450 * 60)){
 					gmflag2[player] = 1;
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 				}
 			gmflag2_e[player] = 1;
 		}
@@ -373,7 +373,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade[player] >= 11) && (gametime[player] <= 300 * 60)){
 					gmflag1[player] = 1;
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 				}
 				gmflag1_e[player] = 1;
 			}
@@ -382,7 +382,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
 				if((grade[player] >= 19) && (gametime[player] <= 390*60)){
 					gmflag2[player] = 1;
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 				}
 				gmflag2_e[player] = 1;
 			}
@@ -448,7 +448,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 500) && (!gmflag1_e[player])) {
 				if((grade2[player] >= 11) && (gametime[player] <= 300 * 60)){
 					gmflag1[player] = 1;
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 				}
 			gmflag1_e[player] = 1;
 			}
@@ -457,7 +457,7 @@ void GradeUp2(int32_t player, int32_t lines){
 			if((tc[player] >= 700) && (!gmflag2_e[player])) {
 				if((grade2[player] >= 19) && (gametime[player] <= 390*60)){
 					gmflag2[player] = 1;
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 				}
 				gmflag2_e[player] = 1;
 			}
@@ -511,7 +511,7 @@ void GradeUp3(int32_t player) {//ブロックを置く度に
 	if((tc[player] >= 400) &&(!gmflag1_e[player])) {
 		if(tr2[player] >= 80){
 			gmflag1[player] = 1;
-			objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+			objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 		}
 		gmflag1_e[player] = 1;
 	}

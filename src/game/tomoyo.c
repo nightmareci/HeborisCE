@@ -100,15 +100,15 @@ void statTomoyoNextStage(int32_t player) {
 
 	// 21面以降はEX○と表示 #1.60c7m4
 	if( (stage[player] >= 20) && (stage[player] <= 26) ) {
-		sprintf(string[0],"EX%d",stage[player] - 19);
+		SDL_snprintf(string[0], STRING_LENGTH,"EX%d",stage[player] - 19);
 	} else if( (stage[player] >= 27) && (stage[player] <= 44) ){
-		sprintf(string[0],"EH%d",stage[player] - 26);
+		SDL_snprintf(string[0], STRING_LENGTH,"EH%d",stage[player] - 26);
 	} else if( (stage[player] >= 45) && (stage[player] <= 71) ){
-		sprintf(string[0],"TGT%d",stage[player] - 44);
+		SDL_snprintf(string[0], STRING_LENGTH,"TGT%d",stage[player] - 44);
 	} else if(stage[player] >= 100){
-		sprintf(string[0],"FP%d",stage[player] - 99);
+		SDL_snprintf(string[0], STRING_LENGTH,"FP%d",stage[player] - 99);
 	} else {
-		sprintf(string[0],"%d",stage[player] + 1);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",stage[player] + 1);
 	}
 	printFont(22-(1*(stage[player] >= 45) && (stage[player] <= 67) || (stage[player] >= 100))-(1*(stage[player] >= 36) && (stage[player] <= 44)) + 24 * player - 12 * maxPlay, 6, string[0], 0);
 
@@ -144,7 +144,7 @@ void statTomoyoNextStage(int32_t player) {
 		// 花火
 		if((statusc[player * 10 + 0] % 10 == 0) && (tomoyo_hanabi[player] < 10)) {
 			PlaySE(WAVE_SE_HANABI);
-			objectCreate2(player, 7, APP_Rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + APP_Rand(20), 0, 0, APP_Rand(7)+1, 0);
+			objectCreate2(player, 7, SDL_rand(80) + 72 + 192 * player - 96 * maxPlay, 32 + SDL_rand(20), 0, 0, SDL_rand(7)+1, 0);
 			tomoyo_hanabi[player]++;
 		}
 		if(stage[player] < 100){
@@ -158,11 +158,11 @@ void statTomoyoNextStage(int32_t player) {
 				ext = 5;
 			}
 
-			sprintf(string[0],"%2d sec",ext);
+			SDL_snprintf(string[0], STRING_LENGTH,"%2d sec",ext);
 			printSMALLFont( (15 + 24 * player - 12 * maxPlay)*8 + 8, 14*8 + 1, string[0], 0 );
 		}else{
 			printSMALLFont( (15 + 24 * player - 12 * maxPlay)*8 + 8, 13*8, "Score Bonus", 3 );
-			sprintf(string[0],"%5d pts",FP_bonus[player]);
+			SDL_snprintf(string[0], STRING_LENGTH,"%5d pts",FP_bonus[player]);
 			printSMALLFont( (15 + 24 * player - 12 * maxPlay)*8 + 8, 14*8 + 1, string[0], 0 );
 		}
 		// CLEAR TIME
@@ -237,7 +237,7 @@ void statTomoyoNextStage(int32_t player) {
 					// 5分以内なら最後まで
 					laststage[player] = 26;
 					//EX7行きが決まれば流れ星
-					objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+					objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 					PlaySE(WAVE_SE_STGSTAR);
 				}else {
 					// 5分超えている場合はEX5
@@ -353,7 +353,7 @@ void statTomoyoEditor(int32_t player) {
 	if( statusc[player * 10 + 1] == 0 ) {
 		printFont(15 + 24 * player - 12 * maxPlay, 8 + statusc[player * 10] +(1*(statusc[player * 10] >= 13)) , "b", 1);
 
-		sprintf(string[0],"STAGE:%2d",stage[player] + 1);
+		SDL_snprintf(string[0], STRING_LENGTH,"STAGE:%2d",stage[player] + 1);
 		printFont(16 + 24 * player - 12 * maxPlay, 8, string[0],  (statusc[player * 10] == 0) );
 
 		printFont(16 + 24 * player - 12 * maxPlay, 9, "FIELD",    (statusc[player * 10] == 1) );
@@ -364,7 +364,7 @@ void statTomoyoEditor(int32_t player) {
 		printFont(16 + 24 * player - 12 * maxPlay,13, "COLOR",    (statusc[player * 10] == 5) + (color_flag[player] * 2) );
 		printFont(16 + 24 * player - 12 * maxPlay,14, "BIG",      (statusc[player * 10] == 6) + (IsBig[player] * 2) );
 		printFont(16 + 24 * player - 12 * maxPlay,15, "BLIND",    (statusc[player * 10] == 7) + (blind_flag[player] * 2) );
-		sprintf(string[0],"SPEED:%4d",min_speed[player]);
+		SDL_snprintf(string[0], STRING_LENGTH,"SPEED:%4d",min_speed[player]);
 		printFont(16 + 24 * player - 12 * maxPlay,16, string[0],   (statusc[player * 10] == 8) );
 		printFont(16 + 24 * player - 12 * maxPlay,17, "THUNDER",   (statusc[player * 10] == 9) + (isthunder[player] * 2) );
 		printFont(16 + 24 * player - 12 * maxPlay,18, "HIDE NEXT", (statusc[player * 10] == 10) + (hnext_flag[player] * 2) );
@@ -374,7 +374,7 @@ void statTomoyoEditor(int32_t player) {
 			printFont(16 + 24 * player - 12 * maxPlay,20, "RISE:OFF",   (statusc[player * 10] == 12));
 		else{
 			printFont(16 + 24 * player - 12 * maxPlay,20, "RISE:ON",   (statusc[player * 10] == 12));
-			sprintf(string[0],"INTER:%3d",tomoyo_rise[player]);
+			SDL_snprintf(string[0], STRING_LENGTH,"INTER:%3d",tomoyo_rise[player]);
 			printFont(16 + 24 * player - 12 * maxPlay,21, string[0],   (statusc[player * 10] == 12) + 4);
 		}
 		printFont(16 + 24 * player - 12 * maxPlay,22, " [LOAD]",     (statusc[player * 10] == 13) );
@@ -768,22 +768,22 @@ void statTomoyoSelect(int32_t player) {
 
 	// 21面以降はEX○と表示 #1.60c7m4
 	if( (start_stage[player] >= 20) && (start_stage[player] <= 26) ) {
-		sprintf(string[0],"EX%d",start_stage[player] - 19);
+		SDL_snprintf(string[0], STRING_LENGTH,"EX%d",start_stage[player] - 19);
 	} else if( (start_stage[player] >= 27) && (start_stage[player] <= 44) ){
-		sprintf(string[0],"E-HEART%d",start_stage[player] - 26);
+		SDL_snprintf(string[0], STRING_LENGTH,"E-HEART%d",start_stage[player] - 26);
 	} else if( (start_stage[player] >= 45) && (start_stage[player] <= 71) ){
-		sprintf(string[0],"ACE-TGT%d",start_stage[player] - 44);
+		SDL_snprintf(string[0], STRING_LENGTH,"ACE-TGT%d",start_stage[player] - 44);
 	} else if( start_stage[player] >= 100 ){
-		sprintf(string[0],"F-POINT %d",start_stage[player] - 99);
+		SDL_snprintf(string[0], STRING_LENGTH,"F-POINT %d",start_stage[player] - 99);
 	} else {
-		sprintf(string[0],"%2d",start_stage[player] + 1);
+		SDL_snprintf(string[0], STRING_LENGTH,"%2d",start_stage[player] + 1);
 	}
 
 	printFont(15 + 24 * player - 12 * maxPlay, 9, string[0],  (statusc[player * 10] == 0) * count % 9 );
 
 	// NEXTC #1.60c7l7
 	printFont(15 + 24 * player - 12 * maxPlay, 11, "NEXTC", 3);
-	sprintf(string[0],"%d",start_nextc[player]);
+	SDL_snprintf(string[0], STRING_LENGTH,"%d",start_nextc[player]);
 	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0],  (statusc[player * 10] == 1) * count % 9 );
 
 	// ゲームモード
@@ -1003,7 +1003,7 @@ void statTomoyoResult(int32_t player) {
 	// リプレイセーブ #1.60c7n8
 	ReplaySaveCheck(player, 3);
 	if(statusc[player * 10 + 3]) {
-		sprintf(string[0], "SAVED : %02d", statusc[player * 10 + 3]);
+		SDL_snprintf(string[0], STRING_LENGTH, "SAVED : %02d", statusc[player * 10 + 3]);
 		printFont(15 + 24 * player - 12 * maxPlay, 24, string[0], 5);
 	}
 
@@ -1018,26 +1018,26 @@ void statTomoyoResult(int32_t player) {
 	} else if ((stage[player] > 19) && (stage[player] <= 26)) {
 		// EX
 		printSMALLFont(182 + 192 * player - 96 * maxPlay, 64, "EX", 0);
-		sprintf(string[0], "%d", stage[player] - 19);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", stage[player] - 19);
 		printSMALLFont(194 + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	} else if ((stage[player] > 26) && (stage[player] <= 44)) {
 		// E-Heart
 		printSMALLFont(182-(6*(stage[player] - 26 >= 10)) + 192 * player - 96 * maxPlay, 64, "EH", 0);
-		sprintf(string[0], "%d", stage[player] - 26);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", stage[player] - 26);
 		printSMALLFont(194-(6*(stage[player] - 26 >= 10)) + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	} else if ((stage[player] > 44) && (stage[player] <= 71)) {
 		// ACE-Target
 		printSMALLFont(176-(6*(stage[player] - 44 >= 10)) + 192 * player - 96 * maxPlay, 64, "TGT", 0);
-		sprintf(string[0], "%d", stage[player] - 44);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", stage[player] - 44);
 		printSMALLFont(194-(6*(stage[player] - 44 >= 10)) + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	} else if (stage[player] >= 100) {
 		// F-Point
 		printSMALLFont(182-(6*(stage[player] - 99 >= 10))-(6*(stage[player] - 99 >= 100)) + 192 * player - 96 * maxPlay, 64, "FP", 0);
-		sprintf(string[0], "%d", stage[player] - 99);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", stage[player] - 99);
 		printSMALLFont(194-(6*(stage[player] - 99 >= 10))-(6*(stage[player] - 99 >= 100)) + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	} else {
 		// 通常
-		sprintf(string[0], "%2d", stage[player] + 1);
+		SDL_snprintf(string[0], STRING_LENGTH, "%2d", stage[player] + 1);
 		printSMALLFont(188 + 192 * player - 96 * maxPlay, 64, string[0], 0);
 	}
 
@@ -1049,13 +1049,13 @@ void statTomoyoResult(int32_t player) {
 	// CLEAR #1.60c7m5
 	if((!t_training[player]) && (tomoyo_opt[player] == 0) && (stage[player] <= 26)) {
 		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 86, 254, 112, 26, 7);
-		sprintf(string[0], "%3d>", clearp[player] );
+		SDL_snprintf(string[0], STRING_LENGTH, "%3d>", clearp[player] );
 		printSMALLFont(176 + 192 * player - 96 * maxPlay, 86, string[0], 0);
 	}
 	// SCORE(F-Point)
 	if(stage[player] >= 100){
 		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 86, 154, 112, 26, 7);
-		sprintf(string[0], "%7d", sc[player]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[player]);
 		printSMALLFont(158 + 192 * player - 96 * maxPlay, 86, string[0], 0);
 	}
 	// コンティニュー選択
@@ -1063,7 +1063,7 @@ void statTomoyoResult(int32_t player) {
 		printSMALLFont(120 + 192 * player - 96 * maxPlay, 144, "CONTINUE", (statusc[player * 10] == 0) * fontc[rots[player]]);
 		printSMALLFont(120 + 192 * player - 96 * maxPlay, 154, "END", (statusc[player * 10] == 1) * fontc[rots[player]]);
 
-		sprintf(string[0], "%2d", 10 - (statusc[player * 10 + 1] / 60));
+		SDL_snprintf(string[0], STRING_LENGTH, "%2d", 10 - (statusc[player * 10 + 1] / 60));
 		printFont(17 + 24 * player - 12 * maxPlay, 22, "TIME", 6);
 		printFont(21 + 24 * player - 12 * maxPlay, 22, string[0], 0);
 	}
@@ -1148,7 +1148,7 @@ void statTomoyoSelect_FP(int32_t player) {
 		if(stage[player] == 190){	//ステージ90突破で流れ星
 			StopAllBGM();
 			APP_PlayWave(43);
-			objectCreate2(player, 8, APP_Rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + APP_Rand(10), 0, 0, 0, 0);
+			objectCreate2(player, 8, SDL_rand(20) + 180 + 192 * player - 96 * maxPlay, 20 + SDL_rand(10), 0, 0, 0, 0);
 		}
 	}
 
@@ -1165,7 +1165,7 @@ void statTomoyoSelect_FP(int32_t player) {
 	if(statusc[player * 10] == 0){	//最初
 		printFont(15 + 24 * player - 12 * maxPlay, 7, "  FIRST", 4);
 
-		sprintf(string[0],"F-POINT%3d",start_stage[player] - 99);
+		SDL_snprintf(string[0], STRING_LENGTH,"F-POINT%3d",start_stage[player] - 99);
 		printFont(15 + 24 * player - 12 * maxPlay, 14, string[0], 0);
 		printFont(14 + 24 * player - 12 * maxPlay, 14, "<          >", count % 9);
 
@@ -1197,19 +1197,19 @@ void statTomoyoSelect_FP(int32_t player) {
 	} else {
 		printFont(15 + 24 * player - 12 * maxPlay, 7, "   NEXT", 4);
 
-		sprintf(string[0], "%2d", 10 - (statusc[player * 10 + 1] / 60));
+		SDL_snprintf(string[0], STRING_LENGTH, "%2d", 10 - (statusc[player * 10 + 1] / 60));
 		printFont(17 + 24 * player - 12 * maxPlay, 23, "TIME", 6);
 		printFont(21 + 24 * player - 12 * maxPlay, 23, string[0], 0);
 
 		for(i=0;i<=3;i++){
 			if(statusc[player * 10 + 3] < 90){
 				if(statusc[player * 10 + 3] + FP_next[i] <= 90)
-				sprintf(string[0], "%2d", statusc[player * 10 + 3] + FP_next[i]);
-				else sprintf(string[0], "90");
+				SDL_snprintf(string[0], STRING_LENGTH, "%2d", statusc[player * 10 + 3] + FP_next[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "90");
 			}else{
 				if(statusc[player * 10 + 3] + FP_next[i] <= 100)
-					sprintf(string[0], "%2d", statusc[player * 10 + 3] + FP_next[i]);
-				else sprintf(string[0], "100");
+					SDL_snprintf(string[0], STRING_LENGTH, "%2d", statusc[player * 10 + 3] + FP_next[i]);
+				else SDL_snprintf(string[0], STRING_LENGTH, "100");
 			}
 			printFont(18 + 24 * player - 12 * maxPlay, 10 + (i * 2), string[0], 0);
 		}
@@ -1370,9 +1370,9 @@ void randPlatinum(int32_t player, int32_t tgtnum){
 void loadTomoyoStage(int32_t player, int32_t number) {
 	int32_t i;
 
-	APP_FillMemory(saveBuf, 50000 * 4, 0);
+	SDL_memset(saveBuf, 0, 50000 * 4);
 
-	sprintf(string[0], "config/stage/stage%02d.sav", number);
+	SDL_snprintf(string[0], STRING_LENGTH, "config/stage/stage%02d.sav", number);
 	APP_LoadFile(string[0], saveBuf, 450 * 4);
 
 	// フィールド読み込み
@@ -1424,7 +1424,7 @@ void loadTomoyoStage(int32_t player, int32_t number) {
 void saveTomoyoStage(int32_t player, int32_t number) {
 	int32_t i;
 
-	APP_FillMemory(saveBuf, 50000 * 4, 0);
+	SDL_memset(saveBuf, 0, 50000 * 4);
 
 	// フィールドをセーブバッファにコピー
 	for(i=0;i<210;i++) {
@@ -1469,6 +1469,6 @@ void saveTomoyoStage(int32_t player, int32_t number) {
 	saveBuf[220] = tomoyo_waits[player];
 
 	// 保存する
-	sprintf(string[0], "config/stage/stage%02d.sav", number);
+	SDL_snprintf(string[0], STRING_LENGTH, "config/stage/stage%02d.sav", number);
 	APP_SaveFile(string[0], saveBuf, 450 * 4);
 }

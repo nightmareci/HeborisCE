@@ -177,11 +177,6 @@ bool APP_Update(void)
 
 SDL_NORETURN void APP_Exit(SDL_AppResult result)
 {
-	if (result == SDL_APP_FAILURE) {
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
-	}
-	APP_Quit();
-	SDL_Quit();
 	longjmp(APP_QuitPoint, result);
 }
 

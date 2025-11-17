@@ -4,7 +4,7 @@
 
 #include "common.h"
 
-void staffInitPl(int32_t player) {
+void staffInitPl(void) {
 //	staffroll_y_ex[player] = 2000;		//無理矢理…
 }
 
@@ -12,8 +12,6 @@ void staffInitPl(int32_t player) {
 //  スタッフロール文字列を描画
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void staffExecute(int32_t player) {
-	int32_t i;
-
 	if( ending[player] != 2 ) return;
 
 	if(!onRecord[player]) return;

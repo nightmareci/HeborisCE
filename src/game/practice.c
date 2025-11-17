@@ -36,23 +36,23 @@ void statSelectLevel(int32_t player) {
 
 		// 回転法則
 		printFont(15 - 12 * maxPlay, 6, "ROT", color);
-		if(rots[0] == 0) {
+		if(rotspl[0] == 0) {
 			printFont(18 - 12 * maxPlay, 6, "HEBORIS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 1) {
+		} else if(rotspl[0] == 1) {
 			printFont(19 - 12 * maxPlay, 6, "TI-ARS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 2) {
+		} else if(rotspl[0] == 2) {
 			printFont(20 - 12 * maxPlay, 6, "WORLD", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 3) {
+		} else if(rotspl[0] == 3) {
 			printFont(18 - 12 * maxPlay, 6, "ACE-SRS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 4) {
+		} else if(rotspl[0] == 4) {
 			printFont(18 - 12 * maxPlay, 6, "ACE-ARS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 5) {
+		} else if(rotspl[0] == 5) {
 			printFont(21 - 12 * maxPlay, 6, "ARS2", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 6) {
+		} else if(rotspl[0] == 6) {
 			printFont(19 - 12 * maxPlay, 6, "DS-SRS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 7) {
+		} else if(rotspl[0] == 7) {
 			printFont(20 - 12 * maxPlay, 6, "SRS-X", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 8) {
+		} else if(rotspl[0] == 8) {
 			printFont(20 - 12 * maxPlay, 6, "D.R.S", count % 9 * (vslevel[0] == 1));
 		}
 
@@ -416,14 +416,14 @@ void statSelectLevel(int32_t player) {
 		}
 		// 回転法則
 		if(vslevel[0] == 1) {
-			rots[0]--;
-			if(rots[0] < 0) rots[0] = 8;
+			rotspl[0]--;
+			if(rotspl[0] < 0) rotspl[0] = 8;
 			setNextBlockColors(0, 1);
 			if(hold[0] != -1){		// HOLDブロックの色設定
 				if( isWRule(player) ) {
 					// ワールド
 					c_hblk[0] = wcol[ hold[0] ];
-				} else if( (rots[player] >= 4)&&(rots[player] != 8) ) {
+				} else if( (rotspl[player] >= 4)&&(rotspl[player] != 8) ) {
 					// ARS
 					c_hblk[0] = acol[ hold[0] ];
 				} else {
@@ -615,7 +615,7 @@ void statSelectLevel(int32_t player) {
 			if( isWRule(player) ) {
 				// ワールド
 				c_hblk[0] = wcol[ hold[0] ];
-			} else if( rots[player] >= 4 ) {
+			} else if( rotspl[player] >= 4 ) {
 				// ARS
 				c_hblk[0] = acol[ hold[0] ];
 			} else {
@@ -679,14 +679,14 @@ void statSelectLevel(int32_t player) {
 			}
 			// 回転法則
 			if(vslevel[0] == 1) {
-				rots[0]++;
-				if(rots[0] > 8) rots[0] = 0;
+				rotspl[0]++;
+				if(rotspl[0] > 8) rotspl[0] = 0;
 				setNextBlockColors(0, 1);
 				if(hold[0] != -1){		// HOLDブロックの色設定
 					if( isWRule(player) ) {
 						// ワールド
 						c_hblk[0] = wcol[ hold[0] ];
-					} else if( (rots[player] >= 4)&&(rots[player] != 8) ) {
+					} else if( (rotspl[player] >= 4)&&(rotspl[player] != 8) ) {
 						// ARS
 						c_hblk[0] = acol[ hold[0] ];
 					} else {
@@ -877,7 +877,7 @@ void statSelectLevel(int32_t player) {
 				if( isWRule(player) ) {
 					// ワールド
 					c_hblk[0] = wcol[ hold[0] ];
-				} else if( rots[player] >= 4 ) {
+				} else if( rotspl[player] >= 4 ) {
 					// ARS
 					c_hblk[0] = acol[ hold[0] ];
 				} else {
@@ -1109,11 +1109,11 @@ void PracticeDeath() {
 
 	// SECRET GRADE #1.60c7o1
 	if( sgrade[0] >= min_sgrade ) {
-		printFont(15 - 12 * maxPlay, 26, "S-GRADE", fontc[rots[0]]);
+		printFont(15 - 12 * maxPlay, 26, "S-GRADE", fontc[rotspl[0]]);
 		printFont(23 + (sgrade[0] < 9) - 12 * maxPlay, 26, gname[sgrade[0]], 0);
 	}
 	printMenuButton(22 - 12 * maxPlay, 25, APP_BUTTON_C, -1);
-	printFont(16 - 12 * maxPlay, 25, "PRESS", fontc[rots[0]]);
+	printFont(16 - 12 * maxPlay, 25, "PRESS", fontc[rotspl[0]]);
 	if(getPushState(0, APP_BUTTON_C)) {
 		PracticeOver();
 	}
@@ -1123,7 +1123,7 @@ void PracticeDeath() {
 //  Practiceモードで窒息or捨てゲーした時の処理#1.60cd
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void PracticeOver(void) {
-	int32_t i,tmp;
+	int32_t i;
 
 	// FPSを戻す #1.60c7n7
 	if(APP_GetFPS() != max_fps_2) APP_SetFPS(max_fps_2);
@@ -1158,7 +1158,7 @@ void PracticeOver(void) {
 		waitt[1] = waitt[0];		//
 
 		sp[1] = sp[0];					// スピードもコピー
-		rots[1] = rots[0];				// 回転法則もコピー
+		rotspl[1] = rotspl[0];				// 回転法則もコピー
 		IsBig[1] = IsBig[0];
 	}
 	IsBigStart[1] = IsBigStart[0];

@@ -729,24 +729,28 @@ int APP_GetJoyKeyRepeat ( const APP_JoyKey* const key )
 						if (joy->hatsRepeat[key->setting.index * 4 + 0] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 0];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 0];
+					break;
 				case SDL_HAT_RIGHT:
 					if (multi)
 					{
 						if (joy->hatsRepeat[key->setting.index * 4 + 1] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 1];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 1];
+					break;
 				case SDL_HAT_UP:
 					if (multi)
 					{
 						if (joy->hatsRepeat[key->setting.index * 4 + 2] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 2];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 2];
+					break;
 				case SDL_HAT_DOWN:
 					if (multi)
 					{
 						if (joy->hatsRepeat[key->setting.index * 4 + 3] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 3];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 3];
+					break;
 				default:
 					break;
 				}

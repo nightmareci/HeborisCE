@@ -166,7 +166,6 @@ static const Uint8* BDF_NextUTF8Encoding(const Uint8* text, Uint32* encoding) {
 static bool BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** line, char* end, int rshift) {
 	BDF_Glyph glyph;
 	char buffer[BDF_LINE_MAX];
-	Uint32 y;
 
 	/* Do not load characters that have already been loaded */
 	glyph.encoding = encoding;
@@ -182,7 +181,7 @@ static bool BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** 
 		return false;
 	}
 
-	for (y = 0; y < font->size; y++) {
+	for (int y = 0; y < font->size; y++) {
 		BDF_GetLine(buffer, sizeof(buffer), line, end);
 		glyph.pixels[y] = (SDL_strtol(buffer, NULL, 16) >> rshift);
 	}

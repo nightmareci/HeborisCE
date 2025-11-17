@@ -24,30 +24,30 @@ void statMissionSelect(int32_t player) {
 		printFont(15 + 24 * player - 12 * maxPlay, 10, "<        >", (vslevel[0] == 0) * count % 9);
 		if(statusc[player * 10 + 4] < 0){
 			ExBltRect(55,128 + ((16+statusc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 63,
-				(64*(rots[player]+1))*(rots[player]<8),32*(fontc[(rots[player]+1)*(rots[player]<8)]),
+				(64*(rotspl[player]+1))*(rotspl[player]<8),32*(fontc[(rotspl[player]+1)*(rotspl[player]<8)]),
 				(statusc[player * 10 + 4]* -4),32);
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 63,
-				(64*rots[player])+(statusc[player * 10 + 4] * -4),32*fontc[rots[player]],((16+statusc[player * 10 + 4])* 4),32);
+				(64*rotspl[player])+(statusc[player * 10 + 4] * -4),32*fontc[rotspl[player]],((16+statusc[player * 10 + 4])* 4),32);
 		} else if(statusc[player * 10 + 4] > 0){
 			ExBltRect(55,128 + (statusc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 63,
-				(64*rots[player]),32*fontc[rots[player]],((16-statusc[player * 10 + 4])* 4),32);
+				(64*rotspl[player]),32*fontc[rotspl[player]],((16-statusc[player * 10 + 4])* 4),32);
 			ExBltRect(55,128 + 192 * player -96 * maxPlay , 63,
-				(64*(rots[player]-1))+576*(rots[player]==0)+((16-statusc[player * 10 + 4]) * 4),
-				32*fontc[rots[player]-1+(9*(rots[player]==0))],(statusc[player * 10 + 4] * 4),32);
-		} else ExBltRect(55,128 + 192 * player -96 * maxPlay , 63, 64*rots[player] ,32*fontc[rots[player]],64,32);
-		ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rots[player]) ,384,64,21);
+				(64*(rotspl[player]-1))+576*(rotspl[player]==0)+((16-statusc[player * 10 + 4]) * 4),
+				32*fontc[rotspl[player]-1+(9*(rotspl[player]==0))],(statusc[player * 10 + 4] * 4),32);
+		} else ExBltRect(55,128 + 192 * player -96 * maxPlay , 63, 64*rotspl[player] ,32*fontc[rotspl[player]],64,32);
+		ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rotspl[player]) ,384,64,21);
 
 //		ExBltRect(55,128 + 192 * player -96 * maxPlay , 55, 64*rots[player] ,32*fontc[rots[player]],64,32);
 		if(!english)	//落下特性（日本語）
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rots[player] ,320,64,32);
+			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rotspl[player] ,320,64,32);
 		else			//落下特性（English）
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rots[player] ,352,64,32);
-	printFont(15 + 24 * player - 12 * maxPlay, 16, "FILE", fontc[rots[player]]);
+			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rotspl[player] ,352,64,32);
+	printFont(15 + 24 * player - 12 * maxPlay, 16, "FILE", fontc[rotspl[player]]);
 
 	getRoadName(mission_file);
 	printFont(14 + 24 * player - 12 * maxPlay, 17, string[0], (vslevel[0] == 1) * count % 9 );
 
-	printFont(15 + 24 * player - 12 * maxPlay, 19, "STAGE", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 19, "STAGE", fontc[rotspl[player]]);
 	SDL_snprintf(string[0], STRING_LENGTH, "NO.%02d", c_mission);
 	printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (vslevel[0] == 2) * count % 9 );
 
@@ -59,63 +59,67 @@ void statMissionSelect(int32_t player) {
 	}
 
 	// ↑
-	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, APP_BUTTON_UP) ) {
-		PlaySE(WAVE_SE_MOVE);
-		vslevel[0]--;
-		if(vslevel[0] < 0) vslevel[0] = 4 - (2 * ((mission_file < 25) && (!debug)));
+	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ) {
+		if( getPressState(player, APP_BUTTON_UP) ) {
+			PlaySE(WAVE_SE_MOVE);
+			vslevel[0]--;
+			if(vslevel[0] < 0) vslevel[0] = 4 - (2 * ((mission_file < 25) && (!debug)));
+		}
 	}
 
 	// ↓
-	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, APP_BUTTON_DOWN) ) {
-		PlaySE(WAVE_SE_MOVE);
-		vslevel[0]++;
-		if(vslevel[0] > 4 - (2 * ((mission_file < 25) && (!debug)))) vslevel[0] = 0;
+	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ) {
+		if( getPressState(player, APP_BUTTON_DOWN) ) {
+			PlaySE(WAVE_SE_MOVE);
+			vslevel[0]++;
+			if(vslevel[0] > 4 - (2 * ((mission_file < 25) && (!debug)))) vslevel[0] = 0;
+		}
 	}
 
 	// ←
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
-	if( getPressState(player, APP_BUTTON_LEFT) ) {
-		PlaySE(WAVE_SE_KACHI);
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))) {
+		if( getPressState(player, APP_BUTTON_LEFT) ) {
+			PlaySE(WAVE_SE_KACHI);
 
-		if(vslevel[0] == 0) {
-			rots[player]--;
-			if(rots[player] < 0) rots[player] = 8;
-			statusc[player * 10 + 4] = -16;
-			setNextBlockColors(player, 1);
-		}
-		if(vslevel[0] == 1) {
-			mission_file--;
-			if(mission_file < 0) mission_file = 99;
-			loadMissionData(mission_file);
-		}
-		if(vslevel[0] == 2) {
-			c_mission--;
-			if(c_mission < 0) c_mission = 29;
-		}
+			if(vslevel[0] == 0) {
+				rotspl[player]--;
+				if(rotspl[player] < 0) rotspl[player] = 8;
+				statusc[player * 10 + 4] = -16;
+				setNextBlockColors(player, 1);
+			}
+			if(vslevel[0] == 1) {
+				mission_file--;
+				if(mission_file < 0) mission_file = 99;
+				loadMissionData(mission_file);
+			}
+			if(vslevel[0] == 2) {
+				c_mission--;
+				if(c_mission < 0) c_mission = 29;
+			}
 
+		}
 	}
 
 	// →
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
-	if( getPressState(player, APP_BUTTON_RIGHT) ) {
-		PlaySE(WAVE_SE_KACHI);
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))) {
+		if( getPressState(player, APP_BUTTON_RIGHT) ) {
+			PlaySE(WAVE_SE_KACHI);
 
-		if(vslevel[0] == 0) {
-			rots[player]++;
-			if(rots[player] > 8) rots[player] = 0;
-			statusc[player * 10 + 4] = 16;
-			setNextBlockColors(player, 1);
-		}
-		if(vslevel[0] == 1) {
-			mission_file++;
-			if(mission_file > 99) mission_file = 0;
-			loadMissionData(mission_file);
-		}
-		if(vslevel[0] == 2) {
-			c_mission++;
-			if(c_mission > 29) c_mission = 0;
+			if(vslevel[0] == 0) {
+				rotspl[player]++;
+				if(rotspl[player] > 8) rotspl[player] = 0;
+				statusc[player * 10 + 4] = 16;
+				setNextBlockColors(player, 1);
+			}
+			if(vslevel[0] == 1) {
+				mission_file++;
+				if(mission_file > 99) mission_file = 0;
+				loadMissionData(mission_file);
+			}
+			if(vslevel[0] == 2) {
+				c_mission++;
+				if(c_mission > 29) c_mission = 0;
+			}
 		}
 	}
 
@@ -181,22 +185,22 @@ void statMissionEditor(int32_t player) {
 	padRepeat2(player);
 
 	// 問題の種類
-	printFont(15 + 24 * player - 12 * maxPlay, 5, "TYPE", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 5, "TYPE", fontc[rotspl[player]]);
 
 	printFont(15 + 24 * player - 12 * maxPlay, 6, mission_name_editor[mission_type[c_mission]], (statusc[0 + player * 10] == 0) * count % 9);
 
 	// ノルマ
-	printFont(15 + 24 * player - 12 * maxPlay, 7, "NORM", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 7, "NORM", fontc[rotspl[player]]);
 	SDL_snprintf(string[0], STRING_LENGTH, "%d", mission_norm[c_mission]);
 	printFont(15 + 24 * player - 12 * maxPlay, 8, string[0], (statusc[0 + player * 10] == 1) * count % 9);
 
 	// 制限時間
-	printFont(15 + 24 * player - 12 * maxPlay, 9, "TIME", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 9, "TIME", fontc[rotspl[player]]);
 	getTime(mission_time[c_mission]);
 	printFont(15 + 24 * player - 12 * maxPlay, 10, string[0], (statusc[0 + player * 10] == 2) * count % 9);
 
 	// レベル
-	printFont(15 + 24 * player - 12 * maxPlay, 11, "LEVEL", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 11, "LEVEL", fontc[rotspl[player]]);
 	if(mission_lv[c_mission] >= 15)
 		SDL_snprintf(string[0], STRING_LENGTH, "PLUS %d", mission_lv[c_mission] + 1 - 15);
 	else
@@ -204,7 +208,7 @@ void statMissionEditor(int32_t player) {
 	printFont(15 + 24 * player - 12 * maxPlay, 12, string[0], (statusc[0 + player * 10] == 3) * count % 9);
 
 	// エンディング
-	printFont(15 + 24 * player - 12 * maxPlay, 13, "ENDING", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 13, "ENDING", fontc[rotspl[player]]);
 	if(mission_end[c_mission] == 0) {
 		SDL_snprintf(string[0], STRING_LENGTH, "NO");
 	} else if(mission_end[c_mission] == 1) {
@@ -224,19 +228,19 @@ void statMissionEditor(int32_t player) {
 
 	// 消去ライン数
 	if(mission_erase[c_mission] < -20){
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEE LINE", fontc[rots[player]]);
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEE LINE", fontc[rotspl[player]]);
 		SDL_snprintf(string[0], STRING_LENGTH, "%d", SDL_abs(mission_erase[c_mission]+20));
 	}else if(mission_erase[c_mission] < 0){
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEH LINE", fontc[rots[player]]);
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "RISEH LINE", fontc[rotspl[player]]);
 		SDL_snprintf(string[0], STRING_LENGTH, "%d", SDL_abs(mission_erase[c_mission]));
 	}else{
-		printFont(15 + 24 * player - 12 * maxPlay, 15, "ERASE LINE", fontc[rots[player]]);
+		printFont(15 + 24 * player - 12 * maxPlay, 15, "ERASE LINE", fontc[rotspl[player]]);
 		SDL_snprintf(string[0], STRING_LENGTH, "%d", mission_erase[c_mission]);
 	}
 	printFont(15 + 24 * player - 12 * maxPlay, 16, string[0], (statusc[0 + player * 10] == 5) * count % 9);
 	// 追加情報
 	// 18行目MAX 19行目MIN 20行目OPT(ターゲットだと解説)　21行目解説
-	printFont(15 + 24 * player - 12 * maxPlay, 17, "OPTIONS", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 17, "OPTIONS", fontc[rotspl[player]]);
 	if((mission_type[c_mission] == 2)||(mission_type[c_mission] == 3)){
 		SDL_snprintf(string[0], STRING_LENGTH, "GRADE:%d",mission_opt_1[c_mission]);
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
@@ -347,7 +351,7 @@ void statMissionEditor(int32_t player) {
 		SDL_snprintf(string[0], STRING_LENGTH, "0:OFF 1:ON");
 		printFont(15 + 24 * player - 12 * maxPlay, 21, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
-	else if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
+	else if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33))||(mission_type[c_mission] == 38)){
 		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 18, string[0], (statusc[0 + player * 10] == 6) * count % 9);
 		SDL_snprintf(string[0], STRING_LENGTH, "HOLD USE:%d",mission_opt_2[c_mission]);
@@ -365,7 +369,7 @@ void statMissionEditor(int32_t player) {
 		SDL_snprintf(string[0], STRING_LENGTH, "NO OPTION");
 		printFont(15 + 24 * player - 12 * maxPlay, 20, string[0], (statusc[0 + player * 10] == 8) * count % 9);
 	}
-	printFont(15 + 24 * player - 12 * maxPlay, 24, "BGM", fontc[rots[player]]);
+	printFont(15 + 24 * player - 12 * maxPlay, 24, "BGM", fontc[rotspl[player]]);
 	if(mission_bgm[c_mission] == -1)
 		SDL_snprintf(string[0], STRING_LENGTH, "FADE");
 	else
@@ -373,126 +377,130 @@ void statMissionEditor(int32_t player) {
 	printFont(19 + 24 * player - 12 * maxPlay, 24, string[0], (statusc[0 + player * 10] == 9) * count % 9);
 
 	// ↑
-	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, APP_BUTTON_UP) ) {
-		PlaySE(WAVE_SE_MOVE);
-		statusc[0 + player * 10]--;
-		if(statusc[0 + player * 10] < 0) statusc[0 + player * 10] = 9;
+	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ) {
+		if( getPressState(player, APP_BUTTON_UP) ) {
+			PlaySE(WAVE_SE_MOVE);
+			statusc[0 + player * 10]--;
+			if(statusc[0 + player * 10] < 0) statusc[0 + player * 10] = 9;
+		}
 	}
 
 	// ↓
-	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) )
-	if( getPressState(player, APP_BUTTON_DOWN) ) {
-		PlaySE(WAVE_SE_MOVE);
-		statusc[0 + player * 10]++;
-		if(statusc[0 + player * 10] > 9) statusc[0 + player * 10] = 0;
+	if( (mpc2[player] == 1) || ((mpc2[player] > tame3) && (mpc2[player] % tame4 == 0)) ) {
+		if( getPressState(player, APP_BUTTON_DOWN) ) {
+			PlaySE(WAVE_SE_MOVE);
+			statusc[0 + player * 10]++;
+			if(statusc[0 + player * 10] > 9) statusc[0 + player * 10] = 0;
+		}
 	}
 
 	// ←
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
-	if( getPressState(player, APP_BUTTON_LEFT) ) {
-		PlaySE(WAVE_SE_KACHI);
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))) {
+		if( getPressState(player, APP_BUTTON_LEFT) ) {
+			PlaySE(WAVE_SE_KACHI);
 
-		// TYPE
-		if(statusc[0 + player * 10] == 0) {
-			mission_type[c_mission]--;
-			if(mission_type[c_mission] < 0) mission_type[c_mission] = 41;
-		}
-		// NORM
-		if(statusc[0 + player * 10] == 1) {
-			mission_norm[c_mission]--;
-			if(mission_norm[c_mission] < 0) mission_norm[c_mission] = 99;
-		}
-		// TIME
-		if(statusc[0 + player * 10] == 2) {
-			mission_time[c_mission] = mission_time[c_mission] - 60;
-			if(mission_time[c_mission] < 0) mission_time[c_mission] = REPLAY_PLAYER_CHUNK;
-		}
-		// LEVEL
-		if(statusc[0 + player * 10] == 3) {
-			mission_lv[c_mission]--;
-			if(mission_lv[c_mission] < 0) mission_lv[c_mission] = 29;
-		}
-		// ENDING
-		if(statusc[0 + player * 10] == 4) {
-			mission_end[c_mission]--;
-			if(mission_end[c_mission] < 0) mission_end[c_mission] = 6;
-		}
-		// ERASE LINE
-		if(statusc[0 + player * 10] == 5) {
-			mission_erase[c_mission]--;
-			if(mission_erase[c_mission] < -40) mission_erase[c_mission] = 21;
-		}
-		// OPTIONS
-		if(statusc[0 + player * 10] == 6) {
-			mission_opt_1[c_mission]--;
-			if(mission_opt_1[c_mission] < 0) mission_opt_1[c_mission] = 199;
-		}
-		if(statusc[0 + player * 10] == 7) {
-			mission_opt_2[c_mission]--;
-			if(mission_opt_2[c_mission] < 0) mission_opt_2[c_mission] = 199;
-		}
-		if(statusc[0 + player * 10] == 8) {
-			mission_opt_3[c_mission]--;
-			if(mission_opt_3[c_mission] < 0) mission_opt_3[c_mission] = 99;
-		}
-		if(statusc[0 + player * 10] == 9) {
-			mission_bgm[c_mission]--;
-			if(mission_bgm[c_mission] < -1) mission_bgm[c_mission] = 19;
+			// TYPE
+			if(statusc[0 + player * 10] == 0) {
+				mission_type[c_mission]--;
+				if(mission_type[c_mission] < 0) mission_type[c_mission] = 41;
+			}
+			// NORM
+			if(statusc[0 + player * 10] == 1) {
+				mission_norm[c_mission]--;
+				if(mission_norm[c_mission] < 0) mission_norm[c_mission] = 99;
+			}
+			// TIME
+			if(statusc[0 + player * 10] == 2) {
+				mission_time[c_mission] = mission_time[c_mission] - 60;
+				if(mission_time[c_mission] < 0) mission_time[c_mission] = REPLAY_PLAYER_CHUNK;
+			}
+			// LEVEL
+			if(statusc[0 + player * 10] == 3) {
+				mission_lv[c_mission]--;
+				if(mission_lv[c_mission] < 0) mission_lv[c_mission] = 29;
+			}
+			// ENDING
+			if(statusc[0 + player * 10] == 4) {
+				mission_end[c_mission]--;
+				if(mission_end[c_mission] < 0) mission_end[c_mission] = 6;
+			}
+			// ERASE LINE
+			if(statusc[0 + player * 10] == 5) {
+				mission_erase[c_mission]--;
+				if(mission_erase[c_mission] < -40) mission_erase[c_mission] = 21;
+			}
+			// OPTIONS
+			if(statusc[0 + player * 10] == 6) {
+				mission_opt_1[c_mission]--;
+				if(mission_opt_1[c_mission] < 0) mission_opt_1[c_mission] = 199;
+			}
+			if(statusc[0 + player * 10] == 7) {
+				mission_opt_2[c_mission]--;
+				if(mission_opt_2[c_mission] < 0) mission_opt_2[c_mission] = 199;
+			}
+			if(statusc[0 + player * 10] == 8) {
+				mission_opt_3[c_mission]--;
+				if(mission_opt_3[c_mission] < 0) mission_opt_3[c_mission] = 99;
+			}
+			if(statusc[0 + player * 10] == 9) {
+				mission_bgm[c_mission]--;
+				if(mission_bgm[c_mission] < -1) mission_bgm[c_mission] = 19;
+			}
 		}
 	}
 
 	// →
-	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C)))
-	if( getPressState(player, APP_BUTTON_RIGHT) ) {
-		PlaySE(WAVE_SE_KACHI);
+	if((mpc[player] == 1) || ((mpc[player] > tame1) && (mpc[player] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))) {
+		if( getPressState(player, APP_BUTTON_RIGHT) ) {
+			PlaySE(WAVE_SE_KACHI);
 
-		// TYPE
-		if(statusc[0 + player * 10] == 0) {
-			mission_type[c_mission]++;
-			if(mission_type[c_mission] > 41) mission_type[c_mission] = 0;
-		}
-		// NORM
-		if(statusc[0 + player * 10] == 1) {
-			mission_norm[c_mission]++;
-			if(mission_norm[c_mission] > 99) mission_norm[c_mission] = 0;
-		}
-		// TIME
-		if(statusc[0 + player * 10] == 2) {
-			mission_time[c_mission] = mission_time[c_mission] + 60;
-			if(mission_time[c_mission] > REPLAY_PLAYER_CHUNK) mission_time[c_mission] = 0;
-		}
-		// LEVEL
-		if(statusc[0 + player * 10] == 3) {
-			mission_lv[c_mission]++;
-			if(mission_lv[c_mission] > 29) mission_lv[c_mission] = 0;
-		}
-		// ENDING
-		if(statusc[0 + player * 10] == 4) {
-			mission_end[c_mission]++;
-			if(mission_end[c_mission] > 6) mission_end[c_mission] = 0;
-		}
-		// ERASE LINE
-		if(statusc[0 + player * 10] == 5) {
-			mission_erase[c_mission]++;
-			if(mission_erase[c_mission] > 21) mission_erase[c_mission] = -40;
-		}
-		// OPTIONS
-		if(statusc[0 + player * 10] == 6) {
-			mission_opt_1[c_mission]++;
-			if(mission_opt_1[c_mission] > 199) mission_opt_1[c_mission] = 0;
-		}
-		if(statusc[0 + player * 10] == 7) {
-			mission_opt_2[c_mission]++;
-			if(mission_opt_2[c_mission] > 199) mission_opt_2[c_mission] = 0;
-		}
-		if(statusc[0 + player * 10] == 8) {
-			mission_opt_3[c_mission]++;
-			if(mission_opt_3[c_mission] > 99) mission_opt_3[c_mission] = 0;
-		}
-		if(statusc[0 + player * 10] == 9) {
-			mission_bgm[c_mission]++;
-			if(mission_bgm[c_mission] > 19) mission_bgm[c_mission] = -1;
+			// TYPE
+			if(statusc[0 + player * 10] == 0) {
+				mission_type[c_mission]++;
+				if(mission_type[c_mission] > 41) mission_type[c_mission] = 0;
+			}
+			// NORM
+			if(statusc[0 + player * 10] == 1) {
+				mission_norm[c_mission]++;
+				if(mission_norm[c_mission] > 99) mission_norm[c_mission] = 0;
+			}
+			// TIME
+			if(statusc[0 + player * 10] == 2) {
+				mission_time[c_mission] = mission_time[c_mission] + 60;
+				if(mission_time[c_mission] > REPLAY_PLAYER_CHUNK) mission_time[c_mission] = 0;
+			}
+			// LEVEL
+			if(statusc[0 + player * 10] == 3) {
+				mission_lv[c_mission]++;
+				if(mission_lv[c_mission] > 29) mission_lv[c_mission] = 0;
+			}
+			// ENDING
+			if(statusc[0 + player * 10] == 4) {
+				mission_end[c_mission]++;
+				if(mission_end[c_mission] > 6) mission_end[c_mission] = 0;
+			}
+			// ERASE LINE
+			if(statusc[0 + player * 10] == 5) {
+				mission_erase[c_mission]++;
+				if(mission_erase[c_mission] > 21) mission_erase[c_mission] = -40;
+			}
+			// OPTIONS
+			if(statusc[0 + player * 10] == 6) {
+				mission_opt_1[c_mission]++;
+				if(mission_opt_1[c_mission] > 199) mission_opt_1[c_mission] = 0;
+			}
+			if(statusc[0 + player * 10] == 7) {
+				mission_opt_2[c_mission]++;
+				if(mission_opt_2[c_mission] > 199) mission_opt_2[c_mission] = 0;
+			}
+			if(statusc[0 + player * 10] == 8) {
+				mission_opt_3[c_mission]++;
+				if(mission_opt_3[c_mission] > 99) mission_opt_3[c_mission] = 0;
+			}
+			if(statusc[0 + player * 10] == 9) {
+				mission_bgm[c_mission]++;
+				if(mission_bgm[c_mission] > 19) mission_bgm[c_mission] = -1;
+			}
 		}
 	}
 
@@ -507,9 +515,8 @@ void statMissionEditor(int32_t player) {
 //  問題の表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewMission() {
-	int32_t i,tmp,minus,c_tmp,c_tmp1,c_tmp2;
+	int32_t i,tmp,c_tmp,c_tmp1,c_tmp2;
 	tmp = 0;
-	minus = 0;
 
 	// APP_BltFastRect(プレーンナンバー,dx,dy,sx,sy,hx,hy);
 
@@ -589,13 +596,13 @@ void viewMission() {
 		// LITE版を参考に整理
 		if(!english) {//"\n\nを使って\n%dライン消せ！",
 			SDL_snprintf(string[0], STRING_LENGTH, mission_info_jp[mission_type[c_mission]], mission_norm[c_mission]);
-			if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\n消す前にそのブロック\nを一度ホールドに入れろ");
+			if((((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33))||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\n消す前にそのブロック\nを一度ホールドに入れろ");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\n指定以上でもカウント!");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\n指定以外で\nノルマリセット!");
 			if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\n最後のラインは\nダブルで消せ！");
 		} else {
 			SDL_snprintf(string[0], STRING_LENGTH, mission_info_en[mission_type[c_mission]], mission_norm[c_mission]);
-			if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nBefore Erase \ninto HOLD");
+			if((((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33))||(mission_type[c_mission] == 38))&&(mission_opt_2[c_mission]==1))strcat(string[0], "\n\nBefore Erase \ninto HOLD");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==1))strcat(string[0], "\n\nErase over lines count");
 			if(((mission_type[c_mission] == 2) || (mission_type[c_mission] == 3))&&(mission_opt_1[c_mission]==2))strcat(string[0], "\n\nDo not erase\n other lines!");
 			if((mission_end[c_mission] == 2) || (mission_end[c_mission] == 3))strcat(string[0], "\n\nlast erase 2 lines");
@@ -603,12 +610,12 @@ void viewMission() {
 		}
 
 		//ブロックオーダー系のブロックの絵
-		if((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33)||(mission_type[c_mission] == 38)){
+		if(((mission_type[c_mission] >= 30) && (mission_type[c_mission] <= 33))||(mission_type[c_mission] == 38)){
 			if(mission_opt_3[c_mission]<=6){
 				if( isWRule(0) ) {
 					// ワールド
 					c_tmp = wcol[mission_opt_3[c_mission]];
-				} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
+				} else if( (rotspl[0] >= 4 ) && (rotspl[0] != 8)) {
 					// ARS
 					c_tmp = acol[mission_opt_3[c_mission]];
 				} else {
@@ -619,20 +626,20 @@ void viewMission() {
 				if ( getDrawRate() == 1 ){
 					if(!english){
 						drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, -1, 0, 0 ,0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, -1, 0, 0 ,0);
 					}else{
 						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 1, 0, 0, 0);
 					}
 				}else{
 					if(!english){
 						drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 2, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 2, 0, 0, 0);
 					}else{
 						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 4, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), mission_opt_3[c_mission], 0, c_tmp, 0, 4, 0, 0, 0);
 					}
 				}
 			}else if(mission_opt_3[c_mission]==7){//LJ
@@ -640,7 +647,7 @@ void viewMission() {
 					// ワールド
 					c_tmp1 = wcol[1];
 					c_tmp2 = wcol[5];
-				} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
+				} else if( (rotspl[0] >= 4 ) && (rotspl[0] != 8)) {
 					// ARS
 					c_tmp1 = acol[1];
 					c_tmp2 = acol[5];
@@ -653,30 +660,30 @@ void viewMission() {
 				if ( getDrawRate() == 1 ){
 					if(!english){
 						drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, -1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 1, 0, c_tmp1, 0, -1, 0, 0, 0);
 						drawBlockFast(6 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, -1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 5, 0, c_tmp2, 0, -1, 0, 0, 0);
 					}else{
 						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)),1, 0, c_tmp1, 0, 1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)),1, 0, c_tmp1, 0, 1, 0, 0, 0);
 						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)),5, 0, c_tmp2, 0, 1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)),5, 0, c_tmp2, 0, 1, 0, 0, 0);
 					}
 				}else{
 					if(!english){
 						drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, 2, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 1, 0, c_tmp1, 0, 2, 0, 0, 0);
 						drawBlockFast(6 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, 2, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 5, 0, c_tmp2, 0, 2, 0, 0, 0);
 					}else{
 						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 1, 0, c_tmp1, 0, 4, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 1, 0, c_tmp1, 0, 4, 0, 0, 0);
 						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 5, 0, c_tmp2, 0, 4, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 5, 0, c_tmp2, 0, 4, 0, 0, 0);
 					}
 				}
 			}else if(mission_opt_3[c_mission]==8){//SZ
@@ -684,7 +691,7 @@ void viewMission() {
 					// ワールド
 					c_tmp1 = wcol[3];
 					c_tmp2 = wcol[6];
-				} else if( (rots[0] >= 4 ) && (rots[0] != 8)) {
+				} else if( (rotspl[0] >= 4 ) && (rotspl[0] != 8)) {
 					// ARS
 					c_tmp1 = acol[3];
 					c_tmp2 = acol[6];
@@ -697,30 +704,30 @@ void viewMission() {
 				if ( getDrawRate() == 1 ){
 					if(!english){
 						drawBlockFast(2 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, -1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 3, 0, c_tmp1, 0, -1, 0, 0, 0);
 						drawBlockFast(6 + 25 * maxPlay, 20 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, -1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 6, 0, c_tmp2, 0, -1, 0, 0, 0);
 					}else{
 						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 3, 0, c_tmp1, 0, 1, 0, 0, 0);
 						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 21 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 1, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 6, 0, c_tmp2, 0, 1, 0, 0, 0);
 					}
 				}else{
 					if(!english){
 						drawBlockFast(2 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 2, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 3, 0, c_tmp1, 0, 2, 0, 0, 0);
 						drawBlockFast(6 + 25 * maxPlay, 16 + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 2, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 6, 0, c_tmp2, 0, 2, 0, 0, 0);
 					}else{
 						drawBlockFast(3 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 3, 0, c_tmp1, 0, 4, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 3, 0, c_tmp1, 0, 4, 0, 0, 0);
 						drawBlockFast(7 - (mission_type[c_mission] == 33) + 25 * maxPlay, 17 + (mission_type[c_mission] >= 31) +
 						(mission_type[c_mission] == 33) + isWRule(0) * (mission_opt_3[c_mission] != 0) +
-						((mission_opt_3[c_mission] == 0) && (rots[0] != 8)), 6, 0, c_tmp2, 0, 4, 0, 0, 0);
+						((mission_opt_3[c_mission] == 0) && (rotspl[0] != 8)), 6, 0, c_tmp2, 0, 4, 0, 0, 0);
 					}
 				}
 			}
@@ -899,7 +906,7 @@ void missionNormUp(int32_t lines) {
 		if((lines >= 4)||(mission_type[c_mission] != 39)){
 			for(i = 0; i < 4; i++) {
 				// 調べるY座標を決める
-				if(rots[0] == 8){
+				if(rotspl[0] == 8){
 					by2 = (by[0] + blkDDataY[blk[0] * 16 + rt[0] * 4 + i]);
 				} else if( isWRule(0) ) {
 					by2 = (by[0] + blkWDataY[blk[0] * 16 + rt[0] * 4 + i]);
@@ -1035,9 +1042,9 @@ void missionNormUp(int32_t lines) {
 			if((mission_opt_3[c_mission]>=0)&&(mission_opt_3[c_mission]<=6)){//単品
 				if((lines == 3) && (blk[0] != mission_opt_3[c_mission])) c_norm[0]++;
 			}else if(mission_opt_3[c_mission]==7){//LJ
-				if((lines == 3) && ((blk[0] != 1)||(blk[0] != 5))) c_norm[0]++;
+				if(lines == 3) c_norm[0]++;
 			}else if(mission_opt_3[c_mission]==8){//SZ
-				if((lines == 3) && ((blk[0] != 3)||(blk[0] != 6))) c_norm[0]++;
+				if(lines == 3) c_norm[0]++;
 			}
 		}
 	}
@@ -1169,7 +1176,6 @@ void missionNormUp(int32_t lines) {
 /* 問題の設定（落下速度etc）をゲームに反映させる */
 void missionSetStatus() {
 	int32_t i;
-	int32_t tmp;
 	// ノルマ
 	c_norm[0] = 0;
 
@@ -1214,7 +1220,7 @@ void missionSetStatus() {
 		wait2[0] = wait2_Acea_tbl[mission_lv[c_mission]];
 		wait3[0] = wait3_Acea_tbl[mission_lv[c_mission]];
 		waitt[0] = waitt_Acea_tbl[mission_lv[c_mission]];
-	} else if((mission_type[c_mission] >= 11) && (mission_type[c_mission] <= 18) || (mission_type[c_mission] == 21)) {
+	} else if(((mission_type[c_mission] >= 11) && (mission_type[c_mission] <= 18)) || (mission_type[c_mission] == 21)) {
 		// X-RAY以降。テキトー
 		if((repversw < 56) || (mission_file == 6))
 			sp[0] = lvTableAce55[mission_lv[c_mission]];

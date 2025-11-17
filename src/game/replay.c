@@ -31,7 +31,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 //  リプレイデータをセーブ
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void saveReplayData(int32_t pl, int32_t number) {
-	int32_t i, j, temp1, temp2, max;
+	int32_t i, j, temp1, max;
 
 	if(gameMode[pl] == 4){	// VSはフォーマットが一部異なる
 		saveReplay_VS(number);
@@ -161,7 +161,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 	if(relaymode[pl])
 		saveBuf[294] = first_rot[pl];			// 回転方式のセーブ #1.60c
 	else
-		saveBuf[294] = rots[pl];
+		saveBuf[294] = rotspl[pl];
 	saveBuf[296] = ori_opt[pl];		// のセーブ #1.60c6
 	saveBuf[297] = IsBigStart[pl];
 	//saveBuf[298] = startnextc[pl];
@@ -353,7 +353,7 @@ void saveReplay_VS(int32_t number) {
 //  リプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplayData(int32_t pl, int32_t number) {
-	int32_t i, j, temp1, temp2, max,k,sptemp[4];
+	int32_t temp1, sptemp[4];
 
 	SDL_memset(saveBuf, 0, 300 * sizeof(int32_t));
 
@@ -367,8 +367,8 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	if(saveBuf[201] == 4)	// VSはフォーマットが一部異なる
 		return(loadReplay_VS(number));
 
-	if(saveBuf[4] > REPLAY_SIZE_1P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_1P(REPLAY_TIME_MAX);
-	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
+	if((size_t)saveBuf[4] > REPLAY_SIZE_1P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_1P(REPLAY_TIME_MAX);
+	if((size_t)saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
 	if(saveBuf[0] != 0x4F424548) return (1);
@@ -376,14 +376,12 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	if(saveBuf[2] != 0x4C504552) return (1);
 	if(saveBuf[3] != 0x31765941) return (1);
 
-	for(i = 0; i < 175; i++) {
-		for(j = 0; j < 8; j++) {
+	for(int32_t i = 0; i < 175; i++) {
+		for(int32_t j = 0; j < 8; j++) {
 			nextb[(i << 3) + j] = ((saveBuf[5 + i]) >> (j * 4)) & 15;
 		}
 	}
 
-//	max = (saveBuf[200] + 3730) / 2 + 1;
-	max = saveBuf[4] / sizeof(int16_t) + 1;
 	gameMode[pl] = saveBuf[201];
 	start[pl] = saveBuf[205];		// 開始レベルのロード #1.60c3
 
@@ -424,7 +422,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	nanameallow = saveBuf[291];
 	sonicdrop = saveBuf[292];
 	fastlrmove = saveBuf[293];
-	rots[pl] = saveBuf[294];			// 回転方式のロード #1.60c
+	rotspl[pl] = saveBuf[294];			// 回転方式のロード #1.60c
 	ori_opt[pl] = saveBuf[296];		// ロード #1.60c6
 	IsBigStart[pl] = saveBuf[297];
 	w_reverse = saveBuf[299];			// ワールド時回転方向逆転#1.60c7f8
@@ -535,7 +533,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	if(saveBuf[201] ==9){
 		if(std_opt[pl] <= 1){
 			sp[pl] = saveBuf[261];
-			for(k = 0; k <= 3; k++) {
+			for(int32_t k = 0; k <= 3; k++) {
 				sptemp[k] = (saveBuf[262] >> (k * 8)) & 0xff;
 			}
 			wait1[pl] = sptemp[0];
@@ -563,7 +561,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 		APP_SetError("Failed allocating replay data");
 		APP_Exit(SDL_APP_FAILURE);
 	}
-	for (j = 0; j < replayChunkCnt; j++) {
+	for (int32_t j = 0; j < replayChunkCnt; j++) {
 		size_t chunkSize;
 		if (j < replayChunkCnt - 1) {
 			chunkSize = (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t);
@@ -582,7 +580,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 			APP_Exit(SDL_APP_FAILURE);
 		}
 
-		for(i = 0; i < chunkSize / sizeof(int32_t); i++) {
+		for(size_t i = 0; i < chunkSize / sizeof(int32_t); i++) {
 			replayData[j][(i << 1) + temp1    ] =  chunkBuf[i] & 0xFFFF;
 			replayData[j][(i << 1) + temp1 + 1] = (chunkBuf[i] & 0xFFFF0000) >> 16;
 		}
@@ -600,7 +598,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 //  VSのリプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplay_VS(int32_t number) {
-	int32_t i, j, length, temp1, temp2, max,k,sptemp[4],pl;
+	int32_t i, j, length, temp1, max,k,sptemp[4],pl;
 	pl = 0;
 
 	SDL_memset(saveBuf, 0, 300 * sizeof(int32_t));
@@ -612,8 +610,8 @@ int32_t loadReplay_VS(int32_t number) {
 
 	APP_LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
-	if(saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
-	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
+	if((size_t)saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
+	if((size_t)saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
 	APP_LoadFile(string[0], saveBuf, saveBuf[4]);
@@ -668,8 +666,8 @@ int32_t loadReplay_VS(int32_t number) {
 	sonicdrop = saveBuf[292];
 	fastlrmove = saveBuf[293];
 
-	rots[0] = saveBuf[294];			// 回転方式のロード #1.60c
-	rots[1] = saveBuf[295];
+	rotspl[0] = saveBuf[294];			// 回転方式のロード #1.60c
+	rotspl[1] = saveBuf[295];
 
 	IsBigStart[0] = saveBuf[297];
 	IsBigStart[1] = saveBuf[298];
@@ -692,11 +690,11 @@ int32_t loadReplay_VS(int32_t number) {
 	max_hnext[0] = saveBuf[237];		// NEXT最大表示数
 	max_hnext[1] = saveBuf[238];
 
-	 first_seed[0] = saveBuf[235];		// 乱数シード　超重要
-	 randseed[0] = first_seed[0];
+	first_seed[0] = saveBuf[235];		// 乱数シード　超重要
+	randseed[0] = first_seed[0];
 
-	 first_seed[1] = saveBuf[236];
-	 randseed[1] = first_seed[1];
+	first_seed[1] = saveBuf[236];
+	randseed[1] = first_seed[1];
 
 	nanamedown = saveBuf[241];	//斜め入力での固定を有効にするか #C7T9.6EX
 	item_num = saveBuf[244];
@@ -793,7 +791,6 @@ int32_t loadReplay_VS(int32_t number) {
 	for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
 		for(pl = 0; pl <= 1; pl++){
 			temp1 = pl * REPLAY_PLAYER_CHUNK;
-			temp2 = pl * SAVEBUF_2P_CHUNK;
 
 			int32_t replayIndex = j * SAVEBUF_2P_CHUNK * 2;
 
@@ -856,8 +853,7 @@ void ReplaySelectProc(void) {
 		status[0] = 1;					// ブロックシャッター実行
 		statusc[0] = 0;					// ステータスカウンタを0に
 		statusc[1] = 3;					// シャッター後はステータスNo.3
-		if(examination[0])
-		statusc[1] = 30;
+		if(examination[0]) statusc[1] = 30;
 		//next[0] = nextb[nextc[0]];		// #1.60c7
 		if(gameMode[0] == 6){
 			if((start_stage[0] >= 27) && (start_stage[0] <= 44))
@@ -917,7 +913,7 @@ void ReplaySelectProc(void) {
 }
 
 //BGMを決定
-int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg){
+int32_t ReplayBgmModeDecide(int32_t mode,int32_t nv,int32_t dm,int32_t eg){
 	if(mode==0){
 		if(!nv){//HANABI
 			return 0;
@@ -1004,7 +1000,7 @@ void ReplaySelectInitial(void) {
 }
 
 void ReplaySelect(void) {
-	int32_t		i,start,end;
+	int32_t		i,startNo,endNo;
 
 	// 背景描画
 	if(background == 0) {
@@ -1052,23 +1048,25 @@ void ReplaySelect(void) {
 	padRepeat2(0);
 
 	// ↑
-	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-	if(getPressState(0, APP_BUTTON_UP)) {
-		PlaySE(WAVE_SE_MOVE);
-		do {
-			csr--;
-			if(csr < 0) csr = 39;
-		} while(enable[csr] == -1);
+	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) ) {
+		if(getPressState(0, APP_BUTTON_UP)) {
+			PlaySE(WAVE_SE_MOVE);
+			do {
+				csr--;
+				if(csr < 0) csr = 39;
+			} while(enable[csr] == -1);
+		}
 	}
 
 	// ↓
-	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-	if(getPressState(0, APP_BUTTON_DOWN)) {
-		PlaySE(WAVE_SE_MOVE);
-		do {
-			csr++;
-			if(csr > 39) csr = 0;
-		} while(enable[csr] == -1);
+	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) ) {
+		if(getPressState(0, APP_BUTTON_DOWN)) {
+			PlaySE(WAVE_SE_MOVE);
+			do {
+				csr++;
+				if(csr > 39) csr = 0;
+			} while(enable[csr] == -1);
+		}
 	}
 
 	// Aで開始
@@ -1088,14 +1086,14 @@ void ReplaySelect(void) {
 
 	if(csr >= 20) {
 		printFont(7, 29, "PAGE 2/2 (NO.21 - NO.40)", 7);
-		start = 20;
-		end = 40;
+		startNo = 20;
+		endNo = 40;
 	} else {
 		printFont(7, 29, "PAGE 1/2 (NO.01 - NO.20)", 7);
-		start = 0;
-		end = 20;
+		startNo = 0;
+		endNo = 20;
 	}
-	for(i = start; i < end; i++) {
+	for(i = startNo; i < endNo; i++) {
 		printSMALLFont(25, 48 + 9 * (i - 20 * (i >= 20)), string[10 + i], 0); // 番号表示に従い変更 #1.60c7i5
 		if(enable[i] > -1){
 			ExBltRect(86, 232, 48 + 9 * (i - 20 * (i >= 20)), 72 * enable[i + 40], enable[i] * 9, 72, 9);
@@ -1188,15 +1186,15 @@ void ReplayDetail() {
 
 	if(gameMode[0] != 4){
 		printFont(1, 5,  "ROTATE RULE :", 0);
-		if(rots[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
-		else if(rots[0] == 1) printFont(15, 5, "TI-ARS", fontc[1]);
-		else if(rots[0] == 2) printFont(15, 5, "TI-WORLD", fontc[2]);
-		else if(rots[0] == 3) printFont(15, 5, "ACE-SRS", fontc[3]);
-		else if(rots[0] == 4) printFont(15, 5, "ACE-ARS", fontc[4]);
-		else if(rots[0] == 5) printFont(15, 5, "ACE-ARS2", fontc[5]);
-		else if(rots[0] == 6) printFont(15, 5, "DS-WORLD", fontc[6]);
-		else if(rots[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
-		else if(rots[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
+		if(rotspl[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
+		else if(rotspl[0] == 1) printFont(15, 5, "TI-ARS", fontc[1]);
+		else if(rotspl[0] == 2) printFont(15, 5, "TI-WORLD", fontc[2]);
+		else if(rotspl[0] == 3) printFont(15, 5, "ACE-SRS", fontc[3]);
+		else if(rotspl[0] == 4) printFont(15, 5, "ACE-ARS", fontc[4]);
+		else if(rotspl[0] == 5) printFont(15, 5, "ACE-ARS2", fontc[5]);
+		else if(rotspl[0] == 6) printFont(15, 5, "DS-WORLD", fontc[6]);
+		else if(rotspl[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
+		else if(rotspl[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
 	}
 
 	/* 設定 */
@@ -1521,7 +1519,7 @@ void ReplayDetail() {
 //  リプレイデータをロード（保存メニュー用）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplayData2(int32_t pl, int32_t number) {
-	int32_t i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
+	int32_t tmpBuf[300];
 
 	SDL_memset(tmpBuf, 0, 300 * 4);
 

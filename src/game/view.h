@@ -4,7 +4,7 @@
 #include "app/APP.h"
 
 void drawTLSBlock(int32_t player,int32_t bottom);
-void drawCBlock(int32_t player,int32_t color,int32_t bright,int32_t offset,int32_t flash,int32_t not3D);
+void drawCBlock(int32_t player,int32_t bright,int32_t offset,int32_t flash,int32_t not3D);
 void drawBigBlockNew(int32_t bx1,int32_t by1,int32_t kind,int32_t rotate,int32_t color,int32_t bright,int32_t offset,int32_t flash,int32_t player,int32_t use3D);
 void drawBlock(int32_t bx1,int32_t by1,int32_t kind,int32_t rotate,int32_t color,int32_t bright,int32_t offset,int32_t flash,int32_t player,int32_t use3D);
 void drawBigBlockFast(int32_t bx1,int32_t by1,int32_t kind,int32_t rotate,int32_t color,int32_t bright,int32_t offset,int32_t flash,int32_t player,int32_t use3D);

@@ -64,7 +64,7 @@ void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, 
 void APP_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, int a, int scaleW, int scaleH);
 void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a, int scaleW, int scaleH);
 
-void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int srcX, int srcY, int srcW);
+void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW);
 
 void APP_SetPlaneDrawOffset(int x, int y);
 

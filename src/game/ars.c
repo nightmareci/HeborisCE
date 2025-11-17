@@ -244,7 +244,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			}
 			else
 			{
-				drawCBlock (player, blk[player] + 1, 5, 0, 0, 1);
+				drawCBlock (player, 5, 0, 0, 1);
 			}
 			// BIG時、2マス単位モードの場合は移動量を2倍する #1.60c7m6
 			if(IsBig[player] && BigMove[player]) move = move * 2;
@@ -317,7 +317,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			// 下キーで固定速度アップ
 			if((getPressState(player , 1-(1*(isUDreverse[player])))) && (!down_flag[player])
 						&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
-				if((rots[player] == 5) || (heboGB[player])){	// ARS2では下入れ即接着
+				if((rotspl[player] == 5) || (heboGB[player])){	// ARS2では下入れ即接着
 					if(heboGB[player]==0) PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 					bk[player] = 100;
 				}
@@ -328,7 +328,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			// 上キーで即固定(ARS1のみ)
 			if( ( (getPressState(player , 0+(1*(isUDreverse[player]))) && (repversw >= 43)) ||
 				  (getPushState(player , 0+(1*(isUDreverse[player]))) && (repversw < 43)) )
-				&& (rots[player] == 4) && ( (repversw <= 13) || !up_flag[player] ) && (heboGB[player]==0)
+				&& (rotspl[player] == 4) && ( (repversw <= 13) || !up_flag[player] ) && (heboGB[player]==0)
 						&& (((statusc[player * 10 + 4]) && (!move || nanamedown)) || (repversw < 27))) {
 				bk[player] = bk[player] + lockT;
 					PlaySE(WAVE_SE_ACE_SONIC_LOCK);
@@ -347,7 +347,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				kickc2[player] = 0;
 				kickc3[player] = 0;
 				statusc[player * 10 + 2] ++;
-				drawCBlock (player, 0, 0, 0, 10 , 0);
+				drawCBlock (player, 0, 0, 10 , 0);
 
 				if((getPressState(player , 1)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
 				if(repversw >= 57) goto lockflash;	// SUPERなSKIP
@@ -358,7 +358,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			drawTLSBlock(player, bottom);
 
 			if(getPressState(player , 0+(1*(isUDreverse[player]))) && (!move) && (!sonicdrop) && (!up_flag[player]) && (heboGB[player]==0) && ((statusc[player * 10 + 4]) || (repversw < 27))) {
-				if(rots[player] == 4) {
+				if(rotspl[player] == 4) {
 					// 上キーで一瞬で落下&固定
 					if(gameMode[player]==10){
 						sc[player] = sc[player] + ( bottom - by[player] - 1 ) * 23 / 20;
@@ -379,20 +379,20 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 						}
 
 						while(by[player] != bottom - 1){
-							drawCBlock (player, blk[player] + 1, 4, fsmooth, 0, 1);
+							drawCBlock (player, 4, fsmooth, 0, 1);
 							by[player]++;
 							fsmooth = 0;
 						}
 					}
-					if((world_drop_snd == 1) || (rots[player] == 4)) PlaySE(WAVE_SE_KON);
+					if((world_drop_snd == 1) || (rotspl[player] == 4)) PlaySE(WAVE_SE_KON);
 					PlaySE(WAVE_SE_KACHI);
-					if(rots[player] == 4)	//ACE-ARSは専用のSEを鳴らす
+					if(rotspl[player] == 4)	//ACE-ARSは専用のSEを鳴らす
 						PlaySE(WAVE_SE_ACE_SONIC_LOCK);
 					kickc[player] = 0;
 					kickc2[player] = 0;
 					kickc3[player] = 0;
 					statusc[player * 10 + 2] ++;
-					drawCBlock (player, 0, 0, 0, 10, 0);
+					drawCBlock (player, 0, 0, 10, 0);
 					if((downtype) && (repversw < 54)) up_flag[player] = 1;
 					statusc[player * 10 + 5] = 0;	// 回転させた数リセット #1.60c7s6
 					if(repversw >= 57) goto lockflash;	// SUPERなSKIP
@@ -410,7 +410,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 						by[player] = bottom - 1;
 					}else{	//残像を描画
 						while(by[player] != bottom - 1){
-							drawCBlock (player, blk[player] + 1, 4, 0 , 0, 1);
+							drawCBlock (player, 4, 0 , 0, 1);
 							by[player]++;
 						}
 					}
@@ -438,7 +438,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 			 || (judgeBlock(player, bx[player], by[player] + 1 + (IsBig[player] && BigMove[player] && !ybigtype), blk[player], rt[player]) == 0) )
 			{
 				if((block_spectrum) && ((!smooth) || (bs[player] >= 60)) && (heboGB[player]==0))	//残像を描画
-					drawCBlock (player, blk[player] + 1, 5, 0 , 0, 1);
+					drawCBlock (player, 5, 0 , 0, 1);
 				by[player] = by[player] + 1 + (IsBig[player] && BigMove[player] && !ybigtype);
 			}
 
@@ -455,7 +455,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				// 下キー #1.60c7r3
 				if((getPressState(player, 1-(1*(isUDreverse[player])))) && (!down_flag[player]) && (repversw >= 15)
 							&& (statusc[player * 10 + 4] || (repversw < 27)) && (!move || nanamedown)) {
-					if((rots[player] == 5) || (heboGB[player])) {	// ARS2では下入れ即接着
+					if((rotspl[player] == 5) || (heboGB[player])) {	// ARS2では下入れ即接着
 						PlaySE(WAVE_SE_KON);
 						if(heboGB[player]==0){
 							PlaySE(WAVE_SE_KACHI);
@@ -465,7 +465,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 						kickc2[player] = 0;
 						kickc3[player] = 0;
 						statusc[player * 10 + 2]++;
-						drawCBlock (player, 0, 0, 0, 10, 0);
+						drawCBlock (player, 0, 0, 10, 0);
 						if(downtype) down_flag[player] = 1;
 						if(repversw >= 57) goto lockflash;	// SUPERなSKIP
 						return;
@@ -477,7 +477,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 				// 上キーで即固定(ARS1のみ) #1.60c7r3
 				if( ( (getPressState(player , 0+(1*(isUDreverse[player]))) && (repversw >= 43)) ||
 					  (getPushState(player , 0+(1*(isUDreverse[player]))) && (repversw < 43)) )
-					&& (rots[player] == 4) && (!up_flag[player]) && (repversw >= 15) && (heboGB[player]==0)
+					&& (rotspl[player] == 4) && (!up_flag[player]) && (repversw >= 15) && (heboGB[player]==0)
 					&& (((statusc[player * 10 + 4]) && (!move || nanamedown)) || (repversw < 27))) {
 					PlaySE(WAVE_SE_KACHI);
 					PlaySE(WAVE_SE_ACE_SONIC_LOCK);
@@ -485,7 +485,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 					kickc2[player] = 0;
 					kickc3[player] = 0;
 					statusc[player * 10 + 2]++;
-					drawCBlock (player, 0, 0, 0, 10, 0);
+					drawCBlock (player, 0, 0, 10, 0);
 					if( downtype ) up_flag[player] = 1;
 					if(repversw >= 57) goto lockflash;	// SUPERなSKIP
 					return;
@@ -509,9 +509,9 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 		// 各モードのブロックの種類が10に増えたのでblk[player]+9をblk[player]+11に変更 #1.60c7d
 		// 単純化に伴い+11から+1に変更#1.60c7k9
 		if(smooth && (sp[player] < 60))
-			drawCBlock (player, blk[player] + 1, kosa, bs[player] * 8 / 60 , flash, 0);
+			drawCBlock (player, kosa, bs[player] * 8 / 60 , flash, 0);
 		else
-			drawCBlock (player, blk[player] + 1, kosa, 0 , flash, 0);
+			drawCBlock (player, kosa, 0 , flash, 0);
 
 		// Hold
 		if((repversw >= 35) && (repversw < 64) && (!statusc[player * 10 + 2]) && (!statusc[player * 10 + 6])){doHold(player, 0);
@@ -524,7 +524,7 @@ void statAMove(int32_t player, int32_t kickm, int32_t kickr) {
 	} else {
 		lockflash:
 		statusc[player * 10 + 2] ++;
-		if((c_nblk[0 + player * 6] != 8) && (c_nblk[0 + player * 6] >= 0))drawCBlock (player, 0, 0, 0, 10, 0);
+		if((c_nblk[0 + player * 6] != 8) && (c_nblk[0 + player * 6] >= 0))drawCBlock (player, 0, 0, 10, 0);
 
 		// ↓を離している場合、下入れ制限解除#1.60c7n6
 		if((!getPressState(player, 1-(1*(isUDreverse[player])))) && (repversw >= 10)) down_flag[player] = 0;

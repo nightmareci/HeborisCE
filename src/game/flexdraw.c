@@ -74,9 +74,9 @@ void BlendExBltRectR(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy
 	APP_DrawPlaneRectTransparentScaled(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, a, scx, scy);
 }
 
-void ExBltSpriteText(int32_t pno, const char* str, int32_t cf, int32_t cw, int32_t ch, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t sw)
+void ExBltSpriteText(int32_t pno, const char* str, int32_t cf, int32_t cw, int32_t ch, int32_t dx, int32_t dy, int32_t shx, int32_t shy, int32_t shw)
 {
-	APP_DrawPlaneText(pno, str, cf, cw * zoomRate, ch * zoomRate, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, sw * zoomRate);
+	APP_DrawPlaneText(pno, str, cf, cw * zoomRate, ch * zoomRate, dx * zoomRate, dy * zoomRate, shx * zoomRate, shy * zoomRate, shw * zoomRate);
 }
 
 void ExTextLayerOn(int32_t n, int32_t x, int32_t y)

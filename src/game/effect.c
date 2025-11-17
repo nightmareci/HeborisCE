@@ -118,7 +118,7 @@ void objectExecute(void) {
 void objectStatBlock(int32_t no) {
 	int32_t		zoom, offset, rate ,k, l;
 
-	if((objj[no] < 0) && (rots[objp[no]] == 6)){
+	if((objj[no] < 0) && (rotspl[objp[no]] == 6)){
 		ExBltRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		obj[no] = 0;
 		return;
@@ -212,9 +212,9 @@ void objectStatBlock(int32_t no) {
 }
 
 void objectStatBlock2(int32_t no) {
-	int32_t		zoom, offset, rate, k, l;
+	int32_t		zoom, offset, k, l;
 
-	if((objj[no] < 0) && (rots[objp[no]] == 6)){
+	if((objj[no] < 0) && (rotspl[objp[no]] == 6)){
 		ExBltRect(74,objx[no] / 100, objy[no] / 100,0,0,8,8);
 		obj[no] = 0;
 		return;
@@ -438,7 +438,7 @@ void objectItemWarning(int32_t no){
 	if((objc[no] == 1) && (SDL_abs(APP_GetRealFPS() - APP_GetFPS()) >= 10)) objc[no] = 2;
 
 	if(((objj[no]==2) && (IsBigStart[objp[no]])) || ((objj[no]==36) && (gameMode[objp[no]] != 4)))
-		printFont(15 + 24 * objp[no] - 12 * maxPlay, 15, "NO EFFECT", fontc[rots[objp[no]]]);
+		printFont(15 + 24 * objp[no] - 12 * maxPlay, 15, "NO EFFECT", fontc[rotspl[objp[no]]]);
 	else{
 		if((!objx[no]) && ((!objy[no]) || (obja[no] % 2 == 0)))
 			ExBltRect(81, 110+192 * objp[no] -96 * maxPlay , 54 , 0, 150 + 25 * (count % 4 / 2), 100, 25);

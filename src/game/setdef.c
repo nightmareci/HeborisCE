@@ -337,7 +337,7 @@ void SetDefaultKeyboardConfig(SDL_Scancode* keys)
 
 void SetDefaultConfig()
 {
-	int32_t i,j, cfgbuf[CFG_LENGTH];
+	int32_t cfgbuf[CFG_LENGTH];
 
 	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	cfgbuf[0] = 0x4F424550;
@@ -356,7 +356,7 @@ void SetDefaultConfig()
 	cfgbuf[12] = DefaultConfig.fastlrmove;
 	cfgbuf[13] = DefaultConfig.background;
 
-	for (i = 0; i < 20; i++) {
+	for (int32_t i = 0; i < 20; i++) {
 		cfgbuf[14 + i] = DefaultConfig.keyAssign[i];
 	}
 

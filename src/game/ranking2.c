@@ -73,7 +73,7 @@ int32_t RankingCheck2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime
 void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear,
 	int32_t rother, const char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre) {
 
-	int32_t i, j, rcolor;
+	int32_t i, j;
 
 	if(playback || demo) return;
 	if((rank < 0) || (rank > 4)) return;
@@ -208,7 +208,7 @@ void RankingProc2_2() {
 }
 
 void RankingView2() {//5位まで
-	int32_t i, j, k, color;
+	int32_t i, j;
 
 	// 背景描画
 	count++;
@@ -379,16 +379,31 @@ void RankingView2() {//5位まで
 
 			// メダル
 			if((category <= 8)||(category == 14)) {
-				if(rkac[j + i]) ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52 - rkac[j + i] * 13, 15, 12);
-					else ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52, 15, 12);
-				if(rkst[j + i]) ExBltRect(0, 40, (7 + (i * 4)  ) * 8, 16, 52 - rkst[j + i] * 13, 15, 12);
-					else ExBltRect(0, 40, (7 + (i * 4)  ) * 8, 16, 52 , 15, 12);
-				if(rksk[j + i]) ExBltRect(0, 60, (7 + (i * 4)  ) * 8, 32, 52 - rksk[j + i] * 13, 15, 12);
-					else ExBltRect(0, 60, (7 + (i * 4)  ) * 8, 32, 52, 15, 12);
-				if(rkco[j + i]) ExBltRect(0, 80, (7 + (i * 4)  ) * 8, 80, 52 - rkco[j + i] * 13, 15, 12);
-				 	else ExBltRect(0, 80, (7 + (i * 4)  ) * 8, 80, 52, 15, 12);
-				if(rkre[j + i]) ExBltRect(0, 100,(7 + (i * 4)  ) * 8, 48, 52 - rkre[j + i] * 13, 15, 12);
-					else ExBltRect(0, 100,(7 + (i * 4)  ) * 8, 48, 52, 15, 12);
+				if(rkac[j + i]) {
+					ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52 - rkac[j + i] * 13, 15, 12);
+				} else {
+					ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52, 15, 12);
+				}
+				if(rkst[j + i]) {
+					ExBltRect(0, 40, (7 + (i * 4)  ) * 8, 16, 52 - rkst[j + i] * 13, 15, 12);
+				} else {
+					ExBltRect(0, 40, (7 + (i * 4)  ) * 8, 16, 52 , 15, 12);
+				}
+				if(rksk[j + i]) {
+					ExBltRect(0, 60, (7 + (i * 4)  ) * 8, 32, 52 - rksk[j + i] * 13, 15, 12);
+				} else {
+					ExBltRect(0, 60, (7 + (i * 4)  ) * 8, 32, 52, 15, 12);
+				}
+				if(rkco[j + i]) {
+					ExBltRect(0, 80, (7 + (i * 4)  ) * 8, 80, 52 - rkco[j + i] * 13, 15, 12);
+				} else {
+					ExBltRect(0, 80, (7 + (i * 4)  ) * 8, 80, 52, 15, 12);
+				}
+				if(rkre[j + i]) {
+					ExBltRect(0, 100,(7 + (i * 4)  ) * 8, 48, 52 - rkre[j + i] * 13, 15, 12);
+				} else {
+					ExBltRect(0, 100,(7 + (i * 4)  ) * 8, 48, 52, 15, 12);
+				}
 			}
 		}
 		printFont(1, 27  , "k n ROT TYPE", 0);
@@ -591,12 +606,12 @@ void viewbesttime(int32_t player){
 
 	if(Isbesttime==0)return;
 
-	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
+	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rotspl[player]];
 	/* ベストタイム */
 	if( (gameMode[player] == 7) && ((!maxPlay) || (status[1 - player] == 0)) ) {
-		printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 10, "BEST TIME", fontc[rots[player]]);
+		printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 10, "BEST TIME", fontc[rotspl[player]]);
 
-		tmp = RankingGet2(gameMode[player], anothermode[player], rots[player],player);
+		tmp = RankingGet2(gameMode[player], anothermode[player], rotspl[player],player);
 		if( ((rkdata[tmp] >= 150)&&(anothermode[player] <= 1)) || ((rkdata[tmp] >= 200)&&(anothermode[player] == 2)) )
 		getTime(rktime2[tmp]);
 		else getTime(0);
@@ -607,14 +622,14 @@ void viewbesttimes(int32_t player){
 	int32_t	tmp,color;
 
 	if(Isbesttime==0)return;
-	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
+	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rotspl[player]];
 	/* ベストタイム */
 	if( (gameMode[player] == 7) && ((!maxPlay) || (status[1 - player] == 0)) ) {
 			//bestの文字
 			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 251, 91, 21, 7);
 			//timeの文字
 			ExBltRect(3, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 180, 119, 19, 7);
-			tmp = RankingGet2(gameMode[player], anothermode[player], rots[player],player);
+			tmp = RankingGet2(gameMode[player], anothermode[player], rotspl[player],player);
 			if( ((rkdata[tmp] >= 150)&&(anothermode[player] <= 1)) || ((rkdata[tmp] >= 200)&&(anothermode[player] == 2)) )
 			getTime(rktime2[tmp]);
 			else getTime(0);

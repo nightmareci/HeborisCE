@@ -52,7 +52,7 @@ option(APP_ENABLE_GAME_CONTROLLER_DB "Enable loading gamecontrollerdb.txt for su
 option(APP_ENABLE_JOYSTICK "Enable input via any joystick device" TRUE)
 option(APP_ENABLE_ALL_VIDEO_SETTINGS "Enable all video settings; disabling this option hides some \"unsafe\" settings" TRUE)
 option(APP_ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any time or selecting the \"QUIT\" main menu entry" TRUE)
-set(APP_DEFAULT_JOYKEY_ASSIGN "{ 0 }")
+set(APP_DEFAULT_JOYKEY_ASSIGN "{ { 0 } }")
 set(APP_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
 set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
 set(APP_BASE_PATH_APPEND "")

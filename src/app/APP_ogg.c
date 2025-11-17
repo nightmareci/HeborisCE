@@ -207,13 +207,13 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 					if (stb_vorbis_get_error(ogg->data)) {
 						return false;
 					}
-					if (gotSamples > INT_MAX / (sizeof(float) * ogg->srcSpec.channels)) {
+					if ((size_t)gotSamples > INT_MAX / (sizeof(float) * ogg->srcSpec.channels)) {
 						return false;
 					}
 					if (!SDL_PutAudioStreamData(ogg->converter, ogg->buffer, sizeof(float) * ogg->srcSpec.channels * gotSamples)) {
 						return false;
 					}
-					if (stb_vorbis_get_playback_sample_offset(ogg->data) == ogg->samples) {
+					if ((unsigned)stb_vorbis_get_playback_sample_offset(ogg->data) == ogg->samples) {
 						if (looping) {
 							if (!stb_vorbis_seek_start(ogg->data)) {
 								return false;
@@ -235,10 +235,10 @@ static bool APP_GetOGGStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			if (stb_vorbis_get_error(ogg->data)) {
 				return false;
 			}
-			if (gotSamples > INT_MAX / (sizeof(int16_t) * ogg->dstSpec.channels)) {
+			if ((size_t)gotSamples > INT_MAX / (sizeof(int16_t) * ogg->dstSpec.channels)) {
 				return false;
 			}
-			if (stb_vorbis_get_playback_sample_offset(ogg->data) == ogg->samples) {
+			if ((unsigned)stb_vorbis_get_playback_sample_offset(ogg->data) == ogg->samples) {
 				if (looping) {
 					if (!stb_vorbis_seek_start(ogg->data)) {
 						return false;

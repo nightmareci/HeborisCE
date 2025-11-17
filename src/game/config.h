@@ -47,7 +47,7 @@ extern int32_t dispnextkey[2];
 #endif
 extern int32_t digitc[12];
 extern int32_t fontc[12];
-extern int32_t rots[2];
+extern int32_t rotspl[2];
 extern int32_t background;
 extern int32_t blockflash;
 extern int32_t fastlrmove;

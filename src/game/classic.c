@@ -159,7 +159,7 @@ void statCMove(int32_t player) {
 							}
 							break;
 						// Ti風水色床蹴り 床蹴りは1回だけ可能 #1.60c3
-						} else if((blk[player] == 4) && (rots[player] == 1) && (kickc[player] == 0)) {
+						} else if((blk[player] == 4) && (rotspl[player] == 1) && (kickc[player] == 0)) {
 							if((bak == 2) && (judgeBlock(player, bx[player], by[player] -1 -i, k, bak) == 0)) {
 								if(rotate_snd) PlaySE(WAVE_SE_ROTATE);	// 回転音設定#1.60c7f7
 								by[player] = by[player] -1 -i;
@@ -185,7 +185,7 @@ void statCMove(int32_t player) {
 				}
 			} else if((!disable_wallkick) && (heboGB[player]==0)) {
 				// Ti風赤壁･床蹴り (とりあえず床蹴りは縦、壁蹴りは横になる時だけ) #1.60c3
-				if(rots[player] == 1) {
+				if(rotspl[player] == 1) {
 					move = 0;
 					// BIGの場合は4マス分調べる #1.60c7m6
 					for(i = 0; i <= IsBig[player] * 3; i++) {
@@ -255,7 +255,7 @@ void statCMove(int32_t player) {
 				}
 				else
 				{
-					drawCBlock (player, blk[player] + 1, 5, 0, 0, 1);
+					drawCBlock (player, 5, 0, 0, 1);
 				}
 			}
 			// BIG時、2マス単位モードの場合は移動量を2倍する #1.60c7m6
@@ -330,7 +330,7 @@ void statCMove(int32_t player) {
 					PlaySE(WAVE_SE_KON);
 				kickc[player] = 0;	// 永久床蹴り防止用 #1.60c3
 				statusc[player * 10 + 2]++;
-				drawCBlock(player, 0, 0, 0, 10, 0);
+				drawCBlock(player, 0, 0, 10, 0);
 				// 下入れ制限#1.60c7f9
 				if((getPressState(player, APP_BUTTON_DOWN)) && (downtype) && (!move || nanamedown)) down_flag[player] = 1;
 				if(repversw >= 57) goto lockflash;	// SUPERなSKIP
@@ -366,7 +366,7 @@ void statCMove(int32_t player) {
 					}
 
 					while(by[player] != bottom - 1){
-						drawCBlock (player, blk[player] + 1, 4, fsmooth, 0, 1);
+						drawCBlock (player, 4, fsmooth, 0, 1);
 						by[player]++;
 						fsmooth = 0;
 					}
@@ -395,7 +395,7 @@ void statCMove(int32_t player) {
 			 || (judgeBlock(player, bx[player], by[player] + 1 + (IsBig[player] && BigMove[player] && !ybigtype), blk[player], rt[player]) == 0) )
 			{
 				if((block_spectrum) && ((!smooth) || (bs[player] >= 60)) && (heboGB[player]==0))	//残像を描画
-					drawCBlock (player, blk[player] + 1, 5, 0 , 0, 1);
+					drawCBlock (player, 5, 0 , 0, 1);
 				by[player] = by[player] + 1 + (IsBig[player] && BigMove[player] && !ybigtype);
 			}
 
@@ -413,7 +413,7 @@ void statCMove(int32_t player) {
 						PlaySE(WAVE_SE_KACHI);
 					kickc[player] = 0;
 					statusc[player * 10 + 2]++;
-					drawCBlock(player, 0, 0, 0, 10, 0);
+					drawCBlock(player, 0, 0, 10, 0);
 					if(downtype) down_flag[player] = 1;	// 下入れ制限
 					if(repversw >= 57) goto lockflash;	// SUPERなSKIP
 					return;
@@ -433,9 +433,9 @@ void statCMove(int32_t player) {
 		kosa = bk[player] * 7 / (lockT + (lockT == 0));
 		if(kosa > 6) kosa = 6;
 		if(smooth && (sp[player] < 60))
-			drawCBlock(player, blk[player] + 1, kosa, bs[player] * 8 / 60, flash, 0);
+			drawCBlock(player, kosa, bs[player] * 8 / 60, flash, 0);
 		else
-			drawCBlock(player, blk[player] + 1, kosa, 0, flash, 0);
+			drawCBlock(player, kosa, 0, flash, 0);
 
 		// Hold
 		if((repversw >= 35) && (repversw < 64) && (!statusc[player * 10 + 2]) && (!statusc[player * 10 + 6])){
@@ -449,7 +449,7 @@ void statCMove(int32_t player) {
 	} else {
 		lockflash:
 		statusc[player * 10 + 2]++;
-		if((c_nblk[0 + player * 6] != 8) && (c_nblk[0 + player * 6] >= 0))drawCBlock (player, 0, 0, 0, 10, 0);
+		if((c_nblk[0 + player * 6] != 8) && (c_nblk[0 + player * 6] >= 0))drawCBlock (player, 0, 0, 10, 0);
 
 		// ↓を離している場合、下入れ制限解除#1.60c7n6
 		if((!getPressState(player, 1-(1*(isUDreverse[player])))) && (repversw >= 10)) down_flag[player] = 0;

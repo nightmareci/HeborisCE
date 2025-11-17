@@ -59,16 +59,19 @@ static drwav_bool32 APP_DRWAV_Tell(void* pUserData, drwav_int64* pCursor)
 
 static void* APP_DRWAV_Malloc(size_t sz, void* pUserData)
 {
+	(void)pUserData;
 	return SDL_malloc(sz);
 }
 
 static void* APP_DRWAV_Realloc(void* p, size_t sz, void* pUserData)
 {
+	(void)pUserData;
 	return SDL_realloc(p, sz);
 }
 
 static void APP_DRWAV_Free(void* p, void* pUserData)
 {
+	(void)pUserData;
 	SDL_free(p);
 }
 

@@ -117,7 +117,7 @@ bool APP_InitAudio(int wavesCount)
 	// サウンドの初期化
 	// Initialize sounds
 	if (wavesCount > 0) {
-		APP_Waves = SDL_calloc(sizeof(APP_Sound), wavesCount);
+		APP_Waves = SDL_calloc(wavesCount, sizeof(APP_Sound));
 		if (!APP_Waves) {
 			return SDL_SetError("Couldn't allocate memory for sounds");
 		}

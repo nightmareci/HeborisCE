@@ -276,12 +276,12 @@ void viewBack(void) {
 //  スコア表示（SMALL）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewScoreSmall(void) {
-	int32_t		i, color,tmp, j,k[2],zoomx[2],zoomy[2],gradecolor[2],bps[2],bps1[2],bps2[2],add;
+	int32_t		i, color, j,k[2],zoomx[2],zoomy[2],gradecolor[2],bps[2],bps1[2],bps2[2],add;
 
 	for(i = 0; i < 1 + maxPlay; i++) {
 	if( ((status[i] != 2) || ((status[i] == 2) && (statusc[i * 10 + 2] != 0))) && (status[i] != 0) && ((status[i] !=1) || ((status[i] ==1) && (statusc[i * 10 + 1] != 2))) ){
 		if((i) && ((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4)) )) return;
-		color = (count % 4 / 2) * ((sp[i] >= 1200) || (isboost[i]) || ((heboGB[i]==2)&&(lv[i]>14))) * digitc[rots[i]];
+		color = (count % 4 / 2) * ((sp[i] >= 1200) || (isboost[i]) || ((heboGB[i]==2)&&(lv[i]>14))) * digitc[rotspl[i]];
 		gradecolor[i] = (count % 4 / 2) * ((sp[i] >= 1200) || (isboost[i]));
 		if(sc[i] > 9999999) sc[i] = 9999999;
 		if(li[i] > 9999) li[i] = 9999;
@@ -616,7 +616,7 @@ void viewScoreSmall(void) {
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 					printSMALLFont(208+add + 55 * i - 96 * maxPlay, 76, string[0], color);
 					//枠の下に表示してあるボーナス
-					printFont(14 + 24 * i - 12 * maxPlay, 25, "BONUS", fontc[rots[i]]);
+					printFont(14 + 24 * i - 12 * maxPlay, 25, "BONUS", fontc[rotspl[i]]);
 					SDL_snprintf(string[0], STRING_LENGTH, "%5d", FP_bonus[i] );
 					printFont(20 + 24 * i - 12 * maxPlay, 25, string[0], color);
 				}
@@ -627,37 +627,37 @@ void viewScoreSmall(void) {
 				// MIRRORなどの各種ギミック表示
 				// DUALだと長いので短縮した #1.60c7l9 stageの下にしました
 				if( tomoyo_waits[i])
-					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "BOOST", fontc[rots[i]]);
+					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "BOOST", fontc[rotspl[i]]);
 				else if( isfmirror[i] )
-					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "Mirror", fontc[rots[i]]);
+					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "Mirror", fontc[rotspl[i]]);
 				else if( rollroll_flag[i] )
-					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "RollX2", fontc[rots[i]]);
+					printSMALLFont(208+add + 60 * i - 96 * maxPlay, 85, "RollX2", fontc[rotspl[i]]);
 				else if( xray_flag[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "X Ray", fontc[rots[i]]);
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "X Ray", fontc[rotspl[i]]);
 				else if( color_flag[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Color", fontc[rots[i]]);	// #1.60c7p9ex改造
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Color", fontc[rotspl[i]]);	// #1.60c7p9ex改造
 				else if( IsBig[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Death", fontc[rots[i]]);
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Death", fontc[rotspl[i]]);
 				else if( blind_flag[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Blind", fontc[rots[i]]);
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Blind", fontc[rotspl[i]]);
 				else if( isthunder[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Thunder", fontc[rots[i]]);
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Thunder", fontc[rotspl[i]]);
 				else if( tomoyo_rise[i] )
-					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Rise", fontc[rots[i]]);
+					printSMALLFont(208+add + 66 * i - 96 * maxPlay, 85, "Rise", fontc[rotspl[i]]);
 
-				if(!hide_tomoyoinf && (status[i] >= 3) && (status[i] < 18) || (status[i] == 19) || (status[i] == 20)) {
+				if(!hide_tomoyoinf && (((status[i] >= 3) && (status[i] < 18)) || (status[i] == 19) || (status[i] == 20))) {
 					// NEXTC
-					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 14, "NEXTC", fontc[rots[i]]);
+					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 14, "NEXTC", fontc[rotspl[i]]);
 					SDL_snprintf(string[0], STRING_LENGTH,"%d",nextc[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 15, string[0], color);
 
 					// 固定した回数
-					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 16, "BDOWN", fontc[rots[i]]);
+					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 16, "BDOWN", fontc[rotspl[i]]);
 					SDL_snprintf(string[0], STRING_LENGTH,"%d",bdowncnt[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 17, string[0], color);
 
 					// 消去した回数
-					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 18, "ERASE", fontc[rots[i]]);
+					printFont(26+2*((hnext[i] >= 4) && (!i)) + 7 * i - 12 * maxPlay, 18, "ERASE", fontc[rotspl[i]]);
 					SDL_snprintf(string[0], STRING_LENGTH,"%d",erasecnt[i]);
 					printFont(26+2*((hnext[i] >= 4) && (!i)) + 11 * i - 12 * maxPlay, 19, string[0], color);
 				}
@@ -711,8 +711,8 @@ void viewScoreSmall(void) {
 						if(status[i] != 2){
 							ExBltRect(87,208 + 48 * i - 96 * maxPlay, 102, (gametime[i]%6)*48 ,(gametime[i]%30/6)*48,48,48);
 							ExBltRect(85,208 + 70 * i - 96 * maxPlay, 105, 35, 7*6, 22, 7);
-							ExBltRect(55,201 + 48 * i - 96 * maxPlay, 121 - (3 * (getDrawRate() == 1)), 64*rots[i] ,
-									32*fontc[rots[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
+							ExBltRect(55,201 + 48 * i - 96 * maxPlay, 121 - (3 * (getDrawRate() == 1)), 64*rotspl[i] ,
+									32*fontc[rotspl[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 						}
 					}else{
 						/* BEST TIME STDモードはこっち*/
@@ -1163,12 +1163,12 @@ void viewScoreSmall(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void viewTime(void) {
 	int32_t		i, color, j,tmp,tmp1;
-	int32_t		color2,mp;
-	mp = maxPlay;
-	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
+	int32_t		color2,maxPlayTemp;
+	maxPlayTemp = maxPlay;
+	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) maxPlayTemp = 0;
 
-	for(i = 0; i < 1 + mp; i++) {
-		color = (count % 4 / 2) * (sp[i] >= 1200) * digitc[rots[i]];
+	for(i = 0; i < 1 + maxPlayTemp; i++) {
+		color = (count % 4 / 2) * (sp[i] >= 1200) * digitc[rotspl[i]];
 		/* セクションタイム表示 */
 		if(!hide_st_record) {
 			// split time and lap time
@@ -1181,7 +1181,7 @@ void viewTime(void) {
 						for(j = 0; j < (tc[i] / (st_record_interval_tgm * 10)); j++) {
 							if( (lap_time[j] != 0) && (split_time[j] != 0) ) {
 								SDL_snprintf(string[0], STRING_LENGTH, "%4d", (j + 1) * st_record_interval_tgm * 10);
-								printFont(0, j, string[0], fontc[rots[i]]);
+								printFont(0, j, string[0], fontc[rotspl[i]]);
 								getTime(lap_time[j]);
 								printFont(5, j, string[0], st_new[j + i * 13]);
 								getTime(split_time[j]);
@@ -1208,7 +1208,7 @@ void viewTime(void) {
 					// シングル台
 					if((!maxPlay)&&(!st_record_force_viewright)) {
 						if( (lap_time[9] != 0) && (split_time[9] != 0) ) {
-							printFont(0, 9, " 999", fontc[rots[i]]);
+							printFont(0, 9, " 999", fontc[rotspl[i]]);
 							getTime(lap_time[9]);
 							printFont(5, 9, string[0], st_new[9]);
 							getTime(split_time[9]);
@@ -1237,7 +1237,7 @@ void viewTime(void) {
 						for(j = 0; j < (lv[i] / st_record_interval_heb); j++) {
 							if( (lap_time[j] != 0) && (split_time[j] != 0) ) {
 								SDL_snprintf(string[0], STRING_LENGTH, "%4d", (j + 1) * st_record_interval_heb);
-								printFont(0, j, string[0], fontc[rots[i]]);
+								printFont(0, j, string[0], fontc[rotspl[i]]);
 								getTime(lap_time[j]);
 								printFont(5, j, string[0], color);
 								getTime(split_time[j]);
@@ -1342,15 +1342,15 @@ void viewTime(void) {
 		if( tspin_c[i] > 0+(60*(isScore(i)*((tspin_type!=0) && (last_tspin[i]!=0)) )) ) {
 			// T-SPIN #1.60c7n6
 			if(last_tspin[i]==0)
-				printFont(16 + 24 * i - 12 * maxPlay, 26, "T-SPIN", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(16 + 24 * i - 12 * maxPlay, 26, "T-SPIN", (count % 4 / 2) * digitc[rotspl[i]]);
 			else if((last_tspin[i]==1) || (b_to_b_flag[i]==2))
-				printFont(13 + 24 * i - 12 * maxPlay, 26, "T-SPIN SINGLE!", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(13 + 24 * i - 12 * maxPlay, 26, "T-SPIN SINGLE!", (count % 4 / 2) * digitc[rotspl[i]]);
 			else if((last_tspin[i]==2) || (b_to_b_flag[i]==3))
-				printFont(13 + 24 * i - 12 * maxPlay, 26, "T-SPIN DOUBLE!", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(13 + 24 * i - 12 * maxPlay, 26, "T-SPIN DOUBLE!", (count % 4 / 2) * digitc[rotspl[i]]);
 			else if((last_tspin[i]>=3) || (b_to_b_flag[i]>=4))
-				printFont(13 + 24 * i - 12 * maxPlay, 26, "T-SPIN TRIPLE!", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(13 + 24 * i - 12 * maxPlay, 26, "T-SPIN TRIPLE!", (count % 4 / 2) * digitc[rotspl[i]]);
 		} else if(tspin_c[i]){
-				printFont(19 + 24 * i - 12 * maxPlay, 26, "e 4", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(19 + 24 * i - 12 * maxPlay, 26, "e 4", (count % 4 / 2) * digitc[rotspl[i]]);
 		} else if((hidden[i] > 0) && (!hide_hidden)&&(hidden[i]<8)) {
 			// HIDDEN LV表示 (隠す設定を追加#1.60c7i9)
 			printFont(15 + 24 * i - 12 * maxPlay, 26, "HIDDEN LV", 2);
@@ -1359,38 +1359,38 @@ void viewTime(void) {
 		}else if( (gflash[i] > 0) && (((gameMode[i] == 1) ||(gameMode[i] == 2))&&(enable_grade[i]==4))) {
 		// COOL / REGRET
 			if(gup_down[i]){
-				printFont(17 + i * 24 - 12 * maxPlay, 26, "COOL!!", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(17 + i * 24 - 12 * maxPlay, 26, "COOL!!", (count % 4 / 2) * digitc[rotspl[i]]);
 			}else{
-				printFont(17 + i * 24 - 12 * maxPlay, 26, "REGRET", (count % 4 / 2) * digitc[rots[i]]);
+				printFont(17 + i * 24 - 12 * maxPlay, 26, "REGRET", (count % 4 / 2) * digitc[rotspl[i]]);
 			}
 		}
 
 		if( b_to_b_c[i] > 0+(60*isScore(i)) )
-			printFont(14 + 24 * i - 12 * maxPlay, 25, "BACK TO BACK", (count % 4 / 2) * digitc[rots[i]]);
+			printFont(14 + 24 * i - 12 * maxPlay, 25, "BACK TO BACK", (count % 4 / 2) * digitc[rotspl[i]]);
 		else if(b_to_b_c[i])
-			printFont(17 + 24 * i - 12 * maxPlay, 25, "e 1.5", (count % 4 / 2) * digitc[rots[i]]);
+			printFont(17 + 24 * i - 12 * maxPlay, 25, "e 1.5", (count % 4 / 2) * digitc[rotspl[i]]);
 
 
 
 		if(upLines[i]) {//lineup
 			if((!hebo_plus[i]) && (gameMode[i] != 5) && (gameMode[i] >= 4) && ((timeOn[i]) || (gameMode[i] == 8))){
 				SDL_snprintf(string[0], STRING_LENGTH, "%2dLINE UP", upLines[i] );	// せりあがるライン数
-				printFont(15 + 24 * i - 12 * maxPlay, 28-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), string[0], fontc[rots[i]]);
+				printFont(15 + 24 * i - 12 * maxPlay, 28-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), string[0], fontc[rotspl[i]]);
 				tmp1 = 0;
 				if(gameMode[i] != 6)
 				for(tmp = 1;tmp <= upLines[i];tmp++){
 					if(upLines[i] - tmp >= 9){
-						printFont(15 + tmp1 + 24 * i - 12 * maxPlay, 29-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), "g", digitc[rots[i]]);
+						printFont(15 + tmp1 + 24 * i - 12 * maxPlay, 29-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), "g", digitc[rotspl[i]]);
 						tmp = tmp + 9;
 					}else{
-						printFont(15 + tmp1 + 24 * i - 12 * maxPlay, 29-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), "f", fontc[rots[i]]);
+						printFont(15 + tmp1 + 24 * i - 12 * maxPlay, 29-(17*(gameMode[i] == 8))-(3*(gameMode[i] == 6)), "f", fontc[rotspl[i]]);
 					}
 					tmp1++;
 				}
 			}
 		}else if(gameMode[i] == 4){
-			ExBltRect(55,128 + 192 * i -96 * maxPlay , 218 - (4 * (getDrawRate() == 1)), 64*rots[i] ,
-				32*fontc[rots[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
+			ExBltRect(55,128 + 192 * i -96 * maxPlay , 218 - (4 * (getDrawRate() == 1)), 64*rotspl[i] ,
+				32*fontc[rotspl[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 
 			if((!disrise) && ((timeOn[i]) || (flag == -2) || (flag == -3))){
 				if(vs_style[i] == 0){
@@ -1537,19 +1537,17 @@ void viewScore(void) {
 // Big対応 #1.60c7
 void viewField(void) {
 	int32_t		b, i, j, k, fi, color, add, tmp[4];
-	int32_t		gm;	// gamemode #1.60c7f4
-	int32_t		fldt3, fldt4, fldt5;	//シャドウタイマーでうっすらと消えていく演出に使用 #1.60c7j9
-	int32_t		mp;
-	int32_t		tmp_x1, tmp_x2, tmp_y;	// 枠表示用
+	int32_t		fldt3, fldt4;	//シャドウタイマーでうっすらと消えていく演出に使用 #1.60c7j9
+	int32_t		maxPlayTemp;
 
-	mp = maxPlay;
-	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
+	maxPlayTemp = maxPlay;
+	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) maxPlayTemp = 0;
 
 	// フィールド枠
 	viewFldFrame(0,0);
 	if(maxPlay) viewFldFrame(0,1);
 
-	for(i = 0; i <= mp; i++) {
+	for(i = 0; i <= maxPlayTemp; i++) {
 		if(skip_viewbg) ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
 
 		// イレイサーの線 #1.60c7s2
@@ -1604,7 +1602,6 @@ void viewField(void) {
 						fi = fld[k + j * 10 + i * 220] - 1;
 						fldt3 = fldt[k + j * 10 + i * 220];
 						fldt4 = fldt[k + j * 10 + i * 220] * 32;
-						fldt5 = 256 - (fldt[k + j * 10 + i * 220] * 32);
 
 						// アイテムの場合は見た目を変える #1.60c7n1
 						if( fldi[k + j * 10 + i * 220] ) {
@@ -1665,35 +1662,35 @@ void viewField(void) {
 													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4);
 											}
 											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-											BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
-												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
+												BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
+													((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
 											if (tomoyo_domirror[0] && (i == 0))
-											BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
-												((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
+												BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
+													((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
 										} else if((fldt3 != 0) && (fldt3 > -10)) {
 											// タイマーが0なら無視する #1.60c7k4
 											if((disable_giji3D < 4) && (!iscolor[i]) && (getFieldBlock(i, k + (1-2*i), j, 0) == 0) && (add == 0) && (fi != 8) && (fi != 9) && (heboGB[i]==0)){
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
 												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-												ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
-													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
+													ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 												if (tomoyo_domirror[0] && (i == 0))
-												ExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
-													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
+													ExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 											}
 											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-											ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i],
-												(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
+												ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i],
+													(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
 											if (tomoyo_domirror[0] && (i == 0))
-											ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i],
-												(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
+												ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i],
+													(j + 3) * 8 + ofs_y2[i], ((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8);
 										}
 									}
 								}
 							} else {
 								// X-RAY中は一部分だけ枠を描く #1.60c7p9ex改造
-								if( (isblind[i]) || (blockflash != 2) && ( (!isxray[i]) || ( (xray_counter[i] % p_xray_frame == k) && (!xray_drawblockframe) ) ) ) {
+								if( (isblind[i]) || ((blockflash != 2) && ( (!isxray[i]) || ( (xray_counter[i] % p_xray_frame == k) && (!xray_drawblockframe) ) ) ) ) {
 									// PRACTICEの2P側で[]の枠線が出ないように修正#1.60c7k2
 									if( ((fi != 8)&&(fi != 9) && (add == 0)) || (isblind[i])) {
 										// シャドウタイマーが残っていたら枠を描画 #1.60c7k1
@@ -1703,7 +1700,7 @@ void viewField(void) {
 										if( (fldt3 == -1) || ((fldt3 != 0) && (fldt3 >= 8) && (m_roll_blockframe)) || ((isblind[i]) && (fldt3 != 0)) || (fldt3 < -1) || ((gameMode[i] == 5) && (pauseGame[i]))) {
 											// 死んだとき枠を消す #1.60c7k9
 											// COLOR中は枠を描かない#1.60c7p9ex
-											if(( !color_flag[i] && ((!dead_blockframe) || (gameMode[i] == 5) || (status[i] != 7)) )&& (heboGB[i]==0) || (isblind[i])) {
+											if((( !color_flag[i] && ((!dead_blockframe) || (gameMode[i] == 5) || (status[i] != 7)) )&& (heboGB[i]==0)) || (isblind[i])) {
 												// フィールド端では枠の一部分を表示しない #1.60c7s5
 												if((!isdark[i]) || ((gameMode[i] == 5) && (pauseGame[i]))){
 													// 新・枠線処理
@@ -1718,33 +1715,33 @@ void viewField(void) {
 													if (tmp[0] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
 													}
 													// 右
 													if (tmp[1] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
 													}
 													// 上
 													if (tmp[2] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
 													}
 													// 下
 													if (tmp[3] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-														ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-														ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
+															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
 													}
 													add = 0;
 												}
@@ -1788,12 +1785,12 @@ void viewField(void) {
 void viewPreview(void){
 	int32_t n2[2], n3[2], n4[2], n5[2], n6[2]; // 3Next表示用 #1.60c
 	int32_t nf1[2];//偽者用
-	int32_t i, j, c_tmp[6], mp;
+	int32_t i, j, c_tmp[6], maxPlayTemp;
 
-	mp = maxPlay;
-	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) mp = 0;
+	maxPlayTemp = maxPlay;
+	if((gameMode[0] == 8) || ((playback) && (gameMode[0] != 4))) maxPlayTemp = 0;
 
-	for(i = 0; i <= mp; i++) {
+	for(i = 0; i <= maxPlayTemp; i++) {
 		// hold・3Nextに合わせて画面上部変更 #1.60c
 		if( (hnext[i] >= 1) && (status[i] != 0) && ((status[i] != 2) || ((status[i] == 2) && (statusc[i * 10 + 2] != 0))) ) {
 			// NEXTをplayerごとに #1.60c7m1
@@ -1840,7 +1837,7 @@ void viewPreview(void){
 					if(!item_nblk[j + i * 6]){
 						if(isWRule(i)){
 							c_tmp[j] = wcol[0];
-						} else if((rots[i] >= 4) && (rots[i] != 8)){
+						} else if((rotspl[i] >= 4) && (rotspl[i] != 8)){
 							c_tmp[j] = acol[0];
 						} else{
 							c_tmp[j] = ccol[0];
@@ -1855,20 +1852,20 @@ void viewPreview(void){
 				if((isfakenext[i]) && (ndelay[i])){//偽者
 					{
 						if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-						drawBlockFast(18 + 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0), nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+							drawBlockFast(18 + 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0), nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
 						if (tomoyo_domirror[0] && (i == 0))
-						drawBlockFast(18 + 24 * 1 - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0), nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+							drawBlockFast(18 + 24 * 1 - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0), nf1[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
 					}
 				}else if(ndelay[i]){
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawBlockFast(18 + 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rots[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+						drawBlockFast(18 + 24 * i - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rotspl[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
 					if (tomoyo_domirror[0] && (i == 0))
-					drawBlockFast(18 + 24 * 1 - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rots[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
+						drawBlockFast(18 + 24 * 1 - 12 * maxPlay, 1 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0)) && (rotspl[i] != 8)), next[i], rt_nblk[0 + 6 * i], c_tmp[0], 0, -2, 1, i, (disable_giji3D < 3));
 				}else if((!ndelay[i]) && ((hnext[i] == 1) || (hebo_plus[i]) || (death_plus[i])) && (!heboGB[i])){
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawhBlock(160 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i, rt_nblk[0 + 6 * i], (disable_giji3D < 3));
+						drawhBlock(160 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i, rt_nblk[0 + 6 * i], (disable_giji3D < 3));
 					if(tomoyo_domirror[0] && (i == 0))
-					drawhBlock(160 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i, rt_nblk[0 + 6 * i], (disable_giji3D < 3));
+						drawhBlock(160 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (next[i] != 0) + ((next[i] == 0) && ((c_nblk[0 + i * 6] != 8) || (c_nblk[0 + i * 6] <= 0))), next[i], c_tmp[0], 4, i, rt_nblk[0 + 6 * i], (disable_giji3D < 3));
 				}
 			}
 			//next2個目〜6個目
@@ -1877,45 +1874,46 @@ void viewPreview(void){
 				if (hnext[i] >= 2)
 				{
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawhBlock(180 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4 - (6 * (top_frame)), n2[i], c_tmp[1 - (!ndelay[i])], 4, i, rt_nblk[(1 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(180 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4 - (6 * (top_frame)), n2[i], c_tmp[1 - (!ndelay[i])], 4, i, rt_nblk[(1 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 					if (tomoyo_domirror[0] && (i == 0))
-					drawhBlock(180 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4 - (6 * (top_frame)), n2[i], c_tmp[1 - (!ndelay[i])], 4, i, rt_nblk[(1 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(180 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (n2[i] != 0) * 4 - (6 * (top_frame)), n2[i], c_tmp[1 - (!ndelay[i])], 4, i, rt_nblk[(1 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 				}
 				if (hnext[i] >= 3)
 				{
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawhBlock(200 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4 - (6 * (top_frame)), n3[i], c_tmp[2 - (!ndelay[i])], 4, i, rt_nblk[(2 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(200 + 192 * i - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4 - (6 * (top_frame)), n3[i], c_tmp[2 - (!ndelay[i])], 4, i, rt_nblk[(2 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 					if (tomoyo_domirror[0] && (i == 0))
-					drawhBlock(200 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4 - (6 * (top_frame)), n3[i], c_tmp[2 - (!ndelay[i])], 4, i, rt_nblk[(2 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(200 + 192 * 1 - 96 * maxPlay, 18 + isWRule(i) * (n3[i] != 0) * 4 - (6 * (top_frame)), n3[i], c_tmp[2 - (!ndelay[i])], 4, i, rt_nblk[(2 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 				}
 				if (hnext[i] >= 4)
 				{
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawhBlock(210 + 192 * i - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4 - 8, n4[i], c_tmp[3 - (!ndelay[i])], 4, i, rt_nblk[(3 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(210 + 192 * i - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4 - 8, n4[i], c_tmp[3 - (!ndelay[i])], 4, i, rt_nblk[(3 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 					if (tomoyo_domirror[0] && (i == 0))
-					drawhBlock(210 + 192 * 1 - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4 - 8, n4[i], c_tmp[3 - (!ndelay[i])], 4, i, rt_nblk[(3 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(210 + 192 * 1 - 96 * maxPlay, 40 + isWRule(i) * (n4[i] != 0) * 4 - 8, n4[i], c_tmp[3 - (!ndelay[i])], 4, i, rt_nblk[(3 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 				}
 				if (hnext[i] >= 5)
 				{
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawhBlock(210 + 192 * i - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4 - 8, n5[i], c_tmp[4 - (!ndelay[i])], 4, i, rt_nblk[(4 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(210 + 192 * i - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4 - 8, n5[i], c_tmp[4 - (!ndelay[i])], 4, i, rt_nblk[(4 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 					if (tomoyo_domirror[0] && (i == 0))
-					drawhBlock(210 + 192 * 1 - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4 - 8, n5[i], c_tmp[4 - (!ndelay[i])], 4, i, rt_nblk[(4 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(210 + 192 * 1 - 96 * maxPlay, 58 + isWRule(i) * (n5[i] != 0) * 4 - 8, n5[i], c_tmp[4 - (!ndelay[i])], 4, i, rt_nblk[(4 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 				}
 				if (hnext[i] >= 6)
 				{
 					if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					drawhBlock(210 + 192 * i - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4 - 8, n6[i], c_tmp[5 - (!ndelay[i])], 4, i, rt_nblk[(5 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(210 + 192 * i - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4 - 8, n6[i], c_tmp[5 - (!ndelay[i])], 4, i, rt_nblk[(5 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 					if (tomoyo_domirror[0] && (i == 0))
-					drawhBlock(210 + 192 * 1 - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4 - 8, n6[i], c_tmp[5 - (!ndelay[i])], 4, i, rt_nblk[(5 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
+						drawhBlock(210 + 192 * 1 - 96 * maxPlay, 76 + isWRule(i) * (n6[i] != 0) * 4 - 8, n6[i], c_tmp[5 - (!ndelay[i])], 4, i, rt_nblk[(5 - (!ndelay[i])) + 6 * i], (disable_giji3D < 3));
 				}
 			}
 		}
-		if (!tomoyo_domirror[0])  // stop redrawing frame after mirror starts.
-		if(!top_frame)
-			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 33);
-		else
-			ExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
+		if (!tomoyo_domirror[0]) {  // stop redrawing frame after mirror starts.
+			if(!top_frame)
+				ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 33);
+			else
+				ExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
+		}
 		if(hnext[i] >= 1)
 			ExBltRect(3, 150 + 192 * i - 96 * maxPlay, 4*(!top_frame), 128, 112, 26, 7);
 		if(!disable_hold)
@@ -1942,27 +1940,27 @@ void viewPreview(void){
 						// 表示位置を微調整 #1.60c7p9ex
 						if((ishidenext[i] != 1) || ((ishidenext[i]) && (j != 0) && (j != 9))){
 							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, hold[i], j, 4, i, 0, (disable_giji3D < 3));
+								drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, hold[i], j, 4, i, 0, (disable_giji3D < 3));
 							if (tomoyo_domirror[0] && (i == 0))
-							drawhBlock(116 + 192 * 1 - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, hold[i], j, 4, i, 0, (disable_giji3D < 3));
+								drawhBlock(116 + 192 * 1 - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, hold[i], j, 4, i, 0, (disable_giji3D < 3));
 						}else{	//HIDE NEXT時の「？」
 							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-							printFont(15 + 24 * i - 12 * maxPlay, 2, "?", 0);
+								printFont(15 + 24 * i - 12 * maxPlay, 2, "?", 0);
 							if (tomoyo_domirror[0] && (i == 0))
-							printFont(15 + 24 * 1 - 12 * maxPlay, 2, "?", 0);
+								printFont(15 + 24 * 1 - 12 * maxPlay, 2, "?", 0);
 						}
 					}else{//偽者
 						// 表示位置を微調整 #1.60c7p9ex
 						if((ishidenext[i] != 1) || ((ishidenext[i]) && (j != 0) && (j != 9))){
 							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-							drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i, 0, (disable_giji3D < 3));
+								drawhBlock(116 + 192 * i - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i, 0, (disable_giji3D < 3));
 							if (tomoyo_domirror[0] && (i == 0))
-							drawhBlock(116 + 192 * 1 - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i, 0, (disable_giji3D < 3));
+								drawhBlock(116 + 192 * 1 - 96 * maxPlay, 12 + isWRule(i) * (hold[i] != 0) * 4, nextb[(nextc[i] + 50) % 1400], j, 4, i, 0, (disable_giji3D < 3));
 						}else{	//HIDE NEXT時の「!」
 							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-							printFont(15 + 24 * i - 12 * maxPlay, 2, "!", 0);
+								printFont(15 + 24 * i - 12 * maxPlay, 2, "!", 0);
 							if (tomoyo_domirror[0] && (i == 0))
-							printFont(15 + 24 * 1 - 12 * maxPlay, 2, "!", 0);
+								printFont(15 + 24 * 1 - 12 * maxPlay, 2, "!", 0);
 						}
 					}
 				}
@@ -1988,7 +1986,7 @@ void viewFldBackground(void) {
 
 		// GBモードでなければ上を描画
 		// グラデーション部分をなめらかにしない
-		if (!((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))))
+		if (!((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rotspl[i] == 6))))
 		{
 			// グラデーション部分をなめらかに#1.60c7p9ex
 			if(!top_frame){
@@ -2012,7 +2010,7 @@ void viewFldBackground(void) {
 		// ここまで C++版上部枠表示
 		// ------------------------
 
-		if((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))){
+		if((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rotspl[i] == 6))){
 		//フィールド背景を白く
 			ExBltRect(2, 112 + ofs_x[i] + 192 * i - 96 * maxPlay, 32, 96 * 7, 0, 96, 176);
 			ExBltRect(3, 110 + 192 * i - 96 * maxPlay, 8, 184, 275 + (24 * top_frame), 107, 24);
@@ -2025,23 +2023,23 @@ void viewFldBackground(void) {
 		else if(background == 0)
 		{
 				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
+					ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
 				if (tomoyo_domirror[0] && (i == 0))
-				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
+					ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
 		}
 		else if(background == 1)
 		{
 			if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
+				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
 			if (tomoyo_domirror[0] && (i == 0))
-			ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
+				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
 		}
 	}
 }
 
 /* フィールド枠を表示(uponlyを1にすると上部分だけ表示) */
 void viewFldFrame(int32_t uponly,int32_t i) {
-	int32_t j, gm[2],waiting[2],ismission[2];
+	int32_t gm[2],waiting[2],ismission[2];
 
 		// GAMEMODEに応じて枠の色を変更 #1.60c7f4
 		gm[i] = gameMode[i];
@@ -2055,7 +2053,7 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 		else if(hebo_plus[i])
 			gm [i]= 6;
 		else if((gm[i] > 1) && (gm[i] < 4) && (!item_mode[i])) {
-			if(((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rots[i] == 6))
+			if(((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rotspl[i] == 6))
 				gm[i] = 7;//オールドスタイルの石のやつ
 			else
 				gm[i]--;
@@ -2074,7 +2072,7 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 			 (isLRreverse[i]) || (isUDreverse[i]) || (isboost[i]) || (isremote[i]) || (isdark[i]) || (istrance[i]) ||
 			 (dolaser[i]) || (status[i] == 27) || (donega[i])  || (status[i] == 26) || (status[i] == 28) || (doshotgun[i]) ||
 			 (item_nblk[0 + i * 6] == fldihardno) || (item[i] == fldihardno) || (isbanana[i]) || (do180field[i])  || (status[i] == 34)||
-			 (isdouble[i])||(docopyfld[i])||(isfakenext[i])||(item_monochrome[i])||(ismiss[i])||(status[i] == 29) && (statusc[(1-i) * 10 + 3]) ){
+			 (isdouble[i])||(docopyfld[i])||(isfakenext[i])||(item_monochrome[i])||(ismiss[i])||((status[i] == 29) && (statusc[(1-i) * 10 + 3])) ){
 				gm[i] = 2;		//攻撃アイテム（赤）
 			} else if(isfever[i]){
 				gm[i] = 3;		//フィーバー（黄）
@@ -2320,27 +2318,27 @@ int32_t getBlockPlaneNo(int32_t player, int32_t color) {
 		return 64;
 
 	// TGM
-	if((rots[player] == 0)||(heboGB[player]==2))
+	if((rotspl[player] == 0)||(heboGB[player]==2))
 		return 40;
 
 	// ARS
-	if((rots[player] == 4) || (rots[player] == 5))
+	if((rotspl[player] == 4) || (rotspl[player] == 5))
 		return 73;
 
 	// TI
-	if(rots[player] == 1)
+	if(rotspl[player] == 1)
 		return 41;
 
 	// WORLD & WORLD2
-	if( (rots[player] == 2) || (rots[player] == 3) )
+	if( (rotspl[player] == 2) || (rotspl[player] == 3) )
 		return 42;
 
 	// WORLD3
-	if(rots[player] == 6)
+	if(rotspl[player] == 6)
 		return 43;
 
 	//SRS-X
-	if(rots[player] == 7)
+	if(rotspl[player] == 7)
 		return 64;
 	//DRS
 	return 80;
@@ -2351,19 +2349,19 @@ int32_t getBigBlock_add(int32_t player){
 		return 6;
 	if(heboGB[player]==2)
 		return 5;
-	if(rots[player] == 0)
+	if(rotspl[player] == 0)
 		return 0;
-	if(rots[player] == 1)
+	if(rotspl[player] == 1)
 		return 1;
-	if((rots[player] == 2) || (rots[player] == 3))
+	if((rotspl[player] == 2) || (rotspl[player] == 3))
 		return 2;
-	if((rots[player] == 4) || (rots[player] == 5))
+	if((rotspl[player] == 4) || (rotspl[player] == 5))
 		return 3;
-	if(rots[player] == 6)
+	if(rotspl[player] == 6)
 		return 4;
-	if(rots[player] == 7)
+	if(rotspl[player] == 7)
 		return 5;
-	if(rots[player] == 8)
+	if(rotspl[player] == 8)
 		return 7;
 	return 1;
 }
@@ -2395,7 +2393,7 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 
 	for(j = ((!use3D) || (tmp) || (heboGB[player]>0)); j < 2; j++)
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+		if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]) * 8;
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]) * 8;
 		}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2409,7 +2407,7 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 			if(color < 8) tmp = getBigBlock_add(player);
 			else tmp = 8;
 			if((flash == 999) || (flash == 0)){
-				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+				if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i]);
 					by5 = ((by1 - 3) + blkDDataY[kind * 16 + rotate * 4 + i]);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2461,7 +2459,7 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 
 	for(j = ((!use3D) || (tmp) || (heboGB[player]>0)); j < 2; j++)
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+		if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 		}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2476,7 +2474,7 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 		if(!j){
 			if(color < 8) tmp = getBigBlock_add(player);
 			else tmp = 8;
-				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+				if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = ((by1 - 3) + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2552,7 +2550,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 
 	for(j = ((!use3D) || (tmp) || (flash == 999) || (heboGB[player]>0)); j < 3; j++){
 		for(i = 0; i < 4; i++) {
-			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+			if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 				bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]) * 8;
 				by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]) * 8;
 			}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2563,7 +2561,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 				by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i]) * 8;
 			}
 			if(j == 0){
-				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+				if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i]);
 					by5 = (by[player] + blkDDataY[kind * 16 + rotate * 4 + i]);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2579,7 +2577,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					if(flash != 10)
 						ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 					else if(hidden[player] != 8){
-						if( (color < 8) && (rots[player] != 6)) {
+						if( (color < 8) && (rotspl[player] != 6)) {
 							ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, 20 * tmp, 0, 2, 8 );
 						} else {
 							ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), 0, 2, 8 );
@@ -2611,9 +2609,9 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					// 条件を簡略化#1.60c7i3
 					if((hidden[player] == 8) && (m_roll_blockframe)){
 						ExBltRect(24, bx2, by2 + offset, 0, 0, 8, 8);
-					} else if( (color < 8) && ((rots[player] != 6) && (add == 0))) {
+					} else if( (color < 8) && ((rotspl[player] != 6) && (add == 0))) {
 						ExBltRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 0, 0, 8, 8);
-					} else if((rots[player] != 6) && (color < 10)) {
+					} else if((rotspl[player] != 6) && (color < 10)) {
 						ExBltRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 64, 0, 8, 8);
 					} else {
 						ExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8);
@@ -2643,7 +2641,7 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 /* BIGブロック描画#1.60c7j8 */
 void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t player, int32_t use3D) {
 	int32_t	i, j, bx2, by2, tmp, pos[2];
-	int32_t	k, l, bx3, by3, add, bx5, by5;
+	int32_t	k, l, add, bx5, by5;
 	add = 0;
 	tmp = 1;
 	if( ((isrotatelock[player]) && (color < 8)) || ((ismagnetblock[player]) && (count%2 == 0)) || ((isrollroll[player]) && (color < 8)) )
@@ -2668,7 +2666,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 
 	for(j = ((!use3D) || (tmp) || (flash == 999) || (heboGB[player])); j < 3; j++){
 		for(i = 0; i < 4; i++) {
-			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+			if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 				bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2) * 8;
 				by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 			}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2679,7 +2677,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 				by2 = (by1 + blkDataY[kind * 16 + rotate * 4 + i] * 2) * 8;
 			}
 			if(j == 0){
-				if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
+				if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)){
 					bx5 = (bx[player] + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 					by5 = (by[player] + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 				}else if( isWRule(player) ) {		// WorldType用 #1.60c5
@@ -2700,7 +2698,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 						else
 							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 					}else if((hidden[player] != 8) && (color <= 10)){
-						if( (color < 8) && (rots[player] != 6)) {
+						if( (color < 8) && (rotspl[player] != 6)) {
 							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), 40 * tmp, 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 						} else {
 							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
@@ -2742,9 +2740,9 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 						// 固定時の点滅
 						if((hidden[player] == 8) && (m_roll_blockframe)){
 							ExBltRect(24, bx2, by2 + offset, 0, 0, 16, 16);
-						} else if( (color < 8) && ((rots[player] != 6) && (add == 0))) {
+						} else if( (color < 8) && ((rotspl[player] != 6) && (add == 0))) {
 							ExBltRect(76, bx2, by2 + offset,0 + (l * 160), 0 + (k * 112), 16, 16);
-						} else if((rots[player] != 6) && (color < 10)) {
+						} else if((rotspl[player] != 6) && (color < 10)) {
 							ExBltRect(76, bx2, by2 + offset,128 + (l * 160), 0 + (k * 112), 16, 16);
 						} else {
 							ExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
@@ -2772,7 +2770,7 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 
 // Draw Current Block
 // 現在のツモを表示 Big対応 #1.60c7
-void drawCBlock(int32_t player, int32_t color, int32_t bright, int32_t offset, int32_t flash, int32_t not3D) {
+void drawCBlock(int32_t player, int32_t bright, int32_t offset, int32_t flash, int32_t not3D) {
 	/* BIG時の描画は別関数に独立しました #1.60c7j8 */
 
 	// アイテム #1.60c7n1
@@ -2850,7 +2848,7 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 	for(j = ((tmp) || (!use3D)); j < 2; j++)
 	for(i = 0; i < 4; i++)
 		if(!j){
-			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
+			if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
 				ExBltRect(83,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
@@ -2866,7 +2864,7 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 		}else{
-			if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
+			if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
 				ExBltRect(76,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,

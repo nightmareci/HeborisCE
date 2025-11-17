@@ -98,7 +98,7 @@ void checkMasterFadeout(int32_t player);
 void checkFadeout(int32_t pl);
 void bgmFadeout(void);
 int32_t setstartBGM(int32_t mode,int32_t pl);
-int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg);
+int32_t ReplayBgmModeDecide(int32_t mode,int32_t nv,int32_t dm,int32_t eg);
 int32_t ReplaysetstartBGM(int32_t mode,int32_t pl);
 int32_t setstartBGM_debug(int32_t mode,int32_t pl);
 int32_t BgmModeDecide(int32_t pl,int32_t mode);

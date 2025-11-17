@@ -17,7 +17,7 @@
 #define		wait3			gamewait3
 #define		waitt			gamewaitt
 
-void loadBG(int32_t players,int32_t vsmode);
+void loadBG(int32_t players);
 void LoadBackground(int32_t plane,const char *nameStr);
 void LoadTitle();
 void loadBGM(void);
@@ -121,10 +121,10 @@ void playerInitial(int32_t player);
 void setNextBlockColors(int32_t player,int32_t first);
 void gameAllInit(void);
 void versusInit(int32_t player);
-void enterMissionMode(int32_t player);
-void enterPracticeMode(int32_t player);
+void enterMissionMode(void);
+void enterPracticeMode(void);
 void setStartLevel(int32_t pl);
-void enterVersusMode(int32_t player);
+void enterVersusMode(void);
 void enterSoloMode(int32_t player);
 void padRepeat2(int32_t player);
 void doDemoMode(void);
@@ -244,7 +244,6 @@ extern int32_t flds[10 *22 *2];
 extern int32_t std_opt[2];
 extern int32_t fpbas_mode[2];
 extern int32_t fastroll[2];
-extern int32_t bo[2];
 extern int32_t alpha_tls;
 extern int32_t disable_giji3D;
 extern int32_t FP_next[4];
@@ -766,7 +765,7 @@ extern int32_t ending[2];
 extern int32_t kickc2[2];
 extern int32_t kickc[2];
 extern int32_t start[2];
-extern int32_t tr[2];
+extern int32_t tgmRank[2];
 extern int32_t tc[2];
 extern int32_t ssc;
 extern int32_t sw,sh;

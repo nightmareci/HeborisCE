@@ -70,7 +70,7 @@ int32_t RankingCheck3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, i
 void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int32_t rtime, int32_t rclear,
 	int32_t rother, char *rname, int32_t rank, int32_t rac, int32_t rst, int32_t rsk, int32_t rco ,int32_t rre) {
 
-	int32_t i, j, rcolor;
+	int32_t i, j;
 
 	if(playback || demo) return;
 	if((rank < 0) || (rank > 2)) return;
@@ -203,7 +203,7 @@ void RankingProc2_3() {
 }
 
 void RankingView3() {//3位まで
-	int32_t i, j, k, l, color;
+	int32_t i, j, l;
 
 	// 背景描画
 	count++;
@@ -457,15 +457,15 @@ void RankingView3() {//3位まで
 			if((rkpage >= 1)&&(rkpage <= 4)) {
 				ExBltRect(85, 16,  5 + ((6 + (i * 4) + (l * 13)) * 8), 0, 77, 27, 7);
 				if(rkac3[j + i]) ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52 - rkac3[j + i] * 13, 15, 12);
-					else ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52, 15, 12);
+				else ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52, 15, 12);
 				if(rkst3[j + i]) ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 - rkst3[j + i] * 13, 15, 12);
-					else ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 , 15, 12);
+				else ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 , 15, 12);
 				if(rksk3[j + i]) ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52 - rksk3[j + i] * 13, 15, 12);
-					else ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52, 15, 12);
+				else ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52, 15, 12);
 				if(rkco3[j + i]) ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52 - rkco3[j + i] * 13, 15, 12);
-					else ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52, 15, 12);
+				else ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52, 15, 12);
 				if(rkre3[j + i]) ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52 - rkre3[j + i] * 13, 15, 12);
-					else ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52, 15, 12);
+				else ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52, 15, 12);
 			}
 		}
 	}
@@ -642,9 +642,9 @@ void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type){
 	}else{
 		return;
 	}
-	color[player] = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
+	color[player] = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rotspl[player]];
 	if(1) {
-		tmp = RankingGet3(cat[player],ARSSRSch(rots[player]), ex[player] );
+		tmp = RankingGet3(cat[player],ARSSRSch(rotspl[player]), ex[player] );
 		if( (gameMode[player]==7)&&(anothermode[player] <= 1)){
 			if(rkdata3[tmp] < 150){
 			type = 1;//まだクリアしてないからデータを表示
@@ -723,10 +723,10 @@ void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type){
 	}else{
 		return ;
 	}
-	color[player] = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
+	color[player] = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rotspl[player]];
 	/* ベストタイム/データ */
 	if( (gameMode[player] >= 7) && ((!maxPlay)) ) {
-			tmp = RankingGet3(cat[player],ARSSRSch(rots[player]), ex[player] );
+			tmp = RankingGet3(cat[player],ARSSRSch(rotspl[player]), ex[player] );
 			if( (gameMode[player]==7)&&(anothermode[player] <= 1)){
 				if(rkdata3[tmp] < 150){
 				type = 1;//まだクリアしてないからデータを表示
@@ -742,11 +742,11 @@ void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type){
 				}
 			}
 			if(type==1){//タイムかデータか？
-				printFont(x, y-1, "BEST SCORE", fontc[rots[player]]);
+				printFont(x, y-1, "BEST SCORE", fontc[rotspl[player]]);
 				SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[tmp]);
-				printFont(x+3, y, "LINES", fontc[rots[player]]);
+				printFont(x+3, y, "LINES", fontc[rotspl[player]]);
 			}else{
-				printFont(x, y-1, "BEST TIME", fontc[rots[player]]);
+				printFont(x, y-1, "BEST TIME", fontc[rotspl[player]]);
 				getTime(rktime3[tmp]);
 			}
 			printFont(x, y, string[0], color[player]);
@@ -755,11 +755,11 @@ void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type){
 	}
 }
 int32_t viewgrade(int32_t player){//masterモードのgrade4の段位を見る
-	int32_t	tmp,color[2],cat[2],ex[2];
+	int32_t	tmp;
 	if(ranking_type<2){
 	return 0;
 	}
 	if(Isbesttime==0)return 0;
-	tmp = RankingGet3(2,ARSSRSch(rots[player]), 1 );
+	tmp = RankingGet3(2,ARSSRSch(rotspl[player]), 1 );
 	return rkdata3[tmp];
 }

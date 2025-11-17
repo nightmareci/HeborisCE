@@ -224,137 +224,76 @@ void GradeUp2(int32_t player, int32_t lines){
 
 		i[player] = (i[player] * gbai[player]) / 2;
 		// add combo bonus, if any. tetrises don't gaem extra g points, because it's true in TAP.
-		if(combo2[player] == 2)
-		{
-                	if(lines == 1)
-			{
+		if(combo2[player] == 2) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 6 ) / 5;//1.2倍
+                	} else if(lines == 2) {
+				i[player] = (i[player] * 7 ) / 5;//1.4倍
+                	} else if(lines == 3) {
+				i[player] = (i[player] * 3 ) / 2;//1.5倍
                 	}
-			else if(lines == 2)
-			{
-                        	i[player] = (i[player] * 7 ) / 5;//1.4倍
-                	}
-			else if(lines == 3){
-                        	i[player] = (i[player] * 3 ) / 2;//1.5倍
-                	}
-        	}
-		else if(combo2[player] == 3)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 3) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 6 ) / 5;//1.2倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 3 ) / 2;//1.5倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 9 ) / 5;//1.8倍
                 	}
-        	}
-		else if(combo2[player] == 4)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 4) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 7 ) / 5;//1.4倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 8 ) / 5;//1.6倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 2 );//2.0倍
                 	}
-        	}
-		else if(combo2[player] == 5)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 5) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 7 ) / 5;//1.4倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 17 ) / 10;//1.7倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 11 ) / 5;//2.2倍
 	                }
-        	}
-		else if(combo2[player] == 6)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 6) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 7 ) / 5;//1.4倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 9 ) / 5;//1.8倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 23 ) / 10;//2.3倍
                 	}
-        	}
-		else if(combo2[player] == 7)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 7) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 7 ) / 5;//1.4倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 19 ) / 10;//1.9倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 12 ) / 5;//2.4倍
                 	}
-        	}
-		else if(combo2[player] == 8)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 8) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 3 ) / 2;//1.5倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 2 );//2.0倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 5 ) / 2;//2.5倍
                 	}
-        	}
-		else if(combo2[player] == 9)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] == 9) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 3 ) / 2;//1.5倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 21 ) /10;//2.1倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 13 ) / 5;//2.6倍
                 	}
-        	}
-		else if(combo2[player] > 9)
-		{
-                	if(lines == 1)
-			{
+        	} else if(combo2[player] > 9) {
+                	if(lines == 1) {
                         	i[player] = (i[player] * 2 );//2.0倍
-                	}
-			else if(lines == 2)
-			{
+                	} else if(lines == 2) {
                         	i[player] = (i[player] * 5 ) /2;//2.5倍
-                	}
-			else if(lines == 3)
-			{
+                	} else if(lines == 3) {
                         	i[player] = (i[player] * 3 ) ;//3.0倍
                 	}
         	}
@@ -468,13 +407,12 @@ void GradeUp2(int32_t player, int32_t lines){
 /* ??式段位　*/
 void GradeUp3(int32_t player) {//ブロックを置く度に
 	int32_t 	lap_timeT[2], isqcool;
-	int32_t	gup3sec[2],secinlv[2];
+	int32_t	secinlv[2];
 
 	if( (gameMode[player] == 1) || (gameMode[player] == 2) ) {
 
-	gup3sec[player] = tc[player]/100;//レベルからセクションを決定
 	secinlv[player] = tc[player] - ((tc[player]/100)*100);
-	lap_timeT[player] = ( timeN[player] / (1 + (((rots[player] == 6) || (rots[player] == 8)) && (repversw >= 30))) ) + (time99[player] * 2);//レベルストップ中は3倍加算
+	lap_timeT[player] = ( timeN[player] / (1 + (((rotspl[player] == 6) || (rotspl[player] == 8)) && (repversw >= 30))) ) + (time99[player] * 2);//レベルストップ中は3倍加算
 		// DS-WORLDで異様にCOOLが出にくいのでC7U1
 	if((secinlv[player] > 80)&&(secinlv[player] < 99)&&(qualityflag[player] != 1)){//quality cool
 		ave_laptime3[player] = lap_timeT[player] / secinlv[player];//セクションレベルで割る

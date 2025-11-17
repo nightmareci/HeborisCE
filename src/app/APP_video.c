@@ -165,7 +165,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 
 	/* Validate the window type */
 	APP_ScreenModeFlag windowType = *screenMode & APP_SCREEN_MODE_WINDOW_TYPE;
-	if (windowType < 0 || windowType >= APP_SCREEN_MODE_WINDOW_TYPES_COUNT) {
+	if (windowType >= APP_SCREEN_MODE_WINDOW_TYPES_COUNT) {
 		APP_SetError("Invalid window type value of %d", (int)windowType);
 		goto fail;
 	}
@@ -928,7 +928,7 @@ void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX,
 	}
 }
 
-void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int srcX, int srcY, int srcW)
+void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW)
 {
 	if (
 		plane < 0 || plane >= APP_PLANE_COUNT || !APP_Planes[plane] ||
@@ -997,8 +997,8 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 	const float texCharW = (float)charW / texW;
 	const float texCharH = (float)charH / texH;
 	while (vertex < verticesEnd) {
-		float texX = (srcX + ((*c - firstChar) * charW) % srcW) / texW;
-		float texY = (srcY + (((*c - firstChar) * charW) / srcW) * charH) / texH;
+		float texX = (sheetX + ((*c - firstChar) * charW) % sheetW) / texW;
+		float texY = (sheetY + (((*c - firstChar) * charW) / sheetW) * charH) / texH;
 
 		vertex[0].position = (SDL_FPoint) { x, y };
 		vertex[0].tex_coord = (SDL_FPoint) { texX, texY };

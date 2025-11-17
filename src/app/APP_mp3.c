@@ -63,16 +63,19 @@ static drmp3_bool32 APP_DRMP3_Tell(void* pUserData, drmp3_int64* pCursor)
 
 static void* APP_DRMP3_Malloc(size_t sz, void* pUserData)
 {
+	(void)pUserData;
 	return SDL_malloc(sz);
 }
 
 static void* APP_DRMP3_Realloc(void* p, size_t sz, void* pUserData)
 {
+	(void)pUserData;
 	return SDL_realloc(p, sz);
 }
 
 static void APP_DRMP3_Free(void* p, void* pUserData)
 {
+	(void)pUserData;
 	SDL_free(p);
 }
 

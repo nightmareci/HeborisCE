@@ -60,8 +60,7 @@ int32_t RankingCheck(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rtime, int
 	if(rtt) {
 		for(i = 0; i < 5; i++) {
 			// 完全クリアフラグが立っていたら上位に来る #1.60c7k3
-			if( (end >= rkfl[j+ i]) && ((rlv > rklv[j+ i]) ||
-				 (rlv == rklv[j+ i])&&(rtime < rktime[j+ i])) ) {
+			if( (end >= rkfl[j+ i]) && (((rlv > rklv[j+ i]) || (rlv == rklv[j+ i]))&&(rtime < rktime[j+ i])) ) {
 				rank = i;
 				break;
 			}

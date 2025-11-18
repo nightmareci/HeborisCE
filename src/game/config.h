@@ -18,13 +18,13 @@ int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
 extern int32_t reinit;
-#ifdef APP_ENABLE_JOYSTICK
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 extern APP_JoyKey joyKeyAssign[10 *2];
 #endif
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 extern APP_ConKey conKeyAssign[8 * 2];
 #endif
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern SDL_Scancode keyAssign[10 * 2];
 #endif
 extern int32_t lvupbonus;
@@ -42,7 +42,7 @@ extern int32_t dispnext;
 extern int32_t wavebgm;
 extern int32_t fldtr;
 extern int32_t dtc;
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern int32_t dispnextkey[2];
 #endif
 extern int32_t digitc[12];

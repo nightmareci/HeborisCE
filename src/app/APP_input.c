@@ -1,5 +1,5 @@
 #include "APP_input.h"
-#ifdef APP_ENABLE_GAME_CONTROLLER_DB
+#ifdef APP_ENABLE_GAME_CONTROLLER_DB_FILE
 #include "APP_filesystem.h"
 #endif
 
@@ -9,17 +9,17 @@ static APP_InputType APP_LastInputType = APP_ONLY_INPUT_TYPE;
 static APP_InputType APP_LastInputType = APP_INPUT_NULL;
 #endif
 
-#ifdef APP_ENABLE_LINUX_GPIO
+#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 static int			APP_GPIORepeat[10];
 static struct gpiod_chip	*APP_GPIOChip;
 static struct gpiod_line	*APP_GPIOLines[10];
 #endif
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 static int			APP_KeyRepeat[APP_KEY_MAX];
 #endif
 
-#ifdef APP_ENABLE_JOYSTICK
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 typedef struct APP_Joy
 {
 	SDL_Joystick* joystick;
@@ -32,7 +32,7 @@ typedef struct APP_Joy
 } APP_Joy;
 #endif
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 typedef struct APP_Con
 {
 	SDL_Gamepad* controller;
@@ -42,16 +42,16 @@ typedef struct APP_Con
 static int APP_LastActiveCon = -1;
 #endif
 
-#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
+#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
 typedef struct APP_PlayerSlot
 {
 	APP_PlayerSlotType type;
 	union
 	{
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		APP_Joy joy;
 		#endif
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		APP_Con con;
 		#endif
 	};
@@ -88,7 +88,7 @@ APP_InputType APP_GetLastInputType(void)
 	return APP_LastInputType;
 }
 
-#ifdef APP_ENABLE_LINUX_GPIO
+#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 bool APP_IsPushGPIO ( int key )
 {
 	return key >= 0 && key < NUMBTNS && APP_GPIORepeat[key] == 1;
@@ -105,7 +105,7 @@ int APP_GetGPIORepeat( int key )
 }
 #endif
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 bool APP_IsPushKey (int key)
 {
 	return key >= 0 && key < APP_KEY_MAX && APP_KeyRepeat[key] == 1;
@@ -127,7 +127,7 @@ int APP_GetMaxKey(void)
 }
 #endif
 
-#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
+#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
 
 static bool APP_IsCon ( SDL_JoystickID joy )
 {
@@ -190,7 +190,7 @@ static bool APP_ConIsBuiltin(SDL_Gamepad * const controller) {
 }
 
 bool APP_UpdatePlayerSlots(void) {
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	// This should never be needed, as the builtin controller most likely will
 	// always be connected, but you never know, maybe a modder detached it.
 	if (APP_BuiltinCon.controller && !SDL_GamepadConnected(APP_BuiltinCon.controller)) {
@@ -200,7 +200,7 @@ bool APP_UpdatePlayerSlots(void) {
 	for (int player = 0; player < APP_NumPlayerSlots; player++) {
 		APP_PlayerSlot* const slot = &APP_PlayerSlots[player];
 		switch (slot->type) {
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		case APP_PLAYERSLOT_JOY:
 			if (!SDL_JoystickConnected(slot->joy.joystick)) {
 				if (slot->joy.axesRepeat) SDL_free(slot->joy.axesRepeat);
@@ -211,7 +211,7 @@ bool APP_UpdatePlayerSlots(void) {
 			break;
 		#endif
 
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		case APP_PLAYERSLOT_CON:
 			if (!SDL_GamepadConnected(slot->con.controller)) {
 				*slot = (APP_PlayerSlot) { 0 };
@@ -231,7 +231,7 @@ bool APP_UpdatePlayerSlots(void) {
 		return SDL_SetError("Failed to get joysticks list: %s", SDL_GetError());
 	}
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	for (int device = 0; device < numJoys; device++) {
 		if (!APP_IsCon(joys[device])) {
 			continue;
@@ -267,7 +267,7 @@ bool APP_UpdatePlayerSlots(void) {
 	}
 	#endif
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	for (int device = 0; device < numJoys; device++) {
 		if (APP_IsCon(joys[device])) {
 			continue;
@@ -344,7 +344,7 @@ static void APP_PlayerSlotsClose(void)
 		{
 			switch (APP_PlayerSlots[player].type)
 			{
-			#ifdef APP_ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			case APP_PLAYERSLOT_JOY: {
 				APP_Joy* const joy = &APP_PlayerSlots[player].joy;
 				if (SDL_JoystickConnected(joy->joystick))
@@ -358,7 +358,7 @@ static void APP_PlayerSlotsClose(void)
 			}
 			#endif
 
-			#ifdef APP_ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 			case APP_PLAYERSLOT_CON: {
 				if (SDL_GamepadConnected(APP_PlayerSlots[player].con.controller))
 				{
@@ -404,7 +404,7 @@ APP_PlayerSlotType APP_GetPlayerSlotType(int player)
 
 #endif
 
-#ifdef APP_ENABLE_JOYSTICK
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 
 static void APP_JoyInputsUpdate(void)
 {
@@ -868,7 +868,7 @@ int APP_GetMaxJoyButton(int player)
 }
 #endif
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 
 static SDL_GamepadType APP_GetSDLGameControllerType(SDL_Gamepad * const controller)
 {
@@ -1826,7 +1826,7 @@ void APP_OpenInputs(void)
 	}
 	#endif
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	// キーリピートバッファ初期化
 	// Key repeat buffer init
 	SDL_memset(APP_KeyRepeat, 0, sizeof(APP_KeyRepeat));
@@ -1834,7 +1834,7 @@ void APP_OpenInputs(void)
 
 	// ゲームコントローラーデータベースの初期化
 	// Game controller database init
-	#ifdef APP_ENABLE_GAME_CONTROLLER_DB
+	#ifdef APP_ENABLE_GAME_CONTROLLER_DB_FILE
 	SDL_IOStream* db = APP_OpenRead("gamecontrollerdb.txt");
 	// データベースがなくても問題ありません
 	// If we don't have the database, it's fine
@@ -1849,7 +1849,7 @@ void APP_OpenInputs(void)
 
 void APP_CloseInputs(void)
 {
-	#ifdef APP_ENABLE_LINUX_GPIO
+	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 	if ( APP_GPIOChip )
 	{
 		for ( int i = 0 ; i < 10 ; i ++ )
@@ -1863,12 +1863,12 @@ void APP_CloseInputs(void)
 	}
 	#endif
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	SDL_memset(APP_KeyRepeat, 0, sizeof(APP_KeyRepeat));
 	#endif
 
-	#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	if (APP_BuiltinCon.controller && SDL_GamepadConnected(APP_BuiltinCon.controller)) {
 		SDL_CloseGamepad(APP_BuiltinCon.controller);
 		APP_BuiltinCon.controller = NULL;
@@ -1880,7 +1880,7 @@ void APP_CloseInputs(void)
 
 void APP_InputsUpdate(void)
 {
-	#ifdef APP_ENABLE_LINUX_GPIO
+	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 	for (int line = 0; line < 10; line++)
 	{
 		if (gpiod_line_get_value(APP_GPIOLines[line]) == 1)
@@ -1894,7 +1894,7 @@ void APP_InputsUpdate(void)
 	}
 	#endif
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	int numKeys = 0;
 	const bool* keyStates = SDL_GetKeyboardState(&numKeys);
 
@@ -1911,11 +1911,11 @@ void APP_InputsUpdate(void)
 	}
 	#endif
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	APP_JoyInputsUpdate();
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	APP_ConInputsUpdate();
 	#endif
 }

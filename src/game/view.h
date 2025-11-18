@@ -37,7 +37,7 @@ void viewbesttimes(int32_t player);
 void viewbestSTtimes(int32_t player);
 void printPrompt(int32_t fontX, int32_t fontY, APP_Prompt prompt, int32_t fontColor);
 void printMenuButton(int32_t fontX, int32_t fontY, APP_Button button, int32_t player);
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, APP_ConKey* key, int32_t fontColor);
 #endif
 void printFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);

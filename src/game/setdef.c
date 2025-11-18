@@ -30,11 +30,11 @@ typedef struct {
 
 	int32_t	fontsize;
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	APP_JoyKey	joyKeyAssign[10 * 2];
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t playerCons[2];
 	APP_ConKey conKeyAssign[8 * 2];
 	#endif
@@ -86,7 +86,7 @@ typedef struct {
 } SConfig;
 
 static const SConfig DefaultConfig = {
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	.keyAssign =
 	{
 		SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
@@ -125,11 +125,11 @@ static const SConfig DefaultConfig = {
 
 	.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	.joyKeyAssign = APP_DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	.playerCons = { 0, 1 },
 	.conKeyAssign = {
 		// Player 1
@@ -396,7 +396,7 @@ void SetDefaultConfig()
 	cfgbuf[78] = DefaultConfig.fontc[8] + DefaultConfig.fontc[9] * 0x100 + DefaultConfig.fontc[10] * 0x10000 + DefaultConfig.fontc[11] * 0x1000000 ;
 	cfgbuf[79] = DefaultConfig.digitc[8] + DefaultConfig.digitc[9] * 0x100 + DefaultConfig.digitc[10] * 0x10000 + DefaultConfig.digitc[11] * 0x1000000 ;
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
@@ -424,7 +424,7 @@ void SetDefaultConfig()
 	}
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t *conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		conkeybuf[pl * (1 + 2 * 8)] = DefaultConfig.playerCons[pl];

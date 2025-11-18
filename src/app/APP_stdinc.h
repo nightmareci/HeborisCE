@@ -7,7 +7,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <limits.h>
-#ifdef APP_ENABLE_LINUX_GPIO
+#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 #include <gpiod.h>
 #endif
 #ifdef SDL_PLATFORM_EMSCRIPTEN

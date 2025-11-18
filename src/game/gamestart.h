@@ -142,12 +142,12 @@ int IsPushMenu(int32_t player, APP_Button button, APP_InputType type);
 int IsPressPrompt(APP_Prompt prompt);
 int IsPushPrompt(APP_Prompt prompt);
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 int IsPressConTypeKey(APP_InputType type, APP_ConKey* key);
 int IsPushConTypeKey(APP_InputType type, APP_ConKey* key);
 #endif
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 void updateEscapeFrames();
 #endif
 int quitNow();
@@ -182,7 +182,7 @@ typedef enum EMainLoopState {
 	MAIN_CONFIG,
 	MAIN_SOUND_TEST,
 	MAIN_TEST_MENU,
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	MAIN_RESET_KEYBOARD,
 	#endif
 	MAIN_QUIT
@@ -573,7 +573,7 @@ extern int32_t clearnum[2];
 extern int32_t randommode[2];
 extern int32_t stage_nextc[2];
 extern int32_t start_nextc[2];
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern int32_t skipKey;
 #endif
 extern int32_t start_stage[2];

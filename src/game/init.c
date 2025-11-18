@@ -92,7 +92,7 @@ void gameInit() {
 	ti_s_go_start = 160;		// TOMOYO go開始
 	ti_s_go_end = 225;		// TOMOYO go終了
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 	// TOMOYOモードでのステージスキップキー #1.60c7l8
 	skipKey = SDL_SCANCODE_F5;
 #endif
@@ -554,8 +554,8 @@ void gameInit() {
 
 	//TOMOYO-EHeart最終面の仕掛け（２つのフィールドが明るくなったり暗くなったり）を消す
 	//0=消さない　1=消す
-	disable_ehlast_gimmick = 0; 
-	
+	disable_ehlast_gimmick = 0;
+
 	//**********************************************************
 	// 背景アニメ設定
 	//**********************************************************

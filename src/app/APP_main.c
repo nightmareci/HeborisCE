@@ -24,7 +24,7 @@ static bool APP_LastFrameSkipped;
 static uint64_t APP_NowNS;
 static int64_t APP_FrameNS;
 static int64_t APP_AccumulatedNS = 0;
-#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
+#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
 static bool APP_UpdatePlayerSlotsNow = false;
 #endif
 static bool APP_ShowCursorNow = false;
@@ -226,10 +226,10 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 	/* SDLの初期化 || SDL initialization */
 	if (!SDL_Init(
 		SDL_INIT_AUDIO | SDL_INIT_VIDEO
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		| SDL_INIT_JOYSTICK
 		#endif
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		| SDL_INIT_GAMEPAD
 		#endif
 	)) {
@@ -251,17 +251,17 @@ SDL_AppResult SDLCALL SDL_AppEvent(void* appstate, SDL_Event* event)
 			break;
 
 		case SDL_EVENT_WINDOW_RESIZED:
-			APP_ScreenSubpixelOffset = APP_SCREEN_SUBPIXEL_OFFSET;
+			APP_ScreenSubpixelOffset = APP_GET_SCREEN_SUBPIXEL_OFFSET();
 			break;
 
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		case SDL_EVENT_JOYSTICK_ADDED:
 		case SDL_EVENT_JOYSTICK_REMOVED:
 			APP_UpdatePlayerSlotsNow = true;
 			break;
 		#endif
 
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		case SDL_EVENT_GAMEPAD_ADDED:
 		case SDL_EVENT_GAMEPAD_REMOVED:
 			APP_UpdatePlayerSlotsNow = true;
@@ -316,7 +316,7 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 		return SDL_APP_FAILURE;
 	}
 
-	#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
+	#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
 	if (APP_UpdatePlayerSlotsNow) {
 		if (!APP_UpdatePlayerSlots()) {
 			APP_SetError("Failed changing player joystick/controller device slots: %s", SDL_GetError());

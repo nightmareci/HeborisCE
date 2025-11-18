@@ -16,7 +16,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 			// TODO: Change how replay saving is selected, away
 			// from hard-coded to the keyboard number keys to
 			// something using the configured inputs.
-			#ifdef APP_ENABLE_KEYBOARD
+			#ifdef APP_ENABLE_KEYBOARD_INPUT
 			if(APP_IsPushKey(2 + i + player * 14)) {
 				saveReplayData(player, i + player * 10 + 1);
 				freeReplayData();

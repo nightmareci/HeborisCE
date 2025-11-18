@@ -46,14 +46,14 @@ endif()
 # Override these defaults for platforms as required. These defaults work on a
 # lot of platforms, but some platforms, like game consoles, have to completely
 # override these settings.
-option(APP_ENABLE_KEYBOARD "Enable input via keyboard" TRUE)
-option(APP_ENABLE_GAME_CONTROLLER "Enable input via game controllers (not the same as classic joystick input)" TRUE)
-option(APP_ENABLE_GAME_CONTROLLER_DB "Enable loading gamecontrollerdb.txt for supporting more game controllers" TRUE)
-option(APP_ENABLE_JOYSTICK "Enable input via any joystick device" TRUE)
+option(APP_ENABLE_KEYBOARD_INPUT "Enable input via keyboard" TRUE)
+option(APP_ENABLE_GAME_CONTROLLER_INPUT "Enable input via game controllers (not the same as classic joystick input)" TRUE)
+option(APP_ENABLE_GAME_CONTROLLER_DB_FILE "Enable loading gamecontrollerdb.txt for supporting more game controllers" TRUE)
+option(APP_ENABLE_JOYSTICK_INPUT "Enable input via any joystick device" TRUE)
 option(APP_ENABLE_ALL_VIDEO_SETTINGS "Enable all video settings; disabling this option hides some \"unsafe\" settings" TRUE)
-option(APP_ENABLE_GAME_QUIT "Enables quitting the game by pressing escape at any time or selecting the \"QUIT\" main menu entry" TRUE)
+option(APP_ENABLE_QUIT "Enables quitting by pressing escape at any time or selecting the \"QUIT\" main menu entry" TRUE)
 set(APP_DEFAULT_JOYKEY_ASSIGN "{ { 0 } }")
-set(APP_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
+set(APP_GET_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
 set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
 set(APP_BASE_PATH_APPEND "")
 
@@ -203,11 +203,11 @@ if(VITA)
 	# used in the vendor libraries.
 	set(CMAKE_POSITION_INDEPENDENT_CODE FALSE CACHE BOOL "Override" FORCE)
 
-	set(APP_ENABLE_KEYBOARD FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_KEYBOARD_INPUT FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_JOYSTICK_INPUT FALSE CACHE BOOL "" FORCE)
 	set(APP_ONLY_INPUT_TYPE APP_INPUT_PLAYSTATION CACHE STRING "" FORCE)
 	set(APP_ONLY_SDL_CONTROLLER_TYPE SDL_GAMEPAD_TYPE_PS4 CACHE STRING "" FORCE)
-	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER_DB_FILE FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
 	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
 
@@ -302,12 +302,12 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 
 	set(APP_FRAMEWORK_TYPE "WEB SDL3")
 
-	set(APP_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_GAME_CONTROLLER TRUE CACHE BOOL "" FORCE)
-	set(APP_ENABLE_GAME_CONTROLLER_DB FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_JOYSTICK_INPUT FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER_INPUT TRUE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_GAME_CONTROLLER_DB_FILE FALSE CACHE BOOL "" FORCE)
 	set(APP_ENABLE_ALL_VIDEO_SETTINGS FALSE CACHE BOOL "" FORCE)
 	set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL | APP_SCREEN_MODE_VSYNC)" CACHE STRING "" FORCE)
-	set(APP_ENABLE_GAME_QUIT FALSE CACHE BOOL "" FORCE)
+	set(APP_ENABLE_QUIT FALSE CACHE BOOL "" FORCE)
 	set(APP_BASE_PATH_APPEND "basepath/")
 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
@@ -503,14 +503,10 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 
 	# Builds commandline program for some Unix-type platforms. The "Portable" package type supports creating distributable packages with CPack.
 
-	option(APP_ENABLE_LINUX_GPIO_INPUT "Enable input via GPIO (Linux only)" OFF)
-	if(APP_ENABLE_LINUX_GPIO_INPUT)
-		if(LINUX)
-			set(APP_ENABLE_LINUX_GPIO TRUE)
-			target_link_libraries(${APP_EXE} PRIVATE gpiod)
-		else()
-			message(FATAL_ERROR "\"APP_ENABLE_LINUX_GPIO_INPUT\" is only supported when targeting Linux")
-		endif()
+	if(LINUX)
+		option(APP_ENABLE_LINUX_GPIO_INPUT "Enable input via Linux GPIO" OFF)
+	else()
+		set(APP_ENABLE_LINUX_GPIO_INPUT OFF CACHE BOOL "Enable input via Linux GPIO" FORCE)
 	endif()
 
 	if(APP_PACKAGE_TYPE STREQUAL "Current Directory")

@@ -2117,8 +2117,8 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 
 void printPrompt(int32_t fontX, int32_t fontY, APP_Prompt prompt, int32_t fontColor) {
 	switch (lastInputType) {
-	#ifdef APP_ENABLE_KEYBOARD
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	case APP_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
@@ -2135,7 +2135,7 @@ void printPrompt(int32_t fontX, int32_t fontY, APP_Prompt prompt, int32_t fontCo
 	}
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX:
 	case APP_INPUT_PLAYSTATION:
 		switch (prompt) {
@@ -2170,7 +2170,7 @@ void printMenuButton(int32_t fontX, int32_t fontY, APP_Button button, int32_t pl
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
 		break;
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX:
 		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
 		break;
@@ -2197,7 +2197,7 @@ void printMenuButton(int32_t fontX, int32_t fontY, APP_Button button, int32_t pl
 	}
 }
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, APP_ConKey* key, int32_t fontColor) {
 	if (conPlayer < 0 || conPlayer >= APP_GetNumPlayerSlots() || !key) return;
 	const char* text;

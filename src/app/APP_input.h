@@ -36,20 +36,20 @@ typedef enum APP_InputType
 {
 	// NULL must be zero.
 	APP_INPUT_NULL = 0u
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	,APP_INPUT_JOYSTICK
 	#endif
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	,APP_INPUT_FIRSTGAMECONTROLLERTYPE
 	,APP_INPUT_XBOX = APP_INPUT_FIRSTGAMECONTROLLERTYPE
 	,APP_INPUT_PLAYSTATION
 	,APP_INPUT_NINTENDO
 	,APP_INPUT_LASTGAMECONTROLLERTYPE = APP_INPUT_NINTENDO
 	#endif
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	,APP_INPUT_KEYBOARD
 	#endif
-	#ifdef APP_ENABLE_LINUX_GPIO
+	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 	,APP_INPUT_LINUXGPIO
 	#endif
 } APP_InputType;
@@ -63,13 +63,13 @@ void APP_InputsUpdate(void);
 
 #define APP_INPUTREPEAT_MAX INT_MAX
 
-#ifdef APP_ENABLE_LINUX_GPIO
+#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 bool APP_IsPushGPIO(int key);
 bool APP_IsPressGPIO(int key);
 int APP_GetGPIORepeat(int key);
 #endif
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 #define APP_KEY_MAX SDL_SCANCODE_COUNT
 
 bool APP_IsPushKey(int key);
@@ -78,7 +78,7 @@ int APP_GetKeyRepeat(int key);
 int APP_GetMaxKey(void);
 #endif
 
-#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER)
+#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
 typedef enum APP_PlayerSlotType
 {
 	APP_PLAYERSLOT_NULL,
@@ -91,7 +91,7 @@ APP_PlayerSlotType APP_GetPlayerSlotType(int player);
 bool APP_UpdatePlayerSlots(void);
 #endif
 
-#ifdef APP_ENABLE_JOYSTICK
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 typedef struct APP_JoyGUID {
 	int32_t data[4];
 } APP_JoyGUID;
@@ -135,7 +135,7 @@ int APP_GetMaxJoyHat(int player);
 int APP_GetMaxJoyButton(int player);
 #endif
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 typedef enum APP_ConKeyType {
 	APP_CONKEY_ANY,
 	APP_CONKEY_AXIS,

@@ -439,9 +439,9 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	}
 
 	// This should be after the renderer has been set up, as
-	// APP_SCREEN_SUBPIXEL_OFFSET queries the renderer when a given platform
+	// APP_GET_SCREEN_SUBPIXEL_OFFSET queries the renderer when a given platform
 	// uses nonzero offsets.
-	APP_ScreenSubpixelOffset = APP_SCREEN_SUBPIXEL_OFFSET;
+	APP_ScreenSubpixelOffset = APP_GET_SCREEN_SUBPIXEL_OFFSET();
 
 	// WARNING: Make no changes to the renderer settings from here on down, as
 	// the render target has been set, and bugs have been observed when

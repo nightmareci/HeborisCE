@@ -16,7 +16,7 @@ int32_t background;		// フィールド背景0:スクロール 1:スクロール
 int32_t rotspl[2];		// 回転規則
 int32_t fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 int32_t digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
@@ -40,7 +40,7 @@ int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
 int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 // キーボード設定
 SDL_Scancode keyAssign[APP_BUTTON_COUNT * 2] =
 {
@@ -56,12 +56,12 @@ SDL_Scancode keyAssign[APP_BUTTON_COUNT * 2] =
 
 int32_t segacheat;		// Allow CW and/or 180 rotation in old style.
 
-#ifdef APP_ENABLE_JOYSTICK
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 // →pauseとgiveupを追加 1.60c7g7
 APP_JoyKey joyKeyAssign[APP_BUTTON_COUNT * 2];	// ジョイスティックボタン割り当て
 #endif
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 APP_ConKey conKeyAssign[8 * 2];
 #endif
 
@@ -89,7 +89,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[12] = fastlrmove;
 	cfgbuf[13] = background;
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	for (int32_t i = 0; i < 20; i++) {
 		cfgbuf[14 + i] = keyAssign[i];
 	}
@@ -127,7 +127,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[78] = fontc[8] + fontc[9] * 0x100 + fontc[10] * 0x10000 + fontc[11] * 0x1000000;
 	cfgbuf[79] = digitc[8] + digitc[9] * 0x100 + digitc[10] * 0x10000 + digitc[11] * 0x1000000;
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
@@ -155,7 +155,7 @@ int32_t SaveConfig(void) {
 	}
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		conkeybuf[pl * (1 + 2 * 8)] = pl;
@@ -244,7 +244,7 @@ int32_t LoadConfig(void) {
 	fastlrmove = cfgbuf[12];
 	background = cfgbuf[13];
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	for(int32_t i = 0; i < 20; i++) {
 		if (cfgbuf[14 + i] == (int32_t)SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
 		else keyAssign[i] = cfgbuf[14 + i];
@@ -297,7 +297,7 @@ int32_t LoadConfig(void) {
 		digitc[i + 8] = (cfgbuf[79] >> (i * 8)) & 0xff;
 	}
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
@@ -325,7 +325,7 @@ int32_t LoadConfig(void) {
 	}
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		int32_t* plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
@@ -401,7 +401,7 @@ void ConfigMenu() {
 		ncfg[9]  = background;
 		last_BG = background;
 
-		#ifdef APP_ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD_INPUT
 		for(int32_t i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
 		#endif
 
@@ -451,7 +451,7 @@ void ConfigMenu() {
 		ncfg[78] = fontc[8];
 		ncfg[79] = digitc[8];
 
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		int32_t *joykeybuf = &ncfg[80];
 		for (int32_t pl = 0; pl < 2; pl++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8];
@@ -477,7 +477,7 @@ void ConfigMenu() {
 		}
 		#endif
 
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		int32_t* conkeybuf = &ncfg[240];
 		for (int32_t pl = 0; pl < 2; pl++) {
 			conkeybuf[pl * (1 + 2 * 8)] = pl;
@@ -1269,15 +1269,15 @@ void ConfigMenu() {
 			printFont(23, 1, "- INPUT SETTING", fontc[rotspl[0]]);
 			printFont(2,  3, "<< DESIGN <<	       >> A/V >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 			int32_t numOptions = 0;
-			#ifdef APP_ENABLE_KEYBOARD
+			#ifdef APP_ENABLE_KEYBOARD_INPUT
 			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 2P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			#endif
-			#ifdef APP_ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			numOptions++; printFont(2, 4 + numOptions * 2, "[JOYSTICK 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			numOptions++; printFont(2, 4 + numOptions * 2, "[JOYSTICK 2P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 			numOptions++; printFont(2, 4 + numOptions * 2, "[GAME CONTROLLER 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			numOptions++; printFont(2, 4 + numOptions * 2, "[GAME CONTROLLER 2P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			#endif
@@ -1338,13 +1338,13 @@ void ConfigMenu() {
 				}
 			}
 		}
-		#ifdef APP_ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD_INPUT
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// keyboard 1p&2p
 			bool cancel = false;
-			#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER) || defined(APP_ENABLE_LINUX_GPIO)
+			#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT) || defined(APP_ENABLE_LINUX_GPIO_INPUT)
 			switch (APP_GetLastInputType()) {
-			#ifdef APP_ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			case APP_INPUT_JOYSTICK:
 				if (statusc[0] < 10 && APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_B])) {
 					PlaySE(WAVE_SE_MOVE);
@@ -1354,7 +1354,7 @@ void ConfigMenu() {
 				}
 				break;
 			#endif
-			#ifdef APP_ENABLE_LINUX_GPIO
+			#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 			case APP_INPUT_LINUXGPIO:
 				if (statusc[0] < 10 && APP_IsPushGPIO(APP_BUTTON_B)) {
 					PlaySE(WAVE_SE_MOVE);
@@ -1364,7 +1364,7 @@ void ConfigMenu() {
 				}
 				break;
 			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 			case APP_INPUT_XBOX:
 			case APP_INPUT_PLAYSTATION:
 			case APP_INPUT_NINTENDO:
@@ -1448,7 +1448,7 @@ void ConfigMenu() {
 			}
 		}
 		#endif
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// joystick setting
 			if (APP_GetNumJoys() <= 0) {
@@ -1457,9 +1457,9 @@ void ConfigMenu() {
 			}
 			else {
 				bool cancel = false;
-				#if defined(APP_ENABLE_GAME_CONTROLLER) || defined(APP_ENABLE_LINUX_GPIO) || defined(APP_ENABLE_KEYBOARD)
+				#if defined(APP_ENABLE_GAME_CONTROLLER_INPUT) || defined(APP_ENABLE_LINUX_GPIO_INPUT) || defined(APP_ENABLE_KEYBOARD_INPUT)
 				switch (APP_GetLastInputType()) {
-				#ifdef APP_ENABLE_GAME_CONTROLLER
+				#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 				case APP_INPUT_XBOX:
 				case APP_INPUT_PLAYSTATION:
 				case APP_INPUT_NINTENDO:
@@ -1471,10 +1471,10 @@ void ConfigMenu() {
 					}
 					break;
 				#endif
-				#ifdef APP_ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 				case APP_INPUT_LINUXGPIO:
 				#endif
-				#ifdef APP_ENABLE_KEYBOARD
+				#ifdef APP_ENABLE_KEYBOARD_INPUT
 				case APP_INPUT_KEYBOARD:
 					if (statusc[0] < 10 && APP_IsPushKey(keyAssign[APP_BUTTON_B])) {
 						PlaySE(WAVE_SE_MOVE);
@@ -1735,7 +1735,7 @@ void ConfigMenu() {
 			}
 		}
 		#endif
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// game controller setting
 			if (APP_GetNumCons() <= 0) {
@@ -1759,7 +1759,7 @@ void ConfigMenu() {
 						cancel = true;
 					}
 					break;
-				#ifdef APP_ENABLE_JOYSTICK
+				#ifdef APP_ENABLE_JOYSTICK_INPUT
 				case APP_INPUT_JOYSTICK:
 					if (statusc[0] < 8 && APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_B])) {
 						PlaySE(WAVE_SE_MOVE);
@@ -1769,7 +1769,7 @@ void ConfigMenu() {
 					}
 					break;
 				#endif
-				#ifdef APP_ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 				case APP_INPUT_LINUXGPIO:
 					if (statusc[0] < 8 && APP_IsPushGPIO(APP_BUTTON_B)) {
 						PlaySE(WAVE_SE_MOVE);
@@ -1779,7 +1779,7 @@ void ConfigMenu() {
 					}
 					break;
 				#endif
-				#ifdef APP_ENABLE_KEYBOARD
+				#ifdef APP_ENABLE_KEYBOARD_INPUT
 				case APP_INPUT_KEYBOARD:
 					if (statusc[0] < 8 && APP_IsPushKey(keyAssign[APP_BUTTON_B])) {
 						PlaySE(WAVE_SE_MOVE);
@@ -1922,13 +1922,13 @@ void ConfigMenu() {
 					else if(i == 7) { printFont(3, 7 + i + pl * 10, "D:", 0); }
 					int32_t j =
 						0
-						#ifdef APP_ENABLE_KEYBOARD
+						#ifdef APP_ENABLE_KEYBOARD_INPUT
 						|| APP_IsPressKey(keyAssign[i + 10 * pl])
 						#endif
-						#ifdef APP_ENABLE_JOYSTICK
+						#ifdef APP_ENABLE_JOYSTICK_INPUT
 						|| APP_IsPressJoyKey(&joyKeyAssign[i + 10 * pl])	// キー入力状態取得
 						#endif
-						#ifdef APP_ENABLE_GAME_CONTROLLER
+						#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 						|| APP_IsPressConKey(pl, &conKeyAssign[i + 8 * pl])
 						#endif
 						;
@@ -1967,7 +1967,7 @@ void ConfigMenu() {
 
 					string[0][0] = '\0';
 
-					#ifdef APP_ENABLE_KEYBOARD
+					#ifdef APP_ENABLE_KEYBOARD_INPUT
 					if (keyAssign[i + pl * 10] != SDL_SCANCODE_UNKNOWN)
 					{
 						SDL_snprintf(string[1], STRING_LENGTH," KB:%03X", (unsigned)keyAssign[i + pl * 10]);
@@ -1975,7 +1975,7 @@ void ConfigMenu() {
 					}
 					#endif
 
-					#ifdef APP_ENABLE_JOYSTICK
+					#ifdef APP_ENABLE_JOYSTICK_INPUT
 					APP_JoyKey* const key = &joyKeyAssign[i + pl * 10];
 					APP_JoyGUID getGUID = APP_GetJoyGUID(key->player);
 					APP_JoyGUID zeroGUID = { 0 };
@@ -2017,7 +2017,7 @@ void ConfigMenu() {
 					}
 					#endif
 
-					#ifdef APP_ENABLE_GAME_CONTROLLER
+					#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 					APP_ConKey conKey = conKeyAssign[i + pl * 8];
 					if (APP_GetPlayerSlotType(pl) == APP_PLAYERSLOT_CON && (conKey.type == APP_CONKEY_AXIS || conKey.type == APP_CONKEY_BUTTON)) {
 						if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);

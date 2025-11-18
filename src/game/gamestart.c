@@ -784,7 +784,7 @@ int32_t		dummy;	// 設定ファイルが空だと23行目で発生する謎の�
 
 // #1.60c7l8追加変数
 int32_t		start_stage[2] = {0,0};		// スタート時のステージ番号
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 int32_t		skipKey = 0x3F;				// ステージスキップキー
 #endif
 
@@ -1409,7 +1409,7 @@ int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像があ
 
 bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 bool	quitNowFlag = false;
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 bool	enterResetKeys = false;
 bool	resetKeysFlag = false;
 bool	lastEnterPressed = false;
@@ -1833,7 +1833,7 @@ void mainUpdate() {
 		testmenu();
 		break;
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	case MAIN_RESET_KEYBOARD: {
 		const char* const lines[] = {
 			"RESET KEYBOARD INPUT SETTING?",
@@ -2244,7 +2244,7 @@ bool lastProc(void) {
 		printTinyFont(130, 233, string[0]);
 	}
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	// NEXT隠し
 	if(APP_IsPushKey(dispnextkey[0]) && (!demo) && (!playback) && (!death_plus[0]) && (!hebo_plus[0])&&(!heboGB[0])&&(!onRecord[0])) {
 		// next表示個数は0〜6 #1.60c7q3
@@ -2273,7 +2273,7 @@ bool lastProc(void) {
 void title(void) {
 	static int32_t	ofs, mode, game, democ;
 	static const int32_t maxGame =
-	#ifdef APP_ENABLE_GAME_QUIT
+	#ifdef APP_ENABLE_QUIT
 		8;
 	#else
 		7;
@@ -2405,7 +2405,7 @@ void title(void) {
 		printFont(15, 23, "NORMAL RANKING",       (fontc[rotspl[0]]) * (game == 5));
 		printFont(15, 24, "SECTION TIME RANKING", (fontc[rotspl[0]]) * (game == 6));
 		printFont(15, 25, "SETTING",	      (fontc[rotspl[0]]) * (game == 7));
-		#ifdef APP_ENABLE_GAME_QUIT
+		#ifdef APP_ENABLE_QUIT
 		printFont(15, 26, "QUIT",		 (fontc[rotspl[0]]) * (game == 8));
 		#endif
 
@@ -2587,7 +2587,7 @@ void title(void) {
 					mainLoopState = MAIN_CONFIG;
 					init = true;
 					return;
-#ifdef APP_ENABLE_GAME_QUIT
+#ifdef APP_ENABLE_QUIT
 				// Quit
 				} else if(game == 8) {
 					game = 0;
@@ -4060,7 +4060,7 @@ bool playerExecute(void) {
 
 
 	// TODO: Add "skip stage" player input.
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	// ステージスキップキー長押し
 	if( APP_IsPressKey(skipKey) ){
 			stage_skip_mpc[0]++;
@@ -15732,13 +15732,13 @@ void nextFourWayFilteredDirection(
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // ジョイスティック周りを変更 #1.60c7
 int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割り当て対応 #1.60c
-	#ifdef APP_ENABLE_LINUX_GPIO
+	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 	int32_t gtmp;	// GPIO入力
 	#endif
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t jtmp;	// ジョイスティック入力
 	#endif
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t ctmp;
 	#endif
 	int32_t ktmp = 0;	// キーボード入力
@@ -15772,7 +15772,7 @@ int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割
 		return pressDirection[pl] == key;
 	}
 	else {
-		#ifdef APP_ENABLE_LINUX_GPIO
+		#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 		if ( player == 0 ) {
 			gtmp = APP_IsPressGPIO(key);
 		}
@@ -15780,17 +15780,17 @@ int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割
 			gtmp = 0;
 		#endif
 
-		#ifdef APP_ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD_INPUT
 		// キーボードの入力を読み取る
 		ktmp = APP_IsPressKey(keyAssign[key + pl * 10]);
 		#endif
 
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		// ジョイスティックの入力を読み取る
 		jtmp = APP_IsPressJoyKey(&joyKeyAssign[key + pl * 10]);
 		#endif
 
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		APP_ConKey conkey;
 		switch (key) {
 		case APP_BUTTON_GIVE_UP:
@@ -15815,13 +15815,13 @@ int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割
 
 		return
 			ktmp
-			#ifdef APP_ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			| jtmp
 			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 			| ctmp
 			#endif
-			#ifdef APP_ENABLE_LINUX_GPIO
+			#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 			| gtmp
 			#endif
 			;
@@ -15829,13 +15829,13 @@ int32_t getPressState(int32_t player, APP_Button key) { // パッドボタン割
 }
 
 int32_t getPushState(int32_t player, APP_Button key) { // パッドボタン割り当て対応 #1.60c
-	#ifdef APP_ENABLE_LINUX_GPIO
+	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 	int32_t gtmp;		// GPIO入力
 	#endif
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t jtmp;		// ジョイスティック入力
 	#endif
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t ctmp;
 	#endif
 	int32_t ktmp = 0;	// キーボード入力
@@ -15867,24 +15867,24 @@ int32_t getPushState(int32_t player, APP_Button key) { // パッドボタン割�
 		return pushDirection[pl] == key;
 	}
 	else {
-		#ifdef APP_ENABLE_LINUX_GPIO
+		#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 		if ( player == 0 )
 			gtmp = APP_IsPushGPIO(key);
 		else
 			gtmp = 0;
 		#endif
 
-		#ifdef APP_ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD_INPUT
 		// キーボードの入力を読み取る
 		ktmp = APP_IsPushKey(keyAssign[key + pl * 10]);
 		#endif
 
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		// ジョイスティックの入力を読み取る
 		jtmp = APP_IsPushJoyKey(&joyKeyAssign[key + 10 * pl]);
 		#endif
 
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		APP_ConKey conkey;
 		switch (key) {
 		case APP_BUTTON_GIVE_UP:
@@ -15909,13 +15909,13 @@ int32_t getPushState(int32_t player, APP_Button key) { // パッドボタン割�
 
 		return
 			ktmp
-			#ifdef APP_ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			| jtmp
 			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 			| ctmp
 			#endif
-			#ifdef APP_ENABLE_LINUX_GPIO
+			#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 			| gtmp
 			#endif
 			;
@@ -15924,7 +15924,7 @@ int32_t getPushState(int32_t player, APP_Button key) { // パッドボタン割�
 
 int IsPressMenu(int32_t player, APP_Button button, APP_InputType type)
 {
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	APP_ConKey key;
 	int pushed;
 	#endif
@@ -15934,7 +15934,7 @@ int IsPressMenu(int32_t player, APP_Button button, APP_InputType type)
 	switch (type)
 	#endif
 	{
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX:
 	case APP_INPUT_PLAYSTATION:
 	case APP_INPUT_NINTENDO:
@@ -15987,7 +15987,7 @@ int IsPressMenu(int32_t player, APP_Button button, APP_InputType type)
 
 int IsPushMenu(int32_t player, APP_Button button, APP_InputType type)
 {
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	APP_ConKey key;
 	int pushed;
 	#endif
@@ -15997,7 +15997,7 @@ int IsPushMenu(int32_t player, APP_Button button, APP_InputType type)
 	switch (type)
 	#endif
 	{
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX:
 	case APP_INPUT_PLAYSTATION:
 	case APP_INPUT_NINTENDO:
@@ -16048,7 +16048,7 @@ int IsPushMenu(int32_t player, APP_Button button, APP_InputType type)
 	}
 }
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 int IsPressConTypeKey(APP_InputType type, APP_ConKey* key)
 {
 	#ifdef APP_ONLY_CONTROLLER_TYPE
@@ -16106,8 +16106,8 @@ int IsPressPrompt(APP_Prompt prompt)
 		}
 	#endif
 
-	#ifdef APP_ENABLE_KEYBOARD
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	case APP_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
@@ -16121,7 +16121,7 @@ int IsPressPrompt(APP_Prompt prompt)
 		}
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX: {
 		APP_ConKey key;
 		switch (prompt)
@@ -16179,8 +16179,8 @@ int IsPushPrompt(APP_Prompt prompt)
 		}
 	#endif
 
-	#ifdef APP_ENABLE_KEYBOARD
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	case APP_INPUT_JOYSTICK:
 		// TODO: Something better for joysticks than requiring a keyboard.
 	#endif
@@ -16194,7 +16194,7 @@ int IsPushPrompt(APP_Prompt prompt)
 		}
 	#endif
 
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX: {
 		APP_ConKey key;
 		switch (prompt)
@@ -16237,7 +16237,7 @@ int IsPushPrompt(APP_Prompt prompt)
 	}
 }
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 void updateEscapeFrames() {
 	lastEscapeFrames = escapeFrames;
 	escapeFrames = APP_GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL));
@@ -16245,14 +16245,14 @@ void updateEscapeFrames() {
 #endif
 
 int quitNow() {
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	if (lastEscapeFrames >= 60) {
 		enterResetKeys = true;
 		resetKeysFlag = true;
 		loopFlag = false;
 		mainLoopState = MAIN_RESET_KEYBOARD;
 	}
-	#ifdef APP_ENABLE_GAME_QUIT
+	#ifdef APP_ENABLE_QUIT
 	return quitNowFlag || (lastEscapeFrames > 0 && lastEscapeFrames < 60 && escapeFrames == 0);
 	#else
 	return quitNowFlag;
@@ -17271,12 +17271,12 @@ void spriteTime() {
 	}
 	APP_InputsUpdate();
 
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	updateEscapeFrames();
 	#endif
 
 	switch (lastInputType = APP_GetLastInputType()) {
-	#ifdef APP_ENABLE_LINUX_GPIO
+	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 	case APP_INPUT_LINUXGPIO: {
 		bool pushed = false;
 		for (APP_Button button = 0; !pushed && button < NUMBTNS; button++) {
@@ -17288,7 +17288,7 @@ void spriteTime() {
 		break;
 	}
 	#endif
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	case APP_INPUT_KEYBOARD: {
 		bool pushed = false;
 		int32_t pl;
@@ -17304,7 +17304,7 @@ void spriteTime() {
 		break;
 	}
 	#endif
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	case APP_INPUT_JOYSTICK: {
 		bool pushed = false;
 		int32_t pl;
@@ -17320,7 +17320,7 @@ void spriteTime() {
 		break;
 	}
 	#endif
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX:
 	case APP_INPUT_PLAYSTATION:
 	case APP_INPUT_NINTENDO: {
@@ -17355,7 +17355,7 @@ void spriteTime() {
 				left = false;
 				right = false;
 
-				#ifdef APP_ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 				if (pl == 0) {
 					up = up || APP_IsPushGPIO(APP_BUTTON_UP);
 					down = down || APP_IsPushGPIO(APP_BUTTON_DOWN);
@@ -17364,21 +17364,21 @@ void spriteTime() {
 				}
 				#endif
 
-				#ifdef APP_ENABLE_KEYBOARD
+				#ifdef APP_ENABLE_KEYBOARD_INPUT
 				up = up || APP_IsPushKey(keyAssign[APP_BUTTON_UP + pl * 10]);
 				down = down || APP_IsPushKey(keyAssign[APP_BUTTON_DOWN + pl * 10]);
 				left = left || APP_IsPushKey(keyAssign[APP_BUTTON_LEFT + pl * 10]);
 				right = right || APP_IsPushKey(keyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef APP_ENABLE_JOYSTICK
+				#ifdef APP_ENABLE_JOYSTICK_INPUT
 				up = up || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_UP + pl * 10]);
 				down = down || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_DOWN + pl * 10]);
 				left = left || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_LEFT + pl * 10]);
 				right = right || APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef APP_ENABLE_GAME_CONTROLLER
+				#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 				if (inmenu) {
 					up = up || IsPushMenu(pl, APP_BUTTON_UP, APP_GetConType(pl));
 					down = down || IsPushMenu(pl, APP_BUTTON_DOWN, APP_GetConType(pl));
@@ -17405,7 +17405,7 @@ void spriteTime() {
 				left = false;
 				right = false;
 
-				#ifdef APP_ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 				if (pl == 0) {
 					up = up || APP_IsPressGPIO(APP_BUTTON_UP);
 					down = down || APP_IsPressGPIO(APP_BUTTON_DOWN);
@@ -17414,21 +17414,21 @@ void spriteTime() {
 				}
 				#endif
 
-				#ifdef APP_ENABLE_KEYBOARD
+				#ifdef APP_ENABLE_KEYBOARD_INPUT
 				up = up || APP_IsPressKey(keyAssign[APP_BUTTON_UP + pl * 10]);
 				down = down || APP_IsPressKey(keyAssign[APP_BUTTON_DOWN + pl * 10]);
 				left = left || APP_IsPressKey(keyAssign[APP_BUTTON_LEFT + pl * 10]);
 				right = right || APP_IsPressKey(keyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef APP_ENABLE_JOYSTICK
+				#ifdef APP_ENABLE_JOYSTICK_INPUT
 				up = up || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_UP + pl * 10]);
 				down = down || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_DOWN + pl * 10]);
 				left = left || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_LEFT + pl * 10]);
 				right = right || APP_IsPressJoyKey(&joyKeyAssign[APP_BUTTON_RIGHT + pl * 10]);
 				#endif
 
-				#ifdef APP_ENABLE_GAME_CONTROLLER
+				#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 				if (inmenu) {
 					up = up || IsPressMenu(pl, APP_BUTTON_UP, APP_GetConType(pl));
 					down = down || IsPressMenu(pl, APP_BUTTON_DOWN, APP_GetConType(pl));

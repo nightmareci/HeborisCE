@@ -141,9 +141,6 @@ void statTomoyoNextStage(int32_t player) {
 		}
 	} else {
 		printFont(17 + 24 * player - 12 * maxPlay, 8, "SKIPED", 0);
-		if((stage[player] >= 0) && (stage[player] <= 26)){
-		recFaultTime(player);//ステージNOTランキング用タイム
-		}
 		// リプレイ記録不可能になった事を表示 #1.60c7n8
 		printFont(15 + 24 * player - 12 * maxPlay, 13, "THIS PLAY", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 14, "  CAN'T BE", 2);

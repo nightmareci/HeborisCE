@@ -9993,7 +9993,7 @@ void recSectionTime(int32_t player) {
 void recStageTime(int32_t player) {
 	if(stage[player] > 26) return;
 	//TOMOYOステージタイムctime[
-	stage_time[stage[player] + player * 200] = ctime[player];
+	stage_time[stage[player] + player * 30] = ctime[player];
 	if(st_record_interval_tgm==10){
 		st_other[stage[player] +player*30] = st_bdowncnt[player];//接着回数
 		st_bdowncnt[player] = 0;//リセット

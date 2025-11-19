@@ -7884,7 +7884,7 @@ void doHold(int32_t player, int32_t ihs) {
 
 		// ブロックがめり込んでいたらゲームオーバー #1.60c7l2
 		// ゲームオーバーなっていない＆接地している場合は音を鳴らす
-		if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
+		if( (!ihs || repversw < 67) && (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
 			if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(1);
 		}
 

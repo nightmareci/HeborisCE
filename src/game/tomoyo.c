@@ -26,6 +26,15 @@ void tomoyoInitial(int32_t player) {
 	int32_t** sbakReplayData = replayData;
 	replayData = NULL;
 
+	int32_t stage_time_bak[30];
+	int32_t st_other_bak[30];
+
+	for (int32_t i = 0; i < 30; i++)
+	{
+		stage_time_bak[i] = stage_time[i + player * 30];
+		st_other_bak[i]   = st_other[i + player * 30];
+	}
+
 	// 初期化
 	playerInitial(player);
 
@@ -51,6 +60,15 @@ void tomoyoInitial(int32_t player) {
 
 	if((tomoyo_opt[player]==4)&&(fpbas_mode[player])){
 		lv[player] = sbak[16];	//FPBASICだけ戻す他のモードは初期化
+	}
+
+	if (tomoyo_opt[player] == 0)
+	{
+		for (int32_t i = 0; i < 30; i++)
+		{
+			stage_time[i + player * 30] = stage_time_bak[i];
+			st_other[i + player * 30]   = st_other_bak[i];
+		}
 	}
 
 	backno = 0;

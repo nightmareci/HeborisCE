@@ -1,4 +1,5 @@
 #include "APP_bdf.h"
+#include "APP_error.h"
 #include "hashmap.h"
 #include <limits.h>
 
@@ -177,7 +178,7 @@ static bool BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** 
 
 	glyph.pixels = SDL_malloc(sizeof(Uint32) * font->size);
 	if (!glyph.pixels) {
-		SDL_SetError("Failed to allocate memory for a character's pixels of a font.");
+		APP_SetError("Failed to allocate memory for a character's pixels of a font.");
 		return false;
 	}
 
@@ -190,7 +191,7 @@ static bool BDF_ParseChar(APP_BDFFont* font, Uint32 encoding, int width, char** 
 		return true;
 	}
 	else {
-		SDL_SetError("Failed to insert a character into a font's hashmap.");
+		APP_SetError("Failed to insert a character into a font's hashmap.");
 		SDL_free(glyph.pixels);
 		return false;
 	}
@@ -215,7 +216,7 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 	src_data = SDL_malloc(src_size);
 	if (!src_data) return false;
 	if (SDL_ReadIO(src, src_data, src_size) == 0) {
-		SDL_SetError("Failed to read the font data: %s", SDL_GetError());
+		APP_SetError("Failed to read the font data: %s", SDL_GetError());
 		SDL_free(src_data);
 		return false;
 	}
@@ -230,7 +231,7 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 		if (SDL_strstr(buffer, "SIZE") == buffer) {
 			if (found_size) {
 				SDL_free(src_data);
-				return SDL_SetError("Erroneous extra SIZE line encountered.");
+				return APP_SetError("Erroneous extra SIZE line encountered.");
 			}
 			p = buffer;
 			while (*p != ' ' && *p != '\t') p++;
@@ -238,7 +239,7 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 			font_size = SDL_strtol(p, NULL, 10);
 			if (font_size <= 0 || font_size > INT_MAX) {
 				SDL_free(src_data);
-				return SDL_SetError("Font size of %ld is invalid, must be between 0 and %d.", font_size, INT_MAX);
+				return APP_SetError("Font size of %ld is invalid, must be between 0 and %d.", font_size, INT_MAX);
 			}
 			if (font->size == 0) {
 				font->size = (int)font_size;
@@ -248,7 +249,7 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 		else if (SDL_strstr(buffer, "STARTCHAR") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
-				return SDL_SetError("SIZE line not found before a STARTCHAR line.");
+				return APP_SetError("SIZE line not found before a STARTCHAR line.");
 			}
 			found_encoding = false;
 			found_width = false;
@@ -256,7 +257,7 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 		else if (SDL_strstr(buffer, "ENCODING") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
-				return SDL_SetError("SIZE line not found before an ENCODING line.");
+				return APP_SetError("SIZE line not found before an ENCODING line.");
 			}
 			p = buffer;
 			while (*p != ' ' && *p != '\t') p++;
@@ -264,14 +265,14 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 			encoding = SDL_strtol(p, NULL, 10);
 			if (encoding < 0) {
 				SDL_free(src_data);
-				return SDL_SetError("Character encoding of %ld is invalid, must be nonnegative.", encoding);
+				return APP_SetError("Character encoding of %ld is invalid, must be nonnegative.", encoding);
 			}
 			found_encoding = true;
 		}
 		else if (SDL_strstr(buffer, "DWIDTH") == buffer) {
 			if (!found_size) {
 				SDL_free(src_data);
-				return SDL_SetError("SIZE line not found before a DWIDTH line.");
+				return APP_SetError("SIZE line not found before a DWIDTH line.");
 			}
 			p = buffer;
 			while (*p != ' ' && *p != '\t') p++;
@@ -279,7 +280,7 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 			width = SDL_strtol(p, NULL, 10);
 			if (width <= 0 || width > INT_MAX) {
 				SDL_free(src_data);
-				return SDL_SetError("Character width of %ld is invalid, must be between 0 and %d.", width, INT_MAX);
+				return APP_SetError("Character width of %ld is invalid, must be between 0 and %d.", width, INT_MAX);
 			}
 			found_width = true;
 		}
@@ -287,13 +288,13 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream * src) {
 			int rshift;
 			if (!found_size || !found_encoding || !found_width) {
 				SDL_free(src_data);
-				return SDL_SetError("BITMAP line encountered before all of SIZE, ENCODING, and DWIDTH lines have been found.");
+				return APP_SetError("BITMAP line encountered before all of SIZE, ENCODING, and DWIDTH lines have been found.");
 			}
 			for (s = 8; s < width; s += 8) {}
 			rshift = s - width;
 			if (!BDF_ParseChar(font, (Uint32)encoding, width, &line, end, rshift)) {
 				SDL_free(src_data);
-				return SDL_SetError("Failed to parse a font character: %s", SDL_GetError());
+				return APP_SetError("Failed to parse a font character: %s", SDL_GetError());
 			}
 		}
 	}
@@ -307,7 +308,7 @@ APP_BDFFont* APP_OpenBDFFont(SDL_IOStream * src) {
 
 	font = SDL_malloc(sizeof(APP_BDFFont));
 	if (!font) {
-		SDL_SetError("Failed to allocate memory for the font object.");
+		APP_SetError("Failed to allocate memory for the font object.");
 		return NULL;
 	}
 
@@ -316,7 +317,7 @@ APP_BDFFont* APP_OpenBDFFont(SDL_IOStream * src) {
 	font->glyphs = hashmap_new(sizeof(BDF_Glyph), 16, 0, 0, BDF_HashGlyphEncodings, BDF_CompareGlyphEncodings, BDF_FreeGlyph, NULL);
 	if (!font->glyphs) {
 		SDL_free(font);
-		SDL_SetError("Failed to create the hashmap for the font object: %s", SDL_GetError());
+		APP_SetError("Failed to create the hashmap for the font object: %s", SDL_GetError());
 		return NULL;
 	}
 
@@ -325,7 +326,7 @@ APP_BDFFont* APP_OpenBDFFont(SDL_IOStream * src) {
 	}
 	else if (!APP_AddBDFFont(font, src)) {
 		SDL_free(font);
-		SDL_SetError("Failed to parse the font: %s", SDL_GetError());
+		APP_SetError("Failed to parse the font: %s", SDL_GetError());
 		return NULL;
 	}
 	else {
@@ -343,10 +344,10 @@ int APP_GetBDFTextWidth(APP_BDFFont* font, const char* text) {
 	int w;
 
 	if (font == NULL) {
-		return SDL_SetError("Parameter \"font\" must not be NULL.");
+		return APP_SetError("Parameter \"font\" must not be NULL.");
 	}
 	else if (text == NULL) {
-		return SDL_SetError("Parameter \"text\" must not be NULL.");
+		return APP_SetError("Parameter \"text\" must not be NULL.");
 	}
 
 	w = 0;
@@ -357,11 +358,11 @@ int APP_GetBDFTextWidth(APP_BDFFont* font, const char* text) {
 		get_glyph.encoding = encoding;
 
 		if (!(got_glyph = hashmap_get(font->glyphs, &get_glyph))) {
-			return SDL_SetError("The text contains a character not in the font, so width cannot be calculated.");
+			return APP_SetError("The text contains a character not in the font, so width cannot be calculated.");
 		}
 
 		if (w > INT_MAX - got_glyph->width) {
-			return SDL_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
+			return APP_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
 		}
 
 		w += got_glyph->width;
@@ -371,7 +372,7 @@ int APP_GetBDFTextWidth(APP_BDFFont* font, const char* text) {
 		return w;
 	}
 	else {
-		return SDL_SetError("Invalid data found in the text. The text must be valid UTF-8 data.");
+		return APP_SetError("Invalid data found in the text. The text must be valid UTF-8 data.");
 	}
 }
 
@@ -395,7 +396,7 @@ int APP_GetBDFTextDimensions(APP_BDFFont* font, const char *text, int* w, int* h
 			/* Only one byte for newline formats of only one '\r' or '\n', so don't increment. */
 
 			if (temp_h > INT_MAX - font->size) {
-				return SDL_SetError("The calculated height of the text overflowed (maximum possible height is %d).", INT_MAX);
+				return APP_SetError("The calculated height of the text overflowed (maximum possible height is %d).", INT_MAX);
 			}
 			temp_h += font->size;
 			if (line_w > temp_w) {
@@ -410,11 +411,11 @@ int APP_GetBDFTextDimensions(APP_BDFFont* font, const char *text, int* w, int* h
 
 		get_glyph.encoding = encoding;
 		if (!(got_glyph = hashmap_get(font->glyphs, &get_glyph))) {
-			return SDL_SetError("The text contains a character not in the font, so dimensions cannot be calculated.");
+			return APP_SetError("The text contains a character not in the font, so dimensions cannot be calculated.");
 		}
 
 		if (temp_w > INT_MAX - got_glyph->width) {
-			return SDL_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
+			return APP_SetError("The calculated width of the text overflowed (maximum possible width is %d).", INT_MAX);
 		}
 
 		line_w += got_glyph->width;
@@ -475,7 +476,7 @@ bool APP_PutBDFText(APP_BDFFont* font, int dx, int dy, float subx, float suby, v
 
 		get_glyph.encoding = encoding;
 		if (!(got_glyph = hashmap_get(font->glyphs, &get_glyph))) {
-			return SDL_SetError("The text contains a character not in the font (U+%04" SDL_PRIX32 "), so it cannot be drawn.", encoding);
+			return APP_SetError("The text contains a character not in the font (U+%04" SDL_PRIX32 "), so it cannot be drawn.", encoding);
 		}
 
 		minx = (cx >= 0) ? 0 : -cx;
@@ -529,7 +530,7 @@ SDL_Surface* APP_CreateBDFTextSurface(APP_BDFFont* font, const char* text, SDL_C
 		break;
 
 	default:
-		SDL_SetError("Invalid depth of %d, only 16 or 32 are supported.", depth);
+		APP_SetError("Invalid depth of %d, only 16 or 32 are supported.", depth);
 		return NULL;
 	}
 

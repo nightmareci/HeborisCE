@@ -44,16 +44,19 @@ static bool APP_FrameStep(void)
 	const int64_t initialNS = SDL_GetTicksNS() - APP_NowNS;
 	uint64_t now;
 	if (APP_AccumulatedNS >= APP_FrameNS + 100 * SDL_NS_PER_MS) {
-		APP_AccumulatedNS = 0;
 		APP_NowNS = SDL_GetTicksNS();
+		APP_AccumulatedNS = 0;
+		return false;
 	}
-	const bool skipped = APP_AccumulatedNS + initialNS >= APP_FrameNS;
+	bool skipped = APP_AccumulatedNS >= APP_FrameNS;
 	if (skipped) {
 		now = SDL_GetTicksNS();
-		APP_AccumulatedNS -= APP_FrameNS - initialNS;
+		APP_AccumulatedNS -= APP_FrameNS;
 	}
 	else {
-		SDL_DelayPrecise(APP_FrameNS - initialNS - APP_AccumulatedNS);
+		if (APP_FrameNS - initialNS - APP_AccumulatedNS > 0) {
+			SDL_DelayPrecise(APP_FrameNS - initialNS - APP_AccumulatedNS);
+		}
 		now = SDL_GetTicksNS();
 		APP_AccumulatedNS += now - APP_NowNS - APP_FrameNS;
 	}
@@ -67,7 +70,7 @@ static bool APP_FrameStep(void)
 	#endif
 }
 
-void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t writeDirectoriesCount)
+void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t writeDirectoriesCount, int planeCount, int textLayerCount)
 {
 	if (APP_QuitLevel == 0) {
 		// If this fails, it doesn't matter, the game will still work. But it's
@@ -93,7 +96,7 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 		}
 		APP_QuitLevel++;
 
-		APP_InitVideo();
+		APP_InitVideo(planeCount, textLayerCount);
 		APP_QuitLevel++;
 
 		APP_OpenInputs();
@@ -127,15 +130,10 @@ bool APP_Update(void)
 		APP_SetError("Renderer is not initialized");
 		APP_Exit(SDL_APP_FAILURE);
 	}
-	if (!SDL_FlushRenderer(APP_ScreenRenderer)) {
-		APP_SetError("Failed flushing renderer: %s", SDL_GetError());
-		APP_Exit(SDL_APP_FAILURE);
-	}
 
 	#ifdef NDEBUG
-	if (APP_RenderWhileSkippingFrames || !APP_LastFrameSkipped)
+	if (APP_RenderWhileSkippingFrames || !APP_LastFrameSkipped) {
 	#endif
-	{
 		/* バックサーフェスをフロントに転送 */
 		if (APP_ScreenRenderTarget) {
 			if (
@@ -162,7 +160,18 @@ bool APP_Update(void)
 			APP_SetError("Failed render clear: %s", SDL_GetError());
 			APP_Exit(SDL_APP_FAILURE);
 		}
+	#ifdef NDEBUG
 	}
+	else {
+		if (!SDL_FlushRenderer(APP_ScreenRenderer)) {
+			APP_SetError("Failed flushing renderer: %s", SDL_GetError());
+			APP_Exit(SDL_APP_FAILURE);
+		}
+
+		/* フレームレート待ち || Frame rate waiting */
+		APP_LastFrameSkipped = APP_FrameStep();
+	}
+	#endif
 
 	// フレームレート計算
 	// Frame rate calculation
@@ -202,9 +211,14 @@ int APP_GetRealFPS(void)
 	return APP_RealFPS;
 }
 
-void APP_SetRenderWhileSkippingFrames(bool draw)
+void APP_SetRenderWhileSkippingFrames(bool render)
 {
-	APP_RenderWhileSkippingFrames = draw;
+	APP_RenderWhileSkippingFrames = render;
+}
+
+bool APP_RenderThisFrame(void)
+{
+	return APP_RenderWhileSkippingFrames || !APP_LastFrameSkipped;
 }
 
 SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)

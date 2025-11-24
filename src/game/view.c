@@ -11,14 +11,14 @@ void showControl(void) {
 	zy = - getPressState(0, APP_BUTTON_UP) + getPressState(0, APP_BUTTON_DOWN);
 	bai = 10 + ((!zx) || (!zy)) * 4;
 
-	ExBltRect(3, 20 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 198, 38, 20, 20);				// レバーのカバー部分
+	ExBltRect(PLANE_HEBOSPR, 20 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 198, 38, 20, 20);				// レバーのカバー部分
 
-	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 224 + getPressState(0, APP_BUTTON_A) * 32, 0, 32, 32);	// Aボタン
-	ExBltRect(3, 64 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 132, 224 + getPressState(0, APP_BUTTON_B) * 32, 0, 32, 32);	// Bボタン
-	ExBltRect(3, 84 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 138, 224 + getPressState(0, APP_BUTTON_C) * 32, 0, 32, 32);	// Cボタン
-	ExBltRect(3, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 144, 224 + getPressState(0, APP_BUTTON_D) * 32, 0, 32, 32); 	// Holdボタンの操作状況 #1.60c
+	ExBltRect(PLANE_HEBOSPR, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 126, 224 + getPressState(0, APP_BUTTON_A) * 32, 0, 32, 32);	// Aボタン
+	ExBltRect(PLANE_HEBOSPR, 64 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 132, 224 + getPressState(0, APP_BUTTON_B) * 32, 0, 32, 32);	// Bボタン
+	ExBltRect(PLANE_HEBOSPR, 84 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 138, 224 + getPressState(0, APP_BUTTON_C) * 32, 0, 32, 32);	// Cボタン
+	ExBltRect(PLANE_HEBOSPR, 44 + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 144, 224 + getPressState(0, APP_BUTTON_D) * 32, 0, 32, 32); 	// Holdボタンの操作状況 #1.60c
 
-	ExBltRect(3, 14 + zx * bai + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 120 + zy * bai, 192, 0, 32, 32);	// レバー
+	ExBltRect(PLANE_HEBOSPR, 14 + zx * bai + 96 * (maxPlay + 2 * ((gameMode[0] == 8) && (!maxPlay))), 120 + zy * bai, 192, 0, 32, 32);	// レバー
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -191,14 +191,14 @@ void viewBack(void) {
 
 	// 通常描画
 	if( (bgfadesw == 0) || (demo) ) {
-		//ExBltFast(10 + backno, 0, 0);
+		//ExBlt(PLANE_BACK01 + backno, 0, 0);
 
 		if(back_mov_f[tmp] == 0) {
 			// 静止画
-			ExBltRect(10 + backno, 0, 0, 0, 0, 320, 240);
+			ExBltRect(PLANE_BACK01 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
 			// 動画
-			ExBltRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
+			ExBltRect(PLANE_BACK01 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
 
 			if(count % back_mov_inter[tmp] == 0)
 				back_acnt++;
@@ -220,14 +220,14 @@ void viewBack(void) {
 			backno = bg_max;
 			bgfadesw = 0;
 		}
-		//ExBltFast(10 + backno, 0, 0);
+		//ExBlt(PLANE_BACK01 + backno, 0, 0);
 
 		if(back_mov_f[tmp] == 0) {
 			// 静止画
-			ExBltRect(10 + backno, 0, 0, 0, 0, 320, 240);
+			ExBltRect(PLANE_BACK01 + backno, 0, 0, 0, 0, 320, 240);
 		} else {
 			// 動画
-			ExBltRect(10 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
+			ExBltRect(PLANE_BACK01 + backno, 0, 0, (back_acnt / 10) * 320, (back_acnt % 10) * 240, 320, 240);
 
 			if(count % back_mov_inter[tmp] == 0)
 				back_acnt++;
@@ -241,7 +241,7 @@ void viewBack(void) {
 			bgfade_cnt++;
 			for(i=0;i<5*getDrawRate();i++){
 				for(j=0;j<5*getDrawRate();j++){
-					APP_DrawPlaneRect(72,i*64,j*48,0,bgfade_cnt*48,64,48); // accounts for draw rate, so correct to call directly.
+					APP_DrawPlaneRect(PLANE_FADE,i*64,j*48,0,bgfade_cnt*48,64,48); // accounts for draw rate, so correct to call directly.
 				}
 			}
 			if(bgfade_cnt == 6) {
@@ -293,7 +293,7 @@ void viewScoreSmall(void) {
 			if( (gameMode[i] >= 1) && (gameMode[i] <= 3)&&(examination[i]==0)) {
 				if( ((gameMode[i] <= 2) && (enable_grade[i] != 0) && (enable_grade[i] != 4) && (!examination[i])) ||
 					((gameMode[i] == 3) && ( (grade[i] > 0) && (!devil_minus[i]) )) )
-					ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 42, 35, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 32, 0, 42, 35, 7);
 					//段位(エフェクト中)
 				if(gflash[i] > 108) {
 					k[i] =  gflash[i] -96;
@@ -304,46 +304,46 @@ void viewScoreSmall(void) {
 					// 非DEVIL
 						if(grade[i]==32) {
 							if(enable_grade[i]==1){//GM
-							ExBltRectR(26,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+180,90,32,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+180,90,32,k[i],k[i]);
 							}else{
 							// Gm
-							ExBltRectR(26,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+150,90,30,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,188-zoomx[i]+add + 54 * i - 96 * maxPlay, 40-zoomy[i], 450 ,(gradecolor[i]*216)+150,90,30,k[i],k[i]);
 							}
 						} else if( grade[i] >= 28 ) {
 							// MK〜MM
-							ExBltRectR(26,188-zoomx[i]+add + 52 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((grade[i]-26)*24),90,24,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,188-zoomx[i]+add + 52 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((grade[i]-26)*24),90,24,k[i],k[i]);
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
 							//M
-							ExBltRectR(26,188-zoomx[i]+add + 64 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((1)*25),90,24,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,188-zoomx[i]+add + 64 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((1)*25),90,24,k[i],k[i]);
 							}else{
 							//m
-							ExBltRectR(26,188-zoomx[i]+add + 64 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((0)*24),90,24,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,188-zoomx[i]+add + 64 * i - 96 * maxPlay, 40-zoomy[i],450 ,(gradecolor[i]*216)+((0)*24),90,24,k[i],k[i]);
 							}
 						} else if( grade[i] >= 18 ) {
 							// m1〜m9
-							ExBltRectR(26,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 180 ,(gradecolor[i]*216)+((grade[i]-18)*24),90,24,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 180 ,(gradecolor[i]*216)+((grade[i]-18)*24),90,24,k[i],k[i]);
 						} else if( grade[i] >= 9 ) {
 							// S1〜S9
-							ExBltRectR(26,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 90 ,(gradecolor[i]*216)+((grade[i]-9)*24),90,24,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 90 ,(gradecolor[i]*216)+((grade[i]-9)*24),90,24,k[i],k[i]);
 						} else {
 							// 9〜1
-							ExBltRectR(26,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 0 ,(gradecolor[i]*216)+(grade[i]*24),90,24,k[i],k[i]);
+							ExBltRectScaled(PLANE_GRADE,180-zoomx[i]+add + 62 * i - 96 * maxPlay, 40-zoomy[i], 0 ,(gradecolor[i]*216)+(grade[i]*24),90,24,k[i],k[i]);
 						}
 					}else if(gameMode[i]==3){
 						// DEVIL
 						if( (grade[i] > 0) || (!devil_minus[i]) ) {
 							// S1〜S13
 							if(grade[i]== 15)  //Gm
-								ExBltRectR(26,188- zoomx[i] +add + 54 * i - 96 * maxPlay, 40- zoomy[i], 450 ,(gradecolor[i]*216)+150,90,30,k[i],k[i]);
+								ExBltRectScaled(PLANE_GRADE,188- zoomx[i] +add + 54 * i - 96 * maxPlay, 40- zoomy[i], 450 ,(gradecolor[i]*216)+150,90,30,k[i],k[i]);
 							else if(grade[i] == 14)  //m
-								ExBltRectR(26,188- zoomx[i] +add + 58 * i - 96 * maxPlay, 40- zoomy[i],450 ,(gradecolor[i]*216)+((0)*24),90,24,k[i],k[i]);
+								ExBltRectScaled(PLANE_GRADE,188- zoomx[i] +add + 58 * i - 96 * maxPlay, 40- zoomy[i],450 ,(gradecolor[i]*216)+((0)*24),90,24,k[i],k[i]);
 							else if(grade[i] >= 10)  //S10〜S13と2つ飛ばしてgod
-								ExBltRectR(26,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)),k[i],k[i]);
+								ExBltRectScaled(PLANE_GRADE,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)),k[i],k[i]);
 							else if(grade[i] > 0)//S9以下
-								ExBltRectR(26,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24,k[i],k[i]);
+								ExBltRectScaled(PLANE_GRADE,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24,k[i],k[i]);
 							else  //1（DOOMのみ）
-								ExBltRectR(26,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 0 ,(gradecolor[i]*216)+192,90,24,k[i],k[i]);
+								ExBltRectScaled(PLANE_GRADE,180- zoomx[i] +add + 62 * i - 96 * maxPlay, 40- zoomy[i], 0 ,(gradecolor[i]*216)+192,90,24,k[i],k[i]);
 						}
 					}
 				}else{//(エフェクト以外)
@@ -352,101 +352,101 @@ void viewScoreSmall(void) {
 						if(grade[i]==32) {
 							if(enable_grade[i]==1){
 								//GM
-								ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+180,90,32);
+								ExBltRect(PLANE_GRADE,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+180,90,32);
 							}else{
 								// Gm
-								ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
+								ExBltRect(PLANE_GRADE,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
 							}
 						} else if( grade[i] >= 28 ) {
 							// MK〜MM
-							ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((grade[i]-26)*24),90,24);
+							ExBltRect(PLANE_GRADE,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((grade[i]-26)*24),90,24);
 						} else if( grade[i] == 27 ) {
 							if(enable_grade[i] == 2){
 							//M
-							ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);
+							ExBltRect(PLANE_GRADE,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);
 							}else{
 							//m
-							ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
+							ExBltRect(PLANE_GRADE,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
 							}
 						} else if( grade[i] >= 18 ) {
 							// m1〜m9
-							ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 180 ,(gradecolor[i]*216)+((grade[i]-18)*24),90,24);
+							ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 180 ,(gradecolor[i]*216)+((grade[i]-18)*24),90,24);
 						} else if( grade[i] >= 9 ) {
 							// S1〜S9
-							ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-9)*24),90,24);
+							ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-9)*24),90,24);
 						} else {
 							// 9〜1
-							ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+(grade[i]*24),90,24);
+							ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+(grade[i]*24),90,24);
 						}
 					}else if(gameMode[i]==3){
 						// DEVIL
 						if( (grade[i] > 0) || (!devil_minus[i]) ) {
 							// S1〜S13
 							if(grade[i]== 15)  //Gm
-								ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
+								ExBltRect(PLANE_GRADE,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
 							else if(grade[i] == 14)  //m
-								ExBltRect(26,188+add + 58 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((0)*24),90,24);
+								ExBltRect(PLANE_GRADE,188+add + 58 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((0)*24),90,24);
 							else if(grade[i] >= 10)  //S10〜S13
-								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)));
+								ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 360 ,(gradecolor[i]*216)+((grade[i]-10)*24) + (24 * (grade[i] == 16)),90,24 + (4 * (grade[i] == 16)));
 							else if(grade[i] > 0) //S9以下
-								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24);
+								ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((grade[i]-1)*24),90,24);
 							else if(status[i] != 2)  //1（DOOMのみ）
-								ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+192,90,24);
+								ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+192,90,24);
 						}
 					}
 				}
 				if((gameMode[i] == 3) && ( (grade[i] > 0) || (!devil_minus[i]) ))
-					ExBltRect(85, 208+add + 66 * i - 96 * maxPlay, 32, 0, 42, 35, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 66 * i - 96 * maxPlay, 32, 0, 42, 35, 7);
 			}
 // QUALIFY
 			if((gameMode[i] == 1) &&(examination[i]) && (status[i] != 30)) {
-				ExBltRect(85, 208+add + 66 * i - 96 * maxPlay, 32, 70, 7*10, 35, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 66 * i - 96 * maxPlay, 32, 70, 7*10, 35, 7);
 				if(exam_grade[i]==32) {
 					if(enable_grade[i]==1){
 						//GM
-						ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+180,90,32);
+						ExBltRect(PLANE_GRADE,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+180,90,32);
 					}else{
 						// Gm
-						ExBltRect(26,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
+						ExBltRect(PLANE_GRADE,188+add + 54 * i - 96 * maxPlay, 40, 450 ,(gradecolor[i]*216)+150,90,30);
 					}
 				} else if( exam_grade[i] >= 28 ) {
 					// MK〜MM
-					ExBltRect(26,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((exam_grade[i]-26)*24),90,24);
+					ExBltRect(PLANE_GRADE,188+add + 52 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+((exam_grade[i]-26)*24),90,24);
 				} else if( exam_grade[i] == 27 ) {
 					if((enable_grade[i] == 2)||(enable_grade[i] == 4)){
 					//M
-					ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);
+					ExBltRect(PLANE_GRADE,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216)+24,90,24);
 					}else{
 					//m
-					ExBltRect(26,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
+					ExBltRect(PLANE_GRADE,188+add + 64 * i - 96 * maxPlay, 40,450 ,(gradecolor[i]*216),90,24);
 					}
 				} else if( exam_grade[i] >= 18 ) {
 					// m1〜m9
-					ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 180 ,(gradecolor[i]*216)+((exam_grade[i]-18)*24),90,24);
+					ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 180 ,(gradecolor[i]*216)+((exam_grade[i]-18)*24),90,24);
 				} else if( exam_grade[i] >= 9 ) {
 					// S1〜S9
-					ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((exam_grade[i]-9)*24),90,24);
+					ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 90 ,(gradecolor[i]*216)+((exam_grade[i]-9)*24),90,24);
 				} else {
 					// 9〜1
-					ExBltRect(26,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+(exam_grade[i]*24),90,24);
+					ExBltRect(PLANE_GRADE,180+add + 62 * i - 96 * maxPlay, 40, 0 ,(gradecolor[i]*216)+(exam_grade[i]*24),90,24);
 				}
 			}
 // BEGINNER
 			if (gameMode[i] == 0){
 				//TAMAYA
 				if(!novice_mode[i]){
-					ExBltRect(85, 208+add + 65 * i - 96 * maxPlay, 32, 35, 7*11, 35, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 65 * i - 96 * maxPlay, 32, 35, 7*11, 35, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", hanabi_total[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", hanabi_total[i]);
 					printSMALLFont(208+add + 52 * i - 96 * maxPlay, 40, string[0], color);
 				}
 				//SCORE
-				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 50, 154, 112, 26, 7);
+				ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 50, 154, 112, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 58, string[0], color);
 				//LINES
-				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 68, 0, 10*7, 35, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 73 * i - 96 * maxPlay, 68, 0, 10*7, 35, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
@@ -456,7 +456,7 @@ void viewScoreSmall(void) {
 			if((gameMode[i] >= 1) && (gameMode[i] <= 2)) {
 				//GRADE INFO
 				if(enable_grade[i]==1){
-					ExBltRect(85, 208+add + 48 * i - 96 * maxPlay, 86, 0, 7*29, 100, 14);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 48 * i - 96 * maxPlay, 86, 0, 7*29, 100, 14);
 					if(grade[i] < 17){	// 次の段位
 						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%6d", gscore[grade[i]]);
 						else SDL_snprintf(string[0], STRING_LENGTH, "%d", gscore[grade[i]]);
@@ -466,7 +466,7 @@ void viewScoreSmall(void) {
 						printSMALLFont(220+add + 48 * i - 96 * maxPlay, 94, string[0], color);
 					}
 				}else if(enable_grade[i] == 2){	// 現在のポイント
-					ExBltRect(85, 208+add + 61 * i - 96 * maxPlay, 86, 70, 12*7, 35, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 61 * i - 96 * maxPlay, 86, 70, 12*7, 35, 7);
 					if(i) {SDL_snprintf(string[0], STRING_LENGTH, "%7d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
 					}else{ SDL_snprintf(string[0], STRING_LENGTH, "%d", gpoint[i]-((gpoint[i]*2) * (gpoint[i] < 0)));
 					}
@@ -476,18 +476,18 @@ void viewScoreSmall(void) {
 						printSMALLFont(208+add + 52 * i - 96 * maxPlay, 94, string[0], 2);
 					}
 				}else if(enable_grade[i] == 4){	// 現在のスピード
-					ExBltRect(85, 208+add + 62 * i - 96 * maxPlay, 86, 70, 11*7, 35, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 62 * i - 96 * maxPlay, 86, 70, 11*7, 35, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", tr2[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", tr2[i]);
 					printSMALLFont(208+add +52 * i - 96 * maxPlay, 94, string[0], color);
 				}
 				//SCORE
-				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
+				ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 				//LINES
-				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 104, 0, 10*7, 35, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 73 * i - 96 * maxPlay, 104, 0, 10*7, 35, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 112, string[0], color);
@@ -496,12 +496,12 @@ void viewScoreSmall(void) {
 // DEVIL
 			if(gameMode[i]==3){
 				//SCORE
-				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
+				ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
 				//LINES
-				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 86, 0, 10*7, 35, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 73 * i - 96 * maxPlay, 86, 0, 10*7, 35, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 94, string[0], color);
@@ -509,47 +509,47 @@ void viewScoreSmall(void) {
 
 // VERSUS or ITEM MODE
 			if(item_name[i])	//アイテム名
-				ExBltRect(28, 80 + i * 192+(96*(!maxPlay)), 0, 0, (item_name[i] - 1) * 16, 48, 16);
+				ExBltRect(PLANE_ITEM, 80 + i * 192+(96*(!maxPlay)), 0, 0, (item_name[i] - 1) * 16, 48, 16);
 			if( (gameMode[i] == 4) || (item_mode[i])) {
 				if(gameMode[i] == 4){
 					//WINS
-					ExBltRect(85, 208+add + 82 * i - 96, 32, 70, 7*13, 25, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 82 * i - 96, 32, 70, 7*13, 25, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", vs_win[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", vs_win[i]);
 					printSMALLFont(208+add + 84 * i - 96, 40, string[0], color);
 					//POINTS
 					for(j = 1; j <= winpoint; j++)
-						ExBltRect(54,228 + add + 44 * i - 96,24 + (12 * j),12 * (j <= vs_points[i]),75,12,12);
+						ExBltRect(PLANE_ITEM_GAUGE,228 + add + 44 * i - 96,24 + (12 * j),12 * (j <= vs_points[i]),75,12,12);
 					// アイテムゲージ
 					if(!noitem) {
 						//ITEM
-						ExBltRect(85, 208+add + 78 * i - 96, 57, 0, 56, 18, 7);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 78 * i - 96, 57, 0, 56, 18, 7);
 						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", item_inter[i] - item_g[i] );
 						else SDL_snprintf(string[0], STRING_LENGTH, "%d", item_inter[i] - item_g[i] );
 						printSMALLFont(208+add + 84 * i - 96, 65, string[0], color);
-						ExBltRect(54,210 + 79 * i - 96,80,0,0,12,75);//中身
-						ExBltRect(54,210 + 79 * i - 96,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//目隠し
+						ExBltRect(PLANE_ITEM_GAUGE,210 + 79 * i - 96,80,0,0,12,75);//中身
+						ExBltRect(PLANE_ITEM_GAUGE,210 + 79 * i - 96,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//目隠し
 
 						if(ismiss[i]){//×のしるし
-							ExBltRect(3,208 + 83 * i - 96, 50, 274, 370, 27, 27);
+							ExBltRect(PLANE_HEBOSPR,208 + 83 * i - 96, 50, 274, 370, 27, 27);
 							if(repversw >= 62){
-								ExBltRect(3,228 + 38 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
+								ExBltRect(PLANE_HEBOSPR,228 + 38 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
 							}
 						}if (itemappear_c[i] > 0){  //フラッシュ
 							if((itemappear_c[i]%2)==0)
-								ExBltRect(54,210 + 79 * i - 96,80,24,0,12,75);
+								ExBltRect(PLANE_ITEM_GAUGE,210 + 79 * i - 96,80,24,0,12,75);
 							itemappear_c[i]--;
 						}
 					}
 				} else if(item_mode[i]){//アイテムモードの時はメダルと被るので左に配置
-					ExBltRect(54,98 + 304 * i - 96 * maxPlay,80,0,0,12,75);//中身
-					ExBltRect(54,98 + 304 * i - 96 * maxPlay,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//目隠し
+					ExBltRect(PLANE_ITEM_GAUGE,98 + 304 * i - 96 * maxPlay,80,0,0,12,75);//中身
+					ExBltRect(PLANE_ITEM_GAUGE,98 + 304 * i - 96 * maxPlay,153-((70*item_g[i])/item_inter[i]),12,72-((70*item_g[i])/item_inter[i]),12,((70*item_g[i])/item_inter[i]));//目隠し
 					if(ismiss[i]){//×のしるし
-						if(repversw < 62) ExBltRect(3,98 + 304 * i - 96 * maxPlay, 50, 274, 370, 27, 27);
+						if(repversw < 62) ExBltRect(PLANE_HEBOSPR,98 + 304 * i - 96 * maxPlay, 50, 274, 370, 27, 27);
 					}
 					if (itemappear_c[i] > 0){  //フラッシュ
 						if((itemappear_c[i]%2)==0)
-							ExBltRect(54,98 + 304 * i - 96 * maxPlay,80,24,0,12,75);
+							ExBltRect(PLANE_ITEM_GAUGE,98 + 304 * i - 96 * maxPlay,80,24,0,12,75);
 						itemappear_c[i]--;//100
 					}
 				}
@@ -557,12 +557,12 @@ void viewScoreSmall(void) {
 // PRACTICE
 			if(gameMode[i] == 5){
 				//SCORE
-				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 32, 154, 112, 26, 7);
+				ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 32, 154, 112, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 40, string[0], color);
 				//LINES
-				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 58, string[0], color);
@@ -570,7 +570,7 @@ void viewScoreSmall(void) {
 // TOMOYO
 			if( gameMode[i] == 6) {
 				// STAGE
-				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 32, 228, 112, 26, 7);
+				ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 32, 228, 112, 26, 7);
 
 				if((stage[i] >= 26) && (ending[i] == 3)){
 					// ALL（表示条件を変更 C7T3.2）
@@ -597,13 +597,13 @@ void viewScoreSmall(void) {
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", stage[i] + 1);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				}
-				ExBltRect(85, 208+add + 75 * i - 96 * maxPlay, 50, 35, 5*7, 21, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 75 * i - 96 * maxPlay, 50, 35, 5*7, 21, 7);
 				SDL_snprintf(string[0], STRING_LENGTH, "%d", rest_pblock[i] );
 				printSMALLFont(208+add + 90 * i - 96 * maxPlay, 58, string[0], color);
 				if(stage[i] <= 26){
 				// CLEAR率
 					if((!t_training[i]) && (stage[i] <= 26)) {
-						ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 68, 0, 4*7, 26, 7);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 68, 0, 4*7, 26, 7);
 						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%3d>", clearp[i] );
 						else SDL_snprintf(string[0], STRING_LENGTH, "%d>", clearp[i] );
 						printSMALLFont(208+add + 72 * i - 96 * maxPlay, 76, string[0], color);
@@ -611,7 +611,7 @@ void viewScoreSmall(void) {
 				}
 				// SCORE(F-Point)
 				if(stage[i] >= 99){
-					ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 68, 35, 7*7, 26, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 68, 35, 7*7, 26, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 					printSMALLFont(208+add + 55 * i - 96 * maxPlay, 76, string[0], color);
@@ -665,14 +665,14 @@ void viewScoreSmall(void) {
 // ACE & OLD STYLE
 			if(gameMode[i]==7){
 				//LEVEL
-				ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", lv[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 				printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				if(anothermode[i] != 3){
 					//TOTAL TIME
-					ExBltRect(85, 208+add + 54 * i - 96 * maxPlay, 50, 35, 13*7, 25, 7);
-					ExBltRect(85, 231+add + 54 * i - 96 * maxPlay, 50, 35, 12*7, 19, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 54 * i - 96 * maxPlay, 50, 35, 13*7, 25, 7);
+					ExBltRect(PLANE_HEBOFONT5, 231+add + 54 * i - 96 * maxPlay, 50, 35, 12*7, 19, 7);
 					getTime(gametime[i]);
 					printSMALLFont((26 + 6 * i - 12 * maxPlay)*8+add, 58, string[0], color);
 					// BEST TIME
@@ -682,12 +682,12 @@ void viewScoreSmall(void) {
 						viewbesttimes3(i,(26 + 8 * i - 12 * maxPlay)*8+add,68,0);
 					}
 				}else{	//OLD STYLE
-					ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 					printSMALLFont(208+add +52 * i - 96 * maxPlay, 58, string[0], color);
 
-					ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
+					ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 					printSMALLFont(208+add +52 * i - 96 * maxPlay, 76, string[0], color);
@@ -695,8 +695,8 @@ void viewScoreSmall(void) {
 			}
 // MISSION
 			if(gameMode[i] == 8){
-				ExBltRect(85, 208+add + 54 * i - 96 * maxPlay, 50, 35, 13*7, 25, 7);
-				ExBltRect(85, 231+add + 54 * i - 96 * maxPlay, 50, 35, 12*7, 19, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 54 * i - 96 * maxPlay, 50, 35, 13*7, 25, 7);
+				ExBltRect(PLANE_HEBOFONT5, 231+add + 54 * i - 96 * maxPlay, 50, 35, 12*7, 19, 7);
 				getTime(gametime[i]);
 				printSMALLFont((26 + 6 * i - 12 * maxPlay)*8+add, 58, string[0], color);
 			}
@@ -704,14 +704,14 @@ void viewScoreSmall(void) {
 			if(gameMode[i] == 9){
 				if(std_opt[i]<=1){
 					if((relaymode[i]) && (!playback)){
-						ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 70, 105, 26, 7);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 32, 70, 105, 26, 7);
 						if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", relayround[i] + (1 * (relayround[i] < 9)));
 						else SDL_snprintf(string[0], STRING_LENGTH, "%d", relayround[i] + (1 * (relayround[i] < 9)));
 						printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 						if(status[i] != 2){
-							ExBltRect(87,208 + 48 * i - 96 * maxPlay, 102, (gametime[i]%6)*48 ,(gametime[i]%30/6)*48,48,48);
-							ExBltRect(85,208 + 70 * i - 96 * maxPlay, 105, 35, 7*6, 22, 7);
-							ExBltRect(55,201 + 48 * i - 96 * maxPlay, 121 - (3 * (getDrawRate() == 1)), 64*rotspl[i] ,
+							ExBltRect(PLANE_ROLLMARK,208 + 48 * i - 96 * maxPlay, 102, (gametime[i]%6)*48 ,(gametime[i]%30/6)*48,48,48);
+							ExBltRect(PLANE_HEBOFONT5,208 + 70 * i - 96 * maxPlay, 105, 35, 7*6, 22, 7);
+							ExBltRect(PLANE_ROT,201 + 48 * i - 96 * maxPlay, 121 - (3 * (getDrawRate() == 1)), 64*rotspl[i] ,
 									32*fontc[rotspl[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 						}
 					}else{
@@ -724,11 +724,11 @@ void viewScoreSmall(void) {
 					}
 					// LINES/min
 					if(i) {
-						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 50, 0, 7*33,35, 14);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 69 * i - 96 * maxPlay, 50, 0, 7*33,35, 14);
 					}else{
-						ExBltRect(85, 208+add + 64 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
-						ExBltRect(85, 238+add + 45* i - 96 * maxPlay, 50, 70, 0,7, 7);
-						ExBltRect(85, 244+add + 45 * i - 96 * maxPlay, 50, 70, 7*9,35, 7);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 64 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
+						ExBltRect(PLANE_HEBOFONT5, 238+add + 45* i - 96 * maxPlay, 50, 70, 0,7, 7);
+						ExBltRect(PLANE_HEBOFONT5, 244+add + 45 * i - 96 * maxPlay, 50, 70, 7*9,35, 7);
 					}
 					if(gametime[i]>120){//開始二秒は表示させない
 						bps[i] = (li[i] * 100 *60*60) / (gametime[i]);
@@ -758,11 +758,11 @@ void viewScoreSmall(void) {
 
 					//BLOCK/sec
 					if(i) {
-						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 70, 0, 7*35,35, 14);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 69 * i - 96 * maxPlay, 70, 0, 7*35,35, 14);
 					}else{
-						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 70, 0, 7*2,35, 7);
-						ExBltRect(85, 234+add + 50 * i - 96 * maxPlay, 70, 70, 0,7, 7);
-						ExBltRect(85, 240+add + 50 * i - 96 * maxPlay, 70, 0, 7*12,35, 7);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 69 * i - 96 * maxPlay, 70, 0, 7*2,35, 7);
+						ExBltRect(PLANE_HEBOFONT5, 234+add + 50 * i - 96 * maxPlay, 70, 70, 0,7, 7);
+						ExBltRect(PLANE_HEBOFONT5, 240+add + 50 * i - 96 * maxPlay, 70, 0, 7*12,35, 7);
 					}
 
 					if(gametime[i]>120){
@@ -801,24 +801,24 @@ void viewScoreSmall(void) {
 					}
 				}else{
 					//LEVEL
-					ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", lv[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				}
 				if(std_opt[i]==2){
 				//SQUARE
-					ExBltRect(85, 208+add + 64 * i - 96 * maxPlay, 50, 35, 7*9,33, 7);
+					ExBltRect(PLANE_HEBOFONT5, 208+add + 64 * i - 96 * maxPlay, 50, 35, 7*9,33, 7);
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", squarecnt[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", squarecnt[i]);
 					printSMALLFont(208+add + 84 * i - 96 * maxPlay, 58, string[0], color);
 				} else if(std_opt[i]==3){
 					if(i) {
-						ExBltRect(85, 208+add + 69 * i - 96 * maxPlay, 50, 0, 7*37,35, 14);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 69 * i - 96 * maxPlay, 50, 0, 7*37,35, 14);
 					}else{
-						ExBltRect(85, 208+add + 58 * i - 96 * maxPlay, 50, 35, 7*7,35, 7);
-						ExBltRect(85, 234+add + 34 * i - 96 * maxPlay, 50, 70, 0,7, 7);
-						ExBltRect(85, 240+add + 34 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
+						ExBltRect(PLANE_HEBOFONT5, 208+add + 58 * i - 96 * maxPlay, 50, 35, 7*7,35, 7);
+						ExBltRect(PLANE_HEBOFONT5, 234+add + 34 * i - 96 * maxPlay, 50, 70, 0,7, 7);
+						ExBltRect(PLANE_HEBOFONT5, 240+add + 34 * i - 96 * maxPlay, 50, 0, 7*10,35, 7);
 					}
 					//SCORE/ライン
 
@@ -851,17 +851,17 @@ void viewScoreSmall(void) {
 // ORIGINAL
 			if(gameMode[i] == 10){
 				//LEVEL
-				ExBltRect(85, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 70 * i - 96 * maxPlay, 32, 0, 7*9, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%2d", lv[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 				printSMALLFont(208+add + 84 * i - 96 * maxPlay, 40, string[0], color);
 				//LINES
-				ExBltRect(85, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
+				ExBltRect(PLANE_HEBOFONT5, 208+add + 73 * i - 96 * maxPlay, 50, 0, 10*7, 35, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", li[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", li[i]);
 				printSMALLFont(208+add +52 * i - 96 * maxPlay, 58, string[0], color);
 				//SCORE
-				ExBltRect(3, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
+				ExBltRect(PLANE_HEBOSPR, 208+add + 70 * i - 96 * maxPlay, 68, 154, 112, 26, 7);
 				if(i) SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[i]);
 				else SDL_snprintf(string[0], STRING_LENGTH, "%d", sc[i]);
 				printSMALLFont(208+add +55 * i - 96 * maxPlay, 76, string[0], color);
@@ -876,9 +876,9 @@ void viewScoreSmall(void) {
 						if((gameMode[i] != 8) || (mission_type[c_mission] != 23)){
 							// NORM
 							if(gameMode[i]!=9){
-								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
+								ExBltRect(PLANE_HEBOFONT5,217 + 66 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
 							}else{
-								ExBltRect(85,217 + 66 * i - 96 * maxPlay, 161, 0, 7*5, 25, 7);//GOALの文字
+								ExBltRect(PLANE_HEBOFONT5,217 + 66 * i - 96 * maxPlay, 161, 0, 7*5, 25, 7);//GOALの文字
 							}
 							/* 分し */
 							if(gameMode[i] == 7) SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
@@ -893,11 +893,11 @@ void viewScoreSmall(void) {
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 169, string[0], color);
 
 							/* 横線 */
-							ExBltRect(3,218 + 61 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
+							ExBltRect(PLANE_HEBOSPR,218 + 61 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 							if((sp[i] <= 600) && (!isboost[i])) {
-								ExBltRect(3,219 + 61 * i - 96 * maxPlay,181, 60- (( sp[i] * 24 ) / 660 ),37 ,22,1);
+								ExBltRect(PLANE_HEBOSPR,219 + 61 * i - 96 * maxPlay,181, 60- (( sp[i] * 24 ) / 660 ),37 ,22,1);
 							}else{
-								ExBltRect(3,219 + 62 * i - 96 * maxPlay,181, 38,37 ,22,1);
+								ExBltRect(PLANE_HEBOSPR,219 + 62 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
 							/* 分ぼ */
 							if((gameMode[i] == 7)&&(anothermode[i]!=3)) SDL_snprintf(string[0], STRING_LENGTH, "%3d", lv[i] * 10);
@@ -912,23 +912,23 @@ void viewScoreSmall(void) {
 							printSMALLFont(218 + 61 * i - 96 * maxPlay, 185, string[0], color);
 						}
 					}else if((gameMode[i]==4)&&(wintype==1)){//line
-						ExBltRect(85, 208 + 75 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
+						ExBltRect(PLANE_HEBOFONT5, 208 + 75 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
 						/* 分子 */
 						SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 169, string[0], color);
 
-						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
+						ExBltRect(PLANE_HEBOSPR,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
-							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
+							ExBltRect(PLANE_HEBOSPR,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
-							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
+							ExBltRect(PLANE_HEBOSPR,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
 						SDL_snprintf(string[0], STRING_LENGTH, "%3d", vs_goal/10);
 						printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 					}else{//LINE
 
-						ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 63 + (210 * ((gameMode[i] == 3) && (!devil_minus[i]))), 26, 7);//LEVELの文字画像
+						ExBltRect(PLANE_HEBOFONT5, 208 + 70 * i - 96 * maxPlay, 161, 0, 63 + (210 * ((gameMode[i] == 3) && (!devil_minus[i]))), 26, 7);//LEVELの文字画像
 						/* 分子 */
 						SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i]);
 
@@ -940,12 +940,12 @@ void viewScoreSmall(void) {
 
 						/* 横線 */
 						// 横線の枠 #1.60c7o3
-						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
+						ExBltRect(PLANE_HEBOSPR,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
-							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
+							ExBltRect(PLANE_HEBOSPR,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
-							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
+							ExBltRect(PLANE_HEBOSPR,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 						}
 
 						/* 分母 */
@@ -969,7 +969,7 @@ void viewScoreSmall(void) {
 					}
 				}else if(gameMode[i] == 5){
 						if(p_goaltype==2){//ライン
-							ExBltRect(85, 208 + 68 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
+							ExBltRect(PLANE_HEBOFONT5, 208 + 68 * i - 96 * maxPlay, 161, 35, 7*2, 22, 7);//normの文字画像
 							/* 分子 */
 							SDL_snprintf(string[0], STRING_LENGTH, "%3d", li[i]);
 
@@ -978,7 +978,7 @@ void viewScoreSmall(void) {
 								SDL_snprintf(string[0], STRING_LENGTH, "%3d", 0);
 							}
 						}else if(p_goaltype==3){//ブロック
-							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*2, 30, 7);//BLOCKの文字画像
+							ExBltRect(PLANE_HEBOFONT5, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*2, 30, 7);//BLOCKの文字画像
 							/* 分子 */
 							SDL_snprintf(string[0], STRING_LENGTH, "%3d", bdowncnt[i]);
 
@@ -987,7 +987,7 @@ void viewScoreSmall(void) {
 								SDL_snprintf(string[0], STRING_LENGTH, "%3d", 0);
 							}
 						}else{
-							ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
+							ExBltRect(PLANE_HEBOFONT5, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
 							/* 分子 */
 							SDL_snprintf(string[0], STRING_LENGTH, "%3d", tc[i]);
 
@@ -1001,12 +1001,12 @@ void viewScoreSmall(void) {
 
 						/* 横線 */
 						// 横線の枠 #1.60c7o3
-						ExBltRect(3,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
+						ExBltRect(PLANE_HEBOSPR,210 + 68 * i - 96 * maxPlay,180, 38 + (24 * ((sp[i] >= 1200) || (isboost[i]))),34 ,24,3);
 						// 中身
 						if((sp[i] <= 600) && (!isboost[i])) {
-							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
+							ExBltRect(PLANE_HEBOSPR,211 + 68 * i - 96 * maxPlay,181, 60 - (( sp[i] * 24 ) / 660 ),37 ,22,1);
 						} else {
-							ExBltRect(3,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
+							ExBltRect(PLANE_HEBOSPR,211 + 68 * i - 96 * maxPlay,181, 38,37 ,22,1);
 							}
 
 						/* 分母 */
@@ -1021,7 +1021,7 @@ void viewScoreSmall(void) {
 							printSMALLFont(210 + 68 * i - 96 * maxPlay, 185, string[0], color);
 				}else{
 					// HEBORISレベルの表示位置をTGMレベルと同じにした #1.60c7i2
-					ExBltRect(85, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
+					ExBltRect(PLANE_HEBOFONT5, 208 + 70 * i - 96 * maxPlay, 161, 0, 7*9, 26, 7);//LEVELの文字画像
 					if(i) SDL_snprintf(string[0], STRING_LENGTH, "%4d", lv[i]);
 					else SDL_snprintf(string[0], STRING_LENGTH, "%d", lv[i]);
 					printSMALLFont(208 + 72 * i - 96 * maxPlay, 169, string[0], color);
@@ -1033,72 +1033,72 @@ void viewScoreSmall(void) {
 				if( medaltype == 0 ) {//メダル絵はmedal.bmp
 					// AC
 					if(medal_ac[i]) {
-						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 122, 0, 13 * (4-medal_ac[i]), 15, 12);
+						ExBltRect(PLANE_MEDAL, 208 + 81 * i - 96 * maxPlay, 122, 0, 13 * (4-medal_ac[i]), 15, 12);
 					} else if(medal_info) {
-						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 122, 0, 52, 15, 12);
+						ExBltRect(PLANE_MEDAL, 208 + 81 * i - 96 * maxPlay, 122, 0, 52, 15, 12);
 					}
 
 					// SK
 					if(medal_sk[i]) {
-						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 135, 32, 13 * (4-medal_sk[i]), 15, 12);
+						ExBltRect(PLANE_MEDAL, 208 + 81 * i - 96 * maxPlay, 135, 32, 13 * (4-medal_sk[i]), 15, 12);
 					} else if(medal_info) {
-						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 135, 32, 52, 15, 12);
+						ExBltRect(PLANE_MEDAL, 208 + 81 * i - 96 * maxPlay, 135, 32, 52, 15, 12);
 					}
 
 					// CO(==なのは状態で見てるから)
 					if(medal_co[i]) {
-						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 148, 80, 13 * (4-medal_co[i]), 15, 12);
+						ExBltRect(PLANE_MEDAL, 233 + 31 * i - 96 * maxPlay, 148, 80, 13 * (4-medal_co[i]), 15, 12);
 					} else if(medal_info) {
-						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 148, 80, 52, 15, 12);
+						ExBltRect(PLANE_MEDAL, 233 + 31 * i - 96 * maxPlay, 148, 80, 52, 15, 12);
 					}
 
 					// RE
 					if(medal_re[i]) {
-						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 148, 48, 13 * (4-medal_re[i]), 15, 12);
+						ExBltRect(PLANE_MEDAL, 208 + 81 * i - 96 * maxPlay, 148, 48, 13 * (4-medal_re[i]), 15, 12);
 					} else if(medal_info) {
-						ExBltRect(0, 208 + 81 * i - 96 * maxPlay, 148, 48, 52, 15, 12);
+						ExBltRect(PLANE_MEDAL, 208 + 81 * i - 96 * maxPlay, 148, 48, 52, 15, 12);
 					}
 
 					// ST(==なのは状態で見てるから)
 					if(medal_st[i]) {
-						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 122, 16, 13 * (4-medal_st[i]), 15, 12);
+						ExBltRect(PLANE_MEDAL, 233 + 31 * i - 96 * maxPlay, 122, 16, 13 * (4-medal_st[i]), 15, 12);
 					} else if(medal_info) {	// 未点灯では表示しない #1.60c7q2ex
-						ExBltRect(0, 233 + 31 * i - 96 * maxPlay, 122, 16, 52, 15, 12);
+						ExBltRect(PLANE_MEDAL, 233 + 31 * i - 96 * maxPlay, 122, 16, 52, 15, 12);
 					}
 				} else if( medaltype == 1 ) {//メダル絵はmedal_ti.bmp
 					// AC
 					if(medal_ac[i]) {
-						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 122, 0, 12 * (4-medal_ac[i]), 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 208 + 81 * i - 96 * maxPlay, 122, 0, 12 * (4-medal_ac[i]), 16, 12);
 					} else if(medal_info) {
-						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 122, 0, 48, 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 208 + 81 * i - 96 * maxPlay, 122, 0, 48, 16, 12);
 					}
 
 					// SK
 					if(medal_sk[i]) {
-						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 135, 32, 12 * (4-medal_sk[i]), 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 208 + 81 * i - 96 * maxPlay, 135, 32, 12 * (4-medal_sk[i]), 16, 12);
 					} else if(medal_info) {
-						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 135, 32, 48, 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 208 + 81 * i - 96 * maxPlay, 135, 32, 48, 16, 12);
 					}
 
 					// CO(==なのは状態で見てるから)
 					if(medal_co[i]) {
-						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 148, 80, 12 * (4-medal_co[i]), 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 233 + 31 * i - 96 * maxPlay, 148, 80, 12 * (4-medal_co[i]), 16, 12);
 					} else if(medal_info) {
-						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 148, 80, 48, 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 233 + 31 * i - 96 * maxPlay, 148, 80, 48, 16, 12);
 					}
 
 				// RE
 					if(medal_re[i]){
-						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 148, 48, 12 * (4-medal_re[i]), 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 208 + 81 * i - 96 * maxPlay, 148, 48, 12 * (4-medal_re[i]), 16, 12);
 					} else if(medal_info) {
-						ExBltRect(56, 208 + 81 * i - 96 * maxPlay, 148, 48, 48, 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 208 + 81 * i - 96 * maxPlay, 148, 48, 48, 16, 12);
 					}
 
 					// ST(==なのは状態で見てるから)
 					if(medal_st[i]) {
-						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 122, 16, 12 * (4-medal_st[i]), 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 233 + 31 * i - 96 * maxPlay, 122, 16, 12 * (4-medal_st[i]), 16, 12);
 					} else if(medal_info) {	// 未点灯では表示しない #1.60c7q2ex
-						ExBltRect(56, 233 + 31 * i - 96 * maxPlay, 122, 16, 48, 16, 12);
+						ExBltRect(PLANE_MEDAL_TI, 233 + 31 * i - 96 * maxPlay, 122, 16, 48, 16, 12);
 					}
 				}
 			/* メダル回数表示 */
@@ -1277,18 +1277,18 @@ void viewTime(void) {
 			if( (gameMode[i] == 4) && (i == 0) ) {
 				// 対戦用
 				if(vs_time == 0) {
-					ExBltRect(81, 110 - 96, 215,0,228+18*english, 100, 18);
+					ExBltRect(PLANE_TEXT2, 110 - 96, 215,0,228+18*english, 100, 18);
 				} else {
 					// 制限時間 #1.60c7r5
 					color2 = (count % 4 / 2) * (ltime[i] <= 15 * 60) * 2;
 					getTime(ltime[i]);
 					printBIGFont(112, 216, string[0], color2);
 				}
-				ExBltRect(85, 150, 190, 35, 12*7, 19, 7);
+				ExBltRect(PLANE_HEBOFONT5, 150, 190, 35, 12*7, 19, 7);
 				getTime(gametime[i]);
 				printSMALLFont(136, 199, string[0], 0);
 				if((vsmodesl>0)&&(!demo)){
-					ExBltRect(85, 135, 100, 0, 7*16+vsmodesl*7, 100, 7);
+					ExBltRect(PLANE_HEBOFONT5, 135, 100, 0, 7*16+vsmodesl*7, 100, 7);
 				}
 			} else if(gameMode[i] != 4) {
 				// 通常
@@ -1306,7 +1306,7 @@ void viewTime(void) {
 				if((gameMode[i]!=8)||(mission_time[c_mission] > 0)){
 					printBIGFont(112 + 192 * i - 96 * maxPlay, 216, string[0], color2);
 				}else{
-					ExBltRect(81, 110 + 192 * i - 96 * maxPlay, 215,0,228+18*english, 100, 18);
+					ExBltRect(PLANE_TEXT2, 110 + 192 * i - 96 * maxPlay, 215,0,228+18*english, 100, 18);
 				}
 			}
 		}
@@ -1389,7 +1389,7 @@ void viewTime(void) {
 				}
 			}
 		}else if(gameMode[i] == 4){
-			ExBltRect(55,128 + 192 * i -96 * maxPlay , 218 - (4 * (getDrawRate() == 1)), 64*rotspl[i] ,
+			ExBltRect(PLANE_ROT,128 + 192 * i -96 * maxPlay , 218 - (4 * (getDrawRate() == 1)), 64*rotspl[i] ,
 				32*fontc[rotspl[i]] + (7 * (getDrawRate() == 1)),64,12 + (5 * (getDrawRate() == 1)));
 
 			if((!disrise) && ((timeOn[i]) || (flag == -2) || (flag == -3))){
@@ -1406,13 +1406,13 @@ void viewTime(void) {
 		}
 		if((ismiss[i]) && (gameMode[i] != 4) && (repversw >= 62)){
 			if(gameMode[i] <= 3){
-				ExBltRect(3,228 + 38 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
-				ExBltRect(3,210 + 78 * i - 96 * maxPlay, 60, 274, 370, 27, 27);
-				ExBltRect(3,210 + 78 * i - 96 * maxPlay, 96 - 18 * (gameMode[i] == 3), 274, 370, 27, 27);
+				ExBltRect(PLANE_HEBOSPR,228 + 38 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
+				ExBltRect(PLANE_HEBOSPR,210 + 78 * i - 96 * maxPlay, 60, 274, 370, 27, 27);
+				ExBltRect(PLANE_HEBOSPR,210 + 78 * i - 96 * maxPlay, 96 - 18 * (gameMode[i] == 3), 274, 370, 27, 27);
 			}else if(gameMode[i] == 5){
-				if(p_goaltype < 2) ExBltRect(3,228 + 48 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
-				ExBltRect(3,210 + 78 * i - 96 * maxPlay, 24, 274, 370, 27, 27);
-				ExBltRect(3,210 + 78 * i - 96 * maxPlay, 44, 274, 370, 27, 27);
+				if(p_goaltype < 2) ExBltRect(PLANE_HEBOSPR,228 + 48 * i - 96 * maxPlay, 154, 274, 370, 27, 27);
+				ExBltRect(PLANE_HEBOSPR,210 + 78 * i - 96 * maxPlay, 24, 274, 370, 27, 27);
+				ExBltRect(PLANE_HEBOSPR,210 + 78 * i - 96 * maxPlay, 44, 274, 370, 27, 27);
 			}
 		}
 		if(istimestop[i]){
@@ -1548,7 +1548,7 @@ void viewField(void) {
 	if(maxPlay) viewFldFrame(0,1);
 
 	for(i = 0; i <= maxPlayTemp; i++) {
-		if(skip_viewbg) ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
+		if(skip_viewbg) ExBltRect(PLANE_HEBOSPR, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
 
 		// イレイサーの線 #1.60c7s2
 		if( (gameMode[0] == 8) && (i == 0)  && ((mission_type[c_mission] == 7)||(mission_type[c_mission] == 39))){
@@ -1565,7 +1565,7 @@ void viewField(void) {
 							if((disable_giji3D < 3) && (getFieldBlock3(i, k + (1-2*i), j) == 0)){
 								if(fi < 8) tmp[0]=getBigBlock_add(i);
 								else tmp[0] = 8;
-								ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j+5+(21*(gameMode[i] == 4))) * 8,
+								ExBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j+5+(21*(gameMode[i] == 4))) * 8,
 										(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4*8, 2, 8 );
 							}
 							ExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+5+(21*(gameMode[i] == 4))) * 8, (fi * 8) - ((fi >= 10) * 80), 4 * 8, 8, 8);
@@ -1582,10 +1582,10 @@ void viewField(void) {
 								if(fi < 8) tmp[0]=getBigBlock_add(i);
 								else tmp[0] = 8;
 								if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-									ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
+									ExBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * i - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
 									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8);
 								if (tomoyo_domirror[0] && (i==0))
-								ExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
+								ExBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + 8 - (10 * i), (j + 1 + 4) * 8,
 									(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), 4 * 8, 2, 8);
 							}
 							if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
@@ -1655,17 +1655,17 @@ void viewField(void) {
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
 												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-													BlendExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+													ExBlendBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
 														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4);
 												if (tomoyo_domirror[0] && (i == 0))
-												BlendExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+												ExBlendBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
 													(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8, fldt4);
 											}
 											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-												BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
+												ExBlendBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
 													((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
 											if (tomoyo_domirror[0] && (i == 0))
-												BlendExBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
+												ExBlendBltRect(getBlockPlaneNo(i, fi), (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i], (j + 3) * 8 + ofs_y2[i],
 													((fi + add) * 8) - ((fi >= 10) * 80), color * 8, 8, 8, fldt4);
 										} else if((fldt3 != 0) && (fldt3 > -10)) {
 											// タイマーが0なら無視する #1.60c7k4
@@ -1673,10 +1673,10 @@ void viewField(void) {
 												if(fi < 8) tmp[0]=getBigBlock_add(i);
 												else tmp[0] = 8;
 												if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-													ExBltRect(83, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+													ExBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * i - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
 														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 												if (tomoyo_domirror[0] && (i == 0))
-													ExBltRect(83, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
+													ExBltRect(PLANE_HEBOBLK_SP2, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 + ofs_x2[i] + 8 - (10 * i), (j + 3) * 8 + ofs_y2[i],
 														(fi * 2) - ((fi >= 10) * 20) + (20 * tmp[0]), color * 8, 2, 8);
 											}
 											if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
@@ -1715,33 +1715,33 @@ void viewField(void) {
 													if (tmp[0] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 63, 0 + add, 10, 10);
 													}
 													// 右
 													if (tmp[1] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 73, 0 + add, 10, 10);
 													}
 													// 上
 													if (tmp[2] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 83, 0 + add, 10, 10);
 													}
 													// 下
 													if (tmp[3] == 0)
 													{
 														if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-															ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * i - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
 														if (tomoyo_domirror[0] && (i == 0))
-															ExBltRect(29, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
+															ExBltRect(PLANE_GUIDE, (k + 15 + 24 * 1 - 12 * maxPlay) * 8 - 1 + ofs_x2[i], (j + 3) * 8 - 1 + ofs_y2[i], 93, 0 + add, 10, 10);
 													}
 													add = 0;
 												}
@@ -1753,7 +1753,7 @@ void viewField(void) {
 						}/* if(fi != -1) */
 						if((navigation) && (gameMode[i] == 0) && (tc[i] < navigation_limitLv) && (b) && (navigation_time[i] <= navigation_limittime) && (status[i] == 5)){
 							if((fld[k + j * 10 + i * 220] == 0) && (cp_fld[k + j * 10 + i * 220] == c_cblk_r[i] + 1)){
-								ExBltRect(29, (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+ 3) * 8, ((c_cblk[i]-1) * 8), (((navigation_time[i] % 20)/2) * 8)+38, 8, 8);
+								ExBltRect(PLANE_GUIDE, (k + 15 + 24 * i - 12 * maxPlay) * 8, (j+ 3) * 8, ((c_cblk[i]-1) * 8), (((navigation_time[i] % 20)/2) * 8)+38, 8, 8);
 							}
 						}
 					}
@@ -1910,14 +1910,14 @@ void viewPreview(void){
 		}
 		if (!tomoyo_domirror[0]) {  // stop redrawing frame after mirror starts.
 			if(!top_frame)
-				ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 33);
+				ExBltRect(PLANE_HEBOSPR, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 33);
 			else
-				ExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
+				ExBltRect(PLANE_HEBOSPR, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
 		}
 		if(hnext[i] >= 1)
-			ExBltRect(3, 150 + 192 * i - 96 * maxPlay, 4*(!top_frame), 128, 112, 26, 7);
+			ExBltRect(PLANE_HEBOSPR, 150 + 192 * i - 96 * maxPlay, 4*(!top_frame), 128, 112, 26, 7);
 		if(!disable_hold)
-			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 4, 128, 119, 26, 7);//HOLDという文字
+			ExBltRect(PLANE_HEBOSPR, 112 + 192 * i - 96 * maxPlay, 4, 128, 119, 26, 7);//HOLDという文字
 
 		// HOLDブロック
 		if((!disable_hold) && !((ishidenext[i] == 1) && (hnext_flag[i]))) {
@@ -1965,7 +1965,7 @@ void viewPreview(void){
 					}
 				}
 				if((disable_hold) || (isholdlock[i]) || (death_plus[i])||(hebo_plus[i])||(heboGB[i]))	//HOLD LOCKの錠鍵
-					ExBltRect(3, 110 + 192 * i - 96 * maxPlay, 5, 275, 430, 27, 27);
+					ExBltRect(PLANE_HEBOSPR, 110 + 192 * i - 96 * maxPlay, 5, 275, 430, 27, 27);
 			}
 		}
 	}
@@ -1981,7 +1981,7 @@ void viewFldBackground(void) {
 		int32_t		tr;
 
 		if(background == 2) {
-			BlendExBltRect(24, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160, 256 - fldtr);
+			ExBlendBltRect(PLANE_HEBOFLB0, 120 + 192 * i - 96 * maxPlay, 40, 0, 0, 80, 160, 256 - fldtr);
 		}
 
 		// GBモードでなければ上を描画
@@ -1990,49 +1990,49 @@ void viewFldBackground(void) {
 		{
 			// グラデーション部分をなめらかに#1.60c7p9ex
 			if(!top_frame){
-				BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100 - 20, 32, 256 - fldtr);
+				ExBlendBltRect(PLANE_HEBOSPR, 112 + 192 * i - 96 * maxPlay, 0, 101, 128, 100 - 20, 32, 256 - fldtr);
 				for(k = 0; k < 20; k++) {
 					tr = (256 - fldtr) * (19 - k) / 20;
 					tr = 256 - tr;
-					BlendExBltRect(3, 112 + 192 * i - 96 * maxPlay + (80 + k), 0, 101 + (80 + k), 128, 1, 32, 256 - tr);
+					ExBlendBltRect(PLANE_HEBOSPR, 112 + 192 * i - 96 * maxPlay + (80 + k), 0, 101 + (80 + k), 128, 1, 32, 256 - tr);
 				}
 			}
 			else{
-				BlendExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35, 256 - fldtr);
+				ExBlendBltRect(PLANE_HEBOSPR, 97 + 192 * i - 96 * maxPlay, 0, 127, 423, 126, 35, 256 - fldtr);
 			}
 		}
 
 		if(!top_frame)
-			ExBltRect(3, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
+			ExBltRect(PLANE_HEBOSPR, 112 + 192 * i - 96 * maxPlay, 0, 0, 128, 100, 32);
 		else
-			ExBltRect(3, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
+			ExBltRect(PLANE_HEBOSPR, 97 + 192 * i - 96 * maxPlay, 0, 0, 423, 126, 35);
 
 		// ここまで C++版上部枠表示
 		// ------------------------
 
 		if((heboGB[i]==1) || (((tc[i] >= over1000_start) || (over1000_block[i]) || ((p_over1000)&&(gameMode[i] == 5))) && (rotspl[i] == 6))){
 		//フィールド背景を白く
-			ExBltRect(2, 112 + ofs_x[i] + 192 * i - 96 * maxPlay, 32, 96 * 7, 0, 96, 176);
-			ExBltRect(3, 110 + 192 * i - 96 * maxPlay, 8, 184, 275 + (24 * top_frame), 107, 24);
+			ExBltRect(PLANE_HEBOFLD, 112 + ofs_x[i] + 192 * i - 96 * maxPlay, 32, 96 * 7, 0, 96, 176);
+			ExBltRect(PLANE_HEBOSPR, 110 + 192 * i - 96 * maxPlay, 8, 184, 275 + (24 * top_frame), 107, 24);
 		}
 		// XRAY・COLORのときに黒背景を描く
 		else if ( ( xray_flag[i] && !xray_bgblack ) || ( color_flag[i] && !color_bgblack ) || (heboGB[i] == 2))
 		{
-			ExBltRect(24, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160);
+			ExBltRect(PLANE_HEBOFLB0, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160);
 		}
 		else if(background == 0)
 		{
 				if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-					ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
+					ExBlendBltRect(PLANE_HEBOFLB1 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
 				if (tomoyo_domirror[0] && (i == 0))
-					ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
+					ExBlendBltRect(PLANE_HEBOFLB1 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], count % 128 / 4, count % 256 / 8, 80, 160, 256 - fldtr);
 		}
 		else if(background == 1)
 		{
 			if ((i == 0) || ((!tomoyo_domirror[0]) && (i == 1)))
-				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
+				ExBlendBltRect(PLANE_HEBOFLB1 + pinch[i] * 2, 120 + ofs_x[i] + 192 * i - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
 			if (tomoyo_domirror[0] && (i == 0))
-				ExBlendBltRect(4 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
+				ExBlendBltRect(PLANE_HEBOFLB1 + pinch[i] * 2, 120 + ofs_x[i] + 192 * 1 - 96 * maxPlay, 40 + ofs_y[i], 0, 0, 80, 160, 256 - fldtr);
 		}
 	}
 }
@@ -2100,19 +2100,19 @@ void viewFldFrame(int32_t uponly,int32_t i) {
 		ismission[i] = ((((gameMode[i] >= 8)&&(gameMode[i] < 10)) || ((gameMode[i] == 7) && (anothermode[i] < 3))) && (!uponly) && (!waiting[i]) && (heboGB[i]==0));
 
 		if((ismission[i]) && (disable_giji3D < 4))
-			ExBltRect(2, 104 + 192 * i - 96 * maxPlay + ofs_x[i] + 2 - (4 * i), 32 + ofs_y[i], 784, 184, 112, 184);
+			ExBltRect(PLANE_HEBOFLD, 104 + 192 * i - 96 * maxPlay + ofs_x[i] + 2 - (4 * i), 32 + ofs_y[i], 784, 184, 112, 184);
 
 		if((isfmirror[i]) && (fmirror_cnt[i] > -20) && (fmirror_cnt[i] < 0)){
 			if(uponly == 0)
-				ExBltRect(66+(gm[i]-2), 112 + 192 * i - 96 * maxPlay, 17, 96 * ((fmirror_cnt[i]+20-1) % 5), 206 * ((fmirror_cnt[i]+20-1) / 5), 96, 206);
+				ExBltRect(PLANE_FLDMIRROR01+(gm[i]-2), 112 + 192 * i - 96 * maxPlay, 17, 96 * ((fmirror_cnt[i]+20-1) % 5), 206 * ((fmirror_cnt[i]+20-1) / 5), 96, 206);
 		}else{
 			if((!uponly) && (disable_giji3D < 4) && !( color_flag[i] && !color_bgblack ) && gm[i] <= 6)
-				ExBltRect(2, 112 + 192 * i - 96 * maxPlay + ofs_x[i] + 2 - (4 * i), 32 + ofs_y[i], 96 * gm[i], 184, 96, 184);
-			ExBltRect(2, 112 + (4 * uponly) + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 96 * gm[i]+ (4 * uponly), 0, 96 - (8 * uponly), 184 - uponly * 176);
+				ExBltRect(PLANE_HEBOFLD, 112 + 192 * i - 96 * maxPlay + ofs_x[i] + 2 - (4 * i), 32 + ofs_y[i], 96 * gm[i], 184, 96, 184);
+			ExBltRect(PLANE_HEBOFLD, 112 + (4 * uponly) + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 96 * gm[i]+ (4 * uponly), 0, 96 - (8 * uponly), 184 - uponly * 176);
 		}
 
 		if(ismission[i])//MISSIONのときの枠の出っ張り
-			ExBltRect(2, 104 + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 672, 184, 112, 184);
+			ExBltRect(PLANE_HEBOFLD, 104 + 192 * i - 96 * maxPlay + ofs_x[i], 32 + ofs_y[i], 672, 184, 112, 184);
 }
 
 void printPrompt(int32_t fontX, int32_t fontY, APP_Prompt prompt, int32_t fontColor) {
@@ -2139,18 +2139,18 @@ void printPrompt(int32_t fontX, int32_t fontY, APP_Prompt prompt, int32_t fontCo
 	case APP_INPUT_XBOX:
 	case APP_INPUT_PLAYSTATION:
 		switch (prompt) {
-		case APP_PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_A * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case APP_PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_B * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case APP_PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_C * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case APP_PROMPT_OK: ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_A * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case APP_PROMPT_CANCEL: ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_B * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case APP_PROMPT_RETRY: ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_C * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
 
 	case APP_INPUT_NINTENDO:
 		switch (prompt) {
-		case APP_PROMPT_OK: ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_B * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case APP_PROMPT_CANCEL: ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_A * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
-		case APP_PROMPT_RETRY: ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_C * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case APP_PROMPT_OK: ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_B * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case APP_PROMPT_CANCEL: ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_A * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
+		case APP_PROMPT_RETRY: ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_C * 8, (1 + lastInputType - APP_INPUT_FIRSTGAMECONTROLLERTYPE) * 8, 8, 8); break;
 		default: printFont(fontX, fontY, "?", fontColor); break;
 		}
 		break;
@@ -2167,30 +2167,30 @@ void printMenuButton(int32_t fontX, int32_t fontY, APP_Button button, int32_t pl
 
 	switch (player >= 0 ? lastPlayerInputType[player] : lastInputType) {
 	default:
-		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
+		ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, button * 8, 0 * 8, 8, 8);
 		break;
 
 	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case APP_INPUT_XBOX:
-		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
+		ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, button * 8, 1 * 8, 8, 8);
 		break;
 
 	case APP_INPUT_PLAYSTATION:
-		ExBltRect(23, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
+		ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, button * 8, 2 * 8, 8, 8);
 		break;
 
 	case APP_INPUT_NINTENDO:
 		switch (button) {
 		case APP_BUTTON_A:
-			ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_B * 8, 3 * 8, 8, 8);
+			ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_B * 8, 3 * 8, 8, 8);
 			break;
 
 		case APP_BUTTON_B:
-			ExBltRect(23, fontX * 8, fontY * 8, APP_BUTTON_A * 8, 3 * 8, 8, 8);
+			ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, APP_BUTTON_A * 8, 3 * 8, 8, 8);
 			break;
 
 		default:
-			ExBltRect(23, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
+			ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, button * 8, 3 * 8, 8, 8);
 			break;
 		}
 	#endif
@@ -2206,11 +2206,11 @@ void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, APP_ConKey* ke
 		if (text != NULL) {
 			printFont(fontX, fontY, text, fontColor);
 			if (button != APP_BUTTON_NULL) {
-				ExBltRect(23, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (APP_GetConType(conPlayer) - APP_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+				ExBltRect(PLANE_HEBOBTN, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (APP_GetConType(conPlayer) - APP_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 			}
 		}
 		else if (button != APP_BUTTON_NULL) {
-			ExBltRect(23, fontX * 8, fontY * 8, button * 8, (APP_GetConType(conPlayer) - APP_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+			ExBltRect(PLANE_HEBOBTN, fontX * 8, fontY * 8, button * 8, (APP_GetConType(conPlayer) - APP_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 		}
 	}
 }
@@ -2220,7 +2220,7 @@ void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, APP_ConKey* ke
 //  フォントを表示する
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
-	ExBltSpriteText(1, fontStr, ' ', 8, 8, fontX * 8, fontY * 8, 0, fontColor * 24, 256);
+	ExBltText(PLANE_HEBOFONT, fontStr, ' ', 8, 8, fontX * 8, fontY * 8, 0, fontColor * 24, 256);
 }
 
 // 小さいバージョン
@@ -2243,19 +2243,19 @@ void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t f
 			if(stringChar <= 64) {
 				sx = (stringChar - 48) * 6 + 132;
 				sy = fontColor * 9;
-				ExBltRect(31, fontX + 6 * i, fontY, sx, sy + (90 * fontsize), 6, 9);
+				ExBltRect(PLANE_HEBOFONT3, fontX + 6 * i, fontY, sx, sy + (90 * fontsize), 6, 9);
 			}
 			// 大文字
 			else if(stringChar <= 96) {
 				sx = (stringChar - 65) * 6;
 				sy = fontColor * 18;
-				ExBltRect(22, fontX + 6 * i, fontY, sx, sy, 6, 9);
+				ExBltRect(PLANE_HEBOFONT4, fontX + 6 * i, fontY, sx, sy, 6, 9);
 			}
 			// 小文字
 			else {
 				sx = (stringChar - 97) * 6;
 				sy = (fontColor * 18) + 9;
-				ExBltRect(22, fontX + 6 * i, fontY, sx, sy, 6, 9);
+				ExBltRect(PLANE_HEBOFONT4, fontX + 6 * i, fontY, sx, sy, 6, 9);
 			}
 		}
 	}
@@ -2274,19 +2274,19 @@ void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t
 			if(stringChar <= 64) {
 				sx = (stringChar - 48) * 6 + 132;
 				sy = fontColor * 9;
-				ExBltRect(31, (fontX + i) * 6, fontY * 9, sx, sy + (90 * fontsize), 6, 9);
+				ExBltRect(PLANE_HEBOFONT3, (fontX + i) * 6, fontY * 9, sx, sy + (90 * fontsize), 6, 9);
 			}
 			// 大文字
 			else if(stringChar <= 96) {
 				sx = (stringChar - 65) * 6;
 				sy = fontColor * 18;
-				ExBltRect(22, (fontX + i) * 6, fontY * 9, sx, sy, 6, 9);
+				ExBltRect(PLANE_HEBOFONT4, (fontX + i) * 6, fontY * 9, sx, sy, 6, 9);
 			}
 			// 小文字
 			else {
 				sx = (stringChar - 97) * 6;
 				sy = (fontColor * 18) + 9;
-				ExBltRect(22, (fontX + i) * 6, fontY * 9, sx, sy, 6, 9);
+				ExBltRect(PLANE_HEBOFONT4, (fontX + i) * 6, fontY * 9, sx, sy, 6, 9);
 			}
 		}
 	}
@@ -2294,13 +2294,13 @@ void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t
 
 // 大きいバージョン（数字のみ）
 void printBIGFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
-	ExBltSpriteText(31, fontStr, '0', 12, 16, fontX, fontY, 0, fontColor * 16 + 160 * fontsize, 12 * 11);
+	ExBltText(PLANE_HEBOFONT3, fontStr, '0', 12, 16, fontX, fontY, 0, fontColor * 16 + 160 * fontsize, 12 * 11);
 }
 
 // とっても小さいバージョン　6x7
 // 数字、/ : < > 、アルファベット大文字が使用可能　ただし字詰め無し
 void printTinyFont(int32_t fontX, int32_t fontY, const char *fontStr) {
-	ExBltSpriteText(85, fontStr, ' ', 6, 7, fontX, fontY, 0, 287, 192);
+	ExBltText(PLANE_HEBOFONT5, fontStr, ' ', 6, 7, fontX, fontY, 0, 287, 192);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -2309,39 +2309,39 @@ void printTinyFont(int32_t fontX, int32_t fontY, const char *fontStr) {
 int32_t getBlockPlaneNo(int32_t player, int32_t color) {
 	// プラチナブロックやアイテムなど
 	if(color >= 10)
-		return 46;
+		return PLANE_HEBOBLK_SP;
 
 	if(heboGB[player] == 1)
-		return 74;
+		return PLANE_HEBOBLK_OLD;
 
 	if(heboGB[player] == 2)
-		return 64;
+		return PLANE_HEBOBLK0B;
 
 	// TGM
 	if((rotspl[player] == 0)||(heboGB[player]==2))
-		return 40;
+		return PLANE_HEBOBLK0;
 
 	// ARS
 	if((rotspl[player] == 4) || (rotspl[player] == 5))
-		return 73;
+		return PLANE_HEBOBLK4_5;
 
 	// TI
 	if(rotspl[player] == 1)
-		return 41;
+		return PLANE_HEBOBLK1;
 
 	// WORLD & WORLD2
 	if( (rotspl[player] == 2) || (rotspl[player] == 3) )
-		return 42;
+		return PLANE_HEBOBLK2;
 
 	// WORLD3
 	if(rotspl[player] == 6)
-		return 43;
+		return PLANE_HEBOBLK3;
 
 	//SRS-X
 	if(rotspl[player] == 7)
-		return 64;
+		return PLANE_HEBOBLK0B;
 	//DRS
-	return 80;
+	return PLANE_HEBOBLK6;
 }
 // beboblk_big.png使用時の数値を求める（BIGブロックとミニブロック）
 int32_t getBigBlock_add(int32_t player){
@@ -2419,17 +2419,17 @@ void drawBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32
 				}
 				if(getFieldBlock(player, bx5 + 1 - (2 * player), by5, 1) == 0){
 					if(flash == 999)
-						BlendExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8, 112);
+						ExBlendBltRect(PLANE_HEBOBLK_SP2, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8, 112);
 					else
-						ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
+						ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 				}
 			}else if(flash == 1)
-				ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
+				ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 		}
 
 		// TLS用#1.60c7j3
 		if(flash == 999) {
-			if(j) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112);
+			if(j) ExBlendBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112);
 		// 普通
 		} else {
 			ExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), bright * 8, 8, 8);
@@ -2489,14 +2489,14 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 				if((pos[0] == 0) || (pos[1] == 0)){
 					if(flash == 999){
 						if(color > 10)
-							BlendExBltRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) ,  112, 65536*2,65536*2);
+							ExBlendBltRectScaled(PLANE_HEBOBLK_SP2, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) ,  112, 65536*2,65536*2);
 						else
-							BlendExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))), 112  );
+							ExBlendBltRect(PLANE_HEBOBLK_SP2, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))), 112  );
 					}else{
 						if(color > 10)
-							ExBltFastRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) , 65536*2,65536*2);
+							ExBltRectScaled(PLANE_HEBOBLK_SP2, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) , 65536*2,65536*2);
 						else
-							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 					}
 				}
 		}
@@ -2504,17 +2504,17 @@ void drawBigBlockFast(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, in
 		if(flash == 999) {
 			if(j){
 				if(color > 10)
-					BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 65536*2,65536*2);
+					ExBlendBltRectScaled(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 65536*2,65536*2);
 				else
-					BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112);
+					ExBlendBltRect(PLANE_HEBOBLK_BIG, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112);
 			}
 		// 不透明TLS
 		} else {
 			if(j){
 				if(color > 10)
-					ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 65536*2,65536*2);
+					ExBltRectScaled(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 65536*2,65536*2);
 				else
-					ExBltRect(83, bx2, by2 + offset,((color+add) * 16), 272 + (k * 16), 16, 16);
+					ExBltRect(PLANE_HEBOBLK_SP2, bx2, by2 + offset,((color+add) * 16), 272 + (k * 16), 16, 16);
 			}
 		}
 	}
@@ -2575,12 +2575,12 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					if(color < 8) tmp = getBigBlock_add(player);
 					else tmp = 8;
 					if(flash != 10)
-						ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
+						ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), bright * 8, 2, 8 );
 					else if(hidden[player] != 8){
 						if( (color < 8) && (rotspl[player] != 6)) {
-							ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, 20 * tmp, 0, 2, 8 );
+							ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 8 - (10 * player), by2 + offset, 20 * tmp, 0, 2, 8 );
 						} else {
-							ExBltRect(83, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), 0, 2, 8 );
+							ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 8 - (10 * player), by2 + offset, (color * 2) - ((color >= 10) * 20) + (20 * tmp), 0, 2, 8 );
 						}
 					}
 				}
@@ -2591,24 +2591,24 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 					// PRACTICE対応 #1.60c7e
 					// playerごと #1.60c7h8
 					if((flash > 0) && (flash < 999) && (color <= 7) && (add == 0))
-						ExBltRect(29, bx2 - 1, by2 - 1 + offset, 60, 80, 10, 10);
+						ExBltRect(PLANE_GUIDE, bx2 - 1, by2 - 1 + offset, 60, 80, 10, 10);
 				}
 				// HOLDは個別設定#1.60c7i1
 				if((enable_hold_frame) && (hold_used[player] == 2) && (dhold[player] == 1) && (flash != 10)) {
 					// 点滅させる#1.60c7p9ex
 					if (count % 16 < 8)
-						ExBltRect(29, bx2 - 1, by2 - 1 + offset, 80, 80, 10, 10);
+						ExBltRect(PLANE_GUIDE, bx2 - 1, by2 - 1 + offset, 80, 80, 10, 10);
 					else
-						ExBltRect(29, bx2 - 1, by2 - 1 + offset, 70, 80, 10, 10);
+						ExBltRect(PLANE_GUIDE, bx2 - 1, by2 - 1 + offset, 70, 80, 10, 10);
 				}
 			} else {
-				if(flash == 999) BlendExBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112);
+				if(flash == 999) ExBlendBltRect(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add * 8) - ((color >= 10) * 80), bright * 8, 8, 8, 112);
 				else if(flash == 10) {
 					// []ブロックの時は固定時の点滅をしない #1.60c7f
 					// playerごと #1.60c7h8
 					// 条件を簡略化#1.60c7i3
 					if((hidden[player] == 8) && (m_roll_blockframe)){
-						ExBltRect(24, bx2, by2 + offset, 0, 0, 8, 8);
+						ExBltRect(PLANE_HEBOFLB0, bx2, by2 + offset, 0, 0, 8, 8);
 					} else if( (color < 8) && ((rotspl[player] != 6) && (add == 0))) {
 						ExBltRect(getBlockPlaneNo(player, 0), bx2, by2 + offset, 0, 0, 8, 8);
 					} else if((rotspl[player] != 6) && (color < 10)) {
@@ -2626,11 +2626,11 @@ void drawBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int32_t c
 			// 周り枠 #1.60c7o5
 			if( (flash != 999) && (block_rframe) ) {
 				if(item[player] != 0)
-					ExBltRect(28, (bx1-1)*8  ,by1*8 - 16 + offset - (8 * ((kind == 2) && (isWRule(player))) ) , 0, (item[player] - 1) * 16, 48, 16);
+					ExBltRect(PLANE_ITEM, (bx1-1)*8  ,by1*8 - 16 + offset - (8 * ((kind == 2) && (isWRule(player))) ) , 0, (item[player] - 1) * 16, 48, 16);
 				if((kind != 0) && (kind != 2))
-					ExBltRect(29, bx1*8 - 1, by1*8 - 1 + offset, 0, 0, 26, 26);
+					ExBltRect(PLANE_GUIDE, bx1*8 - 1, by1*8 - 1 + offset, 0, 0, 26, 26);
 				else
-					ExBltRect(29, bx1*8 - 1, by1*8 - 1 + offset - 8 * ((isWRule(player)) && (kind == 2)), 27, 0, 34, 34);
+					ExBltRect(PLANE_GUIDE, bx1*8 - 1, by1*8 - 1 + offset - 8 * ((isWRule(player)) && (kind == 2)), 27, 0, 34, 34);
 				SDL_snprintf(string[0], STRING_LENGTH,"%2d",wait3[player] - bk[player]);
 				printTinyFont(bx1*8 - 1 + 16 + (8 * ((kind == 0) || (kind == 2))),(by1 - 3)*8 - 1 + offset + 50 + (8 * ( (kind == 0) || ((kind == 2) && (!isWRule(player))) ) ) ,string[0]);
 			}
@@ -2694,14 +2694,14 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 					else tmp = 8;
 					if(flash != 10){
 						if(color > 10)
-							ExBltFastRectR(83, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) , 65536*2,65536*2);
+							ExBltRectScaled(PLANE_HEBOBLK_SP2, bx2 + 16 - (22 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 2) - 20 + (20 * tmp), bright * 8 + (4 * (pos[0])), 2, 4 + (4 * ((!pos[1]) && (!pos[0]))) , 65536*2,65536*2);
 						else
-							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + bright * 16 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 					}else if((hidden[player] != 8) && (color <= 10)){
 						if( (color < 8) && (rotspl[player] != 6)) {
-							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), 40 * tmp, 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), 40 * tmp, 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 						} else {
-							ExBltRect(83, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
+							ExBltRect(PLANE_HEBOBLK_SP2, bx2 + 16 - (20 * player), by2 + offset + (8 * (pos[0] != 0)), (color * 4) + (40 * tmp), 136 + (8 * (pos[0])), 4, 8 + (8 * ((!pos[1]) && (!pos[0]))) );
 						}
 					}
 				}
@@ -2710,24 +2710,24 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 					// 枠
 					if(((blockflash != 2) && (!heboGB[player])) && !((hidden[player] == 8) && (flash == 10))) {
 						if((flash > 0) && (flash < 999) && (color <= 7) && (add == 0))
-							ExBltRect(29, bx2 - 2, by2 - 2 + offset, 60, 90, 20, 20);
+							ExBltRect(PLANE_GUIDE, bx2 - 2, by2 - 2 + offset, 60, 90, 20, 20);
 					}
 					// HOLD
 					if((enable_hold_frame) && (hold_used[player] == 2) && (dhold[player] == 1) && (flash != 10)) {
 						// 点滅させる#1.60c7p9ex
 						if (count % 16 < 8)
-							ExBltRect(29, bx2 - 2, by2 - 2 + offset, 100, 90, 20, 20);
+							ExBltRect(PLANE_GUIDE, bx2 - 2, by2 - 2 + offset, 100, 90, 20, 20);
 						else
-							ExBltRect(29, bx2 - 2, by2 - 2 + offset, 80, 90, 20, 20);
+							ExBltRect(PLANE_GUIDE, bx2 - 2, by2 - 2 + offset, 80, 90, 20, 20);
 					}
 				}
 			} else {
 				if(color > 10){	//アイテムブロック
-					if(flash == 999) BlendExBltRectR(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 65536*2,65536*2);
+					if(flash == 999) ExBlendBltRectScaled(getBlockPlaneNo(player, color), bx2, by2 + offset,(color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 112, 65536*2,65536*2);
 					else if(flash == 10) {
 						// 固定時の点滅
-						ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8, 65536*2,65536*2);
-					} else if(flash < 2) ExBltFastRectR(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 65536*2,65536*2);
+						ExBltRectScaled(getBlockPlaneNo(player, color), bx2, by2 + offset, ((color+add) * 8) - ((color >= 10) * 80), 0, 8, 8, 65536*2,65536*2);
+					} else if(flash < 2) ExBltRectScaled(getBlockPlaneNo(player, color), bx2, by2 + offset, (color+add) * 8 - ((color >= 10) * 80), bright * 8, 8, 8, 65536*2,65536*2);
 				} else {	//通常のブロック
 					k = getBigBlock_add(player);
 					l = 0;
@@ -2735,20 +2735,20 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 						k = k-4;
 						l = 1;
 					}
-					if(flash == 999) BlendExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112);
+					if(flash == 999) ExBlendBltRect(PLANE_HEBOBLK_BIG, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16, 112);
 					else if(flash == 10) {
 						// 固定時の点滅
 						if((hidden[player] == 8) && (m_roll_blockframe)){
-							ExBltRect(24, bx2, by2 + offset, 0, 0, 16, 16);
+							ExBltRect(PLANE_HEBOFLB0, bx2, by2 + offset, 0, 0, 16, 16);
 						} else if( (color < 8) && ((rotspl[player] != 6) && (add == 0))) {
-							ExBltRect(76, bx2, by2 + offset,0 + (l * 160), 0 + (k * 112), 16, 16);
+							ExBltRect(PLANE_HEBOBLK_BIG, bx2, by2 + offset,0 + (l * 160), 0 + (k * 112), 16, 16);
 						} else if((rotspl[player] != 6) && (color < 10)) {
-							ExBltRect(76, bx2, by2 + offset,128 + (l * 160), 0 + (k * 112), 16, 16);
+							ExBltRect(PLANE_HEBOBLK_BIG, bx2, by2 + offset,128 + (l * 160), 0 + (k * 112), 16, 16);
 						} else {
-							ExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
+							ExBltRect(PLANE_HEBOBLK_BIG, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
 						}
 					}
-					else if(flash < 2) ExBltRect(76, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
+					else if(flash < 2) ExBltRect(PLANE_HEBOBLK_BIG, bx2, by2 + offset,((color+add) * 16) + (l * 160), (bright * 16) + (k * 112), 16, 16);
 				}
 			}
 		}
@@ -2756,11 +2756,11 @@ void drawBigBlockNew(int32_t bx1, int32_t by1, int32_t kind, int32_t rotate, int
 			// 周り枠 #1.60c7o5
 			if( (flash != 999) && (block_rframe) ) {
 				if(item[player] != 0)
-					ExBltRect(28, (bx1-1)*8  ,by1*8 - 16 + offset - (16 * ((kind == 2) && (isWRule(player))) ) , 0, (item[player] - 1) * 16, 48, 16);
+					ExBltRect(PLANE_ITEM, (bx1-1)*8  ,by1*8 - 16 + offset - (16 * ((kind == 2) && (isWRule(player))) ) , 0, (item[player] - 1) * 16, 48, 16);
 				if((kind != 0) && (kind != 2))
-					ExBltRectR(29, bx1*8 - 2, by1*8 - 2 + offset, 0, 0, 26, 26, 65536*2,65536*2);
+					ExBltRectScaled(PLANE_GUIDE, bx1*8 - 2, by1*8 - 2 + offset, 0, 0, 26, 26, 65536*2,65536*2);
 				else
-					ExBltRectR(29, bx1*8 - 2, by1*8 - 2 + offset - 16 * ((isWRule(player)) && (kind == 2)), 27, 0, 34, 34, 65536*2,65536*2);
+					ExBltRectScaled(PLANE_GUIDE, bx1*8 - 2, by1*8 - 2 + offset - 16 * ((isWRule(player)) && (kind == 2)), 27, 0, 34, 34, 65536*2,65536*2);
 				SDL_snprintf(string[0], STRING_LENGTH,"%2d",wait3[player] - bk[player]);
 				printTinyFont(bx1*8 - 2 + 40 + (16 * ((kind == 0) || (kind == 2))),(by1 - 3)*8 - 2 + offset + 75 + (16 * ( (kind == 0) || ((kind == 2) && (!isWRule(player))) ) ) ,string[0]);
 			}
@@ -2849,33 +2849,33 @@ void drawhBlock(int32_t bx1, int32_t by1, int32_t kind, int32_t color, int32_t r
 	for(i = 0; i < 4; i++)
 		if(!j){
 			if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
-				ExBltRect(83,
+				ExBltRect(PLANE_HEBOBLK_SP2,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 			else if( isWRule(player) )		// WorldType用 #1.60c5
-				ExBltRect(83,
+				ExBltRect(PLANE_HEBOBLK_SP2,
 				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 			else
-				ExBltRect(83,
+				ExBltRect(PLANE_HEBOBLK_SP2,
 				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r + (4 - (5 * player)),
 				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				color + ((k == 8) * 7) + (10 * k), 264, 1, 4);
 		}else{
 			if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66))
-				ExBltRect(76,
+				ExBltRect(PLANE_HEBOBLK_BIG,
 				bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
 			else if( isWRule(player) )		// WorldType用 #1.60c5
-				ExBltRect(76,
+				ExBltRect(PLANE_HEBOBLK_BIG,
 				bx1 + blkWDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkWDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);
 			else
-				ExBltRect(76,
+				ExBltRect(PLANE_HEBOBLK_BIG,
 				bx1 + blkDataX[kind * 16 + rotate * 4 + i] * r,
 				by1 + blkDataY[kind * 16 + rotate * 4 + i] * r,
 				0 + ((color+add) * 4),448 + (k * 4), 4, 4);

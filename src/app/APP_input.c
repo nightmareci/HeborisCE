@@ -1,4 +1,5 @@
 #include "APP_input.h"
+#include "APP_error.h"
 #ifdef APP_ENABLE_GAME_CONTROLLER_DB_FILE
 #include "APP_filesystem.h"
 #endif
@@ -168,7 +169,7 @@ static bool APP_ResizePlayerSlots(int numSlots) {
 	}
 	if (!APP_PlayerSlots) {
 		APP_PlayerSlots = oldSlots;
-		return SDL_SetError("Failed to resize joysticks/controllers array");
+		return APP_SetError("Failed to resize joysticks/controllers array");
 	}
 	for (int player = APP_NumPlayerSlots; player < numSlots; player++) {
 		APP_PlayerSlots[player] = (APP_PlayerSlot) { 0 };
@@ -228,7 +229,7 @@ bool APP_UpdatePlayerSlots(void) {
 	int numJoys;
 	SDL_JoystickID* const joys = SDL_GetJoysticks(&numJoys);
 	if (!joys) {
-		return SDL_SetError("Failed to get joysticks list: %s", SDL_GetError());
+		return APP_SetError("Failed to get joysticks list: %s", SDL_GetError());
 	}
 
 	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
@@ -240,7 +241,7 @@ bool APP_UpdatePlayerSlots(void) {
 		SDL_Gamepad * const controller = SDL_OpenGamepad(joys[device]);
 		if (!controller) {
 			SDL_free(joys);
-			return SDL_SetError("Failed to open controller: %s", SDL_GetError());
+			return APP_SetError("Failed to open controller: %s", SDL_GetError());
 		}
 		if (!APP_BuiltinCon.controller && APP_ConIsBuiltin(controller)) {
 			APP_BuiltinCon.controller = controller;
@@ -258,7 +259,7 @@ bool APP_UpdatePlayerSlots(void) {
 			if (!APP_ResizePlayerSlots(APP_NumPlayerSlots + 1)) {
 				SDL_CloseGamepad(controller);
 				SDL_free(joys);
-				return SDL_SetError("Failed to open controller: %s", SDL_GetError());
+				return APP_SetError("Failed to open controller: %s", SDL_GetError());
 			}
 			player = APP_NumPlayerSlots - 1;
 		}
@@ -275,7 +276,7 @@ bool APP_UpdatePlayerSlots(void) {
 
 		SDL_Joystick* const joystick = SDL_OpenJoystick(joys[device]);
 		if (!joystick) {
-			SDL_SetError("Failed to open joystick: %s", SDL_GetError());
+			APP_SetError("Failed to open joystick: %s", SDL_GetError());
 			goto fail;
 		}
 		bool playerIndexFound = false;
@@ -299,15 +300,15 @@ bool APP_UpdatePlayerSlots(void) {
 			(APP_PlayerSlots[player].joy.numButtons = SDL_GetNumJoystickButtons(joystick)) >= 0
 		) {
 			if (APP_PlayerSlots[player].joy.numAxes > 0 && !(APP_PlayerSlots[player].joy.axesRepeat = (int*)SDL_calloc((size_t)APP_PlayerSlots[player].joy.numAxes * 2, sizeof(int)))) {
-				SDL_SetError("Failed to allocate axes repeat array for joystick");
+				APP_SetError("Failed to allocate axes repeat array for joystick");
 				goto fail;
 			}
 			if (APP_PlayerSlots[player].joy.numHats > 0 && !(APP_PlayerSlots[player].joy.hatsRepeat = (int*)SDL_calloc((size_t)APP_PlayerSlots[player].joy.numHats * 4, sizeof(int)))) {
-				SDL_SetError("Failed to allocate hats repeat array for joystick");
+				APP_SetError("Failed to allocate hats repeat array for joystick");
 				goto fail;
 			}
 			if (APP_PlayerSlots[player].joy.numButtons > 0 && !(APP_PlayerSlots[player].joy.buttonsRepeat = (int*)SDL_calloc((size_t)APP_PlayerSlots[player].joy.numButtons, sizeof(int)))) {
-				SDL_SetError("Failed to allocate buttons repeat array for joystick");
+				APP_SetError("Failed to allocate buttons repeat array for joystick");
 				goto fail;
 			}
 		}

@@ -102,16 +102,16 @@ bool APP_InitAudio(int wavesCount)
 		return true;
 	}
 	else if ((size_t)wavesCount > INT_MAX / sizeof(APP_Sound)) {
-		return SDL_SetError("Requested to use too many sounds, max supported is %d", INT_MAX);
+		return APP_SetError("Requested to use too many sounds, max supported is %d", INT_MAX);
 	}
 
 	// Initialize audio device
 	APP_AudioDevice = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, NULL);
 	if (!APP_AudioDevice) {
-		return SDL_SetError("Couldn't open audio device: %s", SDL_GetError());
+		return APP_SetError("Couldn't open audio device: %s", SDL_GetError());
 	}
 	if (!SDL_GetAudioDeviceFormat(APP_AudioDevice, &APP_AudioDeviceFormat, NULL)) {
-		return SDL_SetError("Couldn't get audio device format: %s", SDL_GetError());
+		return APP_SetError("Couldn't get audio device format: %s", SDL_GetError());
 	}
 
 	// サウンドの初期化
@@ -119,12 +119,12 @@ bool APP_InitAudio(int wavesCount)
 	if (wavesCount > 0) {
 		APP_Waves = SDL_calloc(wavesCount, sizeof(APP_Sound));
 		if (!APP_Waves) {
-			return SDL_SetError("Couldn't allocate memory for sounds");
+			return APP_SetError("Couldn't allocate memory for sounds");
 		}
 		for (int i = 0; i < wavesCount; i++) {
 			APP_Waves[i].stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
 			if (!APP_Waves[i].stream) {
-				return SDL_SetError("Couldn't create audio stream: %s", SDL_GetError());
+				return APP_SetError("Couldn't create audio stream: %s", SDL_GetError());
 			}
 		}
 	}
@@ -132,7 +132,7 @@ bool APP_InitAudio(int wavesCount)
 	SDL_zero(APP_Music);
 	APP_Music.stream = SDL_CreateAudioStream(&APP_AudioDeviceFormat, &APP_AudioDeviceFormat);
 	if (!APP_Music.stream) {
-		return SDL_SetError("Couldn't create audio stream: %s\n", SDL_GetError());
+		return APP_SetError("Couldn't create audio stream: %s\n", SDL_GetError());
 	}
 	APP_Music.streaming = true;
 	APP_Music.looping = true;

@@ -215,16 +215,16 @@ void RankingView2() {//5位まで
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
 
 	// ルール名表示
@@ -359,10 +359,10 @@ void RankingView2() {//5位まで
 			// ライン
 			if(rkclear[j + i] == 1) {
 			//printFont(20, 8+(i*4)  , "GREENLINE", 4);
-			ExBltRect(77, 110, (7 + (i * 4)  ) *8,  0, 2, 170, 2);
+			ExBltRect(PLANE_LINE, 110, (7 + (i * 4)  ) *8,  0, 2, 170, 2);
 			}else if(rkclear[j + i] == 2) {
 			//printFont(20, 8+(i*4)  , "YELLOWLINE", 7);
-			ExBltRect(77, 110, (7 + (i * 4)  ) *8,  0, 0, 170, 2);
+			ExBltRect(PLANE_LINE, 110, (7 + (i * 4)  ) *8,  0, 0, 170, 2);
 			}
 
 			// 回転
@@ -380,29 +380,29 @@ void RankingView2() {//5位まで
 			// メダル
 			if((category <= 8)||(category == 14)) {
 				if(rkac[j + i]) {
-					ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52 - rkac[j + i] * 13, 15, 12);
+					ExBltRect(PLANE_MEDAL, 20, (7 + (i * 4)  ) * 8,  0, 52 - rkac[j + i] * 13, 15, 12);
 				} else {
-					ExBltRect(0, 20, (7 + (i * 4)  ) * 8,  0, 52, 15, 12);
+					ExBltRect(PLANE_MEDAL, 20, (7 + (i * 4)  ) * 8,  0, 52, 15, 12);
 				}
 				if(rkst[j + i]) {
-					ExBltRect(0, 40, (7 + (i * 4)  ) * 8, 16, 52 - rkst[j + i] * 13, 15, 12);
+					ExBltRect(PLANE_MEDAL, 40, (7 + (i * 4)  ) * 8, 16, 52 - rkst[j + i] * 13, 15, 12);
 				} else {
-					ExBltRect(0, 40, (7 + (i * 4)  ) * 8, 16, 52 , 15, 12);
+					ExBltRect(PLANE_MEDAL, 40, (7 + (i * 4)  ) * 8, 16, 52 , 15, 12);
 				}
 				if(rksk[j + i]) {
-					ExBltRect(0, 60, (7 + (i * 4)  ) * 8, 32, 52 - rksk[j + i] * 13, 15, 12);
+					ExBltRect(PLANE_MEDAL, 60, (7 + (i * 4)  ) * 8, 32, 52 - rksk[j + i] * 13, 15, 12);
 				} else {
-					ExBltRect(0, 60, (7 + (i * 4)  ) * 8, 32, 52, 15, 12);
+					ExBltRect(PLANE_MEDAL, 60, (7 + (i * 4)  ) * 8, 32, 52, 15, 12);
 				}
 				if(rkco[j + i]) {
-					ExBltRect(0, 80, (7 + (i * 4)  ) * 8, 80, 52 - rkco[j + i] * 13, 15, 12);
+					ExBltRect(PLANE_MEDAL, 80, (7 + (i * 4)  ) * 8, 80, 52 - rkco[j + i] * 13, 15, 12);
 				} else {
-					ExBltRect(0, 80, (7 + (i * 4)  ) * 8, 80, 52, 15, 12);
+					ExBltRect(PLANE_MEDAL, 80, (7 + (i * 4)  ) * 8, 80, 52, 15, 12);
 				}
 				if(rkre[j + i]) {
-					ExBltRect(0, 100,(7 + (i * 4)  ) * 8, 48, 52 - rkre[j + i] * 13, 15, 12);
+					ExBltRect(PLANE_MEDAL, 100,(7 + (i * 4)  ) * 8, 48, 52 - rkre[j + i] * 13, 15, 12);
 				} else {
-					ExBltRect(0, 100,(7 + (i * 4)  ) * 8, 48, 52, 15, 12);
+					ExBltRect(PLANE_MEDAL, 100,(7 + (i * 4)  ) * 8, 48, 52, 15, 12);
 				}
 			}
 		}
@@ -626,9 +626,9 @@ void viewbesttimes(int32_t player){
 	/* ベストタイム */
 	if( (gameMode[player] == 7) && ((!maxPlay) || (status[1 - player] == 0)) ) {
 			//bestの文字
-			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 251, 91, 21, 7);
+			ExBltRect(PLANE_HEBOSPR, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 251, 91, 21, 7);
 			//timeの文字
-			ExBltRect(3, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 180, 119, 19, 7);
+			ExBltRect(PLANE_HEBOSPR, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 78, 180, 119, 19, 7);
 			tmp = RankingGet2(gameMode[player], anothermode[player], rotspl[player],player);
 			if( ((rkdata[tmp] >= 150)&&(anothermode[player] <= 1)) || ((rkdata[tmp] >= 200)&&(anothermode[player] == 2)) )
 			getTime(rktime2[tmp]);

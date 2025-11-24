@@ -6,6 +6,7 @@
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 #include "app/APP.h"
 
+#define 	TEXT_LAYER_COUNT	16
 #define		STRING_LENGTH		512
 #define		STRING_COUNT		200
 #define		loop			while ( loopFlag )

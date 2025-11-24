@@ -223,14 +223,8 @@ int32_t LoadConfig(void) {
 	screenIndex = cfgbuf[5];
 
 #else
-	screenMode &= ~(APP_SCREEN_MODE_WINDOW_TYPE | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE);
-	screenMode |=
-#ifdef __vita__
-		APP_SCREEN_MODE_FULLSCREEN
-#else
-		APP_SCREEN_MODE_WINDOW
-#endif
-		| APP_SCREEN_MODE_VSYNC | APP_SCREEN_MODE_RENDER_LEVEL;
+	screenMode &= ~(APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE);
+	screenMode |= APP_DEFAULT_SCREEN_MODE;
 	screenIndex = 0;
 
 #endif
@@ -540,22 +534,22 @@ void ConfigMenu() {
 	if(background == 0) {
 		for(int32_t i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_DrawPlaneRect(4, 96 * i - (n % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (n % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_DrawPlaneRect(4, 192 * i - (n % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (n % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(77, 0, 212,  n % 320, 20, 320 - (n % 320), 8);
-	ExBltRect(77, 320 - (n % 320), 212,  0, 20, n % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 212,  n % 320, 20, 320 - (n % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (n % 320), 212,  0, 20, n % 320, 8);
 
-	ExBltRect(77, n % 320, 36,  0, 28, 320 - (n % 320), 8);
-	ExBltRect(77, 0, 36, 320 - (n % 320), 28, n % 320, 8);
+	ExBltRect(PLANE_LINE, n % 320, 36,  0, 28, 320 - (n % 320), 8);
+	ExBltRect(PLANE_LINE, 0, 36, 320 - (n % 320), 28, n % 320, 8);
 
 	printFont(1, 1, "HEBORIS SETTING MENU", fontc[rotspl[0]]);
 

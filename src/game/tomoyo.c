@@ -588,7 +588,7 @@ void statTomoyoEditor(int32_t player) {
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 3) * 8;
 
-		ExBltRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
+		ExBltRect(PLANE_HEBOSPR, bx1 - 1, by1 - 1, 0, 34, 10, 10);
 		ExBltRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
 
 		// ↑
@@ -676,7 +676,7 @@ void statTomoyoEditor(int32_t player) {
 		bx1 = (bx[player] + 15 + 24 * player - 12 * maxPlay) * 8;
 		by1 = (by[player] + 4) * 8;
 
-		ExBltRect(3,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
+		ExBltRect(PLANE_HEBOSPR,  bx1 - 1, by1 - 1, 0, 34, 10, 10);
 		ExBltRect(getBlockPlaneNo(player, blk[player]), bx1, by1, blk[player] * 8 - (blk[player] >= 10) * 80, 0, 8, 8);
 
 		// ↑
@@ -1024,7 +1024,7 @@ void statTomoyoResult(int32_t player) {
 	printFont(15 + 24 * player - 12 * maxPlay, 6, "PLAY DATA", 4);
 
 	// STAGE
-	ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 64, 228, 112, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 120 + 192 * player - 96 * maxPlay, 64, 228, 112, 26, 7);
 
 	if((stage[player] >= 26) && (ending[player])) {
 		// ALLクリア
@@ -1056,19 +1056,19 @@ void statTomoyoResult(int32_t player) {
 	}
 
 	// TIME
-	ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 75, 180, 119, 19, 7);
+	ExBltRect(PLANE_HEBOSPR, 120 + 192 * player - 96 * maxPlay, 75, 180, 119, 19, 7);
 	getTime(gametime[player]);
 	printSMALLFont(152 + 192 * player - 96 * maxPlay, 75, string[0], 0);
 
 	// CLEAR #1.60c7m5
 	if((!t_training[player]) && (tomoyo_opt[player] == 0) && (stage[player] <= 26)) {
-		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 86, 254, 112, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 120 + 192 * player - 96 * maxPlay, 86, 254, 112, 26, 7);
 		SDL_snprintf(string[0], STRING_LENGTH, "%3d>", clearp[player] );
 		printSMALLFont(176 + 192 * player - 96 * maxPlay, 86, string[0], 0);
 	}
 	// SCORE(F-Point)
 	if(stage[player] >= 100){
-		ExBltRect(3, 120 + 192 * player - 96 * maxPlay, 86, 154, 112, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 120 + 192 * player - 96 * maxPlay, 86, 154, 112, 26, 7);
 		SDL_snprintf(string[0], STRING_LENGTH, "%7d", sc[player]);
 		printSMALLFont(158 + 192 * player - 96 * maxPlay, 86, string[0], 0);
 	}

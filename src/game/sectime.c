@@ -198,9 +198,9 @@ void viewbestSTtimes(int32_t player){
 	}else if((gameMode[player]==6) && (stage[player] < 27)){//ベストタイム
 		if( (gameMode[player] == 6) && ((!maxPlay) || (status[1 - player] == 0)) ) {
 			//bestの文字
-			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 251, 91, 21, 7);
+			ExBltRect(PLANE_HEBOSPR, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 251, 91, 21, 7);
 			//timeの文字
-			ExBltRect(3, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 180, 119, 19, 7);
+			ExBltRect(PLANE_HEBOSPR, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 180, 119, 19, 7);
 
 			tempbest = ST_rankingGet(6,false);
 			getTime(st_time[stage[player] + tempbest]);
@@ -242,20 +242,20 @@ void ST_RankingView() {
 	count++;
 	if(background == 0) {
 		for(int32_t i = 0; i <= 6; i++) {
-			ExBltRect(4 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 6; i++) {
-			ExBltRect(4 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(77, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 208,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (count % 320), 208,  0, 20, count % 320, 8);
 
-	ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
+	ExBltRect(PLANE_LINE, count % 320, 16,  0, 28, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 0, 16, 320 - (count % 320), 28, count % 320, 8);
 
 	//アドレス指定
 	int32_t tmp5 = 0;

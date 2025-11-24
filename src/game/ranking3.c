@@ -210,22 +210,22 @@ void RankingView3() {//3位まで
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_DrawPlaneRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_DrawPlaneRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(77, 0, 24,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 24,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 24,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (count % 320), 24,  0, 20, count % 320, 8);
 
-	ExBltRect(77, 0, 128,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 128,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 128,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (count % 320), 128,  0, 20, count % 320, 8);
 
 	// ルール名表示
 	getRuleNameEx3(rankingrule, 0);
@@ -305,45 +305,45 @@ void RankingView3() {//3位まで
 			SDL_snprintf(string[0], STRING_LENGTH, "6TH");
 			printFont(1, 26 , string[0], 0);
 		}
-			ExBltRect(85, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANKの文字
-			ExBltRect(85, 40 , 32 + (l * 13) * 8, 35, 0, 21, 7);//nameの文字,文字を置く座標,切り取る座標,切り取るサイズ
-			ExBltRect(85, 190, 32 + (l * 13) * 8, 35, 7*12, 21, 7);//TIMEの文字
-			ExBltRect(85, 260, 32 + ( l * 13) * 8, 35, 7*6, 21, 7);//ROTSの文字
+			ExBltRect(PLANE_HEBOFONT5, 8, 32 + ( l * 13) * 8, 35, 7*3, 21, 7);//RANKの文字
+			ExBltRect(PLANE_HEBOFONT5, 40 , 32 + (l * 13) * 8, 35, 0, 21, 7);//nameの文字,文字を置く座標,切り取る座標,切り取るサイズ
+			ExBltRect(PLANE_HEBOFONT5, 190, 32 + (l * 13) * 8, 35, 7*12, 21, 7);//TIMEの文字
+			ExBltRect(PLANE_HEBOFONT5, 260, 32 + ( l * 13) * 8, 35, 7*6, 21, 7);//ROTSの文字
 
 		if(rkpage==0){//ビギナー
 			if(l){//SCORE(sita)
-			ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*7, 25, 7);//SCOREの文字
-			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 78 , 32 + (l * 13) * 8, 35, 7*7, 25, 7);//SCOREの文字
+			ExBltRect(PLANE_HEBOFONT5, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 			}else{//HANABI(ue)
-			ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*11, 29, 7);//HANABIの文字
-			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 80 , 32 + (l * 13) * 8, 35, 7*11, 29, 7);//HANABIの文字
+			ExBltRect(PLANE_HEBOFONT5, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 			}
 		}else if(rkpage==5){//TI EH
-			ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
-			ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 7*4, 25, 7);//CLEARの文字
+			ExBltRect(PLANE_HEBOFONT5, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
+			ExBltRect(PLANE_HEBOFONT5, 128 , 32 + (l * 13) * 8, 0, 7*4, 25, 7);//CLEARの文字
 		}else if(rkpage==6){//FP
-			ExBltRect(85, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
-			ExBltRect(85, 126 , 32 + (l * 13) * 8, 35, 7*7, 28, 7);//SCOREの文字
+			ExBltRect(PLANE_HEBOFONT5, 80 , 32 + (l * 13) * 8, 35, 7*10, 27, 7);//STAGEの文字
+			ExBltRect(PLANE_HEBOFONT5, 126 , 32 + (l * 13) * 8, 35, 7*7, 28, 7);//SCOREの文字
 		}else if((rkpage>=7)&&(rkpage<=8)){//ACE
-			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
-			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
+			ExBltRect(PLANE_HEBOFONT5, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 		}else if(rkpage==9){//ORIJINAL
-			ExBltRect(85, 80, 32 + (l * 13) * 8, 35, 7*7, 28, 7);//LEVELの文字
-			ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 14*7, 21, 7);//MODEの文字
+			ExBltRect(PLANE_HEBOFONT5, 80, 32 + (l * 13) * 8, 35, 7*7, 28, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 128 , 32 + (l * 13) * 8, 0, 14*7, 21, 7);//MODEの文字
 		}else if(rkpage==10){//STANDARD
-			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
-			ExBltRect(85, 128 , 32 + (l * 13) * 8, 0, 2*7, 30, 7);//BLOCKの文字
+			ExBltRect(PLANE_HEBOFONT5, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
+			ExBltRect(PLANE_HEBOFONT5, 128 , 32 + (l * 13) * 8, 0, 2*7, 30, 7);//BLOCKの文字
 		}else if(rkpage==11){
 			if(l){//MARATHON(sita)
-			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
-			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 78 , 32 + (l * 13) * 8, 0, 7*10, 35, 7);//LINESの文字
+			ExBltRect(PLANE_HEBOFONT5, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 			}else{//SQUARE(ue)
-			ExBltRect(85, 78 , 32 + (l * 13) * 8, 35, 7*9, 35, 7);//SQUAREの文字
-			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 78 , 32 + (l * 13) * 8, 35, 7*9, 35, 7);//SQUAREの文字
+			ExBltRect(PLANE_HEBOFONT5, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 			}
 		}else{
-			ExBltRect(85, 78 , 32 + (l * 13) * 8, 0, 3*7, 27, 7);//CLASSの文字
-			ExBltRect(85, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
+			ExBltRect(PLANE_HEBOFONT5, 78 , 32 + (l * 13) * 8, 0, 3*7, 27, 7);//CLASSの文字
+			ExBltRect(PLANE_HEBOFONT5, 128, 32 + (l * 13) * 8, 0, 7*9, 26, 7);//LEVELの文字
 		}
 
 		for(i = 0; i < 3; i++) {
@@ -437,9 +437,9 @@ void RankingView3() {//3位まで
 
 			// ライン
 			if(rkclear3[j + i] == 1) {
-				ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
+				ExBltRect(PLANE_LINE, 70, (6 + (i * 4) + (l * 13)) *8,  0, 2, 240, 2);
 			}else if(rkclear3[j + i] == 2) {
-				ExBltRect(77, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
+				ExBltRect(PLANE_LINE, 70, (6 + (i * 4) + (l * 13)) *8,  0, 0, 240, 2);
 			}
 				// 回転
 			if(rkrots3[j + i]==0)SDL_snprintf(string[0], STRING_LENGTH, "HEBORIS");
@@ -455,17 +455,17 @@ void RankingView3() {//3位まで
 
 			// メダル
 			if((rkpage >= 1)&&(rkpage <= 4)) {
-				ExBltRect(85, 16,  5 + ((6 + (i * 4) + (l * 13)) * 8), 0, 77, 27, 7);
-				if(rkac3[j + i]) ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52 - rkac3[j + i] * 13, 15, 12);
-				else ExBltRect(0,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52, 15, 12);
-				if(rkst3[j + i]) ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 - rkst3[j + i] * 13, 15, 12);
-				else ExBltRect(0,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 , 15, 12);
-				if(rksk3[j + i]) ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52 - rksk3[j + i] * 13, 15, 12);
-				else ExBltRect(0,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52, 15, 12);
-				if(rkco3[j + i]) ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52 - rkco3[j + i] * 13, 15, 12);
-				else ExBltRect(0, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52, 15, 12);
-				if(rkre3[j + i]) ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52 - rkre3[j + i] * 13, 15, 12);
-				else ExBltRect(0, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52, 15, 12);
+				ExBltRect(PLANE_HEBOFONT5, 16,  5 + ((6 + (i * 4) + (l * 13)) * 8), 0, 77, 27, 7);
+				if(rkac3[j + i]) ExBltRect(PLANE_MEDAL,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52 - rkac3[j + i] * 13, 15, 12);
+				else ExBltRect(PLANE_MEDAL,  50, 3 + ((6 + (i * 4) + (l * 13)) * 8),  0, 52, 15, 12);
+				if(rkst3[j + i]) ExBltRect(PLANE_MEDAL,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 - rkst3[j + i] * 13, 15, 12);
+				else ExBltRect(PLANE_MEDAL,  70, 3 + ((6 + (i * 4) + (l * 13)) * 8), 16, 52 , 15, 12);
+				if(rksk3[j + i]) ExBltRect(PLANE_MEDAL,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52 - rksk3[j + i] * 13, 15, 12);
+				else ExBltRect(PLANE_MEDAL,  90, 3 + ((6 + (i * 4) + (l * 13)) * 8), 32, 52, 15, 12);
+				if(rkco3[j + i]) ExBltRect(PLANE_MEDAL, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52 - rkco3[j + i] * 13, 15, 12);
+				else ExBltRect(PLANE_MEDAL, 110, 3 + ((6 + (i * 4) + (l * 13)) * 8), 80, 52, 15, 12);
+				if(rkre3[j + i]) ExBltRect(PLANE_MEDAL, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52 - rkre3[j + i] * 13, 15, 12);
+				else ExBltRect(PLANE_MEDAL, 130, 3 + ((6 + (i * 4) + (l * 13)) * 8), 48, 52, 15, 12);
 			}
 		}
 	}
@@ -668,16 +668,16 @@ void viewbesttimes3(int32_t player,int32_t x,int32_t y,int32_t type){
 		}
 		if(type==1){//タイムかデータか？
 			//データ
-			ExBltRect(85, x-(player*12),y, 0, 0,35, 7);//bestの文字
-			ExBltRect(85, x+22-(player*16),y, 35,7*4,35, 7);//
+			ExBltRect(PLANE_HEBOFONT5, x-(player*12),y, 0, 0,35, 7);//bestの文字
+			ExBltRect(PLANE_HEBOFONT5, x+22-(player*16),y, 35,7*4,35, 7);//
 			SDL_snprintf(string[0], STRING_LENGTH, "%d", rkdata3[tmp]);
 
 			printSMALLFont(x-(player*8), y+8, string[0], color[player]);
-			ExBltRect(85, x+24-(player*12),y+8, 0,7*10,35, 7);//LINES
+			ExBltRect(PLANE_HEBOFONT5, x+24-(player*12),y+8, 0,7*10,35, 7);//LINES
 		}else{
 			//タイム
-			ExBltRect(85, x,y, 0, 0,35, 7);
-			ExBltRect(85, x+22,y, 35,7*12,35, 7);
+			ExBltRect(PLANE_HEBOFONT5, x,y, 0, 0,35, 7);
+			ExBltRect(PLANE_HEBOFONT5, x+22,y, 35,7*12,35, 7);
 			getTime(rktime3[tmp]);
 			printSMALLFont(x-(player*8), y+8, string[0], color[player]);
 		}

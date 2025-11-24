@@ -11,7 +11,6 @@ SDL_IOStream* APP_OpenRead(const char* filename);
 SDL_IOStream* APP_OpenWrite(const char* filename);
 SDL_IOStream* APP_OpenAppend(const char* filename);
 
-// TODO: Use this function where file nonexistence is acceptable
 bool APP_FileExists(const char* filename);
 
 // TODO: Refactor these file functions, e.g.:

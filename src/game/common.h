@@ -3,7 +3,7 @@
 
 #include "gamestart.h"
 #include "init.h"
-#include "speed.h"			// レベル調整
+#include "speed.h"		// レベル調整
 #include "mission_info.h"	// ミッション情報
 #include "flexdraw.h"		// 複数解像度対応描画関数	#1.60c7p9ex
 #include "config.h"		// Config	#1.60c5
@@ -26,5 +26,6 @@
 #include "grade.h"		// 段位
 #include "ranking2.h"		// ランキング2
 #include "ranking3.h"		// ランキング3
+#include "plane.h"
 
 #endif

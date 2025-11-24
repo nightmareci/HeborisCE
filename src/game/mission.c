@@ -19,29 +19,29 @@ void statMissionSelect(int32_t player) {
 	}
 
 	printFont(15 + 24 * player - 12 * maxPlay, 5, "START!", (vslevel[0] <= 1) * count % 9);
-	ExBltRect(77, 120 + 192 * player -96 * maxPlay , 52,  (count % 40) * 3, 28, 60, 8);
+	ExBltRect(PLANE_LINE, 120 + 192 * player -96 * maxPlay , 52,  (count % 40) * 3, 28, 60, 8);
 
 		printFont(15 + 24 * player - 12 * maxPlay, 10, "<        >", (vslevel[0] == 0) * count % 9);
 		if(statusc[player * 10 + 4] < 0){
-			ExBltRect(55,128 + ((16+statusc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 63,
+			ExBltRect(PLANE_ROT,128 + ((16+statusc[player * 10 + 4]) * 4) + 192 * player -96 * maxPlay , 63,
 				(64*(rotspl[player]+1))*(rotspl[player]<8),32*(fontc[(rotspl[player]+1)*(rotspl[player]<8)]),
 				(statusc[player * 10 + 4]* -4),32);
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 63,
+			ExBltRect(PLANE_ROT,128 + 192 * player -96 * maxPlay , 63,
 				(64*rotspl[player])+(statusc[player * 10 + 4] * -4),32*fontc[rotspl[player]],((16+statusc[player * 10 + 4])* 4),32);
 		} else if(statusc[player * 10 + 4] > 0){
-			ExBltRect(55,128 + (statusc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 63,
+			ExBltRect(PLANE_ROT,128 + (statusc[player * 10 + 4] * 4) + 192 * player -96 * maxPlay , 63,
 				(64*rotspl[player]),32*fontc[rotspl[player]],((16-statusc[player * 10 + 4])* 4),32);
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 63,
+			ExBltRect(PLANE_ROT,128 + 192 * player -96 * maxPlay , 63,
 				(64*(rotspl[player]-1))+576*(rotspl[player]==0)+((16-statusc[player * 10 + 4]) * 4),
 				32*fontc[rotspl[player]-1+(9*(rotspl[player]==0))],(statusc[player * 10 + 4] * 4),32);
-		} else ExBltRect(55,128 + 192 * player -96 * maxPlay , 63, 64*rotspl[player] ,32*fontc[rotspl[player]],64,32);
-		ExBltRect(55,158 + 192 * player -96 * maxPlay , 40, (64*rotspl[player]) ,384,64,21);
+		} else ExBltRect(PLANE_ROT,128 + 192 * player -96 * maxPlay , 63, 64*rotspl[player] ,32*fontc[rotspl[player]],64,32);
+		ExBltRect(PLANE_ROT,158 + 192 * player -96 * maxPlay , 40, (64*rotspl[player]) ,384,64,21);
 
-//		ExBltRect(55,128 + 192 * player -96 * maxPlay , 55, 64*rots[player] ,32*fontc[rots[player]],64,32);
+//		ExBltRect(PLANE_ROT,128 + 192 * player -96 * maxPlay , 55, 64*rots[player] ,32*fontc[rots[player]],64,32);
 		if(!english)	//落下特性（日本語）
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rotspl[player] ,320,64,32);
+			ExBltRect(PLANE_ROT,128 + 192 * player -96 * maxPlay , 96, 64*rotspl[player] ,320,64,32);
 		else			//落下特性（English）
-			ExBltRect(55,128 + 192 * player -96 * maxPlay , 96, 64*rotspl[player] ,352,64,32);
+			ExBltRect(PLANE_ROT,128 + 192 * player -96 * maxPlay , 96, 64*rotspl[player] ,352,64,32);
 	printFont(15 + 24 * player - 12 * maxPlay, 16, "FILE", fontc[rotspl[player]]);
 
 	getRoadName(mission_file);
@@ -55,7 +55,7 @@ void statMissionSelect(int32_t player) {
 		printFont(15 + 24 * player - 12 * maxPlay, 22, "LOAD", (vslevel[0] == 3) * count % 9);
 		printFont(15 + 24 * player - 12 * maxPlay, 24, "SAVE", (vslevel[0] == 4) * count % 9);
 	}else{
-		ExBltRect(77, 120 + 192 * player -96 * maxPlay , 176,  160 - ((count % 40) * 3), 20, 80, 8);
+		ExBltRect(PLANE_LINE, 120 + 192 * player -96 * maxPlay , 176,  160 - ((count % 40) * 3), 20, 80, 8);
 	}
 
 	// ↑
@@ -522,11 +522,11 @@ void viewMission() {
 
 	// 枠
 	if(getDrawRate() == 1) {
-		if(mission_file <= 24) APP_DrawPlaneRect(44, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
-		APP_DrawPlaneRect(44, 208 * maxPlay, 112, 288, 368, 112, 128);
+		if(mission_file <= 24) APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, maxPlay * 208, 12, 160, (20 * mission_file) + (10 * (english)), 80, 10);
+		APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, 208 * maxPlay, 112, 288, 368, 112, 128);
 	} else {
 		if(mission_file <= 24) APP_DrawPlaneRect(44, 8 + maxPlay * 408, 24, 32, (32 * mission_file) + (16 * (english)), 128, 16);
-		APP_DrawPlaneRect(44, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
+		APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, 16 + maxPlay * 400, 224, 448, 288, 192, 192);
 	}
 
 	// 問題の種類
@@ -749,11 +749,11 @@ void viewMission() {
 		int layer = 3;
 		for(i = tmp; i < (tmp+5); i++, layer++) {
 			if(getDrawRate() == 1) {
-				APP_DrawPlaneRect(44, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
+				APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, 208 * maxPlay, 32 + (i-tmp) * 16, 288, 304 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 112, 13);
 				APP_EnableTextLayer(layer, 1 + 208 * maxPlay, 1 + 32 + (i-tmp) * 16);
 				APP_SetTextLayerSize(layer, 10);
 			} else {
-				APP_DrawPlaneRect(44, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
+				APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, 16 + maxPlay * 400, 64 + (i-tmp) * 32, 448, 224 + (((c_mission == i) && (ending[0] == 0)) * 16) + ((c_mission > i) || (ending[0] != 0)) * 32, 160, 16);
 				APP_EnableTextLayer(layer, 1 + 16 + maxPlay * 400, 1 + 64 + (i-tmp) * 32);
 				APP_SetTextLayerSize(layer, 14);
 			}
@@ -1513,9 +1513,9 @@ void viewEraserLines() {
 		if(i >= 4) break;	// 最大で4本まで
 
 		if(getDrawRate() == 1)
-			APP_DrawPlaneRect(44, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
+			APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, (14 - 12 * maxPlay) * 8, (eraser_lines[i] + 3) * 8, 288, 256 - 64 * (mission_type[c_mission] == 39) + eraser_cleared[i] * 32, 96, 8);
 		else
-			APP_DrawPlaneRect(44, (14 - 12 * maxPlay) * 16, (eraser_lines[i] + 3) * 16, 448, 160 - 64 * (mission_type[c_mission] == 39)+ eraser_cleared[i] * 32, 192, 16);
+			APP_DrawPlaneRect(PLANE_HEBORIS_ROAD, (14 - 12 * maxPlay) * 16, (eraser_lines[i] + 3) * 16, 448, 160 - 64 * (mission_type[c_mission] == 39)+ eraser_cleared[i] * 32, 192, 16);
 	}
 }
 

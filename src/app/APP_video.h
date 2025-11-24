@@ -29,7 +29,7 @@ typedef enum APP_ScreenIndexMask {
 
 #define APP_SCREEN_INDEX_TO_SETTING(display, mode) (((int32_t)((mode) & 0xFFFF) << 16) | (int32_t)((display) & 0xFFFF))
 
-void APP_InitVideo(void);
+void APP_InitVideo(int planeCount, int textLayerCount);
 void APP_QuitVideo(void);
 
 void APP_ResetFrameStep(void);
@@ -55,14 +55,14 @@ void APP_LoadPlane(int plane, const char* filename);
 void APP_DrawPlane(int plane, int dstX, int dstY);
 void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h);
 
-void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, int a);
-void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a);
+void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, uint8_t a);
+void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a);
 
 void APP_DrawPlaneScaled(int plane, int dstX, int dstY, int scaleW, int scaleH);
 void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int scaleW, int scaleH);
 
-void APP_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, int a, int scaleW, int scaleH);
-void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int a, int scaleW, int scaleH);
+void APP_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, int scaleW, int scaleH);
+void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, int scaleW, int scaleH);
 
 void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW);
 

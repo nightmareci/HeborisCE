@@ -351,14 +351,14 @@ void SoundTestProc(void) {
 	// 背景描画 #1.60c7o5
 	if(background == 0) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
 
 	printFont(10, 3, "- SOUND TEST MODE -", 4);

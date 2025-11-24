@@ -54,7 +54,7 @@ option(APP_ENABLE_ALL_VIDEO_SETTINGS "Enable all video settings; disabling this 
 option(APP_ENABLE_QUIT "Enables quitting by pressing escape at any time or selecting the \"QUIT\" main menu entry" TRUE)
 set(APP_DEFAULT_JOYKEY_ASSIGN "{ { 0 } }")
 set(APP_GET_SCREEN_SUBPIXEL_OFFSET "APP_GetScreenSubpixelOffset()")
-set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_WINDOW | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
+set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN_DESKTOP | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
 set(APP_BASE_PATH_APPEND "")
 
 if(VITA OR CMAKE_SYSTEM_NAME MATCHES "Emscripten")
@@ -174,6 +174,7 @@ add_executable(${APP_EXE}
 	"src/game/tomoyo.h"
 	"src/game/view.h"
 	"src/game/world.h"
+	"src/game/plane.h"
 )
 
 set_target_properties(${APP_EXE}
@@ -194,6 +195,8 @@ if(VITA)
 	else()
 		include("${VITASDK}/share/vita.cmake" REQUIRED)
 	endif()
+
+	target_sources(${APP_EXE} PRIVATE "src/app/APP_vita.c")
 
 	# Adding to CMAKE_PREFIX_PATH like this fixes find_package commands in Vita SDK
 	# builds.

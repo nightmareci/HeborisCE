@@ -200,14 +200,14 @@ int32_t RankingView(void) {
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
-			ExBltRect(4 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltRect(4 + (category >= 2) + (category == 3), 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (category >= 2) + (category == 3), 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
 
 	if(category == 0)
@@ -230,16 +230,16 @@ int32_t RankingView(void) {
 	}
 
 //	printFont(2, 6, "RANK   SCORE  LV LINES TIME     NAME", 2);
-	ExBltRect(3, 64, 56, 206, 112, 22, 7);
+	ExBltRect(PLANE_HEBOSPR, 64, 56, 206, 112, 22, 7);
 	if(rankingmode) {
-		ExBltRect(3, 240, 56, 154, 112, 26, 7);
-		ExBltRect(3, 140, 56, 180, 119, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 240, 56, 154, 112, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 140, 56, 180, 119, 26, 7);
 	} else {
-		ExBltRect(3, 140, 56, 154, 112, 26, 7);
-		ExBltRect(3, 240, 56, 180, 119, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 140, 56, 154, 112, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 240, 56, 180, 119, 26, 7);
 	}
-	ExBltRect(3, 216, 48, 180, 112, 26, 7);
-	ExBltRect(3, 257, 48, 154, 119, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 216, 48, 180, 112, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 257, 48, 154, 119, 26, 7);
 
 	for(i = 0; i < 5; i++) {
 		xxx = 40 - count + 4 * i;

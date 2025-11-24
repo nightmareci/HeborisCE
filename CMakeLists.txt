@@ -328,7 +328,6 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		--preload-file '${CMAKE_SOURCE_DIR}/res/font@basepath/res/font' \
 		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/highDetail@basepath/res/graphics/highDetail' \
 		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/lowDetail@basepath/res/graphics/lowDetail' \
-		--preload-file '${CMAKE_SOURCE_DIR}/res/graphics/title@basepath/res/graphics/title' \
 		--preload-file '${CMAKE_SOURCE_DIR}/res/se@basepath/res/se' \
 		--preload-file '${CMAKE_SOURCE_DIR}/config/mission@basepath/config/mission' \
 		--preload-file '${CMAKE_SOURCE_DIR}/config/stage@basepath/config/stage' \

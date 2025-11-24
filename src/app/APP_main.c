@@ -61,13 +61,7 @@ static bool APP_FrameStep(void)
 		APP_AccumulatedNS += now - APP_NowNS - APP_FrameNS;
 	}
 	APP_NowNS = now;
-	#ifdef SDL_PLATFORM_EMSCRIPTEN
-	// Browser timing is pretty bad, but the game is playable if we pretend
-	// frame skips never happen.
-	return false;
-	#else
 	return skipped;
-	#endif
 }
 
 void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t writeDirectoriesCount, int planeCount, int textLayerCount)

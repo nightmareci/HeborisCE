@@ -94,6 +94,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_ogg.c"
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
+	"src/app/APP_error.c"
 	"src/app/hashmap.c"
 
 	"src/game/gamestart.c"

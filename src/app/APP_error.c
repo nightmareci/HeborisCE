@@ -1,7 +1,7 @@
 #include "APP_error.h"
 #include <SDL3/SDL_error.h>
 
-bool APP_SetErrorFunctionLine(const char* function, int line, const char* fmt, ...)
+bool APP_SetFunctionLineError(const char* function, int line, const char* fmt, ...)
 {
 	va_list args;
 	char* fullFmt;

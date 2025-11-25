@@ -3,8 +3,8 @@
 
 #include <stdbool.h>
 
-bool APP_SetErrorFunctionLine(const char* function, int line, const char* fmt, ...);
+bool APP_SetFunctionLineError(const char* function, int line, const char* fmt, ...);
 
-#define APP_SetError(...) APP_SetErrorFunctionLine(__func__, __LINE__, __VA_ARGS__)
+#define APP_SetError(...) APP_SetFunctionLineError(__func__, __LINE__, __VA_ARGS__)
 
 #endif

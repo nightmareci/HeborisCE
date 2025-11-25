@@ -1,4 +1,6 @@
+#include "app/APP_global.h"
 #include "common.h"
+#include <SDL3/SDL_messagebox.h>
 
 APP_ScreenModeFlag screenMode;	// スクリーンモード
 int32_t screenIndex;		// スクリーンインデックス
@@ -223,8 +225,8 @@ int32_t LoadConfig(void) {
 	screenIndex = cfgbuf[5];
 
 #else
-	screenMode &= ~(APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE);
-	screenMode |= APP_DEFAULT_SCREEN_MODE;
+	screenMode &= APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE | APP_SCREEN_MODE_RENDER_LEVEL;
+	screenMode |= APP_BASE_SCREEN_MODE;
 	screenIndex = 0;
 
 #endif

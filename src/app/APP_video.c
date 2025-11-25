@@ -184,7 +184,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	}
 
 	int displayIndex = APP_SCREEN_INDEX_DISPLAY_TO_VALUE(*screenIndex);
-	int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(*screenIndex);
+	int displayModeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(*screenIndex);
 	int displayCount;
 	displays = SDL_GetDisplays(&displayCount);
 	if (!displays) {
@@ -194,6 +194,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	const SDL_DisplayID display = displays[displayIndex];
 	SDL_free(displays);
 	displays = NULL;
+	// TODO: There's a bug in the Vita port of SDL 3.2.24 where displayModeCount is set to 0. An issue/PR should be submitted to libsdl-org/SDL. We avoid needing to deal with the bug by using APP_SCREEN_MODE_FULLSCREEN_DESKTOP on Vita.
 	int displayModeCount;
 	displayModes = SDL_GetFullscreenDisplayModes(display, &displayModeCount);
 	if (!displayModes) {
@@ -205,7 +206,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	windowY = SDL_WINDOWPOS_CENTERED_DISPLAY(display);
 	if (
 		displayIndex >= displayCount ||
-		((windowType == APP_SCREEN_MODE_FULLSCREEN || windowType == APP_SCREEN_MODE_FULLSCREEN_DESKTOP) && modeIndex >= displayModeCount)
+		(windowType == APP_SCREEN_MODE_FULLSCREEN && displayModeCount > 0 && displayModeIndex >= displayModeCount)
 	) {
 		*screenMode = APP_DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
@@ -253,7 +254,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				APP_SetError("Could not create window: %s", SDL_GetError());
 				goto fail;
 			}
-			if (windowType == APP_SCREEN_MODE_FULLSCREEN && !SDL_SetWindowFullscreenMode(APP_ScreenWindow, displayModes[modeIndex])) {
+			if (windowType == APP_SCREEN_MODE_FULLSCREEN && !SDL_SetWindowFullscreenMode(APP_ScreenWindow, displayModes[displayModeIndex])) {
 				APP_SetError("Could not set window fullscreen mode: %s", SDL_GetError());
 				goto fail;
 			}
@@ -267,7 +268,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				APP_SetError("Could not set window size: %s", SDL_GetError());
 				goto fail;
 			}
-			if (!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREEN_MODE_FULLSCREEN) ? displayModes[modeIndex] : NULL)) {
+			if (!SDL_SetWindowFullscreenMode(APP_ScreenWindow, (windowType == APP_SCREEN_MODE_FULLSCREEN) ? displayModes[displayModeIndex] : NULL)) {
 				APP_SetError("Could not set window fullscreen mode: %s", SDL_GetError());
 				goto fail;
 			}
@@ -294,7 +295,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 		else {
 			maxScale = (displayMode->w / logicalWidth) - (displayMode->w % logicalWidth == 0);
 		}
-		int scale = modeIndex + 1;
+		int scale = displayModeIndex + 1;
 		int windowW = scale * logicalWidth;
 		int windowH = scale * logicalHeight;
 		if (scale > maxScale) {

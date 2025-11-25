@@ -1,4 +1,5 @@
 #include "app/APP_global.h"
+#include "app/APP_video.h"
 #include "common.h"
 #include <SDL3/SDL_messagebox.h>
 
@@ -2140,8 +2141,8 @@ void ConfigMenu() {
 		case APP_SCREEN_MODE_WINDOW:
 			{
 			        SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32,
-					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 320 * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1),
-					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 240 * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1)
+					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_WIDTH * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1),
+					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_HEIGHT * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1)
 				);
 				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (n % 2) * digitc[rotspl[0]]);
 			}
@@ -2266,20 +2267,20 @@ void ConfigMenu() {
 						switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
 						case APP_SCREEN_MODE_WINDOW: {
 							const SDL_DisplayMode* displayMode = APP_GetDesktopDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
-							int baseW = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 320;
-							int baseH = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * 240;
-							int maxMode;
-							if(displayMode->w <= baseW || displayMode->h <= baseH) {
-								maxMode = 1;
+							int baseW = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_WIDTH;
+							int baseH = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_HEIGHT;
+							int modeCount;
+							if(displayMode->w <= baseW * 2 || displayMode->h <= baseH * 2) {
+								modeCount = 1;
 							}
-							else if(displayMode->w > displayMode->h) {
-								maxMode = (displayMode->h / baseH) - (displayMode->h % baseH == 0);
+							else if(displayMode->w > displayMode->h * APP_SCREEN_WIDE) {
+								modeCount = (displayMode->h / baseH) - (displayMode->h % baseH == 0);
 							}
 							else {
-								maxMode = (displayMode->w / baseW) - (displayMode->w % baseW == 0);
+								modeCount = (displayMode->w / baseW) - (displayMode->w % baseW == 0);
 							}
 							int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]);
-							modeIndex = (modeIndex + maxMode + m) % maxMode;
+							modeIndex = (modeIndex + modeCount + m) % modeCount;
 							ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_MODE) | APP_SCREEN_INDEX_MODE_TO_SETTING(modeIndex);
 							break;
 						}

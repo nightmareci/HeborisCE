@@ -29,6 +29,10 @@ typedef enum APP_ScreenIndexMask {
 
 #define APP_SCREEN_INDEX_TO_SETTING(display, mode) (((int32_t)((mode) & 0xFFFF) << 16) | (int32_t)((display) & 0xFFFF))
 
+#define APP_SCREEN_WIDTH 320
+#define APP_SCREEN_HEIGHT 240
+#define APP_SCREEN_WIDE ((float)APP_SCREEN_WIDTH / APP_SCREEN_HEIGHT)
+
 void APP_InitVideo(int planeCount, int textLayerCount);
 void APP_QuitVideo(void);
 

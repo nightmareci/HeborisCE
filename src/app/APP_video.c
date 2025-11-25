@@ -11,9 +11,6 @@
 
 #define APP_WINDOW_TITLE "Heboris C.E."
 
-#define APP_WIDE_SCREEN (4.0f / 3.0f)
-#define APP_NARROW_SCREEN (3.0f / 4.0f)
-
 typedef struct APP_TextLayer
 {
 	bool enable;
@@ -210,6 +207,8 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	) {
 		*screenMode = APP_DEFAULT_SCREEN_MODE;
 		*screenIndex = 0;
+		displayModeIndex = 0;
+		displayIndex = 0;
 	}
 	const bool maximized = windowType == APP_SCREEN_MODE_WINDOW_MAXIMIZED;
 
@@ -286,10 +285,10 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 			goto fail;
 		}
 		int maxScale;
-		if (displayMode->w <= logicalWidth || displayMode->h <= logicalHeight) {
+		if (displayMode->w <= logicalWidth * 2 || displayMode->h <= logicalHeight * 2) {
 			maxScale = 1;
 		}
-		else if (displayMode->w > displayMode->h) {
+		else if (displayMode->w > displayMode->h * APP_SCREEN_WIDE) {
 			maxScale = (displayMode->h / logicalHeight) - (displayMode->h % logicalHeight == 0);
 		}
 		else {

@@ -1714,6 +1714,7 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 
 			case SDL_GAMEPAD_TYPE_PS3 :
 			case SDL_GAMEPAD_TYPE_PS4 :
+			case SDL_GAMEPAD_TYPE_PS5 :
 				*text = "R3";
 				break;
 			}

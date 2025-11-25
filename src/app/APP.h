@@ -3,7 +3,6 @@
 
 #include "APP_stdinc.h"
 #include "APP_error.h"
-#include "APP_string.h"
 #include "APP_main.h"
 #include "APP_filesystem.h"
 #include "APP_input.h"

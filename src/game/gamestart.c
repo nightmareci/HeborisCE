@@ -3374,8 +3374,7 @@ void versusInit(int32_t player) {
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
-					APP_MidStr(nextb_list, j + 1, 1, string[0]);
-					temp = SDL_atoi(string[0]);
+					temp = nextb_list[j] - '0';
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
@@ -3385,8 +3384,7 @@ void versusInit(int32_t player) {
 			if(len > 0) {
 				for(i = 0; i < 1400; i++) {
 					j = i % len;
-					APP_MidStr(nextfp_list, j + 1, 1, string[0]);
-					temp = SDL_atoi(string[0]);
+					temp = nextfp_list[j] - '0';
 					if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 				}
 			}
@@ -3412,8 +3410,7 @@ void versusInit(int32_t player) {
 		if(len > 0) {
 			for(i = 0; i < 1400; i++) {
 				j = i % len;
-				APP_MidStr(nextdengen_list, j + 1, 1, string[0]);
-				temp = SDL_atoi(string[0]);
+				temp = nextdengen_list[j] - '0';
 				if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			}
 		}
@@ -3424,8 +3421,7 @@ void versusInit(int32_t player) {
 		if(len > 0) {
 			for(i = 0; i < 1400; i++) {
 				j = i % len;
-				APP_MidStr(nextfp_list, j + 1, 1, string[0]);
-				temp = SDL_atoi(string[0]);
+				temp = nextfp_list[j] - '0';
 				if((temp >= 0) && (temp <= 6)) nextb[i + player * 1400] = temp;
 			}
 		}
@@ -11777,7 +11773,8 @@ void statNameEntry(int32_t player) {
 		if(statusc[player * 10 + 2] < (len == 3) * 53)
 			statusc[player * 10 + 2] = 54;
 
-		APP_MidStr(RankString, statusc[player * 10 + 2] + 1, 1, string[4]);
+		string[4][0] = RankString[statusc[player * 10 + 2]];
+		string[4][1] = '\0';
 
 	//	statusc[player * 10 + 1]++;
 
@@ -11790,7 +11787,8 @@ void statNameEntry(int32_t player) {
 		for(k = 0;k <= 9;k++){
 			if(k > statusc[player * 10 + 1] / 2) break;
 			j = statusc[player * 10 + 2]-3-len + k;
-			APP_MidStr(RankString, j + 1 + (55 * (j < 0)) - (55 * (j > 54)), 1, string[0]);
+			string[0][0] = RankString[j + (55 * (j < 0)) - (55 * (j > 54))];
+			string[0][1] = '\0';
 			if(j==statusc[player * 10 + 2]){
 				printFont(15 + k + 24 * player - 12 * maxPlay, 12-add, string[0], 2 * (count % 20 > 10));
 				printFont(15 + k + 24 * player - 12 * maxPlay, 13-add, "n", count % 9);
@@ -11800,7 +11798,7 @@ void statNameEntry(int32_t player) {
 			PlaySE(WAVE_SE_KETTEI);
 			if(statusc[player * 10 + 2] == 53) {
 				if(len) {
-					APP_MidStr(string[player + 2], 1, len - 1, string[player + 2]);
+					string[player + 2][len - 1] = '\0';
 				}
 			} else if(statusc[player * 10 + 2] == 54) {
 				statusc[player * 10 + 1] = 45 * 60;
@@ -11817,8 +11815,7 @@ void statNameEntry(int32_t player) {
 			PlaySE(WAVE_SE_CHEER);
 		}
 		if(statusc[player * 10 + 1] == (46 * 60) + 30){
-			SDL_snprintf(string[player + 2], STRING_LENGTH, "%s   ", string[player + 2]);
-			APP_LeftStr(string[player + 2], 3, string[player + 2]);
+			string[player + 2][3] = '\0';
 
 			if(ranking_type==0){
 				RankingRegist(gameMode[player], 0, sc[player], li[player], lv[player], gametime[player], (ending[player]==3), string[player + 2]);

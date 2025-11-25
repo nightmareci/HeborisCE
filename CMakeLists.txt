@@ -92,11 +92,8 @@ add_executable(${APP_EXE}
 	"src/app/APP_main.c"
 	"src/app/APP_mp3.c"
 	"src/app/APP_ogg.c"
-	"src/app/APP_string.c"
-
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
-
 	"src/app/hashmap.c"
 
 	"src/game/gamestart.c"
@@ -138,11 +135,8 @@ add_executable(${APP_EXE}
 	"src/app/APP_mp3.c"
 	"src/app/APP_ogg.h"
 	"src/app/APP_stdinc.h"
-	"src/app/APP_string.h"
-
 	"src/app/APP_video.h"
 	"src/app/APP_wav.h"
-
 	"src/app/dr_mp3.h"
 	"src/app/dr_wav.h"
 	"src/app/hashmap.h"

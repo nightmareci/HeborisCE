@@ -82,19 +82,7 @@ struct
 	{ ".mp3", APP_CreateStreamingMP3AudioData }
 };
 
-static void APP_ShowSoundLoadErrorMessage(const char* filenameExt)
-{
-	char* message;
-	if (SDL_asprintf(&message,
-		"Audio file \"%s\" failed to load.\n"
-		"It might be corrupt, so you would need to replace it.",
-		filenameExt
-	) < 0) {
-		return;
-	}
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error loading audio file", message, NULL);
-	SDL_free(message);
-}
+#define APP_SET_SOUND_LOAD_ERROR_MESSAGE(filenameExt) APP_SetError("Audio file \"%s\" failed to load.\nIt might be corrupt, so you would need to replace it.", filenameExt)
 
 bool APP_InitAudio(int wavesCount)
 {
@@ -307,9 +295,8 @@ static bool APP_LoadPreloadedSound(APP_Sound* sound, const char* filename, bool 
 	uint8_t* data;
 	uint32_t size;
 	if (!preload(file, &APP_AudioDeviceFormat, &data, &size)) {
-		APP_ShowSoundLoadErrorMessage(filenameExt);
+		APP_SET_SOUND_LOAD_ERROR_MESSAGE(filenameExt);
 		SDL_free(filenameExt);
-		APP_SetError("Could not load sound file");
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	SDL_free(filenameExt);
@@ -560,9 +547,8 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 		}
 		sound->streamed.leadinData = create(file, &APP_AudioDeviceFormat);
 		if (!sound->streamed.leadinData) {
-			APP_ShowSoundLoadErrorMessage(filenameExt);
+			APP_SET_SOUND_LOAD_ERROR_MESSAGE(filenameExt);
 			SDL_free(filenameExt);
-			APP_SetError("Could not load sound file");
 			APP_Exit(SDL_APP_FAILURE);
 		}
 		SDL_free(filenameExt);
@@ -578,9 +564,8 @@ static bool APP_LoadStreamedSound(APP_Sound* sound, const char* leadinFilename, 
 		}
 		sound->streamed.mainData = create(file, &APP_AudioDeviceFormat);
 		if (!sound->streamed.mainData) {
-			APP_ShowSoundLoadErrorMessage(filenameExt);
+			APP_SET_SOUND_LOAD_ERROR_MESSAGE(filenameExt);
 			SDL_free(filenameExt);
-			APP_SetError("Could not load sound file");
 			APP_Exit(SDL_APP_FAILURE);
 		}
 		SDL_free(filenameExt);

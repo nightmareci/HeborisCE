@@ -189,6 +189,10 @@ void APP_QuitAudio(void)
 
 bool APP_WasAudioStreamingError(void)
 {
+	if (!APP_WasAudioInit) {
+		return false;
+	}
+
 	const int error = SDL_GetAtomicInt(&APP_AudioStreamingError);
 	SDL_MemoryBarrierAcquire();
 	return error;

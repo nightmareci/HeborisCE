@@ -69,7 +69,7 @@ APP_ConKey conKeyAssign[8 * 2];
 #endif
 
 int32_t restart = 0;		// 再起動フラグ
-int32_t reinit = 1;		// Indicates if resources should be loaded.
+int32_t load = 1;		// Indicates if resources should be loaded.
 
 // 設定をバイナリデータに保存 1.60c5
 int32_t SaveConfig(void) {
@@ -222,15 +222,17 @@ int32_t LoadConfig(void) {
 
 	screenMode = cfgbuf[4];
 
-#ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
+	#ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 	screenIndex = cfgbuf[5];
 
-#else
+	#else
 	screenMode &= APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE | APP_SCREEN_MODE_RENDER_LEVEL;
+	#ifdef SDL_PLATFORM_VITA
+	screenMode &= ~APP_SCREEN_MODE_RENDER_LEVEL;
+	#endif
 	screenMode |= APP_BASE_SCREEN_MODE;
 	screenIndex = 0;
-
-#endif
+	#endif
 
 	nextblock = cfgbuf[6];
 	cfgversion = (uint32_t)cfgbuf[7];
@@ -2245,7 +2247,7 @@ void ConfigMenu() {
 					else if(statusc[0] == MENU_AV_DETAIL_LEVEL) {
 						if((ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_WINDOW) ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
 						ncfg[0] ^= APP_SCREEN_MODE_DETAIL_LEVEL;
-						reinit = 1;
+						load = 1;
 						need_reset = 1;
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
@@ -2300,19 +2302,19 @@ void ConfigMenu() {
 					else if(statusc[0] == MENU_AV_PLAY_SE) {
 						// se
 						ncfg[44] ^= 0x1 << 23;
-						reinit = 1;
+						load = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_PLAY_BGM) {
 						// bgm
 						ncfg[44] ^= 0x1 << 15;
-						reinit = 1;
+						load = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
 						ncfg[44] ^= WAVE_BGM_SIMPLE;
-						reinit = 1;
+						load = 1;
 						need_reset = 1;
 					}
 				}
@@ -2348,7 +2350,7 @@ void ConfigMenu() {
 	}
 
 	if(restart) {
-		mainLoopState = MAIN_RESTART;
+		mainLoopState = MAIN_START;
 		return;
 	}
 	// exit setting menu

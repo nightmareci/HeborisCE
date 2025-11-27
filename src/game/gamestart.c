@@ -1463,124 +1463,8 @@ void mainUpdate() {
 	default:
 	case MAIN_INIT:
 		mainLoopState = MAIN_START;
-
+		APP_SetResourceSettings(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories), PLANE_COUNT, TEXT_LAYER_COUNT);
 		goto skipSpriteTime;
-
-	case MAIN_RESTART: {
-		restart = 0;
-		mainLoopState = MAIN_TITLE;
-		init = true;
-
-		if (reinit) {
-			APP_Quit();
-		}
-
-		APP_Init(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories), PLANE_COUNT, TEXT_LAYER_COUNT);
-		if (APP_IsMusicPlaying()) APP_StopMusic();
-		gameInit();
-
-		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
-			SetDefaultConfig();
-			LoadConfig();
-		}
-
-		APP_ScreenModeFlag oldScreenMode = screenMode;
-		int32_t oldScreenIndex = screenIndex;
-		APP_SetScreen(&screenMode, &screenIndex);
-		if ( screenMode != oldScreenMode || screenIndex != oldScreenIndex )
-		{
-			SaveConfig();
-		}
-
-		for ( int layer = 1 ; layer <= 5 ; layer ++ )
-		{
-			APP_SetTextLayerSize(layer, 12);
-		}
-
-		hnext[0] = dispnext;	// #1.60c7o8
-		hnext[1] = dispnext;	// #1.60c7o8
-		versus_rot[0] = rotspl[0];
-		versus_rot[1] = rotspl[1];
-
-		// 画面比率に応じて画像解像度も変える #1.60c7p9ex
-		if ( screenMode & APP_SCREEN_MODE_DETAIL_LEVEL ) {
-			setDrawRate(2);
-		} else {
-			setDrawRate(1);
-		}
-
-		loadGraphics(maxPlay);
-
-		if(reinit && se) {
-			loadWaves();	// #1.60c7o5
-		}
-		for(int i = 0; i < 50; i++) se_play[i] = 0;
-
-		if(reinit && bgm) {
-			for ( size_t i = 0; i < sizeof(bgmload) / sizeof(*bgmload); i++ )
-			{
-				bgmload[i] = 1;
-			}
-
-			loadBGM();	// #1.60c7s6
-		}
-		else {
-			memset(bgmload, 0, sizeof(bgmload));
-		}
-
-		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
-		{
-			APP_DisableTextLayer(layer);
-		}
-
-		if (ranking_type != last_ranking_type) {
-			int32_t i;
-			if(ranking_type==0){
-				i = RankingLoad();
-				if(i == 1) RankingInit();
-				if(i == 2) RankingConvert();
-			}else if(ranking_type==1){
-				i = RankingLoad2();
-				if(i == 1) RankingInit2();
-			}else{
-				i = RankingLoad3();
-				if(i == 1) RankingInit3();
-			}
-		}
-
-		// 連続スナップ取得領域設定
-		if((capx < 0) || (capx > 320)) capx = capx % 320;
-		if((capy < 0) || (capy > 240)) capy = capy % 240;
-		if(capw < 1) capw = 1;
-		if(caph < 1) caph = 1;
-		if(capx + capw > 320) capw = 320 - capx;
-		if(capy + caph > 240) caph = 240 - capy;
-
-		// スタッフロール用データを初期化
-		//staffInit();
-
-		// セクションタイムランキング読み込み
-		if( ST_RankingLoad() ) {
-			ST_RankingInit();
-		}
-
-		PlayerdataLoad();
-
-		StopAllSE();
-		StopAllBGM();
-
-		backupSetups();	// 設定内容をバックアップ #1.60c7o6
-		domirror = 0;	// 鏡像を無効に
-
-		if(APP_GetFPS() != max_fps_2) {
-			APP_SetFPS(max_fps_2);
-		}
-		else {
-			APP_ResetFrameStep();
-		}
-
-		goto skipSpriteTime;
-	}
 
 	case MAIN_START: {
 		restart = 0;
@@ -1588,7 +1472,12 @@ void mainUpdate() {
 		init = true;
 		loopFlag = true;
 
-		APP_Init(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories), PLANE_COUNT, TEXT_LAYER_COUNT);
+		if (load) {
+			APP_Quit();
+		}
+
+		APP_Init();
+		if (APP_IsMusicPlaying()) APP_StopMusic();
 		gameInit();
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
 			SetDefaultConfig();
@@ -1641,7 +1530,9 @@ void mainUpdate() {
 			setDrawRate(1);
 		}
 
-		LoadGraphic(PLANE_LOADING, "loading");		// Loading表示
+		if (load) {
+			LoadGraphic(PLANE_LOADING, "loading");		// Loading表示
+		}
 		x = SDL_rand(5);
 		if ( getDrawRate() != 1 )
 			y = SDL_rand(2);
@@ -1685,7 +1576,7 @@ void mainUpdate() {
 		mainLoopState = MAIN_INIT_END;
 
 		// 効果音読み込み
-		if(reinit && se) {
+		if(se) {
 			loadWaves();	// #1.60c7o5
 		}
 
@@ -1777,7 +1668,7 @@ void mainUpdate() {
 	}
 
 	case MAIN_TITLE:
-		reinit = 0;
+		load = 0;
 		title();
 		break;
 
@@ -1867,7 +1758,7 @@ void mainUpdate() {
 			lastEscapeFrames = 0;
 			loopFlag = true;
 			restart = 1;
-			mainLoopState = MAIN_RESTART;
+			mainLoopState = MAIN_START;
 		}
 		if (enterResetKeys) {
 			if (!APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) && !APP_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL))) {
@@ -16714,74 +16605,65 @@ void LoadBackground(int32_t plane, const char *nameStr) {
 }
 
 void loadGraphics(int32_t players) {
+	if (!load && getLastDrawRate() == getDrawRate()) {
+		return;
+	}
+
 	int32_t i;
 
-	if (reinit || getLastDrawRate() != getDrawRate()) {
-		/* プレーン0にメダルを読み込み #1.60c7m9 */
-		LoadGraphic(PLANE_MEDAL, "medal");
-		/* プレーン56にTIメダルを読み込み #1.60c7m9 */
-		LoadGraphic(PLANE_MEDAL_TI, "medal_ti");
+	/* プレーン0にメダルを読み込み #1.60c7m9 */
+	LoadGraphic(PLANE_MEDAL, "medal");
+	/* プレーン56にTIメダルを読み込み #1.60c7m9 */
+	LoadGraphic(PLANE_MEDAL_TI, "medal_ti");
 
-		// ブロック絵はプレーン40〜43に移転しました #1.60c7o8
+	// ブロック絵はプレーン40〜43に移転しました #1.60c7o8
 
-		/* プレーン1にフォントを読み込み */
-		LoadGraphic(PLANE_HEBOFONT, "hebofont");
+	/* プレーン1にフォントを読み込み */
+	LoadGraphic(PLANE_HEBOFONT, "hebofont");
 
-		/* プレーン2にフィールドを読み込み */
-		LoadGraphic(PLANE_HEBOFLD, "hebofld");
+	/* プレーン2にフィールドを読み込み */
+	LoadGraphic(PLANE_HEBOFLD, "hebofld");
 
-		/* プレーン3に各種スプライトを読み込み */
-		LoadGraphic(PLANE_HEBOSPR, "hebospr");
+	/* プレーン3に各種スプライトを読み込み */
+	LoadGraphic(PLANE_HEBOSPR, "hebospr");
 
 
-		/* プレーン4〜6, 24にフィールド背景を読み込み */
-		LoadGraphic(PLANE_HEBOFLB1, "heboflb1");
-		LoadGraphic(PLANE_HEBOFLB2, "heboflb2");
-		LoadGraphic(PLANE_HEBOFLB3, "heboflb3");
-		LoadGraphic(PLANE_HEBOFLB0, "heboflb0");
-	}
+	/* プレーン4〜6, 24にフィールド背景を読み込み */
+	LoadGraphic(PLANE_HEBOFLB1, "heboflb1");
+	LoadGraphic(PLANE_HEBOFLB2, "heboflb2");
+	LoadGraphic(PLANE_HEBOFLB3, "heboflb3");
+	LoadGraphic(PLANE_HEBOFLB0, "heboflb0");
 
 	loadBG(players); //背景および半透明処理部を独立 C7T2.5EX
-	/* プレーン10〜にバックを読み込み */
 
-	/* プレーン7にタイトルロゴを読み込み */
-//	LoadGraphics("logo", 7, 0);
-//	APP_SetColorKeyPos(7, 0, 0);
+	LoadTitle();
 
-	if (reinit || getLastDrawRate() != getDrawRate()) {
-	//	/* プレーン8にタイトル背景を読み込み */
-		LoadTitle();
-	//	LoadGraphics("title", 8, 0);
-	}
+	/* Glyphs for showing game controller buttons */
+	LoadGraphic(PLANE_HEBOBTN, "hebobtn");
 
-	if (reinit || getLastDrawRate() != getDrawRate()) {
-		/* Glyphs for showing game controller buttons */
-		LoadGraphic(PLANE_HEBOBTN, "hebobtn");
+	/* プレーン22に小文字大文字フォントを読み込み #1.60c7o4 */
+	LoadGraphic(PLANE_HEBOFONT4, "hebofont4");
 
-		/* プレーン22に小文字大文字フォントを読み込み #1.60c7o4 */
-		LoadGraphic(PLANE_HEBOFONT4, "hebofont4");
+	/* プレーン25にモード選択時のメッセージを読み込み  */
+	LoadGraphic(PLANE_TEXT, "text");
 
-		/* プレーン25にモード選択時のメッセージを読み込み  */
-		LoadGraphic(PLANE_TEXT, "text");
+	/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
+	LoadGraphic(PLANE_GRADE, "grade");
 
-		/* プレーン26に段位表示画像を読み込み #1.60c7t2.2 */
-		LoadGraphic(PLANE_GRADE, "grade");
+	/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
+	LoadGraphic(PLANE_MIRROR_EFFECT_TAP, "mirror_effect_TAP");
 
-		/* プレーン27にミラーエフェクト画像を読み込み #1.60c7t2.2 */
-		LoadGraphic(PLANE_MIRROR_EFFECT_TAP, "mirror_effect_TAP");
+	/* プレーン28にアイテム名を読み込み #1.60c7o4 */
+	LoadGraphic(PLANE_ITEM, "item");
 
-		/* プレーン28にアイテム名を読み込み #1.60c7o4 */
-		LoadGraphic(PLANE_ITEM, "item");
+	/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
+	LoadGraphic(PLANE_GUIDE, "guide");
 
-		/* プレーン29に操作中ブロックの周り枠を読み込み #1.60c7o5 */
-		LoadGraphic(PLANE_GUIDE, "guide");
-
-		/* プレーン31にフォント(大)を読み込み */
-		LoadGraphic(PLANE_HEBOFONT3, "hebofont3");
-	}
+	/* プレーン31にフォント(大)を読み込み */
+	LoadGraphic(PLANE_HEBOFONT3, "hebofont3");
 
 	/* ブロック消去エフェクトを読み込み */
-	if(reinit && breakti) {
+	if(breakti) {
 		LoadGraphic(PLANE_BREAK0, "break0");
 		LoadGraphic(PLANE_BREAK1, "break1");
 		LoadGraphic(PLANE_BREAK2, "break2");
@@ -16790,7 +16672,7 @@ void loadGraphics(int32_t players) {
 		LoadGraphic(PLANE_BREAK5, "break5");
 		LoadGraphic(PLANE_BREAK6, "break6");
 		LoadGraphic(PLANE_BREAK7, "break7");
-	} else if (reinit) {
+	} else {
 		LoadGraphic(PLANE_BREAK0, "break0_tap"); // 黒ブロック追加 #1.60c7i5
 		LoadGraphic(PLANE_BREAK1, "break1_tap");
 		LoadGraphic(PLANE_BREAK2, "break2_tap");
@@ -16801,93 +16683,91 @@ void loadGraphics(int32_t players) {
 		LoadGraphic(PLANE_BREAK7, "break7_tap");
 	}
 
-	if (reinit || getLastDrawRate() != getDrawRate()) {
-		/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
-		LoadGraphic(PLANE_HEBOBLK0, "heboblk0");	// TGM
-		LoadGraphic(PLANE_HEBOBLK1, "heboblk1");	// TI & ARS & ARS2
-		LoadGraphic(PLANE_HEBOBLK2, "heboblk2");	// WORLD & WORLD2
-		LoadGraphic(PLANE_HEBOBLK3, "heboblk3");	// WORLD3
+	/* プレーン40〜46にブロック絵を読み込み #1.60c7o8 */
+	LoadGraphic(PLANE_HEBOBLK0, "heboblk0");	// TGM
+	LoadGraphic(PLANE_HEBOBLK1, "heboblk1");	// TI & ARS & ARS2
+	LoadGraphic(PLANE_HEBOBLK2, "heboblk2");	// WORLD & WORLD2
+	LoadGraphic(PLANE_HEBOBLK3, "heboblk3");	// WORLD3
 
-		/* プレーン44にミッションモード用画像を読み込み */
-		LoadGraphic(PLANE_HEBORIS_ROAD, "heboris_road");
+	/* プレーン44にミッションモード用画像を読み込み */
+	LoadGraphic(PLANE_HEBORIS_ROAD, "heboris_road");
 
-		/* プレーン45にライン強制消去用画像を読み込み */
-		LoadGraphic(PLANE_DEL_FIELD, "del_field");
+	/* プレーン45にライン強制消去用画像を読み込み */
+	LoadGraphic(PLANE_DEL_FIELD, "del_field");
 
-		/* プレーン46にプラチナブロックとアイテム絵を読み込み */
-		LoadGraphic(PLANE_HEBOBLK_SP, "heboblk_sp");
+	/* プレーン46にプラチナブロックとアイテム絵を読み込み */
+	LoadGraphic(PLANE_HEBOBLK_SP, "heboblk_sp");
 
-		/* プレーン47〜53に花火を読み込み */
-		LoadGraphic(PLANE_HANABI_RED,       "hanabi_red");
-		LoadGraphic(PLANE_HANABI_ORANGE,    "hanabi_orange");
-		LoadGraphic(PLANE_HANABI_YELLOW,    "hanabi_yellow");
-		LoadGraphic(PLANE_HANABI_GREEN,     "hanabi_green");
-		LoadGraphic(PLANE_HANABI_WATERBLUE, "hanabi_waterblue");
-		LoadGraphic(PLANE_HANABI_BLUE,      "hanabi_blue");
-		LoadGraphic(PLANE_HANABI_PURPLE,    "hanabi_purple");
+	/* プレーン47〜53に花火を読み込み */
+	LoadGraphic(PLANE_HANABI_RED,       "hanabi_red");
+	LoadGraphic(PLANE_HANABI_ORANGE,    "hanabi_orange");
+	LoadGraphic(PLANE_HANABI_YELLOW,    "hanabi_yellow");
+	LoadGraphic(PLANE_HANABI_GREEN,     "hanabi_green");
+	LoadGraphic(PLANE_HANABI_WATERBLUE, "hanabi_waterblue");
+	LoadGraphic(PLANE_HANABI_BLUE,      "hanabi_blue");
+	LoadGraphic(PLANE_HANABI_PURPLE,    "hanabi_purple");
 
-		/* プレーン54にアイテムゲージを読み込み */
-		LoadGraphic(PLANE_ITEM_GAUGE,       "item_gauge");
+	/* プレーン54にアイテムゲージを読み込み */
+	LoadGraphic(PLANE_ITEM_GAUGE,       "item_gauge");
 
-		/* プレーン55に回転ルール性能指標を読み込み */
-		LoadGraphic(PLANE_ROT,	      "rot");
+	/* プレーン55に回転ルール性能指標を読み込み */
+	LoadGraphic(PLANE_ROT,	      "rot");
 
-		/* プラチナブロック消去エフェクトを読み込み */
-		LoadGraphic(PLANE_PERASE1, "perase1");
-		LoadGraphic(PLANE_PERASE2, "perase2");
-		LoadGraphic(PLANE_PERASE3, "perase3");
-		LoadGraphic(PLANE_PERASE4, "perase4");
-		LoadGraphic(PLANE_PERASE5, "perase5");
-		LoadGraphic(PLANE_PERASE6, "perase6");
-		LoadGraphic(PLANE_PERASE7, "perase7");
+	/* プラチナブロック消去エフェクトを読み込み */
+	LoadGraphic(PLANE_PERASE1, "perase1");
+	LoadGraphic(PLANE_PERASE2, "perase2");
+	LoadGraphic(PLANE_PERASE3, "perase3");
+	LoadGraphic(PLANE_PERASE4, "perase4");
+	LoadGraphic(PLANE_PERASE5, "perase5");
+	LoadGraphic(PLANE_PERASE6, "perase6");
+	LoadGraphic(PLANE_PERASE7, "perase7");
 
-		LoadGraphic(PLANE_HEBOBLK0B, "heboblk0B");
+	LoadGraphic(PLANE_HEBOBLK0B, "heboblk0B");
 
-		LoadGraphic(PLANE_SHOOTINGSTAR, "shootingstar");
+	LoadGraphic(PLANE_SHOOTINGSTAR, "shootingstar");
 
-		/* TI式ミラー演出画像を読み込み */
-		LoadGraphic(PLANE_FLDMIRROR01, "fldmirror01");
-		LoadGraphic(PLANE_FLDMIRROR02, "fldmirror02");
-		LoadGraphic(PLANE_FLDMIRROR03, "fldmirror03");
-		LoadGraphic(PLANE_FLDMIRROR04, "fldmirror04");
+	/* TI式ミラー演出画像を読み込み */
+	LoadGraphic(PLANE_FLDMIRROR01, "fldmirror01");
+	LoadGraphic(PLANE_FLDMIRROR02, "fldmirror02");
+	LoadGraphic(PLANE_FLDMIRROR03, "fldmirror03");
+	LoadGraphic(PLANE_FLDMIRROR04, "fldmirror04");
 
-		/* スタッフロールの画像を読み込み */
-		LoadGraphic(PLANE_STAFFROLL, "staffroll");
+	/* スタッフロールの画像を読み込み */
+	LoadGraphic(PLANE_STAFFROLL, "staffroll");
 
-		LoadGraphic(PLANE_FADE, "fade");
+	LoadGraphic(PLANE_FADE, "fade");
 
-		LoadGraphic(PLANE_HEBOBLK4_5, "heboblk4_5");
+	LoadGraphic(PLANE_HEBOBLK4_5, "heboblk4_5");
 
-		LoadGraphic(PLANE_HEBOBLK_OLD, "heboblk_old");
+	LoadGraphic(PLANE_HEBOBLK_OLD, "heboblk_old");
 
-		LoadGraphic(PLANE_TOMOYO_EH_FADE, "tomoyo_eh_fade");
+	LoadGraphic(PLANE_TOMOYO_EH_FADE, "tomoyo_eh_fade");
 
-		LoadGraphic(PLANE_HEBOBLK_BIG, "heboblk_big");
-		LoadGraphic(PLANE_LINE, "line");//ランキングのライン
+	LoadGraphic(PLANE_HEBOBLK_BIG, "heboblk_big");
+	LoadGraphic(PLANE_LINE, "line");//ランキングのライン
 
-		LoadGraphic(PLANE_LASER, "laser");
+	LoadGraphic(PLANE_LASER, "laser");
 
-		LoadGraphic(PLANE_SHUFFLE_FIELD_EFFECT, "shuffle_field_effect");
+	LoadGraphic(PLANE_SHUFFLE_FIELD_EFFECT, "shuffle_field_effect");
 
-		LoadGraphic(PLANE_HEBOBLK6, "heboblk6");
+	LoadGraphic(PLANE_HEBOBLK6, "heboblk6");
 
-		LoadGraphic(PLANE_TEXT2, "text2");
+	LoadGraphic(PLANE_TEXT2, "text2");
 
-		LoadGraphic(PLANE_ITEMERASE, "itemerase");
+	LoadGraphic(PLANE_ITEMERASE, "itemerase");
 
-		LoadGraphic(PLANE_HEBOBLK_SP2, "heboblk_sp2");
+	LoadGraphic(PLANE_HEBOBLK_SP2, "heboblk_sp2");
 
-		LoadGraphic(PLANE_ROTSTEXT, "rotstext");
-		LoadGraphic(PLANE_HEBOFONT5, "hebofont5");
+	LoadGraphic(PLANE_ROTSTEXT, "rotstext");
+	LoadGraphic(PLANE_HEBOFONT5, "hebofont5");
 
-		LoadGraphic(PLANE_GAMEMODEFONT, "gamemodefont");
+	LoadGraphic(PLANE_GAMEMODEFONT, "gamemodefont");
 
-		LoadGraphic(PLANE_ROLLMARK, "rollmark");
+	LoadGraphic(PLANE_ROLLMARK, "rollmark");
 
-		//プレーン88番使用中…
+	//プレーン88番使用中…
 
-		LoadGraphic(PLANE_ITEMGRA, "itemGra");
-	}
+	LoadGraphic(PLANE_ITEMGRA, "itemGra");
 
 //	APP_EnableBlendColorKey(85, 1);
 	/* 050825 画面モード拡張改造部分-- ここから */
@@ -16924,7 +16804,7 @@ void loadBG(int32_t players){
 	int32_t i, j, k, tr,max;
 	int32_t movframe, framemax, tmp1, tmp2;
 
-	if (reinit || getLastDrawRate() != getDrawRate()) {
+	if (load || getLastDrawRate() != getDrawRate()) {
 		/* プレーン10〜にバックを読み込み */
 		LoadBackground(PLANE_BACK01, "back01");
 		LoadBackground(PLANE_BACK02, "back02");
@@ -16938,12 +16818,12 @@ void loadBG(int32_t players){
 		LoadBackground(PLANE_BACK10, "back10");
 		LoadBackground(PLANE_BACK11, "back11");
 		LoadBackground(PLANE_BACK12, "back12");
-	}
 
-	if(vsbg == 1)
-		LoadBackground(PLANE_BACK, "back_vs");
-	else
-		LoadBackground(PLANE_BACK, "back01");
+		if(vsbg == 1)
+			LoadBackground(PLANE_BACK, "back_vs");
+		else
+			LoadBackground(PLANE_BACK, "back01");
+	}
 
 	max = 22;
 
@@ -17000,6 +16880,10 @@ void loadBG(int32_t players){
 /* 効果音読み込み */
 // initializeから独立 #1.60c7o5
 void loadWaves(void) {
+	if (!load) {
+		return;
+	}
+
 	/* 効果音を読み込み */
 	APP_LoadWave(WAVE_SE_SHAKI, NULL, "res/se/shaki", false, false);
 	APP_LoadWave(WAVE_SE_KON, NULL, "res/se/kon", false, false);
@@ -17068,11 +16952,13 @@ void loadBGM(void) {
 	APP_StopMusic();
 
 	if (wavebgm & WAVE_BGM_SIMPLE) {
-		APP_LoadMusic("res/bgm/bgm_leadin", "res/bgm/bgm");
+		if (load) {
+			APP_LoadMusic("res/bgm/bgm_leadin", "res/bgm/bgm");
+		}
 		APP_SetMusicVolume(bgmvolume);
 		APP_PlayMusic();
 	}
-	else {
+	else if (load) {
 		APP_LoadWave(WAVE_BGM_BGM01, "res/bgm/bgm01_leadin", "res/bgm/bgm01", true, true);					// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
 		APP_LoadWave(WAVE_BGM_BGM02, "res/bgm/bgm02_leadin", "res/bgm/bgm02", true, true);					// bgmlv 1 プレイ中（MASTER 500〜899）
 		APP_LoadWave(WAVE_BGM_BGM03, "res/bgm/bgm03_leadin", "res/bgm/bgm03", true, true);					// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）

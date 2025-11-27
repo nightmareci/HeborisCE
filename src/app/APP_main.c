@@ -14,6 +14,12 @@
 
 static int APP_argc;
 static char** APP_argv;
+static bool APP_WasSetResourceSettings = false;
+static const char* const* APP_WriteDirectories = NULL;
+static size_t APP_WriteDirectoryCount = 0;
+static int APP_WaveCount = 0;
+static int APP_PlaneCount = 0;
+static int APP_TextLayerCount = 0;
 static uint64_t APP_LastRealFPSNS;
 static unsigned int APP_FramesThisSecond;
 static unsigned int APP_RealFPS;
@@ -64,9 +70,40 @@ static bool APP_FrameStep(void)
 	return skipped;
 }
 
-void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t writeDirectoriesCount, int planeCount, int textLayerCount)
+void APP_SetResourceSettings(size_t waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount)
+{
+	if (APP_WasSetResourceSettings) {
+		APP_SetError("Resource settings already set, they can only be set once");
+		APP_Exit(SDL_APP_FAILURE);
+	}
+
+	APP_WaveCount = waveCount;
+	APP_WriteDirectories = writeDirectories;
+	APP_WriteDirectoryCount = writeDirectoryCount;
+	APP_PlaneCount = planeCount;
+	APP_TextLayerCount = textLayerCount;
+
+	APP_WasSetResourceSettings = true;
+}
+
+void APP_Init(void)
 {
 	if (APP_QuitLevel == 0) {
+		/* SDLの初期化 || SDL initialization */
+		if (!SDL_Init(
+			SDL_INIT_AUDIO | SDL_INIT_VIDEO
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
+			| SDL_INIT_JOYSTICK
+			#endif
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
+			| SDL_INIT_GAMEPAD
+			#endif
+		)) {
+			APP_SetError("Couldn't initialize SDL: %s", SDL_GetError());
+			APP_Exit(SDL_APP_FAILURE);
+		}
+		APP_QuitLevel++;
+
 		// If this fails, it doesn't matter, the game will still work. But it's
 		// called because if it works, the game might perform better.
 		SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
@@ -77,20 +114,22 @@ void APP_Init(size_t wavesCount, const char* const* writeDirectories, size_t wri
 		}
 		APP_QuitLevel++;
 
-		for (size_t i = 0u; i < writeDirectoriesCount; i++) {
-			if (!APP_CreateDirectory(writeDirectories[i])) {
-				APP_SetError("%s", SDL_GetError());
-				APP_Exit(SDL_APP_FAILURE);
+		if (APP_WriteDirectories) {
+			for (size_t i = 0u; i < APP_WriteDirectoryCount; i++) {
+				if (!APP_CreateDirectory(APP_WriteDirectories[i])) {
+					APP_SetError("%s", SDL_GetError());
+					APP_Exit(SDL_APP_FAILURE);
+				}
 			}
 		}
 
-		if (!APP_InitAudio(wavesCount)) {
+		if (!APP_InitAudio(APP_WaveCount)) {
 			APP_SetError("%s", SDL_GetError());
 			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_QuitLevel++;
 
-		APP_InitVideo(planeCount, textLayerCount);
+		APP_InitVideo(APP_PlaneCount, APP_TextLayerCount);
 		APP_QuitLevel++;
 
 		APP_OpenInputs();
@@ -109,10 +148,11 @@ void APP_Quit(void)
 {
 	switch (APP_QuitLevel)
 	{
-	case 4: APP_CloseInputs(); SDL_FALLTHROUGH;
-	case 3: APP_QuitVideo(); SDL_FALLTHROUGH;
-	case 2: APP_QuitAudio(); SDL_FALLTHROUGH;
-	case 1: APP_QuitFilesystem(); SDL_FALLTHROUGH;
+	case 5: APP_CloseInputs(); SDL_FALLTHROUGH;
+	case 4: APP_QuitVideo(); SDL_FALLTHROUGH;
+	case 3: APP_QuitAudio(); SDL_FALLTHROUGH;
+	case 2: APP_QuitFilesystem(); SDL_FALLTHROUGH;
+	case 1: SDL_Quit(); SDL_FALLTHROUGH;
 	default: break;
 	}
 	APP_QuitLevel = 0;
@@ -231,20 +271,6 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 	}
 	#endif
 
-	/* SDLの初期化 || SDL initialization */
-	if (!SDL_Init(
-		SDL_INIT_AUDIO | SDL_INIT_VIDEO
-		#ifdef APP_ENABLE_JOYSTICK_INPUT
-		| SDL_INIT_JOYSTICK
-		#endif
-		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
-		| SDL_INIT_GAMEPAD
-		#endif
-	)) {
-		APP_SetError("Couldn't initialize SDL: %s", SDL_GetError());
-		return SDL_APP_FAILURE;
-	}
-
 	return SDL_APP_CONTINUE;
 }
 
@@ -256,10 +282,6 @@ SDL_AppResult SDLCALL SDL_AppEvent(void* appstate, SDL_Event* event)
 		// When the window's X-button was pressed, etc.
 		case SDL_EVENT_QUIT:
 			APP_QuitNow = true;
-			break;
-
-		case SDL_EVENT_WINDOW_RESIZED:
-			APP_ScreenSubpixelOffset = APP_GET_SCREEN_SUBPIXEL_OFFSET();
 			break;
 
 		#ifdef APP_ENABLE_JOYSTICK_INPUT
@@ -334,6 +356,8 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 	}
 	#endif
 
+	APP_ScreenSubpixelOffset = APP_GetScreenSubpixelOffset();
+
 	mainUpdate();
 
 	return SDL_APP_CONTINUE;
@@ -346,5 +370,4 @@ void SDLCALL SDL_AppQuit(void* appstate, SDL_AppResult result)
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
 	}
 	APP_Quit();
-	SDL_Quit();
 }

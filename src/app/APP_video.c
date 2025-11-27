@@ -5,8 +5,6 @@
 #include "APP_global.h"
 #include "APP_bdf.h"
 #include "APP_error.h"
-#include <SDL3/SDL_error.h>
-#include <SDL3/SDL_render.h>
 #include <SDL3_image/SDL_image.h>
 
 #define APP_WINDOW_TITLE "Heboris C.E."
@@ -462,7 +460,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	// This should be after the renderer has been set up, as
 	// APP_GET_SCREEN_SUBPIXEL_OFFSET queries the renderer when a given platform
 	// uses nonzero offsets.
-	APP_ScreenSubpixelOffset = APP_GET_SCREEN_SUBPIXEL_OFFSET();
+	APP_ScreenSubpixelOffset = APP_GetScreenSubpixelOffset();
 
 	// WARNING: Make no changes to the renderer settings from here on down, as
 	// the render target has been set, and bugs have been observed when
@@ -1139,7 +1137,13 @@ float APP_GetScreenSubpixelOffset(void)
 			APP_Exit(SDL_APP_FAILURE);
 		}
 		const float scale = rect.w / APP_LogicalWidth;
-		return 0.49f / scale;
+		float y;
+		if (SDL_modff(scale, &y) != 0.0f) {
+			return 0.49f / scale;
+		}
+		else {
+			return 0.0f;
+		}
 	}
 	else {
 		return 0.0f;

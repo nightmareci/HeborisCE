@@ -161,7 +161,6 @@ void setGamePause(int32_t player, bool pauseSetting);
 
 typedef enum EMainLoopState {
 	MAIN_INIT,
-	MAIN_RESTART,
 	MAIN_START,
 	MAIN_INIT_TEXT,
 	MAIN_INIT_LOAD_1,

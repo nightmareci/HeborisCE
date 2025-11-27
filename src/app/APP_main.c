@@ -88,6 +88,11 @@ void APP_SetResourceSettings(size_t waveCount, const char* const* writeDirectori
 
 void APP_Init(void)
 {
+	if (!APP_WasSetResourceSettings) {
+		APP_SetError("APP_SetResourceSettings() must be called only once for the app's whole lifetime before calling APP_Init()");
+		APP_Exit(SDL_APP_FAILURE);
+	}
+
 	if (APP_QuitLevel == 0) {
 		/* SDLの初期化 || SDL initialization */
 		if (!SDL_Init(

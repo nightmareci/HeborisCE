@@ -559,7 +559,7 @@ void ConfigMenu() {
 	if(status[0] == 0) {
 		// game page 1
 		printFont(23, 1, "- GAME P.1", fontc[rotspl[0]]);
-		printFont(2,  3, "<< A/V <<	     >> GAME P.2 >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
+		printFont(2,  3, "<< A/V <<      >> GAME P.2 >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 		printFont(2,  6, "NEXT PATTERN     :", (statusc[0] == 1) * fontc[rotspl[0]]);
 		printFont(2,  7, "NEXT DISPLAY     :", (statusc[0] == 2) * fontc[rotspl[0]]);
 		printFont(2,  8, "8WAY INPUT       :", (statusc[0] == 3) * fontc[rotspl[0]]);
@@ -884,7 +884,7 @@ void ConfigMenu() {
 	} else if(status[0] == 1) {
 		// game page 2
 		printFont(23, 1, "- GAME P.2", fontc[rotspl[0]]);
-		printFont(2,  3, "<< GAME P.1 <<	  >> DESIGN >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
+		printFont(2,  3, "<< GAME P.1 <<      >> DESIGN >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 		printFont(2,  6, "DEBUG MODE        :", (statusc[0] == 1) * fontc[rotspl[0]]);
 		printFont(2,  7, "GRADE TYPE        :", (statusc[0] == 2) * fontc[rotspl[0]]);
 		printFont(2,  8, "IRS TYPE          :", (statusc[0] == 3) * fontc[rotspl[0]]);
@@ -1086,7 +1086,7 @@ void ConfigMenu() {
 	} else if(status[0] == 2) {
 		// design setting
 		printFont(23, 1, "- DESIGN SETTING", fontc[rotspl[0]]);
-		printFont(2, 3, "<< GAME P.2 <<	   >> INPUT >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
+		printFont(2, 3, "<< GAME P.2 <<      >> INPUT >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 
 		printFont( 2,  6, "BLOCK FRAME    :", fontc[rotspl[0]] * (statusc[0] == 1));
 		printFont( 2,  7, "FIELD BG       :", fontc[rotspl[0]] * (statusc[0] == 2));
@@ -1264,7 +1264,7 @@ void ConfigMenu() {
 		int32_t optionIndex = 0;
 		if(statusc[2] == optionIndex++) {
 			printFont(23, 1, "- INPUT SETTING", fontc[rotspl[0]]);
-			printFont(2,  3, "<< DESIGN <<	       >> A/V >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
+			printFont(2,  3, "<< DESIGN <<      >> A/V >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 			int32_t numOptions = 0;
 			#ifdef APP_ENABLE_KEYBOARD_INPUT
 			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
@@ -2068,7 +2068,7 @@ void ConfigMenu() {
 			MENU_AV_BGM_TYPE,
 			MENU_AV_MAX
 		};
-		printFont(2, 3, "<< INPUT <<	   >> GAME P.1 >>", digitc[rotspl[0]] * (statusc[0] == MENU_AV_CHANGE_MENU) * (n % 2));
+		printFont(2, 3, "<< INPUT <<      >> GAME P.1 >>", digitc[rotspl[0]] * (statusc[0] == MENU_AV_CHANGE_MENU) * (n % 2));
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 		printFont(2, 5 + MENU_AV_WINDOW_TYPE, "WINDOW TYPE :", (statusc[0] == MENU_AV_WINDOW_TYPE) * fontc[rotspl[0]]);
 		printFont(2, 5 + MENU_AV_SCREEN_INDEX, "SCREEN INDEX:", (statusc[0] == MENU_AV_SCREEN_INDEX) * fontc[rotspl[0]]);

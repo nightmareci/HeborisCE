@@ -240,6 +240,31 @@ if(VITA)
 		)
 	endif()
 
+	# // The on-disk format is unheadered and uses file extension .dat
+	# // At the start of the .dat, there's a int64_t for how many files there are (the array length of APP_FilesArray)
+	# // After the file count, there's a list of APP_FileData entries
+	# // This isn't actual code, just a description of the on-disk format
+	# typedef struct APP_FileData
+	# {
+	# 	char filename[]; // UTF-8 string
+	# 	int64_t fileSize; // int64_t to correspond to file sizes in SDL3
+	# 	uint8_t file[fileSize];
+	# } APP_FileData;
+	#
+	# typedef struct APP_File
+	# {
+	# 	int64_t offset; // Offset into the .dat where APP_FileData::file is located
+	# 	int64_t size; // APP_FileData::fileSize
+	# } APP_File;
+	#
+	# // All the APP_File objects are represented as one contiguous array, simplifies memory management
+	# APP_File* APP_FilesArray;
+	#
+	# // APP_FilesTable is indexed by the filename (APP_FileData::filename), e.g. "res/graphics/highDetail/title.png"
+	# // Each entry in APP_FilesTable stores a pointer to an APP_File
+	# // When a file is requested to be opened, a custom-interface SDL_IOStream is created, which internally handles bounds checking etc., so the stream can be used as if it only represents a single file with ordinary stream functions, not a normal interface stream of the .dat
+	# SDL_PropertiesID APP_FilesTable;
+
 	vita_create_self(${APP_EXE}.self ${APP_EXE})
 	vita_create_vpk(${APP_EXE}.vpk ${VITA_TITLEID} ${APP_EXE}.self
 		VERSION ${VITA_VERSION}

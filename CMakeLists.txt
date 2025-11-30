@@ -182,6 +182,32 @@ if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW)
 	add_compile_definitions(_POSIX_VERSION=200112L)
 endif()
 
+function(GenerateResourceDAT)
+	set(RES_FILES)
+	foreach(FILE_TYPE "png" "ogg" "bdf" "wav")
+		file(GLOB_RECURSE FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*.${FILE_TYPE}")
+		list(APPEND RES_FILES ${FILES})
+	endforeach()
+
+	add_executable(gen_res_dat "src/util/gen_res_dat.c")
+	set_target_properties(gen_res_dat
+		PROPERTIES
+			C_STANDARD 99
+			C_STANDARD_REQUIRED TRUE
+	)
+	add_custom_command(
+		OUTPUT "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat"
+		DEPENDS ${RES_FILES}
+		COMMAND gen_res_dat "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" "${CMAKE_SOURCE_DIR}/" ${RES_FILES}
+		VERBATIM
+	)
+	add_custom_target("${APP_PROJECT_NAME}_dat"
+		DEPENDS "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat"
+		VERBATIM
+	)
+	add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_dat")
+endfunction()
+
 if(VITA)
 	set(APP_FRAMEWORK_TYPE "VITA SDL3")
 

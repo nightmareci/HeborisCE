@@ -35,4 +35,6 @@
 
 #cmakedefine APP_ENABLE_QUIT
 
+#cmakedefine APP_RESOURCE_DAT
+
 #endif

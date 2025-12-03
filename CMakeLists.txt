@@ -189,16 +189,10 @@ function(GenerateResourceDAT)
 		list(APPEND RES_FILES ${FILES})
 	endforeach()
 
-	add_executable(gen_res_dat "src/util/gen_res_dat.c")
-	set_target_properties(gen_res_dat
-		PROPERTIES
-			C_STANDARD 99
-			C_STANDARD_REQUIRED TRUE
-	)
 	add_custom_command(
 		OUTPUT "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat"
 		DEPENDS ${RES_FILES}
-		COMMAND gen_res_dat "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" "${CMAKE_SOURCE_DIR}/" ${RES_FILES}
+		COMMAND python3 "${CMAKE_SOURCE_DIR}/pkg/script/gen_res_dat.py" "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" "${CMAKE_SOURCE_DIR}/" ${RES_FILES}
 		VERBATIM
 	)
 	add_custom_target("${APP_PROJECT_NAME}_dat"

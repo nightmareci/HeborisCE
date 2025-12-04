@@ -87,6 +87,7 @@ endif()
 
 add_executable(${APP_EXE}
 	"src/app/APP_audio.c"
+	"src/app/APP_hashtable.c"
 	"src/app/APP_bdf.c"
 	"src/app/APP_filesystem.c"
 	"src/app/APP_global.c"
@@ -97,7 +98,6 @@ add_executable(${APP_EXE}
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
 	"src/app/APP_error.c"
-	"src/app/hashmap.c"
 
 	"src/game/gamestart.c"
 	"src/game/init.c"
@@ -128,6 +128,7 @@ add_executable(${APP_EXE}
 	"src/app/APP.h"
 	"src/app/APP_audio.h"
 	"src/app/APP_audio_private.h"
+	"src/app/APP_hashtable.h"
 	"src/app/APP_bdf.h"
 	"src/app/APP_stdinc.h"
 	"src/app/APP_error.h"
@@ -142,7 +143,6 @@ add_executable(${APP_EXE}
 	"src/app/APP_wav.h"
 	"src/app/dr_mp3.h"
 	"src/app/dr_wav.h"
-	"src/app/hashmap.h"
 	"src/app/stb_vorbis.h"
 
 	"src/game/gamestart.h"
@@ -452,7 +452,7 @@ elseif(WIN32 AND MSVC)
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 			install(DIRECTORY "res" DESTINATION ".")
 		endif()
-		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ".")
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
 	else()
 		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building for Windows with MSVC")
 	endif()
@@ -476,14 +476,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		set(SDL_FILESYSTEM_BASE_DIR_TYPE "parent")
 		set(APP_INSTALL_DIR ${APP_PROJECT_NAME})
 		install(TARGETS ${APP_EXE} BUNDLE DESTINATION "${APP_PROJECT_NAME}")
-		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION "${APP_PROJECT_NAME}")
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION "${APP_PROJECT_NAME}")
 		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
 		install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}")
 	elseif(APP_PACKAGE_TYPE MATCHES "Installable")
 		set(SDL_FILESYSTEM_BASE_DIR_TYPE "resource")
 		set(APP_INSTALL_DIR .)
 		install(TARGETS ${APP_EXE} BUNDLE DESTINATION .)
-		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION .)
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION .)
 		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}.app/Contents/Resources/config")
 		install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}.app/Contents/Resources")
 	else()
@@ -592,7 +592,7 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
 			install(DIRECTORY "res" DESTINATION ${APP_PROJECT_NAME})
 		endif()
-		install(FILES "changelog.txt" "heboris.txt" "LICENSE-hashmap.txt" "README.md" DESTINATION ${APP_PROJECT_NAME})
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ${APP_PROJECT_NAME})
 	elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
 		message(STATUS "Configuring installable package")
 		include(GNUInstallDirs REQUIRED)

@@ -1,53 +1,86 @@
 #include "APP_hashtable.h"
+#include "APP_main.h"
 #include "APP_error.h"
+#if defined(_M_X64) || defined(_M_ARM64)
+#include <intrin.h>
+#endif
 
-typedef enum APP_HashSlotStateEnum
-{
-	APP_HASH_SLOT_STATE_EMPTY,
-	APP_HASH_SLOT_STATE_USED,
-	APP_HASH_SLOT_STATE_TOMBSTONE
-} APP_HashStateEnum;
+typedef uint8_t APP_HashTableSlotState;
 
-typedef uint8_t APP_HashSlotState;
-
-typedef struct APP_HashSlot
+typedef struct APP_HashTableSlot
 {
 	uint64_t key;
 	void* value;
 	APP_DestroyHashTableValueCallback destroy;
-	APP_HashSlotState state;
-} APP_HashSlot;
+	bool used;
+} APP_HashTableSlot;
 
 struct APP_HashTable
 {
-	APP_HashSlot* slots;
+	APP_HashTableSlot* slots;
 	void* userdata;
 	size_t capacity;
 	size_t size;
-	size_t tombstones;
 	size_t resizeThreshold;
 };
 
-#define APP_MAX_LOAD_NUMERATOR ((size_t)6)
-#define APP_MAX_LOAD_DENOMINATOR ((size_t)10)
+#define APP_HASH_TABLE_MAX_CAPACITY (SIZE_MAX / sizeof(APP_HashTableSlot))
 
-SDL_FORCE_INLINE uint64_t APP_GetHashTableKeyHash(uint64_t key);
+#define APP_HASH_TABLE_MAX_LOAD_NUMERATOR 19
+#define APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT 5
 
-static uint64_t APP_GetPowerOfTwoHashTableCapacity(uint64_t x);
+SDL_FORCE_INLINE size_t APP_GetHashTableResizeThreshold(size_t capacity)
+{
+	if (capacity >= APP_HASH_TABLE_MAX_CAPACITY) {
+		APP_SetError("Hash table capacity is too large to be resized");
+		APP_Exit(SDL_APP_FAILURE);
+	}
 
-static APP_HashSlot* APP_AllocHashSlots(size_t capacity);
+#if SIZE_MAX > UINT64_MAX
+	#error Current SIZE_MAX is unsupported, 64-bit is the maximum supported!
 
-static bool APP_RehashHashTable(APP_HashTable* table, size_t newCapacity);
+#elif SIZE_MAX > UINT32_MAX
+#ifdef __SIZEOF_INT128__
+	// GNU C
+	return (size_t)(((__int128)capacity * APP_HASH_TABLE_MAX_LOAD_NUMERATOR) >> APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT);
 
-static bool APP_EnsureHashTableCapacityForInsert(APP_HashTable* table);
+#elif defined(_M_X64) || defined(_M_ARM64)
+	// MSVC
+	const unsigned __int64 low = (unsigned __int64)capacity * APP_HASH_TABLE_MAX_LOAD_NUMERATOR;
+	const unsigned __int64 high = __umulh(capacity, APP_HASH_TABLE_MAX_LOAD_NUMERATOR);
+	return (size_t)((high << (64 - APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT)) | (low >> APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT));
 
-static size_t APP_FindHashTableSlotIndex(APP_HashTable* table, uint64_t key, bool* used);
+#else
+	// Portable
+	uint64_t op1 = APP_HASH_TABLE_MAX_LOAD_NUMERATOR;
+	uint64_t op2 = capacity;
+	uint64_t u1 = op1 & 0xFFFFFFFFu;
+	uint64_t v1 = op2 & 0xFFFFFFFFu;
+	uint64_t t = u1 * v1;
+	uint64_t w3 = t & 0xFFFFFFFFu;
+	uint64_t k = t >> 32;
+	op1 >>= 32;
+	t = (op1 * v1) + k;
+	k = t & 0xFFFFFFFFu;
+	uint64_t w1 = t >> 32;
+	op2 >>= 32;
+	t = (u1 * op2) + k;
+	k = t >> 32;
+	const uint64_t low = (t << 32) + w3;
+	const uint64_t high = (op1 * op2) + w1 + k;
+	return (size_t)((high << (64 - APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT)) | (low >> APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT));
+#endif
+#else
+	return (size_t)(((uint64_t)capacity * APP_HASH_TABLE_MAX_LOAD_NUMERATOR) >> APP_HASH_TABLE_MAX_LOAD_RIGHT_SHIFT);
+
+#endif
+}
 
 #define APP_MIXUINT64_C1 UINT64_C(0x9E3779B97F4A7C15)
 #define APP_MIXUINT64_C2 UINT64_C(0xBF58476D1CE4E5B9)
 #define APP_MIXUINT64_C3 UINT64_C(0x94D049BB133111EB)
 
-static inline uint64_t APP_GetHashTableKeyHash(uint64_t key)
+SDL_FORCE_INLINE uint64_t APP_GetHashTableKeyHash(uint64_t key)
 {
 	key += APP_MIXUINT64_C1;
 	key = (key ^ (key >> 30)) * APP_MIXUINT64_C2;
@@ -75,20 +108,19 @@ static size_t APP_GetPowerOfTwoHashTableCapacity(size_t capacity)
 	return ++capacity;
 }
 
-static APP_HashSlot* APP_AllocHashSlots(size_t capacity)
+static APP_HashTableSlot* APP_AllocHashTableSlots(size_t capacity)
 {
-	return (APP_HashSlot*)SDL_calloc(capacity, sizeof(APP_HashSlot));
+	return (APP_HashTableSlot*)SDL_calloc(capacity, sizeof(APP_HashTableSlot));
 }
 
 APP_HashTable* APP_CreateHashTable(size_t initialCapacity)
 {
-	size_t capacity = initialCapacity;
-	if (capacity == 0) {
-		capacity = 16;
+	if (initialCapacity < 16) {
+		initialCapacity = 16;
 	}
-	capacity = APP_GetPowerOfTwoHashTableCapacity(capacity);
+	initialCapacity = APP_GetPowerOfTwoHashTableCapacity(initialCapacity);
 
-	APP_HashSlot* const slots = APP_AllocHashSlots(capacity);
+	APP_HashTableSlot* const slots = APP_AllocHashTableSlots(initialCapacity);
 	if (!slots) {
 		APP_SetError("Failed allocating slots for creating a hash table");
 		return NULL;
@@ -103,10 +135,9 @@ APP_HashTable* APP_CreateHashTable(size_t initialCapacity)
 
 	table->slots = slots;
 	table->userdata = NULL;
-	table->capacity = capacity;
+	table->capacity = initialCapacity;
 	table->size = 0;
-	table->tombstones = 0;
-	table->resizeThreshold = (capacity * APP_MAX_LOAD_NUMERATOR) / APP_MAX_LOAD_DENOMINATOR;
+	table->resizeThreshold = APP_GetHashTableResizeThreshold(initialCapacity);
 	return table;
 }
 
@@ -121,56 +152,65 @@ bool APP_SetHashTableUserdata(APP_HashTable* table, void* userdata)
 
 static bool APP_RehashHashTable(APP_HashTable* table, size_t newCapacity)
 {
-	APP_HashSlot* const newSlots = APP_AllocHashSlots(newCapacity);
+	APP_HashTableSlot* const newSlots = APP_AllocHashTableSlots(newCapacity);
 	if (!newSlots) {
 		return APP_SetError("Failed allocating new slots for rehashing a hash table");
 	}
 
 	const size_t oldCapacity = table->capacity;
-	APP_HashSlot* const oldSlots = table->slots;
+	APP_HashTableSlot* const oldSlots = table->slots;
 
-	for (size_t i = 0; i < oldCapacity; ++i) {
-		if (oldSlots[i].state == APP_HASH_SLOT_STATE_USED) {
-			const uint64_t key = oldSlots[i].key;
-			void* const value = oldSlots[i].value;
-			APP_DestroyHashTableValueCallback const destroy = oldSlots[i].destroy;
+#define APP_REHASH_HASH_TABLE(firstIndex, nextIndex) \
+	for (size_t i = 0; i < oldCapacity; ++i) { \
+		if (oldSlots[i].used) { \
+			const uint64_t key = oldSlots[i].key; \
+			void* const value = oldSlots[i].value; \
+			APP_DestroyHashTableValueCallback const destroy = oldSlots[i].destroy; \
+			const uint64_t hash = APP_GetHashTableKeyHash(key); \
+			size_t index = (size_t)(firstIndex); \
+			while (true) { \
+				if (!newSlots[index].used) { \
+					newSlots[index].used = true; \
+					newSlots[index].key = key; \
+					newSlots[index].value = value; \
+					newSlots[index].destroy = destroy; \
+					break; \
+				} \
+				index = (nextIndex); \
+			} \
+		} \
+	}
 
-			const uint64_t hash = APP_GetHashTableKeyHash(key);
-			size_t index = (hash & (newCapacity - 1));
-			while (true) {
-				if (newSlots[index].state != APP_HASH_SLOT_STATE_USED) {
-					newSlots[index].state = APP_HASH_SLOT_STATE_USED;
-					newSlots[index].key = key;
-					newSlots[index].value = value;
-					newSlots[index].destroy = destroy;
-					break;
-				}
-				index = (index + 1) & (newCapacity - 1);
-			}
-		}
+	if (newCapacity == APP_HASH_TABLE_MAX_CAPACITY) {
+		APP_REHASH_HASH_TABLE(
+			hash % APP_HASH_TABLE_MAX_CAPACITY,
+			(index + 1) % APP_HASH_TABLE_MAX_CAPACITY
+		);
+	}
+	else {
+		const size_t mask = newCapacity - 1;
+		APP_REHASH_HASH_TABLE(
+			hash & mask,
+			(index + 1) & mask
+		);
 	}
 
 	SDL_free(oldSlots);
 	table->slots = newSlots;
 	table->capacity = newCapacity;
-	table->tombstones = 0;
-	table->resizeThreshold = (newCapacity * APP_MAX_LOAD_NUMERATOR) / APP_MAX_LOAD_DENOMINATOR;
+	table->resizeThreshold = APP_GetHashTableResizeThreshold(newCapacity);
 	return true;
 }
 
-static bool APP_EnsureHashTableCapacityForInsert(APP_HashTable* table)
+static bool APP_EnsureHashTableCapacityForSet(APP_HashTable* table)
 {
-	const size_t combined = table->size + table->tombstones;
-	if (combined == SIZE_MAX) {
-		return APP_SetError("Out of memory to expand hash table");
-	}
-	if (combined >= table->resizeThreshold) {
+	if (table->size >= table->resizeThreshold) {
 		size_t newCapacity = table->capacity * 2;
-		if (newCapacity == 0) {
-			newCapacity = 8;
+		if (table->capacity >= APP_HASH_TABLE_MAX_CAPACITY) {
+			APP_SetError("Hash table capacity is too large to be resized");
 		}
-		if (newCapacity < table->capacity) {
-			newCapacity = SIZE_MAX;
+		else if (table->capacity > APP_HASH_TABLE_MAX_CAPACITY / 2) {
+			newCapacity = APP_HASH_TABLE_MAX_CAPACITY;
 		}
 		return APP_RehashHashTable(table, newCapacity);
 	}
@@ -180,23 +220,35 @@ static bool APP_EnsureHashTableCapacityForInsert(APP_HashTable* table)
 static size_t APP_FindHashTableSlotIndex(APP_HashTable* table, uint64_t key, bool* used)
 {
 	const uint64_t hash = APP_GetHashTableKeyHash(key);
-	const size_t mask = table->capacity - 1;
-	size_t index = (size_t)(hash & mask);
 
-	while (true) {
-		switch (table->slots[index].state) {
-		default:
-			*used = false;
-			return index;
+#define APP_FIND_HASH_TABLE_SLOT_INDEX(firstIndex, nextIndex) \
+	size_t index = (size_t)(firstIndex); \
+	while (true) { \
+		if (table->slots[index].used) { \
+			if (table->slots[index].key == key) { \
+				*used = true; \
+				return index; \
+			} \
+		} \
+		else { \
+			*used = false; \
+			return index; \
+		} \
+		index = (nextIndex); \
+	}
 
-		case APP_HASH_SLOT_STATE_USED:
-			if (table->slots[index].key == key) {
-				*used = true;
-				return index;
-			}
-			break;
-		}
-		index = (index + 1) & mask;
+	if (table->capacity == APP_HASH_TABLE_MAX_CAPACITY) {
+		APP_FIND_HASH_TABLE_SLOT_INDEX(
+			hash % APP_HASH_TABLE_MAX_CAPACITY,
+			(index + 1) % APP_HASH_TABLE_MAX_CAPACITY
+		);
+	}
+	else {
+		const size_t mask = table->capacity - 1;
+		APP_FIND_HASH_TABLE_SLOT_INDEX(
+			hash & mask,
+			(index + 1) & mask
+		);
 	}
 }
 
@@ -206,7 +258,7 @@ APP_SetHashTableStatus APP_SetHashTableValue(APP_HashTable* table, uint64_t key,
 		APP_SetError("Invalid parameter \"table\"");
 		return APP_SET_HASH_TABLE_STATUS_FAILURE;
 	}
-	else if (!APP_EnsureHashTableCapacityForInsert(table)) {
+	else if (!APP_EnsureHashTableCapacityForSet(table)) {
 		return APP_SET_HASH_TABLE_STATUS_FAILURE;
 	}
 
@@ -221,12 +273,7 @@ APP_SetHashTableStatus APP_SetHashTableValue(APP_HashTable* table, uint64_t key,
 		return APP_SET_HASH_TABLE_STATUS_UPDATED;
 	}
 	else {
-		if (table->slots[index].state == APP_HASH_SLOT_STATE_TOMBSTONE) {
-			if (table->tombstones > 0) {
-				--table->tombstones;
-			}
-		}
-		table->slots[index].state = APP_HASH_SLOT_STATE_USED;
+		table->slots[index].used = true;
 		table->slots[index].key = key;
 		table->slots[index].value = value;
 		table->slots[index].destroy = destroy;
@@ -270,12 +317,11 @@ bool APP_RemoveHashTableValue(APP_HashTable* table, uint64_t key, bool* removed)
 	if (table->slots[index].destroy) {
 		table->slots[index].destroy(table->slots[index].key, table->slots[index].value, table->userdata);
 	}
-	table->slots[index].state = APP_HASH_SLOT_STATE_TOMBSTONE;
+	table->slots[index].used = false;
 	if (removed) {
 		*removed = true;
 	}
 	--table->size;
-	++table->tombstones;
 	return true;
 }
 
@@ -304,7 +350,7 @@ bool APP_EnumerateHashTable(APP_HashTable* table, APP_EnumerateHashTableCallback
 		return APP_SetError("Invalid parameter \"callback\"");
 	}
 	for (size_t i = 0; i < table->capacity; ++i) {
-		if (table->slots[i].state == APP_HASH_SLOT_STATE_USED) {
+		if (table->slots[i].used) {
 			switch (callback(table->slots[i].key, table->slots[i].value, table->userdata)) {
 			case SDL_ENUM_CONTINUE:
 				continue;
@@ -326,7 +372,7 @@ void APP_DestroyHashTable(APP_HashTable* table)
 		return;
 	}
 	for (size_t i = 0; i < table->capacity; i++) {
-		if (table->slots[i].state == APP_HASH_SLOT_STATE_USED && table->slots[i].destroy) {
+		if (table->slots[i].used && table->slots[i].destroy) {
 			table->slots[i].destroy(table->slots[i].key, table->slots[i].value, table->userdata);
 		}
 	}

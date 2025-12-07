@@ -179,7 +179,7 @@ void APP_QuitAudio(void)
 	APP_Waves = NULL;
 	APP_QuitSound(&APP_Music);
 	SDL_DestroyAudioStream(APP_Music.stream);
-	APP_Music.stream = NULL;
+	APP_Music = (APP_Sound) { 0 };
 
 	SDL_CloseAudioDevice(APP_AudioDevice);
 	APP_AudioDevice = 0;

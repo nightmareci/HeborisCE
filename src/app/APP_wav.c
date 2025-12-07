@@ -18,6 +18,7 @@ typedef struct APP_StreamingWAVAudioData
 	drwav data;
 	drwav_uint64 frames;
 	uint64_t framesMax;
+	SDL_Mutex* lock;
 	SDL_AudioStream* converter;
 	SDL_IOStream* file;
 	float* buffer;
@@ -128,14 +129,23 @@ APP_StreamingAudioData* APP_CreateStreamingWAVAudioData(SDL_IOStream* file, SDL_
 	wav->callbacks.restart = APP_RestartWAVStreamingAudioData;
 	wav->callbacks.destroy = APP_DestroyWAVStreamingAudioData;
 
+	wav->lock = SDL_CreateMutex();
+	if (!wav->lock) {
+		SDL_free(wav);
+		SDL_CloseIO(file);
+		return NULL;
+	}
+
 	const drwav_allocation_callbacks allocationCallbacks = { NULL, APP_DRWAV_Malloc, APP_DRWAV_Realloc, APP_DRWAV_Free };
 	if (!drwav_init(&wav->data, APP_DRWAV_Read, APP_DRWAV_Seek, APP_DRWAV_Tell, file, &allocationCallbacks)) {
+		SDL_DestroyMutex(wav->lock);
 		SDL_free(wav);
 		SDL_CloseIO(file);
 		return NULL;
 	}
 	if (drwav_get_length_in_pcm_frames(&wav->data, &wav->frames) != DRWAV_SUCCESS || wav->frames == 0) {
 		drwav_uninit(&wav->data);
+		SDL_DestroyMutex(wav->lock);
 		SDL_free(wav);
 		SDL_CloseIO(file);
 		return NULL;
@@ -154,6 +164,7 @@ APP_StreamingAudioData* APP_CreateStreamingWAVAudioData(SDL_IOStream* file, SDL_
 		wav->converter = SDL_CreateAudioStream(&wav->srcSpec, dstSpec);
 		if (!wav->converter) {
 			drwav_uninit(&wav->data);
+			SDL_DestroyMutex(wav->lock);
 			SDL_free(wav);
 			SDL_CloseIO(file);
 			return NULL;
@@ -163,6 +174,7 @@ APP_StreamingAudioData* APP_CreateStreamingWAVAudioData(SDL_IOStream* file, SDL_
 		if (!wav->buffer) {
 			SDL_DestroyAudioStream(wav->converter);
 			drwav_uninit(&wav->data);
+			SDL_DestroyMutex(wav->lock);
 			SDL_free(wav);
 			SDL_CloseIO(file);
 			return NULL;
@@ -182,6 +194,7 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 	}
 
 	APP_StreamingWAVAudioData* wav = (APP_StreamingWAVAudioData*)streamingAudioData;
+	SDL_LockMutex(wav->lock);
 	int chunkRemaining = APP_STREAMED_AUDIO_CHUNK_SPEC_SIZE_MAX(wav->dstSpec, chunkTotalSize);
 	uint8_t* pos = chunk;
 
@@ -189,16 +202,19 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 		while (true) {
 			const int gotBytes = SDL_GetAudioStreamData(wav->converter, pos, chunkRemaining);
 			if (gotBytes < 0) {
+				SDL_UnlockMutex(wav->lock);
 				return false;
 			}
 			*chunkOutSize += gotBytes;
 			if (SDL_GetAudioStreamAvailable(wav->converter) == 0 && wav->finished) {
 				*finished = true;
+				SDL_UnlockMutex(wav->lock);
 				return true;
 			}
 			pos += gotBytes;
 			chunkRemaining -= gotBytes;
 			if (chunkRemaining == 0) {
+				SDL_UnlockMutex(wav->lock);
 				return true;
 			}
 
@@ -210,21 +226,25 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 					case SDL_IO_STATUS_ERROR:
 					case SDL_IO_STATUS_NOT_READY:
 					case SDL_IO_STATUS_WRITEONLY:
+						SDL_UnlockMutex(wav->lock);
 						return false;
 
 					default:
 						break;
 					}
 					if (!SDL_PutAudioStreamData(wav->converter, wav->buffer, sizeof(float) * wav->srcSpec.channels * gotSamples)) {
+						SDL_UnlockMutex(wav->lock);
 						return false;
 					}
 					drwav_uint64 cursor;
 					if (drwav_get_cursor_in_pcm_frames(&wav->data, &cursor) != DRWAV_SUCCESS) {
+						SDL_UnlockMutex(wav->lock);
 						return false;
 					}
 					if (cursor == wav->frames) {
 						if (looping) {
 							if (!drwav_seek_to_pcm_frame(&wav->data, 0)) {
+								SDL_UnlockMutex(wav->lock);
 								return false;
 							}
 						}
@@ -245,17 +265,20 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			case SDL_IO_STATUS_ERROR:
 			case SDL_IO_STATUS_NOT_READY:
 			case SDL_IO_STATUS_WRITEONLY:
+				SDL_UnlockMutex(wav->lock);
 				return false;
 
 			default:
 				break;
 			}
 			if (gotSamples > INT_MAX / (sizeof(int16_t) * wav->dstSpec.channels)) {
+				SDL_UnlockMutex(wav->lock);
 				return false;
 			}
 			if (wav->data.readCursorInPCMFrames == wav->data.totalPCMFrameCount) {
 				if (looping) {
 					if (!drwav_seek_to_pcm_frame(&wav->data, 0)) {
+						SDL_UnlockMutex(wav->lock);
 						return false;
 					}
 				}
@@ -269,6 +292,7 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 			*chunkOutSize += gotBytes;
 			chunkRemaining -= gotBytes;
 		} while (chunkRemaining > 0 && !*finished);
+		SDL_UnlockMutex(wav->lock);
 		return true;
 	}
 }
@@ -276,14 +300,18 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 static bool APP_RestartWAVStreamingAudioData(APP_StreamingAudioData* streamingAudioData)
 {
 	APP_StreamingWAVAudioData* wav = (APP_StreamingWAVAudioData*)streamingAudioData;
+	SDL_LockMutex(wav->lock);
 
 	wav->finished = false;
 	if (wav->converter) {
 		if (!SDL_ClearAudioStream(wav->converter)) {
+			SDL_UnlockMutex(wav->lock);
 			return false;
 		}
 	}
-	return !!drwav_seek_to_pcm_frame(&wav->data, 0);
+	const bool success = !!drwav_seek_to_pcm_frame(&wav->data, 0);
+	SDL_UnlockMutex(wav->lock);
+	return success;
 }
 
 static void APP_DestroyWAVStreamingAudioData(APP_StreamingAudioData* streamingAudioData)
@@ -293,5 +321,6 @@ static void APP_DestroyWAVStreamingAudioData(APP_StreamingAudioData* streamingAu
 	SDL_DestroyAudioStream(wav->converter);
 	SDL_free(wav->buffer);
 	drwav_uninit(&wav->data);
+	SDL_DestroyMutex(wav->lock);
 	SDL_free(wav);
 }

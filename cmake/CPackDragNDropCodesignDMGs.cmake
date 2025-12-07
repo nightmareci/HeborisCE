@@ -1,0 +1,5 @@
+foreach(FILE ${CPACK_PACKAGE_FILES})
+	if(FILE MATCHES ".dmg$")
+		execute_process(COMMAND codesign --force --options runtime --timestamp --entitlements "${CPACK_BUNDLE_ENTITLEMENTS}" --sign "${CPACK_BUNDLE_APPLE_CERT_APP}" "${FILE}")
+	endif()
+endforeach()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.20)
 project(HeborisCE
 	VERSION 1.1.1
 	LANGUAGES C
@@ -7,6 +7,7 @@ project(HeborisCE
 set(APP_PROJECT_VERSION "${CMAKE_PROJECT_VERSION}")
 set(APP_PROJECT_CREATOR "nightmareci")
 set(APP_PROJECT_NAME "${CMAKE_PROJECT_NAME}")
+set(APP_PROJECT_IDENTIFIER "com.nightmareci.heborisce")
 
 # NOTE: Never, ever change APP_FILESYSTEM_ORG and APP_FILESYSTEM_APP, unless you're
 # making a hard fork such that you're effectively making a new, distinct game,
@@ -461,104 +462,105 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 
 	# Builds Mac application bundle, packaged into a DMG with CPack by default.
 
-	target_sources(${APP_EXE} PRIVATE
-		"src/app/physfsrwops.c"
-		"src/app/physfsrwops.h"
-		"pkg/macos/${APP_PROJECT_NAME}.icns"
-	)
+	if(NOT CMAKE_GENERATOR STREQUAL "Xcode")
+		message(FATAL_ERROR "Building Mac apps is only supported by the Xcode generator")
+	endif()
 
 	set_property(TARGET ${APP_EXE} PROPERTY MACOSX_BUNDLE TRUE)
-	set_source_files_properties("pkg/macos/${APP_PROJECT_NAME}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_PROJECT_NAME})
-	set(MACOSX_BUNDLE_GUI_IDENTIFIER "${APP_PROJECT_NAME}")
-	set(MACOSX_BUNDLE_ICON_FILE ${APP_PROJECT_NAME})
+
+	if(APP_RESOURCE_DAT)
+		GenerateResourceDAT()
+	endif()
 	if(APP_PACKAGE_TYPE MATCHES "Portable")
 		set(SDL_FILESYSTEM_BASE_DIR_TYPE "parent")
 		set(APP_INSTALL_DIR ${APP_PROJECT_NAME})
 		install(TARGETS ${APP_EXE} BUNDLE DESTINATION "${APP_PROJECT_NAME}")
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION "${APP_PROJECT_NAME}")
-		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
-		install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}")
+		if(APP_RESOURCE_DAT)
+			install(FILES "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION "${APP_PROJECT_NAME}")
+		else()
+			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
+			install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}")
+		endif()
 	elseif(APP_PACKAGE_TYPE MATCHES "Installable")
 		set(SDL_FILESYSTEM_BASE_DIR_TYPE "resource")
 		set(APP_INSTALL_DIR .)
 		install(TARGETS ${APP_EXE} BUNDLE DESTINATION .)
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION .)
-		install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}.app/Contents/Resources/config")
-		install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}.app/Contents/Resources")
+		if(APP_RESOURCE_DAT)
+			set_source_files_properties("${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+		else()
+			set(RES_FILES)
+			foreach(FILE_TYPE "png" "ogg" "bdf" "wav")
+				file(GLOB_RECURSE FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*.${FILE_TYPE}")
+				list(APPEND RES_FILES ${FILES})
+			endforeach()
+			file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*.sav")
+			file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*.sav")
+			set(ALL_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+			foreach(FILE ${ALL_FILES})
+				cmake_path(GET FILE PARENT_PATH PATH)
+				target_sources(${APP_EXE} PRIVATE "${FILE}")
+				set_source_files_properties("${FILE}" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/${PATH}")
+			endforeach()
+		endif()
 	else()
 		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building a macOS app")
 	endif()
 
+	set(CPACK_GENERATOR "DragNDrop" CACHE STRING "The CPack generator to use")
+
+	set(CPACK_BUNDLE_APPLE_CERT_APP "-" CACHE STRING "The name of the code signing certificate to use")
+	if(CPACK_BUNDLE_APPLE_CERT_APP STREQUAL "-")
+		set(CPACK_BUNDLE_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-adhoc.xml")
+	else()
+		set(CPACK_BUNDLE_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-identity-required.xml")
+	endif()
+	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_PROJECT_NAME})
+	set(MACOSX_BUNDLE_GUI_IDENTIFIER "${APP_PROJECT_IDENTIFIER}")
+	set(MACOSX_BUNDLE_ICON_FILE ${APP_PROJECT_NAME})
 	set_target_properties(${APP_EXE} PROPERTIES
 		MACOSX_BUNDLE_INFO_PLIST "cmake/MacOSXBundleInfo.plist.cmake"
+		XCODE_ATTRIBUTE_BUNDLE_IDENTIFIER "${APP_PROJECT_IDENTIFIER}"
+		XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${APP_PROJECT_IDENTIFER}"
+		XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CPACK_BUNDLE_ENTITLEMENTS}"
 		INSTALL_RPATH "@executable_path"
+		BUILD_WITH_INSTALL_RPATH ON
 		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
+	target_sources(${APP_EXE} PRIVATE "pkg/macos/${APP_PROJECT_NAME}.icns")
+	set_source_files_properties("pkg/macos/${APP_PROJECT_NAME}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 	if(APP_VENDORED)
-		include("cmake/AddLibrariesVendor.cmake" REQUIRED)
-		AddLibrariesVendor(${APP_EXE} TRUE)
+		set(BUILD_SHARED_LIBS OFF)
+		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
+		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_VENDORED ON)
+		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
 	else()
-		include("cmake/AddLibrariesPkgConfig.cmake" REQUIRED)
-		AddLibrariesPkgConfig(${APP_EXE})
+		find_package(SDL3 REQUIRED)
+		find_package(SDL3_image REQUIRED)
+		target_link_libraries(${APP_EXE} PRIVATE
+			SDL3::SDL3
+			SDL3_image::SDL3_image
+		)
 	endif()
-
-	set(APP_APPLE_CERT_NAME - CACHE STRING "The name of the Apple supplied code signing certificate to use. Defaults to adhoc signing (\"-\")")
-	include(CMakeFindBinUtils)
-	install(CODE "
-		set(APP_POST_EXCLUDES
-		\"^/usr/lib\"
-		\"^/System/Library/Frameworks\"
-		)
-
-		file(GET_RUNTIME_DEPENDENCIES
-			EXECUTABLES \$<TARGET_FILE:${APP_EXE}>
-			POST_EXCLUDE_REGEXES
-				\${APP_POST_EXCLUDES}
-			RESOLVED_DEPENDENCIES_VAR RESOLVED_DEPENDENCIES
-			UNRESOLVED_DEPENDENCIES_VAR UNRESOLVED_DEPENDENCIES
-		)
-
-		file(INSTALL
-			DESTINATION \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app/Contents/libs\"
-			TYPE SHARED_LIBRARY
-			FOLLOW_SYMLINK_CHAIN
-			FILES \${RESOLVED_DEPENDENCIES}
-		)
-
-		set(APP_CHANGES \"\")
-		set(APP_LIBS \"\")
-		foreach(RESOLVED_DEPENDENCY \${RESOLVED_DEPENDENCIES})
-			string(REGEX REPLACE \"^.*/([^/]+)\" \"\\\\1\" LIB \"\${RESOLVED_DEPENDENCY}\")
-			list(APPEND APP_CHANGES -change \"\${RESOLVED_DEPENDENCY}\" \"@rpath/../libs/\${LIB}\")
-			list(APPEND APP_LIBS \"\${LIB}\")
-		endforeach()
-
-		if(\"${APP_APPLE_CERT_NAME}\" STREQUAL -)
-			set(APP_ENTITLEMENTS adhoc)
-		else()
-			set(APP_ENTITLEMENTS identity-required)
-		endif()
-
-		foreach(APP_LIB \${APP_LIBS})
-			execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} \${APP_CHANGES} -id \"@rpath/../libs/\${APP_LIB}\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app/Contents/libs/\${APP_LIB}\")
-			execute_process(COMMAND xcrun codesign --remove-signature \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app/Contents/libs/\${APP_LIB}\")
-			execute_process(COMMAND xcrun codesign -f -o runtime --timestamp -s \"${APP_APPLE_CERT_NAME}\" --entitlements \"${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-\${APP_ENTITLEMENTS}.xml\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app/Contents/libs/\${APP_LIB}\")
-		endforeach()
-		execute_process(COMMAND ${CMAKE_INSTALL_NAME_TOOL} \${APP_CHANGES} \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app/Contents/MacOS/${APP_EXE}\")
-		execute_process(COMMAND xcrun codesign --remove-signature \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app\")
-		execute_process(COMMAND xcrun codesign -f -o runtime --timestamp -s \"${APP_APPLE_CERT_NAME}\" --entitlements \"${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-\${APP_ENTITLEMENTS}.xml\" \"\${CMAKE_INSTALL_PREFIX}/${APP_INSTALL_DIR}/${APP_PROJECT_NAME}.app\")
-	")
 
 	set(CPACK_DMG_VOLUME_NAME ${APP_PROJECT_NAME})
 	set(CPACK_PACKAGE_VENDOR "${APP_PROJECT_CREATOR}")
 	if(APP_PACKAGE_TYPE MATCHES "Portable")
-		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME}-Portable-App-macOS")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} Portable App macOS")
 	elseif(${APP_PACKAGE_TYPE} MATCHES "Installable")
-		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME}-Installable-App-macOS")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} Installable App macOS")
 	endif()
-	set(CPACK_GENERATOR "DragNDrop")
+	if(CPACK_GENERATOR STREQUAL "DragNDrop")
+		set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CPackDragNDropCodesignDMGs.cmake")
+	endif()
 	include(CPack)
 elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 	if(CMAKE_SYSTEM_NAME STREQUAL Darwin)

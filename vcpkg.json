@@ -1,10 +1,8 @@
 {
-  "name": "heboriscce",
-  "builtin-baseline": "1de2026f28ead93ff1773e6e680387643e914ea1",
+  "name": "heborisce",
+  "builtin-baseline": "74e6536215718009aae747d86d84b78376bf9e09",
   "dependencies": [
-    "sdl2",
-    "sdl2-image",
-    "sdl2-mixer",
-    "physfs"
+    "sdl3",
+    "sdl3-image"
   ]
 }

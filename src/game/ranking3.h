@@ -1,7 +1,7 @@
 #ifndef ranking3_h_
 #define ranking3_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 int32_t viewgrade(int32_t player);
 void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type);
@@ -12,7 +12,6 @@ void RankingSave3();
 void getTime(int32_t time);
 void getModeNameEx3(int32_t mode,int32_t number);
 void getRuleNameEx3(int32_t rule,int32_t number);
-void PlaySE(int32_t no);
 void RankingProc2_3();
 void RankingView3();
 void RankingProc_3();

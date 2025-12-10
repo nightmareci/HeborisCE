@@ -1,7 +1,7 @@
 #ifndef effect_h_
 #define effect_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void objectComboClearPl(int32_t player);
 void objectClearPl(int32_t player);

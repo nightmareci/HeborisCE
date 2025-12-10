@@ -24,7 +24,7 @@ modules:
       config-opts:
           - -DCMAKE_INSTALL_PREFIX=/app
           - -DAPP_PACKAGE_TYPE=Installable
-          - -DAPP_LINUX_DESKTOP_ICON=io.github.nightmareci.HeborisCE
+          - -DAPP_LINUX_DESKTOP_ICON=com.nightmareci.HeborisCE
       sources:
         - type: dir
           path: ../..

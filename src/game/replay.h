@@ -1,7 +1,7 @@
 #ifndef replay_h_
 #define replay_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 #define REPLAY_PLAYER_CHUNK (60 * 60 * 20)
 #define REPLAY_CHUNK_SIZE (REPLAY_PLAYER_CHUNK * 2 * sizeof(int32_t))
@@ -24,8 +24,7 @@ void ReplayDetail();
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void getTime(int32_t time);
 int32_t getModeAddRep(void);
-int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg);
-void PlaySE(int32_t no);
+int32_t ReplayBgmModeDecide(int32_t mode,int32_t nv,int32_t dm,int32_t eg);
 void missionSetStatus();
 void loadMissionData(int32_t number);
 int32_t setstartBGM(int32_t mode,int32_t pl);

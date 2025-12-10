@@ -1,7 +1,7 @@
 #ifndef speed_h_
 #define speed_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 extern int32_t waitt_HeboGB_tbl[15];
 extern int32_t wait3_HeboGB_tbl[15];

@@ -3,7 +3,7 @@
 
 This version contains the source code for Heboris C.E. (Cross-platform
 Expansion). It requires a C compiler supporting C99 and the CMake utility, and
-the libraries for SDL 2.0, SDL 2.0 mixer, SDL 2.0 image, and PhysicsFS.
+the libraries for SDL 3.0 and SDL 3.0 image.
 
 ## Default Keyboard Controls
 The keyboard controls can be reset to defaults at any time by holding the
@@ -34,26 +34,21 @@ Player 2:
 * Give up: Page up
 * Pause: Page down
 
-## Installing Flatpak Version on Linux
-The benefit of using the Flatpak release package over building it yourself is
-it's built with a recent compiler (improved optimizations) and bundled with
-recent-version libraries, rather than having to settle on older libraries on
-some distros, like Ubuntu. The total installation size of Flatpak and necessary
-components is quite large, but the Flatpak package should work on any Linux
-distribution supporting Flatpak:
-```sh
-# Ubuntu, etc. Replace with whatever your distro requires to get Flatpak installed.
-sudo apt-get install flatpak
+## Package Types
 
-# You might not have to run these first two lines, but there's no harm in running them if you don't need to.
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install runtime/org.freedesktop.Platform/x86_64/21.08
-
-flatpak install ~/Downloads/HeborisCE-Linux.flatpak
-
-# You might need to log out and then log back in for the HeborisCE application
-# to show up in application menus.
-```
+A CMake configuration option, `APP_PACKAGE_TYPE`, can be set to control how the
+build accesses game resources and save data files:
+* `Current Directory` (default): Resources and save files are read/written in
+  the current directory. Handy for quickly building and playing right at command
+  line.
+* `Portable`: Resources and save files are read/written in the executable
+  directory.
+* `Installable`: Resources are read from the executable directory and save files
+  read/written in a sensible OS user account directory.
+* `Portable Mac App` (macOS only): Resources and save files are read/written in
+  the app directory.
+* `Installable Mac App` (macOS only): Resources are read from inside the app and
+  save files read/written in a sensible OS user account directory.
 
 ## Setup On Ubuntu
 
@@ -64,7 +59,7 @@ sudo apt-get install git
 
 Building dependencies:
 ```sh
-sudo apt-get install gcc cmake libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libphysfs-dev
+sudo apt-get install gcc cmake libsdl3-dev libsdl3-image-dev
 ```
 
 ## Setup in Windows MSYS2
@@ -76,7 +71,7 @@ pacman -Syu git
 
 Building dependencies:
 ```sh
-pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-SDL2 mingw-w64-x86_64-SDL2_mixer mingw-w64-x86_64-SDL2_image mingw-w64-x86_64-physfs
+pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-SDL3 mingw-w64-x86_64-SDL3_image
 ```
 
 ## Download, Build, and Run Without Installing
@@ -89,89 +84,54 @@ cmake --build build
 ./build/HeborisCE
 ```
 
-## Selecting a MIDI Soundfont if MIDI Doesn't Work
-
-At least on Windows and macOS, it seems MIDI always works fine, but not always
-on Linux. If MIDI music doesn't seem to work, you can manually select a
-soundfont like this, on Linux:
-
-```sh
-SDL_SOUNDFONTS='/usr/share/soundfonts/default.sf2' ./build/HeborisCE
-```
-
-Provide a full path to a .sf2 file after `SDL_SOUNDFONTS=` to select the
-soundfont you want to use.
-
-On Linux, soundfont packages install their .sf2 files in
-`/usr/share/soundfonts`, though you can use any .sf2 soundfont you want, such
-as those just downloaded from some website.
-
-A soundfont is not included, because they're quite large. But here are some
-free soundfont sources; you'll probably want to stick with General MIDI ("GM") ones:
-
-* [Soundfonts 4U](https://sites.google.com/site/soundfonts4u/)
-* [Ultimate List of Free Soundfonts - TriSamples](https://trisamples.com/free-soundfonts/)
-* [Links to SoundFonts](http://www.synthfont.com/links_to_soundfonts.html)
-
-Unfortunately, there are some dead links on those pages, but some links still work.
-
 ## Download and Package for Windows
 
-For Windows, building with VCPKG and Visual Studio/MSVC is the officially
-supported method. The packaging script requires you have x64, x86, and ARM64
-support with Visual Studio set up, as it produces builds for those platforms.
+For Windows, a handy packaging script is provided that automatically produces
+packages for supported targets (x86, x64, ARM64). The script only does vendored
+builds, so you need to have the Git submodules downloaded to use it.
 
 For now, only packaging of portable builds is supported. Installable build
 support might be added in the future, where they're provided as installers.
 
 ```bat
-REM First, install x86, x64, and ARM64 support in the Visual Studio installer.
+REM First, install x86, x64, and/or ARM64 support in the Visual Studio
+REM installer, and the CMake support. Then, open a developer PowerShell for the
+REM following commands
 
-REM Install required packages for all platforms. You'll need to have the working directory of your shell in the VCPKG install root for these lines.
-REM As of the time this was written, sdl2-mixer[opusfile] is broken, so you can't install SDL 2 mixer with Opus support. The game will work fine without it.
-.\vcpkg install --triplet x64-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
-.\vcpkg install --triplet x86-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
-.\vcpkg install --triplet arm64-windows sdl2 sdl2-image[core] sdl2-mixer[libflac,libmodplug,libvorbis,mpg123,nativemidi] physfs
+REM Clone the repository with the Git submodules
+git clone https://github.com/nightmareci/HeborisCE --recurse-submodules
 
-REM Have your working directory somewhere for source repos here.
-git clone https://github.com/nightmareci/HeborisCE
+REM Have your working directory in the cloned repository
 cd HeborisCE
-REM Starting at the root of the VCPKG install/repo, vcpkg.cmake is at [vcpkg-root]\scripts\buildsystems\vcpkg.cmake
-.\pkg\windows\pkg.bat path\to\vcpkg.cmake . build-pkg
-REM All the builds will be in separate ZIPs in the build-pkg directory.
+
+REM Run the packaging script, passing in the source directory, build directory,
+REM and type of build desired
+./pkg/windows/pkg.bat . build-pkg x64
 ```
 
 ## Download and Package for macOS
 
-The macOS packaging script will just use the libraries you have installed.
-Homebrew or MacPorts will work, though only MacPorts can provide Universal
-builds of the libraries, so packages built with Homebrew aren't suitable for
-distribution.
+For macOS, a handy packaging script is provided that automatically produces
+Universal Binary packages for supported targets (x86-64 and ARM64). The script
+only does vendored builds, so you need to have the Git submodules downloaded to
+use it.
 
 The "Installable Mac App" version will work unnotarized, though users will have to
 approve it, and will get the "Apple could not verify..." message.
 ```sh
-git clone https://github.com/nightmareci/HeborisCE
+git clone https://github.com/nightmareci/HeborisCE --recurse-submodules
 cd HeborisCE
 ./pkg/macos/pkg.sh 'Installable Mac App' . build-pkg
 ```
 
 You can also create a "Portable Mac App" version; distribution of this version
-basically requires you have an Apple Developer subscription, so the app can get
-access to the folder it's in. But building it for use on the same system it was
-built on works fine, and is a convenient way to have it easy to customize the
-theme. The "Portable Mac App" version requires the built app be in the folder with the
+basically requires you notarize the build, so the app can get access to the
+folder it's in. But building it for use on the same system it was built on works
+fine, and is a convenient way to have it easy to customize the theme. The
+"Portable Mac App" version requires the built app be in the folder with the
 other files (`res` folder, etc.).
 ```sh
 ./pkg/macos/pkg.sh 'Portable Mac App' . build-pkg
-```
-
-A third type, "Portable", creates a command line binary with the libraries in
-a separate `libs` folder. It's similar to "Portable Mac App" in usage, as you
-can modify the files and still run it, but you can easily have terminal output
-with it, and run it from command line.
-```sh
-./pkg/macos/pkg.sh Portable . build-pkg
 ```
 
 The packaging script can optionally take a codesigning identity, so you can
@@ -185,7 +145,7 @@ identity is provided.
 
 AppImage:
 ```sh
-git clone https://github.com/nightmareci/HeborisCE
+git clone https://github.com/nightmareci/HeborisCE --recurse-submodules
 cd HeborisCE
 ./pkg/linux/pkg-appimage.sh . build-appimage
 ```
@@ -244,16 +204,15 @@ making the game behave similarly to old Heboris versions, but explicitly
 setting where all files are. This feature can be used to get debugging working
 in IDEs, by setting that command line argument to where the source root is.
 
-An alternative to using the explicit resource/data directory command line 
-argument is to use the `WorkingDir` package type when building (the default if 
-`APP_PACKAGE_TYPE` isn't provided to the CMake configuration step) and 
-configuring your IDE to run the game with its working directory set to the 
+An alternative to using the explicit resource/data directory command line
+argument is to use the `Current Directory` package type when building (the
+default if `APP_PACKAGE_TYPE` isn't provided to the CMake configuration step)
+and configuring your IDE to run the game with its working directory set to the
 source root. This option isn't available in all IDEs, however.
 
 ## Changes
 
- - Port to use SDL 2.0 so it (probably) works on all SDL 2.0-supported 
-platforms.
+ - Port to use SDL 3.0 so it works on many SDL 3.0-supported platforms.
  - Change to a CMake build system.
  - Convert all source code from C++ to C.
  - Convert everything to UTF-8.
@@ -274,15 +233,8 @@ platforms.
  - Fix the "low detail" 320x240 graphics setting.
  - Implement guaranteed-long-term-correct frame timing; part of that system is
    efficiently timed screen updates, only when appropriate.
- - Use PhysicsFS for file and directory access; now the game can create missing
-   directories for save data. This was necessary for an "installable" version
-   of the game, where the save data directory is outside the game's
-   resources/program directory.
 
 ## Todo
-
-This repository will be maintained for bug fixes, non-new-content enhancements
-(like new video settings), and ports.
 
  - Implement automated packaging of builds. At least support Windows, macOS, and
    desktop Linux.

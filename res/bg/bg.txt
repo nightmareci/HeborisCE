@@ -6,5 +6,5 @@ should be of size 320x240, and highDetail backgrounds of size 640x480.
 
 For both low detail and high detail, the following backgrounds are read.
 
-back01.png - back12.png	: backgrounds in standard game
-back_vs.png		: background in vs. mode
+back01 - back12	: backgrounds in standard game
+back_vs		: background in vs. mode

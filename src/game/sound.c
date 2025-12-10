@@ -3,11 +3,11 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  全効果音停止 #1.60c7j6
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void StopAllWaves(void) {
+void StopAllSE(void) {
 	int32_t i;
-	for(i = 0; i <= 49; i++) {
+	for(i = 0; i < WAVE_BGM_START; i++) {
 		APP_StopWave(i);
-		APP_SetVolumeWave(i, sevolume);	// #1.60c7o8
+		APP_SetWaveVolume(i, sevolume);	// #1.60c7o8
 	}
 }
 
@@ -16,36 +16,36 @@ void StopAllWaves(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void StopAllBGM(void) {
 	int32_t i;
-	for(i = 50; i <= 69; i++) {
+	for(i = WAVE_BGM_START; i < WAVE_BGM_START + WAVE_BGM_COUNT; i++) {
 		APP_StopWave(i);
-		APP_SetVolumeWave(i, bgmvolume);	// #1.60c7o8
+		APP_SetWaveVolume(i, bgmvolume);	// #1.60c7o8
 	}
 }
 
-void SetVolumeAllWaves(int32_t vol) {
+void SetVolumeAllSE(int32_t vol) {
 	int32_t i;
-	for(i = 0; i <= 49; i++) {
-		APP_SetVolumeWave(i, vol);
+	for(i = 0; i < WAVE_BGM_START; i++) {
+		APP_SetWaveVolume(i, vol);
 	}
 }
 
 void SetVolumeAllBGM(int32_t vol) {
 	int32_t i;
-	for(i = 50; i <= 69; i++) {
-		APP_SetVolumeWave(i, vol);
+	for(i = WAVE_BGM_START; i < WAVE_BGM_START + WAVE_BGM_COUNT; i++) {
+		APP_SetWaveVolume(i, vol);
 	}
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  効果音再生（の予約）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void PlaySE(int32_t no) {
-	if(no < 50) {
+void PlaySE(WaveNum no) {
+	if(no < WAVE_BGM_START) {
 		se_play[no] = 1;
 	}
 }
 
-void StopSE(int32_t no) {
-	if(no < 50) {
+void StopSE(WaveNum no) {
+	if(no < WAVE_BGM_START) {
 		se_play[no] = 2;
 	}
 }
@@ -54,7 +54,7 @@ void StopSE(int32_t no) {
 void PlayAllSE() {
 	int32_t i;
 
-	for(i = 0; i < 50; i++) {
+	for(i = 0; i < WAVE_BGM_START; i++) {
 		if(se_play[i] == 1) {
 			APP_PlayWave(i);
 			se_play[i] = 0;
@@ -183,7 +183,7 @@ int32_t BgmModeDecide(int32_t pl,int32_t mode){
 //  リプレイ専用時のBGMレベル設定
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
-	int32_t	i,bgmmode;
+	int32_t	i;
 
 	i = 0;
 
@@ -208,7 +208,6 @@ int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
 		// MISSIONモードではmission_bgmで決まる
 		i = mission_bgm[c_mission];
 	} else {
-		bgmmode = ReplayBgmModeDecide(0,gameMode[0], novice_mode[0],devil_minus[0],enable_grade[0]);
 		if(((mode == 1) || (mode == 2)) && (enable_grade[pl] == 4))
 				i = 0 + (mode == 2);
 		// 通常モード
@@ -242,7 +241,7 @@ int32_t ReplaysetstartBGM(int32_t mode, int32_t pl) {
 void bgmFadeout(void) {
 	int32_t player;
 
-	if(wavebgm & APP_WAVE_SIMPLE) return;
+	if(wavebgm & WAVE_BGM_SIMPLE) return;
 
 	for( player = 0; player <= maxPlay; player++ ) {
 		if((gameMode[player] <= 3) || (gameMode[player] == 7) || (gameMode[player] == 10)) {
@@ -254,7 +253,7 @@ void bgmFadeout(void) {
 		if(fadelv[player] != 0) {
 			fadelv[player] += fade_seed;
 			if(fadelv[player] > 10000) fadelv[player] = 10000;
-			APP_SetVolumeWave(50 +bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
+			APP_SetWaveVolume(WAVE_BGM_START+bgmlv, (int)(bgmvolume * ((10000 - fadelv[player]) / 10000.0f)));
 		}
 	}
 }
@@ -301,21 +300,21 @@ void checkMasterFadeout(int32_t player) {
 //			bgmlv++;
 
 			// 20Gになるときのtr[player]の数値を覚えておく
-			if(tr2[player] + 1 == 50) tr_20g[player] = tr[player] + 1;
-			else if(tr2[player] + 2 == 50) tr_20g[player] = tr[player] + 2;
-			else if(tr2[player] + 11 == 50) tr_20g[player] = tr[player] + 11;	//速度スキップ時
-			else tr_20g[player] = tr[player] + 12;
+			if(tr2[player] + 1 == 50) tr_20g[player] = tgmRank[player] + 1;
+			else if(tr2[player] + 2 == 50) tr_20g[player] = tgmRank[player] + 2;
+			else if(tr2[player] + 11 == 50) tr_20g[player] = tgmRank[player] + 11;	//速度スキップ時
+			else tr_20g[player] = tgmRank[player] + 12;
 
 			regretcancel[player] = 1; //2曲目になったのにREGRET発生で20Gにならないのを防ぐ
 		}
 
 		// 2曲目→3曲目の判定
-		if((((gup3sp_adjust[player] == 2 ) && (tr[player] + 2 >= tr_20g[player] + 20)) || (tr[player] + 2 >= tr_20g[player] + 10)) && (bgmlv == 1+(gameMode[player] == 2))) {
+		if((((gup3sp_adjust[player] == 2 ) && (tgmRank[player] + 2 >= tr_20g[player] + 20)) || (tgmRank[player] + 2 >= tr_20g[player] + 10)) && (bgmlv == 1+(gameMode[player] == 2))) {
 			fadelv[player] = 50;
 //			bgmlv++;
 		}
 		// 3曲目→4曲目の判定
-		if((((gup3sp_adjust[player] == 2 ) && (tr[player] + 2 >= tr_20g[player] + 60)) || (tr[player] + 2 >= tr_20g[player] + 70)) && (bgmlv == 2+(gameMode[player] == 2)) && (tc[player] < 900)) {
+		if((((gup3sp_adjust[player] == 2 ) && (tgmRank[player] + 2 >= tr_20g[player] + 60)) || (tgmRank[player] + 2 >= tr_20g[player] + 70)) && (bgmlv == 2+(gameMode[player] == 2)) && (tc[player] < 900)) {
 			fadelv[player] = 50;
 //			bgmlv++;
 		}
@@ -327,9 +326,9 @@ void checkMasterFadeout(int32_t player) {
 void changeBGM(int32_t player) {
 	StopAllBGM();
 	if((!isfever[0]) && (!isfever[1]))
-		APP_PlayWave(50 +bgmlv);
+		APP_PlayWave(WAVE_BGM_START+bgmlv);
 	fadelv[player] = 0;
-	//if((!(wavebgm & APP_WAVE_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
+	//if((!(wavebgm & APP_SOUND_FORMAT_SIMPLE)) && (gameMode[0] != 8)) bgmlv = 3;
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
@@ -338,86 +337,88 @@ void changeBGM(int32_t player) {
 void SoundTestProc(void) {
 	static int32_t snd;
 
-        if (init) {
-                snd = 0;
+	if (init) {
+		snd = 0;
 
-                StopAllWaves();
-                StopAllBGM();
+		StopAllSE();
+		StopAllBGM();
 
-                init = false;
-        }
+		init = false;
+	}
 
-        count++;
+	count++;
 
-        // 背景描画 #1.60c7o5
-        if(background == 0) {
-                for(int32_t i = 0; i <= 4; i++) {
-                        ExBltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
-                }
-        } else if(background == 1) {
-                for(int32_t i = 0; i <= 4; i++) {
-                        ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
-                }
-        } else {
-                ExBltFast(30, 0, 0);
-        }
+	// 背景描画 #1.60c7o5
+	if(background == 0) {
+		for(int32_t i = 0; i <= 4; i++) {
+			ExBltRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+		}
+	} else if(background == 1) {
+		for(int32_t i = 0; i <= 4; i++) {
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
+		}
+	} else {
+		ExBlt(PLANE_UNUSED, 0, 0);
+	}
 
-        printFont(10, 3, "- SOUND TEST MODE -", 4);
-        if(snd < 50){
-                printFont(17, 6, "SE NO.", 1);
-                sprintf(string[0], "%d", snd);
-                printFont(23, 6, string[0], 2);
-        }
-        else{
-                printFont(16, 6, "BGM NO.", 1);
-                sprintf(string[0], "%d", snd-50);
-                printFont(23, 6, string[0], 2);
-        }
+	printFont(10, 3, "- SOUND TEST MODE -", 4);
+	if(snd < WAVE_BGM_START){
+		printFont(17, 6, "SE NO.", 1);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", snd);
+		printFont(23, 6, string[0], 2);
+	}
+	else{
+		printFont(16, 6, "BGM NO.", 1);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", snd-WAVE_BGM_START);
+		printFont(23, 6, string[0], 2);
+	}
 
-        printFont(10, 9,  "LEFT  : SOUND NO.-1", 0);
-        printFont(10, 11, "RIGHT : SOUND NO.+1", 0);
-        printFont(10, 13, "A     : PLAY",        0);
-        printFont(10, 15, "B     : EXIT",        0);
-        printFont(10, 17, "C     : STOP",        0);
+	printFont(10, 9,  "LEFT  : SOUND NO.-1", 0);
+	printFont(10, 11, "RIGHT : SOUND NO.+1", 0);
+	printFont(10, 13, "A     : PLAY",	0);
+	printFont(10, 15, "B     : EXIT",	0);
+	printFont(10, 17, "C     : STOP",	0);
 
-        padRepeat(0);
+	padRepeat(0);
 
-        // ←
-        if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
-        if(getPressState(0, APP_BUTTON_LEFT)) {
-                snd--;
-                if(snd < 0) snd = 69;
-        }
+	// ←
+	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0))) {
+		if(getPressState(0, APP_BUTTON_LEFT)) {
+			snd--;
+			if(snd < 0) snd = WAVE_BGM_START+WAVE_BGM_COUNT-1;
+		}
+	}
 
-        // →
-        if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)))
-        if(getPressState(0, APP_BUTTON_RIGHT)) {
-                snd++;
-                if(snd > 69) snd = 0;
-        }
+	// →
+	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0))) {
+		if(getPressState(0, APP_BUTTON_RIGHT)) {
+			snd++;
+			if(snd > WAVE_BGM_START+WAVE_BGM_COUNT-1) snd = 0;
+		}
+	}
 
-        // Aボタンで再生
-        if(getPushState(0, APP_BUTTON_A)) {
-                StopAllWaves();
-                StopAllBGM();
-                APP_PlayWave(snd);
-        }
+	// Aボタンで再生
+	if(getPushState(0, APP_BUTTON_A)) {
+		StopAllSE();
+		StopAllBGM();
+		APP_PlayWave(snd);
+	}
 
-        // Cボタンで停止
-        if(getPushState(0, APP_BUTTON_C)) {
-                StopAllWaves();
-                StopAllBGM();
-        }
+	// Cボタンで停止
+	if(getPushState(0, APP_BUTTON_C)) {
+		StopAllSE();
+		StopAllBGM();
+	}
 
-        // Bボタンでタイトル
-        if(getPushState(0, APP_BUTTON_B)) {
-                StopAllWaves();
-                StopAllBGM();
-                if(wavebgm & APP_WAVE_SIMPLE) {	// No.30→38に変更 #1.60c7i2
-                        if(APP_IsPlayMusic()) APP_ReplayMusic();
-                } else APP_PlayWave(61);//タイトルBGM
-                
-                mainLoopState = MAIN_TITLE;
-                init = true;
-        }
+	// Bボタンでタイトル
+	if(getPushState(0, APP_BUTTON_B)) {
+		StopAllSE();
+		StopAllBGM();
+		if(wavebgm & WAVE_BGM_SIMPLE) {	// No.30→38に変更 #1.60c7i2
+			if(APP_IsMusicPlaying()) APP_ResumeMusic();
+		} else APP_PlayWave(WAVE_BGM_TITLE);//タイトルBGM
+
+		mainLoopState = MAIN_TITLE;
+		init = true;
+	}
 }

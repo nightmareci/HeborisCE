@@ -16,7 +16,7 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 			// TODO: Change how replay saving is selected, away
 			// from hard-coded to the keyboard number keys to
 			// something using the configured inputs.
-			#ifdef APP_ENABLE_KEYBOARD
+			#ifdef APP_ENABLE_KEYBOARD_INPUT
 			if(APP_IsPushKey(2 + i + player * 14)) {
 				saveReplayData(player, i + player * 10 + 1);
 				freeReplayData();
@@ -31,14 +31,14 @@ void ReplaySaveCheck(int32_t player, int32_t statnumber) {
 //  リプレイデータをセーブ
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void saveReplayData(int32_t pl, int32_t number) {
-	int32_t i, j, temp1, temp2, max;
+	int32_t i, j, temp1, max;
 
 	if(gameMode[pl] == 4){	// VSはフォーマットが一部異なる
 		saveReplay_VS(number);
 		return;
 	}
 
-	APP_FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	SDL_memset(saveBuf, 0, 300 * sizeof(int32_t));
 
 	// ファイルフォーマット (4byte単位)
 	//   0〜    3 ヘッダ
@@ -161,7 +161,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 	if(relaymode[pl])
 		saveBuf[294] = first_rot[pl];			// 回転方式のセーブ #1.60c
 	else
-		saveBuf[294] = rots[pl];
+		saveBuf[294] = rotspl[pl];
 	saveBuf[296] = ori_opt[pl];		// のセーブ #1.60c6
 	saveBuf[297] = IsBigStart[pl];
 	//saveBuf[298] = startnextc[pl];
@@ -180,15 +180,15 @@ void saveReplayData(int32_t pl, int32_t number) {
 	saveBuf[4] = REPLAY_SIZE_1P(max);
 
 	if(number <= 40)
-		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
+		SDL_snprintf(string[0], STRING_LENGTH, "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
+		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
 	APP_SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	temp1 = pl * REPLAY_PLAYER_CHUNK;
 	for (j = 0; j < replayChunkCnt; j++) {
-		APP_FillMemory(saveBuf, (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t), 0);
+		SDL_memset(saveBuf, 0, (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t));
 		for (i = 0; i < REPLAY_PLAYER_CHUNK / 2 && j * REPLAY_PLAYER_CHUNK + (i << 1) < max; i++) {
 			saveBuf[i] =
 				(replayData[j][(i << 1) + 0 + temp1] <<  0) |
@@ -205,7 +205,7 @@ void saveReplay_VS(int32_t number) {
 	int32_t i, j, temp1, temp2, max, pl;
 	pl = 0;
 
-	APP_FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	SDL_memset(saveBuf, 0, 300 * sizeof(int32_t));
 
 	// 300... 　1P&2Pリプレイデータ
 
@@ -319,15 +319,15 @@ void saveReplay_VS(int32_t number) {
 	saveBuf[4] = REPLAY_SIZE_2P(max);
 
 	if(number <= 40)
-		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
+		SDL_snprintf(string[0], STRING_LENGTH, "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
+		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
 	APP_SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	if (replayData) {
 		for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
-			APP_FillMemory(saveBuf, SAVEBUF_2P_CHUNK * 2 * sizeof(int32_t), 0);
+			SDL_memset(saveBuf, 0, SAVEBUF_2P_CHUNK * 2 * sizeof(int32_t));
 			for (pl = 0; pl < 2; pl++) {
 				temp1 = pl * REPLAY_PLAYER_CHUNK;
 				temp2 = pl * SAVEBUF_2P_CHUNK;
@@ -353,22 +353,22 @@ void saveReplay_VS(int32_t number) {
 //  リプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplayData(int32_t pl, int32_t number) {
-	int32_t i, j, temp1, temp2, max,k,sptemp[4];
+	int32_t temp1, sptemp[4];
 
-	APP_FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	SDL_memset(saveBuf, 0, 300 * sizeof(int32_t));
 
 	if(number <= 40)
-		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
+		SDL_snprintf(string[0], STRING_LENGTH, "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
+		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
 	APP_LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
 	if(saveBuf[201] == 4)	// VSはフォーマットが一部異なる
 		return(loadReplay_VS(number));
 
-	if(saveBuf[4] > REPLAY_SIZE_1P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_1P(REPLAY_TIME_MAX);
-	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
+	if((size_t)saveBuf[4] > REPLAY_SIZE_1P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_1P(REPLAY_TIME_MAX);
+	if((size_t)saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
 	if(saveBuf[0] != 0x4F424548) return (1);
@@ -376,14 +376,12 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	if(saveBuf[2] != 0x4C504552) return (1);
 	if(saveBuf[3] != 0x31765941) return (1);
 
-	for(i = 0; i < 175; i++) {
-		for(j = 0; j < 8; j++) {
+	for(int32_t i = 0; i < 175; i++) {
+		for(int32_t j = 0; j < 8; j++) {
 			nextb[(i << 3) + j] = ((saveBuf[5 + i]) >> (j * 4)) & 15;
 		}
 	}
 
-//	max = (saveBuf[200] + 3730) / 2 + 1;
-	max = saveBuf[4] / sizeof(int16_t) + 1;
 	gameMode[pl] = saveBuf[201];
 	start[pl] = saveBuf[205];		// 開始レベルのロード #1.60c3
 
@@ -424,7 +422,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	nanameallow = saveBuf[291];
 	sonicdrop = saveBuf[292];
 	fastlrmove = saveBuf[293];
-	rots[pl] = saveBuf[294];			// 回転方式のロード #1.60c
+	rotspl[pl] = saveBuf[294];			// 回転方式のロード #1.60c
 	ori_opt[pl] = saveBuf[296];		// ロード #1.60c6
 	IsBigStart[pl] = saveBuf[297];
 	w_reverse = saveBuf[299];			// ワールド時回転方向逆転#1.60c7f8
@@ -535,7 +533,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	if(saveBuf[201] ==9){
 		if(std_opt[pl] <= 1){
 			sp[pl] = saveBuf[261];
-			for(k = 0; k <= 3; k++) {
+			for(int32_t k = 0; k <= 3; k++) {
 				sptemp[k] = (saveBuf[262] >> (k * 8)) & 0xff;
 			}
 			wait1[pl] = sptemp[0];
@@ -559,10 +557,11 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	temp1 = pl * 60 * 60 * 20;
 
 	replayChunkCnt = ((saveBuf[4] / sizeof(int32_t) - 300) * 2 / REPLAY_PLAYER_CHUNK) + 1;
-	if (!(replayData = malloc(replayChunkCnt * sizeof(int32_t*)))) {
-		abort();
+	if (!(replayData = SDL_malloc(replayChunkCnt * sizeof(int32_t*)))) {
+		APP_SetError("Failed allocating replay data");
+		APP_Exit(SDL_APP_FAILURE);
 	}
-	for (j = 0; j < replayChunkCnt; j++) {
+	for (int32_t j = 0; j < replayChunkCnt; j++) {
 		size_t chunkSize;
 		if (j < replayChunkCnt - 1) {
 			chunkSize = (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t);
@@ -576,11 +575,12 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 			chunkSize,
 			(300 + j * (REPLAY_PLAYER_CHUNK / 2)) * sizeof(int32_t)
 		);
-		if (!(replayData[j] = calloc(REPLAY_CHUNK_SIZE, 1u))) {
-			abort();
+		if (!(replayData[j] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
+			APP_SetError("Failed allocating replay data");
+			APP_Exit(SDL_APP_FAILURE);
 		}
 
-		for(i = 0; i < chunkSize / sizeof(int32_t); i++) {
+		for(size_t i = 0; i < chunkSize / sizeof(int32_t); i++) {
 			replayData[j][(i << 1) + temp1    ] =  chunkBuf[i] & 0xFFFF;
 			replayData[j][(i << 1) + temp1 + 1] = (chunkBuf[i] & 0xFFFF0000) >> 16;
 		}
@@ -598,20 +598,20 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 //  VSのリプレイデータをロード
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplay_VS(int32_t number) {
-	int32_t i, j, length, temp1, temp2, max,k,sptemp[4],pl;
+	int32_t i, j, length, temp1, max,k,sptemp[4],pl;
 	pl = 0;
 
-	APP_FillMemory(saveBuf, 300 * sizeof(int32_t), 0);
+	SDL_memset(saveBuf, 0, 300 * sizeof(int32_t));
 
 	if(number <= 40)
-		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
+		SDL_snprintf(string[0], STRING_LENGTH, "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "demo/DEMO%02d.SAV", number - 40);
+		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
 	APP_LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
 
-	if(saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
-	if(saveBuf[4] < 300 * sizeof(int32_t)) return (1);
+	if((size_t)saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
+	if((size_t)saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
 	APP_LoadFile(string[0], saveBuf, saveBuf[4]);
@@ -666,8 +666,8 @@ int32_t loadReplay_VS(int32_t number) {
 	sonicdrop = saveBuf[292];
 	fastlrmove = saveBuf[293];
 
-	rots[0] = saveBuf[294];			// 回転方式のロード #1.60c
-	rots[1] = saveBuf[295];
+	rotspl[0] = saveBuf[294];			// 回転方式のロード #1.60c
+	rotspl[1] = saveBuf[295];
 
 	IsBigStart[0] = saveBuf[297];
 	IsBigStart[1] = saveBuf[298];
@@ -690,11 +690,11 @@ int32_t loadReplay_VS(int32_t number) {
 	max_hnext[0] = saveBuf[237];		// NEXT最大表示数
 	max_hnext[1] = saveBuf[238];
 
-	 first_seed[0] = saveBuf[235];		// 乱数シード　超重要
-	 randseed[0] = first_seed[0];
+	first_seed[0] = saveBuf[235];		// 乱数シード　超重要
+	randseed[0] = first_seed[0];
 
-	 first_seed[1] = saveBuf[236];
-	 randseed[1] = first_seed[1];
+	first_seed[1] = saveBuf[236];
+	randseed[1] = first_seed[1];
 
 	nanamedown = saveBuf[241];	//斜め入力での固定を有効にするか #C7T9.6EX
 	item_num = saveBuf[244];
@@ -772,24 +772,25 @@ int32_t loadReplay_VS(int32_t number) {
 	}
 
 	#else
-	
+
 	length = (saveBuf[4] / sizeof(int32_t) - 300);
 	max = ((length % SAVEBUF_2P_CHUNK) + (length / (SAVEBUF_2P_CHUNK * 2)) * SAVEBUF_2P_CHUNK) * 2;
 
 	replayChunkCnt = ((max - 1) / REPLAY_PLAYER_CHUNK) + 1;
-	if (!(replayData = malloc(replayChunkCnt * sizeof(int32_t*)))) {
-		abort();
+	if (!(replayData = SDL_malloc(replayChunkCnt * sizeof(int32_t*)))) {
+		APP_SetError("Failed allocating replay data");
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	for (i = 0; i < replayChunkCnt; i++) {
-		if (!(replayData[i] = calloc(REPLAY_CHUNK_SIZE, 1u))) {
-			abort();
+		if (!(replayData[i] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
+			APP_SetError("Failed allocating replay data");
+			APP_Exit(SDL_APP_FAILURE);
 		}
 	}
 
 	for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
 		for(pl = 0; pl <= 1; pl++){
 			temp1 = pl * REPLAY_PLAYER_CHUNK;
-			temp2 = pl * SAVEBUF_2P_CHUNK;
 
 			int32_t replayIndex = j * SAVEBUF_2P_CHUNK * 2;
 
@@ -804,7 +805,7 @@ int32_t loadReplay_VS(int32_t number) {
 			setNextBlockColors(pl, 1);	// #1.60c7n2
 		}
 	}
-	
+
 	#endif
 	SavedSeed[0]= saveBuf[269]; // harmless if it's zero anyway
 	SavedSeed[1]= saveBuf[270]; // harmless if it's zero anyway
@@ -816,9 +817,9 @@ int32_t loadReplay_VS(int32_t number) {
 void freeReplayData() {
 	if (replayData) {
 		for (int32_t i = 0u; i < replayChunkCnt; i++) {
-			free(replayData[i]);
+			SDL_free(replayData[i]);
 		}
-		free(replayData);
+		SDL_free(replayData);
 		replayData = NULL;
 		replayChunkCnt = 0;
 	}
@@ -852,8 +853,7 @@ void ReplaySelectProc(void) {
 		status[0] = 1;					// ブロックシャッター実行
 		statusc[0] = 0;					// ステータスカウンタを0に
 		statusc[1] = 3;					// シャッター後はステータスNo.3
-		if(examination[0])
-		statusc[1] = 30;
+		if(examination[0]) statusc[1] = 30;
 		//next[0] = nextb[nextc[0]];		// #1.60c7
 		if(gameMode[0] == 6){
 			if((start_stage[0] >= 27) && (start_stage[0] <= 44))
@@ -886,7 +886,7 @@ void ReplaySelectProc(void) {
 			if(backno >= bg_max) backno = bg_max;
 			bgmlv = mission_bgm[c_mission];
 			if(repversw < 54) missionSetStatus();
-			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(18);
+			if(((mission_file == 6) || (mission_file == 18) || (mission_file == 24)) && (start_mission == 0)) PlaySE(WAVE_SE_CHEER);
 		}
 		if(gameMode[0] == 4){
 			timeOn[1] = 0;
@@ -901,7 +901,7 @@ void ReplaySelectProc(void) {
 			domirror = 0;
 		}
 		if(((gameMode[0] == 3) && (!devil_minus[0])) || ((gameMode[0] == 7) && (anothermode[0] == 2))){
-			PlaySE(18);//歓声
+			PlaySE(WAVE_SE_CHEER);//歓声
 			gflash[0]=120;
 		}
 		mainLoopState = MAIN_GAME_EXECUTE;
@@ -913,7 +913,7 @@ void ReplaySelectProc(void) {
 }
 
 //BGMを決定
-int32_t ReplayBgmModeDecide(int32_t pl,int32_t mode,int32_t nv,int32_t dm,int32_t eg){
+int32_t ReplayBgmModeDecide(int32_t mode,int32_t nv,int32_t dm,int32_t eg){
 	if(mode==0){
 		if(!nv){//HANABI
 			return 0;
@@ -965,28 +965,28 @@ void ReplaySelectInitial(void) {
 			if(saveBuf[201] == 6) {
 				// TOMOYO
 				if(saveBuf[216] <= 26)
-					sprintf(string[1], "%3d>", saveBuf[220]);	// クリア率
+					SDL_snprintf(string[1], STRING_LENGTH, "%3d>", saveBuf[220]);	// クリア率
 				else
-					sprintf(string[1], "    ");
-				sprintf(string[10 + i], "%2d %7d  %s        %s", i + 1, saveBuf[202], string[1], string[0]);
+					SDL_snprintf(string[1], STRING_LENGTH, "    ");
+				SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d %7d  %s        %s", i + 1, saveBuf[202], string[1], string[0]);
 			} else if(saveBuf[201] == 7) {
 				// ACE
-				sprintf(string[10 + i], "%2d          %4d  %4d  %s", i + 1, saveBuf[203], saveBuf[204], string[0]);
+				SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d          %4d  %4d  %s", i + 1, saveBuf[203], saveBuf[204], string[0]);
 			} else if(saveBuf[201] == 9){
 				if(saveBuf[260] == 0)
-					sprintf(string[10 + i], "%2d                      %s", i + 1, string[0]);
+					SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d                      %s", i + 1, string[0]);
 				else if(saveBuf[260] == 1)
-					sprintf(string[10 + i], "%2d                %4d  ", i + 1, saveBuf[204]);
+					SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d                %4d  ", i + 1, saveBuf[204]);
 				else
-					sprintf(string[10 + i], "%2d %7d  %4d  %4d  %s", i + 1, saveBuf[202], saveBuf[203], saveBuf[204], string[0]);
+					SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d %7d  %4d  %4d  %s", i + 1, saveBuf[202], saveBuf[203], saveBuf[204], string[0]);
 			} else if((saveBuf[201] != 8) && (saveBuf[201] != 4)){
 				// 通常
-				sprintf(string[10 + i], "%2d %7d  %4d  %4d  %s", i + 1, saveBuf[202], saveBuf[203], saveBuf[204], string[0]);
+				SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d %7d  %4d  %4d  %s", i + 1, saveBuf[202], saveBuf[203], saveBuf[204], string[0]);
 			} else
-				sprintf(string[10 + i],"%2d                      %s ", i + 1,string[0]);
+				SDL_snprintf(string[10 + i], STRING_LENGTH,"%2d                      %s ", i + 1,string[0]);
 		} else {
 			enable[i] = -1;
-			APP_StrCpy(string[10 + i], "");
+			SDL_strlcpy(string[10 + i], "", STRING_LENGTH);
 		}
 		freeReplayData();
 	}
@@ -1000,22 +1000,22 @@ void ReplaySelectInitial(void) {
 }
 
 void ReplaySelect(void) {
-	int32_t		i,start,end;
+	int32_t		i,startNo,endNo;
 
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
 
 	// Bで戻る
@@ -1034,11 +1034,11 @@ void ReplaySelect(void) {
 		return;
 	}
 
-	ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (count % 320), 232,  0, 20, count % 320, 8);
 
-	ExBltRect(77, count % 320, 0,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
+	ExBltRect(PLANE_LINE, count % 320, 0,  0, 28, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 
 	printFont(9, 2, "- SELECT REPLAY DATA -", 4);
 	printMenuButton(12, 3, APP_BUTTON_C, -1);
@@ -1048,59 +1048,61 @@ void ReplaySelect(void) {
 	padRepeat2(0);
 
 	// ↑
-	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-	if(getPressState(0, APP_BUTTON_UP)) {
-		PlaySE(5);
-		do {
-			csr--;
-			if(csr < 0) csr = 39;
-		} while(enable[csr] == -1);
+	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) ) {
+		if(getPressState(0, APP_BUTTON_UP)) {
+			PlaySE(WAVE_SE_MOVE);
+			do {
+				csr--;
+				if(csr < 0) csr = 39;
+			} while(enable[csr] == -1);
+		}
 	}
 
 	// ↓
-	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) )
-	if(getPressState(0, APP_BUTTON_DOWN)) {
-		PlaySE(5);
-		do {
-			csr++;
-			if(csr > 39) csr = 0;
-		} while(enable[csr] == -1);
+	if( (mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)) ) {
+		if(getPressState(0, APP_BUTTON_DOWN)) {
+			PlaySE(WAVE_SE_MOVE);
+			do {
+				csr++;
+				if(csr > 39) csr = 0;
+			} while(enable[csr] == -1);
+		}
 	}
 
 	// Aで開始
 	if(getPushState(0, APP_BUTTON_A)) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		flag = csr + 1;
 	}
 
 //	printFont(1, 5, "FILE   SCORE  LV LINES TIME     MODE", 2);
-	ExBltRect(3,  48, 40, 154, 112, 26, 7);//SCOREの文字
-	ExBltRect(3,  95, 40, 180, 112, 26, 7);
-	ExBltRect(3, 134, 40, 154, 119, 26, 7);
-	ExBltRect(3, 180, 40, 180, 119, 26, 7);
-	ExBltRect(3, 232, 40, 206, 119, 22, 7);//Mode
+	ExBltRect(PLANE_HEBOSPR,  48, 40, 154, 112, 26, 7);//SCOREの文字
+	ExBltRect(PLANE_HEBOSPR,  95, 40, 180, 112, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 134, 40, 154, 119, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 180, 40, 180, 119, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 232, 40, 206, 119, 22, 7);//Mode
 
-	for(i = 0; i < 40; i++) ExBltRect(3, 8 * i, (csr - (20 * (csr >= 20))) * 9 + 53, 20, 34, 8, 4);
+	for(i = 0; i < 40; i++) ExBltRect(PLANE_HEBOSPR, 8 * i, (csr - (20 * (csr >= 20))) * 9 + 53, 20, 34, 8, 4);
 
 	if(csr >= 20) {
 		printFont(7, 29, "PAGE 2/2 (NO.21 - NO.40)", 7);
-		start = 20;
-		end = 40;
+		startNo = 20;
+		endNo = 40;
 	} else {
 		printFont(7, 29, "PAGE 1/2 (NO.01 - NO.20)", 7);
-		start = 0;
-		end = 20;
+		startNo = 0;
+		endNo = 20;
 	}
-	for(i = start; i < end; i++) {
+	for(i = startNo; i < endNo; i++) {
 		printSMALLFont(25, 48 + 9 * (i - 20 * (i >= 20)), string[10 + i], 0); // 番号表示に従い変更 #1.60c7i5
 		if(enable[i] > -1){
-			ExBltRect(86, 232, 48 + 9 * (i - 20 * (i >= 20)), 72 * enable[i + 40], enable[i] * 9, 72, 9);
+			ExBltRect(PLANE_GAMEMODEFONT, 232, 48 + 9 * (i - 20 * (i >= 20)), 72 * enable[i + 40], enable[i] * 9, 72, 9);
 		}
 	}
 
 	// Cで詳細
 	if(getPushState(0, APP_BUTTON_C)) {
-		PlaySE(10);
+		PlaySE(WAVE_SE_KETTEI);
 		mainLoopState = MAIN_REPLAY_DETAIL;
 		init = true;
 	}
@@ -1119,28 +1121,28 @@ void ReplayDetail() {
 	if(background == 0) {
 		for(int32_t i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(77, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 232,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (count % 320), 232,  0, 20, count % 320, 8);
 
-	ExBltRect(77, count % 320, 0,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(77, 0, 0, 320 - (count % 320), 28, count % 320, 8);
+	ExBltRect(PLANE_LINE, count % 320, 0,  0, 28, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 	// 詳細を表示
 	printFont(1, 1,  "REPLAY DETAIL", 5);
 
 	/* 基本情報 */
 	printFont(1, 3,  "NUMBER      :", 0);
-	sprintf(string[0],"%d",csr + 1);
+	SDL_snprintf(string[0], STRING_LENGTH,"%d",csr + 1);
 	printFont(15, 3, string[0], 0);
 
 	printFont(1, 4,  "GAME MODE   :", 0);
@@ -1184,15 +1186,15 @@ void ReplayDetail() {
 
 	if(gameMode[0] != 4){
 		printFont(1, 5,  "ROTATE RULE :", 0);
-		if(rots[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
-		else if(rots[0] == 1) printFont(15, 5, "TI-ARS", fontc[1]);
-		else if(rots[0] == 2) printFont(15, 5, "TI-WORLD", fontc[2]);
-		else if(rots[0] == 3) printFont(15, 5, "ACE-SRS", fontc[3]);
-		else if(rots[0] == 4) printFont(15, 5, "ACE-ARS", fontc[4]);
-		else if(rots[0] == 5) printFont(15, 5, "ACE-ARS2", fontc[5]);
-		else if(rots[0] == 6) printFont(15, 5, "DS-WORLD", fontc[6]);
-		else if(rots[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
-		else if(rots[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
+		if(rotspl[0] == 0) printFont(15, 5, "HEBORIS", fontc[0]);
+		else if(rotspl[0] == 1) printFont(15, 5, "TI-ARS", fontc[1]);
+		else if(rotspl[0] == 2) printFont(15, 5, "TI-WORLD", fontc[2]);
+		else if(rotspl[0] == 3) printFont(15, 5, "ACE-SRS", fontc[3]);
+		else if(rotspl[0] == 4) printFont(15, 5, "ACE-ARS", fontc[4]);
+		else if(rotspl[0] == 5) printFont(15, 5, "ACE-ARS2", fontc[5]);
+		else if(rotspl[0] == 6) printFont(15, 5, "DS-WORLD", fontc[6]);
+		else if(rotspl[0] == 7) printFont(15, 5, "SRS-X", fontc[7]);
+		else if(rotspl[0] == 8) printFont(15, 5, "D.R.S", fontc[8]);
 	}
 
 	/* 設定 */
@@ -1234,15 +1236,15 @@ void ReplayDetail() {
 	if(gameMode[0] == 6) {
 		// TOMOYO
 		printFont(1, 15, "STAGE       :", 0);
-		sprintf(string[0],"%d",saveBuf[202]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",saveBuf[202]);
 		printFont(15, 15, string[0], 0);
 
 		printFont(1, 16, "START STAGE :", 0);
-		sprintf(string[0],"%d",start_stage[0] + 1);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",start_stage[0] + 1);
 		printFont(15, 16, string[0], 0);
 
 		printFont(1, 17, "START NEXTC :", 0);
-		sprintf(string[0],"%d",start_nextc[0]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",start_nextc[0]);
 		printFont(15, 17, string[0], 0);
 
 		printFont(1, 18, "BORDER      :", 0);
@@ -1255,11 +1257,11 @@ void ReplayDetail() {
 		else printFont(15, 19, "e", 0);
 
 		printFont(1, 20, "CLEAR STAGE :", 0);
-		sprintf(string[0],"%d",saveBuf[219]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",saveBuf[219]);
 		printFont(15, 20, string[0], 0);
 		if(start_stage[0] <= 26){
 			printFont(1, 21, "CLEAR PER.  :", 0);
-			sprintf(string[0],"%d%%",saveBuf[220]);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d%%",saveBuf[220]);
 			printFont(15, 21, string[0], 0);
 		}
 
@@ -1304,29 +1306,29 @@ void ReplayDetail() {
 		else printFont(15, 18, "NORMAL", 0);
 
 		printFont(1, 19, "GOAL TYPE   :", 0);
-		if(vs_goal == 0) sprintf(string[0], "SURVIVAL");
-		else if(wintype == 0) sprintf(string[0], "LV %d", vs_goal);
-		else if(wintype == 1) sprintf(string[0], "%d LINES", vs_goal / 10);
-		else sprintf(string[0], "SURVIVAL");
+		if(vs_goal == 0) SDL_snprintf(string[0], STRING_LENGTH, "SURVIVAL");
+		else if(wintype == 0) SDL_snprintf(string[0], STRING_LENGTH, "LV %d", vs_goal);
+		else if(wintype == 1) SDL_snprintf(string[0], STRING_LENGTH, "%d LINES", vs_goal / 10);
+		else SDL_snprintf(string[0], STRING_LENGTH, "SURVIVAL");
 		printFont(15, 19, string[0], 0);
 
 		if(!noitem){
 			printFont(1, 21, "ITEMS", 0);
 
 			printFont(3, 22, "1P :", 0);
-			if(use_item[0] == 0) sprintf(string[0], "ALL");
-			else if(use_item[0] == item_num + 1) sprintf(string[0], "FEW");
-			else if(use_item[0] == item_num + 2) sprintf(string[0], "DS");
-			else if(use_item[0] == item_num + 3) sprintf(string[0], "TGM");
-			else sprintf(string[0], "%d", use_item[0]);
+			if(use_item[0] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ALL");
+			else if(use_item[0] == item_num + 1) SDL_snprintf(string[0], STRING_LENGTH, "FEW");
+			else if(use_item[0] == item_num + 2) SDL_snprintf(string[0], STRING_LENGTH, "DS");
+			else if(use_item[0] == item_num + 3) SDL_snprintf(string[0], STRING_LENGTH, "TGM");
+			else SDL_snprintf(string[0], STRING_LENGTH, "%d", use_item[0]);
 			printFont(8, 22, string[0], 0);
 
 			printFont(3, 23, "2P :", 0);
-			if(use_item[1] == 0) sprintf(string[0], "ALL");
-			else if(use_item[1] == item_num + 1) sprintf(string[0], "FEW");
-			else if(use_item[1] == item_num + 2) sprintf(string[0], "DS");
-			else if(use_item[1] == item_num + 3) sprintf(string[0], "TGM");
-			else sprintf(string[0], "%d", use_item[1]);
+			if(use_item[1] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ALL");
+			else if(use_item[1] == item_num + 1) SDL_snprintf(string[0], STRING_LENGTH, "FEW");
+			else if(use_item[1] == item_num + 2) SDL_snprintf(string[0], STRING_LENGTH, "DS");
+			else if(use_item[1] == item_num + 3) SDL_snprintf(string[0], STRING_LENGTH, "TGM");
+			else SDL_snprintf(string[0], STRING_LENGTH, "%d", use_item[1]);
 			printFont(8, 23, string[0], 0);
 		}
 
@@ -1334,16 +1336,16 @@ void ReplayDetail() {
 		// NORMAL
 		if(gameMode[0] != 7) {
 			printFont(1, 15, "SCORE       :", 0);
-			sprintf(string[0],"%d",saveBuf[202]);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d",saveBuf[202]);
 			printFont(15, 15, string[0], 0);
 		}
 
 		printFont(1, 16, "LEVEL       :", 0);
-		sprintf(string[0],"%d",saveBuf[203]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",saveBuf[203]);
 		printFont(15, 16, string[0], 0);
 
 		printFont(1, 17, "LINES       :", 0);
-		sprintf(string[0],"%d",saveBuf[204]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",saveBuf[204]);
 		printFont(15, 17, string[0], 0);
 
 		printFont(1, 18, "BIG         :", 0);
@@ -1351,7 +1353,7 @@ void ReplayDetail() {
 		else printFont(15, 18, "e", 0);
 
 		printFont(1, 19, "START LEVEL :", 0);
-		sprintf(string[0],"%d",start[0]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",start[0]);
 		printFont(15, 19, string[0], 0);
 
 		printFont(1, 20, "RISE ON/OFF :", 0);
@@ -1360,66 +1362,66 @@ void ReplayDetail() {
 
 		printFont(1, 21, "RISE START  :", 0);
 		if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
-			sprintf(string[0],"500");
-		else sprintf(string[0],"%d",level_shirase_start);
+			SDL_snprintf(string[0], STRING_LENGTH,"500");
+		else SDL_snprintf(string[0], STRING_LENGTH,"%d",level_shirase_start);
 		printFont(15, 21, string[0], 0);
 
 		printFont(1, 22, "RISE LINES  :", 0);
-		sprintf(string[0],"%d",raise_shirase_lines);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",raise_shirase_lines);
 		printFont(15, 22, string[0], 0);
 
 		printFont(1, 23, "RISE INTER  :", 0);
 		if((devil_randrise) && (gameMode[0] == 3) && (!devil_minus[0]))
-			sprintf(string[0],"RANDOM BY SECTION");
+			SDL_snprintf(string[0], STRING_LENGTH,"RANDOM BY SECTION");
 		else
-			sprintf(string[0],"%d",raise_shirase_interval);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d",raise_shirase_interval);
 		printFont(15, 23, string[0], 0);
 	} else if(gameMode[0] == 8){	// MISSION
 		printFont(1, 15, "FILE NAME.  :", 0);
 		if(mission_file == 0)
-			sprintf(string[0], "BIG ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "BIG ROAD");
 		else if(mission_file == 1)
-			sprintf(string[0], "TRICKY ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "TRICKY ROAD");
 		else if(mission_file == 2)
-			sprintf(string[0], "GRAND ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "GRAND ROAD");
 		else if(mission_file == 3)
-			sprintf(string[0], "STAR ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "STAR ROAD");
 		else if(mission_file == 4)
-			sprintf(string[0], "ANOTHER ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "ANOTHER ROAD");
 		else if(mission_file == 5)
-			sprintf(string[0], "DS ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "DS ROAD");
 		else if(mission_file == 6)
-			sprintf(string[0], "DEVIL ROAD");
+			SDL_snprintf(string[0], STRING_LENGTH, "DEVIL ROAD");
 		else if(mission_file <= 16)
-			sprintf(string[0], "TRIAL S%d", mission_file - 6);
+			SDL_snprintf(string[0], STRING_LENGTH, "TRIAL S%d", mission_file - 6);
 		else if(mission_file == 17)
-			sprintf(string[0], "TRIAL HM");
+			SDL_snprintf(string[0], STRING_LENGTH, "TRIAL HM");
 		else if(mission_file == 18)
-			sprintf(string[0], "TRIAL GOD");
+			SDL_snprintf(string[0], STRING_LENGTH, "TRIAL GOD");
 		else if(mission_file == 19)
-			sprintf(string[0], "HEBO AMATEUR");
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO AMATEUR");
 		else if(mission_file == 20)
-			sprintf(string[0], "HEBO PRO");
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO PRO");
 		else if(mission_file == 21)
-			sprintf(string[0], "HEBO BRONZE");
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO BRONZE");
 		else if(mission_file == 22)
-			sprintf(string[0], "HEBO SILVER ");
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO SILVER ");
 		else if(mission_file == 23)
-			sprintf(string[0], "HEBO GOLD");
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO GOLD");
 		else if(mission_file == 24)
-			sprintf(string[0], "HEBO PLATINUM");
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO PLATINUM");
 		else
-			sprintf(string[0], "NO.%02d", mission_file);
+			SDL_snprintf(string[0], STRING_LENGTH, "NO.%02d", mission_file);
 		printFont(15, 15, string[0], 0);
 
 		printFont(1, 16, "START MISSION:", 0);
-		sprintf(string[0],"%d",start_mission);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",start_mission);
 		printFont(15, 16, string[0], 0);
 	}else if((gameMode[0] == 9) && (saveBuf[260] < 2)){	// STANDARD
 
 
 		printFont(1, 16, "SPEED     :", 0);
-		sprintf(string[0],"%d",saveBuf[261]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%d",saveBuf[261]);
 		printFont(15, 16, string[0], 0);
 
 		printFont(1, 17, "ARE       :", 0);
@@ -1430,10 +1432,10 @@ void ReplayDetail() {
 
 		printFont(1, 20, "DAS       :", 0);
 		for(int32_t k = 0; k <= 3; k++) {
-			sprintf(string[0],"%4d",(saveBuf[262] >> (k * 8)) & 0xff);
+			SDL_snprintf(string[0], STRING_LENGTH,"%4d",(saveBuf[262] >> (k * 8)) & 0xff);
 			printFont(15, 17+k, string[0], 0);
 		}
-		sprintf(string[0], "BGM       :%2d", saveBuf[266]);
+		SDL_snprintf(string[0], STRING_LENGTH, "BGM       :%2d", saveBuf[266]);
 		printFont(1, 22, string[0], 0);
 	}
 	/* タイム類 */
@@ -1442,12 +1444,12 @@ void ReplayDetail() {
 	printFont(15, 25, string[0], 0);
 
 	printFont(1, 26, "LENGTH      :", 0);
-	sprintf(string[0], "%zu", saveBuf[4] / sizeof(int16_t) + 1);
+	SDL_snprintf(string[0], STRING_LENGTH, "%zu", saveBuf[4] / sizeof(int16_t) + 1);
 	printFont(15, 26, string[0], 0);
 
 	/* バージョン */
 	printFont(1, 28, "VERSION     :", 0);
-	sprintf(string[0],"%d",repversw);
+	SDL_snprintf(string[0], STRING_LENGTH,"%d",repversw);
 	printFont(15, 28, string[0], 0);
 
 	// 段位
@@ -1474,7 +1476,7 @@ void ReplayDetail() {
 		else if(((death_plus[0]) || (hebo_plus[0])) && (max_hnext[0] >= 1))
 			printFont(33, 10, "1", 0);
 		else{
-			sprintf(string[0],"%d",max_hnext[0]);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d",max_hnext[0]);
 			printFont(33, 10, string[0], 0);
 		}
 	}
@@ -1482,7 +1484,7 @@ void ReplayDetail() {
 	printFont(20, 11, "FRAME RATE :", 0);
 	if(repversw < 25) printFont(33, 11, "N/A", 0);
 	else{
-		sprintf(string[0],"%2dFPS",saveBuf[239]);
+		SDL_snprintf(string[0], STRING_LENGTH,"%2dFPS",saveBuf[239]);
 		printFont(33, 11, string[0], 0);
 	}
 	// IRS
@@ -1506,7 +1508,7 @@ void ReplayDetail() {
 	else printFont(33, 14, "19/20", 0);
 
 	if(flag < 0 || getPushState(0, APP_BUTTON_A) || getPushState(0, APP_BUTTON_B)) {
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		freeReplayData();
 		mainLoopState = MAIN_REPLAY_SELECT;
 		init = true;
@@ -1517,14 +1519,14 @@ void ReplayDetail() {
 //  リプレイデータをロード（保存メニュー用）
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 int32_t loadReplayData2(int32_t pl, int32_t number) {
-	int32_t i, j, temp1, temp2, max,k,sptemp[4], tmpBuf[300];
+	int32_t tmpBuf[300];
 
-	APP_FillMemory(tmpBuf, 300 * 4, 0);
+	SDL_memset(tmpBuf, 0, 300 * 4);
 
 	if(number <= 40)
-		sprintf(string[0], "replay/REPLAY%02d.SAV", number);
+		SDL_snprintf(string[0], STRING_LENGTH, "replay/REPLAY%02d.SAV", number);
 	else
-		sprintf(string[0], "demo/DEMO%02d.SAV", number - 20);
+		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 20);
 
 	APP_LoadFile(string[0], tmpBuf, 1200);
 

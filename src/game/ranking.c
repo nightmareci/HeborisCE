@@ -13,7 +13,7 @@ void RankingInit(void) {
 			rkbl[i * 5 + j] = 25 - 5* j;
 			rklv[i * 5 + j] = 50 - 10 * j;
 			rktime[i * 5 + j] = 10800 - 1800 * j;
-			APP_StrCpy(string[30 + 5 * i + j], "NOP");
+			SDL_strlcpy(string[30 + 5 * i + j], "NOP", STRING_LENGTH);
 			rkfl[i * 5 + j] = 0;
 		}
 	}
@@ -42,7 +42,7 @@ void RankingConvert(void) {
 			rklv[i * 10 + j + 5] = 50 - 10 * j;
 			rktime[i * 10 + j + 5] = 10800 - 1800 * j;
 			rkfl[i * 10 + j + 5] = 0;
-			APP_StrCpy(string[30 + 10 * i + j + 5], "NOP");
+			SDL_strlcpy(string[30 + 10 * i + j + 5], "NOP", STRING_LENGTH);
 		}
 	}
 }
@@ -60,8 +60,7 @@ int32_t RankingCheck(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rtime, int
 	if(rtt) {
 		for(i = 0; i < 5; i++) {
 			// 完全クリアフラグが立っていたら上位に来る #1.60c7k3
-			if( (end >= rkfl[j+ i]) && ((rlv > rklv[j+ i]) ||
-				 (rlv == rklv[j+ i])&&(rtime < rktime[j+ i])) ) {
+			if( (end >= rkfl[j+ i]) && (((rlv > rklv[j+ i]) || (rlv == rklv[j+ i]))&&(rtime < rktime[j+ i])) ) {
 				rank = i;
 				break;
 			}
@@ -91,7 +90,7 @@ void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t
 		rkbl[temp] = rkbl[temp - 1];
 		rklv[temp] = rklv[temp - 1];
 		rktime[temp] = rktime[temp - 1];
-		APP_StrCpy(string[30 + temp], string[30 + temp - 1]);
+		SDL_strlcpy(string[30 + temp], string[30 + temp - 1], STRING_LENGTH);
 		rkfl[temp] = rkfl[temp - 1];
 	}
 
@@ -100,7 +99,7 @@ void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t
 	rkbl[temp] = rli;
 	rklv[temp] = rlv;
 	rktime[temp] = rtime;
-	APP_StrCpy(string[30 + temp], rname);
+	SDL_strlcpy(string[30 + temp], rname, STRING_LENGTH);
 	rkfl[temp] = end;
 }
 
@@ -127,7 +126,7 @@ void RankingProc_1() {
 	}
 
 	if (!flag) flag = RankingView();
-	
+
 	if (flag) {
 		mainLoopState = lastRankingMainLoopState;
 		resumeAfterRanking = 1;
@@ -181,14 +180,14 @@ void RankingCreate(int32_t cat, int32_t mode) {
 	int32_t	i, j;
 
 	for(i = 0; i < 5; i++) {
-		APP_StrCpy(string[3], "TH");
-		if(i == 0) APP_StrCpy(string[3], "ST");
-		if(i == 1) APP_StrCpy(string[3], "ND");
-		if(i == 2) APP_StrCpy(string[3], "RD");
+		SDL_strlcpy(string[3], "TH", STRING_LENGTH);
+		if(i == 0) SDL_strlcpy(string[3], "ST", STRING_LENGTH);
+		if(i == 1) SDL_strlcpy(string[3], "ND", STRING_LENGTH);
+		if(i == 2) SDL_strlcpy(string[3], "RD", STRING_LENGTH);
 
 		j = cat* 10 +mode* 5 + i;
 		getTime(rktime[j]);
-		sprintf(string[10 + i], "%2d%s %7d %3d %4d  %s  %s",
+		SDL_snprintf(string[10 + i], STRING_LENGTH, "%2d%s %7d %3d %4d  %s  %s",
 			i + 1, string[3], rksc[j], rklv[j], rkbl[j], string[0], string[30 + j]);
 	}
 }
@@ -201,14 +200,14 @@ int32_t RankingView(void) {
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (category >= 2) + (category == 3), 96 * i - (count & 63) /2, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4 + (category >= 2) + (category == 3), 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (category >= 2) + (category == 3), 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
 
 	if(category == 0)
@@ -231,16 +230,16 @@ int32_t RankingView(void) {
 	}
 
 //	printFont(2, 6, "RANK   SCORE  LV LINES TIME     NAME", 2);
-	ExBltRect(3, 64, 56, 206, 112, 22, 7);
+	ExBltRect(PLANE_HEBOSPR, 64, 56, 206, 112, 22, 7);
 	if(rankingmode) {
-		ExBltRect(3, 240, 56, 154, 112, 26, 7);
-		ExBltRect(3, 140, 56, 180, 119, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 240, 56, 154, 112, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 140, 56, 180, 119, 26, 7);
 	} else {
-		ExBltRect(3, 140, 56, 154, 112, 26, 7);
-		ExBltRect(3, 240, 56, 180, 119, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 140, 56, 154, 112, 26, 7);
+		ExBltRect(PLANE_HEBOSPR, 240, 56, 180, 119, 26, 7);
 	}
-	ExBltRect(3, 216, 48, 180, 112, 26, 7);
-	ExBltRect(3, 257, 48, 154, 119, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 216, 48, 180, 112, 26, 7);
+	ExBltRect(PLANE_HEBOSPR, 257, 48, 154, 119, 26, 7);
 
 	for(i = 0; i < 5; i++) {
 		xxx = 40 - count + 4 * i;
@@ -266,21 +265,21 @@ int32_t RankingView(void) {
 		}
 
 //		printFont(xxx, 8 + 2 * i, string[10 + i], col);
-		sprintf(string[0], "%d", i + 1);
+		SDL_snprintf(string[0], STRING_LENGTH, "%d", i + 1);
 		printBIGFont((xxx +3) * 8, (4 * i + 9) * 8, string[0], col);
 		printFont(xxx + 6, 4 * i + 10, string[30 + category * 10 + rankingmode* 5 + i], col);
 		if(rankingmode) {
-			sprintf(string[0], "%7d", rksc[category * 10 + rankingmode * 5 + i]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%7d", rksc[category * 10 + rankingmode * 5 + i]);
 			printFont(xxx + 25, 4 * i + 10, string[0], col);
 			getTime(rktime[category * 10 + rankingmode * 5 + i]);
 			printBIGFont((xxx + 11) * 8, (4 * i + 9) * 8, string[0], col);
 		} else {
-			sprintf(string[0], "%7d", rksc[category * 10 + rankingmode * 5 + i]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%7d", rksc[category * 10 + rankingmode * 5 + i]);
 			printBIGFont((xxx + 11) * 8, (4 * i + 9) * 8, string[0], col);
 			getTime(rktime[category * 10 + rankingmode * 5 + i]);
 			printFont(xxx + 25, 4 * i + 10, string[0], col);
 		}
-		sprintf(string[0], "%5d/%3d", rklv[category * 10 + rankingmode * 5 + i], rkbl[category * 10 + rankingmode * 5 + i]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%5d/%3d", rklv[category * 10 + rankingmode * 5 + i], rkbl[category * 10 + rankingmode * 5 + i]);
 		printFont(xxx + 24, 4 * i + 9, string[0], col);
 	}
 
@@ -294,7 +293,7 @@ int32_t RankingView(void) {
 int32_t RankingSave(void) {
 	int32_t i, temp;
 
-	APP_FillMemory(saveBuf, 50000 * 4, 0);
+	SDL_memset(saveBuf, 0, 50000 * 4);
 
 	// ファイルフォーマット (4byte単位)
 	//   0〜    3 ヘッダ
@@ -328,7 +327,7 @@ int32_t RankingSave(void) {
 int32_t RankingLoad(void) {
 	int32_t i, temp;
 
-	APP_FillMemory(saveBuf, 50000 * 4, 0);
+	SDL_memset(saveBuf, 0, 50000 * 4);
 
 	APP_LoadFile("config/data/RANKING.SAV", saveBuf, 16);
 

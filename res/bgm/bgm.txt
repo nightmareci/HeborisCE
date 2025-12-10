@@ -1,37 +1,44 @@
 bgm.txt - background music
 --------------------------
 
-The background music plays at the following places. wav files are not strictly
-required. The available formats to use are: 
+This directory stores all the BGMs used in the game. If a BGM's file(s) are
+missing, then that BGM will not be played. The supported formats are:
 
-	.mid, .wav, .ogg, .mp3, .flac, .opus, .mod, .it, .xm, .s3m
+	.wav, .ogg, .mp3
 
-Be aware that all the music must then be of the same format, and the format used
-should be specified in the in-game setting menu, under the 'BGM' option.
+Any mix of formats can be used, and the formats are tried in the order listed
+above.
+
+Looping BGMs support a "leadin" feature, where a leadin track is played first,
+then the main part is looped without the leadin. A separate audio file is used
+for the leadin, with the name of the looping main part with "_leadin" appended,
+e.g. use both bgm_leadin.ogg and bgm.ogg for SIMPLE BGM. The leadin feature is
+not supported for tracks that are not looping.
 
 The following tracks are used in-game.
 
 When BGM TYPE is SIMPLE
-bgm.wav			: Only track used
+bgm			: Only track used (looping)
 
 When BGM TYPE is MULTITRACK
-bgm01.wav 		: MASTER mode Lv0-499
-bgm02.wav 		: MASTER mode Lv500-699
-bgm03.wav 		: MASTER mode Lv700... And DEVIL mode Lv0-499
-bgm04.wav 		: DEVIL mode Lv500-699
-bgm05.wav 		: DEVIL mode Lv700-999
-bgm06.wav 		: DEVIL mode Lv1000...
-ending.wav		: staff roll in MASTER,20G and DEVIL mode
-ending_b.wav		: staff roll in BEGINNER mode
-tomoyo.wav		: TOMOYO mode normal stage
-tomoyo_ex.wav		: TOMOYO mode EX-stage
-vsmode.wav		: VERSUS mode
-title.wav		: title
-select.wav		: mode select
-nameentry.wav		: name entry and results
-tomoyo_eh.wav		: TOMOYO mode E-HEART stage
-tomoyo_eh_final.wav	: TOMOYO mode E-HEART final stage
-fever.wav		: FEVER!!!
-mission_ex01.wav	: MISSION mode No.1
-mission_ex02.wav	: MISSION mode No.2
-mission_ex03.wav	: MISSION mode No.3
+
+bgm01 		: MASTER mode Lv0-499 (looping)
+bgm02 		: MASTER mode Lv500-699 (looping)
+bgm03 		: MASTER mode Lv700... And DEVIL mode Lv0-499 (looping)
+bgm04 		: DEVIL mode Lv500-699 (looping)
+bgm05 		: DEVIL mode Lv700-999 (looping)
+bgm06 		: DEVIL mode Lv1000... (looping)
+ending		: staff roll in MASTER,20G and DEVIL mode (not looping)
+ending_b	: staff roll in BEGINNER mode (not looping)
+tomoyo		: TOMOYO mode normal stage (looping)
+tomoyo_ex	: TOMOYO mode EX-stage (looping)
+vsmode		: VERSUS mode (looping)
+title		: title (looping)
+select		: mode select (looping)
+nameentry	: name entry and results (looping)
+tomoyo_eh	: TOMOYO mode E-HEART stage (looping)
+tomoyo_eh_final	: TOMOYO mode E-HEART final stage (looping)
+fever		: FEVER!!! (looping)
+mission_ex01	: MISSION mode No.1 (looping)
+mission_ex02	: MISSION mode No.2 (looping)
+mission_ex03	: MISSION mode No.3 (looping)

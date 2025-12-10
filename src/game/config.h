@@ -1,7 +1,7 @@
 #ifndef config_h_
 #define config_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 #define CFG_LENGTH 302
 
@@ -10,21 +10,21 @@
 // ||
 // Version number of the configuration file format.
 // Increase by 1 if a format change breaks compatibility.
-#define CFG_VERSION 3u
+#define CFG_VERSION 4u
 
 void ConfigMenu();
 int32_t LoadConfig(void);
 int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);
 extern int32_t restart;
-extern int32_t reinit;
-#ifdef APP_ENABLE_JOYSTICK
+extern int32_t load;
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 extern APP_JoyKey joyKeyAssign[10 *2];
 #endif
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 extern APP_ConKey conKeyAssign[8 * 2];
 #endif
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern SDL_Scancode keyAssign[10 * 2];
 #endif
 extern int32_t lvupbonus;
@@ -39,16 +39,15 @@ extern int32_t fontsize;
 extern int32_t movesound;
 extern int32_t dispnext;
 
-extern APP_WaveFormat lastWavebgm;
-extern APP_WaveFormat wavebgm;
+extern int32_t wavebgm;
 extern int32_t fldtr;
 extern int32_t dtc;
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern int32_t dispnextkey[2];
 #endif
 extern int32_t digitc[12];
 extern int32_t fontc[12];
-extern int32_t rots[2];
+extern int32_t rotspl[2];
 extern int32_t background;
 extern int32_t blockflash;
 extern int32_t fastlrmove;

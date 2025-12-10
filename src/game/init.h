@@ -1,7 +1,7 @@
 #ifndef init_h_
 #define init_h_
 
-#include "SDL_scancode.h"
+#include <SDL3/SDL_scancode.h>
 #include <stdint.h>
 
 extern int32_t english;
@@ -38,7 +38,7 @@ extern int32_t ti_s_ready_start;
 extern int32_t ti_s_ready_end;
 extern int32_t ti_s_go_start;
 extern int32_t ti_s_go_end;
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern int32_t skipKey;
 #endif
 extern int32_t vsmodesl;

@@ -30,18 +30,18 @@ typedef struct {
 
 	int32_t	fontsize;
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	APP_JoyKey	joyKeyAssign[10 * 2];
 	#endif
-	
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t playerCons[2];
 	APP_ConKey conKeyAssign[8 * 2];
 	#endif
 
 	int32_t fourwayfilter;
 	int32_t fourwaypriorityup;
-	
+
 	int32_t rots[2];
 	int32_t segacheat;
 
@@ -86,7 +86,7 @@ typedef struct {
 } SConfig;
 
 static const SConfig DefaultConfig = {
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	.keyAssign =
 	{
 		SDL_SCANCODE_UP, SDL_SCANCODE_DOWN, SDL_SCANCODE_LEFT, SDL_SCANCODE_RIGHT,
@@ -110,7 +110,7 @@ static const SConfig DefaultConfig = {
 	.sevolume = 100,
 	.bgm = 1,
 	.bgmvolume = 100,
-	.wavebgm = APP_WAVE_SIMPLE | APP_WAVE_OGG,	//BGMの選択
+	.wavebgm = WAVE_BGM_SIMPLE,	//BGMの選択
 	.maxPlay = 0,			//プレイヤー人数の選択	0:シングル 1:デュアル
 
 	.breakeffect = 1,	//ラインをそろえたとき、ブロックを弾けさせるか 0:off 1:on
@@ -125,86 +125,86 @@ static const SConfig DefaultConfig = {
 
 	.fontsize = 1,			//フォントサイズ 0:DEFAULT 1:SMALL 宣言し忘れ修正#1.60c6.1a
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	.joyKeyAssign = APP_DEFAULT_JOYKEY_ASSIGN,		//ジョイスティックボタン割り当て
 	#endif
-	
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	.playerCons = { 0, 1 },
 	.conKeyAssign = {
 		// Player 1
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
+			.index = SDL_GAMEPAD_BUTTON_DPAD_UP
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
+			.index = SDL_GAMEPAD_BUTTON_DPAD_DOWN
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_LEFT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_RIGHT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_A
+			.index = SDL_GAMEPAD_BUTTON_SOUTH
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_B
+			.index = SDL_GAMEPAD_BUTTON_EAST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_X
+			.index = SDL_GAMEPAD_BUTTON_WEST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+			.index = SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER
 		},
 
 		// Player 2
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_UP
+			.index = SDL_GAMEPAD_BUTTON_DPAD_UP
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_DOWN
+			.index = SDL_GAMEPAD_BUTTON_DPAD_DOWN
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_LEFT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_LEFT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_DPAD_RIGHT
+			.index = SDL_GAMEPAD_BUTTON_DPAD_RIGHT
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_A
+			.index = SDL_GAMEPAD_BUTTON_SOUTH
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_B
+			.index = SDL_GAMEPAD_BUTTON_EAST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_X
+			.index = SDL_GAMEPAD_BUTTON_WEST
 		},
 		{
 			.type = APP_CONKEY_BUTTON,
-			.index = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+			.index = SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER
 		}
 	},
 	#endif
 
 	.fourwayfilter = 0,
 	.fourwaypriorityup = 0,
-	
+
 	.rots = {2, 1},
 	.segacheat = 0,
 
@@ -337,9 +337,9 @@ void SetDefaultKeyboardConfig(SDL_Scancode* keys)
 
 void SetDefaultConfig()
 {
-	int32_t i,j, cfgbuf[CFG_LENGTH];
+	int32_t cfgbuf[CFG_LENGTH];
 
-	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -356,7 +356,7 @@ void SetDefaultConfig()
 	cfgbuf[12] = DefaultConfig.fastlrmove;
 	cfgbuf[13] = DefaultConfig.background;
 
-	for (i = 0; i < 20; i++) {
+	for (int32_t i = 0; i < 20; i++) {
 		cfgbuf[14 + i] = DefaultConfig.keyAssign[i];
 	}
 
@@ -376,7 +376,7 @@ void SetDefaultConfig()
 	cfgbuf[61] =
 		(( DefaultConfig.se & 0x1) << 23) | (( DefaultConfig.sevolume & 0x7F) << 16) |
 		((DefaultConfig.bgm & 0x1) << 15) | ((DefaultConfig.bgmvolume & 0x7F) <<  8) |
-		(DefaultConfig.wavebgm & APP_WAVE_MASK);
+		(DefaultConfig.wavebgm & WAVE_BGM_SIMPLE);
 	cfgbuf[62] = DefaultConfig.breakeffect;
 	cfgbuf[63] = DefaultConfig.showcombo;
 	cfgbuf[64] = DefaultConfig.top_frame;
@@ -396,7 +396,7 @@ void SetDefaultConfig()
 	cfgbuf[78] = DefaultConfig.fontc[8] + DefaultConfig.fontc[9] * 0x100 + DefaultConfig.fontc[10] * 0x10000 + DefaultConfig.fontc[11] * 0x1000000 ;
 	cfgbuf[79] = DefaultConfig.digitc[8] + DefaultConfig.digitc[9] * 0x100 + DefaultConfig.digitc[10] * 0x10000 + DefaultConfig.digitc[11] * 0x1000000 ;
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
@@ -423,8 +423,8 @@ void SetDefaultConfig()
 		}
 	}
 	#endif
-	
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t *conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		conkeybuf[pl * (1 + 2 * 8)] = DefaultConfig.playerCons[pl];

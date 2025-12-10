@@ -17,7 +17,7 @@ int32_t cpu_judgeBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, i
 		return cpu_judgeBigBlock(player, bx1, by1, kind, rotate);
 	}
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8 && ((segacheat==2) || (heboGB[player]!=2) || repversw<66)) {
+		if(rotspl[player] == 8 && ((segacheat==2) || (heboGB[player]!=2) || repversw<66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		} else if( isWRule(player) ) {
@@ -45,7 +45,7 @@ int32_t cpu_setBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, int
 		return cpu_setBigBlock(player, bx1, by1, kind, rotate);
 	}
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
+		if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i]);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i]);
 		} else if( isWRule(player) ) {
@@ -69,7 +69,7 @@ int32_t cpu_judgeBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind
 	int32_t		k, l, bx3, by3;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
+		if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		} else if( isWRule(player) ) {
@@ -101,7 +101,7 @@ int32_t cpu_setBigBlock(int32_t player, int32_t bx1, int32_t by1, int32_t kind, 
 	puted = 0;
 
 	for(i = 0; i < 4; i++) {
-		if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
+		if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 			bx2 = (bx1 + blkDDataX[kind * 16 + rotate * 4 + i] * 2);
 			by2 = (by1 + blkDDataY[kind * 16 + rotate * 4 + i] * 2);
 		} else if( isWRule(player) ) {
@@ -134,7 +134,7 @@ void cpuMove(int32_t player) {
 		cp_input[i + player * 10] = 0;
 	}
 
-	slow = (((rots[player] == 6) || (rots[player] == 8)) && (sp[player] < 40)) * (gameMode[player] == 4);
+	slow = (((rotspl[player] == 6) || (rotspl[player] == 8)) && (sp[player] < 40)) * (gameMode[player] == 4);
 	slow = slow + 2 * ((isfmirror[player]) || (isxray[player]) || (iscolor[player]) || (item_monochrome[player]) ||
 					   (ishidenext[player]) || (isdark[player]) || (isfakenext[player]) || (ismiss[player]));
 
@@ -223,8 +223,8 @@ void cpuMove(int32_t player) {
 void cpuDrop(int32_t player){
 
 	if(isUDreverse[player]){	//上下逆転時
-		if((sonicdrop) || (heboGB[player] == 0) &&
-			((rots[player] <= 1) || (rots[player] == 5) || (rots[player] == 7))){
+		if(((sonicdrop) || (heboGB[player] == 0)) &&
+			((rotspl[player] <= 1) || (rotspl[player] == 5) || (rotspl[player] == 7))){
 			if(!up_flag[player]){
 				cp_input[0 + player * 10] = 0;
 				cp_input[1 + player * 10] = 1;
@@ -237,7 +237,7 @@ void cpuDrop(int32_t player){
 		}
 	}else{	// 通常時
 		if((!up_flag[player]) && (!sonicdrop) && (heboGB[player] == 0) &&
-			((rots[player] == 2) || (rots[player] == 3) || (rots[player] == 4) || (rots[player] == 6) || (rots[player] == 8))){
+			((rotspl[player] == 2) || (rotspl[player] == 3) || (rotspl[player] == 4) || (rotspl[player] == 6) || (rotspl[player] == 8))){
 			cp_input[0 + player * 10] = 1;
 			cp_input[1 + player * 10] = 0;
 		}else{
@@ -353,16 +353,16 @@ int32_t cpu_blockEraseJudge(int32_t player) {
 //■　■こんな状態なら必要と判断
 //■　■
 int32_t cpu_HowManyNeedIblock(int32_t player) {
-	int32_t i,j, count_left, count_right,total,by,by2;
+	int32_t i,j, count_left, count_right,total,y,y2;
 
 	count_left = 0;
 	count_right = 0;
 	total = 0;
 
 	for(j = 0;j < fldsizew[player];j++) {
-		by = cpu_checkHoleStart(player,j);
-		by2 = cpu_checkFieldTop(player,j);
-		for(i = by; i < by2; i++) {
+		y = cpu_checkHoleStart(player,j);
+		y2 = cpu_checkFieldTop(player,j);
+		for(i = y; i < y2; i++) {
 			// 左側にブロックがある（または端）
 			if((j == 0) || (fld[(j - 1) + i * 10 + player * 220] != 0))
 				count_left++;
@@ -464,7 +464,7 @@ void cpuCheckBestSpot(int32_t player) {
 
 				for(k=0; k<4; k++) {
 					// 座標を決める
-					if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
+					if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 						bx2 = (i + blkDDataX[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 						by2 = (bottom + blkDDataY[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 					} else if( isWRule(player) ) {
@@ -556,7 +556,7 @@ void cpuCheckBestSpot(int32_t player) {
 
 						for(k=0; k<4; k++) {
 							// 座標を決める
-							if(rots[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
+							if(rotspl[player] == 8 && ((segacheat == 2) || (heboGB[player] != 2) || repversw < 66)) {
 								bx2 = (i + blkDDataX[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 								by2 = (bottom + blkDDataY[blk[player] * 16 + j * 4 + k] * (IsBig[player] + 1));
 							} else if( isWRule(player) ) {

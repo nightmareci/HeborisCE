@@ -12,7 +12,7 @@ void statSelectLevel(int32_t player) {
 
 	// HOLDボタンでページ切り替え #1.60c7a
 	if(getPushState(player, APP_BUTTON_D)) {
-		APP_PlayWave(5);
+		APP_PlayWave(WAVE_SE_MOVE);
 		if(vslevel[0] < 14)
 			vslevel[0] = 14;
 		else if(vslevel[0] < 29)	// 3ページ目 #1.60c7j5
@@ -22,7 +22,7 @@ void statSelectLevel(int32_t player) {
 	}
 		// 現在のページ番号を表示 C7T3
 		printFont(15 + 24 * player - 12 * maxPlay,25 , "kn", count % 9);
-		sprintf(string[0], "PAGE %d/3",1+(1*(vslevel[0]>=14))+(1*(vslevel[0]>=29)));
+		SDL_snprintf(string[0], STRING_LENGTH, "PAGE %d/3",1+(1*(vslevel[0]>=14))+(1*(vslevel[0]>=29)));
 		printFont(18 + 24 * player - 12 * maxPlay,25 , string[0], 0);
 		printMenuButton(18 + 24 * player - 12 * maxPlay,26 , APP_BUTTON_C, player);
 		printFont(19 + 24 * player - 12 * maxPlay,26 , ":RAPID", 0);
@@ -31,28 +31,28 @@ void statSelectLevel(int32_t player) {
 		// START! BGM変更できるように#1.60c6.2d
 		// 4番以降を選べるようにした#1.60c7f5
 		printFont(15 - 12 * maxPlay, 5, "BGM", color);
-		sprintf(string[0], "%2d", p_bgmlv);
+		SDL_snprintf(string[0], STRING_LENGTH, "%2d", p_bgmlv);
 		printFont(23 - 12 * maxPlay, 5, string[0], count % 9 * (vslevel[0] == 0));
 
 		// 回転法則
 		printFont(15 - 12 * maxPlay, 6, "ROT", color);
-		if(rots[0] == 0) {
+		if(rotspl[0] == 0) {
 			printFont(18 - 12 * maxPlay, 6, "HEBORIS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 1) {
+		} else if(rotspl[0] == 1) {
 			printFont(19 - 12 * maxPlay, 6, "TI-ARS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 2) {
+		} else if(rotspl[0] == 2) {
 			printFont(20 - 12 * maxPlay, 6, "WORLD", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 3) {
+		} else if(rotspl[0] == 3) {
 			printFont(18 - 12 * maxPlay, 6, "ACE-SRS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 4) {
+		} else if(rotspl[0] == 4) {
 			printFont(18 - 12 * maxPlay, 6, "ACE-ARS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 5) {
+		} else if(rotspl[0] == 5) {
 			printFont(21 - 12 * maxPlay, 6, "ARS2", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 6) {
+		} else if(rotspl[0] == 6) {
 			printFont(19 - 12 * maxPlay, 6, "DS-SRS", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 7) {
+		} else if(rotspl[0] == 7) {
 			printFont(20 - 12 * maxPlay, 6, "SRS-X", count % 9 * (vslevel[0] == 1));
-		} else if(rots[0] == 8) {
+		} else if(rotspl[0] == 8) {
 			printFont(20 - 12 * maxPlay, 6, "D.R.S", count % 9 * (vslevel[0] == 1));
 		}
 
@@ -65,13 +65,13 @@ void statSelectLevel(int32_t player) {
 		// WAITS
 		printFont(15 - 12 * maxPlay, 8, "WAITS", color);
 
-		sprintf(string[0], "W1:%2d", wait1[player]);//SYUTUGEN
+		SDL_snprintf(string[0], STRING_LENGTH, "W1:%2d", wait1[player]);//SYUTUGEN
 		printFont(15 - 12 * maxPlay, 9, string[0], count % 9 * (vslevel[player] == 3));
-		sprintf(string[0], "W2:%2d", wait2[player]);//SYOUKYO
+		SDL_snprintf(string[0], STRING_LENGTH, "W2:%2d", wait2[player]);//SYOUKYO
 		printFont(20 - 12 * maxPlay, 9, string[0], count % 9 * (vslevel[player] == 4));
-		sprintf(string[0], "W3:%2d", wait3[player]);//SETTYAKU
+		SDL_snprintf(string[0], STRING_LENGTH, "W3:%2d", wait3[player]);//SETTYAKU
 		printFont(15 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[player] == 5));
-		sprintf(string[0], "WT:%2d", waitt[player]);//YOKOTAME
+		SDL_snprintf(string[0], STRING_LENGTH, "WT:%2d", waitt[player]);//YOKOTAME
 		printFont(20 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[player] == 6));
 
 			//それぞれ項目名表示
@@ -96,7 +96,7 @@ void statSelectLevel(int32_t player) {
 		}
 		// ブロック落下スピード(1200 = 20G)
 		printFont(15 - 12 * maxPlay, 13, "SPEED", count % 9 * (vslevel[0] == 7));
-		sprintf(string[0], "%7d", sp[0]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%7d", sp[0]);
 		printFont(18 - 12 * maxPlay, 13, string[0], count % 9 * (vslevel[0] == 7));
 
 		printFont(15 - 12 * maxPlay, 14, "OTHERS", color);
@@ -104,7 +104,7 @@ void statSelectLevel(int32_t player) {
 		// シングル台での表示ずれ修正#1.60c6.1a
 
 		// HIDDEN
-		sprintf(string[0], "HIDDEN  %2d", hidden[0]);
+		SDL_snprintf(string[0], STRING_LENGTH, "HIDDEN  %2d", hidden[0]);
 		if(hidden[player] <= 7){
 			printFont(15 - 12 * maxPlay, 15, string[0], count % 9 * (vslevel[0] == 8));
 		}else if(hidden[player] == 8){
@@ -153,16 +153,16 @@ void statSelectLevel(int32_t player) {
 		if(p_goaltype==0){
 		printFont(15 - 12 * maxPlay, 21, "NO OPTION", count % 9 * (vslevel[0] == 12));
 		}else if(p_goaltype==1){
-		sprintf(string[0], "LEVEL %3d", p_goaltypenumlist[p_goaltypenum]*10);
+		SDL_snprintf(string[0], STRING_LENGTH, "LEVEL %3d", p_goaltypenumlist[p_goaltypenum]*10);
 		printFont(15 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 12));
 		}else if(p_goaltype==2){
-		sprintf(string[0], "%3dLINES", p_goaltypenumlist[p_goaltypenum]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%3dLINES", p_goaltypenumlist[p_goaltypenum]);
 		printFont(15 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 12));
 		}else if(p_goaltype==3){
-		sprintf(string[0], "%3dBLOCK", p_goaltypenumlist[p_goaltypenum]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%3dBLOCK", p_goaltypenumlist[p_goaltypenum]);
 		printFont(15 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 12));
 		}else if(p_goaltype==4){
-		sprintf(string[0], "%3dSEC", p_goaltypenumlist[p_goaltypenum]*2);
+		SDL_snprintf(string[0], STRING_LENGTH, "%3dSEC", p_goaltypenumlist[p_goaltypenum]*2);
 		printFont(15 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 12));
 		}
 
@@ -189,15 +189,15 @@ void statSelectLevel(int32_t player) {
 		else if(upLineT[0] == 2)
 			printFont(19 - 12 * maxPlay, 7, "RANDOM", count % 9 * (vslevel[0] == 15));
 
-		sprintf(string[0], "LINE(S) %2d", raise_shirase_lines);
+		SDL_snprintf(string[0], STRING_LENGTH, "LINE(S) %2d", raise_shirase_lines);
 		printFont(15 - 12 * maxPlay, 8, string[0], count % 9 * (vslevel[0] == 16));
 
-		sprintf(string[0], "INTER. %3d", raise_shirase_interval);
+		SDL_snprintf(string[0], STRING_LENGTH, "INTER. %3d", raise_shirase_interval);
 		printFont(15 - 12 * maxPlay, 9, string[0], count % 9 * (vslevel[0] == 17));
 
 		// 背景 #1.60c7o9
 		printFont(15 - 12 * maxPlay, 10, "BACKGROUND", color);
-		sprintf(string[0],"NO.%d",p_backno);
+		SDL_snprintf(string[0], STRING_LENGTH,"NO.%d",p_backno);
 		printFont(15 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[0] == 18));
 
 		// TLSをレベルアップタイプと切り離す #1.60c7i2
@@ -273,7 +273,7 @@ void statSelectLevel(int32_t player) {
 		printFont(15 - 12 * maxPlay, 23, "INIT FLD", color);
 		if(p_stage==-1) printFont(24 - 12 * maxPlay, 24, "e", count % 9 * (vslevel[0] == 28));
 		else{
-			sprintf(string[0],"%3d",p_stage+1);
+			SDL_snprintf(string[0], STRING_LENGTH,"%3d",p_stage+1);
 			printFont(22 - 12 * maxPlay, 24, string[0], count % 9 * (vslevel[0] == 28));
 		}
 
@@ -290,17 +290,17 @@ void statSelectLevel(int32_t player) {
 
 		// NEXT #1.60c7f6
 		printFont(15 - 12 * maxPlay,9, "NEXT BLOCK", color);
-		sprintf(string[0], "NEXT1    %d", next[0]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NEXT1    %d", next[0]);
 		printFont(15 - 12 * maxPlay, 10, string[0], count % 9 * (vslevel[0] == 30));
-		sprintf(string[0], "NEXT2    %d", nextb[(nextc[0] + 1) % 1400]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NEXT2    %d", nextb[(nextc[0] + 1) % 1400]);
 		printFont(15 - 12 * maxPlay, 11, string[0], count % 9 * (vslevel[0] == 31));
-		sprintf(string[0], "NEXT3    %d", nextb[(nextc[0] + 2) % 1400]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NEXT3    %d", nextb[(nextc[0] + 2) % 1400]);
 		printFont(15 - 12 * maxPlay, 12, string[0], count % 9 * (vslevel[0] == 32));
-		sprintf(string[0], "NEXT4    %d", nextb[(nextc[0] + 3) % 1400]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NEXT4    %d", nextb[(nextc[0] + 3) % 1400]);
 		printFont(15 - 12 * maxPlay, 13, string[0], count % 9 * (vslevel[0] == 33));
-		sprintf(string[0], "NEXT5    %d", nextb[(nextc[0] + 4) % 1400]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NEXT5    %d", nextb[(nextc[0] + 4) % 1400]);
 		printFont(15 - 12 * maxPlay, 14, string[0], count % 9 * (vslevel[0] == 34));
-		sprintf(string[0], "NEXT6    %d", nextb[(nextc[0] + 5) % 1400]);
+		SDL_snprintf(string[0], STRING_LENGTH, "NEXT6    %d", nextb[(nextc[0] + 5) % 1400]);
 		printFont(15 - 12 * maxPlay, 15, string[0], count % 9 * (vslevel[0] == 35));
 
 
@@ -310,7 +310,7 @@ void statSelectLevel(int32_t player) {
 		if(hold[0] == -1) {
 			printFont(24 - 12 * maxPlay, 17, "e", count % 9 * (vslevel[0] == 36));
 		} else {
-			sprintf(string[0], "%d", hold[0]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%d", hold[0]);
 			printFont(24 - 12 * maxPlay, 17, string[0], count % 9 * (vslevel[0] == 36));
 		}
 
@@ -319,7 +319,7 @@ void statSelectLevel(int32_t player) {
 		if(p_nextblock==0){
 			printFont(19 - 12 * maxPlay, 19, "RANDOM", count % 9 * (vslevel[0] == 37));
 		}else if((p_nextblock>1)&&(p_nextblock<8)){
-			sprintf(string[0], "HEBO%d", p_nextblock);
+			SDL_snprintf(string[0], STRING_LENGTH, "HEBO%d", p_nextblock);
 			printFont(20 - 12 * maxPlay, 19, string[0], count % 9 * (vslevel[0] == 37));
 		}else if(p_nextblock==1){
 			printFont(18 - 12 * maxPlay, 19, "MEMORY1", count % 9 * (vslevel[0] == 37));
@@ -354,7 +354,7 @@ void statSelectLevel(int32_t player) {
 
 		// NEXTC
 		printFont(15 - 12 * maxPlay, 21, "NEXTC", color);
-		sprintf(string[0], "%4d", nextc[0]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%4d", nextc[0]);
 		printFont(21 - 12 * maxPlay, 21, string[0], count % 9 * (vslevel[0] == 39));
 
 		// square
@@ -369,13 +369,13 @@ void statSelectLevel(int32_t player) {
 		if(!p_heboGBlv){
 			printFont(15 - 12 * maxPlay, 23, "OLDSTYLE e", count % 9 * (vslevel[0] == 41));
 		}else{
-			sprintf(string[0], "OLDSTYLE%2d", p_heboGBlv);
+			SDL_snprintf(string[0], STRING_LENGTH, "OLDSTYLE%2d", p_heboGBlv);
 			printFont(15 - 12 * maxPlay, 23, string[0], count % 9 * (vslevel[0] == 41));
 		}
 
 		// FPS #1.60c7n7
 		printFont(15 - 12 * maxPlay, 24, "FPS", color);			// Y座標ズレ修正 #1.60c7p9ex改造
-		sprintf(string[0], "%2d", max_fps);
+		SDL_snprintf(string[0], STRING_LENGTH, "%2d", max_fps);
 		printFont(23 - 12 * maxPlay, 24, string[0], count % 9 * (vslevel[0] == 42));
 
 	}
@@ -384,7 +384,7 @@ void statSelectLevel(int32_t player) {
 	// ↑
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
 		if(getPressState(player, APP_BUTTON_UP)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 
 			vslevel[0]--;
 
@@ -395,7 +395,7 @@ void statSelectLevel(int32_t player) {
 	// ↓
 	if(((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && !(mpc2[0] == statusc[1])){
 		if(getPressState(player, APP_BUTTON_DOWN)) {
-			PlaySE(5);
+			PlaySE(WAVE_SE_MOVE);
 
 			vslevel[0]++;
 			if(vslevel[0] > 42) vslevel[0] = 0;	// #1.60c7p9ex改造
@@ -406,7 +406,7 @@ void statSelectLevel(int32_t player) {
 	// ← (Cボタンを押しながらだと高速に数値を変更します)
 	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))){
 	if(getPressState(player, APP_BUTTON_LEFT)) {
-		PlaySE(3);
+		PlaySE(WAVE_SE_KACHI);
 		// 数値変更(手抜き)
 
 		// BGM#1.60c6.2d
@@ -416,14 +416,14 @@ void statSelectLevel(int32_t player) {
 		}
 		// 回転法則
 		if(vslevel[0] == 1) {
-			rots[0]--;
-			if(rots[0] < 0) rots[0] = 8;
+			rotspl[0]--;
+			if(rotspl[0] < 0) rotspl[0] = 8;
 			setNextBlockColors(0, 1);
 			if(hold[0] != -1){		// HOLDブロックの色設定
 				if( isWRule(player) ) {
 					// ワールド
 					c_hblk[0] = wcol[ hold[0] ];
-				} else if( (rots[player] >= 4)&&(rots[player] != 8) ) {
+				} else if( (rotspl[player] >= 4)&&(rotspl[player] != 8) ) {
 					// ARS
 					c_hblk[0] = acol[ hold[0] ];
 				} else {
@@ -566,11 +566,11 @@ void statSelectLevel(int32_t player) {
 			p_next_adjust = !p_next_adjust;
 			if(!p_next_adjust){
 				do {
-					next[0] = APP_Rand(7);
+					next[0] = SDL_rand(7);
 				} while((next[0] != 2) && (next[0] != 3) && (next[0] != 6));
 			} else {
 				do {
-					next[0] = APP_Rand(7);
+					next[0] = SDL_rand(7);
 				} while((next[0] == 2) || (next[0] == 3) || (next[0] == 6));
 			}
 			setNextBlockColors(0, 1);
@@ -615,7 +615,7 @@ void statSelectLevel(int32_t player) {
 			if( isWRule(player) ) {
 				// ワールド
 				c_hblk[0] = wcol[ hold[0] ];
-			} else if( rots[player] >= 4 ) {
+			} else if( rotspl[player] >= 4 ) {
 				// ARS
 				c_hblk[0] = acol[ hold[0] ];
 			} else {
@@ -668,7 +668,7 @@ void statSelectLevel(int32_t player) {
 	// → (Cボタンを押しながらだと高速に数値を変更します)
 	if((mpc[0] == 1) || ((mpc[0] > tame1) && (mpc[0] % tame2 == 0)) || (getPressState(player, APP_BUTTON_C))){
 		if(getPressState(player, APP_BUTTON_RIGHT)) {
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 			// 数値変更(これも手抜き)
 
 			// BGM#1.60c6.2d
@@ -679,14 +679,14 @@ void statSelectLevel(int32_t player) {
 			}
 			// 回転法則
 			if(vslevel[0] == 1) {
-				rots[0]++;
-				if(rots[0] > 8) rots[0] = 0;
+				rotspl[0]++;
+				if(rotspl[0] > 8) rotspl[0] = 0;
 				setNextBlockColors(0, 1);
 				if(hold[0] != -1){		// HOLDブロックの色設定
 					if( isWRule(player) ) {
 						// ワールド
 						c_hblk[0] = wcol[ hold[0] ];
-					} else if( (rots[player] >= 4)&&(rots[player] != 8) ) {
+					} else if( (rotspl[player] >= 4)&&(rotspl[player] != 8) ) {
 						// ARS
 						c_hblk[0] = acol[ hold[0] ];
 					} else {
@@ -828,11 +828,11 @@ void statSelectLevel(int32_t player) {
 				p_next_adjust = !p_next_adjust;
 				if(!p_next_adjust){
 					do {
-						next[0] = APP_Rand(7);
+						next[0] = SDL_rand(7);
 					} while((next[0] != 2) && (next[0] != 3) && (next[0] != 6));
 				} else {
 					do {
-						next[0] = APP_Rand(7);
+						next[0] = SDL_rand(7);
 					} while((next[0] == 2) || (next[0] == 3) || (next[0] == 6));
 				}
 				setNextBlockColors(0, 1);
@@ -877,7 +877,7 @@ void statSelectLevel(int32_t player) {
 				if( isWRule(player) ) {
 					// ワールド
 					c_hblk[0] = wcol[ hold[0] ];
-				} else if( rots[player] >= 4 ) {
+				} else if( rotspl[player] >= 4 ) {
 					// ARS
 					c_hblk[0] = acol[ hold[0] ];
 				} else {
@@ -936,10 +936,10 @@ void statSelectLevel(int32_t player) {
 		if(vslevel[0] == 10) {
 			// FAVORITES関連
 			loadWait(0, p_setting); // 対応した設定を読み込む。
-			PlaySE(3);
+			PlaySE(WAVE_SE_KACHI);
 		} else if(vslevel[0] == 28) {
 			// INIT FLD
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 
 			if(p_stage != -1) {
 				stage[0] = p_stage;			// ステージ設定
@@ -956,7 +956,7 @@ void statSelectLevel(int32_t player) {
 			}
 		} else {
 			// そうでないならゲーム開始
-			PlaySE(10);
+			PlaySE(WAVE_SE_KETTEI);
 			PracticeStart();
 			bgmlv = p_bgmlv; // BGM変更#1.60c6.2c
 		}
@@ -968,7 +968,7 @@ void PracticeStart(void){
 	playerInitial(1); // 2Pを初期化して結果を消去
 	status[1] = 10; // 2Pの動きを停止
 
-	APP_TextLayerOff(0);
+	APP_DisableTextLayer(0);
 	upLines[0] = 0;
 	shirase[0] = raise_shirase_interval;	// 最初のせり上がりカウントを設定 #1.60c7i2
 
@@ -1088,7 +1088,7 @@ void PracticeDeath() {
 	onRecord[0] = 0;
 
 	// BGM停止 || Stop BGM#1.60c6.2d
-	if(!(wavebgm & APP_WAVE_SIMPLE))
+	if(!(wavebgm & WAVE_BGM_SIMPLE))
 		StopAllBGM();
 
 	// 条件の単純化に合わせ、すべてのブロックの透明を無効化する #1.60c7k6
@@ -1109,11 +1109,11 @@ void PracticeDeath() {
 
 	// SECRET GRADE #1.60c7o1
 	if( sgrade[0] >= min_sgrade ) {
-		printFont(15 - 12 * maxPlay, 26, "S-GRADE", fontc[rots[0]]);
+		printFont(15 - 12 * maxPlay, 26, "S-GRADE", fontc[rotspl[0]]);
 		printFont(23 + (sgrade[0] < 9) - 12 * maxPlay, 26, gname[sgrade[0]], 0);
 	}
 	printMenuButton(22 - 12 * maxPlay, 25, APP_BUTTON_C, -1);
-	printFont(16 - 12 * maxPlay, 25, "PRESS", fontc[rots[0]]);
+	printFont(16 - 12 * maxPlay, 25, "PRESS", fontc[rotspl[0]]);
 	if(getPushState(0, APP_BUTTON_C)) {
 		PracticeOver();
 	}
@@ -1123,13 +1123,13 @@ void PracticeDeath() {
 //  Practiceモードで窒息or捨てゲーした時の処理#1.60cd
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void PracticeOver(void) {
-	int32_t i,tmp;
+	int32_t i;
 
 	// FPSを戻す #1.60c7n7
 	if(APP_GetFPS() != max_fps_2) APP_SetFPS(max_fps_2);
 
 	// BGM停止 || Stop BGM#1.60c6.2d
-	if(!(wavebgm & APP_WAVE_SIMPLE))
+	if(!(wavebgm & WAVE_BGM_SIMPLE))
 		StopAllBGM();
 
 	// 1Pの結果を2Pにコピー (from hogeパッチ)
@@ -1158,7 +1158,7 @@ void PracticeOver(void) {
 		waitt[1] = waitt[0];		//
 
 		sp[1] = sp[0];					// スピードもコピー
-		rots[1] = rots[0];				// 回転法則もコピー
+		rotspl[1] = rotspl[0];				// 回転法則もコピー
 		IsBig[1] = IsBig[0];
 	}
 	IsBigStart[1] = IsBigStart[0];

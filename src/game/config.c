@@ -1,9 +1,10 @@
+#include "app/APP_global.h"
+#include "app/APP_video.h"
 #include "common.h"
+#include <SDL3/SDL_messagebox.h>
 
 APP_ScreenModeFlag screenMode;	// スクリーンモード
 int32_t screenIndex;		// スクリーンインデックス
-#define SOUND_BUFFER_MAX 4
-int32_t soundbuffer = 0;	// Size of the sound buffer. It's "1024 << soundbuffer" bytes.
 int32_t nextblock;		// ツモ
 uint32_t cfgversion;		// 設定ファイルフォーマットのバージョン番号です。
 int32_t smooth;			// ブロック落下	0:ノーマル 1:スムーズ
@@ -15,15 +16,15 @@ int32_t fastlrmove;		// 横先行入力	0:有効 1:無効
 int32_t blockflash;		// ブロック枠	0:点滅 1:点灯 2:無し
 int32_t background;		// フィールド背景0:スクロール 1:スクロール無し 2:ベタ
 
-int32_t rots[2];		// 回転規則
+int32_t rotspl[2];		// 回転規則
 int32_t fontc[12];		// 題字の色	0:白 1:青 2:赤 3:桃 4:緑 5:黄 6:空 7:橙 8:紫 9:藍
 int32_t digitc[12];		// 数字の色	それぞれ、TGMRule・TiRule・WorldRule・World2Rule・ARSRule・ARS2Rule・World3Rule
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 int32_t dispnextkey[2] = { SDL_SCANCODE_F3, SDL_SCANCODE_F4 };	// NEXT表示キー(デフォルトはF3, F4) 	#1.60c7g7
 #endif
 int32_t dtc;			// tgmlvの表示	0:off  1:on  (lvtype = 1の時は常に表示)
 int32_t fldtr;			// フィールド背景非表示時のフィールド透過度(0-256)
-APP_WaveFormat wavebgm;		// BGMの選択 || BGM selection
+int32_t wavebgm;		// BGMの選択 || BGM selection
 // ver.160c6
 int32_t dispnext;		// ネクスト表示個数設定
 int32_t movesound;		// ブロック移動音設定	0:OFF　1:ON
@@ -42,7 +43,7 @@ int32_t downtype;		// 下入れタイプ 0:HEBORIS 1:Ti #1.60c7f9
 
 int32_t lvupbonus;		// レベルアップボーナス 0:TI 1:TGM/TAP 2:ajust#1.60c7g3
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 // キーボード設定
 SDL_Scancode keyAssign[APP_BUTTON_COUNT * 2] =
 {
@@ -58,23 +59,23 @@ SDL_Scancode keyAssign[APP_BUTTON_COUNT * 2] =
 
 int32_t segacheat;		// Allow CW and/or 180 rotation in old style.
 
-#ifdef APP_ENABLE_JOYSTICK
+#ifdef APP_ENABLE_JOYSTICK_INPUT
 // →pauseとgiveupを追加 1.60c7g7
 APP_JoyKey joyKeyAssign[APP_BUTTON_COUNT * 2];	// ジョイスティックボタン割り当て
 #endif
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 APP_ConKey conKeyAssign[8 * 2];
 #endif
 
 int32_t restart = 0;		// 再起動フラグ
-int32_t reinit = 1;		// Indicates if resources should be loaded.
+int32_t load = 1;		// Indicates if resources should be loaded.
 
 // 設定をバイナリデータに保存 1.60c5
 int32_t SaveConfig(void) {
-	int32_t i, j, cfgbuf[CFG_LENGTH];
+	int32_t cfgbuf[CFG_LENGTH];
 
-	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	cfgbuf[0] = 0x4F424550;
 	cfgbuf[1] = 0x20534953;
 	cfgbuf[2] = 0x464E4F44;
@@ -91,8 +92,8 @@ int32_t SaveConfig(void) {
 	cfgbuf[12] = fastlrmove;
 	cfgbuf[13] = background;
 
-	#ifdef APP_ENABLE_KEYBOARD
-	for(i = 0; i < 20; i++) {
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
+	for (int32_t i = 0; i < 20; i++) {
 		cfgbuf[14 + i] = keyAssign[i];
 	}
 	#endif
@@ -100,10 +101,8 @@ int32_t SaveConfig(void) {
 	cfgbuf[35] = fourwayfilter;
 	cfgbuf[37] = fourwaypriorityup;
 
-	cfgbuf[38] = soundbuffer;
-
-	cfgbuf[40] = rots[0];
-	cfgbuf[41] = rots[1];
+	cfgbuf[40] = rotspl[0];
+	cfgbuf[41] = rotspl[1];
 	cfgbuf[42] = segacheat;
 	cfgbuf[44] = dtc;
 	cfgbuf[45] = dispnext;
@@ -115,7 +114,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[61] =
 		(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 		((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-		(wavebgm & APP_WAVE_MASK);
+		wavebgm;
 	cfgbuf[62] = breakeffect;
 	cfgbuf[63] = showcombo;
 	cfgbuf[64] = top_frame;
@@ -131,7 +130,7 @@ int32_t SaveConfig(void) {
 	cfgbuf[78] = fontc[8] + fontc[9] * 0x100 + fontc[10] * 0x10000 + fontc[11] * 0x1000000;
 	cfgbuf[79] = digitc[8] + digitc[9] * 0x100 + digitc[10] * 0x10000 + digitc[11] * 0x1000000;
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
@@ -158,8 +157,8 @@ int32_t SaveConfig(void) {
 		}
 	}
 	#endif
-	
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		conkeybuf[pl * (1 + 2 * 8)] = pl;
@@ -211,9 +210,8 @@ int32_t SaveConfig(void) {
 
 // 設定をバイナリデータから読み込み 1.60c5
 int32_t LoadConfig(void) {
-	int32_t i, j, cfgbuf[CFG_LENGTH];
-
-	APP_FillMemory(cfgbuf, sizeof(cfgbuf), 0);
+	int32_t cfgbuf[CFG_LENGTH];
+	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
 	APP_LoadFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
@@ -222,24 +220,19 @@ int32_t LoadConfig(void) {
 	if((uint32_t)cfgbuf[7] != CFG_VERSION) return (1);
 	if((uint32_t)cfgbuf[34] != ConfigChecksum(cfgbuf)) return (1);
 
-
 	screenMode = cfgbuf[4];
 
-#ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
+	#ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 	screenIndex = cfgbuf[5];
 
-#else
-	screenMode &= ~APP_SCREENMODE_WINDOWTYPE;
-	screenMode |=
-#ifdef __vita__
-		APP_SCREENMODE_FULLSCREEN
-#else
-		APP_SCREENMODE_WINDOW
-#endif
-		| APP_SCREENMODE_VSYNC | APP_SCREENMODE_RENDERLEVEL;
+	#else
+	screenMode &= APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_SCALE_MODE | APP_SCREEN_MODE_RENDER_LEVEL;
+	#ifdef SDL_PLATFORM_VITA
+	screenMode &= ~APP_SCREEN_MODE_RENDER_LEVEL;
+	#endif
+	screenMode |= APP_BASE_SCREEN_MODE;
 	screenIndex = 0;
-
-#endif
+	#endif
 
 	nextblock = cfgbuf[6];
 	cfgversion = (uint32_t)cfgbuf[7];
@@ -250,9 +243,9 @@ int32_t LoadConfig(void) {
 	fastlrmove = cfgbuf[12];
 	background = cfgbuf[13];
 
-	#ifdef APP_ENABLE_KEYBOARD
-	for(i = 0; i < 20; i++) {
-		if (cfgbuf[14 + i] == SDL_GetScancodeFromKey(SDLK_ESCAPE)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
+	for(int32_t i = 0; i < 20; i++) {
+		if (cfgbuf[14 + i] == (int32_t)SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) keyAssign[i] = SDL_SCANCODE_UNKNOWN;
 		else keyAssign[i] = cfgbuf[14 + i];
 	}
 	#endif
@@ -260,15 +253,8 @@ int32_t LoadConfig(void) {
 	fourwayfilter = cfgbuf[35];
 	fourwaypriorityup = cfgbuf[37];
 
-	if (cfgbuf[38] < 0 || cfgbuf[38] >= SOUND_BUFFER_MAX) {
-		soundbuffer = 0;
-	}
-	else {
-		soundbuffer = cfgbuf[38];
-	}
-
-	rots[0] = cfgbuf[40];
-	rots[1] = cfgbuf[41];
+	rotspl[0] = cfgbuf[40];
+	rotspl[1] = cfgbuf[41];
 	segacheat = cfgbuf[42];
 	dtc     = cfgbuf[44];
 	dispnext = cfgbuf[45];
@@ -284,10 +270,7 @@ int32_t LoadConfig(void) {
 	bgm = (cfgbuf[61] >> 15) & 0x1;
 	bgmvolume = (cfgbuf[61] >> 8) & 0x7F;
 	if(bgmvolume > 100) bgmvolume = 100;
-	wavebgm = cfgbuf[61] & APP_WAVE_MASK;
-	if ((wavebgm & APP_WAVE_FORMAT) < 1 || (wavebgm & APP_WAVE_FORMAT) >= APP_WAVE_MAXFORMAT || !APP_WaveFormatSupported(wavebgm)) {
-		wavebgm = APP_WAVE_WAV;
-	}
+	wavebgm = cfgbuf[61] & WAVE_BGM_SIMPLE;
 
 	breakeffect = cfgbuf[62];
 	showcombo = cfgbuf[63];
@@ -300,20 +283,20 @@ int32_t LoadConfig(void) {
 
 	/* 72〜74はジョイスティック用 */
 
-	for(i = 0; i <= 3; i++) {
+	for(int32_t i = 0; i <= 3; i++) {
 		fontc[i] = (cfgbuf[74] >> (i * 8)) & 0xff;
 		digitc[i] = (cfgbuf[75] >> (i * 8)) & 0xff;
 	}
-	for(i = 0; i <= 3; i++) {
+	for(int32_t i = 0; i <= 3; i++) {
 		fontc[i + 4] = (cfgbuf[76] >> (i * 8)) & 0xff;
 		digitc[i + 4] = (cfgbuf[77] >> (i * 8)) & 0xff;
 	}
-	for(i = 0; i <= 3; i++) {
+	for(int32_t i = 0; i <= 3; i++) {
 		fontc[i + 8] = (cfgbuf[78] >> (i * 8)) & 0xff;
 		digitc[i + 8] = (cfgbuf[79] >> (i * 8)) & 0xff;
 	}
 
-	#ifdef APP_ENABLE_JOYSTICK
+	#ifdef APP_ENABLE_JOYSTICK_INPUT
 	int32_t *joykeybuf = &cfgbuf[80];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		for (int32_t key = 0; key < 10; key++) {
@@ -340,8 +323,8 @@ int32_t LoadConfig(void) {
 		}
 	}
 	#endif
-	
-	#ifdef APP_ENABLE_GAME_CONTROLLER
+
+	#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	int32_t* conkeybuf = &cfgbuf[240];
 	for (int32_t pl = 0; pl < 2; pl++) {
 		int32_t* plbuf = &conkeybuf[pl * (1 + 2 * 8) + 1];
@@ -396,17 +379,14 @@ uint32_t ConfigChecksum(int32_t *cfgbuf) {
 
 
 void ConfigMenu() {
-	static int32_t i, j, m, pl, conPlayer, count, pages;
+	static int32_t m, conPlayer, n, pages;
 	static int32_t ncfg[CFG_LENGTH];
 	static int32_t need_reset;	// 設定保存時にリセットするか
-	static int32_t need_setScreen;
 	static int32_t need_reloadBG;
 	static int32_t last_BG;
 
 	if (init) {
 		pages = 5;
-
-		// TODO: Add all settings in init.inc to the settings menu.
 
 		ncfg[0]  = screenMode;
 		ncfg[1]  = screenIndex;
@@ -420,14 +400,12 @@ void ConfigMenu() {
 		ncfg[9]  = background;
 		last_BG = background;
 
-		#ifdef APP_ENABLE_KEYBOARD
-		for(i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
+		#ifdef APP_ENABLE_KEYBOARD_INPUT
+		for(int32_t i = 0; i < 20; i++) ncfg[10 + i] = keyAssign[i];
 		#endif
 
 		ncfg[35] = fourwayfilter;
 		ncfg[37] = fourwaypriorityup;
-
-		ncfg[38] = soundbuffer;
 
 		ncfg[36] = dtc;
 		ncfg[42] = segacheat;
@@ -435,7 +413,7 @@ void ConfigMenu() {
 		ncfg[44] =
 			(( se & 0x1) << 23) | (( sevolume & 0x7F) << 16) |
 			((bgm & 0x1) << 15) | ((bgmvolume & 0x7F) <<  8) |
-			(wavebgm & APP_WAVE_MASK);
+			wavebgm;
 		ncfg[45] = dispnext;
 		ncfg[46] = movesound;
 		ncfg[47] = fontsize;
@@ -472,7 +450,7 @@ void ConfigMenu() {
 		ncfg[78] = fontc[8];
 		ncfg[79] = digitc[8];
 
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		int32_t *joykeybuf = &ncfg[80];
 		for (int32_t pl = 0; pl < 2; pl++) {
 			int32_t *plbuf = &joykeybuf[pl * 10 * 8];
@@ -497,8 +475,8 @@ void ConfigMenu() {
 			}
 		}
 		#endif
-		
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		int32_t* conkeybuf = &ncfg[240];
 		for (int32_t pl = 0; pl < 2; pl++) {
 			conkeybuf[pl * (1 + 2 * 8)] = pl;
@@ -540,214 +518,214 @@ void ConfigMenu() {
 		ncfg[300] = disable_wallkick;
 		ncfg[301] = showctrl;
 
-		for(i = 0; i < 10; i++) statusc[i] = 0;
+		for(int32_t i = 0; i < 10; i++) statusc[i] = 0;
 
 		status[0] = 0;
 		statusc[0] = 1;
 		statusc[1] = 1;
 		statusc[2] = 0;
 
-		count = 0;
+		n = 0;
 
 		need_reset = 0;
 		need_reloadBG = 1;
-		
+
 		init = false;
 	}
 
-	count++;
+	n++;
 
 	// 背景描画
 	if(background == 0) {
-		for(i = 0; i <= 4; i++) {
+		for(int32_t i = 0; i <= 4; i++) {
 			if(getDrawRate() == 1)
-				APP_BltFastRect(4, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (n % 96) / 3, 0, 0, 0, 96, 240);
 			else
-				APP_BltFastRect(4, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+				APP_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (n % 32), 0, 0, 0, 192, 480);
 		}
 	} else if(background == 1) {
-		for(i = 0; i <= 4; i++) {
-			ExBltFastRect(4, 96 * i, 0, 0, 0, 96, 240);
+		for(int32_t i = 0; i <= 4; i++) {
+			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(77, 0, 212,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 212,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 212,  n % 320, 20, 320 - (n % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (n % 320), 212,  0, 20, n % 320, 8);
 
-	ExBltRect(77, count % 320, 36,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(77, 0, 36, 320 - (count % 320), 28, count % 320, 8);
+	ExBltRect(PLANE_LINE, n % 320, 36,  0, 28, 320 - (n % 320), 8);
+	ExBltRect(PLANE_LINE, 0, 36, 320 - (n % 320), 28, n % 320, 8);
 
-	printFont(1, 1, "HEBORIS SETTING MENU", fontc[rots[0]]);
+	printFont(1, 1, "HEBORIS SETTING MENU", fontc[rotspl[0]]);
 
 	if(status[0] == 0) {
 		// game page 1
-		printFont(23, 1, "- GAME P.1", fontc[rots[0]]);
-		printFont(2,  3, "<< A/V <<	     >> GAME P.2 >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
-		printFont(2,  6, "NEXT PATTERN     :", (statusc[0] == 1) * fontc[rots[0]]);
-		printFont(2,  7, "NEXT DISPLAY     :", (statusc[0] == 2) * fontc[rots[0]]);
-		printFont(2,  8, "8WAY INPUT       :", (statusc[0] == 3) * fontc[rots[0]]);
-		printFont(2,  9, "SONIC DROP       :", (statusc[0] == 4) * fontc[rots[0]]);
-		printFont(2, 10, "INIT LR MOVE     :", (statusc[0] == 5) * fontc[rots[0]]);
-		printFont(2, 11, "BLOCK FALL       :", (statusc[0] == 6) * fontc[rots[0]]);
-		printFont(2, 12, "SHOW LEVEL       :", (statusc[0] == 7) * fontc[rots[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
-		printFont(2, 13, "WORLDREVERSE     :", (statusc[0] == 8) * fontc[rots[0]]);
-		printFont(2, 14, "DOWN TYPE        :", (statusc[0] == 9) * fontc[rots[0]]);
-		printFont(2, 15, "LVUP BONUS       :", (statusc[0] == 10) * fontc[rots[0]]);
-		printFont(2, 16, "OLDSTYLE ARS     :", (statusc[0] == 11) * fontc[rots[0]]); // allow CW and 180 i oldschool ARS
-		printFont(2, 17, "SPAWN Y TYPE     :", (statusc[0] == 12) * fontc[rots[0]]);
-		printFont(2, 18, "HIDE INFO(TOMOYO):", (statusc[0] == 13) * fontc[rots[0]]);
-		printFont(2, 19, "T-SPIN TYPE      :", (statusc[0] == 14) * fontc[rots[0]]);
-		printFont(2, 20, "BLOCK SPECTRUM   :", (statusc[0] == 15) * fontc[rots[0]]);
-		printFont(2, 21, "NEXT ADJUST      :", (statusc[0] == 16) * fontc[rots[0]]);
-		printFont(2, 22, "VIEW BEST TIME   :", (statusc[0] == 17) * fontc[rots[0]]);
-		printFont(2, 23, "BACK TO BACK     :", (statusc[0] == 18) * fontc[rots[0]]);
-		printFont(2, 24, "4WAY FILTER      :", (statusc[0] == 19) * fontc[rots[0]]);
-		printFont(2, 25, "4WAY PRIORITY UP :", (statusc[0] == 20) * fontc[rots[0]]);
+		printFont(23, 1, "- GAME P.1", fontc[rotspl[0]]);
+		printFont(2,  3, "<< A/V <<      >> GAME P.2 >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
+		printFont(2,  6, "NEXT PATTERN     :", (statusc[0] == 1) * fontc[rotspl[0]]);
+		printFont(2,  7, "NEXT DISPLAY     :", (statusc[0] == 2) * fontc[rotspl[0]]);
+		printFont(2,  8, "8WAY INPUT       :", (statusc[0] == 3) * fontc[rotspl[0]]);
+		printFont(2,  9, "SONIC DROP       :", (statusc[0] == 4) * fontc[rotspl[0]]);
+		printFont(2, 10, "INIT LR MOVE     :", (statusc[0] == 5) * fontc[rotspl[0]]);
+		printFont(2, 11, "BLOCK FALL       :", (statusc[0] == 6) * fontc[rotspl[0]]);
+		printFont(2, 12, "SHOW LEVEL       :", (statusc[0] == 7) * fontc[rotspl[0]]);	// "TGM LEVEL"を"SHOW LEVEL"に変更 #1.60c7i2
+		printFont(2, 13, "WORLDREVERSE     :", (statusc[0] == 8) * fontc[rotspl[0]]);
+		printFont(2, 14, "DOWN TYPE        :", (statusc[0] == 9) * fontc[rotspl[0]]);
+		printFont(2, 15, "LVUP BONUS       :", (statusc[0] == 10) * fontc[rotspl[0]]);
+		printFont(2, 16, "OLDSTYLE ARS     :", (statusc[0] == 11) * fontc[rotspl[0]]); // allow CW and 180 i oldschool ARS
+		printFont(2, 17, "SPAWN Y TYPE     :", (statusc[0] == 12) * fontc[rotspl[0]]);
+		printFont(2, 18, "HIDE INFO(TOMOYO):", (statusc[0] == 13) * fontc[rotspl[0]]);
+		printFont(2, 19, "T-SPIN TYPE      :", (statusc[0] == 14) * fontc[rotspl[0]]);
+		printFont(2, 20, "BLOCK SPECTRUM   :", (statusc[0] == 15) * fontc[rotspl[0]]);
+		printFont(2, 21, "NEXT ADJUST      :", (statusc[0] == 16) * fontc[rotspl[0]]);
+		printFont(2, 22, "VIEW BEST TIME   :", (statusc[0] == 17) * fontc[rotspl[0]]);
+		printFont(2, 23, "BACK TO BACK     :", (statusc[0] == 18) * fontc[rotspl[0]]);
+		printFont(2, 24, "4WAY FILTER      :", (statusc[0] == 19) * fontc[rotspl[0]]);
+		printFont(2, 25, "4WAY PRIORITY UP :", (statusc[0] == 20) * fontc[rotspl[0]]);
 
 		printMenuButton(2, 28, APP_BUTTON_A, 0);
 		printMenuButton(17, 28, APP_BUTTON_B, 0);
 		printFont(2, 28, " :SAVE&RETURN   :CANCEL", 9);
 
-		i = statusc[0];
+		int32_t i = statusc[0];
 		switch(i)
 		{
 		case 0:
-			printFont(1, 3, "b", fontc[rots[0]]); break;
+			printFont(1, 3, "b", fontc[rotspl[0]]); break;
 		default:
-			printFont(1, 5 + i, "b", fontc[rots[0]]); break;
+			printFont(1, 5 + i, "b", fontc[rotspl[0]]); break;
 		}
 
 		// next pattern
 		if((ncfg[2] > 1)&&(ncfg[2] < 8))
-		sprintf(string[0], "HEBO%" PRId32, ncfg[2]);
+		SDL_snprintf(string[0], STRING_LENGTH, "HEBO%" PRId32, ncfg[2]);
 		else if(ncfg[2] == 0)
-		sprintf(string[0], "RANDOM");
+		SDL_snprintf(string[0], STRING_LENGTH, "RANDOM");
 		else if(ncfg[2] == 1)
-		sprintf(string[0], "MEMORY1");
+		SDL_snprintf(string[0], STRING_LENGTH, "MEMORY1");
 		else if(ncfg[2] == 8)
-		sprintf(string[0], "MEMORY4");
+		SDL_snprintf(string[0], STRING_LENGTH, "MEMORY4");
 		else if(ncfg[2] == 9)
-		sprintf(string[0], "GUIDELINE");
+		SDL_snprintf(string[0], STRING_LENGTH, "GUIDELINE");
 		else if(ncfg[2] == 10)
-		sprintf(string[0], "DENGEN");
+		SDL_snprintf(string[0], STRING_LENGTH, "DENGEN");
 		else if(ncfg[2] == 11)
-		sprintf(string[0], "TOMOYO");
+		SDL_snprintf(string[0], STRING_LENGTH, "TOMOYO");
 		else if(ncfg[2] == 12)
-		sprintf(string[0], "FP");
+		SDL_snprintf(string[0], STRING_LENGTH, "FP");
 		else if(ncfg[2] == 13)
-		sprintf(string[0], "SEGA");
+		SDL_snprintf(string[0], STRING_LENGTH, "SEGA");
 		else if(ncfg[2] == 14)
-		sprintf(string[0], "BLOXEED");
+		SDL_snprintf(string[0], STRING_LENGTH, "BLOXEED");
 		else if (ncfg[2] == 15)
-			sprintf(string[0], "EH-MEMORY6");
+			SDL_snprintf(string[0], STRING_LENGTH, "EH-MEMORY6");
 		else if (ncfg[2] == 16)
-			sprintf(string[0], "MEMORY4-DP");
-		printFont(20, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
+			SDL_snprintf(string[0], STRING_LENGTH, "MEMORY4-DP");
+		printFont(20, 6, string[0], (statusc[0] == 1) * (n % 2) * digitc[rotspl[0]]);
 
 		// next display
-		sprintf(string[0], "%" PRId32, ncfg[45]);
-		printFont(20, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[45]);
+		printFont(20, 7, string[0], (statusc[0] == 2) * (n % 2) * digitc[rotspl[0]]);
 
 		// 8way input
-		if(ncfg[5]) sprintf(string[0], "e"); // × 斜め入力
-		else sprintf(string[0], "c");		// ○
-		printFont(20, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[5]) SDL_snprintf(string[0], STRING_LENGTH, "e"); // × 斜め入力
+		else SDL_snprintf(string[0], STRING_LENGTH, "c");		// ○
+		printFont(20, 8, string[0], (statusc[0] == 3) * (n % 2) * digitc[rotspl[0]]);
 
 		// sonic drop
-		if(ncfg[6]) sprintf(string[0], "e");	// × 高速落下
-		else sprintf(string[0], "c");		// ○
-		printFont(20, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[6]) SDL_snprintf(string[0], STRING_LENGTH, "e");	// × 高速落下
+		else SDL_snprintf(string[0], STRING_LENGTH, "c");		// ○
+		printFont(20, 9, string[0], (statusc[0] == 4) * (n % 2) * digitc[rotspl[0]]);
 
 		// init lr move
-		if(ncfg[7]) sprintf(string[0], "e");	// × 横先行入力
-		else sprintf(string[0], "c");		// ○
-		printFont(20, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[7]) SDL_snprintf(string[0], STRING_LENGTH, "e");	// × 横先行入力
+		else SDL_snprintf(string[0], STRING_LENGTH, "c");		// ○
+		printFont(20, 10, string[0], (statusc[0] == 5) * (n % 2) * digitc[rotspl[0]]);
 
 		// block fall
-		if(ncfg[4]) sprintf(string[0], "SMOOTH");
-		else sprintf(string[0], "NORMAL");
-		printFont(20, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[4]) SDL_snprintf(string[0], STRING_LENGTH, "SMOOTH");
+		else SDL_snprintf(string[0], STRING_LENGTH, "NORMAL");
+		printFont(20, 11, string[0], (statusc[0] == 6) * (n % 2) * digitc[rotspl[0]]);
 
 		// show level
-		if(ncfg[36]) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
-		printFont(20, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[36]) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(20, 12, string[0], (statusc[0] == 7) * (n % 2) * digitc[rotspl[0]]);
 
 		// WORLDREVERSE
-		if(ncfg[52]) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
-		printFont(20, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[52]) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(20, 13, string[0], (statusc[0] == 8) * (n % 2) * digitc[rotspl[0]]);
 
 		// downtype
-		if(ncfg[53]) sprintf(string[0], "DOWN RESET");
-		else sprintf(string[0], "NO RESET(HEBORIS)");
-		printFont(20, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[53]) SDL_snprintf(string[0], STRING_LENGTH, "DOWN RESET");
+		else SDL_snprintf(string[0], STRING_LENGTH, "NO RESET(HEBORIS)");
+		printFont(20, 14, string[0], (statusc[0] == 9) * (n % 2) * digitc[rotspl[0]]);
 
 		// lvupbonus
-		if(ncfg[54]==0) sprintf(string[0], "ON");
-		else if(ncfg[54] ==1)sprintf(string[0], "OFF");
-		else if(ncfg[54] ==2)sprintf(string[0], "ADJUST");
-		printFont(20, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[54]==0) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else if(ncfg[54] ==1)SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else if(ncfg[54] ==2)SDL_snprintf(string[0], STRING_LENGTH, "ADJUST");
+		printFont(20, 15, string[0], (statusc[0] == 10) * (n % 2) * digitc[rotspl[0]]);
 
 		// segacheat
-		if (ncfg[42]==0) sprintf(string[0], "CCW ONLY");
-		else if (ncfg[42] == 1)sprintf(string[0], "CW AND 180 ALLOW");
-		else if (ncfg[42] == 2)sprintf(string[0], "D.R.S. 3STATE+CW+180");
-		printFont(20, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
+		if (ncfg[42]==0) SDL_snprintf(string[0], STRING_LENGTH, "CCW ONLY");
+		else if (ncfg[42] == 1)SDL_snprintf(string[0], STRING_LENGTH, "CW AND 180 ALLOW");
+		else if (ncfg[42] == 2)SDL_snprintf(string[0], STRING_LENGTH, "D.R.S. 3STATE+CW+180");
+		printFont(20, 16, string[0], (statusc[0] == 11) * (n % 2) * digitc[rotspl[0]]);
 
 		// spawn y type
-		if(ncfg[274] == 0) sprintf(string[0], "FIELD IN");
-		else sprintf(string[0], "FIELD OUT");
-		printFont(20, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[274] == 0) SDL_snprintf(string[0], STRING_LENGTH, "FIELD IN");
+		else SDL_snprintf(string[0], STRING_LENGTH, "FIELD OUT");
+		printFont(20, 17, string[0], (statusc[0] == 12) * (n % 2) * digitc[rotspl[0]]);
 
 		// hide info (tomoyo)
-		if(ncfg[275] == 0) sprintf(string[0], "NOT HIDE");
-		else sprintf(string[0], "HIDE");
-		printFont(20, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[275] == 0) SDL_snprintf(string[0], STRING_LENGTH, "NOT HIDE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "HIDE");
+		printFont(20, 18, string[0], (statusc[0] == 13) * (n % 2) * digitc[rotspl[0]]);
 
 		// t-spin type
-		     if(ncfg[276] == 0) sprintf(string[0], "NO CHECK");
-		else if(ncfg[276] == 1) sprintf(string[0], "ERASE(NO BONUS)");
-		else if(ncfg[276] == 2) sprintf(string[0], "3-C(BONUS)");
-		else if(ncfg[276] == 3) sprintf(string[0], "BOTH(BONUS:3-C)");
-		printFont(20, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
+		if     (ncfg[276] == 0) SDL_snprintf(string[0], STRING_LENGTH, "NO CHECK");
+		else if(ncfg[276] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ERASE(NO BONUS)");
+		else if(ncfg[276] == 2) SDL_snprintf(string[0], STRING_LENGTH, "3-C(BONUS)");
+		else if(ncfg[276] == 3) SDL_snprintf(string[0], STRING_LENGTH, "BOTH(BONUS:3-C)");
+		printFont(20, 19, string[0], (statusc[0] == 14) * (n % 2) * digitc[rotspl[0]]);
 
 		// block spectrum
-		if(ncfg[277] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(20, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[277] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(20, 20, string[0], (statusc[0] == 15) * (n % 2) * digitc[rotspl[0]]);
 
 		// next adjust
-		if(ncfg[278] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON(NOT FIRST OSZ)");
-		printFont(20, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[278] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON(NOT FIRST OSZ)");
+		printFont(20, 21, string[0], (statusc[0] == 16) * (n % 2) * digitc[rotspl[0]]);
 
 		// view best time
-		if(ncfg[279] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(20, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[279] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(20, 22, string[0], (statusc[0] == 17) * (n % 2) * digitc[rotspl[0]]);
 
 		// back to back
-		if(ncfg[280] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(20, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[280] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(20, 23, string[0], (statusc[0] == 18) * (n % 2) * digitc[rotspl[0]]);
 
-		     if(ncfg[35] == 0) sprintf(string[0], "1P&2P");
-		else if(ncfg[35] == 1) sprintf(string[0], "ONLY 1P");
-		else if(ncfg[35] == 2) sprintf(string[0], "ONLY 2P");
-		else if(ncfg[35] == 3) sprintf(string[0], "OFF");
-		printFont(20, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
+		if     (ncfg[35] == 0) SDL_snprintf(string[0], STRING_LENGTH, "1P&2P");
+		else if(ncfg[35] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 1P");
+		else if(ncfg[35] == 2) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 2P");
+		else if(ncfg[35] == 3) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(20, 24, string[0], (statusc[0] == 19) * (n % 2) * digitc[rotspl[0]]);
 
-		     if(ncfg[37] == 0) sprintf(string[0], "1P&2P");
-		else if(ncfg[37] == 1) sprintf(string[0], "ONLY 1P");
-		else if(ncfg[37] == 2) sprintf(string[0], "ONLY 2P");
-		else if(ncfg[37] == 3) sprintf(string[0], "OFF");
-		printFont(20, 25, string[0], (statusc[0] == 20) * (count % 2) * digitc[rots[0]]);
+		if     (ncfg[37] == 0) SDL_snprintf(string[0], STRING_LENGTH, "1P&2P");
+		else if(ncfg[37] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 1P");
+		else if(ncfg[37] == 2) SDL_snprintf(string[0], STRING_LENGTH, "ONLY 2P");
+		else if(ncfg[37] == 3) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(20, 25, string[0], (statusc[0] == 20) * (n % 2) * digitc[rotspl[0]]);
 
 		statusc[1] = 0;
 
-		for(pl = 0; pl < 2; pl++) {
+		for(int32_t pl = 0; pl < 2; pl++) {
 			// ↑↓カーソルリピード #1.60c7k8
 			m=0;
 			padRepeat2(pl);
@@ -760,12 +738,12 @@ void ConfigMenu() {
 				if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 			padRepeat(pl);
 			if(m) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = (statusc[0] + m + 21) % 21;
 			}
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, APP_BUTTON_D)) {
-				assert(pages > 0);
+				SDL_assert(pages > 0);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -773,7 +751,7 @@ void ConfigMenu() {
 				m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
 
 				if(m) {
-					     if(statusc[0] ==  1) ncfg[2] = (ncfg[2] + 17 + m) % 17;	// nextbloc 8を追加#1.60c7h4
+					if     (statusc[0] ==  1) ncfg[2] = (ncfg[2] + 17 + m) % 17;	// nextbloc 8を追加#1.60c7h4
 					else if(statusc[0] ==  2) ncfg[45] = (ncfg[45] + 7 + m) % 7;	// dispnext
 					else if(statusc[0] ==  3) ncfg[5] = !ncfg[5];			// nanameallow
 					else if(statusc[0] ==  4) ncfg[6] = !ncfg[6];			// sonicdrop
@@ -795,7 +773,7 @@ void ConfigMenu() {
 					else if(statusc[0] == 20) ncfg[37] = (ncfg[37] + 4 + m)%4;	// four way priority up
 
 					else if(statusc[0] == 0) {	// page
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages) % pages;
 						statusc[0] = 0;
 						statusc[1] = 0;
@@ -804,7 +782,7 @@ void ConfigMenu() {
 				}
 			}
 			if(getPushState(pl, APP_BUTTON_A)) {	// A:保存&再起動
-				APP_PlayWave(10);
+				APP_PlayWave(WAVE_SE_KETTEI);
 				screenMode = ncfg[0];
 				screenIndex = ncfg[1];
 				nextblock = ncfg[2];
@@ -818,7 +796,6 @@ void ConfigMenu() {
 
 				fourwayfilter = ncfg[35];
 				fourwaypriorityup = ncfg[37];
-				soundbuffer = ncfg[38];
 				dtc = ncfg[36];
 				segacheat = ncfg[42];
 				fldtr = ncfg[43];
@@ -826,7 +803,7 @@ void ConfigMenu() {
 				sevolume = (ncfg[44] >> 16) & 0x7F;
 				bgm = (ncfg[44] >> 15) & 0x1;
 				bgmvolume = (ncfg[44] >> 8) & 0x7F;
-				wavebgm = ncfg[44] & APP_WAVE_MASK;
+				wavebgm = ncfg[44] & WAVE_BGM_SIMPLE;
 				dispnext = ncfg[45];
 				movesound = ncfg[46];
 				fontsize = ncfg[47];
@@ -894,159 +871,159 @@ void ConfigMenu() {
 				if(need_reset) {
 					restart = 1;	// 再起動フラグ
 				} else if(need_reloadBG==1){	//プレイする最大人数の変更があったら…
-					loadBG(maxPlay,0);			// 背景だけ再読み込み C7T2.5EX
+					loadBG(maxPlay);			// 背景だけ再読み込み C7T2.5EX
 				}
 				status[0] = -1;
 			}
 
 			if(getPushState(pl, APP_BUTTON_B)) {	// B:設定破棄&タイトル画面に戻る
-				SetVolumeAllWaves(sevolume);
+				SetVolumeAllSE(sevolume);
 				SetVolumeAllBGM(bgmvolume);
-				APP_SetVolumeMusic(bgmvolume);
+				APP_SetMusicVolume(bgmvolume);
 				status[0] = -1;
 			}
 		}
 	} else if(status[0] == 1) {
 		// game page 2
-		printFont(23, 1, "- GAME P.2", fontc[rots[0]]);
-		printFont(2,  3, "<< GAME P.1 <<	  >> DESIGN >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
-		printFont(2,  6, "DEBUG MODE        :", (statusc[0] == 1) * fontc[rots[0]]);
-		printFont(2,  7, "GRADE TYPE        :", (statusc[0] == 2) * fontc[rots[0]]);
-		printFont(2,  8, "IRS TYPE          :", (statusc[0] == 3) * fontc[rots[0]]);
-		printFont(2,  9, "LANGUAGE          :", (statusc[0] == 4) * fontc[rots[0]]);
-		printFont(2, 10, "MINI SELECT       :", (statusc[0] == 5) * fontc[rots[0]]);
-		printFont(2, 11, "BIG MOVE TYPE     :", (statusc[0] == 6) * fontc[rots[0]]);
-		printFont(2, 12, "ITEM INTERVAL     :", (statusc[0] == 7) * fontc[rots[0]]);
-		printFont(2, 13, "HIDE WAITS        :", (statusc[0] == 8) * fontc[rots[0]]);
-		printFont(2, 14, "VS LIMIT TIME(SEC):", (statusc[0] == 9) * fontc[rots[0]]);
-		printFont(2, 15, "MEDAL GRAPHICS    :", (statusc[0] == 10) * fontc[rots[0]]);
-		printFont(2, 16, "DEVIL RISE STARTLV:", (statusc[0] == 11) * fontc[rots[0]]);
-		printFont(2, 17, "RISE TYPE         :", (statusc[0] == 12) * fontc[rots[0]]);
-		printFont(2, 18, "HOLD              :", (statusc[0] == 13) * fontc[rots[0]]);
-		printFont(2, 19, "IRS               :", (statusc[0] == 14) * fontc[rots[0]]);
-		printFont(2, 20, "USE CPU(1P)       :", (statusc[0] == 15) * fontc[rots[0]]);
-		printFont(2, 21, "USE CPU(2P)       :", (statusc[0] == 16) * fontc[rots[0]]);
-		printFont(2, 22, "CPU TYPE          :", (statusc[0] == 17) * fontc[rots[0]]);
-		printFont(2, 23, "BLOCK ROTATE FRAME:", (statusc[0] == 18) * fontc[rots[0]]);
-		printFont(2, 24, "WALL KICK         :", (statusc[0] == 19) * fontc[rots[0]]);
-		printFont(2, 25, "SHOW 1P CONTROL   :", (statusc[0] == 20) * fontc[rots[0]]);
+		printFont(23, 1, "- GAME P.2", fontc[rotspl[0]]);
+		printFont(2,  3, "<< GAME P.1 <<      >> DESIGN >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
+		printFont(2,  6, "DEBUG MODE        :", (statusc[0] == 1) * fontc[rotspl[0]]);
+		printFont(2,  7, "GRADE TYPE        :", (statusc[0] == 2) * fontc[rotspl[0]]);
+		printFont(2,  8, "IRS TYPE          :", (statusc[0] == 3) * fontc[rotspl[0]]);
+		printFont(2,  9, "LANGUAGE          :", (statusc[0] == 4) * fontc[rotspl[0]]);
+		printFont(2, 10, "MINI SELECT       :", (statusc[0] == 5) * fontc[rotspl[0]]);
+		printFont(2, 11, "BIG MOVE TYPE     :", (statusc[0] == 6) * fontc[rotspl[0]]);
+		printFont(2, 12, "ITEM INTERVAL     :", (statusc[0] == 7) * fontc[rotspl[0]]);
+		printFont(2, 13, "HIDE WAITS        :", (statusc[0] == 8) * fontc[rotspl[0]]);
+		printFont(2, 14, "VS LIMIT TIME(SEC):", (statusc[0] == 9) * fontc[rotspl[0]]);
+		printFont(2, 15, "MEDAL GRAPHICS    :", (statusc[0] == 10) * fontc[rotspl[0]]);
+		printFont(2, 16, "DEVIL RISE STARTLV:", (statusc[0] == 11) * fontc[rotspl[0]]);
+		printFont(2, 17, "RISE TYPE         :", (statusc[0] == 12) * fontc[rotspl[0]]);
+		printFont(2, 18, "HOLD              :", (statusc[0] == 13) * fontc[rotspl[0]]);
+		printFont(2, 19, "IRS               :", (statusc[0] == 14) * fontc[rotspl[0]]);
+		printFont(2, 20, "USE CPU(1P)       :", (statusc[0] == 15) * fontc[rotspl[0]]);
+		printFont(2, 21, "USE CPU(2P)       :", (statusc[0] == 16) * fontc[rotspl[0]]);
+		printFont(2, 22, "CPU TYPE          :", (statusc[0] == 17) * fontc[rotspl[0]]);
+		printFont(2, 23, "BLOCK ROTATE FRAME:", (statusc[0] == 18) * fontc[rotspl[0]]);
+		printFont(2, 24, "WALL KICK         :", (statusc[0] == 19) * fontc[rotspl[0]]);
+		printFont(2, 25, "SHOW 1P CONTROL   :", (statusc[0] == 20) * fontc[rotspl[0]]);
 
 		printMenuButton(2, 28, APP_BUTTON_A, 0);
 		printMenuButton(4, 28, APP_BUTTON_B, 0);
 		printFont(2, 28, " / :RETURN", 9);
 
-		i = statusc[0];
-		switch(i)
+		int32_t s = statusc[0];
+		switch(s)
 		{
 		case 0:
-			printFont(1, 3, "b", fontc[rots[0]]); break;
+			printFont(1, 3, "b", fontc[rotspl[0]]); break;
 		default:
-			printFont(1, 5 + i, "b", fontc[rots[0]]); break;
+			printFont(1, 5 + s, "b", fontc[rotspl[0]]); break;
 		}
 
 		// debug mode
-		if(ncfg[281] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(21, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[281] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(21, 6, string[0], (statusc[0] == 1) * (n % 2) * digitc[rotspl[0]]);
 
 		// grade type
-		sprintf(string[0], "%" PRId32, ncfg[282]);
-		printFont(21, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[282]);
+		printFont(21, 7, string[0], (statusc[0] == 2) * (n % 2) * digitc[rotspl[0]]);
 
 		// irs type
-		if(ncfg[284] == 0) sprintf(string[0], "CLASSIC");
-		else if(ncfg[284] == 1)sprintf(string[0], "ACE");
-		else sprintf(string[0], "ACE+");
-		printFont(21, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[284] == 0) SDL_snprintf(string[0], STRING_LENGTH, "CLASSIC");
+		else if(ncfg[284] == 1)SDL_snprintf(string[0], STRING_LENGTH, "ACE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ACE+");
+		printFont(21, 8, string[0], (statusc[0] == 3) * (n % 2) * digitc[rotspl[0]]);
 
 		// language
-		if(ncfg[285] == 0) sprintf(string[0], "JAPANESE");
-		else sprintf(string[0], "ENGLISH");
-		printFont(21, 9, string[0], (statusc[0] == 4) * (count % 2) * digitc[rots[0]]);
-		
+		if(ncfg[285] == 0) SDL_snprintf(string[0], STRING_LENGTH, "JAPANESE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ENGLISH");
+		printFont(21, 9, string[0], (statusc[0] == 4) * (n % 2) * digitc[rotspl[0]]);
+
 		// mini select
-		if(ncfg[286] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(21, 10, string[0], (statusc[0] == 5) * (count % 2) * digitc[rots[0]]);
-		
+		if(ncfg[286] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(21, 10, string[0], (statusc[0] == 5) * (n % 2) * digitc[rotspl[0]]);
+
 		// big move type
-		if(ncfg[287] == 0) sprintf(string[0], "1CELL");
-		else if(ncfg[287] == 1)sprintf(string[0], "2CELL");
-		else sprintf(string[0], "TOMOYO:1/OTHER:2");
-		printFont(21, 11, string[0], (statusc[0] == 6) * (count % 2) * digitc[rots[0]]);
-		
+		if(ncfg[287] == 0) SDL_snprintf(string[0], STRING_LENGTH, "1CELL");
+		else if(ncfg[287] == 1)SDL_snprintf(string[0], STRING_LENGTH, "2CELL");
+		else SDL_snprintf(string[0], STRING_LENGTH, "TOMOYO:1/OTHER:2");
+		printFont(21, 11, string[0], (statusc[0] == 6) * (n % 2) * digitc[rotspl[0]]);
+
 		// item interval
-		sprintf(string[0], "%" PRId32, ncfg[288]);
-		printFont(21, 12, string[0], (statusc[0] == 7) * (count % 2) * digitc[rots[0]]);
-		
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[288]);
+		printFont(21, 12, string[0], (statusc[0] == 7) * (n % 2) * digitc[rotspl[0]]);
+
 		// hide waits
-		if(ncfg[289] == 0) sprintf(string[0], "NOT HIDE");
-		else sprintf(string[0], "HIDE");
-		printFont(21, 13, string[0], (statusc[0] == 8) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[289] == 0) SDL_snprintf(string[0], STRING_LENGTH, "NOT HIDE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "HIDE");
+		printFont(21, 13, string[0], (statusc[0] == 8) * (n % 2) * digitc[rotspl[0]]);
 
 		// versus limit time (seconds)
-		sprintf(string[0], "%" PRId32, ncfg[290] / 60);
-		printFont(21, 14, string[0], (statusc[0] == 9) * (count % 2) * digitc[rots[0]]);
-		
-		// medal graphics
-		if(ncfg[291] == 0) sprintf(string[0], "f");	//□
-		else if(ncfg[291] == 1) sprintf(string[0], "c");//○
-		else sprintf(string[0], "OFF");
-		printFont(21, 15, string[0], (statusc[0] == 10) * (count % 2) * digitc[rots[0]]);
-		
-		// devil rise start level
-		sprintf(string[0], "%" PRId32, ncfg[292]);
-		printFont(21, 16, string[0], (statusc[0] == 11) * (count % 2) * digitc[rots[0]]);
-		
-		// rise type
-		if(ncfg[293] == 0) sprintf(string[0], "COPY");
-		else if(ncfg[293] == 1)sprintf(string[0], "PATTERN");
-		else if(ncfg[293] == 2)sprintf(string[0], "RANDOM");
-		else sprintf(string[0], "REVERSE ERASE FIELD");
-		printFont(21, 17, string[0], (statusc[0] == 12) * (count % 2) * digitc[rots[0]]);
-		
-		// hold
-		if(ncfg[294] == 0) sprintf(string[0], "ENABLE");
-		else sprintf(string[0], "DISABLE");
-		printFont(21, 18, string[0], (statusc[0] == 13) * (count % 2) * digitc[rots[0]]);
-		
-		// irs
-		if(ncfg[295] == 0) sprintf(string[0], "ENABLE");
-		else sprintf(string[0], "DISABLE");
-		printFont(21, 19, string[0], (statusc[0] == 14) * (count % 2) * digitc[rots[0]]);
-		
-		// use cpu (1p)
-		if(ncfg[296] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(21, 20, string[0], (statusc[0] == 15) * (count % 2) * digitc[rots[0]]);
-		
-		// use cpu (2p)
-		if(ncfg[297] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(21, 21, string[0], (statusc[0] == 16) * (count % 2) * digitc[rots[0]]);
-		
-		// cpu type
-		if(ncfg[298] == 0) sprintf(string[0], "ERASE SOON");
-		else sprintf(string[0], "ERASE STORE");
-		printFont(21, 22, string[0], (statusc[0] == 17) * (count % 2) * digitc[rots[0]]);
-		
-		// block rotate frame
-		if(ncfg[299] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(21, 23, string[0], (statusc[0] == 18) * (count % 2) * digitc[rots[0]]);
-		
-		// wall kick
-		if(ncfg[300] == 0) sprintf(string[0], "ENABLE");
-		else sprintf(string[0], "DISABLE");
-		printFont(21, 24, string[0], (statusc[0] == 19) * (count % 2) * digitc[rots[0]]);
-		
-		// show 1p control
-		if(ncfg[301] == 0) sprintf(string[0], "REPLAY ONLY");
-		else if(ncfg[301] == 1) sprintf(string[0], "ALWAYS ON");
-		else sprintf(string[0], "ALWAYS OFF");
-		printFont(21, 25, string[0], (statusc[0] == 20) * (count % 2) * digitc[rots[0]]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[290] / 60);
+		printFont(21, 14, string[0], (statusc[0] == 9) * (n % 2) * digitc[rotspl[0]]);
 
-		for(pl = 0; pl < 2; pl++) {
+		// medal graphics
+		if(ncfg[291] == 0) SDL_snprintf(string[0], STRING_LENGTH, "f");	//□
+		else if(ncfg[291] == 1) SDL_snprintf(string[0], STRING_LENGTH, "c");//○
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(21, 15, string[0], (statusc[0] == 10) * (n % 2) * digitc[rotspl[0]]);
+
+		// devil rise start level
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[292]);
+		printFont(21, 16, string[0], (statusc[0] == 11) * (n % 2) * digitc[rotspl[0]]);
+
+		// rise type
+		if(ncfg[293] == 0) SDL_snprintf(string[0], STRING_LENGTH, "COPY");
+		else if(ncfg[293] == 1)SDL_snprintf(string[0], STRING_LENGTH, "PATTERN");
+		else if(ncfg[293] == 2)SDL_snprintf(string[0], STRING_LENGTH, "RANDOM");
+		else SDL_snprintf(string[0], STRING_LENGTH, "REVERSE ERASE FIELD");
+		printFont(21, 17, string[0], (statusc[0] == 12) * (n % 2) * digitc[rotspl[0]]);
+
+		// hold
+		if(ncfg[294] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ENABLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DISABLE");
+		printFont(21, 18, string[0], (statusc[0] == 13) * (n % 2) * digitc[rotspl[0]]);
+
+		// irs
+		if(ncfg[295] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ENABLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DISABLE");
+		printFont(21, 19, string[0], (statusc[0] == 14) * (n % 2) * digitc[rotspl[0]]);
+
+		// use cpu (1p)
+		if(ncfg[296] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(21, 20, string[0], (statusc[0] == 15) * (n % 2) * digitc[rotspl[0]]);
+
+		// use cpu (2p)
+		if(ncfg[297] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(21, 21, string[0], (statusc[0] == 16) * (n % 2) * digitc[rotspl[0]]);
+
+		// cpu type
+		if(ncfg[298] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ERASE SOON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ERASE STORE");
+		printFont(21, 22, string[0], (statusc[0] == 17) * (n % 2) * digitc[rotspl[0]]);
+
+		// block rotate frame
+		if(ncfg[299] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(21, 23, string[0], (statusc[0] == 18) * (n % 2) * digitc[rotspl[0]]);
+
+		// wall kick
+		if(ncfg[300] == 0) SDL_snprintf(string[0], STRING_LENGTH, "ENABLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DISABLE");
+		printFont(21, 24, string[0], (statusc[0] == 19) * (n % 2) * digitc[rotspl[0]]);
+
+		// show 1p control
+		if(ncfg[301] == 0) SDL_snprintf(string[0], STRING_LENGTH, "REPLAY ONLY");
+		else if(ncfg[301] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ALWAYS ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ALWAYS OFF");
+		printFont(21, 25, string[0], (statusc[0] == 20) * (n % 2) * digitc[rotspl[0]]);
+
+		for(int32_t pl = 0; pl < 2; pl++) {
 			padRepeat(pl);
 			m=0;
 			padRepeat2(pl);
@@ -1058,20 +1035,20 @@ void ConfigMenu() {
 			if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 				if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 			if(m) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = (statusc[0] + m + 21) % 21;
 			}
 
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, APP_BUTTON_D)) {
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
 			} else {
 				m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
 				if(m) {
-					     if(statusc[0] ==   1) ncfg[281] = !ncfg[281];
+					if     (statusc[0] ==   1) ncfg[281] = !ncfg[281];
 					else if(statusc[0] ==   2) ncfg[282] = (ncfg[282] + 5 + m) % 5;
 					else if(statusc[0] ==   3) ncfg[284] = (ncfg[284] + 3 + m) % 3;
 					else if(statusc[0] ==   4) ncfg[285] = !ncfg[285];
@@ -1093,7 +1070,7 @@ void ConfigMenu() {
 					else if(statusc[0] ==  20) ncfg[301] = (ncfg[301] + 3 + m) % 3;
 
 					else if(statusc[0] == 0) {
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages)%pages;
 						statusc[0] = 0;
 					}
@@ -1102,7 +1079,7 @@ void ConfigMenu() {
 			}
 
 			if(getPushState(pl, APP_BUTTON_A) || getPushState(pl, APP_BUTTON_B)) {	// A&B:mainに戻る
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = 0;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1110,103 +1087,103 @@ void ConfigMenu() {
 		}
 	} else if(status[0] == 2) {
 		// design setting
-		printFont(23, 1, "- DESIGN SETTING", fontc[rots[0]]);
-		printFont(2, 3, "<< GAME P.2 <<	   >> INPUT >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+		printFont(23, 1, "- DESIGN SETTING", fontc[rotspl[0]]);
+		printFont(2, 3, "<< GAME P.2 <<      >> INPUT >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 
-		printFont( 2,  6, "BLOCK FRAME    :", fontc[rots[0]] * (statusc[0] == 1));
-		printFont( 2,  7, "FIELD BG       :", fontc[rots[0]] * (statusc[0] == 2));
-		printFont( 2,  8, "FIELD BG TR    :", fontc[rots[0]] * (statusc[0] == 3));
+		printFont( 2,  6, "BLOCK FRAME    :", fontc[rotspl[0]] * (statusc[0] == 1));
+		printFont( 2,  7, "FIELD BG       :", fontc[rotspl[0]] * (statusc[0] == 2));
+		printFont( 2,  8, "FIELD BG TR    :", fontc[rotspl[0]] * (statusc[0] == 3));
 
-		printFont( 2,  9, "FONT [HEBORIS] :", fontc[rots[0]] * (statusc[0] == 4));
-		printFont( 2, 10, "FONT [TI-ARS]  :", fontc[rots[0]] * (statusc[0] == 5));
-		printFont( 2, 11, "FONT [TI-WORLD]:", fontc[rots[0]] * (statusc[0] == 6));
-		printFont( 2, 12, "FONT [ACE-SRS] :", fontc[rots[0]] * (statusc[0] == 7));
-		printFont( 2, 13, "FONT [ACE-ARS] :", fontc[rots[0]] * (statusc[0] == 8));
-		printFont( 2, 14, "FONT [ACE-ARS2]:", fontc[rots[0]] * (statusc[0] == 9));
-		printFont( 2, 15, "FONT [DS-WORLD]:", fontc[rots[0]] * (statusc[0] == 10));
-		printFont( 2, 16, "FONT [SRS-X]   :", fontc[rots[0]] * (statusc[0] == 11));
-		printFont( 2, 17, "FONT [DRS]     :", fontc[rots[0]] * (statusc[0] == 12));
+		printFont( 2,  9, "FONT [HEBORIS] :", fontc[rotspl[0]] * (statusc[0] == 4));
+		printFont( 2, 10, "FONT [TI-ARS]  :", fontc[rotspl[0]] * (statusc[0] == 5));
+		printFont( 2, 11, "FONT [TI-WORLD]:", fontc[rotspl[0]] * (statusc[0] == 6));
+		printFont( 2, 12, "FONT [ACE-SRS] :", fontc[rotspl[0]] * (statusc[0] == 7));
+		printFont( 2, 13, "FONT [ACE-ARS] :", fontc[rotspl[0]] * (statusc[0] == 8));
+		printFont( 2, 14, "FONT [ACE-ARS2]:", fontc[rotspl[0]] * (statusc[0] == 9));
+		printFont( 2, 15, "FONT [DS-WORLD]:", fontc[rotspl[0]] * (statusc[0] == 10));
+		printFont( 2, 16, "FONT [SRS-X]   :", fontc[rotspl[0]] * (statusc[0] == 11));
+		printFont( 2, 17, "FONT [DRS]     :", fontc[rotspl[0]] * (statusc[0] == 12));
 
-		printFont(22,  9, "DIGIT[HEBORIS] :", fontc[rots[0]] * (statusc[0] == 13));
-		printFont(22, 10, "DIGIT[TI-ARS]  :", fontc[rots[0]] * (statusc[0] == 14));
-		printFont(22, 11, "DIGIT[TI-WORLD]:", fontc[rots[0]] * (statusc[0] == 15));
-		printFont(22, 12, "DIGIT[ACE-SRS] :", fontc[rots[0]] * (statusc[0] == 16));
-		printFont(22, 13, "DIGIT[ACE-ARS] :", fontc[rots[0]] * (statusc[0] == 17));
-		printFont(22, 14, "DIGIT[ACE-ARS2]:", fontc[rots[0]] * (statusc[0] == 18));
-		printFont(22, 15, "DIGIT[DS-WORLD]:", fontc[rots[0]] * (statusc[0] == 19));
-		printFont(22, 16, "DIGIT[SRS-X]   :", fontc[rots[0]] * (statusc[0] == 20));
-		printFont(22, 17, "DIGIT[DRS]     :", fontc[rots[0]] * (statusc[0] == 21));
+		printFont(22,  9, "DIGIT[HEBORIS] :", fontc[rotspl[0]] * (statusc[0] == 13));
+		printFont(22, 10, "DIGIT[TI-ARS]  :", fontc[rotspl[0]] * (statusc[0] == 14));
+		printFont(22, 11, "DIGIT[TI-WORLD]:", fontc[rotspl[0]] * (statusc[0] == 15));
+		printFont(22, 12, "DIGIT[ACE-SRS] :", fontc[rotspl[0]] * (statusc[0] == 16));
+		printFont(22, 13, "DIGIT[ACE-ARS] :", fontc[rotspl[0]] * (statusc[0] == 17));
+		printFont(22, 14, "DIGIT[ACE-ARS2]:", fontc[rotspl[0]] * (statusc[0] == 18));
+		printFont(22, 15, "DIGIT[DS-WORLD]:", fontc[rotspl[0]] * (statusc[0] == 19));
+		printFont(22, 16, "DIGIT[SRS-X]   :", fontc[rotspl[0]] * (statusc[0] == 20));
+		printFont(22, 17, "DIGIT[DRS]     :", fontc[rotspl[0]] * (statusc[0] == 21));
 
-		printFont( 2, 19, "NUMBER FONT    :", fontc[rots[0]] * (statusc[0] == 22));
-		printFont( 2, 20, "MAX PLAYER     :", fontc[rots[0]] * (statusc[0] == 23));
-		printFont( 2, 21, "BREAK EFFECT   :", fontc[rots[0]] * (statusc[0] == 24));
-		printFont( 2, 22, "SHOW COMBOS    :", fontc[rots[0]] * (statusc[0] == 25));
-		printFont( 2, 23, "TOP FRAME      :", fontc[rots[0]] * (statusc[0] == 26));
+		printFont( 2, 19, "NUMBER FONT    :", fontc[rotspl[0]] * (statusc[0] == 22));
+		printFont( 2, 20, "MAX PLAYER     :", fontc[rotspl[0]] * (statusc[0] == 23));
+		printFont( 2, 21, "BREAK EFFECT   :", fontc[rotspl[0]] * (statusc[0] == 24));
+		printFont( 2, 22, "SHOW COMBOS    :", fontc[rotspl[0]] * (statusc[0] == 25));
+		printFont( 2, 23, "TOP FRAME      :", fontc[rotspl[0]] * (statusc[0] == 26));
 
 		printMenuButton(2, 28, APP_BUTTON_A, 0);
 		printMenuButton(4, 28, APP_BUTTON_B, 0);
 		printFont(2, 28, " / :RETURN", 9);
 
-		i = statusc[0];
-		if((i >= 13) && (i <= 21)) {
-			printFont(21, i - 4, "b", fontc[rots[0]]);
-		} else if(i > 21) {
-			printFont(1, i - 3, "b", fontc[rots[0]]);
-		} else if(i == 0) {
-			printFont(1, 3, "b", fontc[rots[0]]);
+		int32_t s = statusc[0];
+		if((s >= 13) && (s <= 21)) {
+			printFont(21, s - 4, "b", fontc[rotspl[0]]);
+		} else if(s > 21) {
+			printFont(1, s - 3, "b", fontc[rotspl[0]]);
+		} else if(s == 0) {
+			printFont(1, 3, "b", fontc[rotspl[0]]);
 		} else {
-			printFont(1, 5 + i, "b", fontc[rots[0]]);
+			printFont(1, 5 + s, "b", fontc[rotspl[0]]);
 		}
 
-		if(ncfg[8] == 0) sprintf(string[0], "BLINK");
-		else if(ncfg[8] == 1) sprintf(string[0], "ON");
-		else if(ncfg[8] == 2) sprintf(string[0], "OFF");
-		else if(ncfg[8] == 3) sprintf(string[0], "DRAW ONLY FIELD BLOCKS");
-		printFont(18, 6, string[0], (statusc[0] == 1) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[8] == 0) SDL_snprintf(string[0], STRING_LENGTH, "BLINK");
+		else if(ncfg[8] == 1) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else if(ncfg[8] == 2) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else if(ncfg[8] == 3) SDL_snprintf(string[0], STRING_LENGTH, "DRAW ONLY FIELD BLOCKS");
+		printFont(18, 6, string[0], (statusc[0] == 1) * (n % 2) * digitc[rotspl[0]]);
 
-		if(ncfg[9] == 0) sprintf(string[0], "GRID (SCROLLING)");
-		else if(ncfg[9] == 1) sprintf(string[0], "GRID");
-		else sprintf(string[0], "BLACK");
-		printFont(18, 7, string[0], (statusc[0] == 2) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[9] == 0) SDL_snprintf(string[0], STRING_LENGTH, "GRID (SCROLLING)");
+		else if(ncfg[9] == 1) SDL_snprintf(string[0], STRING_LENGTH, "GRID");
+		else SDL_snprintf(string[0], STRING_LENGTH, "BLACK");
+		printFont(18, 7, string[0], (statusc[0] == 2) * (n % 2) * digitc[rotspl[0]]);
 
-		sprintf(string[0], "%" PRId32, ncfg[43]);
-		printFont(18, 8, string[0], (statusc[0] == 3) * (count % 2) * digitc[rots[0]]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[43]);
+		printFont(18, 8, string[0], (statusc[0] == 3) * (n % 2) * digitc[rotspl[0]]);
 
-		for(i = 0; i < 9; i++) { //FONT
-			sprintf(string[0], "%" PRId32, ncfg[62+(2*i)]);
+		for(int32_t i = 0; i < 9; i++) { //FONT
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[62+(2*i)]);
 			printFont(18, 9+i, string[0], ncfg[62+(2*i)]);
 		}
-		for(i = 0; i < 9; i++) {//DIGIT
-			sprintf(string[0], "%" PRId32, ncfg[63+(2*i)]);
+		for(int32_t i = 0; i < 9; i++) {//DIGIT
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, ncfg[63+(2*i)]);
 			printFont(38, 9+i, string[0], ncfg[63+(2*i)]);
 		}
 
-		if(ncfg[47] == 0) sprintf(string[0], "DEFAULT");
-		else sprintf(string[0], "SHARP");
-		printFont(18, 19, string[0], (statusc[0] == 22) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[47] == 0) SDL_snprintf(string[0], STRING_LENGTH, "DEFAULT");
+		else SDL_snprintf(string[0], STRING_LENGTH, "SHARP");
+		printFont(18, 19, string[0], (statusc[0] == 22) * (n % 2) * digitc[rotspl[0]]);
 
-		if(ncfg[48] == 0) sprintf(string[0], "SINGLE");
-		else sprintf(string[0], "DUAL");
-		printFont(18, 20, string[0], (statusc[0] == 23) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[48] == 0) SDL_snprintf(string[0], STRING_LENGTH, "SINGLE");
+		else SDL_snprintf(string[0], STRING_LENGTH, "DUAL");
+		printFont(18, 20, string[0], (statusc[0] == 23) * (n % 2) * digitc[rotspl[0]]);
 
 		//breakefect
-		if(ncfg[49] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(18, 21, string[0], (statusc[0] == 24) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[49] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(18, 21, string[0], (statusc[0] == 24) * (n % 2) * digitc[rotspl[0]]);
 
 		//showcombo
-		if(ncfg[50] == 0) sprintf(string[0], "OFF");
-		else sprintf(string[0], "ON");
-		printFont(18, 22, string[0], (statusc[0] == 25) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[50] == 0) SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		printFont(18, 22, string[0], (statusc[0] == 25) * (n % 2) * digitc[rotspl[0]]);
 
 		//top frame
-		if(ncfg[51] == 0) sprintf(string[0], "TI");
-		else sprintf(string[0], "ACE");
-		printFont(18, 23, string[0], (statusc[0] == 26) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[51] == 0) SDL_snprintf(string[0], STRING_LENGTH, "TI");
+		else SDL_snprintf(string[0], STRING_LENGTH, "ACE");
+		printFont(18, 23, string[0], (statusc[0] == 26) * (n % 2) * digitc[rotspl[0]]);
 
 		statusc[1] = 0;
 
-		for(pl = 0; pl < 2; pl++) {
+		for(int32_t pl = 0; pl < 2; pl++) {
 			padRepeat(pl);
 			m=0;
 			padRepeat2(pl);
@@ -1218,13 +1195,13 @@ void ConfigMenu() {
 			if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 				if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 			if(m) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = (statusc[0] + m + 27) % 27;
 			}
 
 			// HOLDボタンでページ切り替え #1.60c7k8
 			if(getPushState(pl, APP_BUTTON_D)) {
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = (status[0] + 1 + pages)%pages;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1261,7 +1238,7 @@ void ConfigMenu() {
 					if(statusc[0] == 26) ncfg[51] = !ncfg[51];	// top_frame
 
 					if(statusc[0] == 0){
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages)%pages;
 						statusc[0] = 0;
 					}
@@ -1277,7 +1254,7 @@ void ConfigMenu() {
 			}
 
 			if(getPushState(pl, APP_BUTTON_A) || getPushState(pl, APP_BUTTON_B)) {	// A&B:mainに戻る
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = 0;
 				statusc[0] = 0;
 				statusc[1] = 1;
@@ -1288,31 +1265,31 @@ void ConfigMenu() {
 		// menu
 		int32_t optionIndex = 0;
 		if(statusc[2] == optionIndex++) {
-			printFont(23, 1, "- INPUT SETTING", fontc[rots[0]]);
-			printFont(2,  3, "<< DESIGN <<	       >> A/V >>", digitc[rots[0]] * (statusc[0] == 0) * (count % 2));
+			printFont(23, 1, "- INPUT SETTING", fontc[rotspl[0]]);
+			printFont(2,  3, "<< DESIGN <<      >> A/V >>", digitc[rotspl[0]] * (statusc[0] == 0) * (n % 2));
 			int32_t numOptions = 0;
-			#ifdef APP_ENABLE_KEYBOARD
-			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 1P]", fontc[rots[0]] * (statusc[0] == numOptions));
-			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 2P]", fontc[rots[0]] * (statusc[0] == numOptions));
+			#ifdef APP_ENABLE_KEYBOARD_INPUT
+			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
+			numOptions++; printFont(2, 4 + numOptions * 2, "[KEYBOARD 2P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			#endif
-			#ifdef APP_ENABLE_JOYSTICK
-			numOptions++; printFont(2, 4 + numOptions * 2, "[JOYSTICK 1P]", fontc[rots[0]] * (statusc[0] == numOptions));
-			numOptions++; printFont(2, 4 + numOptions * 2, "[JOYSTICK 2P]", fontc[rots[0]] * (statusc[0] == numOptions));
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
+			numOptions++; printFont(2, 4 + numOptions * 2, "[JOYSTICK 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
+			numOptions++; printFont(2, 4 + numOptions * 2, "[JOYSTICK 2P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER
-			numOptions++; printFont(2, 4 + numOptions * 2, "[GAME CONTROLLER 1P]", fontc[rots[0]] * (statusc[0] == numOptions));
-			numOptions++; printFont(2, 4 + numOptions * 2, "[GAME CONTROLLER 2P]", fontc[rots[0]] * (statusc[0] == numOptions));
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
+			numOptions++; printFont(2, 4 + numOptions * 2, "[GAME CONTROLLER 1P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
+			numOptions++; printFont(2, 4 + numOptions * 2, "[GAME CONTROLLER 2P]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			#endif
-			numOptions++; printFont(2, 4 + numOptions * 2, "[INPUT TEST]", fontc[rots[0]] * (statusc[0] == numOptions));
-			numOptions++; printFont(2, 4 + numOptions * 2, "[DISP ASSIGN]", fontc[rots[0]] * (statusc[0] == numOptions));
+			numOptions++; printFont(2, 4 + numOptions * 2, "[INPUT TEST]", fontc[rotspl[0]] * (statusc[0] == numOptions));
+			numOptions++; printFont(2, 4 + numOptions * 2, "[DISP ASSIGN]", fontc[rotspl[0]] * (statusc[0] == numOptions));
 			printMenuButton(2, 28, APP_BUTTON_A, 0);
 			printMenuButton(12, 28, APP_BUTTON_B, 0);
 			printFont(2, 28, " :SELECT   :RETURN", 9);
 
-			if(statusc[0] != 0) printFont(1, 4+statusc[0]*2, "b", fontc[rots[0]]);
-			else printFont(1, 3, "b", fontc[rots[0]]);
+			if(statusc[0] != 0) printFont(1, 4+statusc[0]*2, "b", fontc[rotspl[0]]);
+			else printFont(1, 3, "b", fontc[rotspl[0]]);
 
-			for(pl = 0; pl < 2; pl++) {
+			for(int32_t pl = 0; pl < 2; pl++) {
 				// ↑↓カーソルリピード #1.60c7k8
 				m=0;
 				padRepeat2(pl);
@@ -1324,12 +1301,12 @@ void ConfigMenu() {
 				if((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0)))
 					if(getPressState(pl, APP_BUTTON_DOWN)) m++;
 				if(m) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = (statusc[0] + m + numOptions + 1) % (numOptions + 1);
 				}
 				// HOLDボタンでページ切り替え #1.60c7k8
 				if(getPushState(pl, APP_BUTTON_D)) {
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 					status[0] = (status[0] + 1 + pages)%pages;
 					statusc[0] = 0;
 					statusc[1] = 1;
@@ -1337,7 +1314,7 @@ void ConfigMenu() {
 					m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
 					if(m) {
 						if(statusc[0] == 0){
-							PlaySE(3);
+							PlaySE(WAVE_SE_KACHI);
 							status[0] = (status[0] + m + pages)%pages;
 							statusc[0] = 0;
 							statusc[1] = 1;
@@ -1346,52 +1323,52 @@ void ConfigMenu() {
 				}
 
 				if(getPushState(pl, APP_BUTTON_A) && (statusc[0] != 0)) {
-					PlaySE(19);
+					PlaySE(WAVE_SE_LEVELUP);
 					statusc[2] = statusc[0];
 					statusc[0] = 0;
 					conPlayer = -1;
 				}
 
 				if(getPushState(pl, APP_BUTTON_B)) {
-					PlaySE(3);
+					PlaySE(WAVE_SE_KACHI);
 					status[0] = 0;
 					statusc[0] = 0;
 					statusc[1] = 1;
 				}
 			}
 		}
-		#ifdef APP_ENABLE_KEYBOARD
+		#ifdef APP_ENABLE_KEYBOARD_INPUT
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// keyboard 1p&2p
 			bool cancel = false;
-			#if defined(APP_ENABLE_JOYSTICK) || defined(APP_ENABLE_GAME_CONTROLLER) || defined(APP_ENABLE_LINUX_GPIO)
+			#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT) || defined(APP_ENABLE_LINUX_GPIO_INPUT)
 			switch (APP_GetLastInputType()) {
-			#ifdef APP_ENABLE_JOYSTICK
+			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			case APP_INPUT_JOYSTICK:
 				if (statusc[0] < 10 && APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_B])) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = 0;
 					statusc[2] = 0;
 					cancel = true;
 				}
 				break;
 			#endif
-			#ifdef APP_ENABLE_LINUX_GPIO
+			#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 			case APP_INPUT_LINUXGPIO:
 				if (statusc[0] < 10 && APP_IsPushGPIO(APP_BUTTON_B)) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = 0;
 					statusc[2] = 0;
 					cancel = true;
 				}
 				break;
 			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER
+			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 			case APP_INPUT_XBOX:
 			case APP_INPUT_PLAYSTATION:
 			case APP_INPUT_NINTENDO:
 				if (statusc[0] < 10 && IsPushMenu(0, APP_BUTTON_B, APP_GetLastInputType())) {
-					PlaySE(5);
+					PlaySE(WAVE_SE_MOVE);
 					statusc[0] = 0;
 					statusc[2] = 0;
 					cancel = true;
@@ -1404,30 +1381,30 @@ void ConfigMenu() {
 			}
 			#endif
 			if (!cancel) {
-				pl = statusc[2] - optionIndex + 2;
-				sprintf(string[0], "KEYBOARD %" PRId32 "P SETTING", pl + 1);
-				printFont(2, 3, string[0], digitc[rots[0]]);
+				int32_t pl = statusc[2] - optionIndex + 2;
+				SDL_snprintf(string[0], STRING_LENGTH, "KEYBOARD %" PRId32 "P SETTING", pl + 1);
+				printFont(2, 3, string[0], digitc[rotspl[0]]);
 
-				printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
-				printMenuButton(3, 7, APP_BUTTON_DOWN, pl); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
-				printMenuButton(3, 8, APP_BUTTON_LEFT, pl); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
-				printMenuButton(3, 9, APP_BUTTON_RIGHT, pl); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
-				printFont(3, 10, "A     :", fontc[rots[0]] * (statusc[0] == 4));
-				printFont(3, 11, "B     :", fontc[rots[0]] * (statusc[0] == 5));
-				printFont(3, 12, "C     :", fontc[rots[0]] * (statusc[0] == 6));
-				printFont(3, 13, "D     :", fontc[rots[0]] * (statusc[0] == 7));
-				printFont(3, 14, "GIVEUP:", fontc[rots[0]] * (statusc[0] == 8));
-				printFont(3, 15, "PAUSE :", fontc[rots[0]] * (statusc[0] == 9));
+				printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(9, 6, ":", fontc[rotspl[0]] * (statusc[0] == 0));
+				printMenuButton(3, 7, APP_BUTTON_DOWN, pl); printFont(9, 7, ":", fontc[rotspl[0]] * (statusc[0] == 1));
+				printMenuButton(3, 8, APP_BUTTON_LEFT, pl); printFont(9, 8, ":", fontc[rotspl[0]] * (statusc[0] == 2));
+				printMenuButton(3, 9, APP_BUTTON_RIGHT, pl); printFont(9, 9, ":", fontc[rotspl[0]] * (statusc[0] == 3));
+				printFont(3, 10, "A     :", fontc[rotspl[0]] * (statusc[0] == 4));
+				printFont(3, 11, "B     :", fontc[rotspl[0]] * (statusc[0] == 5));
+				printFont(3, 12, "C     :", fontc[rotspl[0]] * (statusc[0] == 6));
+				printFont(3, 13, "D     :", fontc[rotspl[0]] * (statusc[0] == 7));
+				printFont(3, 14, "GIVEUP:", fontc[rotspl[0]] * (statusc[0] == 8));
+				printFont(3, 15, "PAUSE :", fontc[rotspl[0]] * (statusc[0] == 9));
 
-				for(i = 0; i < statusc[0]; i++) {
-					sprintf(string[0], "%03X", (unsigned)ncfg[10 + i + pl * 10]);
-					printFont(10, 6 + i, string[0], digitc[rots[0]]);
+				for(int32_t i = 0; i < statusc[0]; i++) {
+					SDL_snprintf(string[0], STRING_LENGTH, "%03X", (unsigned)ncfg[10 + i + pl * 10]);
+					printFont(10, 6 + i, string[0], digitc[rotspl[0]]);
 				}
 
 				if(statusc[0] < 10) {
-					printFont(10, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
-					for(i = 0; i < APP_GetMaxKey(); i++) {
-						if(i != SDL_GetScancodeFromKey(SDLK_ESCAPE) && APP_IsPushKey(i)) {
+					printFont(10, 6 + statusc[0], "_", digitc[rotspl[0]] * (n % 2));
+					for(int32_t i = 0; i < APP_GetMaxKey(); i++) {
+						if(i != (int32_t)SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL) && APP_IsPushKey(i)) {
 							bool unmapped = true;
 							for (APP_Button button = 0; button < statusc[0]; button++) {
 								if (ncfg[10 + button + pl * 10] == i) {
@@ -1436,7 +1413,7 @@ void ConfigMenu() {
 								}
 							}
 							if (unmapped) {
-								PlaySE(5);
+								PlaySE(WAVE_SE_MOVE);
 								ncfg[10 + statusc[0] + pl * 10] = i;
 								statusc[0]++;
 							}
@@ -1444,25 +1421,25 @@ void ConfigMenu() {
 						}
 					}
 				} else {
-					printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-					printPrompt(3 + 3, 17, APP_PROMPT_OK, digitc[rots[0]] * (count % 2));
-					printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rots[0]] * (count % 2));
-					printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
+					printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rotspl[0]] * (n % 2));
+					printPrompt(3 + 3, 17, APP_PROMPT_OK, digitc[rotspl[0]] * (n % 2));
+					printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rotspl[0]] * (n % 2));
+					printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rotspl[0]] * (n % 2));
 
 					if(IsPushPrompt(APP_PROMPT_OK)) {
-						PlaySE(10);
-						for(i = 0; i < APP_BUTTON_COUNT * 2; i++) keyAssign[i] = ncfg[10 + i];
+						PlaySE(WAVE_SE_KETTEI);
+						for(int32_t i = 0; i < APP_BUTTON_COUNT * 2; i++) keyAssign[i] = ncfg[10 + i];
 						statusc[0] = 0;
 						statusc[2] = 0;
 					}
 					if(IsPushPrompt(APP_PROMPT_RETRY)) {
-						PlaySE(5);
-						for(i = 0; i < APP_BUTTON_COUNT * 2; i++) ncfg[10 + i] = keyAssign[i];
+						PlaySE(WAVE_SE_MOVE);
+						for(int32_t i = 0; i < APP_BUTTON_COUNT * 2; i++) ncfg[10 + i] = keyAssign[i];
 						statusc[0] = 0;
 					}
 					if(IsPushPrompt(APP_PROMPT_CANCEL)) {
-						PlaySE(5);
-						for(i = 0; i < APP_BUTTON_COUNT * 2; i++) ncfg[10 + i] = keyAssign[i];
+						PlaySE(WAVE_SE_MOVE);
+						for(int32_t i = 0; i < APP_BUTTON_COUNT * 2; i++) ncfg[10 + i] = keyAssign[i];
 						statusc[0] = 0;
 						statusc[2] = 0;
 					}
@@ -1470,7 +1447,7 @@ void ConfigMenu() {
 			}
 		}
 		#endif
-		#ifdef APP_ENABLE_JOYSTICK
+		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// joystick setting
 			if (APP_GetNumJoys() <= 0) {
@@ -1479,27 +1456,27 @@ void ConfigMenu() {
 			}
 			else {
 				bool cancel = false;
-				#if defined(APP_ENABLE_GAME_CONTROLLER) || defined(APP_ENABLE_LINUX_GPIO) || defined(APP_ENABLE_KEYBOARD)
+				#if defined(APP_ENABLE_GAME_CONTROLLER_INPUT) || defined(APP_ENABLE_LINUX_GPIO_INPUT) || defined(APP_ENABLE_KEYBOARD_INPUT)
 				switch (APP_GetLastInputType()) {
-				#ifdef APP_ENABLE_GAME_CONTROLLER
+				#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 				case APP_INPUT_XBOX:
 				case APP_INPUT_PLAYSTATION:
 				case APP_INPUT_NINTENDO:
 					if (statusc[0] < 10 && IsPushMenu(0, APP_BUTTON_B, APP_GetLastInputType())) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
 					}
 					break;
 				#endif
-				#ifdef APP_ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 				case APP_INPUT_LINUXGPIO:
 				#endif
-				#ifdef APP_ENABLE_KEYBOARD
+				#ifdef APP_ENABLE_KEYBOARD_INPUT
 				case APP_INPUT_KEYBOARD:
 					if (statusc[0] < 10 && APP_IsPushKey(keyAssign[APP_BUTTON_B])) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1512,44 +1489,44 @@ void ConfigMenu() {
 				}
 				#endif
 				if (!cancel) {
-					pl = statusc[2] - optionIndex + 2;
-					sprintf(string[0], "JOYSTICK %" PRId32 "P SETTING", pl + 1);
-					printFont(2, 3, string[0], digitc[rots[0]]);
+					int32_t pl = statusc[2] - optionIndex + 2;
+					SDL_snprintf(string[0], STRING_LENGTH, "JOYSTICK %" PRId32 "P SETTING", pl + 1);
+					printFont(2, 3, string[0], digitc[rotspl[0]]);
 
-					printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(9, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
-					printMenuButton(3, 7, APP_BUTTON_DOWN, pl); printFont(9, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
-					printMenuButton(3, 8, APP_BUTTON_LEFT, pl); printFont(9, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
-					printMenuButton(3, 9, APP_BUTTON_RIGHT, pl); printFont(9, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
-					printFont(3, 10, "A     :", fontc[rots[0]] * (statusc[0] == 4));
-					printFont(3, 11, "B     :", fontc[rots[0]] * (statusc[0] == 5));
-					printFont(3, 12, "C     :", fontc[rots[0]] * (statusc[0] == 6));
-					printFont(3, 13, "D     :", fontc[rots[0]] * (statusc[0] == 7));
-					printFont(3, 14, "GIVEUP:", fontc[rots[0]] * (statusc[0] == 8));
-					printFont(3, 15, "PAUSE :", fontc[rots[0]] * (statusc[0] == 9));
+					printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(9, 6, ":", fontc[rotspl[0]] * (statusc[0] == 0));
+					printMenuButton(3, 7, APP_BUTTON_DOWN, pl); printFont(9, 7, ":", fontc[rotspl[0]] * (statusc[0] == 1));
+					printMenuButton(3, 8, APP_BUTTON_LEFT, pl); printFont(9, 8, ":", fontc[rotspl[0]] * (statusc[0] == 2));
+					printMenuButton(3, 9, APP_BUTTON_RIGHT, pl); printFont(9, 9, ":", fontc[rotspl[0]] * (statusc[0] == 3));
+					printFont(3, 10, "A     :", fontc[rotspl[0]] * (statusc[0] == 4));
+					printFont(3, 11, "B     :", fontc[rotspl[0]] * (statusc[0] == 5));
+					printFont(3, 12, "C     :", fontc[rotspl[0]] * (statusc[0] == 6));
+					printFont(3, 13, "D     :", fontc[rotspl[0]] * (statusc[0] == 7));
+					printFont(3, 14, "GIVEUP:", fontc[rotspl[0]] * (statusc[0] == 8));
+					printFont(3, 15, "PAUSE :", fontc[rotspl[0]] * (statusc[0] == 9));
 
-					j = 80 + pl * 10 * 8;
-					for(i = 0; i < statusc[0]; i++) {
-						switch((APP_JoyKeyType)ncfg[j+5+i*8]) {
+					int32_t ncfgi = 80 + pl * 10 * 8;
+					for(int32_t i = 0; i < statusc[0]; i++) {
+						switch((APP_JoyKeyType)ncfg[ncfgi+5+i*8]) {
 						case APP_JOYKEY_AXIS:
-							sprintf(string[0], "JOY%dP:A%d%c", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], ncfg[j+7+i*8] >= 0 ? '+' : '-');
+							SDL_snprintf(string[0], STRING_LENGTH, "JOY%dP:A%d%c", (int)ncfg[ncfgi+0+i*8] + 1, (int)ncfg[ncfgi+6+i*8], ncfg[ncfgi+7+i*8] >= 0 ? '+' : '-');
 							break;
 						case APP_JOYKEY_HAT:
-							sprintf(string[0], "JOY%dP:H%d,%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8], (int)ncfg[j+7+i*8]);
+							SDL_snprintf(string[0], STRING_LENGTH, "JOY%dP:H%d,%d", (int)ncfg[ncfgi+0+i*8] + 1, (int)ncfg[ncfgi+6+i*8], (int)ncfg[ncfgi+7+i*8]);
 							break;
 						case APP_JOYKEY_BUTTON:
-							sprintf(string[0], "JOY%dP:B%d", (int)ncfg[j+0+i*8] + 1, (int)ncfg[j+6+i*8]);
+							SDL_snprintf(string[0], STRING_LENGTH, "JOY%dP:B%d", (int)ncfg[ncfgi+0+i*8] + 1, (int)ncfg[ncfgi+6+i*8]);
 							break;
 						default:
-							sprintf(string[0], "???");
+							SDL_snprintf(string[0], STRING_LENGTH, "???");
 							break;
 						}
-						printFont(10, 6 + i, string[0], digitc[rots[0]]);
+						printFont(10, 6 + i, string[0], digitc[rotspl[0]]);
 					}
 
 					if(statusc[0] < 10) {
-						printFont(10, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+						printFont(10, 6 + statusc[0], "_", digitc[rotspl[0]] * (n % 2));
 						APP_JoyKey pushKey;
-						int pushPlayer = -1;
+						int32_t pushPlayer = -1;
 						do {
 							if (APP_GetPlayerSlotType(pl) != APP_PLAYERSLOT_JOY) {
 								break;
@@ -1626,17 +1603,17 @@ void ConfigMenu() {
 							bool unmapped = true;
 							for (APP_Button button = 0; button < statusc[0]; button++) {
 								if (
-									ncfg[j+0+button*8] == pushKey.player &&
-									memcmp(&ncfg[j+1+button*8], pushKey.guid.data, sizeof(int32_t) * 4) == 0 &&
-									ncfg[j+5+button*8] == pushKey.type
+									ncfg[ncfgi+0+button*8] == pushKey.player &&
+									memcmp(&ncfg[ncfgi+1+button*8], pushKey.guid.data, sizeof(int32_t) * 4) == 0 &&
+									ncfg[ncfgi+5+button*8] == (int32_t)pushKey.type
 								) {
 									switch (pushKey.type) {
 									case APP_JOYKEY_AXIS:
 									case APP_JOYKEY_HAT:
-										unmapped = (ncfg[j+6+button*8] != pushKey.setting.index || ncfg[j+7+button*8] != pushKey.setting.value);
+										unmapped = (ncfg[ncfgi+6+button*8] != pushKey.setting.index || ncfg[ncfgi+7+button*8] != pushKey.setting.value);
 										break;
 									case APP_JOYKEY_BUTTON:
-										unmapped = (ncfg[j+6+button*8] != pushKey.setting.button);
+										unmapped = (ncfg[ncfgi+6+button*8] != pushKey.setting.button);
 										break;
 									default:
 										break;
@@ -1645,20 +1622,20 @@ void ConfigMenu() {
 								if (!unmapped) break;
 							}
 							if (unmapped) {
-								PlaySE(5);
-								ncfg[j+0+statusc[0]*8] = pushKey.player;
+								PlaySE(WAVE_SE_MOVE);
+								ncfg[ncfgi+0+statusc[0]*8] = pushKey.player;
 								for (int32_t i = 0; i < 4; i++) {
-									ncfg[j+1+i+statusc[0]*8] = pushKey.guid.data[i];
+									ncfg[ncfgi+1+i+statusc[0]*8] = pushKey.guid.data[i];
 								}
-								ncfg[j+5+statusc[0]*8] = pushKey.type;
+								ncfg[ncfgi+5+statusc[0]*8] = pushKey.type;
 								switch(pushKey.type) {
 								case APP_JOYKEY_AXIS:
 								case APP_JOYKEY_HAT:
-									ncfg[j+6+statusc[0]*8] = pushKey.setting.index;
-									ncfg[j+7+statusc[0]*8] = pushKey.setting.value;
+									ncfg[ncfgi+6+statusc[0]*8] = pushKey.setting.index;
+									ncfg[ncfgi+7+statusc[0]*8] = pushKey.setting.value;
 									break;
 								case APP_JOYKEY_BUTTON:
-									ncfg[j+6+statusc[0]*8] = pushKey.setting.button;
+									ncfg[ncfgi+6+statusc[0]*8] = pushKey.setting.button;
 									break;
 								default:
 									break;
@@ -1667,12 +1644,12 @@ void ConfigMenu() {
 							}
 						}
 					} else {
-						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 3, 17, APP_PROMPT_OK, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
+						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rotspl[0]] * (n % 2));
+						printPrompt(3 + 3, 17, APP_PROMPT_OK, digitc[rotspl[0]] * (n % 2));
+						printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rotspl[0]] * (n % 2));
+						printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rotspl[0]] * (n % 2));
 						if(IsPushPrompt(APP_PROMPT_OK)) {
-							PlaySE(10);
+							PlaySE(WAVE_SE_KETTEI);
 							for (APP_Button button = 0; button < APP_BUTTON_COUNT; button++) {
 								APP_JoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
@@ -1700,7 +1677,7 @@ void ConfigMenu() {
 							statusc[2] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_RETRY)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							for (APP_Button button = 0; button < APP_BUTTON_COUNT; button++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
 								APP_JoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
@@ -1726,7 +1703,7 @@ void ConfigMenu() {
 							statusc[0] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_CANCEL)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							for (APP_Button button = 0; button < 10; button++) {
 								int32_t *plcfg = &ncfg[80 + pl * 10 * 8 + button * 8];
 								APP_JoyKey *pljoy = &joyKeyAssign[pl * 10 + button];
@@ -1757,7 +1734,7 @@ void ConfigMenu() {
 			}
 		}
 		#endif
-		#ifdef APP_ENABLE_GAME_CONTROLLER
+		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 		else if(optionIndex += 2, (statusc[2] == optionIndex - 2) || (statusc[2] == optionIndex - 1)) {
 			// game controller setting
 			if (APP_GetNumCons() <= 0) {
@@ -1775,36 +1752,36 @@ void ConfigMenu() {
 				case APP_INPUT_PLAYSTATION:
 				case APP_INPUT_NINTENDO:
 					if (APP_IsPushConKey(-1, &cancelKey)) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
 					}
 					break;
-				#ifdef APP_ENABLE_JOYSTICK
+				#ifdef APP_ENABLE_JOYSTICK_INPUT
 				case APP_INPUT_JOYSTICK:
 					if (statusc[0] < 8 && APP_IsPushJoyKey(&joyKeyAssign[APP_BUTTON_B])) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
 					}
 					break;
 				#endif
-				#ifdef APP_ENABLE_LINUX_GPIO
+				#ifdef APP_ENABLE_LINUX_GPIO_INPUT
 				case APP_INPUT_LINUXGPIO:
 					if (statusc[0] < 8 && APP_IsPushGPIO(APP_BUTTON_B)) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
 					}
 					break;
 				#endif
-				#ifdef APP_ENABLE_KEYBOARD
+				#ifdef APP_ENABLE_KEYBOARD_INPUT
 				case APP_INPUT_KEYBOARD:
 					if (statusc[0] < 8 && APP_IsPushKey(keyAssign[APP_BUTTON_B])) {
-						PlaySE(5);
+						PlaySE(WAVE_SE_MOVE);
 						statusc[0] = 0;
 						statusc[2] = 0;
 						cancel = true;
@@ -1817,22 +1794,22 @@ void ConfigMenu() {
 				}
 
 				if (!cancel) {
-					pl = statusc[2] - optionIndex + 2;
-					sprintf(string[0], "CONTROLLER %" PRId32 "P SETTING", pl + 1);
-					printFont(2, 3, string[0], digitc[rots[0]]);
+					int32_t pl = statusc[2] - optionIndex + 2;
+					SDL_snprintf(string[0], STRING_LENGTH, "CONTROLLER %" PRId32 "P SETTING", pl + 1);
+					printFont(2, 3, string[0], digitc[rotspl[0]]);
 
-					printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(4, 6, ":", fontc[rots[0]] * (statusc[0] == 0));
-					printMenuButton(3, 7, APP_BUTTON_DOWN, pl); printFont(4, 7, ":", fontc[rots[0]] * (statusc[0] == 1));
-					printMenuButton(3, 8, APP_BUTTON_LEFT, pl); printFont(4, 8, ":", fontc[rots[0]] * (statusc[0] == 2));
-					printMenuButton(3, 9, APP_BUTTON_RIGHT, pl); printFont(4, 9, ":", fontc[rots[0]] * (statusc[0] == 3));
-					printFont(3, 10, "A:", fontc[rots[0]] * (statusc[0] == 4));
-					printFont(3, 11, "B:", fontc[rots[0]] * (statusc[0] == 5));
-					printFont(3, 12, "C:", fontc[rots[0]] * (statusc[0] == 6));
-					printFont(3, 13, "D:", fontc[rots[0]] * (statusc[0] == 7));
+					printMenuButton(3, 6, APP_BUTTON_UP, pl); printFont(4, 6, ":", fontc[rotspl[0]] * (statusc[0] == 0));
+					printMenuButton(3, 7, APP_BUTTON_DOWN, pl); printFont(4, 7, ":", fontc[rotspl[0]] * (statusc[0] == 1));
+					printMenuButton(3, 8, APP_BUTTON_LEFT, pl); printFont(4, 8, ":", fontc[rotspl[0]] * (statusc[0] == 2));
+					printMenuButton(3, 9, APP_BUTTON_RIGHT, pl); printFont(4, 9, ":", fontc[rotspl[0]] * (statusc[0] == 3));
+					printFont(3, 10, "A:", fontc[rotspl[0]] * (statusc[0] == 4));
+					printFont(3, 11, "B:", fontc[rotspl[0]] * (statusc[0] == 5));
+					printFont(3, 12, "C:", fontc[rotspl[0]] * (statusc[0] == 6));
+					printFont(3, 13, "D:", fontc[rotspl[0]] * (statusc[0] == 7));
 
-					APP_ConKey key;
-					key.type = APP_CONKEY_ANY;
-					if (conPlayer == -1 && !APP_IsPressConKey(-1, &key)) {
+					APP_ConKey anyKey;
+					anyKey.type = APP_CONKEY_ANY;
+					if (conPlayer == -1 && !APP_IsPressConKey(-1, &anyKey)) {
 						APP_ResetLastActiveCon();
 						conPlayer = -2;
 					}
@@ -1842,18 +1819,18 @@ void ConfigMenu() {
 					}
 
 					if (conPlayer == pl) {
-						for(i = 0; i < statusc[0]; i++) {
+						for(int32_t i = 0; i < statusc[0]; i++) {
 							APP_ConKey key = {
 								.type  = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0],
 								.index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1]
 							};
-							sprintf(string[0], "%" PRId32 "P:", conPlayer + 1);
-							printFont(5, 6 + i, string[0], digitc[rots[0]]);
-							printConKey(5 + strlen(string[0]), 6 + i, conPlayer, &key, digitc[rots[0]]);
+							SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "P:", conPlayer + 1);
+							printFont(5, 6 + i, string[0], digitc[rotspl[0]]);
+							printConKey(5 + strlen(string[0]), 6 + i, conPlayer, &key, digitc[rotspl[0]]);
 						}
 					}
 					if(statusc[0] < APP_BUTTON_GAME_COUNT) {
-						printFont(5, 6 + statusc[0], "_", digitc[rots[0]] * (count % 2));
+						printFont(5, 6 + statusc[0], "_", digitc[rotspl[0]] * (n % 2));
 						bool pushed = false;
 						APP_ConKey pushKey;
 
@@ -1876,19 +1853,19 @@ void ConfigMenu() {
 						}
 
 						if (pushed) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 0] = pushKey.type;
 							ncfg[240 + pl * (1 + 2 * 8) + 1 + statusc[0] * 2 + 1] = pushKey.index;
 							statusc[0]++;
 						}
 					} else {
-						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 3, 17, APP_PROMPT_OK, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rots[0]] * (count % 2));
-						printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rots[0]] * (count % 2));
+						printFont(3, 17, "OK[     ] / RETRY[   ] / CANCEL[  ]", digitc[rotspl[0]] * (n % 2));
+						printPrompt(3 + 3, 17, APP_PROMPT_OK, digitc[rotspl[0]] * (n % 2));
+						printPrompt(3 + 18, 17, APP_PROMPT_RETRY, digitc[rotspl[0]] * (n % 2));
+						printPrompt(3 + 32, 17, APP_PROMPT_CANCEL, digitc[rotspl[0]] * (n % 2));
 						if(IsPushPrompt(APP_PROMPT_OK)) {
-							PlaySE(10);
-							for(i = 0; i < 8; i++) {
+							PlaySE(WAVE_SE_KETTEI);
+							for(int32_t i = 0; i < 8; i++) {
 								APP_ConKey* key = &conKeyAssign[pl * 8 + i];
 								key->type = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0];
 								key->index = ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1];
@@ -1897,9 +1874,9 @@ void ConfigMenu() {
 							statusc[2] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_RETRY)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							ncfg[240 + pl * (1 + 2 * 8)] = pl;
-							for (i = 0; i < 8; i++) {
+							for (int32_t i = 0; i < 8; i++) {
 								APP_ConKey* key = &conKeyAssign[pl * 8 + i];
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
@@ -1907,9 +1884,9 @@ void ConfigMenu() {
 							statusc[0] = 0;
 						}
 						else if(IsPushPrompt(APP_PROMPT_CANCEL)) {
-							PlaySE(5);
+							PlaySE(WAVE_SE_MOVE);
 							ncfg[240 + pl * (1 + 2 * 8)] = pl;
-							for (i = 0; i < 8; i++) {
+							for (int32_t i = 0; i < 8; i++) {
 								APP_ConKey* key = &conKeyAssign[pl * 8 + i];
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 0] = key->type;
 								ncfg[240 + pl * (1 + 2 * 8) + 1 + i * 2 + 1] = key->index;
@@ -1924,16 +1901,16 @@ void ConfigMenu() {
 		#endif
 		else if(statusc[2] == optionIndex++) {
 			// INPUT TEST #1.60c7n3
-			printFont(2,  3, "INPUT TEST", digitc[rots[0]]);
+			printFont(2,  3, "INPUT TEST", digitc[rotspl[0]]);
 			printFont(2, 28, "EXIT[ & ]", 9);
 			printMenuButton(7, 28, APP_BUTTON_RIGHT, 0);
 			printMenuButton(9, 28, APP_BUTTON_A, 0);
 
-			for(pl=0; pl<2; pl++) {
-				sprintf(string[0],"%" PRId32 "P", pl + 1);
+			for(int32_t pl=0; pl<2; pl++) {
+				SDL_snprintf(string[0], STRING_LENGTH,"%" PRId32 "P", pl + 1);
 				printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
-				for(i=0; i<=7; i++) {
+				for(int32_t i=0; i<=7; i++) {
 					if(i == 0)      { printMenuButton(3, 7 + i + pl * 10, APP_BUTTON_UP, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
 					else if(i == 1) { printMenuButton(3, 7 + i + pl * 10, APP_BUTTON_DOWN, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
 					else if(i == 2) { printMenuButton(3, 7 + i + pl * 10, APP_BUTTON_LEFT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
@@ -1942,42 +1919,42 @@ void ConfigMenu() {
 					else if(i == 5) { printFont(3, 7 + i + pl * 10, "B:", 0); }
 					else if(i == 6) { printFont(3, 7 + i + pl * 10, "C:", 0); }
 					else if(i == 7) { printFont(3, 7 + i + pl * 10, "D:", 0); }
-					j =
+					int32_t j =
 						0
-						#ifdef APP_ENABLE_KEYBOARD
+						#ifdef APP_ENABLE_KEYBOARD_INPUT
 						|| APP_IsPressKey(keyAssign[i + 10 * pl])
 						#endif
-						#ifdef APP_ENABLE_JOYSTICK
+						#ifdef APP_ENABLE_JOYSTICK_INPUT
 						|| APP_IsPressJoyKey(&joyKeyAssign[i + 10 * pl])	// キー入力状態取得
 						#endif
-						#ifdef APP_ENABLE_GAME_CONTROLLER
+						#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 						|| APP_IsPressConKey(pl, &conKeyAssign[i + 8 * pl])
 						#endif
 						;
-					if(j) sprintf(string[0],"d");
-					else  sprintf(string[0],"c");
+					if(j) SDL_snprintf(string[0], STRING_LENGTH,"d");
+					else  SDL_snprintf(string[0], STRING_LENGTH,"c");
 					printFont(5, 7 + i + pl * 10, string[0], j+1);
 				}
 			}
 
 			if( getPressState(0, APP_BUTTON_RIGHT) && getPressState(0, APP_BUTTON_A) ) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = 0;
 				statusc[2] = 0;
 			}
 		} else if(statusc[2] == optionIndex++) {
 			// DISP ASSIGN #1.60c7n4
-			printFont(2,  3, "DISP ASSIGN", digitc[rots[0]]);
+			printFont(2,  3, "DISP ASSIGN", digitc[rotspl[0]]);
 			printMenuButton(2, 28, APP_BUTTON_A, 0);
 			printMenuButton(4, 28, APP_BUTTON_B, 0);
 			printFont(2, 28, " / : EXIT", 9);
 
-			for(pl=0; pl<2; pl++) {
+			for(int32_t pl=0; pl<2; pl++) {
 				string[0][0] = '\0';
-				sprintf(string[0],"%" PRId32 "P", pl + 1);
+				SDL_snprintf(string[0], STRING_LENGTH,"%" PRId32 "P", pl + 1);
 				printFont(3, 6 + pl * 10, string[0], 2 - pl);
 
-				for(i=0; i<=7; i++) {
+				for(int32_t i=0; i<=7; i++) {
 					if(i == 0)      { printMenuButton(3, 7 + i + pl * 10, APP_BUTTON_UP, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
 					else if(i == 1) { printMenuButton(3, 7 + i + pl * 10, APP_BUTTON_DOWN, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
 					else if(i == 2) { printMenuButton(3, 7 + i + pl * 10, APP_BUTTON_LEFT, pl); printFont(4, 7 + i + pl * 10, ":", 0); }
@@ -1989,17 +1966,15 @@ void ConfigMenu() {
 
 					string[0][0] = '\0';
 
-					size_t stringPos = 0u;
-
-					#ifdef APP_ENABLE_KEYBOARD
+					#ifdef APP_ENABLE_KEYBOARD_INPUT
 					if (keyAssign[i + pl * 10] != SDL_SCANCODE_UNKNOWN)
 					{
-						sprintf(string[1]," KB:%03X", (unsigned)keyAssign[i + pl * 10]);
+						SDL_snprintf(string[1], STRING_LENGTH," KB:%03X", (unsigned)keyAssign[i + pl * 10]);
 						strcat(string[0], string[1]);
 					}
 					#endif
 
-					#ifdef APP_ENABLE_JOYSTICK
+					#ifdef APP_ENABLE_JOYSTICK_INPUT
 					APP_JoyKey* const key = &joyKeyAssign[i + pl * 10];
 					APP_JoyGUID getGUID = APP_GetJoyGUID(key->player);
 					APP_JoyGUID zeroGUID = { 0 };
@@ -2011,21 +1986,21 @@ void ConfigMenu() {
 					) {
 						switch(key->type) {
 						case APP_JOYKEY_AXIS:
-							sprintf(string[1], " JOY%dP:A%d%c",
+							SDL_snprintf(string[1], STRING_LENGTH, " JOY%dP:A%d%c",
 								key->player + 1,
 								key->setting.index,
 								key->setting.value >= 0 ? '+' : '-'
 							);
 							break;
 						case APP_JOYKEY_HAT:
-							sprintf(string[1], " JOY%dP:H%d,%d",
+							SDL_snprintf(string[1], STRING_LENGTH, " JOY%dP:H%d,%d",
 								key->player + 1,
 								key->setting.index,
 								key->setting.value
 							);
 							break;
 						case APP_JOYKEY_BUTTON:
-							sprintf(string[1], " JOY%dP:B%d",
+							SDL_snprintf(string[1], STRING_LENGTH, " JOY%dP:B%d",
 								key->player + 1,
 								key->setting.button
 							);
@@ -2040,22 +2015,22 @@ void ConfigMenu() {
 
 					}
 					#endif
-					
-					#ifdef APP_ENABLE_GAME_CONTROLLER
+
+					#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 					APP_ConKey conKey = conKeyAssign[i + pl * 8];
 					if (APP_GetPlayerSlotType(pl) == APP_PLAYERSLOT_CON && (conKey.type == APP_CONKEY_AXIS || conKey.type == APP_CONKEY_BUTTON)) {
 						if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);
-						sprintf(string[1], " CON%" PRId32 "P:", pl + 1);
+						SDL_snprintf(string[1], STRING_LENGTH, " CON%" PRId32 "P:", pl + 1);
 						int32_t x = 5 + strlen(string[0]);
 						printFont(x, 7 + i + pl * 10, string[1], 0);
 						printConKey(x + strlen(string[1]), 7 + i + pl * 10, pl, &conKey, 0);
 					}
 					else {
-						if (string[0][0] == '\0') sprintf(string[0], " NO ASSIGN");
+						if (string[0][0] == '\0') SDL_snprintf(string[0], STRING_LENGTH, " NO ASSIGN");
 						printFont(5, 7 + i + pl * 10, string[0], 0);
 					}
 					#else
-					if (string[0][0] == '\0') sprintf(string[0], " NO ASSIGN");
+					if (string[0][0] == '\0') SDL_snprintf(string[0], STRING_LENGTH, " NO ASSIGN");
 					printFont(5, 7 + i + pl * 10, string[0], 0);
 					#endif
 				}
@@ -2063,15 +2038,15 @@ void ConfigMenu() {
 
 			// A/B:戻る
 			if(getPushState(0, APP_BUTTON_A) || getPushState(0, APP_BUTTON_B) || getPushState(1, APP_BUTTON_A) || getPushState(1, APP_BUTTON_B)) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				statusc[0] = 0;
 				statusc[2] = 0;
 			}
 		}
 	} else if(status[0] == 4) {
 		// video setting
-		bool showScreenModeSetting = (ncfg[0] & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_FULLSCREEN || (ncfg[0] & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_WINDOW;
-		printFont(23, 1, "- A/V SETTING", fontc[rots[0]]);
+		bool showScreenModeSetting = (ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_FULLSCREEN || (ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_WINDOW;
+		printFont(23, 1, "- A/V SETTING", fontc[rotspl[0]]);
 		enum {
 			MENU_AV_CHANGE_MENU,
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
@@ -2087,38 +2062,34 @@ void ConfigMenu() {
 			MENU_AV_RENDER_LEVEL,
 			MENU_AV_SCREEN_MODE,
 #endif
-			MENU_AV_MOVE_SOUND,
-			MENU_AV_SOUND_BUFFER,
-			MENU_AV_PLAY_SOUND,
-			MENU_AV_SOUND_VOLUME,
+			MENU_AV_MOVE_SE,
+			MENU_AV_PLAY_SE,
+			MENU_AV_SE_VOLUME,
 			MENU_AV_PLAY_BGM,
 			MENU_AV_BGM_VOLUME,
 			MENU_AV_BGM_TYPE,
-			MENU_AV_BGM_FORMAT,
 			MENU_AV_MAX
 		};
-		printFont(2, 3, "<< INPUT <<	   >> GAME P.1 >>", digitc[rots[0]] * (statusc[0] == MENU_AV_CHANGE_MENU) * (count % 2));
+		printFont(2, 3, "<< INPUT <<      >> GAME P.1 >>", digitc[rotspl[0]] * (statusc[0] == MENU_AV_CHANGE_MENU) * (n % 2));
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		printFont(2, 5 + MENU_AV_WINDOW_TYPE, "WINDOW TYPE :", (statusc[0] == MENU_AV_WINDOW_TYPE) * fontc[rots[0]]);
-		printFont(2, 5 + MENU_AV_SCREEN_INDEX, "SCREEN INDEX:", (statusc[0] == MENU_AV_SCREEN_INDEX) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_WINDOW_TYPE, "WINDOW TYPE :", (statusc[0] == MENU_AV_WINDOW_TYPE) * fontc[rotspl[0]]);
+		printFont(2, 5 + MENU_AV_SCREEN_INDEX, "SCREEN INDEX:", (statusc[0] == MENU_AV_SCREEN_INDEX) * fontc[rotspl[0]]);
 #endif
-		printFont(2, 5 + MENU_AV_DETAIL_LEVEL, "DETAIL LEVEL:", (statusc[0] == MENU_AV_DETAIL_LEVEL) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_DETAIL_LEVEL, "DETAIL LEVEL:", (statusc[0] == MENU_AV_DETAIL_LEVEL) * fontc[rotspl[0]]);
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		printFont(2, 5 + MENU_AV_VSYNC, "VSYNC       :", (statusc[0] == MENU_AV_VSYNC) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_VSYNC, "VSYNC       :", (statusc[0] == MENU_AV_VSYNC) * fontc[rotspl[0]]);
 #endif
-		printFont(2, 5 + MENU_AV_SCALE_MODE, "SCALE MODE  :", (statusc[0] == MENU_AV_SCALE_MODE) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_SCALE_MODE, "SCALE MODE  :", (statusc[0] == MENU_AV_SCALE_MODE) * fontc[rotspl[0]]);
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		if(APP_RenderLevelLowSupported()) printFont(2, 5 + MENU_AV_RENDER_LEVEL, "RENDER LEVEL:", (statusc[0] == MENU_AV_RENDER_LEVEL) * fontc[rots[0]]);
-		if(showScreenModeSetting) printFont(2, 5 + MENU_AV_SCREEN_MODE, "SCREEN MODE :", (statusc[0] == MENU_AV_SCREEN_MODE) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_RENDER_LEVEL, "RENDER LEVEL:", (statusc[0] == MENU_AV_RENDER_LEVEL) * fontc[rotspl[0]]);
+		if(showScreenModeSetting) printFont(2, 5 + MENU_AV_SCREEN_MODE, "SCREEN MODE :", (statusc[0] == MENU_AV_SCREEN_MODE) * fontc[rotspl[0]]);
 #endif
-		printFont(2, 5 + MENU_AV_MOVE_SOUND, "MOVE SOUND  :", (statusc[0] == MENU_AV_MOVE_SOUND) * fontc[rots[0]]);
-		printFont(2, 5 + MENU_AV_SOUND_BUFFER, "SOUND BUFFER:", (statusc[0] == MENU_AV_SOUND_BUFFER)* fontc[rots[0]]);
-		printFont(2, 5 + MENU_AV_PLAY_SOUND, "PLAY SOUND  :", (statusc[0] == MENU_AV_PLAY_SOUND) * fontc[rots[0]]);
-		if ((ncfg[44] >> 23) & 0x1) printFont(2, 5 + MENU_AV_SOUND_VOLUME, "SOUND VOLUME:", (statusc[0] == MENU_AV_SOUND_VOLUME) * fontc[rots[0]]);
-		printFont(2, 5 + MENU_AV_PLAY_BGM, "PLAY BGM    :", (statusc[0] == MENU_AV_PLAY_BGM) * fontc[rots[0]]);
-		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_VOLUME, "BGM VOLUME  :", (statusc[0] == MENU_AV_BGM_VOLUME) * fontc[rots[0]]);
-		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_TYPE, "BGM TYPE    :", (statusc[0] == MENU_AV_BGM_TYPE) * fontc[rots[0]]);
-		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_FORMAT, "BGM FORMAT  :", (statusc[0] == MENU_AV_BGM_FORMAT) * fontc[rots[0]]);
+		printFont(2, 5 + MENU_AV_MOVE_SE, "MOVE SE     :", (statusc[0] == MENU_AV_MOVE_SE) * fontc[rotspl[0]]);
+		printFont(2, 5 + MENU_AV_PLAY_SE, "PLAY SE     :", (statusc[0] == MENU_AV_PLAY_SE) * fontc[rotspl[0]]);
+		if ((ncfg[44] >> 23) & 0x1) printFont(2, 5 + MENU_AV_SE_VOLUME, "SE VOLUME   :", (statusc[0] == MENU_AV_SE_VOLUME) * fontc[rotspl[0]]);
+		printFont(2, 5 + MENU_AV_PLAY_BGM, "PLAY BGM    :", (statusc[0] == MENU_AV_PLAY_BGM) * fontc[rotspl[0]]);
+		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_VOLUME, "BGM VOLUME  :", (statusc[0] == MENU_AV_BGM_VOLUME) * fontc[rotspl[0]]);
+		if((ncfg[44] >> 15) & 0x1) printFont(2, 5 + MENU_AV_BGM_TYPE, "BGM TYPE    :", (statusc[0] == MENU_AV_BGM_TYPE) * fontc[rotspl[0]]);
 
 		printMenuButton(2, 28, APP_BUTTON_A, 0);
 		printMenuButton(4, 28, APP_BUTTON_B, 0);
@@ -2126,293 +2097,239 @@ void ConfigMenu() {
 
 		switch(statusc[0]) {
 		case 0:
-			printFont(1, 3, "b", fontc[rots[0]]); break;
+			printFont(1, 3, "b", fontc[rotspl[0]]); break;
 		default:
-			printFont(1, 5 + statusc[0], "b", fontc[rots[0]]); break;
+			printFont(1, 5 + statusc[0], "b", fontc[rotspl[0]]); break;
 		}
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 		/* 画面モード */
-		switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
-		case APP_SCREENMODE_WINDOW: sprintf(string[0], "WINDOW"); break;
-		case APP_SCREENMODE_WINDOW_MAXIMIZED: sprintf(string[0], "WINDOW MAXIMIZED"); break;
-		case APP_SCREENMODE_FULLSCREEN_DESKTOP: sprintf(string[0], "FULL SCREEN DESKTOP"); break;
-		case APP_SCREENMODE_FULLSCREEN: sprintf(string[0], "FULL SCREEN"); break;
-		default: sprintf(string[0], "???"); break;
+		switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
+		case APP_SCREEN_MODE_WINDOW: SDL_snprintf(string[0], STRING_LENGTH, "WINDOW"); break;
+		case APP_SCREEN_MODE_WINDOW_MAXIMIZED: SDL_snprintf(string[0], STRING_LENGTH, "WINDOW MAXIMIZED"); break;
+		case APP_SCREEN_MODE_FULLSCREEN_DESKTOP: SDL_snprintf(string[0], STRING_LENGTH, "FULL SCREEN DESKTOP"); break;
+		case APP_SCREEN_MODE_FULLSCREEN: SDL_snprintf(string[0], STRING_LENGTH, "FULL SCREEN"); break;
+		default: SDL_snprintf(string[0], STRING_LENGTH, "???"); break;
 		}
-		printFont(15, 5 + MENU_AV_WINDOW_TYPE, string[0], (statusc[0] == MENU_AV_WINDOW_TYPE) * (count % 2) * digitc[rots[0]]);
-		sprintf(string[0], "%" PRId32, APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
-		printFont(15, 5 + MENU_AV_SCREEN_INDEX, string[0], (statusc[0] == MENU_AV_SCREEN_INDEX) * (count % 2) * digitc[rots[0]]);
-		if(ncfg[0] & APP_SCREENMODE_VSYNC) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
-		printFont(15, 5 + MENU_AV_VSYNC, string[0], (statusc[0] == MENU_AV_VSYNC) * (count % 2) * digitc[rots[0]]);
+		printFont(15, 5 + MENU_AV_WINDOW_TYPE, string[0], (statusc[0] == MENU_AV_WINDOW_TYPE) * (n % 2) * digitc[rotspl[0]]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
+		printFont(15, 5 + MENU_AV_SCREEN_INDEX, string[0], (statusc[0] == MENU_AV_SCREEN_INDEX) * (n % 2) * digitc[rotspl[0]]);
+		if(ncfg[0] & APP_SCREEN_MODE_VSYNC) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(15, 5 + MENU_AV_VSYNC, string[0], (statusc[0] == MENU_AV_VSYNC) * (n % 2) * digitc[rotspl[0]]);
 #endif
-		sprintf(string[0], "%s", ncfg[0] & APP_SCREENMODE_DETAILLEVEL ? "HIGH (640X480)" : "LOW (320X240)");
-		printFont(15, 5 + MENU_AV_DETAIL_LEVEL, string[0], (statusc[0] == MENU_AV_DETAIL_LEVEL) * (count % 2) * digitc[rots[0]]);
+		SDL_snprintf(string[0], STRING_LENGTH, "%s", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "HIGH (640X480)" : "LOW (320X240)");
+		printFont(15, 5 + MENU_AV_DETAIL_LEVEL, string[0], (statusc[0] == MENU_AV_DETAIL_LEVEL) * (n % 2) * digitc[rotspl[0]]);
 
-		if (ncfg[0] & APP_SCREENMODE_SCALEMODE) {
-			sprintf(string[0], "INTEGER");
+		if (ncfg[0] & APP_SCREEN_MODE_SCALE_MODE) {
+			SDL_snprintf(string[0], STRING_LENGTH, "INTEGER");
 		}
 		else {
-			sprintf(string[0], "FILL SCREEN");
+			SDL_snprintf(string[0], STRING_LENGTH, "FILL SCREEN");
 		}
-		printFont(15, 5 + MENU_AV_SCALE_MODE, string[0], (statusc[0] == MENU_AV_SCALE_MODE) * (count % 2) * digitc[rots[0]]);
+		printFont(15, 5 + MENU_AV_SCALE_MODE, string[0], (statusc[0] == MENU_AV_SCALE_MODE) * (n % 2) * digitc[rotspl[0]]);
 
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-		if (APP_RenderLevelLowSupported()) {
-			if (ncfg[0] & APP_SCREENMODE_RENDERLEVEL) {
-				sprintf(string[0], "HIGH");
-			}
-			else {
-				sprintf(string[0], "LOW (%s)", ncfg[0] & APP_SCREENMODE_DETAILLEVEL ? "640X480" : "320X240");
-			}
-			printFont(15, 5 + MENU_AV_RENDER_LEVEL, string[0], (statusc[0] == MENU_AV_RENDER_LEVEL) * (count % 2) * digitc[rots[0]]);
+		if (ncfg[0] & APP_SCREEN_MODE_RENDER_LEVEL) {
+			SDL_snprintf(string[0], STRING_LENGTH, "HIGH");
 		}
+		else {
+			SDL_snprintf(string[0], STRING_LENGTH, "LOW (%s)", ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL ? "640X480" : "320X240");
+		}
+		printFont(15, 5 + MENU_AV_RENDER_LEVEL, string[0], (statusc[0] == MENU_AV_RENDER_LEVEL) * (n % 2) * digitc[rotspl[0]]);
 
 		/* 画面モード */
-		switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
-		case APP_SCREENMODE_WINDOW:
+		switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
+		case APP_SCREEN_MODE_WINDOW:
 			{
-			        sprintf(string[0], "%" PRId32 "X%" PRId32,
-					(!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 320 * (APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]) + 1),
-					(!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 240 * (APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]) + 1)
+			        SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32,
+					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_WIDTH * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1),
+					(!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_HEIGHT * (APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]) + 1)
 				);
-				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (n % 2) * digitc[rotspl[0]]);
 			}
 			break;
-		case APP_SCREENMODE_FULLSCREEN:
+		case APP_SCREEN_MODE_FULLSCREEN:
 			{
 				SDL_DisplayMode displayMode;
-				SDL_GetDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]), &displayMode);
+				APP_GetDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]), APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]), &displayMode);
 				int bpp;
 				Uint32 Rmask, Gmask, Bmask, Amask;
-				if(SDL_PixelFormatEnumToMasks(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))
+				if(SDL_GetMasksForPixelFormat(displayMode.format, &bpp, &Rmask, &Bmask, &Gmask, &Amask))
 				{
-					sprintf(string[0], "%" PRId32 "X%" PRId32 " %" PRId32 "HZ %" PRId32 "BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
+					SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32 " %.2fHZ %" PRId32 "BPP", displayMode.w, displayMode.h, displayMode.refresh_rate, bpp);
 				}
 				else
 				{
-					sprintf(string[0], "%" PRId32 "X%" PRId32 " %" PRId32 "HZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
+					SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "X%" PRId32 " %.2fHZ", displayMode.w, displayMode.h, displayMode.refresh_rate);
 				}
-				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (count % 2) * digitc[rots[0]]);
+				printFont(15, 5 + MENU_AV_SCREEN_MODE, string[0], (statusc[0] == MENU_AV_SCREEN_MODE) * (n % 2) * digitc[rotspl[0]]);
 			}
+			break;
+		default:
 			break;
 		}
 #endif
 
-		if(ncfg[46]) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
-		printFont(15, 5 + MENU_AV_MOVE_SOUND, string[0], (statusc[0] == MENU_AV_MOVE_SOUND) * (count % 2) * digitc[rots[0]]);
+		if(ncfg[46]) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(15, 5 + MENU_AV_MOVE_SE, string[0], (statusc[0] == MENU_AV_MOVE_SE) * (n % 2) * digitc[rotspl[0]]);
 
-		sprintf(string[0], "%d BYTES", 1024 << (int)ncfg[38]);
-		printFont(15, 5 + MENU_AV_SOUND_BUFFER, string[0], (statusc[0] == MENU_AV_SOUND_BUFFER) * (count % 2) * digitc[rots[0]]);
-
-		if((ncfg[44] >> 23) & 0x1) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
-		printFont(15, 5 + MENU_AV_PLAY_SOUND, string[0], (statusc[0] == MENU_AV_PLAY_SOUND) * (count % 2) * digitc[rots[0]]);
+		if((ncfg[44] >> 23) & 0x1) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(15, 5 + MENU_AV_PLAY_SE, string[0], (statusc[0] == MENU_AV_PLAY_SE) * (n % 2) * digitc[rotspl[0]]);
 
 		if((ncfg[44] >> 23) & 0x1) {
-			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 16) & 0x7F));
-			printFont(15, 5 + MENU_AV_SOUND_VOLUME, string[0], (statusc[0] == MENU_AV_SOUND_VOLUME) * (count % 2) * digitc[rots[0]]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, (int)((ncfg[44] >> 16) & 0x7F));
+			printFont(15, 5 + MENU_AV_SE_VOLUME, string[0], (statusc[0] == MENU_AV_SE_VOLUME) * (n % 2) * digitc[rotspl[0]]);
 		}
 
-		if((ncfg[44] >> 15) & 0x1) sprintf(string[0], "ON");
-		else sprintf(string[0], "OFF");
-		printFont(15, 5 + MENU_AV_PLAY_BGM, string[0], (statusc[0] == MENU_AV_PLAY_BGM) * (count % 2) * digitc[rots[0]]);
+		if((ncfg[44] >> 15) & 0x1) SDL_snprintf(string[0], STRING_LENGTH, "ON");
+		else SDL_snprintf(string[0], STRING_LENGTH, "OFF");
+		printFont(15, 5 + MENU_AV_PLAY_BGM, string[0], (statusc[0] == MENU_AV_PLAY_BGM) * (n % 2) * digitc[rotspl[0]]);
 
 		if((ncfg[44] >> 15) & 0x1) {
-			sprintf(string[0], "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
-			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (count % 2) * digitc[rots[0]]);
+			SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32, (int)((ncfg[44] >> 8) & 0x7F));
+			printFont(15, 5 + MENU_AV_BGM_VOLUME, string[0], (statusc[0] == MENU_AV_BGM_VOLUME) * (n % 2) * digitc[rotspl[0]]);
 
-			int32_t wavebgm_temp = ncfg[44] & APP_WAVE_MASK;
-			if(wavebgm_temp & APP_WAVE_SIMPLE) sprintf(string[0], "SIMPLE");
-			else sprintf(string[0], "MULTITRACK");
-			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (count % 2) * digitc[rots[0]]);
-
-			switch(wavebgm_temp & APP_WAVE_FORMAT) {
-				case APP_WAVE_MID: sprintf(string[0], "MIDI"); break;
-				case APP_WAVE_WAV: sprintf(string[0], "WAVE"); break;
-				case APP_WAVE_OGG: sprintf(string[0], "OGG"); break;
-				case APP_WAVE_MP3: sprintf(string[0], "MP3"); break;
-				case APP_WAVE_FLAC: sprintf(string[0], "FLAC"); break;
-				case APP_WAVE_OPUS: sprintf(string[0], "OPUS"); break;
-				case APP_WAVE_MOD: sprintf(string[0], "MOD"); break;
-				case APP_WAVE_IT: sprintf(string[0], "IT"); break;
-				case APP_WAVE_XM: sprintf(string[0], "XM"); break;
-				case APP_WAVE_S3M: sprintf(string[0], "S3M"); break;
-				default: sprintf(string[0], "???"); break;
-			}
-			printFont(15, 5 + MENU_AV_BGM_FORMAT, string[0], (statusc[0] == MENU_AV_BGM_FORMAT) * (count % 2) * digitc[rots[0]]);
+			int32_t wavebgm_temp = ncfg[44] & WAVE_BGM_SIMPLE;
+			if(wavebgm_temp & WAVE_BGM_SIMPLE) SDL_snprintf(string[0], STRING_LENGTH, "SIMPLE");
+			else SDL_snprintf(string[0], STRING_LENGTH, "MULTITRACK");
+			printFont(15, 5 + MENU_AV_BGM_TYPE, string[0], (statusc[0] == MENU_AV_BGM_TYPE) * (n % 2) * digitc[rotspl[0]]);
 		}
 
-		for(pl = 0; pl < 2; pl++) {
+		for(int32_t pl = 0; pl < 2; pl++) {
 			if(getPushState(pl, APP_BUTTON_A) || getPushState(pl, APP_BUTTON_B)) {
-				PlaySE(3);
+				PlaySE(WAVE_SE_KACHI);
 				status[0] = 0;
 				statusc[0] = 0;
 				statusc[1] = 1;
 			} else if(padRepeat2(pl), ((mpc2[0] == 1) || ((mpc2[0] > tame3) && (mpc2[0] % tame4 == 0))) && (m = getPressState(pl, APP_BUTTON_DOWN) - getPressState(pl, APP_BUTTON_UP))) {
-				PlaySE(5);
+				PlaySE(WAVE_SE_MOVE);
 				int32_t nextChoice = (statusc[0] + m + MENU_AV_MAX) % MENU_AV_MAX;
 				if(m > 0) {
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
-					nextChoice +=  nextChoice == MENU_AV_RENDER_LEVEL && !APP_RenderLevelLowSupported();
 					nextChoice +=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
 #endif
-					nextChoice +=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
-					nextChoice += (nextChoice == MENU_AV_BGM_VOLUME && !((ncfg[44] >> 15) & 0x1)) * 3;
+					nextChoice +=  nextChoice == MENU_AV_SE_VOLUME && !((ncfg[44] >> 23) & 0x1);
+					nextChoice += (nextChoice == MENU_AV_BGM_VOLUME && !((ncfg[44] >> 15) & 0x1)) * 2;
 				}
 				else if(m < 0) {
-					nextChoice -= (nextChoice == MENU_AV_BGM_FORMAT && !((ncfg[44] >> 15) & 0x1)) * 3;
-					nextChoice -=  nextChoice == MENU_AV_SOUND_VOLUME && !((ncfg[44] >> 23) & 0x1);
+					nextChoice -=  nextChoice == MENU_AV_SE_VOLUME && !((ncfg[44] >> 23) & 0x1);
+					nextChoice -= (nextChoice == MENU_AV_BGM_TYPE && !((ncfg[44] >> 15) & 0x1)) * 2;
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					nextChoice -=  nextChoice == MENU_AV_SCREEN_MODE && !showScreenModeSetting;
-					nextChoice -=  nextChoice == MENU_AV_RENDER_LEVEL && !APP_RenderLevelLowSupported();
 #endif
 				}
 				statusc[0] = (nextChoice + MENU_AV_MAX) % MENU_AV_MAX;
 			} else {
 				padRepeat(pl);
 				m = getPushState(pl, APP_BUTTON_RIGHT) - getPushState(pl, APP_BUTTON_LEFT);
-				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SOUND) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE || statusc[0] == MENU_AV_BGM_FORMAT)) {
+				if(m && ((statusc[0] >= MENU_AV_CHANGE_MENU && statusc[0] <= MENU_AV_PLAY_SE) || statusc[0] == MENU_AV_PLAY_BGM || statusc[0] == MENU_AV_BGM_TYPE)) {
 					if(statusc[0] == MENU_AV_CHANGE_MENU) {
-						PlaySE(3);
+						PlaySE(WAVE_SE_KACHI);
 						status[0] = (status[0] + m + pages) % pages;
 						statusc[0] = MENU_AV_CHANGE_MENU;
 						statusc[1] = 1;
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_WINDOW_TYPE) {
-						ncfg[1] &= ~APP_SCREENINDEX_MODE;
-						ncfg[0] = (ncfg[0] & ~APP_SCREENMODE_WINDOWTYPE) | ((((ncfg[0] & APP_SCREENMODE_WINDOWTYPE) + APP_SCREENMODE_NUMWINDOWTYPES + m)) % APP_SCREENMODE_NUMWINDOWTYPES);
+						ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
+						ncfg[0] = (ncfg[0] & ~APP_SCREEN_MODE_WINDOW_TYPE) | ((((ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) + APP_SCREEN_MODE_WINDOW_TYPES_COUNT + m)) % APP_SCREEN_MODE_WINDOW_TYPES_COUNT);
 						need_reset = 1;
-						if (screenMode != ncfg[0]) {
-							need_setScreen = 1;
-						}
 					}
 					else if(statusc[0] == MENU_AV_SCREEN_INDEX) {
-						ncfg[1] &= ~APP_SCREENINDEX_MODE;
-						ncfg[1] = (ncfg[1] & ~APP_SCREENINDEX_DISPLAY) | APP_SCREENINDEX_DISPLAY_TOSETTING((APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]) + APP_GetMaxDisplayIndex() + m) % APP_GetMaxDisplayIndex());	// displayIndex
+						ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
+						ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_DISPLAY) | APP_SCREEN_INDEX_DISPLAY_TO_SETTING((APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]) + APP_GetMaxDisplayIndex() + m) % APP_GetMaxDisplayIndex());	// displayIndex
 						need_reset = 1;
-						need_setScreen = 1;
 					}
 #endif
 					else if(statusc[0] == MENU_AV_DETAIL_LEVEL) {
-						if((ncfg[0] & APP_SCREENMODE_WINDOWTYPE) == APP_SCREENMODE_WINDOW) ncfg[1] &= ~APP_SCREENINDEX_MODE;
-						ncfg[0] ^= APP_SCREENMODE_DETAILLEVEL;
-						reinit = 1;
+						if((ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) == APP_SCREEN_MODE_WINDOW) ncfg[1] &= ~APP_SCREEN_INDEX_MODE;
+						ncfg[0] ^= APP_SCREEN_MODE_DETAIL_LEVEL;
+						load = 1;
 						need_reset = 1;
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_VSYNC) {
-						ncfg[0] ^= APP_SCREENMODE_VSYNC;
+						ncfg[0] ^= APP_SCREEN_MODE_VSYNC;
 						need_reset = 1;
 					}
 #endif
 					else if(statusc[0] == MENU_AV_SCALE_MODE) {
-						ncfg[0] ^= APP_SCREENMODE_SCALEMODE;
+						ncfg[0] ^= APP_SCREEN_MODE_SCALE_MODE;
 						need_reset = 1;
 					}
 #ifdef APP_ENABLE_ALL_VIDEO_SETTINGS
 					else if(statusc[0] == MENU_AV_RENDER_LEVEL) {
-						ncfg[0] ^= APP_SCREENMODE_RENDERLEVEL;
+						ncfg[0] ^= APP_SCREEN_MODE_RENDER_LEVEL;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_SCREEN_MODE) {
-						switch(ncfg[0] & APP_SCREENMODE_WINDOWTYPE) {
-						case APP_SCREENMODE_WINDOW: {
-							SDL_DisplayMode displayMode;
-							SDL_GetDesktopDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]), &displayMode);
-							int baseW = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 320;
-							int baseH = (!!(ncfg[0] & APP_SCREENMODE_DETAILLEVEL) + 1) * 240;
-							int maxMode;
-							if(displayMode.w <= baseW || displayMode.h <= baseH) {
-								maxMode = 1;
+						switch(ncfg[0] & APP_SCREEN_MODE_WINDOW_TYPE) {
+						case APP_SCREEN_MODE_WINDOW: {
+							const SDL_DisplayMode* displayMode = APP_GetDesktopDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
+							int baseW = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_WIDTH;
+							int baseH = (!!(ncfg[0] & APP_SCREEN_MODE_DETAIL_LEVEL) + 1) * APP_SCREEN_HEIGHT;
+							int modeCount;
+							if(displayMode->w <= baseW * 2 || displayMode->h <= baseH * 2) {
+								modeCount = 1;
 							}
-							else if(displayMode.w > displayMode.h) {
-								maxMode = (displayMode.h / baseH) - (displayMode.h % baseH == 0);
+							else if(displayMode->w > displayMode->h * APP_SCREEN_WIDE) {
+								modeCount = (displayMode->h / baseH) - (displayMode->h % baseH == 0);
 							}
 							else {
-								maxMode = (displayMode.w / baseW) - (displayMode.w % baseW == 0);
+								modeCount = (displayMode->w / baseW) - (displayMode->w % baseW == 0);
 							}
-							int modeIndex = APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]);
-							modeIndex = (modeIndex + maxMode + m) % maxMode;
-							ncfg[1] = (ncfg[1] & ~APP_SCREENINDEX_MODE) | APP_SCREENINDEX_MODE_TOSETTING(modeIndex);
+							int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]);
+							modeIndex = (modeIndex + modeCount + m) % modeCount;
+							ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_MODE) | APP_SCREEN_INDEX_MODE_TO_SETTING(modeIndex);
 							break;
 						}
-						case APP_SCREENMODE_FULLSCREEN: {
-							int modeIndex = APP_SCREENINDEX_MODE_TOVALUE(ncfg[1]);
-							int maxDisplayMode = APP_GetMaxDisplayMode(APP_SCREENINDEX_DISPLAY_TOVALUE(ncfg[1]));
+						case APP_SCREEN_MODE_FULLSCREEN: {
+							int modeIndex = APP_SCREEN_INDEX_MODE_TO_VALUE(ncfg[1]);
+							int maxDisplayMode = APP_GetMaxDisplayMode(APP_SCREEN_INDEX_DISPLAY_TO_VALUE(ncfg[1]));
 							modeIndex = (modeIndex + maxDisplayMode + m) % maxDisplayMode;
-							ncfg[1] = (ncfg[1] & ~APP_SCREENINDEX_MODE) | APP_SCREENINDEX_MODE_TOSETTING(modeIndex);
+							ncfg[1] = (ncfg[1] & ~APP_SCREEN_INDEX_MODE) | APP_SCREEN_INDEX_MODE_TO_SETTING(modeIndex);
 							break;
 						}
 						default: break;
 						}
 						need_reset = 1;
-						need_setScreen = 1;
 					}
 #endif
-					else if(statusc[0] == MENU_AV_MOVE_SOUND) ncfg[46] = !ncfg[46];
-					else if (statusc[0] == MENU_AV_SOUND_BUFFER) {
-						// soundbuffer
-						if (m < 0 && ncfg[38] == 0) {
-							ncfg[38] = SOUND_BUFFER_MAX - 1;
-						}
-						else {
-							ncfg[38] = (ncfg[38] + m) % SOUND_BUFFER_MAX;
-						}
-						reinit = 1;
-						need_reset = 1;
-					}
-					else if(statusc[0] == MENU_AV_PLAY_SOUND) {
+					else if(statusc[0] == MENU_AV_MOVE_SE) ncfg[46] = !ncfg[46];
+					else if(statusc[0] == MENU_AV_PLAY_SE) {
 						// se
 						ncfg[44] ^= 0x1 << 23;
-						reinit = 1;
+						load = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_PLAY_BGM) {
 						// bgm
 						ncfg[44] ^= 0x1 << 15;
-						reinit = 1;
+						load = 1;
 						need_reset = 1;
 					}
 					else if(statusc[0] == MENU_AV_BGM_TYPE) {
 						// wavebgm type
-						ncfg[44] ^= APP_WAVE_SIMPLE;
-						reinit = 1;
-						need_reset = 1;
-					}
-					else if(statusc[0] == MENU_AV_BGM_FORMAT) {
-						// wavebgm format
-						int32_t wavebgm_format = (ncfg[44] & APP_WAVE_FORMAT) - 1;
-						do {
-							wavebgm_format += m;
-							if (m < 0 && wavebgm_format < 0) {
-								wavebgm_format = APP_WAVE_MAXFORMAT - 2;
-							}
-							else if (m > 0 && wavebgm_format > APP_WAVE_MAXFORMAT - 2) {
-								wavebgm_format = 0;
-							}
-						} while (!APP_WaveFormatSupported(wavebgm_format + 1));
-
-						ncfg[44] = (ncfg[44] & ~APP_WAVE_FORMAT) | (wavebgm_format + 1);
-						reinit = 1;
+						ncfg[44] ^= WAVE_BGM_SIMPLE;
+						load = 1;
 						need_reset = 1;
 					}
 				}
-				else if((m || (mp[pl] && mpc[pl] > 30)) && (statusc[0] == MENU_AV_SOUND_VOLUME || statusc[0] == MENU_AV_BGM_VOLUME)) {
-					if(statusc[0] == MENU_AV_SOUND_VOLUME) {
+				else if((m || (mp[pl] && mpc[pl] > 30)) && (statusc[0] == MENU_AV_SE_VOLUME || statusc[0] == MENU_AV_BGM_VOLUME)) {
+					if(statusc[0] == MENU_AV_SE_VOLUME) {
 						// sevolume
 						int32_t sevolume_temp = (ncfg[44] >> 16) & 0x7F;
 						if(m) sevolume_temp += m;
 						else if(mp[pl] && mpc[pl] > 30) sevolume_temp += mp[pl] * 2 - 5;
-						
+
 						if(sevolume_temp < 0) sevolume_temp = 0;
 						if(sevolume_temp > 100) sevolume_temp = 100;
-						
+
 						ncfg[44] = (ncfg[44] & ~(0x7F << 16)) | ((sevolume_temp & 0x7F) << 16);
-						SetVolumeAllWaves(sevolume_temp);
+						SetVolumeAllSE(sevolume_temp);
 					}
 					else if(statusc[0] == MENU_AV_BGM_VOLUME) {
 						// bgmvolume
@@ -2425,7 +2342,7 @@ void ConfigMenu() {
 
 						ncfg[44] = (ncfg[44] & ~(0x7F << 8)) | ((bgmvolume_temp & 0x7F) << 8);
 						SetVolumeAllBGM(bgmvolume_temp);
-						APP_SetVolumeMusic(bgmvolume_temp);
+						APP_SetMusicVolume(bgmvolume_temp);
 					}
 				}
 			}
@@ -2433,7 +2350,7 @@ void ConfigMenu() {
 	}
 
 	if(restart) {
-		mainLoopState = MAIN_RESTART;
+		mainLoopState = MAIN_START;
 		return;
 	}
 	// exit setting menu

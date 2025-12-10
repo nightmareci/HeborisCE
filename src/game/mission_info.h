@@ -1,7 +1,7 @@
 #ifndef mission_info_h_
 #define mission_info_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 extern const char* mission_info_en[42];
 extern const char* mission_info_jp[42];

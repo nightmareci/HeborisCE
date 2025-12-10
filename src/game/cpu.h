@@ -1,7 +1,7 @@
 #ifndef cpu_h_
 #define cpu_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 void cpuCopyField(int32_t player);
 int32_t cpu_checkFieldTop(int32_t player,int32_t x);

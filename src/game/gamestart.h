@@ -4,9 +4,11 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  外部ライブラリのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include "common.h"
+#include "app/APP.h"
 
-#define		STRING_MAX		200
+#define 	TEXT_LAYER_COUNT	16
+#define		STRING_LENGTH		512
+#define		STRING_COUNT		200
 #define		loop			while ( loopFlag )
 #define		halt			spriteTime()
 #define		ctime			cgametime
@@ -16,13 +18,13 @@
 #define		wait3			gamewait3
 #define		waitt			gamewaitt
 
-void loadBG(int32_t players,int32_t vsmode);
-void LoadBackground(const char *nameStr,int32_t p1,int32_t p2);
+void loadBG(int32_t players);
+void LoadBackground(int32_t plane,const char *nameStr);
 void LoadTitle();
 void loadBGM(void);
 void loadWaves(void);
 void loadGraphics(int32_t players);
-void LoadGraphic(const char *nameStr,int32_t p1,int32_t p2);
+void LoadGraphic(int32_t plane,const char *nameStr);
 void removeBigBlock(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
 void setBigBlock(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
 int32_t judgeBigBlock(int32_t player,int32_t bx1,int32_t by1,int32_t kind,int32_t rotate);
@@ -120,10 +122,10 @@ void playerInitial(int32_t player);
 void setNextBlockColors(int32_t player,int32_t first);
 void gameAllInit(void);
 void versusInit(int32_t player);
-void enterMissionMode(int32_t player);
-void enterPracticeMode(int32_t player);
+void enterMissionMode(void);
+void enterPracticeMode(void);
 void setStartLevel(int32_t pl);
-void enterVersusMode(int32_t player);
+void enterVersusMode(void);
 void enterSoloMode(int32_t player);
 void padRepeat2(int32_t player);
 void doDemoMode(void);
@@ -141,26 +143,24 @@ int IsPushMenu(int32_t player, APP_Button button, APP_InputType type);
 int IsPressPrompt(APP_Prompt prompt);
 int IsPushPrompt(APP_Prompt prompt);
 
-#ifdef APP_ENABLE_GAME_CONTROLLER
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 int IsPressConTypeKey(APP_InputType type, APP_ConKey* key);
 int IsPushConTypeKey(APP_InputType type, APP_ConKey* key);
 #endif
 
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 void updateEscapeFrames();
 #endif
 int quitNow();
 
 void title();
 void backupSetups();
-void initialize();
 void mainUpdate();
 void gameExecute();
 void setGamePause(int32_t player, bool pauseSetting);
 
 typedef enum EMainLoopState {
 	MAIN_INIT,
-	MAIN_RESTART,
 	MAIN_START,
 	MAIN_INIT_TEXT,
 	MAIN_INIT_LOAD_1,
@@ -182,11 +182,12 @@ typedef enum EMainLoopState {
 	MAIN_CONFIG,
 	MAIN_SOUND_TEST,
 	MAIN_TEST_MENU,
-	#ifdef APP_ENABLE_KEYBOARD
+	#ifdef APP_ENABLE_KEYBOARD_INPUT
 	MAIN_RESET_KEYBOARD,
 	#endif
 	MAIN_QUIT
 } EMainLoopState;
+
 extern bool init;
 extern EMainLoopState mainLoopState;
 extern EMainLoopState lastRankingMainLoopState;
@@ -198,7 +199,7 @@ extern uint32_t PieceSeed;
 extern bool inmenu;
 extern APP_InputType lastInputType;
 extern APP_InputType lastPlayerInputType[2];
-extern char *string[STRING_MAX];
+extern char string[STRING_COUNT][STRING_LENGTH];
 extern int32_t fldihardno;
 extern int32_t fldigsno;
 extern int32_t fldisno;
@@ -243,7 +244,6 @@ extern int32_t flds[10 *22 *2];
 extern int32_t std_opt[2];
 extern int32_t fpbas_mode[2];
 extern int32_t fastroll[2];
-extern int32_t bo[2];
 extern int32_t alpha_tls;
 extern int32_t disable_giji3D;
 extern int32_t FP_next[4];
@@ -573,7 +573,7 @@ extern int32_t clearnum[2];
 extern int32_t randommode[2];
 extern int32_t stage_nextc[2];
 extern int32_t start_nextc[2];
-#ifdef APP_ENABLE_KEYBOARD
+#ifdef APP_ENABLE_KEYBOARD_INPUT
 extern int32_t skipKey;
 #endif
 extern int32_t start_stage[2];
@@ -765,7 +765,7 @@ extern int32_t ending[2];
 extern int32_t kickc2[2];
 extern int32_t kickc[2];
 extern int32_t start[2];
-extern int32_t tr[2];
+extern int32_t tgmRank[2];
 extern int32_t tc[2];
 extern int32_t ssc;
 extern int32_t sw,sh;

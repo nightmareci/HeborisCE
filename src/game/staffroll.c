@@ -4,7 +4,7 @@
 
 #include "common.h"
 
-void staffInitPl(int32_t player) {
+void staffInitPl(void) {
 //	staffroll_y_ex[player] = 2000;		//無理矢理…
 }
 
@@ -12,17 +12,15 @@ void staffInitPl(int32_t player) {
 //  スタッフロール文字列を描画
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void staffExecute(int32_t player) {
-	int32_t i;
-
 	if( ending[player] != 2 ) return;
 
 	if(!onRecord[player]) return;
 
 	// 描画する
 	if ( getDrawRate() != 1 )
-		APP_BltRect(70,240 + 384 * player - 192 * maxPlay,80,0,staffroll_y_ex[player],160,320);
+		APP_DrawPlaneRect(PLANE_STAFFROLL,240 + 384 * player - 192 * maxPlay,80,0,staffroll_y_ex[player],160,320);
 	else
-		APP_BltRect(70,120 + 192 * player - 96 * maxPlay,40,0,staffroll_y_ex[player] / 2,80,160);
+		APP_DrawPlaneRect(PLANE_STAFFROLL,120 + 192 * player - 96 * maxPlay,40,0,staffroll_y_ex[player] / 2,80,160);
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

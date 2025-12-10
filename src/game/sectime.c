@@ -15,7 +15,7 @@ int32_t		st_others[90];		//落としたブロック数
 //const char**		st_rkname[135];			// 名前
 // 初期化
 void ST_RankingInit(void) {
-	int32_t	i, j;
+	int32_t	i;
 
 	for(i=0; i<90; i++) {
 		st_time[i] = 5400;
@@ -27,12 +27,12 @@ void ST_RankingInit(void) {
 }
 
 // STメダルの色を判定
-int32_t ST_RankingCheck(int32_t player, int32_t rmode, int32_t section,int32_t enable_grade) {
+int32_t ST_RankingCheck(int32_t player, int32_t rmode, int32_t section) {
 	int32_t	tmp;
 
 	if((rmode >= 4) || (rmode == 0)) return 0;
 
-	tmp = ST_rankingGet(player,rmode,enable_grade);
+	tmp = ST_rankingGet(rmode,enable_grade[player] == 4);
 
 	//-5秒更新
 	if(lap_time[section + player * 100] <= st_time[section + tmp] - 300) {
@@ -55,10 +55,10 @@ int32_t ST_RankingCheck(int32_t player, int32_t rmode, int32_t section,int32_t e
 }
 
 // 記録更新したかチェック
-int32_t ST_RankingCheckAll(int32_t player, int32_t rmode, int32_t enable_grade) {
+int32_t ST_RankingCheckAll(int32_t player, int32_t rmode) {
 	int32_t i,tmp2;
 
-	tmp2 = ST_rankingGet(player,rmode,enable_grade);
+	tmp2 = ST_rankingGet(rmode,enable_grade[player] == 4);
 
 	if(rmode == 6) {
 			for(i=0; i<stage[player]+ (stage[player] == laststage[player]); i++) {
@@ -78,10 +78,10 @@ int32_t ST_RankingCheckAll(int32_t player, int32_t rmode, int32_t enable_grade) 
 }
 // ステージごとの記録更新したかチェック
 int32_t Stage_RankingCheck(int32_t player, int32_t rmode) {
-	int32_t i,tmp3;
+	int32_t tmp3;
 	if(stage[player] >= 27) return 0;
 
-	tmp3 = ST_rankingGet(player,rmode,0);
+	tmp3 = ST_rankingGet(rmode,false);
 
 	if((stage_time[stage[player] + player * 30] <= st_time[stage[player] + tmp3]) && (stage_time[stage[player] + player * 30] != 0)) {
 		return 1;
@@ -89,10 +89,10 @@ int32_t Stage_RankingCheck(int32_t player, int32_t rmode) {
 	return 0;
 }
 // セクションタイムランキング更新
-void ST_RankingUpdate(int32_t player, int32_t rmode, int32_t end,int32_t enable_grade) {
-	int32_t i, temp,tmp4;
+void ST_RankingUpdate(int32_t player, int32_t rmode, int32_t end) {
+	int32_t i, tmp4;
 
-	tmp4 = ST_rankingGet(player,rmode,enable_grade);
+	tmp4 = ST_rankingGet(rmode,enable_grade[player]);
 
 	if(rmode == 6){//TOMOYO
 		for(i=0; i<stage[player] + (stage[player] == laststage[player]); i++) {
@@ -129,9 +129,9 @@ void ST_RankingUpdate(int32_t player, int32_t rmode, int32_t end,int32_t enable_
 
 // セーブ
 void ST_RankingSave(void) {//12345 6789
-	int32_t i,j, temp2[3];
+	int32_t i;
 
-	APP_FillMemory(saveBuf, 5000 * 4, 0);
+	SDL_memset(saveBuf, 0, 5000 * 4);
 
 	saveBuf[0] = st_version;
 
@@ -147,9 +147,9 @@ void ST_RankingSave(void) {//12345 6789
 
 // ロード
 int32_t ST_RankingLoad(void) {
-	int32_t i,j, temp2[3];
+	int32_t i;
 
-	APP_FillMemory(saveBuf, 5000 * 4, 0);
+	SDL_memset(saveBuf, 0, 5000 * 4);
 
 	// バージョンを見る
 	APP_LoadFile("config/data/STRANKING.SAV", saveBuf, 4);
@@ -175,13 +175,13 @@ void viewbestSTtime(int32_t player){
 
 	if(Isbesttime==0)return;
 
-	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
+	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rotspl[player]];
 	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//セクションタイム
 	}else if((gameMode[player]==6) && (stage[player] < 27)){//ベストタイム
 	//	if( (gameMode[player] == 6) && (!maxPlay) ) {
-			printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 11, "BEST TIME", fontc[rots[player]]);
+			printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 11, "BEST TIME", fontc[rotspl[player]]);
 
-			tempbest = ST_rankingGet(player,6,0);
+			tempbest = ST_rankingGet(6,false);
 			getTime(st_time[stage[player] + tempbest]);
 			printFont(26+2*((hnext[player] >= 4) && (!player)) + 7 * player - 12 * maxPlay, 12, string[0], color);
 	}
@@ -192,31 +192,31 @@ void viewbestSTtimes(int32_t player){
 
 	if(Isbesttime==0)return;
 
-	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rots[player]];
+	color = (count % 4 / 2) * (sp[player] >= 1200) * digitc[rotspl[player]];
 	if((gameMode[player]>=0)&&(gameMode[player]<=3)){//セクションタイム
 
 	}else if((gameMode[player]==6) && (stage[player] < 27)){//ベストタイム
 		if( (gameMode[player] == 6) && ((!maxPlay) || (status[1 - player] == 0)) ) {
 			//bestの文字
-			ExBltRect(3, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 251, 91, 21, 7);
+			ExBltRect(PLANE_HEBOSPR, 208+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 251, 91, 21, 7);
 			//timeの文字
-			ExBltRect(3, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 180, 119, 19, 7);
+			ExBltRect(PLANE_HEBOSPR, 230+20*((hnext[player] >= 4) && (!player)) + 70 * player - 96 * maxPlay, 95, 180, 119, 19, 7);
 
-			tempbest = ST_rankingGet(player,6,0);
+			tempbest = ST_rankingGet(6,false);
 			getTime(st_time[stage[player] + tempbest]);
 			printSMALLFont((26 + 8 * player - 12 * maxPlay)*8+20*((hnext[player] >= 4) && (!player)), 103, string[0], color);
 		}
 	}
 }
 //STランキングのアドレス指定
-int32_t ST_rankingGet(int32_t player,int32_t rmode,int32_t enable_grade){
-	int32_t	temp;
+int32_t ST_rankingGet(int32_t rmode,bool grade3){
+	int32_t	temp = 0;
 	if(rmode == 0){//ビギナー
 		temp = 0;
 	}else if(rmode == 1){//マスター
-		if(enable_grade !=4){
+		if(!grade3){
 		temp = 4;
-		}else if(enable_grade==4){
+		}else if(grade3){
 		temp = 15;
 		}
 	}else if(rmode == 2){//20G
@@ -242,20 +242,20 @@ void ST_RankingView() {
 	count++;
 	if(background == 0) {
 		for(int32_t i = 0; i <= 6; i++) {
-			ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (mode >= 3) + (mode == 4), 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 6; i++) {
-			ExBltFastRect(4 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
+			ExBltRect(PLANE_HEBOFLB1 + (mode >= 3) + (mode == 4), 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBltFast(30, 0, 0);
+		ExBlt(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(77, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(77, 320 - (count % 320), 208,  0, 20, count % 320, 8);
+	ExBltRect(PLANE_LINE, 0, 208,  count % 320, 20, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 320 - (count % 320), 208,  0, 20, count % 320, 8);
 
-	ExBltRect(77, count % 320, 16,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(77, 0, 16, 320 - (count % 320), 28, count % 320, 8);
+	ExBltRect(PLANE_LINE, count % 320, 16,  0, 28, 320 - (count % 320), 8);
+	ExBltRect(PLANE_LINE, 0, 16, 320 - (count % 320), 28, count % 320, 8);
 
 	//アドレス指定
 	int32_t tmp5 = 0;
@@ -303,7 +303,7 @@ void ST_RankingView() {
 	}
 
 	// 表示数を決める
-	int32_t max;
+	int32_t max = 0;
 	if(mode == 0)
 		max = 2;
 	else if( (mode == 1) || (mode == 2)|| (mode == 3) )
@@ -325,9 +325,9 @@ void ST_RankingView() {
 
 		if(mode != 5){//その他
 			if( ((mode == 1) || (mode == 2)|| (mode == 3)) && (i == 9) ){
-				sprintf(string[0], " 900-999");
+				SDL_snprintf(string[0], STRING_LENGTH, " 900-999");
 			} else if(mode <= 4){
-				sprintf(string[0], "%4d-%3d", i*100, (i+1)*100);
+				SDL_snprintf(string[0], STRING_LENGTH, "%4d-%3d", i*100, (i+1)*100);
 			}
 
 			printFont(1, 4+i, string[0], tmp);
@@ -341,35 +341,35 @@ void ST_RankingView() {
 			printFont(21, 4+i, string[0], tmp);
 
 			//USEブロック数
-			sprintf(string[0],"%d",st_others[i + tmp5]);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d",st_others[i + tmp5]);
 			printFont(29, 4+i, string[0], tmp);
 
 			//BPS
 			int32_t bps = (st_others[i + tmp5] * 1000) / (st_time[i + tmp5] / 60);
 			int32_t bps1 = bps / 1000;//整数
 			int32_t bps2 = bps % 1000;//下三桁
-			sprintf(string[0],"%d.",bps1);
+			SDL_snprintf(string[0], STRING_LENGTH,"%d.",bps1);
 			printFont(32, 4+i, string[0], tmp);
 			if(bps2>=100){
-			sprintf(string[0],"%3d",bps2);
+			SDL_snprintf(string[0], STRING_LENGTH,"%3d",bps2);
 			printFont(34, 4+i, string[0], tmp);
 			}else if(bps2>=10){
-			sprintf(string[0],"0%2d",bps2);
+			SDL_snprintf(string[0], STRING_LENGTH,"0%2d",bps2);
 			printFont(34, 4+i, string[0], tmp);
 			}else{
-			sprintf(string[0],"00%d",bps2);
+			SDL_snprintf(string[0], STRING_LENGTH,"00%d",bps2);
 			printFont(34, 4+i, string[0], tmp);
 			}
 			if(mode==2){
 				printFont(2, 28, "GRADE HISTORY", 2);
 				for(int32_t s=0;s<5;s++){
-				sprintf(string[0],"%d",grade_his[s]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%d",grade_his[s]);
 				printFont(3*s, 29, string[0], tmp);
 				}
 			}
 		}else{ //TOMOYO
 			if(i <= 19){
-				sprintf(string[0], "%d",i+1);
+				SDL_snprintf(string[0], STRING_LENGTH, "%d",i+1);
 				printFont(2, 4+i, string[0], tmp);
 
 				//タイム
@@ -377,11 +377,11 @@ void ST_RankingView() {
 				printFont(6, 4+i, string[0], tmp);
 
 				//使用ブロック数
-				sprintf(string[0],"%d",st_others[i + tmp5]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%d",st_others[i + tmp5]);
 				printFont(16, 4+i, string[0], tmp);
 
 			}else if(i > 19){
-				sprintf(string[0], "EX%d",i - 19);
+				SDL_snprintf(string[0], STRING_LENGTH, "EX%d",i - 19);
 				printFont(20, i - 16, string[0], tmp);
 
 				//タイム
@@ -389,7 +389,7 @@ void ST_RankingView() {
 				printFont(26, i - 16, string[0], tmp);
 
 				//使用ブロック数
-				sprintf(string[0],"%d",st_others[i + tmp5]);
+				SDL_snprintf(string[0], STRING_LENGTH,"%d",st_others[i + tmp5]);
 				printFont(36, i-16, string[0], tmp);
 			}
 		}
@@ -413,13 +413,13 @@ void ST_RankingView() {
 
 	if(getPushState(0, APP_BUTTON_LEFT)) {
 		// ←
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		mode--;
 		if(mode < 1) mode = 5;
 	}
 	if(getPushState(0, APP_BUTTON_RIGHT)) {
 		// →
-		PlaySE(5);
+		PlaySE(WAVE_SE_MOVE);
 		mode++;
 		if(mode > 5) mode = 1;
 	}
@@ -434,9 +434,9 @@ void ST_RankingView() {
 
 // プレイヤーデータセーブ
 void PlayerdataSave(void) {//12345 6789
-	int32_t i,j, temp2[3];
+	int32_t i,j;
 
-	APP_FillMemory(saveBuf, 500 * 4, 0);
+	SDL_memset(saveBuf, 0, 500 * 4);
 
 	saveBuf[0] = 0x4F424503;
 
@@ -457,9 +457,9 @@ void PlayerdataSave(void) {//12345 6789
 
 // プレイヤーデータロード
 int32_t PlayerdataLoad(void) {
-	int32_t i,j, temp2[3];
+	int32_t i,j;
 
-	APP_FillMemory(saveBuf, 500 * 4, 0);
+	SDL_memset(saveBuf, 0, 500 * 4);
 
 	// バージョンを見る
 	APP_LoadFile("config/data/PLAYERDATA.SAV", saveBuf, 4);

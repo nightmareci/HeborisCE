@@ -1,7 +1,7 @@
 #ifndef ranking_h_
 #define ranking_h_
 
-#include "common.h"
+#include "app/APP.h"
 
 int32_t RankingLoad(void);
 int32_t RankingSave(void);

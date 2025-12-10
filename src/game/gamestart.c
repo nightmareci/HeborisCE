@@ -3961,7 +3961,6 @@ bool playerExecute(void) {
 		ltime[0] = ltime[0] - 1800;		// -30秒
 		timeOn[0] = 0;					// タイマーストップ
 		sclear[0] = 0;					// スキップ
-		recFaultTime(0);				//ステージクリアしていない
 		statusc[0 * 10] = 0;				// カウンタを0に
 		statusc[0 * 10 + 1] = 0;
 		status[0] = 17;					// ステージ終了
@@ -7747,7 +7746,7 @@ void doHold(int32_t player, int32_t ihs) {
 
 		// ブロックがめり込んでいたらゲームオーバー #1.60c7l2
 		// ゲームオーバーなっていない＆接地している場合は音を鳴らす
-		if( (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
+		if( (!ihs || repversw < 67) && (!checkGameOver(player)) && (judgeBlock(player, bx[player], by[player] + 1, blk[player], rt[player]) != 0) ) {
 			if( (!isWRule(player)) || (world_drop_snd >= 1) ) PlaySE(WAVE_SE_KON);
 		}
 
@@ -8625,7 +8624,6 @@ void statErase(int32_t player) {
 			sclear[player] = 0;				// タイムオーバー
 			statusc[player * 10] = 0;			// カウンタを0に
 			statusc[player * 10 + 1] = 0;
-			recFaultTime(player);
 			status[player] = 17;				// ステージ終了
 			return;
 		}
@@ -9839,21 +9837,11 @@ void recSectionTime(int32_t player) {
 void recStageTime(int32_t player) {
 	if(stage[player] > 26) return;
 	//TOMOYOステージタイムctime[
-	stage_time[stage[player] + player * 200] = ctime[player];
+	stage_time[stage[player] + player * 30] = ctime[player];
 	if(st_record_interval_tgm==10){
 		st_other[stage[player] +player*30] = st_bdowncnt[player];//接着回数
 		st_bdowncnt[player] = 0;//リセット
 	}
-}
-/* ステージクリアできないタイム記録） */
-void recFaultTime(int32_t player) {
-	if(stage[player] > 26) return;
-	//TOMOYOステージタイムctime[
-	stage_time[stage[player] + player * 200] = 5400;
-	if(st_record_interval_tgm==10){
-		st_other[stage[player] +player*30] = 99;//接着回
-	}
-	st_bdowncnt[player] = 0;
 }
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  ステータスNo.07 - ゲームオーバー演出
@@ -9908,10 +9896,6 @@ void statGameOver(int32_t player) {
 	//警告音が鳴っていたら止める
 	StopSE(WAVE_SE_PINCH);
 	StopSE(WAVE_SE_HURRYUP);
-
-	if((gameMode[player]==6)&&(tomoyo_opt[player]==0)){
-		recFaultTime(player);//ステージNOTランキング用タイム
-	}
 
 	statusc[player * 10 + 1]++;
 

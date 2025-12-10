@@ -26,6 +26,15 @@ void tomoyoInitial(int32_t player) {
 	int32_t** sbakReplayData = replayData;
 	replayData = NULL;
 
+	int32_t stage_time_bak[30];
+	int32_t st_other_bak[30];
+
+	for (int32_t i = 0; i < 30; i++)
+	{
+		stage_time_bak[i] = stage_time[i + player * 30];
+		st_other_bak[i]   = st_other[i + player * 30];
+	}
+
 	// 初期化
 	playerInitial(player);
 
@@ -51,6 +60,15 @@ void tomoyoInitial(int32_t player) {
 
 	if((tomoyo_opt[player]==4)&&(fpbas_mode[player])){
 		lv[player] = sbak[16];	//FPBASICだけ戻す他のモードは初期化
+	}
+
+	if (tomoyo_opt[player] == 0)
+	{
+		for (int32_t i = 0; i < 30; i++)
+		{
+			stage_time[i + player * 30] = stage_time_bak[i];
+			st_other[i + player * 30]   = st_other_bak[i];
+		}
 	}
 
 	backno = 0;
@@ -123,9 +141,6 @@ void statTomoyoNextStage(int32_t player) {
 		}
 	} else {
 		printFont(17 + 24 * player - 12 * maxPlay, 8, "SKIPED", 0);
-		if((stage[player] >= 0) && (stage[player] <= 26)){
-		recFaultTime(player);//ステージNOTランキング用タイム
-		}
 		// リプレイ記録不可能になった事を表示 #1.60c7n8
 		printFont(15 + 24 * player - 12 * maxPlay, 13, "THIS PLAY", 2);
 		printFont(15 + 24 * player - 12 * maxPlay, 14, "  CAN'T BE", 2);

@@ -181,7 +181,7 @@ set_target_properties(${APP_EXE}
 		C_STANDARD_REQUIRED TRUE
 )
 
-if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW)
+if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 	add_compile_definitions(_POSIX_VERSION=200112L)
 endif()
 

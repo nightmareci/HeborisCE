@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.26)
 project(HeborisCE
 	VERSION 1.1.1
 	LANGUAGES C
@@ -7,7 +7,7 @@ project(HeborisCE
 set(APP_PROJECT_VERSION "${CMAKE_PROJECT_VERSION}")
 set(APP_PROJECT_CREATOR "nightmareci")
 set(APP_PROJECT_NAME "${CMAKE_PROJECT_NAME}")
-set(APP_PROJECT_IDENTIFIER "com.nightmareci.heborisce")
+set(APP_PROJECT_IDENTIFIER "com.nightmareci.HeborisCE")
 
 # NOTE: Never, ever change APP_FILESYSTEM_ORG and APP_FILESYSTEM_APP, unless you're
 # making a hard fork such that you're effectively making a new, distinct game,
@@ -31,6 +31,8 @@ set(APP_PROJECT_IDENTIFIER "com.nightmareci.heborisce")
 # the originally-chosen "HeborisC7EX SDL2" filesystem application name.
 set(APP_FILESYSTEM_ORG "${APP_PROJECT_CREATOR}")
 set(APP_FILESYSTEM_APP "HeborisC7EX SDL2")
+
+set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIG>")
 
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	set(APP_EXE index)
@@ -70,10 +72,35 @@ endif()
 
 if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
 	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_CURRENT_DIRECTORY")
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
 elseif(APP_PACKAGE_TYPE MATCHES "Installable")
 	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
+	if(NOT VITA AND NOT CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+		if(APP_PACKAGE_TYPE STREQUAL "Installable Mac App")
+			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${APP_EXE}>/Frameworks")
+		elseif(NOT WIN32 AND (LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR UNIX))
+			include(GNUInstallDirs REQUIRED)
+			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
+			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_LIBDIR}")
+		elseif(CYGWIN)
+			include(GNUInstallDirs REQUIRED)
+			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
+			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
+		else()
+			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+		endif()
+	endif()
 elseif(APP_PACKAGE_TYPE MATCHES "Portable")
 	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
+	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+	if(APP_PACKAGE_TYPE STREQUAL "Portable Mac App")
+		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${APP_EXE}>/Frameworks")
+	else()
+		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+	endif()
 endif()
 
 if(MSVC)
@@ -209,7 +236,7 @@ endif()
 # // Each entry in APP_FilesTable stores a pointer to an APP_File
 # // When a file is requested to be opened, a custom-interface SDL_IOStream is created, which internally handles bounds checking etc., so the stream can be used as if it only represents a single file with ordinary stream functions, not a normal interface stream of the .dat
 # SDL_PropertiesID APP_FilesTable;
-function(GenerateResourceDAT)
+function(GenerateResourceDAT DAT_FILE)
 	set(RES_FILES)
 	foreach(FILE_TYPE "png" "ogg" "bdf" "wav")
 		file(GLOB_RECURSE FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*.${FILE_TYPE}")
@@ -220,13 +247,13 @@ function(GenerateResourceDAT)
 	set(ALL_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
 
 	add_custom_command(
-		OUTPUT "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat"
+		OUTPUT "${DAT_FILE}"
 		DEPENDS ${ALL_FILES}
-		COMMAND python3 "${CMAKE_SOURCE_DIR}/pkg/script/gen_res_dat.py" "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" "${CMAKE_SOURCE_DIR}/" ${ALL_FILES}
+		COMMAND python3 "${CMAKE_SOURCE_DIR}/pkg/script/gen_res_dat.py" "${DAT_FILE}" "${CMAKE_SOURCE_DIR}/" ${ALL_FILES}
 		VERBATIM
 	)
 	add_custom_target("${APP_PROJECT_NAME}_dat"
-		DEPENDS "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat"
+		DEPENDS "${DAT_FILE}"
 		VERBATIM
 	)
 	add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_dat")
@@ -290,7 +317,7 @@ if(VITA)
 	endif()
 
 	if(APP_RESOURCE_DAT)
-		GenerateResourceDAT()
+		GenerateResourceDAT("${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat")
 		set(ASSETS
 			FILE "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" "${APP_PROJECT_NAME}.dat"
 		)
@@ -309,11 +336,16 @@ if(VITA)
 		# Game assets.
 		${ASSETS}
 
+		# Text files.
+		FILE "changelog.txt" "changelog.txt"
+		FILE "heboris.txt" "heboris.txt"
+		FILE "README.md" "README.md"
+
 		# Files for LiveArea and boot.
-		FILE "pkg/vita/sce_sys/icon0.png" sce_sys/icon0.png
-		FILE "pkg/vita/sce_sys/pic0.png" sce_sys/pic0.png
-		FILE "pkg/vita/sce_sys/livearea/contents/bg0.png" sce_sys/livearea/contents/bg0.png
-		FILE "pkg/vita/sce_sys/livearea/contents/template.xml" sce_sys/livearea/contents/template.xml
+		FILE "pkg/vita/sce_sys/icon0.png" "sce_sys/icon0.png"
+		FILE "pkg/vita/sce_sys/pic0.png" "sce_sys/pic0.png"
+		FILE "pkg/vita/sce_sys/livearea/contents/bg0.png" "sce_sys/livearea/contents/bg0.png"
+		FILE "pkg/vita/sce_sys/livearea/contents/template.xml" "sce_sys/livearea/contents/template.xml"
 	)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	# TODO: Add option to not include --emrun in linker flags for actual
@@ -378,7 +410,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ASSERTIONS")
 	endif()
 	if(APP_RESOURCE_DAT)
-		GenerateResourceDAT()
+		GenerateResourceDAT("${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -pthread -lidbfs.js -s PTHREAD_POOL_SIZE=30 -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1 \
 			--preload-file '${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat@basepath/${APP_PROJECT_NAME}.dat' \
 		")
@@ -397,7 +429,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	endif()
 
 	set_property(TARGET ${APP_EXE} PROPERTY SUFFIX ".html")
-elseif(WIN32 AND MSVC)
+elseif(WIN32 AND NOT CYGWIN)
 	set(APP_FRAMEWORK_TYPE "WINDOWS SDL3")
 
 	if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -407,13 +439,13 @@ elseif(WIN32 AND MSVC)
 	endif()
 	option(CMAKE_WIN32_EXECUTABLE "Hide the Windows console." ${WIN32_EXECUTABLE_DEFAULT})
 
-	target_sources(${APP_EXE} PRIVATE "pkg/windows/icon.rc")
+	target_sources(${APP_EXE} PRIVATE "pkg/windows/HeborisCE.rc")
 
 	if(APP_VENDORED)
-		set(BUILD_SHARED_LIBS OFF)
+		set(BUILD_SHARED_LIBS ON)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_DEPS_SHARED ON)
 		set(SDLIMAGE_VENDORED ON)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 		target_link_libraries(${APP_EXE} PRIVATE
@@ -430,32 +462,44 @@ elseif(WIN32 AND MSVC)
 	endif()
 
 	if(APP_RESOURCE_DAT)
-		GenerateResourceDAT()
+		GenerateResourceDAT("${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
 	endif()
-	if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
-		message(STATUS "Configuring current directory version; CMake installation is not supported")
-	elseif(
+	if(
 		APP_PACKAGE_TYPE STREQUAL "Portable" OR
 		APP_PACKAGE_TYPE STREQUAL "Installable"
 	)
-		if(APP_PACKAGE_TYPE STREQUAL "Portable")
-			message(STATUS "Configuring portable package")
-		elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
-			message(STATUS "Configuring installable package")
-		else()
-			message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"Current Directory\", \"Portable\", or \"Installable\"")
-		endif()
-
 		install(TARGETS ${APP_EXE} DESTINATION ".")
+		if(APP_VENDORED)
+			install(CODE "
+				file(GLOB LIBS \"$<TARGET_FILE_DIR:${APP_EXE}>/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+				file(INSTALL
+					DESTINATION \"${CMAKE_INSTALL_PREFIX}\"
+					TYPE SHARED_LIBRARY
+					FOLLOW_SYMLINK_CHAIN
+					FILES \${LIBS}
+				)
+			")
+		endif()
 		if(APP_RESOURCE_DAT)
-			install(FILES "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION ".")
+			install(FILES "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION ".")
 		else()
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 			install(DIRECTORY "res" DESTINATION ".")
 		endif()
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
-	else()
-		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building for Windows with MSVC")
+
+		set(CPACK_GENERATOR "ZIP" CACHE STRING "The CPack generator to use")
+		set(CPACK_PACKAGE_VENDOR "${APP_PROJECT_CREATOR}")
+		if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(AMD64|IA64|EM64T)$") # x86-64 names are a mess, but this covers all the possible values
+			set(PROCESSOR "x64")
+		else() # For anything else, the CMake variable probably corresponds to what we want (e.g. x86 and ARM64)
+			set(PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}")
+		endif()
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} ${APP_PACKAGE_TYPE} Windows ${PROCESSOR}")
+		set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
+		include(CPack)
+	elseif(NOT APP_PACKAGE_TYPE STREQUAL "Current Directory")
+		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported when building for Windows")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App")
 	set(APP_FRAMEWORK_TYPE "MACOSX SDL3")
@@ -469,7 +513,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 	set_property(TARGET ${APP_EXE} PROPERTY MACOSX_BUNDLE TRUE)
 
 	if(APP_RESOURCE_DAT)
-		GenerateResourceDAT()
+		GenerateResourceDAT("${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
 	endif()
 	if(APP_PACKAGE_TYPE MATCHES "Portable")
 		set(SDL_FILESYSTEM_BASE_DIR_TYPE "parent")
@@ -477,7 +521,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		install(TARGETS ${APP_EXE} BUNDLE DESTINATION "${APP_PROJECT_NAME}")
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION "${APP_PROJECT_NAME}")
 		if(APP_RESOURCE_DAT)
-			install(FILES "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION "${APP_PROJECT_NAME}")
+			install(FILES "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION "${APP_PROJECT_NAME}")
 		else()
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
 			install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}")
@@ -488,7 +532,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		install(TARGETS ${APP_EXE} BUNDLE DESTINATION .)
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION .)
 		if(APP_RESOURCE_DAT)
-			set_source_files_properties("${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+			set_source_files_properties("${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 		else()
 			set(RES_FILES)
 			foreach(FILE_TYPE "png" "ogg" "bdf" "wav")
@@ -532,9 +576,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${CPACK_BUNDLE_ENTITLEMENTS}"
 		XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--timestamp --options runtime"
 		XCODE_ATTRIBUTE_CODE_SIGN_INJECT_BASE_ENTITLEMENTS ${INJECT_BASE_ENTITLEMENTS}
-		INSTALL_RPATH "@executable_path"
+		INSTALL_RPATH "@executable_path/../Frameworks"
 		BUILD_WITH_INSTALL_RPATH ON
-		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 	target_sources(${APP_EXE} PRIVATE "pkg/macos/${APP_PROJECT_NAME}.icns")
 	set_source_files_properties("pkg/macos/${APP_PROJECT_NAME}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
@@ -570,7 +613,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CPackDragNDropCodesignDMGs.cmake")
 	endif()
 	include(CPack)
-elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
+elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CYGWIN OR UNIX)
 	if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
 		set(APP_FRAMEWORK_TYPE "MACOSX SDL3")
 	else()
@@ -590,52 +633,169 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 		set(APP_ENABLE_LINUX_GPIO_INPUT OFF CACHE BOOL "Enable input via Linux GPIO" FORCE)
 	endif()
 
-	if(APP_RESOURCE_DAT)
-		GenerateResourceDAT()
+	unset(RPATH_ORIGIN)
+	if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+		set(RPATH_ORIGIN "@executable_path")
+	elseif(LINUX OR UNIX)
+		set(RPATH_ORIGIN "$ORIGIN")
 	endif()
+
 	if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
-	elseif(APP_PACKAGE_TYPE STREQUAL "Portable")
-		install(TARGETS ${APP_EXE} DESTINATION ${APP_PROJECT_NAME})
+		set(APP_RESOURCE_DAT_FILE "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
 		if(APP_RESOURCE_DAT)
-			install(FILES "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION ${APP_PROJECT_NAME})
-		else()
-			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
-			install(DIRECTORY "res" DESTINATION ${APP_PROJECT_NAME})
+			GenerateResourceDAT("${APP_RESOURCE_DAT_FILE}")
 		endif()
-		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ${APP_PROJECT_NAME})
-	elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
-		message(STATUS "Configuring installable package")
-		include(GNUInstallDirs REQUIRED)
-		set(APP_BASE_PATH_APPEND "../${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/")
-		install(TARGETS ${APP_EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
+		if(APP_VENDORED)
+			if(DEFINED RPATH_ORIGIN)
+				set_target_properties(${APP_EXE} PROPERTIES
+					INSTALL_RPATH "${RPATH_ORIGIN}"
+					BUILD_WITH_INSTALL_RPATH ON
+				)
+			endif()
+		endif()
+	elseif(APP_PACKAGE_TYPE STREQUAL "Portable")
+		set(APP_RESOURCE_DAT_FILE "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
 		if(APP_RESOURCE_DAT)
-			install(FILES "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
+			GenerateResourceDAT("${APP_RESOURCE_DAT_FILE}")
+		endif()
+		if(APP_VENDORED)
+			if(DEFINED RPATH_ORIGIN)
+				set_target_properties(${APP_EXE} PROPERTIES
+					INSTALL_RPATH "${RPATH_ORIGIN}"
+					BUILD_WITH_INSTALL_RPATH ON
+				)
+			endif()
+		endif()
+
+		if(NOT APP_RESOURCE_DAT)
+			file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
+			file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
+			file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
+			set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+			set(OUTPUT_FILES)
+			foreach(FILE ${DEPENDS_FILES})
+				list(APPEND OUTPUT_FILES "${APP_OUTPUT_DIR}/${FILE}")
+			endforeach()
+			add_custom_command(
+				OUTPUT ${OUTPUT_FILES}
+				DEPENDS ${DEPENDS_FILES}
+				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${APP_OUTPUT_DIR}/res"
+				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${APP_OUTPUT_DIR}/config/mission"
+				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${APP_OUTPUT_DIR}/config/stage"
+				VERBATIM
+			)
+			add_custom_target("${APP_PROJECT_NAME}_output_files"
+				DEPENDS ${OUTPUT_FILES}
+				VERBATIM
+			)
+			add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_output_files")
+		endif()
+
+		install(TARGETS ${APP_EXE} DESTINATION ".")
+		if(APP_VENDORED)
+			if(DEFINED ENV{DESTDIR})
+				set(DESTDIR "$ENV{DESTDIR}")
+			else()
+				set(DESTDIR "")
+			endif()
+			install(CODE "
+				file(GLOB LIBS \"$<TARGET_FILE_DIR:${APP_EXE}>/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+				file(INSTALL
+					DESTINATION \"${DESTDIR}${CMAKE_INSTALL_PREFIX}\"
+					TYPE SHARED_LIBRARY
+					FOLLOW_SYMLINK_CHAIN
+					FILES \${LIBS}
+				)
+			")
+		endif()
+		if(APP_RESOURCE_DAT)
+			install(FILES "${APP_RESOURCE_DAT_FILE}" DESTINATION ".")
+		else()
+			install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
+			install(DIRECTORY "res" DESTINATION ".")
+		endif()
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
+	elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
+		set(APP_RESOURCE_DAT_FILE "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/${APP_PROJECT_NAME}.dat")
+		if(APP_RESOURCE_DAT)
+			GenerateResourceDAT("${APP_RESOURCE_DAT_FILE}")
+		endif()
+		if(APP_VENDORED)
+			if(DEFINED RPATH_ORIGIN)
+				set_target_properties(${APP_EXE} PROPERTIES
+					INSTALL_RPATH "${RPATH_ORIGIN}/../${CMAKE_INSTALL_LIBDIR}"
+					BUILD_WITH_INSTALL_RPATH ON
+				)
+			endif()
+		endif()
+		set(APP_BASE_PATH_APPEND "../${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/")
+
+		if(NOT APP_RESOURCE_DAT)
+			file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
+			file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
+			file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
+			set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+			set(OUTPUT_FILES)
+			foreach(FILE ${DEPENDS_FILES})
+				list(APPEND OUTPUT_FILES "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/${FILE}")
+			endforeach()
+			add_custom_command(
+				OUTPUT ${OUTPUT_FILES}
+				DEPENDS ${DEPENDS_FILES}
+				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/res"
+				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/config/mission"
+				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/config/stage"
+				VERBATIM
+			)
+			add_custom_target("${APP_PROJECT_NAME}_output_files"
+				DEPENDS ${OUTPUT_FILES}
+				VERBATIM
+			)
+			add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_output_files")
+		endif()
+
+		install(TARGETS ${APP_EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
+		if(APP_VENDORED)
+			if(DEFINED RPATH_ORIGIN)
+				set(LIBDIR "${CMAKE_INSTALL_LIBDIR}")
+			else()
+				set(LIBDIR "${CMAKE_INSTALL_BINDIR}")
+			endif()
+			if(DEFINED ENV{DESTDIR})
+				set(DESTDIR "$ENV{DESTDIR}")
+			else()
+				set(DESTDIR "")
+			endif()
+			install(CODE "
+				file(GLOB LIBS \"$<TARGET_FILE_DIR:${APP_EXE}>/../${LIBDIR}/*${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+				file(INSTALL
+					DESTINATION \"${DESTDIR}${CMAKE_INSTALL_PREFIX}/${LIBDIR}\"
+					TYPE SHARED_LIBRARY
+					FOLLOW_SYMLINK_CHAIN
+					FILES \${LIBS}
+				)
+			")
+		endif()
+		if(APP_RESOURCE_DAT)
+			install(FILES "${APP_RESOURCE_DAT_FILE}" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 		else()
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/config")
 			install(DIRECTORY "res" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 		endif()
-		install(FILES "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
+		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 		if(LINUX)
-			set(APP_LINUX_DESKTOP_ICON ${APP_PROJECT_NAME} CACHE STRING "The file name of the icon to put into the Linux desktop file, without an extension")
-			set(APP_COMMENT "Cross-platform Expansion and continuation of Heboris U.E.")
-			configure_file("cmake/entry.desktop.cmake" "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.desktop" @ONLY)
-			install(FILES "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
-			install(FILES "pkg/linux/icon.png" RENAME "${APP_PROJECT_NAME}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
+			install(FILES "pkg/linux/${APP_PROJECT_NAME}.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
+			install(FILES "pkg/linux/${APP_PROJECT_NAME}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
 		endif()
 	else()
 		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"Current Directory\", \"Portable\", or \"Installable\"")
 	endif()
 
-	set_target_properties(${APP_EXE}
-		PROPERTIES
-		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-	)
-
 	if(APP_VENDORED)
-		set(BUILD_SHARED_LIBS OFF)
+		set(BUILD_SHARED_LIBS ON)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_DEPS_SHARED ON)
 		set(SDLIMAGE_VENDORED ON)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 		target_link_libraries(${APP_EXE} PRIVATE
@@ -649,6 +809,18 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 			SDL3::SDL3
 			SDL3_image::SDL3_image
 		)
+	endif()
+
+	if(NOT APP_PACKAGE_TYPE STREQUAL "Current Directory")
+		set(CPACK_GENERATOR "ZIP" CACHE STRING "The CPack generator to use")
+		set(CPACK_PACKAGE_VENDOR "${APP_PROJECT_CREATOR}")
+		if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+			set(PLATFORM "macOS")
+		else()
+			set(PLATFORM "${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
+		endif()
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} ${APP_PACKAGE_TYPE} ${PLATFORM}")
+		include(CPack)
 	endif()
 else()
 	message(FATAL_ERROR "The current build target is not supported")

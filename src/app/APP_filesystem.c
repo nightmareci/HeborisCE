@@ -62,6 +62,21 @@ bool APP_InitFilesystem(int argc, char** argv)
 			APP_FilesDATPath = NULL;
 			return APP_SetError("Error creating resource DAT path string");
 		}
+		SDL_PathInfo info;
+		if (!SDL_GetPathInfo(APP_FilesDATPath, &info) || info.type != SDL_PATHTYPE_FILE) {
+			SDL_free(APP_FilesDATPath);
+			const char* basePath = SDL_GetBasePath();
+			if (!basePath) {
+				return APP_SetError("Failed getting base path: %s", SDL_GetError());
+			}
+			if (SDL_asprintf(&APP_FilesDATPath, "%s%s", basePath, APP_PROJECT_NAME ".dat") < 0) {
+				APP_FilesDATPath = NULL;
+				return APP_SetError("Error creating resource DAT path string");
+			}
+			if (!SDL_GetPathInfo(APP_FilesDATPath, &info) || info.type != SDL_PATHTYPE_FILE) {
+				return APP_SetError("Resource DAT file was not found");
+			}
+		}
 	}
 #elif APP_FILESYSTEM_TYPE == APP_FILESYSTEM_PORTABLE
 	else {

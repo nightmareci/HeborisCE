@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=HeborisCE
+Icon=HeborisCE
+Comment=Cross-platform Expansion and continuation of Heboris U.E.
+Exec=HeborisCE
+GenericName=HeborisCE
+Categories=Game
+Terminal=false

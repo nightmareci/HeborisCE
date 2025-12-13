@@ -615,10 +615,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 	set_source_files_properties("pkg/macos/${APP_PROJECT_NAME}.icns" PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
 	if(APP_VENDORED)
-		set(BUILD_SHARED_LIBS OFF)
+		set(BUILD_SHARED_LIBS ON)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_DEPS_SHARED ON)
 		set(SDLIMAGE_VENDORED ON)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 		target_link_libraries(${APP_EXE} PRIVATE

@@ -265,6 +265,30 @@ function(GenerateResourceDAT DAT_FILE)
 	add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_dat")
 endfunction()
 
+function(CopyResourcesToDestination DESTINATION_DIR)
+	file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
+	file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
+	file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
+	set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+	set(OUTPUT_FILES)
+	foreach(FILE ${DEPENDS_FILES})
+		list(APPEND OUTPUT_FILES "${DESTINATION_DIR}/${FILE}")
+	endforeach()
+	add_custom_command(
+		OUTPUT ${OUTPUT_FILES}
+		DEPENDS ${DEPENDS_FILES}
+		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${DESTINATION_DIR}/res"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${DESTINATION_DIR}/config/mission"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${DESTINATION_DIR}/config/stage"
+		VERBATIM
+	)
+	add_custom_target("${APP_PROJECT_NAME}_output_files"
+		DEPENDS ${OUTPUT_FILES}
+		VERBATIM
+	)
+	add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_output_files")
+endfunction()
+
 if(VITA)
 	set(APP_FRAMEWORK_TYPE "VITA SDL3")
 
@@ -469,6 +493,8 @@ elseif(WIN32 AND NOT CYGWIN)
 
 	if(APP_RESOURCE_DAT)
 		GenerateResourceDAT("${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
+	elseif(NOT APP_PACKAGE_TYPE STREQUAL "Current Directory")
+		CopyResourcesToDestination("${APP_OUTPUT_DIR}")
 	endif()
 	if(
 		APP_PACKAGE_TYPE STREQUAL "Portable" OR
@@ -663,6 +689,8 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CYGWIN OR UNIX)
 		set(APP_RESOURCE_DAT_FILE "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
 		if(APP_RESOURCE_DAT)
 			GenerateResourceDAT("${APP_RESOURCE_DAT_FILE}")
+		else()
+			CopyResourcesToDestination("${APP_OUTPUT_DIR}")
 		endif()
 		if(APP_VENDORED)
 			if(DEFINED RPATH_ORIGIN)
@@ -671,30 +699,6 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CYGWIN OR UNIX)
 					BUILD_WITH_INSTALL_RPATH ON
 				)
 			endif()
-		endif()
-
-		if(NOT APP_RESOURCE_DAT)
-			file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
-			file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
-			file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
-			set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
-			set(OUTPUT_FILES)
-			foreach(FILE ${DEPENDS_FILES})
-				list(APPEND OUTPUT_FILES "${APP_OUTPUT_DIR}/${FILE}")
-			endforeach()
-			add_custom_command(
-				OUTPUT ${OUTPUT_FILES}
-				DEPENDS ${DEPENDS_FILES}
-				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${APP_OUTPUT_DIR}/res"
-				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${APP_OUTPUT_DIR}/config/mission"
-				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${APP_OUTPUT_DIR}/config/stage"
-				VERBATIM
-			)
-			add_custom_target("${APP_PROJECT_NAME}_output_files"
-				DEPENDS ${OUTPUT_FILES}
-				VERBATIM
-			)
-			add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_output_files")
 		endif()
 
 		install(TARGETS ${APP_EXE} DESTINATION ".")
@@ -722,9 +726,12 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CYGWIN OR UNIX)
 		endif()
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION ".")
 	elseif(APP_PACKAGE_TYPE STREQUAL "Installable")
-		set(APP_RESOURCE_DAT_FILE "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/${APP_PROJECT_NAME}.dat")
+		set(APP_DATA_DIR "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
+		set(APP_RESOURCE_DAT_FILE "${APP_DATA_DIR}/${APP_PROJECT_NAME}.dat")
 		if(APP_RESOURCE_DAT)
 			GenerateResourceDAT("${APP_RESOURCE_DAT_FILE}")
+		else()
+			CopyResourcesToDestination("${APP_DATA_DIR}")
 		endif()
 		if(APP_VENDORED)
 			if(DEFINED RPATH_ORIGIN)
@@ -735,30 +742,6 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR CYGWIN OR UNIX)
 			endif()
 		endif()
 		set(APP_BASE_PATH_APPEND "../${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/")
-
-		if(NOT APP_RESOURCE_DAT)
-			file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
-			file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
-			file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
-			set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
-			set(OUTPUT_FILES)
-			foreach(FILE ${DEPENDS_FILES})
-				list(APPEND OUTPUT_FILES "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/${FILE}")
-			endforeach()
-			add_custom_command(
-				OUTPUT ${OUTPUT_FILES}
-				DEPENDS ${DEPENDS_FILES}
-				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/res"
-				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/config/mission"
-				COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/config/stage"
-				VERBATIM
-			)
-			add_custom_target("${APP_PROJECT_NAME}_output_files"
-				DEPENDS ${OUTPUT_FILES}
-				VERBATIM
-			)
-			add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_output_files")
-		endif()
 
 		install(TARGETS ${APP_EXE} DESTINATION "${CMAKE_INSTALL_BINDIR}")
 		if(APP_VENDORED)

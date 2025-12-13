@@ -555,6 +555,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		if(APP_RESOURCE_DAT)
 			install(FILES "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION "${APP_PROJECT_NAME}")
 		else()
+			CopyResourcesToDestination("${APP_OUTPUT_DIR}")
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${APP_PROJECT_NAME}/config")
 			install(DIRECTORY "res" DESTINATION "${APP_PROJECT_NAME}")
 		endif()

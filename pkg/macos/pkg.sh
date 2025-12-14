@@ -36,4 +36,4 @@ cmake "$SOURCE_DIR" -B "$BUILD_DIR" -G Xcode \
 	-DCPACK_BUNDLE_APPLE_CERT_APP="$IDENTITY" \
 	-DSDLIMAGE_AVIF=OFF \
 	|| exit 1
-cmake --build "$BUILD_DIR" --config Release --target package || exit 1
+cmake --build "$BUILD_DIR" --config Release --target package --parallel || exit 1

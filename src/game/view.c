@@ -2206,7 +2206,7 @@ void printConKey(int32_t fontX, int32_t fontY, int32_t conPlayer, APP_ConKey* ke
 		if (text != NULL) {
 			printFont(fontX, fontY, text, fontColor);
 			if (button != APP_BUTTON_NULL) {
-				ExBltRect(PLANE_HEBOBTN, (fontX + strlen(text)) * 8, fontY * 8, button * 8, (APP_GetConType(conPlayer) - APP_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
+				ExBltRect(PLANE_HEBOBTN, (fontX + (int32_t)SDL_strlen(text)) * 8, fontY * 8, button * 8, (APP_GetConType(conPlayer) - APP_INPUT_FIRSTGAMECONTROLLERTYPE + 1) * 8, 8, 8);
 			}
 		}
 		else if (button != APP_BUTTON_NULL) {
@@ -2233,7 +2233,7 @@ void printFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontCo
 void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = SDL_strlen(fontStr);
+	stringLength = (int32_t)SDL_strlen(fontStr);
 	for(i = 0; i < stringLength; i++) {
 		stringChar = fontStr[i];
 
@@ -2264,7 +2264,7 @@ void printSMALLFont(int32_t fontX, int32_t fontY, const char *fontStr, int32_t f
 void printSMALLFontEX(int32_t fontX, int32_t fontY, const char *fontStr, int32_t fontColor) {
 	int32_t		i, sx, sy, stringLength, stringChar;
 
-	stringLength = SDL_strlen(fontStr);
+	stringLength = (int32_t)SDL_strlen(fontStr);
 	for(i = 0; i < stringLength; i++) {
 		stringChar = fontStr[i];
 

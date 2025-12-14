@@ -38,6 +38,143 @@ static int APP_QuitLevel;
 static bool APP_QuitNow = false;
 static jmp_buf APP_QuitPoint;
 
+static bool APP_FrameStep(void);
+
+SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
+{
+	(void)appstate;
+	APP_argc = argc;
+	APP_argv = argv;
+	
+	APP_QuitLevel = 0;
+	
+	// TODO: Remove this once the issue with WASAPI crackling with the move sound in-game is fixed
+#ifdef SDL_PLATFORM_WIN32
+	if (!SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "directsound")) {
+		APP_SetError("Couldn't set audio driver to DirectSound: %s", SDL_GetError());
+		return SDL_APP_FAILURE;
+	}
+#endif
+	
+	// SDLの初期化 || SDL initialization
+        // NOTE: On macOS, it seems doing SDL_Quit/SDL_Init for restarts
+        // completely breaks things, so only do SDL_Init/SDL_Quit at
+        // startup/shutdown. Probably speeds up restarts on all platforms
+        // anyways.
+	if (!SDL_Init(
+		SDL_INIT_AUDIO | SDL_INIT_VIDEO
+#ifdef APP_ENABLE_JOYSTICK_INPUT
+		| SDL_INIT_JOYSTICK
+#endif
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
+		| SDL_INIT_GAMEPAD
+#endif
+	)) {
+		APP_SetError("Couldn't initialize SDL: %s", SDL_GetError());
+		return SDL_APP_FAILURE;
+	}
+	
+	return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDLCALL SDL_AppEvent(void* appstate, SDL_Event* event)
+{
+	(void)appstate;
+	switch (event->type) {
+		// ウィンドウの×ボタンが押された時など
+		// When the window's X-button was pressed, etc.
+	case SDL_EVENT_QUIT:
+		APP_QuitNow = true;
+		break;
+		
+#ifdef APP_ENABLE_JOYSTICK_INPUT
+	case SDL_EVENT_JOYSTICK_ADDED:
+	case SDL_EVENT_JOYSTICK_REMOVED:
+		APP_UpdatePlayerSlotsNow = true;
+		break;
+#endif
+		
+#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
+	case SDL_EVENT_GAMEPAD_ADDED:
+	case SDL_EVENT_GAMEPAD_REMOVED:
+		APP_UpdatePlayerSlotsNow = true;
+		break;
+#endif
+		
+	case SDL_EVENT_MOUSE_MOTION:
+	case SDL_EVENT_MOUSE_BUTTON_DOWN:
+	case SDL_EVENT_MOUSE_BUTTON_UP:
+	case SDL_EVENT_MOUSE_WHEEL:
+		APP_ShowCursorNow = true;
+		break;
+		
+	default:
+		break;
+	}
+	
+	return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
+{
+	(void)appstate;
+	switch (setjmp(APP_QuitPoint)) {
+	case SDL_APP_CONTINUE:
+	default:
+		break;
+		
+	case SDL_APP_SUCCESS:
+		return SDL_APP_SUCCESS;
+		
+	case SDL_APP_FAILURE:
+		return SDL_APP_FAILURE;
+	}
+
+	if (APP_WasAudioStreamingError()) {
+		APP_SetError("Failed streaming audio from storage");
+		return SDL_APP_FAILURE;
+	}
+
+	if (APP_ShowCursorNow) {
+		if (!SDL_ShowCursor()) {
+			APP_SetError("Failed showing mouse cursor: %s", SDL_GetError());
+			return SDL_APP_FAILURE;
+		}
+		APP_ShowCursorNow = false;
+		APP_CursorFrames = APP_SettingFPS;
+	}
+
+	if (APP_CursorFrames > 0 && --APP_CursorFrames == 0 && SDL_CursorVisible() && !SDL_HideCursor()) {
+		APP_SetError("Failed hiding mouse cursor: %s", SDL_GetError());
+		return SDL_APP_FAILURE;
+	}
+
+#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
+	if (APP_UpdatePlayerSlotsNow) {
+		if (!APP_UpdatePlayerSlots()) {
+			APP_SetError("Failed changing player joystick/controller device slots: %s", SDL_GetError());
+			return SDL_APP_FAILURE;
+		}
+		APP_UpdatePlayerSlotsNow = false;
+	}
+#endif
+
+	APP_ScreenSubpixelOffset = APP_GetScreenSubpixelOffset();
+
+	mainUpdate();
+
+	return SDL_APP_CONTINUE;
+}
+
+void SDLCALL SDL_AppQuit(void* appstate, SDL_AppResult result)
+{
+	(void)appstate;
+	if (result == SDL_APP_FAILURE) {
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
+	}
+	APP_Quit();
+}
+
 void APP_ResetFrameStep(void)
 {
 	APP_FrameNS = SDL_NS_PER_SECOND / APP_GetFPS();
@@ -70,7 +207,7 @@ static bool APP_FrameStep(void)
 	return skipped;
 }
 
-void APP_SetResourceSettings(size_t waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount)
+void APP_SetResourceSettings(int waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount)
 {
 	if (APP_WasSetResourceSettings) {
 		APP_SetError("Resource settings already set, they can only be set once");
@@ -94,21 +231,6 @@ void APP_Init(void)
 	}
 
 	if (APP_QuitLevel == 0) {
-		/* SDLの初期化 || SDL initialization */
-		if (!SDL_Init(
-			SDL_INIT_AUDIO | SDL_INIT_VIDEO
-			#ifdef APP_ENABLE_JOYSTICK_INPUT
-			| SDL_INIT_JOYSTICK
-			#endif
-			#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
-			| SDL_INIT_GAMEPAD
-			#endif
-		)) {
-			APP_SetError("Couldn't initialize SDL: %s", SDL_GetError());
-			APP_Exit(SDL_APP_FAILURE);
-		}
-		APP_QuitLevel++;
-
 		// If this fails, it doesn't matter, the game will still work. But it's
 		// called because if it works, the game might perform better.
 		SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
@@ -153,11 +275,10 @@ void APP_Quit(void)
 {
 	switch (APP_QuitLevel)
 	{
-	case 5: APP_CloseInputs(); SDL_FALLTHROUGH;
-	case 4: APP_QuitVideo(); SDL_FALLTHROUGH;
-	case 3: APP_QuitAudio(); SDL_FALLTHROUGH;
-	case 2: APP_QuitFilesystem(); SDL_FALLTHROUGH;
-	case 1: SDL_Quit(); SDL_FALLTHROUGH;
+	case 4: APP_CloseInputs(); SDL_FALLTHROUGH;
+	case 3: APP_QuitVideo(); SDL_FALLTHROUGH;
+	case 2: APP_QuitAudio(); SDL_FALLTHROUGH;
+	case 1: APP_QuitFilesystem(); SDL_FALLTHROUGH;
 	default: break;
 	}
 	APP_QuitLevel = 0;
@@ -258,121 +379,4 @@ void APP_SetRenderWhileSkippingFrames(bool render)
 bool APP_RenderThisFrame(void)
 {
 	return APP_RenderWhileSkippingFrames || !APP_LastFrameSkipped;
-}
-
-SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
-{
-	(void)appstate;
-	APP_argc = argc;
-	APP_argv = argv;
-
-	APP_QuitLevel = 0;
-
-	// TODO: Remove this once the issue with WASAPI crackling with the move sound in-game is fixed
-	#ifdef SDL_PLATFORM_WIN32
-	if (!SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "directsound")) {
-		APP_SetError("Couldn't set audio driver to DirectSound: %s", SDL_GetError());
-		return SDL_APP_FAILURE;
-	}
-	#endif
-
-	return SDL_APP_CONTINUE;
-}
-
-SDL_AppResult SDLCALL SDL_AppEvent(void* appstate, SDL_Event* event)
-{
-	(void)appstate;
-	switch (event->type) {
-		// ウィンドウの×ボタンが押された時など
-		// When the window's X-button was pressed, etc.
-		case SDL_EVENT_QUIT:
-			APP_QuitNow = true;
-			break;
-
-		#ifdef APP_ENABLE_JOYSTICK_INPUT
-		case SDL_EVENT_JOYSTICK_ADDED:
-		case SDL_EVENT_JOYSTICK_REMOVED:
-			APP_UpdatePlayerSlotsNow = true;
-			break;
-		#endif
-
-		#ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
-		case SDL_EVENT_GAMEPAD_ADDED:
-		case SDL_EVENT_GAMEPAD_REMOVED:
-			APP_UpdatePlayerSlotsNow = true;
-			break;
-		#endif
-
-		case SDL_EVENT_MOUSE_MOTION:
-		case SDL_EVENT_MOUSE_BUTTON_DOWN:
-		case SDL_EVENT_MOUSE_BUTTON_UP:
-		case SDL_EVENT_MOUSE_WHEEL:
-			APP_ShowCursorNow = true;
-			break;
-
-		default:
-			break;
-	}
-
-	return SDL_APP_CONTINUE;
-}
-
-SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
-{
-	(void)appstate;
-	switch (setjmp(APP_QuitPoint)) {
-	case SDL_APP_CONTINUE:
-	default:
-		break;
-
-	case SDL_APP_SUCCESS:
-		return SDL_APP_SUCCESS;
-
-	case SDL_APP_FAILURE:
-		return SDL_APP_FAILURE;
-	}
-
-	if (APP_WasAudioStreamingError()) {
-		APP_SetError("Failed streaming audio from storage");
-		return SDL_APP_FAILURE;
-	}
-
-	if (APP_ShowCursorNow) {
-		if (!SDL_ShowCursor()) {
-			APP_SetError("Failed showing mouse cursor: %s", SDL_GetError());
-			return SDL_APP_FAILURE;
-		}
-		APP_ShowCursorNow = false;
-		APP_CursorFrames = APP_SettingFPS;
-	}
-
-	if (APP_CursorFrames > 0 && --APP_CursorFrames == 0 && SDL_CursorVisible() && !SDL_HideCursor()) {
-		APP_SetError("Failed hiding mouse cursor: %s", SDL_GetError());
-		return SDL_APP_FAILURE;
-	}
-
-	#if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
-	if (APP_UpdatePlayerSlotsNow) {
-		if (!APP_UpdatePlayerSlots()) {
-			APP_SetError("Failed changing player joystick/controller device slots: %s", SDL_GetError());
-			return SDL_APP_FAILURE;
-		}
-		APP_UpdatePlayerSlotsNow = false;
-	}
-	#endif
-
-	APP_ScreenSubpixelOffset = APP_GetScreenSubpixelOffset();
-
-	mainUpdate();
-
-	return SDL_APP_CONTINUE;
-}
-
-void SDLCALL SDL_AppQuit(void* appstate, SDL_AppResult result)
-{
-	(void)appstate;
-	if (result == SDL_APP_FAILURE) {
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, APP_PROJECT_NAME " Error", SDL_GetError(), APP_ScreenWindow);
-	}
-	APP_Quit();
 }

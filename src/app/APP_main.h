@@ -17,7 +17,7 @@ void APP_SetRenderWhileSkippingFrames(bool render);
 
 bool APP_RenderThisFrame(void);
 
-void APP_SetResourceSettings(size_t waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount);
+void APP_SetResourceSettings(int waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount);
 
 void APP_Init(void);
 

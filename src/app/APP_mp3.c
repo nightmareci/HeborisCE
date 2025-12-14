@@ -237,7 +237,7 @@ static bool APP_GetMP3StreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 					default:
 						break;
 					}
-					if (!SDL_PutAudioStreamData(mp3->converter, mp3->buffer, sizeof(float) * mp3->srcSpec.channels * gotSamples)) {
+					if (!SDL_PutAudioStreamData(mp3->converter, mp3->buffer, (int)(sizeof(float) * mp3->srcSpec.channels * gotSamples))) {
 						SDL_UnlockMutex(mp3->lock);
 						return false;
 					}

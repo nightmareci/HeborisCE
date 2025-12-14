@@ -163,7 +163,7 @@ static bool BDF_ParseChar(APP_BDFFont* font, uint32_t encoding, int width, char*
 	}
 	glyph->width = width;
 
-	glyph->pixels = SDL_malloc(sizeof(Uint32) * font->size);
+	glyph->pixels = SDL_malloc(sizeof(uint32_t) * font->size);
 	if (!glyph->pixels) {
 		APP_SetError("Failed to allocate memory for a character's pixels of a font.");
 		SDL_free(glyph);
@@ -173,7 +173,7 @@ static bool BDF_ParseChar(APP_BDFFont* font, uint32_t encoding, int width, char*
 	char buffer[BDF_LINE_MAX];
 	for (int y = 0; y < font->size; y++) {
 		BDF_GetLine(buffer, sizeof(buffer), line, end);
-		glyph->pixels[y] = (SDL_strtol(buffer, NULL, 16) >> rshift);
+		glyph->pixels[y] = (uint32_t)(SDL_strtol(buffer, NULL, 16) >> rshift);
 	}
 
 	if (APP_SetHashTableValue(font->glyphs, encoding, glyph, BDF_DestroyGlyph, NULL)) {
@@ -281,8 +281,8 @@ bool APP_AddBDFFont(APP_BDFFont* font, SDL_IOStream* src)
 				return APP_SetError("BITMAP line encountered before all of SIZE, ENCODING, and DWIDTH lines have been found.");
 			}
 			for (s = 8; s < width; s += 8) {}
-			rshift = s - width;
-			if (!BDF_ParseChar(font, (Uint32)encoding, width, &line, end, rshift)) {
+			rshift = s - (int)width;
+			if (!BDF_ParseChar(font, (Uint32)encoding, (int)width, &line, end, rshift)) {
 				SDL_free(srcData);
 				return APP_SetError("Failed to parse a font character: %s", SDL_GetError());
 			}

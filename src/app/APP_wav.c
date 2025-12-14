@@ -232,7 +232,7 @@ static bool APP_GetWAVStreamingAudioDataChunk(APP_StreamingAudioData* streamingA
 					default:
 						break;
 					}
-					if (!SDL_PutAudioStreamData(wav->converter, wav->buffer, sizeof(float) * wav->srcSpec.channels * gotSamples)) {
+					if (!SDL_PutAudioStreamData(wav->converter, wav->buffer, (int)(sizeof(float) * wav->srcSpec.channels * gotSamples))) {
 						SDL_UnlockMutex(wav->lock);
 						return false;
 					}

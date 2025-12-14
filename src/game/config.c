@@ -1826,7 +1826,12 @@ void ConfigMenu() {
 							};
 							SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "P:", conPlayer + 1);
 							printFont(5, 6 + i, string[0], digitc[rotspl[0]]);
-							printConKey(5 + strlen(string[0]), 6 + i, conPlayer, &key, digitc[rotspl[0]]);
+							size_t len = SDL_strlen(string[0]);
+							if (len > INT32_MAX - 5) {
+								APP_SetError("string[0] too long");
+								APP_Exit(SDL_APP_FAILURE);
+							}
+							printConKey(5 + (int32_t)len, 6 + i, conPlayer, &key, digitc[rotspl[0]]);
 						}
 					}
 					if(statusc[0] < APP_BUTTON_GAME_COUNT) {
@@ -2021,9 +2026,19 @@ void ConfigMenu() {
 					if (APP_GetPlayerSlotType(pl) == APP_PLAYERSLOT_CON && (conKey.type == APP_CONKEY_AXIS || conKey.type == APP_CONKEY_BUTTON)) {
 						if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);
 						SDL_snprintf(string[1], STRING_LENGTH, " CON%" PRId32 "P:", pl + 1);
-						int32_t x = 5 + strlen(string[0]);
+						size_t len = SDL_strlen(string[0]);
+						if (len > INT32_MAX - 5) {
+							APP_SetError("string[0] too long");
+							APP_Exit(SDL_APP_FAILURE);
+						}
+						int32_t x = 5 + (int32_t)len;
 						printFont(x, 7 + i + pl * 10, string[1], 0);
-						printConKey(x + strlen(string[1]), 7 + i + pl * 10, pl, &conKey, 0);
+						len = SDL_strlen(string[1]);
+						if (len > INT32_MAX - x) {
+							APP_SetError("string[1] too long");
+							APP_Exit(SDL_APP_FAILURE);
+						}
+						printConKey(x + (int32_t)len, 7 + i + pl * 10, pl, &conKey, 0);
 					}
 					else {
 						if (string[0][0] == '\0') SDL_snprintf(string[0], STRING_LENGTH, " NO ASSIGN");

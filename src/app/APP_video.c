@@ -1003,6 +1003,10 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 		return;
 	}
 	const size_t length = SDL_strlen(text);
+	if (length > INT_MAX / 6) {
+		APP_SetError("Length of text to draw is too long, %d is max supported", INT_MAX / 6);
+		goto fail;
+	}
 	if (dstX + length * charW <= 0) {
 		return;
 	}
@@ -1030,7 +1034,7 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 		APP_TextIndices = indices;
 		int* index = APP_TextIndices + APP_TextDataLength * 6;
 		int* const indicesEnd = APP_TextIndices + length * 6;
-		int i = APP_TextDataLength * 4;
+		int i = (int)APP_TextDataLength * 4;
 		while (index < indicesEnd) {
 			index[0] = i + 0;
 			index[1] = i + 1;
@@ -1086,7 +1090,7 @@ void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, i
 		x += charW;
 	}
 
-	if (!SDL_RenderGeometry(APP_ScreenRenderer, APP_Planes[plane], APP_TextVertices, length * 4, APP_TextIndices, length * 6)) {
+	if (!SDL_RenderGeometry(APP_ScreenRenderer, APP_Planes[plane], APP_TextVertices, (int)length * 4, APP_TextIndices, (int)length * 6)) {
 		APP_SetError("Failed rendering: %s", SDL_GetError());
 		goto fail;
 	}

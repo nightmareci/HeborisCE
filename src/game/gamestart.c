@@ -1737,7 +1737,12 @@ void mainUpdate() {
 			1
 		};
 		for (size_t i = 0; i < sizeof(lines) / sizeof(*lines); i++) {
-			printFont((40 - strlen(lines[i])) / 2, (30 - (sizeof(lines) / sizeof(*lines)) * 2) / 2 + i * 2, lines[i], colors[i]);
+			size_t len = SDL_strlen(lines[i]);
+			if (len > INT32_MIN + 40) {
+				APP_SetError("lines[%zu] is too long", i);
+				APP_Exit(SDL_APP_FAILURE);
+			}
+			printFont((40 - (int32_t)len) / 2, (30 - (int32_t)(sizeof(lines) / sizeof(*lines)) * 2) / 2 + (int32_t)i * 2, lines[i], colors[i]);
 		}
 
 		if (
@@ -2242,7 +2247,7 @@ void title(void) {
 	printFont(27, 13, "VERSION 1.60", 4);
 	printFont(27, 14, "(2002/03/31)", 6);
 	SDL_snprintf(string[0], STRING_LENGTH, "%s", version);
-	printFont(20 - SDL_strlen(version) / 2, 16, string[0], 1); // #1.60c7f4
+	printFont(20 - (int32_t)SDL_strlen(version) / 2, 16, string[0], 1); // #1.60c7f4
 
 	// モード0: ボタン入力待ち
 	if (mode == 0) {
@@ -3246,7 +3251,8 @@ int32_t standardRand(void) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 // 変数playerを追加しました。#1.60c7m1
 void versusInit(int32_t player) {
-	int32_t		i, j, k, same, temp, mae, shu, len;
+	int32_t i, j, k, same, temp, mae, shu;
+	size_t len;
 
 	same = limit[nextblock];
 	mae = -1;
@@ -11611,7 +11617,7 @@ void statNameEntry(int32_t player) {
 	if(statusc[player * 10 + 1] == 0)
 		SDL_strlcpy(string[player + 2], "", STRING_LENGTH);
 
-	len = SDL_strlen(string[player + 2]);
+	len = (int32_t)SDL_strlen(string[player + 2]);
 
 	// 何位に入ったか表示#1.60c7i5
 	if(rank != -1) {

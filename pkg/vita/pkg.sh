@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$1" -o -z "$2" ] ; then
-	echo 'Usage: pkg.sh [source-directory] [build-directory]'
+	echo 'Usage: pkg.sh [source-directory] [build-directory] (cmake-generator)'
 	exit 1
 fi
 
@@ -10,13 +10,19 @@ if [ -z "$VITASDK" ] ; then
 	exit 1
 fi
 
-mkdir "$2"
+mkdir -p "$2" || exit 1
 
 SOURCE_DIRECTORY=`readlink -f "$1"`
 BUILD_DIRECTORY=`readlink -f "$2"`
 
-cd "$SOURCE_DIRECTORY"
-cmake -B "$BUILD_DIRECTORY" -G Ninja -DCMAKE_BUILD_TYPE=Release --toolchain "$VITASDK/share/vita.toolchain.cmake" -DAPP_VENDORED=ON -DAPP_RESOURCE_DAT=ON \
+if [ -z "$3" ] ; then
+	set --
+else
+	set -- -G "$3"
+fi
+
+cd "$SOURCE_DIRECTORY" || exit 1
+cmake -B "$BUILD_DIRECTORY" "$@" -DCMAKE_BUILD_TYPE=Release --toolchain "$VITASDK/share/vita.toolchain.cmake" -DAPP_VENDORED=ON -DAPP_RESOURCE_DAT=ON \
 	-DSDLIMAGE_AVIF=OFF \
 	-DSDLIMAGE_BMP=OFF \
 	-DSDLIMAGE_GIF=OFF \

@@ -32,7 +32,18 @@ set(APP_PROJECT_IDENTIFIER "com.nightmareci.HeborisCE")
 set(APP_FILESYSTEM_ORG "${APP_PROJECT_CREATOR}")
 set(APP_FILESYSTEM_APP "HeborisC7EX SDL2")
 
-set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIG>")
+get_cmake_property(GENERATOR_IS_MULTI_CONFIG GENERATOR_IS_MULTI_CONFIG)
+if(VITA)
+	# VitaSDK doesn't handle CMake output directories properly, so the
+	# output directory *must* be the binary directory
+	# TODO: Maybe an issue for supporting CMake output directory settings
+	# should be submitted to the VitaSDK project
+	set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}")
+elseif(GENERATOR_IS_MULTI_CONFIG STREQUAL "NOTFOUND" OR NOT GENERATOR_IS_MULTI_CONFIG)
+	set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+else()
+	set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIG>")
+endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 	set(APP_EXE index)
@@ -80,22 +91,20 @@ if(APP_PACKAGE_TYPE STREQUAL "Current Directory")
 	endif()
 elseif(APP_PACKAGE_TYPE MATCHES "Installable")
 	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_INSTALLABLE")
-	if(NOT VITA AND NOT CMAKE_SYSTEM_NAME MATCHES "Emscripten")
-		if(APP_PACKAGE_TYPE STREQUAL "Installable Mac App")
-			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
-			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${APP_EXE}>/Frameworks")
-		elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR UNIX OR MSYS)
-			include(GNUInstallDirs REQUIRED)
-			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
-			if(MSYS)
-				set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
-			else()
-				set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_LIBDIR}")
-			endif()
+	if(APP_PACKAGE_TYPE STREQUAL "Installable Mac App")
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<TARGET_BUNDLE_CONTENT_DIR:${APP_EXE}>/Frameworks")
+	elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR UNIX OR MSYS)
+		include(GNUInstallDirs REQUIRED)
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
+		if(MSYS)
+			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_BINDIR}")
 		else()
-			set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
-			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+			set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}/${CMAKE_INSTALL_LIBDIR}")
 		endif()
+	else()
+		set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
+		set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${APP_OUTPUT_DIR}")
 	endif()
 elseif(APP_PACKAGE_TYPE MATCHES "Portable")
 	set(APP_FILESYSTEM_TYPE "APP_FILESYSTEM_PORTABLE")
@@ -219,7 +228,7 @@ if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 endif()
 
 # // The on-disk format is unheadered and uses file extension .dat
-# // At the start of the .dat, there's a int64_t for how many files there are (the array length of APP_FilesArray)
+# // At the start of the .dat, there's an int64_t for how many files there are (the array length of APP_FilesArray)
 # // After the file count, there's a list of APP_FileData entries
 # // This isn't actual code, just a description of the on-disk format
 # typedef struct APP_FileData
@@ -238,9 +247,14 @@ endif()
 # // All the APP_File objects are represented as one contiguous array, simplifies memory management
 # APP_File* APP_FilesArray;
 #
-# // APP_FilesTable is indexed by the filename (APP_FileData::filename), e.g. "res/graphics/highDetail/title.png"
-# // Each entry in APP_FilesTable stores a pointer to an APP_File
-# // When a file is requested to be opened, a custom-interface SDL_IOStream is created, which internally handles bounds checking etc., so the stream can be used as if it only represents a single file with ordinary stream functions, not a normal interface stream of the .dat
+# // APP_FilesTable is indexed by the filename (APP_FileData::filename), e.g.
+# // "res/graphics/highDetail/title.png"
+# //
+# // Each entry in APP_FilesTable stores a pointer to an APP_File. When a file
+# // is requested to be opened, a custom-interface SDL_IOStream is created,
+# // which internally handles bounds checking etc., so the stream can be used as
+# // if it only represents a single file with ordinary stream functions, not a
+# // normal interface stream of the .dat
 # SDL_PropertiesID APP_FilesTable;
 function(GenerateResourceDAT DAT_FILE)
 	set(RES_FILES)
@@ -347,9 +361,9 @@ if(VITA)
 	endif()
 
 	if(APP_RESOURCE_DAT)
-		GenerateResourceDAT("${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat")
+		GenerateResourceDAT("${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat")
 		set(ASSETS
-			FILE "${CMAKE_BINARY_DIR}/${APP_PROJECT_NAME}.dat" "${APP_PROJECT_NAME}.dat"
+			FILE "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat" "${APP_PROJECT_NAME}.dat"
 		)
 	else()
 		set(ASSETS
@@ -527,7 +541,7 @@ elseif(WIN32 AND NOT MSYS)
 		else() # For anything else, the CMake variable probably corresponds to what we want (e.g. x86 and ARM64)
 			set(PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}")
 		endif()
-		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} ${APP_PACKAGE_TYPE} Windows ${PROCESSOR}")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME}-${APP_PACKAGE_TYPE}-Windows-${PROCESSOR}")
 		set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)
 		include(CPack)
 	elseif(NOT APP_PACKAGE_TYPE STREQUAL "Current Directory")
@@ -589,9 +603,9 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 
 	set(CPACK_BUNDLE_APPLE_CERT_APP "-" CACHE STRING "The name of the code signing certificate to use")
 	if(CPACK_BUNDLE_APPLE_CERT_APP STREQUAL "-")
-		set(CPACK_BUNDLE_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-adhoc.xml")
+		set(CPACK_BUNDLE_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-adhoc.plist")
 	else()
-		set(CPACK_BUNDLE_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-identity-required.xml")
+		set(CPACK_BUNDLE_ENTITLEMENTS "${CMAKE_SOURCE_DIR}/pkg/macos/entitlements-identity-required.plist")
 	endif()
 	set(MACOSX_BUNDLE_BUNDLE_NAME ${APP_PROJECT_NAME})
 	set(MACOSX_BUNDLE_GUI_IDENTIFIER "${APP_PROJECT_IDENTIFIER}")
@@ -639,12 +653,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 	set(CPACK_DMG_VOLUME_NAME ${APP_PROJECT_NAME})
 	set(CPACK_PACKAGE_VENDOR "${APP_PROJECT_CREATOR}")
 	if(APP_PACKAGE_TYPE MATCHES "Portable")
-		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} Portable App macOS")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME}-Portable-App-macOS")
 	elseif(${APP_PACKAGE_TYPE} MATCHES "Installable")
-		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} Installable App macOS")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME}-Installable-App-macOS")
 	endif()
 	if(CPACK_GENERATOR STREQUAL "DragNDrop")
-		set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CPackDragNDropCodesignDMGs.cmake")
+		set(CPACK_POST_BUILD_SCRIPTS "${CMAKE_SOURCE_DIR}/cmake/CPackDragNDropCodeSignDMGs.cmake")
 	endif()
 	include(CPack)
 elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
@@ -813,15 +827,60 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 		if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 			set(PLATFORM "macOS")
 		else()
-			set(PLATFORM "${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_PROCESSOR}")
+			set(PLATFORM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
 		endif()
-		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME} ${APP_PACKAGE_TYPE} ${PLATFORM}")
+		set(CPACK_PACKAGE_FILE_NAME "${APP_PROJECT_NAME}-${APP_PACKAGE_TYPE}-${PLATFORM}")
 		include(CPack)
 	endif()
 else()
 	message(FATAL_ERROR "The current build target is not supported")
 endif()
 
-configure_file("src/app/APP_build_config.h.cmake" "src/app/APP_build_config.h" @ONLY)
-target_sources(${APP_EXE} PRIVATE "${CMAKE_BINARY_DIR}/src/app/APP_build_config.h")
-target_include_directories(${APP_EXE} PRIVATE "src" "${CMAKE_BINARY_DIR}/src" "${CMAKE_BINARY_DIR}/src/app")
+set(BUILD_CONFIG_H "src/app/APP_build_config.h")
+set(INPUT_BUILD_CONFIG "${CMAKE_SOURCE_DIR}/${BUILD_CONFIG_H}.cmake")
+set(OUTPUT_BUILD_CONFIG "${APP_OUTPUT_DIR}/${BUILD_CONFIG_H}")
+add_custom_command(
+	DEPENDS "${INPUT_BUILD_CONFIG}"
+	OUTPUT "${OUTPUT_BUILD_CONFIG}"
+	VERBATIM
+	COMMAND "${CMAKE_COMMAND}"
+		-DINPUT_FILE=${INPUT_BUILD_CONFIG}
+		-DOUTPUT_FILE=${OUTPUT_BUILD_CONFIG}
+
+		-DAPP_PROJECT_VERSION=${APP_PROJECT_VERSION}
+		-DAPP_PROJECT_CREATOR=${APP_PROJECT_CREATOR}
+		-DAPP_PROJECT_NAME=${APP_PROJECT_NAME}
+
+		-DAPP_FILESYSTEM_ORG=${APP_FILESYSTEM_ORG}
+		-DAPP_FILESYSTEM_APP=${APP_FILESYSTEM_APP}
+		-DAPP_FILESYSTEM_TYPE=${APP_FILESYSTEM_TYPE}
+
+		-DAPP_BASE_PATH_APPEND=${APP_BASE_PATH_APPEND}
+
+		-DAPP_ENABLE_LINUX_GPIO_INPUT=${APP_ENABLE_LINUX_GPIO_INPUT}
+		-DAPP_ENABLE_KEYBOARD_INPUT=${APP_ENABLE_KEYBOARD_INPUT}
+		-DAPP_ENABLE_GAME_CONTROLLER_INPUT=${APP_ENABLE_GAME_CONTROLLER_INPUT}
+		-DAPP_ENABLE_GAME_CONTROLLER_DB_FILE=${APP_ENABLE_GAME_CONTROLLER_DB_FILE}
+		-DAPP_ENABLE_JOYSTICK_INPUT=${APP_ENABLE_JOYSTICK_INPUT}
+
+		-DAPP_ONLY_INPUT_TYPE=${APP_ONLY_INPUT_TYPE}
+		-DAPP_ONLY_CONTROLLER_TYPE=${APP_ONLY_CONTROLLER_TYPE}
+		-DAPP_ONLY_SDL_CONTROLLER_TYPE=${APP_ONLY_SDL_CONTROLLER_TYPE}
+
+		-DAPP_DEFAULT_JOYKEY_ASSIGN=${APP_DEFAULT_JOYKEY_ASSIGN}
+
+		-DAPP_BASE_SCREEN_MODE=${APP_BASE_SCREEN_MODE}
+		-DAPP_DEFAULT_SCREEN_MODE=${APP_DEFAULT_SCREEN_MODE}
+
+		-DAPP_FRAMEWORK_TYPE=${APP_FRAMEWORK_TYPE}
+
+		-DAPP_ENABLE_ALL_VIDEO_SETTINGS=${APP_ENABLE_ALL_VIDEO_SETTINGS}
+
+		-DAPP_ENABLE_QUIT=${APP_ENABLE_QUIT}
+
+		-DAPP_RESOURCE_DAT=${APP_RESOURCE_DAT}
+
+		-P "${CMAKE_SOURCE_DIR}/cmake/ConfigureFile.cmake"
+)
+target_sources(${APP_EXE} PRIVATE "${OUTPUT_BUILD_CONFIG}")
+target_include_directories(${APP_EXE} PRIVATE "src" "${APP_OUTPUT_DIR}/src" "${APP_OUTPUT_DIR}/src/app")

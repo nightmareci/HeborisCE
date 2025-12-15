@@ -8,18 +8,18 @@ fi
 SOURCE_DIRECTORY=`readlink -f "$1"`
 BUILD_DIRECTORY=`readlink -f "$2"`
 
-if [ -z "$3" ] ; then
-	GENERATOR='Unix Makefiles'
-else
-	GENERATOR="$3"
-fi
-
 NAME="HeborisCE"
 
-mkdir "$BUILD_DIRECTORY"
+mkdir -p "$BUILD_DIRECTORY" || exit 1
 cd "$BUILD_DIRECTORY" || exit 1
 
-cmake "$SOURCE_DIRECTORY" -G "$GENERATOR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_BINDIR=bin -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_DATAROOTDIR=share -DAPP_PACKAGE_TYPE=Installable -DAPP_VENDORED=ON || exit 1
+if [ -z "$3" ] ; then
+	set --
+else
+	set -- -G "$3"
+fi
+
+cmake "$SOURCE_DIRECTORY" "$@" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_BINDIR=bin -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_DATAROOTDIR=share -DAPP_PACKAGE_TYPE=Installable -DAPP_VENDORED=ON || exit 1
 cmake --build build --parallel || exit 1
 DESTDIR=AppDir cmake --install build || exit 1
 

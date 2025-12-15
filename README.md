@@ -50,6 +50,18 @@ build accesses game resources and save data files:
 * `Installable Mac App` (macOS only): Resources are read from inside the app and
   save files read/written in a sensible OS user account directory.
 
+## Uncompressed Resource DAT File
+A CMake configuration boolean option, `APP_RESOURCE_DAT`, enables or disables
+generating a "resource DAT" file named `HeborisCE.dat`, basically a
+custom-format, uncompressed archive file storing all the game's resource files.
+The option requires Python 3 to generate the resource DAT. When using the CMake
+option for resource DATs, the build will also be configured to only load
+resources from the DAT. This option is generally not needed, and is disabled by
+default, though was found to be benefitial for massively reducing install time
+for PlayStation Vita VPKs. If you're curious about the DAT format, it's
+documented in the `CMakeLists.txt` file, above the `GenerateResourceDAT()`
+function.
+
 ## Setup On Ubuntu
 
 If using Git to get the source code, rather than downloading a zip of it from GitHub:
@@ -81,7 +93,7 @@ git clone https://github.com/nightmareci/HeborisCE
 cd HeborisCE
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-./build/HeborisCE
+./build/Release/HeborisCE
 ```
 
 ## Download and Package for Windows
@@ -114,7 +126,7 @@ REM and type of build desired
 For macOS, a handy packaging script is provided that automatically produces
 Universal Binary packages for supported targets (x86-64 and ARM64). The script
 only does vendored builds, so you need to have the Git submodules downloaded to
-use it.
+use it. It also requires Xcode and the Xcode command line utilities.
 
 The "Installable Mac App" version will work unnotarized, though users will have to
 approve it, and will get the "Apple could not verify..." message.

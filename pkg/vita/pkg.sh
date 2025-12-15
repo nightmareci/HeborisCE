@@ -35,4 +35,4 @@ cmake -B "$BUILD_DIRECTORY" -G Ninja -DCMAKE_BUILD_TYPE=Release --toolchain "$VI
 	-DSDLIMAGE_XPM=OFF \
 	-DSDLIMAGE_XV=OFF \
 	|| exit 1
-cmake --build "$BUILD_DIRECTORY" || exit 1
+cmake --build "$BUILD_DIRECTORY" --parallel || exit 1

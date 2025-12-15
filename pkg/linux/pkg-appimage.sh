@@ -20,7 +20,7 @@ mkdir "$BUILD_DIRECTORY"
 cd "$BUILD_DIRECTORY" || exit 1
 
 cmake "$SOURCE_DIRECTORY" -G "$GENERATOR" -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_BINDIR=bin -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_DATAROOTDIR=share -DAPP_PACKAGE_TYPE=Installable -DAPP_VENDORED=ON || exit 1
-cmake --build build -j `nproc` || exit 1
+cmake --build build --parallel || exit 1
 DESTDIR=AppDir cmake --install build || exit 1
 
 LINUXDEPLOY="linuxdeploy-$(uname -m).AppImage"

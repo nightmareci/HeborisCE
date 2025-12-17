@@ -141,6 +141,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_video.c"
 	"src/app/APP_wav.c"
 	"src/app/APP_error.c"
+	"src/app/APP_worker.c"
 
 	"src/game/gamestart.c"
 	"src/game/init.c"
@@ -175,6 +176,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_bdf.h"
 	"src/app/APP_stdinc.h"
 	"src/app/APP_error.h"
+	"src/app/APP_worker.h"
 	"src/app/APP_filesystem.h"
 	"src/app/APP_global.h"
 	"src/app/APP_input.h"

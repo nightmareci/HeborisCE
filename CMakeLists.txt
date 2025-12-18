@@ -267,6 +267,9 @@ function(GenerateResourceDAT DAT_FILE)
 	file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*.sav")
 	file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*.sav")
 	set(ALL_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+	if(NOT APP_PACKAGE_TYPE STREQUAL "Installable Mac App")
+		list(APPEND ALL_FILES "${APP_PROJECT_NAME}.png")
+	endif()
 
 	add_custom_command(
 		OUTPUT "${DAT_FILE}"
@@ -285,7 +288,7 @@ function(CopyResourcesToDestination DESTINATION_DIR)
 	file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
 	file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
 	file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
-	set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+	set(DEPENDS_FILES "${APP_PROJECT_NAME}.png" ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
 	set(OUTPUT_FILES)
 	foreach(FILE ${DEPENDS_FILES})
 		list(APPEND OUTPUT_FILES "${DESTINATION_DIR}/${FILE}")
@@ -293,9 +296,10 @@ function(CopyResourcesToDestination DESTINATION_DIR)
 	add_custom_command(
 		OUTPUT ${OUTPUT_FILES}
 		DEPENDS ${DEPENDS_FILES}
-		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${DESTINATION_DIR}/res"
-		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${DESTINATION_DIR}/config/mission"
-		COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${DESTINATION_DIR}/config/stage"
+		COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_SOURCE_DIR}/${APP_PROJECT_NAME}.png" "${DESTINATION_DIR}"
+		COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${DESTINATION_DIR}/res"
+		COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${DESTINATION_DIR}/config/mission"
+		COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${DESTINATION_DIR}/config/stage"
 		VERBATIM
 	)
 	add_custom_target("${APP_PROJECT_NAME}_output_files"
@@ -462,6 +466,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		")
 	else()
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --emrun -pthread -lidbfs.js -s PTHREAD_POOL_SIZE=30 -s ALLOW_MEMORY_GROWTH=1 -s FORCE_FILESYSTEM=1 \
+			--preload-file '${CMAKE_SOURCE_DIR}/${APP_PROJECT_NAME}.png@basepath/${APP_PROJECT_NAME}.png' \
 			--preload-file '${CMAKE_SOURCE_DIR}/res/bg/highDetail@basepath/res/bg/highDetail' \
 			--preload-file '${CMAKE_SOURCE_DIR}/res/bg/lowDetail@basepath/res/bg/lowDetail' \
 			--preload-file '${CMAKE_SOURCE_DIR}/res/bgm@basepath/res/bgm' \
@@ -531,6 +536,7 @@ elseif(WIN32 AND NOT MSYS)
 		if(APP_RESOURCE_DAT)
 			install(FILES "${APP_OUTPUT_DIR}/${APP_PROJECT_NAME}.dat" DESTINATION ".")
 		else()
+			install(FILES "${APP_PROJECT_NAME}.png" DESTINATION ".")
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 			install(DIRECTORY "res" DESTINATION ".")
 		endif()
@@ -739,6 +745,7 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 		if(APP_RESOURCE_DAT)
 			install(FILES "${APP_RESOURCE_DAT_FILE}" DESTINATION ".")
 		else()
+			install(FILES "${APP_PROJECT_NAME}.png" DESTINATION ".")
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "config")
 			install(DIRECTORY "res" DESTINATION ".")
 		endif()
@@ -786,13 +793,14 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 		if(APP_RESOURCE_DAT)
 			install(FILES "${APP_RESOURCE_DAT_FILE}" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 		else()
+			install(FILES "${APP_PROJECT_NAME}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 			install(DIRECTORY "config/mission" "config/stage" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}/config")
 			install(DIRECTORY "res" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 		endif()
 		install(FILES "changelog.txt" "heboris.txt" "README.md" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/${APP_PROJECT_NAME}")
 		if(LINUX)
 			install(FILES "pkg/linux/${APP_PROJECT_NAME}.desktop" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
-			install(FILES "pkg/linux/${APP_PROJECT_NAME}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
+			install(FILES "${APP_PROJECT_NAME}.png" DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps")
 		endif()
 	else()
 		message(FATAL_ERROR "Package type \"${APP_PACKAGE_TYPE}\" unsupported; must be \"Current Directory\", \"Portable\", or \"Installable\"")

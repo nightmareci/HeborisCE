@@ -1,4 +1,4 @@
-![Application Icon](/pkg/icon.png)
+![Application Icon](/HeborisCE.png)
 # Heboris C.E. - Continuation of Heboris U.E.
 
 This version contains the source code for Heboris C.E. (Cross-platform

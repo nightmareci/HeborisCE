@@ -46,6 +46,8 @@ static int* APP_TextIndices = NULL;
 static int APP_PlaneDrawOffsetX = 0;
 static int APP_PlaneDrawOffsetY = 0;
 
+static SDL_IOStream* APP_OpenImage(const char* filename, const char** type);
+
 static void APP_PrivateBDFFontInitialize(void)
 {
 	const char* const filenames[APP_BDF_FONT_FILE_COUNT] = {
@@ -223,6 +225,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	APP_LogicalHeight = logicalHeight;
 
 	/* ウィンドウの作成 || Create and set up the window */
+	bool createdWindow = false;
 	if (
 		windowType == APP_SCREEN_MODE_FULLSCREEN ||
 		windowType == APP_SCREEN_MODE_FULLSCREEN_DESKTOP
@@ -255,6 +258,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				APP_SetError("Could not set window fullscreen mode: %s", SDL_GetError());
 				goto fail;
 			}
+			createdWindow = true;
 		}
 		else {
 			if (!SDL_SetWindowFullscreen(APP_ScreenWindow, true)) {
@@ -324,6 +328,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				APP_SetError("Could not create window: %s", SDL_GetError());
 				goto fail;
 			}
+			createdWindow = true;
 		}
 		else {
 			if (!SDL_SetWindowFullscreen(APP_ScreenWindow, false)) {
@@ -352,6 +357,23 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	}
 	SDL_free(displayModes);
 	displayModes = NULL;
+	if (createdWindow) {
+		const char* type;
+		SDL_IOStream* const file = APP_OpenImage(APP_PROJECT_NAME, &type);
+		if (file) {
+			SDL_Surface* const surface = IMG_LoadTyped_IO(file, true, type);
+			if (!surface) {
+				APP_SetError("Could not load icon image: %s", SDL_GetError());
+				goto fail;
+			}
+			if (!SDL_SetWindowIcon(APP_ScreenWindow, surface)) {
+				SDL_DestroySurface(surface);
+				APP_SetError("Could not set window icon: %s", SDL_GetError());
+				goto fail;
+			}
+			SDL_DestroySurface(surface);
+		}
+	}
 
 	// Create the renderer, if not already created. It's important to not
 	// recreate the renderer if it's already created, so restarting without
@@ -779,40 +801,37 @@ void APP_DisableTextLayer(int layer) {
 	APP_TextLayers[layer].enable = false;
 }
 
-void APP_LoadPlane(int plane, const char* filename)
-{
-	if (!APP_ScreenRenderer || !filename || !*filename || plane < 0 || plane >= APP_PlaneCount) {
-		return;
-	}
+static const char* const APP_ImageTypes[] = {
+	"png",
+	"gif",
+	"bmp",
+	"tga",
+	"webp",
+	"qoi",
+	"svg",
+	"jpg",
+	"avif",
+	"jxl",
+	"tif",
+	"xcf",
+	"pcx",
+	"ico",
+	"cur",
+	"ani",
+	"lbm",
+	"pnm",
+	"xpm",
+	"xv",
+};
 
-	const char* const types[] = {
-		"png",
-		"gif",
-		"bmp",
-		"tga",
-		"webp",
-		"qoi",
-		"svg",
-		"jpg",
-		"avif",
-		"jxl",
-		"tif",
-		"xcf",
-		"pcx",
-		"ico",
-		"cur",
-		"ani",
-		"lbm",
-		"pnm",
-		"xpm",
-		"xv",
-	};
+static SDL_IOStream* APP_OpenImage(const char* filename, const char** type)
+{
 	SDL_IOStream* file = NULL;
 	char* filenameExt;
-	const char* type;
-	for (size_t i = 0; i < SDL_arraysize(types); i++) {
-		if (SDL_asprintf(&filenameExt, "%s.%s", filename, types[i]) < 0) {
-			APP_SetError("Error loading image");
+	for (size_t i = 0; i < SDL_arraysize(APP_ImageTypes); i++) {
+		*type = APP_ImageTypes[i];
+		if (SDL_asprintf(&filenameExt, "%s.%s", filename, *type) < 0) {
+			APP_SetError("Error opening image file");
 			APP_Exit(SDL_APP_FAILURE);
 		}
 		if (!APP_FileExists(filenameExt)) {
@@ -822,12 +841,23 @@ void APP_LoadPlane(int plane, const char* filename)
 		file = APP_OpenRead(filenameExt);
 		if (!file) {
 			SDL_free(filenameExt);
-			APP_SetError("Error loading image");
+			APP_SetError("Error opening image file: %s", SDL_GetError());
 			APP_Exit(SDL_APP_FAILURE);
 		}
-		type = types[i];
+		SDL_free(filenameExt);
 		break;
 	}
+	return file;
+}
+
+void APP_LoadPlane(int plane, const char* filename)
+{
+	if (!APP_ScreenRenderer || !filename || !*filename || plane < 0 || plane >= APP_PlaneCount) {
+		return;
+	}
+
+	const char* type;
+	SDL_IOStream* const file = APP_OpenImage(filename, &type);
 	if (!file) {
 		return;
 	}
@@ -839,20 +869,18 @@ void APP_LoadPlane(int plane, const char* filename)
 	if (!APP_Planes[plane]) {
 		char* message;
 		if (SDL_asprintf(&message,
-			"Image file \"%s\" failed to load.\n"
+			"Image file \"%s.%s\" failed to load.\n"
 			"It might be corrupt, so you would need to replace it.\n"
 			"Or the build of SDL_image in use might not support its format, so try another format.",
-			filenameExt
+			filename, type
 		) < 0) {
 			APP_SetError("Error loading image");
 			APP_Exit(SDL_APP_FAILURE);
 		}
-		SDL_free(filenameExt);
 		APP_SetError("%s", message);
 		SDL_free(message);
 		APP_Exit(SDL_APP_FAILURE);
 	}
-	SDL_free(filenameExt);
 	if (
 		!SDL_SetTextureScaleMode(APP_Planes[plane], SDL_SCALEMODE_NEAREST) ||
 		!SDL_SetTextureBlendMode(APP_Planes[plane], SDL_BLENDMODE_BLEND)

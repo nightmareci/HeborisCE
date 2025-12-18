@@ -142,7 +142,7 @@ void ST_RankingSave(void) {//12345 6789
 		saveBuf[i + 277] = st_others[i];
 	}
 
-	APP_SaveFile("config/data/STRANKING.SAV", saveBuf, 400 * 4);
+	APP_WriteFile32("config/data/STRANKING.SAV", saveBuf, 400);
 }
 
 // ロード
@@ -152,14 +152,14 @@ int32_t ST_RankingLoad(void) {
 	SDL_memset(saveBuf, 0, 5000 * 4);
 
 	// バージョンを見る
-	APP_LoadFile("config/data/STRANKING.SAV", saveBuf, 4);
+	APP_ReadFile32("config/data/STRANKING.SAV", saveBuf, 1, 0);
 
 	if(saveBuf[0] != st_version) {
 		return 1;
 	}
 
 	// 全体を読み込む
-	APP_LoadFile("config/data/STRANKING.SAV", saveBuf, 400 * 4);
+	APP_ReadFile32("config/data/STRANKING.SAV", saveBuf, 400, 0);
 
 	for(i=0;i<90;i++) {
 		st_time[i] = saveBuf[i + 10];
@@ -452,7 +452,7 @@ void PlayerdataSave(void) {//12345 6789
 		saveBuf[1 +17]=BloxeedSeed[1];
 	}
 
-	APP_SaveFile("config/data/PLAYERDATA.SAV", saveBuf, 100 * 4);
+	APP_WriteFile32("config/data/PLAYERDATA.SAV", saveBuf, 100);
 }
 
 // プレイヤーデータロード
@@ -462,14 +462,14 @@ int32_t PlayerdataLoad(void) {
 	SDL_memset(saveBuf, 0, 500 * 4);
 
 	// バージョンを見る
-	APP_LoadFile("config/data/PLAYERDATA.SAV", saveBuf, 4);
+	APP_ReadFile32("config/data/PLAYERDATA.SAV", saveBuf, 1, 0);
 
 	if(saveBuf[0] != 0x4F424503) {
 		return 1;
 	}
 
 	// 全体を読み込む
-	APP_LoadFile("config/data/PLAYERDATA.SAV", saveBuf, 100 * 4);
+	APP_ReadFile32("config/data/PLAYERDATA.SAV", saveBuf, 100, 0);
 
 	for( j = 0 ; j < 2 ; j++){
 		for(i=0;i<5;i++) {

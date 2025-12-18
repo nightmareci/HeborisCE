@@ -519,13 +519,13 @@ SDL_IOStream* APP_OpenAppend(const char* filename)
 	return APP_OpenFromPath(APP_PrefPath, filename, "ab");
 }
 
-static void APP_Swap32ArrayNativeToLE(int32_t* arrayNative, size_t size)
+static void APP_Swap32ArrayNativeToLE(int32_t* arrayNative, size_t count)
 {
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 	(void)arrayNative;
-	(void)size;
+	(void)count;
 #elif SDL_BYTEORDER == SDL_BIG_ENDIAN
-	for (size_t i = 0; i < size / sizeof(int32_t); i++) {
+	for (size_t i = 0; i < count; i++) {
 		arrayNative[i] = SDL_Swap32(arrayNative[i]);
 	}
 #else
@@ -533,13 +533,13 @@ static void APP_Swap32ArrayNativeToLE(int32_t* arrayNative, size_t size)
 #endif
 }
 
-static void APP_Swap32ArrayLEToNative(int32_t* arrayLE, size_t size)
+static void APP_Swap32ArrayLEToNative(int32_t* arrayLE, size_t count)
 {
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
 	(void)arrayLE;
-	(void)size;
+	(void)count;
 #elif SDL_BYTEORDER == SDL_BIG_ENDIAN
-	for (size_t i = 0; i < size / sizeof(int32_t); i++) {
+	for (size_t i = 0; i < count; i++) {
 		arrayLE[i] = SDL_Swap32(arrayLE[i]);
 	}
 #else
@@ -547,77 +547,67 @@ static void APP_Swap32ArrayLEToNative(int32_t* arrayLE, size_t size)
 #endif
 }
 
-void APP_LoadFile(const char* filename, void* buf, size_t size)
+void APP_ReadFile32(const char* filename, int32_t* values, size_t count, size_t start)
 {
 	SDL_IOStream* src = APP_OpenRead(filename);
 	if (!src) {
 		return;
 	}
 
-	if (SDL_ReadIO(src, buf, size) != size || !SDL_CloseIO(src)) {
+	if (SDL_SeekIO(src, start * sizeof(int32_t), SDL_IO_SEEK_SET) < 0) {
+		APP_SetError("Error seeking file: %s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
+	}
+	else if (SDL_ReadIO(src, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
 		APP_SetError("Error reading file: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
-
-	APP_Swap32ArrayLEToNative(buf, size);
-}
-
-void APP_ReadFile(const char* filename, void* buf, size_t size, size_t offset)
-{
-	SDL_IOStream* src = APP_OpenRead(filename);
-	if (!src) {
-		return;
+	else if (!SDL_CloseIO(src)) {
+		APP_SetError("Error closing file: %s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
 	}
 
-	if (SDL_SeekIO(src, offset, SDL_IO_SEEK_SET) < 0) {
-		return;
-	}
-	SDL_ReadIO(src, buf, size);
-	SDL_CloseIO(src);
-
-	APP_Swap32ArrayLEToNative(buf, size);
+	APP_Swap32ArrayLEToNative(values, count);
 }
 
-
-void APP_SaveFile(const char* filename, void* buf, size_t size)
+void APP_WriteFile32(const char* filename, int32_t* values, size_t count)
 {
 	SDL_IOStream* dst = APP_OpenWrite(filename);
 	if (!dst) {
 		return;
 	}
 
-	APP_Swap32ArrayNativeToLE(buf, size);
+	APP_Swap32ArrayNativeToLE(values, count);
 
-	if (SDL_WriteIO(dst, buf, size) != size) {
+	if (SDL_WriteIO(dst, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
 		APP_SetError("Error writing file: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
-	if (!SDL_CloseIO(dst))
-	{
+	else if (!SDL_CloseIO(dst)) {
 		APP_SetError("Error closing file: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 
-	APP_Swap32ArrayLEToNative(buf, size);
+	APP_Swap32ArrayLEToNative(values, count);
 }
 
-void APP_AppendFile(const char* filename, void* buf, size_t size)
+void APP_AppendFile32(const char* filename, int32_t* values, size_t count)
 {
 	SDL_IOStream* dst = APP_OpenAppend(filename);
 	if (!dst) {
 		return;
 	}
 
-	APP_Swap32ArrayNativeToLE(buf, size);
+	APP_Swap32ArrayNativeToLE(values, count);
 
-	if (SDL_WriteIO(dst, buf, size) != size) {
+	if (SDL_WriteIO(dst, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
 		APP_SetError("Error writing file: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
-	if (!SDL_CloseIO(dst)) {
+	else if (!SDL_CloseIO(dst)) {
 		APP_SetError("Error closing file: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 
-	APP_Swap32ArrayLEToNative(buf, size);
+	APP_Swap32ArrayLEToNative(values, count);
 }

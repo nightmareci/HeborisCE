@@ -468,5 +468,5 @@ void SetDefaultConfig()
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
-	APP_SaveFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
+	APP_WriteFile32("config/data/CONFIG.SAV", cfgbuf, SDL_arraysize(cfgbuf));
 }

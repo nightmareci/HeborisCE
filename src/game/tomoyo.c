@@ -1406,7 +1406,7 @@ void loadTomoyoStage(int32_t player, int32_t number) {
 	SDL_memset(saveBuf, 0, 50000 * 4);
 
 	SDL_snprintf(string[0], STRING_LENGTH, "config/stage/stage%02d.sav", number);
-	APP_LoadFile(string[0], saveBuf, 450 * 4);
+	APP_ReadFile32(string[0], saveBuf, 450, 0);
 
 	// フィールド読み込み
 	for(i=0;i<210;i++) {
@@ -1503,5 +1503,5 @@ void saveTomoyoStage(int32_t player, int32_t number) {
 
 	// 保存する
 	SDL_snprintf(string[0], STRING_LENGTH, "config/stage/stage%02d.sav", number);
-	APP_SaveFile(string[0], saveBuf, 450 * 4);
+	APP_WriteFile32(string[0], saveBuf, 450);
 }

@@ -203,7 +203,7 @@ int32_t SaveConfig(void) {
 
 	cfgbuf[34] = ConfigChecksum(cfgbuf);
 
-	APP_SaveFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
+	APP_WriteFile32("config/data/CONFIG.SAV", cfgbuf, SDL_arraysize(cfgbuf));
 
 	return (0);
 }
@@ -212,7 +212,7 @@ int32_t SaveConfig(void) {
 int32_t LoadConfig(void) {
 	int32_t cfgbuf[CFG_LENGTH];
 	SDL_memset(cfgbuf, 0, sizeof(cfgbuf));
-	APP_LoadFile("config/data/CONFIG.SAV", cfgbuf, sizeof(cfgbuf));
+	APP_ReadFile32("config/data/CONFIG.SAV", cfgbuf, SDL_arraysize(cfgbuf), 0);
 	if(cfgbuf[0] != 0x4F424550) return (1);
 	if(cfgbuf[1] != 0x20534953) return (1);
 	if(cfgbuf[2] != 0x464E4F44) return (1);

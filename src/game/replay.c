@@ -184,7 +184,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 	else
 		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
-	APP_SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	APP_WriteFile32(string[0], saveBuf, 300);
 
 	temp1 = pl * REPLAY_PLAYER_CHUNK;
 	for (j = 0; j < replayChunkCnt; j++) {
@@ -194,7 +194,7 @@ void saveReplayData(int32_t pl, int32_t number) {
 				(replayData[j][(i << 1) + 0 + temp1] <<  0) |
 				(replayData[j][(i << 1) + 1 + temp1] << 16);
 		}
-		APP_AppendFile(string[0], saveBuf, i * sizeof(int32_t));
+		APP_AppendFile32(string[0], saveBuf, i);
 	}
 }
 
@@ -323,7 +323,7 @@ void saveReplay_VS(int32_t number) {
 	else
 		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
-	APP_SaveFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	APP_WriteFile32(string[0], saveBuf, 300);
 
 	if (replayData) {
 		for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
@@ -344,7 +344,7 @@ void saveReplay_VS(int32_t number) {
 						);
 				}
 			}
-			APP_AppendFile(string[0], saveBuf, (SAVEBUF_2P_CHUNK + i) * sizeof(int32_t));
+			APP_AppendFile32(string[0], saveBuf, SAVEBUF_2P_CHUNK + i);
 		}
 	}
 }
@@ -362,7 +362,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	else
 		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
-	APP_LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	APP_ReadFile32(string[0], saveBuf, 300, 0);
 
 	if(saveBuf[201] == 4)	// VSはフォーマットが一部異なる
 		return(loadReplay_VS(number));
@@ -562,25 +562,25 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	for (int32_t j = 0; j < replayChunkCnt; j++) {
-		size_t chunkSize;
+		size_t count;
 		if (j < replayChunkCnt - 1) {
-			chunkSize = (REPLAY_PLAYER_CHUNK / 2) * sizeof(int32_t);
+			count = REPLAY_PLAYER_CHUNK / 2;
 		}
 		else {
-			chunkSize = ((saveBuf[4] / sizeof(int32_t) - 300) % ((REPLAY_PLAYER_CHUNK / 2))) * sizeof(int32_t);
+			count = (saveBuf[4] / sizeof(int32_t) - 300) % ((REPLAY_PLAYER_CHUNK / 2));
 		}
-		APP_ReadFile(
+		APP_ReadFile32(
 			string[0],
 			chunkBuf,
-			chunkSize,
-			(300 + j * (REPLAY_PLAYER_CHUNK / 2)) * sizeof(int32_t)
+			count,
+			(300 + j * (REPLAY_PLAYER_CHUNK / 2)) * 1
 		);
 		if (!(replayData[j] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
 			APP_SetError("Failed allocating replay data");
 			APP_Exit(SDL_APP_FAILURE);
 		}
 
-		for(size_t i = 0; i < chunkSize / sizeof(int32_t); i++) {
+		for(size_t i = 0; i < count; i++) {
 			replayData[j][(i << 1) + temp1    ] =  chunkBuf[i] & 0xFFFF;
 			replayData[j][(i << 1) + temp1 + 1] = (chunkBuf[i] & 0xFFFF0000) >> 16;
 		}
@@ -608,13 +608,13 @@ int32_t loadReplay_VS(int32_t number) {
 	else
 		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 40);
 
-	APP_LoadFile(string[0], saveBuf, 300 * sizeof(int32_t));
+	APP_ReadFile32(string[0], saveBuf, 300, 0);
 
 	if((size_t)saveBuf[4] > REPLAY_SIZE_2P(REPLAY_TIME_MAX)) saveBuf[4] = REPLAY_SIZE_2P(REPLAY_TIME_MAX);
 	if((size_t)saveBuf[4] < 300 * sizeof(int32_t)) return (1);
 
 
-	APP_LoadFile(string[0], saveBuf, saveBuf[4]);
+	APP_ReadFile32(string[0], saveBuf, saveBuf[4] / sizeof(int32_t), 0);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -1528,7 +1528,7 @@ int32_t loadReplayData2(int32_t pl, int32_t number) {
 	else
 		SDL_snprintf(string[0], STRING_LENGTH, "demo/DEMO%02d.SAV", number - 20);
 
-	APP_LoadFile(string[0], tmpBuf, 1200);
+	APP_ReadFile32(string[0], tmpBuf, 300, 0);
 
 	if(tmpBuf[0] != 0x4F424548) return (1);
 	if(tmpBuf[1] != 0x20534952) return (1);

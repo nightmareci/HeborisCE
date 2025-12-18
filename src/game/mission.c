@@ -1555,7 +1555,7 @@ void loadMissionData(int32_t number) {
 
 	SDL_snprintf(string[0], STRING_LENGTH, "config/mission/mission%02d.sav", number);
 
-	APP_LoadFile(string[0], saveBuf, 930 * 4);
+	APP_ReadFile32(string[0], saveBuf, 930, 0);
 
 	// 問題データを読み込み
 	for(i = 0; i < 30; i++) {
@@ -1596,5 +1596,5 @@ void saveMissionData(int32_t number) {
 	}
 
 	SDL_snprintf(string[0], STRING_LENGTH, "config/mission/mission%02d.sav", number);
-	APP_SaveFile(string[0], saveBuf, 930 * 4);
+	APP_WriteFile32(string[0], saveBuf, 930);
 }

@@ -453,7 +453,7 @@ void RankingSave2() {
 		saveBuf[4 + i + (5 * 15 * 2) * 10] = rkrots[i];//11
 	}
 
-	APP_SaveFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);//1654=4+(5*15*2*11)
+	APP_WriteFile32("config/data/RANKING2.SAV", saveBuf, 1654);//1654=4+(5*15*2*11)
 }
 
 // ランキングを読み込み
@@ -462,7 +462,7 @@ int32_t RankingLoad2() {
 
 	// ヘッダだけ読み込み
 	SDL_memset(saveBuf, 0, 5000 * 4);
-	APP_LoadFile("config/data/RANKING2.SAV", saveBuf, 16);
+	APP_ReadFile32("config/data/RANKING2.SAV", saveBuf, 4, 0);
 
 	// バージョン違いなら初期化
 	if(saveBuf[0] != 0x4F424549) return 1;
@@ -471,7 +471,7 @@ int32_t RankingLoad2() {
 	if(saveBuf[3] != 0x34764354) return 1;
 
 	// 全部読み込み
-	APP_LoadFile("config/data/RANKING2.SAV", saveBuf, 1654 * 4);
+	APP_ReadFile32("config/data/RANKING2.SAV", saveBuf, 1654, 0);
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
 		// 名前

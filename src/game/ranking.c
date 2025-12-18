@@ -22,7 +22,7 @@ void RankingInit(void) {
 void RankingConvert(void) {
 	int32_t	i, j, temp;
 
-	APP_LoadFile("config/data/RANKING.SAV", saveBuf, 1312);
+	APP_ReadFile32("config/data/RANKING.SAV", saveBuf, 328, 0);
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;
 		rksc[i] = saveBuf[temp + 0];
@@ -319,7 +319,7 @@ int32_t RankingSave(void) {
 		saveBuf[temp + 5] = rkfl[i];
 	}
 
-	APP_SaveFile("config/data/RANKING.SAV", saveBuf, 1312);
+	APP_WriteFile32("config/data/RANKING.SAV", saveBuf, 328);
 
 	return (0);
 }
@@ -329,7 +329,7 @@ int32_t RankingLoad(void) {
 
 	SDL_memset(saveBuf, 0, 50000 * 4);
 
-	APP_LoadFile("config/data/RANKING.SAV", saveBuf, 16);
+	APP_ReadFile32("config/data/RANKING.SAV", saveBuf, 4, 0);
 
 	if(saveBuf[0] != 0x4F424548) return (1);
 	if(saveBuf[1] != 0x20534952) return (1);
@@ -338,7 +338,7 @@ int32_t RankingLoad(void) {
 	if(saveBuf[3] == 0x31764353) return (2);
 	else if(saveBuf[3] != 0x32764353) return (1);
 
-	APP_LoadFile("config/data/RANKING.SAV", saveBuf, 1312);
+	APP_ReadFile32("config/data/RANKING.SAV", saveBuf, 328, 0);
 
 	for(i = 0; i < 40; i++) {
 		temp = (i + 1) << 3;

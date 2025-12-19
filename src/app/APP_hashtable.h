@@ -32,6 +32,8 @@ size_t APP_GetHashTableSize(APP_HashTable* table);
 
 bool APP_EnumerateHashTable(APP_HashTable* table, APP_EnumerateHashTableCallback callback);
 
+void APP_EmptyHashTable(APP_HashTable* table);
+
 void APP_DestroyHashTable(APP_HashTable* table);
 
 #endif

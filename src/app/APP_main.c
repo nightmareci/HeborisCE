@@ -45,9 +45,9 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 	(void)appstate;
 	APP_argc = argc;
 	APP_argv = argv;
-	
+
 	APP_QuitLevel = 0;
-	
+
 	// TODO: Remove this once the issue with WASAPI crackling with the move sound in-game is fixed
 #ifdef SDL_PLATFORM_WIN32
 	if (!SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "directsound")) {
@@ -55,7 +55,7 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 		return SDL_APP_FAILURE;
 	}
 #endif
-	
+
 	// SDLの初期化 || SDL initialization
         // NOTE: On macOS, it seems doing SDL_Quit/SDL_Init for restarts
         // completely breaks things, so only do SDL_Init/SDL_Quit at
@@ -73,7 +73,7 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 		APP_SetError("Couldn't initialize SDL: %s", SDL_GetError());
 		return SDL_APP_FAILURE;
 	}
-	
+
 	return SDL_APP_CONTINUE;
 }
 
@@ -86,32 +86,32 @@ SDL_AppResult SDLCALL SDL_AppEvent(void* appstate, SDL_Event* event)
 	case SDL_EVENT_QUIT:
 		APP_QuitNow = true;
 		break;
-		
+
 #ifdef APP_ENABLE_JOYSTICK_INPUT
 	case SDL_EVENT_JOYSTICK_ADDED:
 	case SDL_EVENT_JOYSTICK_REMOVED:
 		APP_UpdatePlayerSlotsNow = true;
 		break;
 #endif
-		
+
 #ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 	case SDL_EVENT_GAMEPAD_ADDED:
 	case SDL_EVENT_GAMEPAD_REMOVED:
 		APP_UpdatePlayerSlotsNow = true;
 		break;
 #endif
-		
+
 	case SDL_EVENT_MOUSE_MOTION:
 	case SDL_EVENT_MOUSE_BUTTON_DOWN:
 	case SDL_EVENT_MOUSE_BUTTON_UP:
 	case SDL_EVENT_MOUSE_WHEEL:
 		APP_ShowCursorNow = true;
 		break;
-		
+
 	default:
 		break;
 	}
-	
+
 	return SDL_APP_CONTINUE;
 }
 
@@ -122,10 +122,10 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 	case SDL_APP_CONTINUE:
 	default:
 		break;
-		
+
 	case SDL_APP_SUCCESS:
 		return SDL_APP_SUCCESS;
-		
+
 	case SDL_APP_FAILURE:
 		return SDL_APP_FAILURE;
 	}
@@ -223,6 +223,15 @@ void APP_SetResourceSettings(int waveCount, const char* const* writeDirectories,
 	APP_WasSetResourceSettings = true;
 }
 
+void APP_WaitToFinishLoading(void)
+{
+	if (!APP_WaitWorkerJob(APP_LoadingWorker, 0)) {
+		APP_SetError("%s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
+	}
+	APP_HavePlane(-1);
+}
+
 void APP_Init(void)
 {
 	if (!APP_WasSetResourceSettings) {
@@ -261,6 +270,13 @@ void APP_Init(void)
 
 		APP_OpenInputs();
 		APP_QuitLevel++;
+
+		APP_LoadingWorker = APP_CreateWorker(0);
+		if (!APP_LoadingWorker) {
+			APP_SetError("%s", SDL_GetError);
+			APP_Exit(SDL_APP_FAILURE);
+		}
+		APP_QuitLevel++;
 	}
 
 	APP_SetPlaneDrawOffset(0, 0);
@@ -275,6 +291,7 @@ void APP_Quit(void)
 {
 	switch (APP_QuitLevel)
 	{
+	case 5: APP_DestroyWorker(APP_LoadingWorker); APP_LoadingWorker = NULL; SDL_FALLTHROUGH;
 	case 4: APP_CloseInputs(); SDL_FALLTHROUGH;
 	case 3: APP_QuitVideo(); SDL_FALLTHROUGH;
 	case 2: APP_QuitAudio(); SDL_FALLTHROUGH;

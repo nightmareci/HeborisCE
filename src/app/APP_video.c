@@ -24,8 +24,16 @@ typedef struct APP_TextLayer
 	float textureH;
 } APP_TextLayer;
 
+typedef struct APP_LoadPlaneData
+{
+	char* filename;
+	SDL_Surface* surface;
+	APP_WorkerJobID job;
+} APP_LoadPlaneData;
+
 static int APP_PlaneCount = 0;
 static SDL_Texture** APP_Planes = NULL;
+static APP_LoadPlaneData* APP_PlanesLoadData = NULL;
 
 #define APP_BDF_FONT_FILE_COUNT	3
 static APP_BDFFont* APP_BDFFonts[APP_BDF_FONT_FILE_COUNT] = { 0 };
@@ -95,11 +103,18 @@ void APP_InitVideo(int planeCount, int textLayerCount)
 		APP_Planes = SDL_calloc(planeCount, sizeof(SDL_Texture*));
 		if (!APP_Planes) {
 			APP_SetError("Failed to allocate memory for planes");
+			APP_Exit(SDL_APP_FAILURE);
+		}
+		APP_PlanesLoadData = SDL_calloc(planeCount, sizeof(APP_LoadPlaneData));
+		if (!APP_PlanesLoadData) {
+			APP_SetError("Failed to allocate memory for plane loading data");
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_PlaneCount = planeCount;
 	}
 	else {
 		APP_Planes = NULL;
+		APP_PlanesLoadData = NULL;
 		APP_PlaneCount = 0;
 	}
 
@@ -136,8 +151,14 @@ void APP_QuitVideo(void)
 		APP_TextLayers = NULL;
 
 		for (int i = 0; i < APP_PlaneCount; i++) {
+			if (APP_PlanesLoadData[i].job) {
+				APP_WaitWorkerJob(APP_LoadingWorker, APP_PlanesLoadData[i].job);
+				SDL_DestroySurface(APP_PlanesLoadData[i].surface);
+			}
 			SDL_DestroyTexture(APP_Planes[i]);
 		}
+		SDL_free(APP_PlanesLoadData);
+		APP_PlanesLoadData = NULL;
 		SDL_free(APP_Planes);
 		APP_Planes = NULL;
 
@@ -850,6 +871,21 @@ static SDL_IOStream* APP_OpenImage(const char* filename, const char** type)
 	return file;
 }
 
+static bool APP_LoadPlaneCallback(void* userdata)
+{
+	APP_LoadPlaneData* const data = userdata;
+	const char* type;
+	SDL_IOStream* const file = APP_OpenImage(data->filename, &type);
+	SDL_free(data->filename);
+	data->filename = NULL;
+	if (!file) {
+		data->surface = NULL;
+		return true;
+	}
+	data->surface = IMG_LoadTyped_IO(file, true, type);
+	return data->surface != NULL;
+}
+
 void APP_LoadPlane(int plane, const char* filename)
 {
 	if (!APP_ScreenRenderer || !filename || !*filename || plane < 0 || plane >= APP_PlaneCount) {
@@ -865,33 +901,70 @@ void APP_LoadPlane(int plane, const char* filename)
 	if (APP_Planes[plane]) {
 		SDL_DestroyTexture(APP_Planes[plane]);
 	}
-	APP_Planes[plane] = IMG_LoadTextureTyped_IO(APP_ScreenRenderer, file, true, type);
-	if (!APP_Planes[plane]) {
-		char* message;
-		if (SDL_asprintf(&message,
-			"Image file \"%s.%s\" failed to load.\n"
-			"It might be corrupt, so you would need to replace it.\n"
-			"Or the build of SDL_image in use might not support its format, so try another format.",
-			filename, type
-		) < 0) {
-			APP_SetError("Error loading image");
-			APP_Exit(SDL_APP_FAILURE);
-		}
-		APP_SetError("%s", message);
-		SDL_free(message);
+	APP_Planes[plane] = NULL;
+	APP_PlanesLoadData[plane].filename = SDL_strdup(filename);
+	if (!APP_PlanesLoadData[plane].filename) {
+		APP_SetError("Failed loading a plane");
 		APP_Exit(SDL_APP_FAILURE);
 	}
-	if (
+	APP_PlanesLoadData[plane].job = APP_SubmitWorkerJob(APP_LoadingWorker, APP_LoadPlaneCallback, &APP_PlanesLoadData[plane]);
+	if (!APP_PlanesLoadData[plane].job) {
+		SDL_free(APP_PlanesLoadData[plane].filename);
+		APP_PlanesLoadData[plane].filename = NULL;
+		APP_SetError("Failed loading a plane: %s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
+	}
+}
+
+static bool APP_HaveSinglePlane(int plane)
+{
+	if (!APP_PlanesLoadData[plane].job) {
+		return APP_Planes[plane] != NULL;
+	}
+	else if (!APP_WaitWorkerJob(APP_LoadingWorker, APP_PlanesLoadData[plane].job)) {
+		APP_SetError("Failed to finish loading a plane: %s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
+	}
+	APP_Planes[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, APP_PlanesLoadData[plane].surface);
+	SDL_DestroySurface(APP_PlanesLoadData[plane].surface);
+	APP_PlanesLoadData[plane].surface = NULL;
+	APP_PlanesLoadData[plane].job = 0;
+	if (!APP_Planes[plane]) {
+		APP_SetError("Failed to create texture for a plane: %s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
+	}
+	else if (
 		!SDL_SetTextureScaleMode(APP_Planes[plane], SDL_SCALEMODE_NEAREST) ||
 		!SDL_SetTextureBlendMode(APP_Planes[plane], SDL_BLENDMODE_BLEND)
 	) {
 		APP_SetError("Error loading image: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
+	return true;
 }
 
-void APP_DrawPlane(int plane, int dstX, int dstY) {
-	if (plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] || !APP_RenderThisFrame()) {
+bool APP_HavePlane(int plane)
+{
+	if (plane < 0) {
+		bool havePlane = false;
+		for (int i = 0; i < APP_PlaneCount; i++) {
+			if (APP_HaveSinglePlane(i)) {
+				havePlane = true;
+			}
+		}
+		return havePlane;
+	}
+	else if (plane < APP_PlaneCount) {
+		return APP_HaveSinglePlane(plane);
+	}
+	else {
+		return false;
+	}
+}
+
+void APP_DrawPlane(int plane, int dstX, int dstY)
+{
+	if (plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) || !APP_RenderThisFrame()) {
 		return;
 	}
 	float w, h;
@@ -904,7 +977,7 @@ void APP_DrawPlane(int plane, int dstX, int dstY) {
 
 void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h)
 {
-	if (plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] || w == 0 || h == 0 || !APP_RenderThisFrame()) {
+	if (plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) || w == 0 || h == 0 || !APP_RenderThisFrame()) {
 		return;
 	}
 
@@ -927,7 +1000,7 @@ void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w,
 
 void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, uint8_t a)
 {
-	if (plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] || !APP_RenderThisFrame()) {
+	if (plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) || !APP_RenderThisFrame()) {
 		return;
 	}
 
@@ -944,7 +1017,7 @@ void APP_DrawPlaneTransparent(int plane, int dstX, int dstY, uint8_t a)
 
 void APP_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, Uint8 a)
 {
-	if (plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] || w == 0 || h == 0 || !APP_RenderThisFrame()) {
+	if (plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) || w == 0 || h == 0 || !APP_RenderThisFrame()) {
 		return;
 	}
 
@@ -966,7 +1039,7 @@ void APP_DrawPlaneScaled(int plane, int dstX, int dstY, int scaleW, int scaleH)
 
 void APP_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int scaleW, int scaleH)
 {
-	if (plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] || w == 0 || h == 0 || !APP_RenderThisFrame()) {
+	if (plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) || w == 0 || h == 0 || !APP_RenderThisFrame()) {
 		return;
 	}
 
@@ -995,7 +1068,7 @@ void APP_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, in
 
 void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, int scaleW, int scaleH)
 {
-	if (plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] || w == 0 || h == 0 || !APP_RenderThisFrame()) {
+	if (plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) || w == 0 || h == 0 || !APP_RenderThisFrame()) {
 		return;
 	}
 
@@ -1024,7 +1097,7 @@ void APP_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX,
 void APP_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW)
 {
 	if (
-		plane < 0 || plane >= APP_PlaneCount || !APP_Planes[plane] ||
+		plane < 0 || plane >= APP_PlaneCount || !APP_HavePlane(plane) ||
 		!text || !*text || charW <= 0 || charH <= 0 || dstX >= APP_LogicalWidth || dstY >= APP_LogicalHeight || dstY + charH <= 0 ||
 		!APP_RenderThisFrame()
 	) {

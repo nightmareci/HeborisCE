@@ -19,6 +19,8 @@ bool APP_RenderThisFrame(void);
 
 void APP_SetResourceSettings(int waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount);
 
+void APP_WaitToFinishLoading(void);
+
 void APP_Init(void);
 
 void APP_Quit(void);

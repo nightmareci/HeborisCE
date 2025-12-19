@@ -56,6 +56,11 @@ void APP_DisableTextLayer(int layer);
 // are tried until a file is found.
 void APP_LoadPlane(int plane, const char* filename);
 
+// Check if a plane is loaded.
+//
+// If plane < 0, returns whether at least one plane is loaded.
+bool APP_HavePlane(int plane);
+
 void APP_DrawPlane(int plane, int dstX, int dstY);
 void APP_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h);
 

@@ -1664,6 +1664,8 @@ void mainUpdate() {
 			APP_ResetFrameStep();
 		}
 
+		APP_WaitToFinishLoading();
+
 		goto skipSpriteTime;
 	}
 

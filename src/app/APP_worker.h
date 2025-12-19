@@ -20,7 +20,7 @@ typedef enum APP_WorkerJobStatus
 typedef bool (*APP_WorkerJobCallback)(void* userdata);
 
 // Create a worker.
-APP_Worker* APP_CreateWorker(size_t threadsCount);
+APP_Worker* APP_CreateWorker(int threadsCount);
 
 // Submit a job for a worker.
 APP_WorkerJobID APP_SubmitWorkerJob(APP_Worker* worker, APP_WorkerJobCallback callback, void* userdata);

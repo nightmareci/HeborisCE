@@ -366,7 +366,7 @@ bool APP_EnumerateHashTable(APP_HashTable* table, APP_EnumerateHashTableCallback
 	return true;
 }
 
-void APP_DestroyHashTable(APP_HashTable* table)
+void APP_EmptyHashTable(APP_HashTable* table)
 {
 	if (!table) {
 		return;
@@ -375,7 +375,16 @@ void APP_DestroyHashTable(APP_HashTable* table)
 		if (table->slots[i].used && table->slots[i].destroy) {
 			table->slots[i].destroy(table->slots[i].key, table->slots[i].value, table->userdata);
 		}
+		table->slots[i].used = false;
 	}
-	SDL_free(table->slots);
+	table->size = 0;
+}
+
+void APP_DestroyHashTable(APP_HashTable* table)
+{
+	APP_EmptyHashTable(table);
+	if (table) {
+		SDL_free(table->slots);
+	}
 	SDL_free(table);
 }

@@ -110,6 +110,9 @@ static size_t APP_GetPowerOfTwoHashTableCapacity(size_t capacity)
 
 static APP_HashTableSlot* APP_AllocHashTableSlots(size_t capacity)
 {
+	if (capacity > SIZE_MAX / sizeof(APP_HashTableSlot)) {
+		return NULL;
+	}
 	return (APP_HashTableSlot*)SDL_calloc(capacity, sizeof(APP_HashTableSlot));
 }
 

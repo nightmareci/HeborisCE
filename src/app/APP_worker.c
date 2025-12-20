@@ -7,8 +7,7 @@
 typedef struct APP_WorkerJobData
 {
 	SDL_Semaphore* complete;
-	SDL_Mutex* lock;
-	APP_WorkerJobStatus status;
+	SDL_AtomicInt status;
 } APP_WorkerJobData;
 
 typedef struct APP_QueuedWorkerJob APP_QueuedWorkerJob;
@@ -67,17 +66,15 @@ static int SDLCALL APP_WorkerThreadFunction(void* data)
 		if (!queuedJob->callback(queuedJob->userdata)) {
 			SDL_MemoryBarrierRelease();
 			SDL_SetAtomicInt(&worker->failure, 1);
-			SDL_LockMutex(queuedJob->jobData->lock);
-			queuedJob->jobData->status = APP_WORKER_JOB_FAILURE;
+			SDL_MemoryBarrierRelease();
+			SDL_SetAtomicInt(&queuedJob->jobData->status, APP_WORKER_JOB_FAILURE);
 			SDL_SignalSemaphore(queuedJob->jobData->complete);
-			SDL_UnlockMutex(queuedJob->jobData->lock);
 			SDL_free(queuedJob);
 			continue;
 		}
-		SDL_LockMutex(queuedJob->jobData->lock);
-		queuedJob->jobData->status = APP_WORKER_JOB_COMPLETE;
+		SDL_MemoryBarrierRelease();
+		SDL_SetAtomicInt(&queuedJob->jobData->status, APP_WORKER_JOB_COMPLETE);
 		SDL_SignalSemaphore(queuedJob->jobData->complete);
-		SDL_UnlockMutex(queuedJob->jobData->lock);
 		SDL_free(queuedJob);
 	}
 	return 1;
@@ -160,7 +157,6 @@ APP_Worker* APP_CreateWorker(int threadsCount)
 static void APP_DestroyWorkerJobData(uint64_t key, void* value, void* userdata)
 {
 	APP_WorkerJobData* const jobData = value;
-	SDL_DestroyMutex(jobData->lock);
 	SDL_DestroySemaphore(jobData->complete);
 	SDL_free(jobData);
 }
@@ -200,13 +196,6 @@ APP_WorkerJobID APP_SubmitWorkerJob(APP_Worker* worker, APP_WorkerJobCallback ca
 		SDL_free(queuedJob);
 		return APP_SetError("Failed submitting a worker job: %s", SDL_GetError());
 	}
-	jobData->lock = SDL_CreateMutex();
-	if (!jobData->lock) {
-		SDL_DestroySemaphore(jobData->complete);
-		SDL_free(jobData);
-		SDL_free(queuedJob);
-		return APP_SetError("Failed submitting a worker job: %s", SDL_GetError());
-	}
 	queuedJob->callback = callback;
 	queuedJob->userdata = userdata;
 	#if 0
@@ -216,7 +205,6 @@ APP_WorkerJobID APP_SubmitWorkerJob(APP_Worker* worker, APP_WorkerJobCallback ca
 	#endif
 	const APP_WorkerJobID job = ++worker->nextJobID;
 	if (job == 0) {
-		SDL_DestroyMutex(jobData->lock);
 		SDL_DestroySemaphore(jobData->complete);
 		SDL_free(jobData);
 		SDL_free(queuedJob);
@@ -226,7 +214,6 @@ APP_WorkerJobID APP_SubmitWorkerJob(APP_Worker* worker, APP_WorkerJobCallback ca
 	if (!APP_SetHashTableValue(worker->jobsTable, job, jobData, APP_DestroyWorkerJobData, NULL)) {
 		SDL_MemoryBarrierRelease();
 		SDL_SetAtomicInt(&worker->failure, 1);
-		SDL_DestroyMutex(jobData->lock);
 		SDL_DestroySemaphore(jobData->complete);
 		SDL_free(jobData);
 		SDL_free(queuedJob);
@@ -254,20 +241,18 @@ static SDL_EnumerationResult APP_EnumerateWorkerJob(uint64_t key, void* value, v
 	APP_WorkerJobData* const jobData = value;
 	APP_WorkerJobStatus* const statusOut = userdata;
 
-	SDL_LockMutex(jobData->lock);
-	switch (jobData->status) {
+	const int status = SDL_GetAtomicInt(&jobData->status);
+	SDL_MemoryBarrierAcquire();
+	switch (status) {
 	case APP_WORKER_JOB_COMPLETE:
-		SDL_UnlockMutex(jobData->lock);
 		return SDL_ENUM_CONTINUE;
 
 	case APP_WORKER_JOB_IN_PROGRESS:
-		SDL_UnlockMutex(jobData->lock);
 		*statusOut = APP_WORKER_JOB_IN_PROGRESS;
 		return SDL_ENUM_CONTINUE;
 
 	default:
 	case APP_WORKER_JOB_FAILURE:
-		SDL_UnlockMutex(jobData->lock);
 		*statusOut = APP_WORKER_JOB_FAILURE;
 		return SDL_ENUM_SUCCESS;
 	}
@@ -313,20 +298,17 @@ static SDL_EnumerationResult APP_EnumerateWaitWorkerJob(uint64_t key, void* valu
 {
 	APP_WorkerJobData* const jobData = value;
 	APP_Worker* const worker = userdata;
-	APP_WorkerJobStatus status;
 
-	SDL_LockMutex(jobData->lock);
-	status = jobData->status;
-	SDL_UnlockMutex(jobData->lock);
+	int status = SDL_GetAtomicInt(&jobData->status);
+	SDL_MemoryBarrierAcquire();
 	if (status == APP_WORKER_JOB_FAILURE) {
 		return SDL_ENUM_FAILURE;
 	}
 
 	SDL_WaitSemaphore(jobData->complete);
 
-	SDL_LockMutex(jobData->lock);
-	status = jobData->status;
-	SDL_UnlockMutex(jobData->lock);
+	status = SDL_GetAtomicInt(&jobData->status);
+	SDL_MemoryBarrierAcquire();
 	if (status == APP_WORKER_JOB_FAILURE) {
 		return SDL_ENUM_FAILURE;
 	}
@@ -351,22 +333,18 @@ bool APP_WaitWorkerJob(APP_Worker* worker, APP_WorkerJobID job)
 		APP_EmptyHashTable(worker->jobsTable);
 	}
 	else {
-		APP_WorkerJobData* const jobData = NULL;
+		APP_WorkerJobData* jobData = NULL;
 		if (APP_GetHashTableValue(worker->jobsTable, job, (void**)&jobData)) {
-			APP_WorkerJobStatus status;
-
-			SDL_LockMutex(jobData->lock);
-			status = jobData->status;
-			SDL_UnlockMutex(jobData->lock);
+			int status = SDL_GetAtomicInt(&jobData->status);
+			SDL_MemoryBarrierAcquire();
 			if (status == APP_WORKER_JOB_FAILURE) {
 				return APP_SetError("Worker job failed");
 			}
 
 			SDL_WaitSemaphore(jobData->complete);
 
-			SDL_LockMutex(jobData->lock);
-			status = jobData->status;
-			SDL_UnlockMutex(jobData->lock);
+			status = SDL_GetAtomicInt(&jobData->status);
+			SDL_MemoryBarrierAcquire();
 			if (status == APP_WORKER_JOB_FAILURE) {
 				return APP_SetError("Worker job failed");
 			}

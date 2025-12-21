@@ -246,7 +246,9 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	APP_LogicalHeight = logicalHeight;
 
 	/* ウィンドウの作成 || Create and set up the window */
+#ifdef APP_SET_WINDOW_ICON
 	bool createdWindow = false;
+#endif
 	if (
 		windowType == APP_SCREEN_MODE_FULLSCREEN ||
 		windowType == APP_SCREEN_MODE_FULLSCREEN_DESKTOP
@@ -279,7 +281,9 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				APP_SetError("Could not set window fullscreen mode: %s", SDL_GetError());
 				goto fail;
 			}
+#ifdef APP_SET_WINDOW_ICON
 			createdWindow = true;
+#endif
 		}
 		else {
 			if (!SDL_SetWindowFullscreen(APP_ScreenWindow, true)) {
@@ -349,7 +353,9 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				APP_SetError("Could not create window: %s", SDL_GetError());
 				goto fail;
 			}
+#ifdef APP_SET_WINDOW_ICON
 			createdWindow = true;
+#endif
 		}
 		else {
 			if (!SDL_SetWindowFullscreen(APP_ScreenWindow, false)) {
@@ -378,6 +384,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	}
 	SDL_free(displayModes);
 	displayModes = NULL;
+#ifdef APP_SET_WINDOW_ICON
 	if (createdWindow) {
 		const char* type;
 		SDL_IOStream* const file = APP_OpenImage(APP_PROJECT_NAME, &type);
@@ -395,6 +402,7 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 			SDL_DestroySurface(surface);
 		}
 	}
+#endif
 
 	// Create the renderer, if not already created. It's important to not
 	// recreate the renderer if it's already created, so restarting without

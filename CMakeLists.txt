@@ -40,6 +40,10 @@ if(VITA)
 	# should be submitted to the VitaSDK project
 	set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}")
 elseif(GENERATOR_IS_MULTI_CONFIG STREQUAL "NOTFOUND" OR NOT GENERATOR_IS_MULTI_CONFIG)
+	string(LENGTH "${CMAKE_BUILD_TYPE}" BUILD_TYPE_LENGTH)
+	if(BUILD_TYPE_LENGTH EQUAL 0)
+		set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "CMake build type" FORCE)
+	endif()
 	set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 else()
 	set(APP_OUTPUT_DIR "${CMAKE_BINARY_DIR}/$<CONFIG>")
@@ -68,6 +72,11 @@ option(APP_ENABLE_GAME_CONTROLLER_DB_FILE "Enable loading gamecontrollerdb.txt f
 option(APP_ENABLE_JOYSTICK_INPUT "Enable input via any joystick device" TRUE)
 option(APP_ENABLE_ALL_VIDEO_SETTINGS "Enable all video settings; disabling this option hides some \"unsafe\" settings" TRUE)
 option(APP_ENABLE_QUIT "Enables quitting by pressing escape at any time or selecting the \"QUIT\" main menu entry" TRUE)
+if(VITA OR APP_PACKAGE_TYPE STREQUAL "Installable Mac App")
+	set(APP_SET_WINDOW_ICON FALSE CACHE BOOL "Enables setting the window icon dynamically at runtime" FORCE)
+else()
+	option(APP_SET_WINDOW_ICON "Enables setting the window icon dynamically at runtime" TRUE)
+endif()
 set(APP_DEFAULT_JOYKEY_ASSIGN "{ { 0 } }")
 set(APP_BASE_SCREEN_MODE "0")
 set(APP_DEFAULT_SCREEN_MODE "(APP_SCREEN_MODE_FULLSCREEN_DESKTOP | APP_SCREEN_MODE_DETAIL_LEVEL | APP_SCREEN_MODE_RENDER_LEVEL)")
@@ -267,7 +276,7 @@ function(GenerateResourceDAT DAT_FILE)
 	file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*.sav")
 	file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*.sav")
 	set(ALL_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
-	if(NOT APP_PACKAGE_TYPE STREQUAL "Installable Mac App")
+	if(APP_SET_WINDOW_ICON)
 		list(APPEND ALL_FILES "${APP_PROJECT_NAME}.png")
 	endif()
 
@@ -285,10 +294,24 @@ function(GenerateResourceDAT DAT_FILE)
 endfunction()
 
 function(CopyResourcesToDestination DESTINATION_DIR)
+	if(APP_SET_WINDOW_ICON)
+		add_custom_command(
+			OUTPUT "${DESTINATION_DIR}/${APP_PROJECT_NAME}.png"
+			DEPENDS "${APP_PROJECT_NAME}.png"
+			COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_SOURCE_DIR}/${APP_PROJECT_NAME}.png" "${DESTINATION_DIR}"
+			VERBATIM
+		)
+		add_custom_target("${APP_PROJECT_NAME}_output_icon_file"
+			DEPENDS "${DESTINATION_DIR}/${APP_PROJECT_NAME}.png"
+			VERBATIM
+		)
+		add_dependencies(${APP_EXE} "${APP_PROJECT_NAME}_output_icon_file")
+	endif()
+
 	file(GLOB_RECURSE RES_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "res/*")
 	file(GLOB MISSION_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/mission/*")
 	file(GLOB STAGE_FILES RELATIVE "${CMAKE_SOURCE_DIR}" "config/stage/*")
-	set(DEPENDS_FILES "${APP_PROJECT_NAME}.png" ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
+	set(DEPENDS_FILES ${RES_FILES} ${MISSION_FILES} ${STAGE_FILES})
 	set(OUTPUT_FILES)
 	foreach(FILE ${DEPENDS_FILES})
 		list(APPEND OUTPUT_FILES "${DESTINATION_DIR}/${FILE}")
@@ -296,7 +319,6 @@ function(CopyResourcesToDestination DESTINATION_DIR)
 	add_custom_command(
 		OUTPUT ${OUTPUT_FILES}
 		DEPENDS ${DEPENDS_FILES}
-		COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_SOURCE_DIR}/${APP_PROJECT_NAME}.png" "${DESTINATION_DIR}"
 		COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/res" "${DESTINATION_DIR}/res"
 		COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/mission" "${DESTINATION_DIR}/config/mission"
 		COMMAND "${CMAKE_COMMAND}" -E copy_directory_if_different "${CMAKE_SOURCE_DIR}/config/stage" "${DESTINATION_DIR}/config/stage"
@@ -889,6 +911,8 @@ add_custom_command(
 		-DAPP_ENABLE_QUIT=${APP_ENABLE_QUIT}
 
 		-DAPP_RESOURCE_DAT=${APP_RESOURCE_DAT}
+
+		-DAPP_SET_WINDOW_ICON=${APP_SET_WINDOW_ICON}
 
 		-P "${CMAKE_SOURCE_DIR}/cmake/ConfigureFile.cmake"
 )

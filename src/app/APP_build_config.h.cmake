@@ -37,4 +37,6 @@
 
 #cmakedefine APP_RESOURCE_DAT
 
+#cmakedefine APP_SET_WINDOW_ICON
+
 #endif

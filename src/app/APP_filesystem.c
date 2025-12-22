@@ -118,7 +118,7 @@ bool APP_InitFilesystem(int argc, char** argv)
 	}
 	SDL_IOStream* datFile = SDL_IOFromFile(APP_FilesDATPath, "rb");
 	if (!datFile) {
-		APP_SetError("Error opening resource DAT", APP_FilesDATPath);
+		APP_SetError("Error opening resource DAT: %s", APP_FilesDATPath, SDL_GetError());
 		return false;
 	}
 	int64_t filesCount;
@@ -190,7 +190,7 @@ bool APP_FileExists(const char* filename)
 	SDL_PathInfo info;
 
 	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
-		APP_SetError("Error allocating string to check if file exists");
+		APP_SetError("Error allocating string to check if file \"%s\" exists", filename);
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
@@ -311,17 +311,17 @@ SDL_IOStream* APP_OpenRead(const char* filename)
 
 	APP_FileUserdata* const fileUserdata = SDL_malloc(sizeof(APP_FileUserdata));
 	if (!fileUserdata) {
-		APP_SetError("Failed allocating data to open a file for reading from resource DAT");
+		APP_SetError("Failed allocating data to open file \"%s\" for reading from resource DAT", filename);
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	fileUserdata->file = file;
 	fileUserdata->stream = SDL_IOFromFile(APP_FilesDATPath, "rb");
 	if (!fileUserdata->stream) {
-		APP_SetError("Failed opening resource DAT file for opening a file for reading: %s", SDL_GetError());
+		APP_SetError("Failed opening resource DAT file for opening file \"%s\" for reading: %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_SeekIO(fileUserdata->stream, file->start, SDL_IO_SEEK_SET) < 0) {
-		APP_SetError("Failed seeking resource DAT to open a file for reading: %s", SDL_GetError());
+		APP_SetError("Failed seeking resource DAT to open file \"%s\" for reading: %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 
@@ -336,7 +336,7 @@ SDL_IOStream* APP_OpenRead(const char* filename)
 
 	SDL_IOStream* datStream = SDL_OpenIO(&interface, fileUserdata);
 	if (!datStream) {
-		APP_SetError("Failed creating a stream to read a file in resource DAT: %s", SDL_GetError());
+		APP_SetError("Failed creating a stream to read file \"%s\" in resource DAT: %s", filename, SDL_GetError());
 		SDL_free(fileUserdata);
 		APP_Exit(SDL_APP_FAILURE);
 	}
@@ -436,7 +436,7 @@ bool APP_FileExists(const char* filename)
 	SDL_PathInfo info;
 
 	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, filename) < 0) {
-		APP_SetError("Error allocating string to check if file exists");
+		APP_SetError("Error allocating string to check if file \"%s\" exists", filename);
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
@@ -446,7 +446,7 @@ bool APP_FileExists(const char* filename)
 	SDL_free(path);
 
 	if (SDL_asprintf(&path, "%s%s", APP_BasePath, filename) < 0) {
-		APP_SetError("Error allocating string to check if file exists");
+		APP_SetError("Error allocating string to check if file \"%s\" exists", filename);
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
@@ -490,7 +490,7 @@ bool APP_CreateDirectory(const char* directory)
 	char* path;
 
 	if (SDL_asprintf(&path, "%s%s", APP_PrefPath, directory) < 0) {
-		return APP_SetError("Failed creating directory string");
+		return APP_SetError("Failed creating directory string for \"%s\"", directory);
 	}
 	else if (!SDL_CreateDirectory(path)) {
 		SDL_free(path);
@@ -555,15 +555,15 @@ void APP_ReadFile32(const char* filename, int32_t* values, size_t count, size_t 
 	}
 
 	if (SDL_SeekIO(src, start * sizeof(int32_t), SDL_IO_SEEK_SET) < 0) {
-		APP_SetError("Error seeking file: %s", SDL_GetError());
+		APP_SetError("Error seeking file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	else if (SDL_ReadIO(src, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
-		APP_SetError("Error reading file: %s", SDL_GetError());
+		APP_SetError("Error reading file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	else if (!SDL_CloseIO(src)) {
-		APP_SetError("Error closing file: %s", SDL_GetError());
+		APP_SetError("Error closing file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 
@@ -580,11 +580,11 @@ void APP_WriteFile32(const char* filename, int32_t* values, size_t count)
 	APP_Swap32ArrayNativeToLE(values, count);
 
 	if (SDL_WriteIO(dst, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
-		APP_SetError("Error writing file: %s", SDL_GetError());
+		APP_SetError("Error writing file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	else if (!SDL_CloseIO(dst)) {
-		APP_SetError("Error closing file: %s", SDL_GetError());
+		APP_SetError("Error closing file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 
@@ -601,11 +601,11 @@ void APP_AppendFile32(const char* filename, int32_t* values, size_t count)
 	APP_Swap32ArrayNativeToLE(values, count);
 
 	if (SDL_WriteIO(dst, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
-		APP_SetError("Error writing file: %s", SDL_GetError());
+		APP_SetError("Error writing file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 	else if (!SDL_CloseIO(dst)) {
-		APP_SetError("Error closing file: %s", SDL_GetError());
+		APP_SetError("Error closing file \"%s\": %s", filename, SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
 	}
 

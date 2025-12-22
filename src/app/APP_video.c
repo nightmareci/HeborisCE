@@ -900,12 +900,6 @@ void APP_LoadPlane(int plane, const char* filename)
 		return;
 	}
 
-	const char* type;
-	SDL_IOStream* const file = APP_OpenImage(filename, &type);
-	if (!file) {
-		return;
-	}
-
 	if (APP_Planes[plane]) {
 		SDL_DestroyTexture(APP_Planes[plane]);
 	}

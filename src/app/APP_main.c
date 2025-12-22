@@ -271,7 +271,7 @@ void APP_Init(void)
 		APP_OpenInputs();
 		APP_QuitLevel++;
 
-		APP_LoadingWorker = APP_CreateWorker(0);
+		APP_LoadingWorker = APP_CreateWorker();
 		if (!APP_LoadingWorker) {
 			APP_SetError("%s", SDL_GetError);
 			APP_Exit(SDL_APP_FAILURE);

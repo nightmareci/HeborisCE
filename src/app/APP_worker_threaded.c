@@ -1,8 +1,6 @@
 #include "APP_worker.h"
 #include "APP_hashtable.h"
 #include "APP_error.h"
-#include <SDL3/SDL_cpuinfo.h>
-#include <SDL3/SDL_thread.h>
 
 typedef struct APP_WorkerJobData
 {
@@ -80,7 +78,7 @@ static int SDLCALL APP_WorkerThreadFunction(void* data)
 	return 1;
 }
 
-APP_Worker* APP_CreateWorker(int threadsCount)
+APP_Worker* APP_CreateWorker(void)
 {
 	APP_Worker* worker = SDL_calloc(1, sizeof(APP_Worker));
 	if (!worker) {
@@ -97,7 +95,7 @@ APP_Worker* APP_CreateWorker(int threadsCount)
 		return NULL;
 	}
 
-	worker->jobsTable = APP_CreateHashTable(16);
+	worker->jobsTable = APP_CreateHashTable(0);
 	if (!worker->jobsTable) {
 		APP_SetError("Failed to create worker: %s", SDL_GetError());
 		SDL_DestroyMutex(worker->jobsQueueLock);
@@ -105,10 +103,7 @@ APP_Worker* APP_CreateWorker(int threadsCount)
 		return NULL;
 	}
 
-	if (threadsCount <= 0) {
-		threadsCount = SDL_GetNumLogicalCPUCores();
-	}
-	worker->threadsCount = threadsCount;
+	worker->threadsCount = SDL_GetNumLogicalCPUCores();
 
 	worker->newJob = SDL_CreateSemaphore(0);
 	if (!worker->newJob) {
@@ -120,7 +115,7 @@ APP_Worker* APP_CreateWorker(int threadsCount)
 		return NULL;
 	}
 
-	worker->threads = SDL_malloc(threadsCount * sizeof(SDL_Thread*));
+	worker->threads = SDL_malloc(worker->threadsCount * sizeof(SDL_Thread*));
 	if (!worker->threads) {
 		APP_SetError("Failed to create worker");
 		SDL_DestroySemaphore(worker->newJob);
@@ -130,7 +125,7 @@ APP_Worker* APP_CreateWorker(int threadsCount)
 		return NULL;
 	}
 
-	for (int i = 0; i < threadsCount; i++) {
+	for (int i = 0; i < worker->threadsCount; i++) {
 		worker->threads[i] = SDL_CreateThread(APP_WorkerThreadFunction, "APP_WorkerThreadFunction", worker);
 		if (!worker->threads[i]) {
 			APP_SetError("Failed to create worker: %s", SDL_GetError());
@@ -235,7 +230,7 @@ APP_WorkerJobID APP_SubmitWorkerJob(APP_Worker* worker, APP_WorkerJobCallback ca
 	return job;
 }
 
-static SDL_EnumerationResult APP_EnumerateWorkerJob(uint64_t key, void* value, void* userdata)
+static SDL_EnumerationResult APP_EnumerateWorkerJobStatus(uint64_t key, void* value, void* userdata)
 {
 	const APP_WorkerJobID job = (APP_WorkerJobID)key;
 	APP_WorkerJobData* const jobData = value;
@@ -274,18 +269,19 @@ APP_WorkerJobStatus APP_GetWorkerJobStatus(APP_Worker* worker, APP_WorkerJobID j
 		status = APP_WORKER_JOB_COMPLETE;
 		APP_WorkerJobStatus status;
 		APP_SetHashTableUserdata(worker->jobsTable, &status);
-		if (!APP_EnumerateHashTable(worker->jobsTable, APP_EnumerateWorkerJob)) {
+		if (!APP_EnumerateHashTable(worker->jobsTable, APP_EnumerateWorkerJobStatus)) {
 			APP_SetError("Failed getting worker job status: %s", SDL_GetError());
 			return APP_WORKER_JOB_FAILURE;
 		}
 	}
 	else {
-		void* value;
-		if (!APP_GetHashTableValue(worker->jobsTable, job, &value)) {
+		APP_WorkerJobData* jobData;
+		if (!APP_GetHashTableValue(worker->jobsTable, job, (void**)&jobData)) {
 			status = APP_WORKER_JOB_COMPLETE;
 		}
 		else {
-			status = (APP_WorkerJobStatus)(uintptr_t)value;
+			status = (APP_WorkerJobStatus)SDL_GetAtomicInt(&jobData->status);
+			SDL_MemoryBarrierAcquire();
 		}
 	}
 	if (status == APP_WORKER_JOB_FAILURE) {
@@ -294,15 +290,22 @@ APP_WorkerJobStatus APP_GetWorkerJobStatus(APP_Worker* worker, APP_WorkerJobID j
 	return status;
 }
 
+typedef struct APP_EnumerateWaitWorkerJobData
+{
+	APP_Worker* worker;
+	bool success;
+} APP_EnumerateWaitWorkerJobData;
+
 static SDL_EnumerationResult APP_EnumerateWaitWorkerJob(uint64_t key, void* value, void* userdata)
 {
 	APP_WorkerJobData* const jobData = value;
-	APP_Worker* const worker = userdata;
+	APP_EnumerateWaitWorkerJobData* const enumerateData = userdata;
 
 	int status = SDL_GetAtomicInt(&jobData->status);
 	SDL_MemoryBarrierAcquire();
 	if (status == APP_WORKER_JOB_FAILURE) {
-		return SDL_ENUM_FAILURE;
+		enumerateData->success = false;
+		return SDL_ENUM_CONTINUE;
 	}
 
 	SDL_WaitSemaphore(jobData->complete);
@@ -310,7 +313,7 @@ static SDL_EnumerationResult APP_EnumerateWaitWorkerJob(uint64_t key, void* valu
 	status = SDL_GetAtomicInt(&jobData->status);
 	SDL_MemoryBarrierAcquire();
 	if (status == APP_WORKER_JOB_FAILURE) {
-		return SDL_ENUM_FAILURE;
+		enumerateData->success = false;
 	}
 	return SDL_ENUM_CONTINUE;
 }
@@ -326,8 +329,10 @@ bool APP_WaitWorkerJob(APP_Worker* worker, APP_WorkerJobID job)
 	}
 
 	if (job == 0) {
-		APP_SetHashTableUserdata(worker->jobsTable, worker);
-		if (!APP_EnumerateHashTable(worker->jobsTable, APP_EnumerateWaitWorkerJob)) {
+		APP_EnumerateWaitWorkerJobData enumerateData = { worker, true };
+		APP_SetHashTableUserdata(worker->jobsTable, &enumerateData);
+		if (!APP_EnumerateHashTable(worker->jobsTable, APP_EnumerateWaitWorkerJob) || !enumerateData.success) {
+			APP_EmptyHashTable(worker->jobsTable);
 			return APP_SetError("Worker job failed");
 		}
 		APP_EmptyHashTable(worker->jobsTable);

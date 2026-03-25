@@ -1,24 +1,16 @@
 bgm.txt - background music
 --------------------------
 
-This directory stores all the BGMs used in the game. If a BGM's file(s) are
-missing, then that BGM will not be played. The supported formats are:
-
-	.wav, .ogg, .mp3
-
-Any mix of formats can be used, and the formats are tried in the order listed
-above.
-
-Looping BGMs support a "leadin" feature, where a leadin track is played first,
-then the main part is looped without the leadin. A separate audio file is used
-for the leadin, with the name of the looping main part with "_leadin" appended,
-e.g. use both bgm_leadin.ogg and bgm.ogg for SIMPLE BGM. The leadin feature is
-not supported for tracks that are not looping.
+This directory stores all the BGMs used in the game. If a BGM's file is missing,
+then that BGM will not be played. Any mix of formats that SDL Mixer supports can
+be used. If there's multiple files of the same name but different extension, the
+file you didn't want to use might be used, so if that happens delete all the
+files of a given name except the one you want to use.
 
 The following tracks are used in-game.
 
 When BGM TYPE is SIMPLE
-bgm			: Only track used (looping)
+bgm		: Only track used (looping)
 
 When BGM TYPE is MULTITRACK
 

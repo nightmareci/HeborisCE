@@ -16877,65 +16877,65 @@ void loadWaves(void) {
 	}
 
 	/* 効果音を読み込み */
-	APP_LoadWave(WAVE_SE_SHAKI, NULL, "res/se/shaki", false, false);
-	APP_LoadWave(WAVE_SE_KON, NULL, "res/se/kon", false, false);
-	APP_LoadWave(WAVE_SE_GON, NULL, "res/se/gon", false, false);
-	APP_LoadWave(WAVE_SE_KACHI, NULL, "res/se/kachi", false, false);
-	APP_LoadWave(WAVE_SE_ROTATE, NULL, "res/se/rotate", false, false);
-	APP_LoadWave(WAVE_SE_MOVE, NULL, "res/se/move", false, false);
-	APP_LoadWave(WAVE_SE_HOLD, NULL, "res/se/hold", false, false);
-	APP_LoadWave(WAVE_SE_TUMAGARI, NULL, "res/se/tumagari", false, false);
-	APP_LoadWave(WAVE_SE_GAMEOVER, NULL, "res/se/gameover", false, false);
-	APP_LoadWave(WAVE_SE_LVSTOP, NULL, "res/se/lvstop", false, false);
-	APP_LoadWave(WAVE_SE_KETTEI, NULL, "res/se/kettei", false, false);
+	APP_LoadWave(WAVE_SE_SHAKI, "res/se/shaki", false);
+	APP_LoadWave(WAVE_SE_KON, "res/se/kon", false);
+	APP_LoadWave(WAVE_SE_GON, "res/se/gon", false);
+	APP_LoadWave(WAVE_SE_KACHI, "res/se/kachi", false);
+	APP_LoadWave(WAVE_SE_ROTATE, "res/se/rotate", false);
+	APP_LoadWave(WAVE_SE_MOVE, "res/se/move", false);
+	APP_LoadWave(WAVE_SE_HOLD, "res/se/hold", false);
+	APP_LoadWave(WAVE_SE_TUMAGARI, "res/se/tumagari", false);
+	APP_LoadWave(WAVE_SE_GAMEOVER, "res/se/gameover", false);
+	APP_LoadWave(WAVE_SE_LVSTOP, "res/se/lvstop", false);
+	APP_LoadWave(WAVE_SE_KETTEI, "res/se/kettei", false);
 
-	APP_LoadWave(WAVE_SE_ERASE1, NULL, "res/se/erase1", false, false);
-	APP_LoadWave(WAVE_SE_ERASE2, NULL, "res/se/erase2", false, false);
-	APP_LoadWave(WAVE_SE_ERASE3, NULL, "res/se/erase3", false, false);
-	APP_LoadWave(WAVE_SE_ERASE4, NULL, "res/se/erase4", false, false);
+	APP_LoadWave(WAVE_SE_ERASE1, "res/se/erase1", false);
+	APP_LoadWave(WAVE_SE_ERASE2, "res/se/erase2", false);
+	APP_LoadWave(WAVE_SE_ERASE3, "res/se/erase3", false);
+	APP_LoadWave(WAVE_SE_ERASE4, "res/se/erase4", false);
 
-	APP_LoadWave(WAVE_SE_READY, NULL, "res/se/ready", false, false);
-	APP_LoadWave(WAVE_SE_GO, NULL, "res/se/go", false, false);
+	APP_LoadWave(WAVE_SE_READY, "res/se/ready", false);
+	APP_LoadWave(WAVE_SE_GO, "res/se/go", false);
 
-	APP_LoadWave(WAVE_SE_APPLAUSE, NULL, "res/se/applause", false, false);
-	APP_LoadWave(WAVE_SE_CHEER, NULL, "res/se/cheer", false, false);
-	APP_LoadWave(WAVE_SE_LEVELUP, NULL, "res/se/levelup", false, false);
+	APP_LoadWave(WAVE_SE_APPLAUSE, "res/se/applause", false);
+	APP_LoadWave(WAVE_SE_CHEER, "res/se/cheer", false);
+	APP_LoadWave(WAVE_SE_LEVELUP, "res/se/levelup", false);
 
-	APP_LoadWave(WAVE_SE_UP, NULL, "res/se/up", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK1, NULL, "res/se/block1", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK2, NULL, "res/se/block2", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK3, NULL, "res/se/block3", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK4, NULL, "res/se/block4", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK5, NULL, "res/se/block5", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK6, NULL, "res/se/block6", false, false);
-	APP_LoadWave(WAVE_SE_BLOCK7, NULL, "res/se/block7", false, false);
+	APP_LoadWave(WAVE_SE_UP, "res/se/up", false);
+	APP_LoadWave(WAVE_SE_BLOCK1, "res/se/block1", false);
+	APP_LoadWave(WAVE_SE_BLOCK2, "res/se/block2", false);
+	APP_LoadWave(WAVE_SE_BLOCK3, "res/se/block3", false);
+	APP_LoadWave(WAVE_SE_BLOCK4, "res/se/block4", false);
+	APP_LoadWave(WAVE_SE_BLOCK5, "res/se/block5", false);
+	APP_LoadWave(WAVE_SE_BLOCK6, "res/se/block6", false);
+	APP_LoadWave(WAVE_SE_BLOCK7, "res/se/block7", false);
 
-	APP_LoadWave(WAVE_SE_TTCLEAR, NULL, "res/se/ttclear", false, false);
-	APP_LoadWave(WAVE_SE_GM, NULL, "res/se/gm", false, false);
-	APP_LoadWave(WAVE_SE_RANKUP, NULL, "res/se/rankup", false, false);
-	APP_LoadWave(WAVE_SE_STAGECLEAR, NULL, "res/se/stageclear", false, false);
-	APP_LoadWave(WAVE_SE_HURRYUP, NULL, "res/se/hurryup", false, false);
-	APP_LoadWave(WAVE_SE_TIMEOVER, NULL, "res/se/timeover", false, false);
-	APP_LoadWave(WAVE_SE_TSPIN, NULL, "res/se/tspin", false, false);
-	APP_LoadWave(WAVE_SE_HANABI, NULL, "res/se/hanabi", false, false);
-	APP_LoadWave(WAVE_SE_MISSIONCLR, NULL, "res/se/missionclr", false, false);
+	APP_LoadWave(WAVE_SE_TTCLEAR, "res/se/ttclear", false);
+	APP_LoadWave(WAVE_SE_GM, "res/se/gm", false);
+	APP_LoadWave(WAVE_SE_RANKUP, "res/se/rankup", false);
+	APP_LoadWave(WAVE_SE_STAGECLEAR, "res/se/stageclear", false);
+	APP_LoadWave(WAVE_SE_HURRYUP, "res/se/hurryup", false);
+	APP_LoadWave(WAVE_SE_TIMEOVER, "res/se/timeover", false);
+	APP_LoadWave(WAVE_SE_TSPIN, "res/se/tspin", false);
+	APP_LoadWave(WAVE_SE_HANABI, "res/se/hanabi", false);
+	APP_LoadWave(WAVE_SE_MISSIONCLR, "res/se/missionclr", false);
 
-	APP_LoadWave(WAVE_SE_THUNDER, NULL, "res/se/thunder", false, false);
+	APP_LoadWave(WAVE_SE_THUNDER, "res/se/thunder", false);
 
-	APP_LoadWave(WAVE_SE_WARNING, NULL, "res/se/warning", false, false);
+	APP_LoadWave(WAVE_SE_WARNING, "res/se/warning", false);
 
-	APP_LoadWave(WAVE_SE_MEDAL, NULL, "res/se/medal", false, false);
-	APP_LoadWave(WAVE_SE_PINCH, NULL, "res/se/pinch", false, false);
+	APP_LoadWave(WAVE_SE_MEDAL, "res/se/medal", false);
+	APP_LoadWave(WAVE_SE_PINCH, "res/se/pinch", false);
 
-	APP_LoadWave(WAVE_SE_PLATINAERASE, NULL, "res/se/platinaerase", false, false);
-	APP_LoadWave(WAVE_SE_TIMEEXTEND, NULL, "res/se/timeextend", false, false);
-	APP_LoadWave(WAVE_SE_STGSTAR, NULL, "res/se/stgstar", false, false);
-	APP_LoadWave(WAVE_SE_ACE_SONIC_LOCK, NULL, "res/se/ace_sonic_lock", false, false);
-	APP_LoadWave(WAVE_SE_REGRET, NULL, "res/se/regret", false, false);
-	APP_LoadWave(WAVE_SE_COOL, NULL, "res/se/cool", false, false);
+	APP_LoadWave(WAVE_SE_PLATINAERASE, "res/se/platinaerase", false);
+	APP_LoadWave(WAVE_SE_TIMEEXTEND, "res/se/timeextend", false);
+	APP_LoadWave(WAVE_SE_STGSTAR, "res/se/stgstar", false);
+	APP_LoadWave(WAVE_SE_ACE_SONIC_LOCK, "res/se/ace_sonic_lock", false);
+	APP_LoadWave(WAVE_SE_REGRET, "res/se/regret", false);
+	APP_LoadWave(WAVE_SE_COOL, "res/se/cool", false);
 
-	APP_LoadWave(WAVE_SE_TIMESTOP, NULL, "res/se/timestop", false, false);
-	APP_LoadWave(WAVE_SE_TSERASE, NULL, "res/se/tserase", false, false);
+	APP_LoadWave(WAVE_SE_TIMESTOP, "res/se/timestop", false);
+	APP_LoadWave(WAVE_SE_TSERASE, "res/se/tserase", false);
 	//APP_SetWaveLooping(WAVE_SE_PINCH, true);	//#1.60c7l6
 }
 
@@ -16945,32 +16945,32 @@ void loadBGM(void) {
 
 	if (wavebgm & WAVE_BGM_SIMPLE) {
 		if (load) {
-			APP_LoadMusic("res/bgm/bgm_leadin", "res/bgm/bgm");
+			APP_LoadMusic("res/bgm/bgm");
 		}
 		APP_SetMusicVolume(bgmvolume);
 		APP_PlayMusic();
 	}
 	else if (load) {
-		APP_LoadWave(WAVE_BGM_BGM01, "res/bgm/bgm01_leadin", "res/bgm/bgm01", true, true);					// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
-		APP_LoadWave(WAVE_BGM_BGM02, "res/bgm/bgm02_leadin", "res/bgm/bgm02", true, true);					// bgmlv 1 プレイ中（MASTER 500〜899）
-		APP_LoadWave(WAVE_BGM_BGM03, "res/bgm/bgm03_leadin", "res/bgm/bgm03", true, true);					// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
-		APP_LoadWave(WAVE_BGM_BGM04, "res/bgm/bgm04_leadin", "res/bgm/bgm04", true, true);					// bgmlv 3 プレイ中（DEVIL  500〜699）
-		APP_LoadWave(WAVE_BGM_BGM05, "res/bgm/bgm05_leadin", "res/bgm/bgm05", true, true);					// bgmlv 4 プレイ中（DEVIL  700〜999）
-		APP_LoadWave(WAVE_BGM_BGM06, "res/bgm/bgm06_leadin", "res/bgm/bgm06", true, true);					// bgmlv 5 プレイ中（DEVIL  1000以降）
-		APP_LoadWave(WAVE_BGM_ENDING, NULL, "res/bgm/ending", false, true);							// bgmlv 6 プレイ中（エンディング）
-		APP_LoadWave(WAVE_BGM_ENDING_B, NULL, "res/bgm/ending_b", false, true);							// bgmlv 7 プレイ中（BEGINNERエンディング）
-		APP_LoadWave(WAVE_BGM_TOMOYO, "res/bgm/tomoyo_leadin", "res/bgm/tomoyo", true, true);					// bgmlv 8 プレイ中 通常（TOMOYO）
-		APP_LoadWave(WAVE_BGM_TOMOYO_EX, "res/bgm/tomoyo_ex_leadin", "res/bgm/tomoyo_ex", true, true);				// bgmlv 9 プレイ中 EXステージ（TOMOYO）
-		APP_LoadWave(WAVE_BGM_VSMODE, "res/bgm/vsmode_leadin", "res/bgm/vsmode", true, true);					// bgmlv 10 プレイ中（対戦モード）
-		APP_LoadWave(WAVE_BGM_TITLE, "res/bgm/title_leadin", "res/bgm/title", true, true);					// bgmlv 11 タイトル
-		APP_LoadWave(WAVE_BGM_SELECT, "res/bgm/select_leadin", "res/bgm/select", true, true);					// bgmlv 12 モードセレクト
-		APP_LoadWave(WAVE_BGM_NAMEENTRY, "res/bgm/nameentry_leadin", "res/bgm/nameentry", true, true);				// bgmlv 13 ネームエントリー
-		APP_LoadWave(WAVE_BGM_TOMOYO_EH, "res/bgm/tomoyo_eh_leadin", "res/bgm/tomoyo_eh", true, true);				// bgmlv 14 プレイ中 E-Heart（TOMOYO）
-		APP_LoadWave(WAVE_BGM_FEVER, "res/bgm/fever_leadin", "res/bgm/fever", true, true);					// bgmlv 15 FEVER発動中
-		APP_LoadWave(WAVE_BGM_MISSION_EX01, "res/bgm/mission_ex01_leadin", "res/bgm/mission_ex01", true, true);			// bgmlv 16 プレイ中 ミッションその1
-		APP_LoadWave(WAVE_BGM_MISSION_EX02, "res/bgm/mission_ex02_leadin", "res/bgm/mission_ex02", true, true);			// bgmlv 17 プレイ中 ミッションその2
-		APP_LoadWave(WAVE_BGM_MISSION_EX03, "res/bgm/mission_ex03_leadin", "res/bgm/mission_ex03", true, true);			// bgmlv 18 プレイ中 ミッションその3
-		APP_LoadWave(WAVE_BGM_TOMOYO_EH_FINAL, "res/bgm/tomoyo_eh_final_leadin", "res/bgm/tomoyo_eh_final", true, true);	// bgmlv 19 プレイ E-Heartラスト
+		APP_LoadWave(WAVE_BGM_BGM01, "res/bgm/bgm01", true);				// bgmlv 0 プレイ中（MASTER   0〜499）playwave(50)
+		APP_LoadWave(WAVE_BGM_BGM02, "res/bgm/bgm02", true);				// bgmlv 1 プレイ中（MASTER 500〜899）
+		APP_LoadWave(WAVE_BGM_BGM03, "res/bgm/bgm03", true);				// bgmlv 2 プレイ中（MASTER 900〜998、DEVIL 0〜499）
+		APP_LoadWave(WAVE_BGM_BGM04, "res/bgm/bgm04", true);				// bgmlv 3 プレイ中（DEVIL  500〜699）
+		APP_LoadWave(WAVE_BGM_BGM05, "res/bgm/bgm05", true);				// bgmlv 4 プレイ中（DEVIL  700〜999）
+		APP_LoadWave(WAVE_BGM_BGM06, "res/bgm/bgm06", true);				// bgmlv 5 プレイ中（DEVIL  1000以降）
+		APP_LoadWave(WAVE_BGM_ENDING, "res/bgm/ending", false);				// bgmlv 6 プレイ中（エンディング）
+		APP_LoadWave(WAVE_BGM_ENDING_B, "res/bgm/ending_b", false);			// bgmlv 7 プレイ中（BEGINNERエンディング）
+		APP_LoadWave(WAVE_BGM_TOMOYO, "res/bgm/tomoyo", true);				// bgmlv 8 プレイ中 通常（TOMOYO）
+		APP_LoadWave(WAVE_BGM_TOMOYO_EX, "res/bgm/tomoyo_ex", true);			// bgmlv 9 プレイ中 EXステージ（TOMOYO）
+		APP_LoadWave(WAVE_BGM_VSMODE, "res/bgm/vsmode", true);		        	// bgmlv 10 プレイ中（対戦モード）
+		APP_LoadWave(WAVE_BGM_TITLE, "res/bgm/title", true);		        	// bgmlv 11 タイトル
+		APP_LoadWave(WAVE_BGM_SELECT, "res/bgm/select", true);				// bgmlv 12 モードセレクト
+		APP_LoadWave(WAVE_BGM_NAMEENTRY, "res/bgm/nameentry", true);			// bgmlv 13 ネームエントリー
+		APP_LoadWave(WAVE_BGM_TOMOYO_EH, "res/bgm/tomoyo_eh", true);			// bgmlv 14 プレイ中 E-Heart（TOMOYO）
+		APP_LoadWave(WAVE_BGM_FEVER, "res/bgm/fever", true);				// bgmlv 15 FEVER発動中
+		APP_LoadWave(WAVE_BGM_MISSION_EX01, "res/bgm/mission_ex01", true);		// bgmlv 16 プレイ中 ミッションその1
+		APP_LoadWave(WAVE_BGM_MISSION_EX02, "res/bgm/mission_ex02", true);		// bgmlv 17 プレイ中 ミッションその2
+		APP_LoadWave(WAVE_BGM_MISSION_EX03, "res/bgm/mission_ex03", true);		// bgmlv 18 プレイ中 ミッションその3
+		APP_LoadWave(WAVE_BGM_TOMOYO_EH_FINAL, "res/bgm/tomoyo_eh_final", true);	// bgmlv 19 プレイ E-Heartラスト
 	}
 }
 

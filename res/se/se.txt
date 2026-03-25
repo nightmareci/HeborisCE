@@ -2,13 +2,11 @@ se.txt - sound effects
 ----------------------
 
 This directory stores all the sound effects used in the game. If a sound
-effect's file is missing, then that sound effect will not be played. The
-supported formats are:
-
-	.wav, .ogg, .mp3
-
-Any mix of formats can be used, and the formats are tried in the order listed
-above.
+effect's file is missing, then that sound effect will not be played. Any mix of
+formats SDL Mixer supports can be used. If there's multiple files of the same
+name but different extension, the file you didn't want to use might be used, so
+if that happens delete all the files of a given name except the one you want to
+use.
 
 A summary of the sound effects used in game are as follows:
 

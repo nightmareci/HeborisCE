@@ -6,10 +6,8 @@
 #include "APP_error.h"
 #include "APP_global.h"
 #include "game/gamestart.h"
-#include <SDL3/SDL_stdinc.h>
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL_main.h>
-#include <stdarg.h>
 #include <setjmp.h>
 
 static int APP_argc;
@@ -47,14 +45,6 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 	APP_argv = argv;
 
 	APP_QuitLevel = 0;
-
-	// TODO: Remove this once the issue with WASAPI crackling with the move sound in-game is fixed
-#ifdef SDL_PLATFORM_WIN32
-	if (!SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "directsound")) {
-		APP_SetError("Couldn't set audio driver to DirectSound: %s", SDL_GetError());
-		return SDL_APP_FAILURE;
-	}
-#endif
 
 	// SDLの初期化 || SDL initialization
         // NOTE: On macOS, it seems doing SDL_Quit/SDL_Init for restarts
@@ -127,11 +117,6 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 		return SDL_APP_SUCCESS;
 
 	case SDL_APP_FAILURE:
-		return SDL_APP_FAILURE;
-	}
-
-	if (APP_WasAudioStreamingError()) {
-		APP_SetError("Failed streaming audio from storage");
 		return SDL_APP_FAILURE;
 	}
 

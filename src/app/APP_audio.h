@@ -1,7 +1,7 @@
 #ifndef APP_audio_h_
 #define APP_audio_h_
 
-#include "APP_stdinc.h"
+#include <stdbool.h>
 
 // Playable wave numbers must be 0 or greater; all negative wave numbers are
 // treated the same as APP_WAVE_NUM_ALL.
@@ -10,10 +10,7 @@
 // 0 corresponds to silent.
 //
 // Filenames must have no file extension; load functions will try extensions
-// for all supported formats. The supported formats are tried in this order:
-// 1. WAVE (.wav)
-// 2. OGG Vorbis (.ogg)
-// 3. MP3 (.mp3)
+// for all supported formats.
 
 // A special wave number that causes operations to act upon all waves.
 #define APP_WAVE_NUM_ALL -1
@@ -24,11 +21,8 @@ bool APP_InitAudio(int wavesCount);
 // Quit the audio system.
 void APP_QuitAudio(void);
 
-// Get whether a fatal audio system error occurred.
-bool APP_WasAudioStreamingError(void);
-
 // Load a wave. Does not support APP_WAVE_NUM_ALL.
-void APP_LoadWave(int num, const char* leadinFilename, const char* mainFilename, bool looping, bool streaming);
+void APP_LoadWave(int num, const char* filename, bool looping);
 
 // Play waves. APP_WAVE_NUM_ALL plays all waves.
 void APP_PlayWave(int num);
@@ -53,7 +47,7 @@ void APP_SetWaveVolume(int num, int volume);
 void APP_SetWaveLooping(int num, bool looping);
 
 // Load music.
-void APP_LoadMusic(const char* leadinFilename, const char* mainFilename);
+void APP_LoadMusic(const char* filename);
 
 // Play music.
 void APP_PlayMusic(void);

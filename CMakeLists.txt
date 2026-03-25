@@ -146,10 +146,7 @@ add_executable(${APP_EXE}
 	"src/app/APP_global.c"
 	"src/app/APP_input.c"
 	"src/app/APP_main.c"
-	"src/app/APP_mp3.c"
-	"src/app/APP_ogg.c"
 	"src/app/APP_video.c"
-	"src/app/APP_wav.c"
 	"src/app/APP_error.c"
 
 	"src/game/gamestart.c"
@@ -180,7 +177,6 @@ add_executable(${APP_EXE}
 
 	"src/app/APP.h"
 	"src/app/APP_audio.h"
-	"src/app/APP_audio_private.h"
 	"src/app/APP_hashtable.h"
 	"src/app/APP_bdf.h"
 	"src/app/APP_stdinc.h"
@@ -190,14 +186,8 @@ add_executable(${APP_EXE}
 	"src/app/APP_global.h"
 	"src/app/APP_input.h"
 	"src/app/APP_main.h"
-	"src/app/APP_mp3.c"
-	"src/app/APP_ogg.h"
 	"src/app/APP_stdinc.h"
 	"src/app/APP_video.h"
-	"src/app/APP_wav.h"
-	"src/app/dr_mp3.h"
-	"src/app/dr_wav.h"
-	"src/app/stb_vorbis.h"
 
 	"src/game/gamestart.h"
 	"src/game/init.h"
@@ -372,24 +362,51 @@ if(VITA)
 
 	if(APP_VENDORED)
 		set(BUILD_SHARED_LIBS OFF)
+
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
-		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED OFF)
+
 		set(SDLIMAGE_VENDORED ON)
+		set(SDLIMAGE_DEPS_SHARED OFF)
+ 		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
+		set(SDLIMAGE_PNG_LIBPNG OFF)
+		set(SDLIMAGE_BACKEND_STB ON)
+		# TODO: Enable TIFF once vendored zlib builds for all platforms
+		set(SDLIMAGE_TIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+
+		set(SDLMIXER_VENDORED ON)
+		set(SDLMIXER_AIFF OFF)
+		set(SDLMIXER_WAVE ON)
+		set(SDLMIXER_VOC OFF)
+		set(SDLMIXER_AU OFF)
+		set(SDLMIXER_FLAC OFF)
+		set(SDLMIXER_GME OFF)
+		set(SDLMIXER_MOD OFF)
+		set(SDLMIXER_MP3 OFF)
+		set(SDLMIXER_MIDI OFF)
+		set(SDLMIXER_OPUS OFF)
+		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
+		set(SDLMIXER_VORBIS_STB ON)
+		set(SDLMIXER_VORBIS_VORBISFILE OFF)
+		set(SDLMIXER_WAVPACK OFF)
+		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
+
 		find_package(Threads REQUIRED)
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 			Threads::Threads
 		)
 	else()
 		find_package(SDL3 REQUIRED)
 		find_package(SDL3_image REQUIRED)
+		find_package(SDL3_mixer REQUIRED)
 		find_package(Threads REQUIRED)
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 			Threads::Threads
 		)
 	endif()
@@ -436,32 +453,50 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		set(SDL_PTHREADS ON CACHE BOOL "" FORCE)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 
-		set(SDLIMAGE_AVIF OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_BMP OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_GIF OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_JPG OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_JXL OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_LBM OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_PCX OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_PNM OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_QOI OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_SVG OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_TGA OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_TIF OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_WEBP OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_XCF OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_XPM OFF CACHE BOOL "" FORCE)
-		set(SDLIMAGE_XV OFF CACHE BOOL "" FORCE)
-
-		set(SDLIMAGE_PNG ON CACHE BOOL "" FORCE)
-
-		set(SDLIMAGE_DEPS_SHARED OFF)
 		set(SDLIMAGE_VENDORED ON)
+		set(SDLIMAGE_AVIF OFF)
+		set(SDLIMAGE_BMP OFF)
+		set(SDLIMAGE_GIF OFF)
+		set(SDLIMAGE_JPG OFF)
+		set(SDLIMAGE_JXL OFF)
+		set(SDLIMAGE_LBM OFF)
+		set(SDLIMAGE_PCX OFF)
+		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
+		set(SDLIMAGE_PNG_LIBPNG OFF)
+		set(SDLIMAGE_BACKEND_STB ON)
+		set(SDLIMAGE_PNG ON)
+		set(SDLIMAGE_PNM OFF)
+		set(SDLIMAGE_QOI OFF)
+		set(SDLIMAGE_SVG OFF)
+		set(SDLIMAGE_TGA OFF)
+		set(SDLIMAGE_TIF OFF)
+		set(SDLIMAGE_WEBP OFF)
+		set(SDLIMAGE_XCF OFF)
+		set(SDLIMAGE_XPM OFF)
+		set(SDLIMAGE_XV OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+
+		set(SDLMIXER_VENDORED ON)
+		set(SDLMIXER_AIFF OFF)
+		set(SDLMIXER_VOC OFF)
+		set(SDLMIXER_AU OFF)
+		set(SDLMIXER_FLAC OFF)
+		set(SDLMIXER_GME OFF)
+		set(SDLMIXER_MOD OFF)
+		set(SDLMIXER_MP3 OFF)
+		set(SDLMIXER_MIDI OFF)
+		set(SDLMIXER_OPUS OFF)
+		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
+		set(SDLMIXER_VORBIS_STB ON)
+		set(SDLMIXER_VORBIS_VORBISFILE OFF)
+		set(SDLMIXER_WAVE ON)
+		set(SDLMIXER_WAVPACK OFF)
+		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
 
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 
 		# TODO: Support non-vendored, when possible. emsdk doesn't provide SDL3_image yet, so only vendored works
@@ -523,20 +558,38 @@ elseif(WIN32 AND NOT MSYS)
 	if(APP_VENDORED)
 		set(BUILD_SHARED_LIBS ON)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
-		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED ON)
+
 		set(SDLIMAGE_VENDORED ON)
+		set(SDLIMAGE_DEPS_SHARED ON)
+		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
+		set(SDLIMAGE_PNG_LIBPNG OFF)
+		set(SDLIMAGE_BACKEND_STB ON)
+		# TODO: Enable TIFF once vendored zlib builds for all platforms
+		set(SDLIMAGE_TIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+
+		set(SDLMIXER_VENDORED ON)
+		set(SDLMIXER_DEPS_SHARED ON)
+		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
+		set(SDLMIXER_VORBIS_STB ON)
+		set(SDLMIXER_VORBIS_VORBISFILE OFF)
+		# TODO: Enable WavPack when it builds for all platforms
+		set(SDLMIXER_WAVPACK OFF)
+		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
+
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 	else()
 		find_package(SDL3 REQUIRED)
 		find_package(SDL3_image REQUIRED)
+		find_package(SDL3_mixer REQUIRED)
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 	endif()
 
@@ -666,13 +719,29 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 	if(APP_VENDORED)
 		set(BUILD_SHARED_LIBS ON)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
-		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED ON)
+
 		set(SDLIMAGE_VENDORED ON)
+		set(SDLIMAGE_DEPS_SHARED ON)
+		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
+		set(SDLIMAGE_PNG_LIBPNG OFF)
+		set(SDLIMAGE_BACKEND_STB ON)
+		# TODO: Enable TIFF once veondred zlib builds for all platforms
+		set(SDLIMAGE_TIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+
+		set(SDLMIXER_VENDORED ON)
+		set(SDLMIXER_DEPS_SHARED ON)
+		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
+		set(SDLMIXER_VORBIS_STB ON)
+		set(SDLMIXER_VORBIS_VORBISFILE OFF)
+		# TODO: Enable WavPack when it builds for all platforms
+		set(SDLMIXER_WAVPACK OFF)
+		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
+
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 		add_custom_command(TARGET ${APP_EXE} POST_BUILD
 			COMMAND "${CMAKE_SOURCE_DIR}/cmake/CodeSignDylibs.sh" "${APP_PROJECT_NAME}.app/Contents/Frameworks"
@@ -680,9 +749,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 	else()
 		find_package(SDL3 REQUIRED)
 		find_package(SDL3_image REQUIRED)
+		find_package(SDL3_mixer REQUIRED)
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 	endif()
 
@@ -836,21 +907,40 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 
 	if(APP_VENDORED)
 		set(BUILD_SHARED_LIBS ON)
+
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
-		#set(SDLIMAGE_BACKEND_STB OFF) # TODO: Fix vendored zlib in SDL_image
-		set(SDLIMAGE_DEPS_SHARED ON)
+
 		set(SDLIMAGE_VENDORED ON)
+		set(SDLIMAGE_DEPS_SHARED ON)
+		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
+		set(SDLIMAGE_PNG_LIBPNG OFF)
+		set(SDLIMAGE_BACKEND_STB ON)
+		# TODO: Enable TIFF once vendored zlib builds for all platforms
+		set(SDLIMAGE_TIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
+
+		set(SDLMIXER_VENDORED ON)
+		set(SDLMIXER_DEPS_SHARED ON)
+		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
+		set(SDLMIXER_VORBIS_STB ON)
+		set(SDLMIXER_VORBIS_VORBISFILE OFF)
+		# TODO: Enable WavPack when it builds for all platforms
+		set(SDLMIXER_WAVPACK OFF)
+		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
+
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 	else()
 		find_package(SDL3 REQUIRED)
 		find_package(SDL3_image REQUIRED)
+		find_package(SDL3_mixer REQUIRED)
 		target_link_libraries(${APP_EXE} PRIVATE
 			SDL3::SDL3
 			SDL3_image::SDL3_image
+			SDL3_mixer::SDL3_mixer
 		)
 	endif()
 

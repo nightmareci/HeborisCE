@@ -2,12 +2,13 @@
 /config/data
 /replay
 
-# Buildsystem generated files
+# Build system generated/local config files
 /build*
 /pkg/windows/icon.aps
 /out
 /vcpkg_installed
 /CMakeSettings.json
+/CMakeUserPresets.json
 /.vscode
 /.vs
 /CMakeLists.txt.*

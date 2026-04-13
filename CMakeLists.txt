@@ -128,15 +128,11 @@ elseif(APP_PACKAGE_TYPE MATCHES "Portable")
 	endif()
 endif()
 
-if(MSVC)
-	if(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
-		# Options only for real MSVC, not immitators like ClangCL
-		add_compile_options("/MP")
-	endif()
-
-	# Options for all MSVC-like compilers
-	add_compile_options("/utf-8")
-endif()
+add_compile_options(
+	# Force MSVC to read sources in UTF-8 encoding
+	"$<$<C_COMPILER_ID:MSVC>:/utf-8>"
+	"$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
+)
 
 add_executable(${APP_EXE}
 	"src/app/APP_audio.c"
@@ -372,6 +368,8 @@ if(VITA)
 		set(SDLIMAGE_BACKEND_STB ON)
 		# TODO: Enable TIFF once vendored zlib builds for all platforms
 		set(SDLIMAGE_TIF OFF)
+		# TODO: Enable AVIF when it builds for all platforms
+		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
@@ -566,6 +564,8 @@ elseif(WIN32 AND NOT MSYS)
 		set(SDLIMAGE_BACKEND_STB ON)
 		# TODO: Enable TIFF once vendored zlib builds for all platforms
 		set(SDLIMAGE_TIF OFF)
+		# TODO: Enable AVIF when it builds for all platforms
+		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
@@ -727,6 +727,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND APP_PACKAGE_TYPE MATCHES "Mac App
 		set(SDLIMAGE_BACKEND_STB ON)
 		# TODO: Enable TIFF once veondred zlib builds for all platforms
 		set(SDLIMAGE_TIF OFF)
+		# TODO: Enable AVIF when it builds for all platforms
+		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
@@ -917,6 +919,8 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 		set(SDLIMAGE_BACKEND_STB ON)
 		# TODO: Enable TIFF once vendored zlib builds for all platforms
 		set(SDLIMAGE_TIF OFF)
+		# TODO: Enable AVIF when it builds for all platforms
+		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)

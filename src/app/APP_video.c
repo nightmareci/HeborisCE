@@ -70,11 +70,14 @@ static void APP_PrivateBDFFontInitialize(void)
 		if (APP_BDFFonts[i]) {
 			continue;
 		}
+		if (!APP_FileExists(filenames[i])) {
+			SDL_Log("Missing font file %s", filenames[i]);
+			continue;
+		}
 		SDL_IOStream* const src = APP_OpenRead(filenames[i]);
 		if (!src) {
-			SDL_Log("Failed to open font file \"%s\"; continuing without it.", filenames[i]);
-			APP_BDFFonts[i] = NULL;
-			continue;
+			APP_SetError("Failed to open font file \"%s\": %s", SDL_GetError());
+			APP_Exit(SDL_APP_FAILURE);
 		}
 		APP_BDFFonts[i] = APP_OpenBDFFont(src);
 		if (!APP_BDFFonts[i]) {
@@ -876,6 +879,9 @@ static SDL_IOStream* APP_OpenImage(const char* filename, const char** type)
 		SDL_free(filenameExt);
 		break;
 	}
+	if (!file) {
+		SDL_Log("Missing image file %s.*", filename);
+	}
 	return file;
 }
 
@@ -926,6 +932,9 @@ static bool APP_HaveSinglePlane(int plane)
 	else if (!APP_WaitWorkerJob(APP_LoadingWorker, APP_PlanesLoadData[plane].job)) {
 		APP_SetError("Failed to finish loading a plane: %s", SDL_GetError());
 		APP_Exit(SDL_APP_FAILURE);
+	}
+	if (!APP_PlanesLoadData[plane].surface) {
+		return false;
 	}
 	APP_Planes[plane] = SDL_CreateTextureFromSurface(APP_ScreenRenderer, APP_PlanesLoadData[plane].surface);
 	SDL_DestroySurface(APP_PlanesLoadData[plane].surface);

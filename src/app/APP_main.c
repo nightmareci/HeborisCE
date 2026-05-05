@@ -15,6 +15,7 @@ static char** APP_argv;
 static bool APP_WasSetResourceSettings = false;
 static const char* const* APP_WriteDirectories = NULL;
 static size_t APP_WriteDirectoryCount = 0;
+static SDL_IOStream* APP_LogFile = NULL;
 static int APP_WaveCount = 0;
 static int APP_PlaneCount = 0;
 static int APP_TextLayerCount = 0;
@@ -47,10 +48,10 @@ SDL_AppResult SDLCALL SDL_AppInit(void** appstate, int argc, char** argv)
 	APP_QuitLevel = 0;
 
 	// SDLの初期化 || SDL initialization
-        // NOTE: On macOS, it seems doing SDL_Quit/SDL_Init for restarts
-        // completely breaks things, so only do SDL_Init/SDL_Quit at
-        // startup/shutdown. Probably speeds up restarts on all platforms
-        // anyways.
+	// NOTE: On macOS, it seems doing SDL_Quit/SDL_Init for restarts
+	// completely breaks things, so only do SDL_Init/SDL_Quit at
+	// startup/shutdown. Probably speeds up restarts on all platforms
+	// anyways.
 	if (!SDL_Init(
 		SDL_INIT_AUDIO | SDL_INIT_VIDEO
 #ifdef APP_ENABLE_JOYSTICK_INPUT
@@ -192,6 +193,44 @@ static bool APP_FrameStep(void)
 	return skipped;
 }
 
+static void APP_LogOutput(void* userdata, int category, SDL_LogPriority priority, const char* message)
+{
+	const char* priorityString;
+	switch (priority) {
+	default:
+		priorityString = "INVALID";
+		break;
+
+	case SDL_LOG_PRIORITY_TRACE:
+		priorityString = "TRACE";
+		break;
+
+    	case SDL_LOG_PRIORITY_VERBOSE:
+     		priorityString = "VERBOSE";
+       		break;
+	case SDL_LOG_PRIORITY_DEBUG:
+		priorityString = "DEBUG";
+	 	break;
+	case SDL_LOG_PRIORITY_INFO:
+		priorityString = "INFO";
+		break;
+
+	case SDL_LOG_PRIORITY_WARN:
+		priorityString = "WARN";
+		break;
+
+	case SDL_LOG_PRIORITY_ERROR:
+		priorityString = "ERROR";
+		break;
+
+	case SDL_LOG_PRIORITY_CRITICAL:
+		priorityString = "CRITICAL";
+		break;
+	}
+
+	SDL_IOprintf(APP_LogFile, "%s: %s\n", priorityString, message);
+}
+
 void APP_SetResourceSettings(int waveCount, const char* const* writeDirectories, size_t writeDirectoryCount, int planeCount, int textLayerCount)
 {
 	if (APP_WasSetResourceSettings) {
@@ -235,6 +274,14 @@ void APP_Init(void)
 		}
 		APP_QuitLevel++;
 
+		APP_LogFile = APP_OpenWrite("log.txt");
+		if (!APP_LogFile) {
+			APP_SetError("Failed opening log file");
+			APP_Exit(SDL_APP_FAILURE);
+		}
+		APP_QuitLevel++;
+		SDL_SetLogOutputFunction(APP_LogOutput, NULL);
+
 		if (APP_WriteDirectories) {
 			for (size_t i = 0u; i < APP_WriteDirectoryCount; i++) {
 				if (!APP_CreateDirectory(APP_WriteDirectories[i])) {
@@ -276,10 +323,11 @@ void APP_Quit(void)
 {
 	switch (APP_QuitLevel)
 	{
-	case 5: APP_DestroyWorker(APP_LoadingWorker); APP_LoadingWorker = NULL; SDL_FALLTHROUGH;
-	case 4: APP_CloseInputs(); SDL_FALLTHROUGH;
-	case 3: APP_QuitVideo(); SDL_FALLTHROUGH;
-	case 2: APP_QuitAudio(); SDL_FALLTHROUGH;
+	case 6: APP_DestroyWorker(APP_LoadingWorker); APP_LoadingWorker = NULL; SDL_FALLTHROUGH;
+	case 5: APP_CloseInputs(); SDL_FALLTHROUGH;
+	case 4: APP_QuitVideo(); SDL_FALLTHROUGH;
+	case 3: APP_QuitAudio(); SDL_FALLTHROUGH;
+	case 2: SDL_CloseIO(APP_LogFile); APP_LogFile = NULL; SDL_FALLTHROUGH;
 	case 1: APP_QuitFilesystem(); SDL_FALLTHROUGH;
 	default: break;
 	}

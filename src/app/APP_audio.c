@@ -159,6 +159,9 @@ static bool APP_LoadTrack(MIX_Track** track, const char* filename)
 		MIX_DestroyAudio(audio);
 		return true;
 	}
+	if (!*track) {
+		SDL_Log("Missing audio file %s.*", filename);
+	}
 	return true;
 }
 

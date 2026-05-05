@@ -1846,6 +1846,9 @@ void APP_OpenInputs(void)
 		}
 		SDL_CloseIO(db);
 	}
+	else {
+		SDL_Log("Missing game controller configurations file gamecontrollerdb.txt");
+	}
 	#endif
 }
 

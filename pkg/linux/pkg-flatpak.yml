@@ -1,4 +1,4 @@
-app-id: io.github.nightmareci.HeborisCE
+app-id: com.nightmareci.HeborisCE
 runtime: org.freedesktop.Platform
 runtime-version: '21.08'
 sdk: org.freedesktop.Sdk
@@ -6,25 +6,12 @@ command: HeborisCE
 rename-desktop-file: HeborisCE.desktop
 rename-icon: HeborisCE
 modules:
-    - name: physfs
-      buildsystem: cmake-ninja
-      builddir: true
-      config-opts:
-          - -DCMAKE_INSTALL_PREFIX=/app
-          - -DCMAKE_BUILD_TYPE=Release
-          - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
-          - -DPHYSFS_BUILD_TEST=FALSE
-      sources:
-          - type: archive
-            url: 'http://icculus.org/physfs/downloads/physfs-3.0.2.tar.bz2'
-            sha1: 6a15c458898d0570101d8f173201cde9ced78df7
     - name: HeborisCE
       buildsystem: cmake-ninja
       builddir: true
       config-opts:
           - -DCMAKE_INSTALL_PREFIX=/app
-          - -DAPP_PACKAGE_TYPE=Installable
-          - -DAPP_LINUX_DESKTOP_ICON=com.nightmareci.HeborisCE
+          - -DPACKAGE_TYPE=Installable
       sources:
         - type: dir
           path: ../..

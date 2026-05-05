@@ -36,7 +36,7 @@ Player 2:
 
 ## Package Types
 
-A CMake configuration option, `APP_PACKAGE_TYPE`, can be set to control how the
+A CMake configuration option, `PACKAGE_TYPE`, can be set to control how the
 build accesses game resources and save data files:
 * `Current Directory` (default): Resources and save files are read/written in
   the current directory. Handy for quickly building and playing right at command
@@ -51,8 +51,8 @@ build accesses game resources and save data files:
   save files read/written in a sensible OS user account directory.
 
 ## Uncompressed Resource DAT File
-A CMake configuration boolean option, `APP_RESOURCE_DAT`, enables or disables
-generating a "resource DAT" file named `HeborisCE.dat`, basically a
+A CMake configuration boolean option, `FILESYSTEM_USING_RESOURCE_DAT`, enables
+or disables generating a "resource DAT" file named `HeborisCE.dat`, basically a
 custom-format, uncompressed archive file storing all the game's resource files.
 The option requires Python 3 to generate the resource DAT. When using the CMake
 option for resource DATs, the build will also be configured to only load
@@ -177,9 +177,9 @@ Raspberry Pi OS installation:
 sudo apt install libgpiod-dev
 ```
 
-Set `APP_ENABLE_LINUX_GPIO_INPUT` when running CMake, then build:
+Set `INPUT_ENABLE_LINUX_GPIO` when running CMake, then build:
 ```sh
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DAPP_ENABLE_LINUX_GPIO_INPUT=1
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DINPUT_ENABLE_LINUX_GPIO=1
 cmake --build build
 ./build/HeborisCE
 ```
@@ -218,8 +218,8 @@ in IDEs, by setting that command line argument to where the source root is.
 
 An alternative to using the explicit resource/data directory command line
 argument is to use the `Current Directory` package type when building (the
-default if `APP_PACKAGE_TYPE` isn't provided to the CMake configuration step)
-and configuring your IDE to run the game with its working directory set to the
+default if `PACKAGE_TYPE` isn't provided to the CMake configuration step) and
+configuring your IDE to run the game with its working directory set to the
 source root. This option isn't available in all IDEs, however.
 
 ## Changes

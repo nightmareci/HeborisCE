@@ -22,7 +22,7 @@ else
 fi
 
 cd "$SOURCE_DIRECTORY" || exit 1
-cmake -B "$BUILD_DIRECTORY" "$@" -DCMAKE_BUILD_TYPE=Release --toolchain "$VITASDK/share/vita.toolchain.cmake" -DAPP_VENDORED=ON -DAPP_RESOURCE_DAT=ON \
+cmake -B "$BUILD_DIRECTORY" "$@" -DCMAKE_BUILD_TYPE=Release --toolchain "$VITASDK/share/vita.toolchain.cmake" -DBUILD_VENDORED=ON -DFILESYSTEM_USING_RESOURCE_DAT=ON \
 	-DSDLIMAGE_AVIF=OFF \
 	-DSDLIMAGE_BMP=OFF \
 	-DSDLIMAGE_GIF=OFF \

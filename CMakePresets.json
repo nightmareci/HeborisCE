@@ -10,7 +10,7 @@
 			"name": "default",
 			"hidden": true,
 			"cacheVariables": {
-				"APP_VENDORED": "ON"
+				"BUILD_VENDORED": "ON"
 			}
 		},
 		{

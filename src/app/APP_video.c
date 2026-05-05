@@ -64,8 +64,6 @@ static void APP_PrivateBDFFontInitialize(void)
 		"res/font/font16.bdf"
 	};
 
-	/* フォント読み込み */
-	/* Load fonts */
 	for (int i = 0; i < APP_BDF_FONT_FILE_COUNT; i++) {
 		if (APP_BDFFonts[i]) {
 			continue;
@@ -101,7 +99,6 @@ static void APP_PrivateBDFFontFinalize(void)
 
 void APP_InitVideo(int planeCount, int textLayerCount)
 {
-	// Initialize the planes
 	if (planeCount > 0) {
 		APP_Planes = SDL_calloc(planeCount, sizeof(SDL_Texture*));
 		if (!APP_Planes) {
@@ -121,7 +118,6 @@ void APP_InitVideo(int planeCount, int textLayerCount)
 		APP_PlaneCount = 0;
 	}
 
-	/* テキストレイヤーの初期化 || Initialize the text layers */
 	if (textLayerCount > 0) {
 		APP_TextLayers = SDL_calloc(textLayerCount, sizeof(APP_TextLayer));
 		if (!APP_TextLayers) {
@@ -195,9 +191,6 @@ void APP_SetScreen(APP_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	SDL_DisplayID* displays = NULL;
 	SDL_DisplayMode** displayModes = NULL;
 
-	/* 画面の設定 || Set up the screen */
-
-	/* Validate the window type */
 	APP_ScreenModeFlag windowType = *screenMode & APP_SCREEN_MODE_WINDOW_TYPE;
 	if (windowType >= APP_SCREEN_MODE_WINDOW_TYPES_COUNT) {
 		APP_SetError("Invalid window type value of %d", (int)windowType);

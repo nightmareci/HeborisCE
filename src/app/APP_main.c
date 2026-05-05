@@ -323,8 +323,7 @@ void APP_Init(void)
 
 void APP_Quit(void)
 {
-	switch (APP_QuitLevel)
-	{
+	switch (APP_QuitLevel) {
 	case 6: APP_DestroyWorker(APP_LoadingWorker); APP_LoadingWorker = NULL; SDL_FALLTHROUGH;
 	case 5: APP_CloseInputs(); SDL_FALLTHROUGH;
 	case 4: APP_QuitVideo(); SDL_FALLTHROUGH;
@@ -346,7 +345,6 @@ bool APP_Update(void)
 	#ifdef NDEBUG
 	if (APP_RenderWhileSkippingFrames || !APP_LastFrameSkipped) {
 	#endif
-		/* バックサーフェスをフロントに転送 */
 		if (APP_ScreenRenderTarget) {
 			if (
 				!SDL_SetRenderTarget(APP_ScreenRenderer, NULL) ||
@@ -364,10 +362,8 @@ bool APP_Update(void)
 			APP_Exit(SDL_APP_FAILURE);
 		}
 
-		/* フレームレート待ち || Frame rate waiting */
 		APP_LastFrameSkipped = APP_FrameStep();
 
-		/* 画面塗りつぶし || Fill screen */
 		if (!SDL_RenderClear(APP_ScreenRenderer)) {
 			APP_SetError("Failed render clear: %s", SDL_GetError());
 			APP_Exit(SDL_APP_FAILURE);
@@ -380,13 +376,10 @@ bool APP_Update(void)
 			APP_Exit(SDL_APP_FAILURE);
 		}
 
-		/* フレームレート待ち || Frame rate waiting */
 		APP_LastFrameSkipped = APP_FrameStep();
 	}
 	#endif
 
-	// フレームレート計算
-	// Frame rate calculation
 	APP_FramesThisSecond++;
 	if (APP_NowNS - APP_LastRealFPSNS >= SDL_NS_PER_SECOND) {
 		APP_RealFPS = APP_FramesThisSecond;

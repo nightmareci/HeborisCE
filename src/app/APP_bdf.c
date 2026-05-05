@@ -557,7 +557,9 @@ SDL_Texture* APP_CreateBDFTextTexture(APP_BDFFont* font, SDL_Renderer* renderer,
 
 void APP_CloseBDFFont(APP_BDFFont* font)
 {
-	SDL_assert(font != NULL);
+	if (!font) {
+		return;
+	}
 
 	APP_DestroyHashTable(font->glyphs);
 	SDL_free(font);

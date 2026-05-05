@@ -44,6 +44,7 @@ typedef enum APP_InputType
 	,APP_INPUT_XBOX = APP_INPUT_FIRSTGAMECONTROLLERTYPE
 	,APP_INPUT_PLAYSTATION
 	,APP_INPUT_NINTENDO
+	// TODO: Rename APP_INPUT_NINTENDO => APP_INPUT_SNES and add APP_INPUT_GAMECUBE
 	,APP_INPUT_LASTGAMECONTROLLERTYPE = APP_INPUT_NINTENDO
 	#endif
 	#ifdef APP_ENABLE_KEYBOARD_INPUT
@@ -92,18 +93,21 @@ bool APP_UpdatePlayerSlots(void);
 #endif
 
 #ifdef APP_ENABLE_JOYSTICK_INPUT
-typedef struct APP_JoyGUID {
+typedef struct APP_JoyGUID
+{
 	int32_t data[4];
 } APP_JoyGUID;
 
-typedef enum APP_JoyKeyType {
+typedef enum APP_JoyKeyType
+{
 	APP_JOYKEY_ANY,
 	APP_JOYKEY_AXIS,
 	APP_JOYKEY_HAT,
 	APP_JOYKEY_BUTTON
 } APP_JoyKeyType;
 
-typedef union APP_JoyKeySetting {
+typedef union APP_JoyKeySetting
+{
 	struct {
 		int index;
 		int value;
@@ -111,16 +115,17 @@ typedef union APP_JoyKeySetting {
 	int button;
 } APP_JoyKeySetting;
 
-typedef struct APP_JoyKey {
+typedef struct APP_JoyKey
+{
 	int player;
 	APP_JoyGUID guid;
 	APP_JoyKeyType type;
 	APP_JoyKeySetting setting;
 } APP_JoyKey;
 
-bool APP_IsPushJoyKey(const APP_JoyKey* const key);
-bool APP_IsPressJoyKey(const APP_JoyKey* const key);
-int APP_GetJoyKeyRepeat(const APP_JoyKey* const key); // If key->type == APP_JOYKEY_ANY, checks all inputs of the key's joystick and returns the max repeat value.
+bool APP_IsPushJoyKey(const APP_JoyKey* key);
+bool APP_IsPressJoyKey(const APP_JoyKey* key);
+int APP_GetJoyKeyRepeat(const APP_JoyKey* key); // If key->type == APP_JOYKEY_ANY, checks all inputs of the key's joystick and returns the max repeat value.
 
 // If game controller support is enabled, a joystick player can possibly
 // correspond to a game controller, in which case these functions return -1 if
@@ -136,13 +141,15 @@ int APP_GetMaxJoyButton(int player);
 #endif
 
 #ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
-typedef enum APP_ConKeyType {
+typedef enum APP_ConKeyType
+{
 	APP_CONKEY_ANY,
 	APP_CONKEY_AXIS,
 	APP_CONKEY_BUTTON // The dpad is considered to be four buttons.
 } APP_ConKeyType;
 
-typedef struct APP_ConKey {
+typedef struct APP_ConKey
+{
 	APP_ConKeyType type;
 	int index;
 } APP_ConKey;
@@ -160,15 +167,15 @@ typedef struct APP_ConKey {
 // Button numbers are the same as the SDL_CONTROLLER_BUTTON_* constants.
 #define APP_CONBUTTON_MAX SDL_GAMEPAD_BUTTON_COUNT
 
-bool APP_IsPushConKey(const int player, const APP_ConKey* const key);
-bool APP_IsPressConKey(const int player, const APP_ConKey* const key);
-int APP_GetConKeyRepeat(const int player, const APP_ConKey* const key);
+bool APP_IsPushConKey(int player, const APP_ConKey* key);
+bool APP_IsPressConKey(int player, const APP_ConKey* key);
+int APP_GetConKeyRepeat(int player, const APP_ConKey* key);
 
 int APP_GetNumCons(void);
 void APP_ResetLastActiveCon(void);
 int APP_GetLastActiveCon(void);
 APP_InputType APP_GetConType(const int player);
-bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char** text, APP_Button* button);
+bool APP_GetConKeyDesc(int player, const APP_ConKey* key, const char** text, APP_Button* button);
 #endif
 
 #endif

@@ -1,8 +1,11 @@
+// TODO: Explicitly handle GameCube controllers. So, handle SDL_GAMEPAD_TYPE_GAMECUBE for input type. Rename APP_INPUT_NINTENDO => APP_INPUT_SNES, add APP_INPUT_GAMECUBE
+
 #include "APP_input.h"
 #include "APP_error.h"
 #ifdef APP_ENABLE_GAME_CONTROLLER_DB_FILE
 #include "APP_filesystem.h"
 #endif
+#include "APP_main.h"
 
 #ifdef APP_ONLY_INPUT_TYPE
 static APP_InputType APP_LastInputType = APP_ONLY_INPUT_TYPE;
@@ -11,13 +14,13 @@ static APP_InputType APP_LastInputType = APP_INPUT_NULL;
 #endif
 
 #ifdef APP_ENABLE_LINUX_GPIO_INPUT
-static int			APP_GPIORepeat[10];
-static struct gpiod_chip	*APP_GPIOChip;
-static struct gpiod_line	*APP_GPIOLines[10];
+static int APP_GPIORepeat[10];
+static struct gpiod_chip* APP_GPIOChip;
+static struct gpiod_line* APP_GPIOLines[10];
 #endif
 
 #ifdef APP_ENABLE_KEYBOARD_INPUT
-static int			APP_KeyRepeat[APP_KEY_MAX];
+static int APP_KeyRepeat[APP_KEY_MAX];
 #endif
 
 #ifdef APP_ENABLE_JOYSTICK_INPUT
@@ -47,8 +50,7 @@ static int APP_LastActiveCon = -1;
 typedef struct APP_PlayerSlot
 {
 	APP_PlayerSlotType type;
-	union
-	{
+	union {
 		#ifdef APP_ENABLE_JOYSTICK_INPUT
 		APP_Joy joy;
 		#endif
@@ -74,7 +76,8 @@ not* be placed here. This list is *only* for when the builtin controller can
 still be used even while external controllers are attached while docked.
 */
 #define APP_CON_ID(vendor, product) (Uint32)(((Uint32)(Uint16)(vendor) << 16) | (Uint16)(product))
-static Uint32 APP_BuiltinConIDs[] = {
+static Uint32 APP_BuiltinConIDs[] =
+{
 	APP_CON_ID(0x28de, 0x1205) // Steam Deck
 };
 static APP_Con APP_BuiltinCon = { 0 };
@@ -90,34 +93,34 @@ APP_InputType APP_GetLastInputType(void)
 }
 
 #ifdef APP_ENABLE_LINUX_GPIO_INPUT
-bool APP_IsPushGPIO ( int key )
+bool APP_IsPushGPIO(int key)
 {
 	return key >= 0 && key < NUMBTNS && APP_GPIORepeat[key] == 1;
 }
 
-bool APP_IsPressGPIO ( int key )
+bool APP_IsPressGPIO(int key)
 {
 	return key >= 0 && key < NUMBTNS && APP_GPIORepeat[key] != 0;
 }
 
-int APP_GetGPIORepeat( int key )
+int APP_GetGPIORepeat(int key)
 {
 	return key >= 0 && key < NUMBTNS ? APP_GPIORepeat[key] : 0;
 }
 #endif
 
 #ifdef APP_ENABLE_KEYBOARD_INPUT
-bool APP_IsPushKey (int key)
+bool APP_IsPushKey(int key)
 {
 	return key >= 0 && key < APP_KEY_MAX && APP_KeyRepeat[key] == 1;
 }
 
-bool APP_IsPressKey (int key)
+bool APP_IsPressKey(int key)
 {
 	return key >= 0 && key < APP_KEY_MAX && APP_KeyRepeat[key] != 0;
 }
 
-int APP_GetKeyRepeat( int key )
+int APP_GetKeyRepeat(int key)
 {
 	return key >= 0 && key < APP_KEY_MAX ? APP_KeyRepeat[key] : 0;
 }
@@ -130,9 +133,9 @@ int APP_GetMaxKey(void)
 
 #if defined(APP_ENABLE_JOYSTICK_INPUT) || defined(APP_ENABLE_GAME_CONTROLLER_INPUT)
 
-static bool APP_IsCon ( SDL_JoystickID joy )
+static bool APP_IsCon(SDL_JoystickID joy)
 {
-	if ( !joy ) {
+	if (!joy) {
 		return false;
 	}
 
@@ -178,7 +181,7 @@ static bool APP_ResizePlayerSlots(int numSlots) {
 	return true;
 }
 
-static bool APP_ConIsBuiltin(SDL_Gamepad * const controller) {
+static bool APP_ConIsBuiltin(SDL_Gamepad* controller) {
 	for (size_t i = 0; i < SDL_arraysize(APP_BuiltinConIDs); i++) {
 		const Uint16 vendor = SDL_GetGamepadVendor(controller);
 		const Uint16 product = SDL_GetGamepadProduct(controller);
@@ -238,7 +241,7 @@ bool APP_UpdatePlayerSlots(void) {
 			continue;
 		}
 
-		SDL_Gamepad * const controller = SDL_OpenGamepad(joys[device]);
+		SDL_Gamepad* const controller = SDL_OpenGamepad(joys[device]);
 		if (!controller) {
 			SDL_free(joys);
 			return APP_SetError("Failed to open controller: %s", SDL_GetError());
@@ -339,12 +342,9 @@ bool APP_UpdatePlayerSlots(void) {
 
 static void APP_PlayerSlotsClose(void)
 {
-	if (APP_PlayerSlots)
-	{
-		for (int player = 0; player < APP_NumPlayerSlots; player++)
-		{
-			switch (APP_PlayerSlots[player].type)
-			{
+	if (APP_PlayerSlots) {
+		for (int player = 0; player < APP_NumPlayerSlots; player++) {
+			switch (APP_PlayerSlots[player].type) {
 			#ifdef APP_ENABLE_JOYSTICK_INPUT
 			case APP_PLAYERSLOT_JOY: {
 				APP_Joy* const joy = &APP_PlayerSlots[player].joy;
@@ -411,8 +411,7 @@ static void APP_JoyInputsUpdate(void)
 {
 	if (!APP_PlayerSlots) return;
 
-	for (int player = 0; player < APP_NumPlayerSlots; player++)
-	{
+	for (int player = 0; player < APP_NumPlayerSlots; player++) {
 		if (
 			APP_PlayerSlots[player].type != APP_PLAYERSLOT_JOY ||
 			!SDL_JoystickConnected(APP_PlayerSlots[player].joy.joystick)
@@ -426,21 +425,17 @@ static void APP_JoyInputsUpdate(void)
 
 		APP_Joy* const joy = &APP_PlayerSlots[player].joy;
 
-		for (int axis = 0; axis < joy->numAxes; axis++)
-		{
+		for (int axis = 0; axis < joy->numAxes; axis++) {
 			const int value = SDL_GetJoystickAxis(joy->joystick, axis);
 
-			if (value < APP_DEADZONE_MIN)
-			{
+			if (value < APP_DEADZONE_MIN) {
 				if (++joy->axesRepeat[axis*2 + 0] == 1) APP_LastInputType = APP_INPUT_JOYSTICK;
 			}
-			else
-			{
+			else {
 				joy->axesRepeat[axis*2 + 0] = 0;
 			}
 
-			if (value > APP_DEADZONE_MAX)
-			{
+			if (value > APP_DEADZONE_MAX) {
 				if (++joy->axesRepeat[axis*2 + 1] == 1) APP_LastInputType = APP_INPUT_JOYSTICK;
 			}
 			else
@@ -449,103 +444,82 @@ static void APP_JoyInputsUpdate(void)
 			}
 		}
 
-		for (int hat = 0; hat < joy->numHats; hat++)
-		{
+		for (int hat = 0; hat < joy->numHats; hat++) {
 			Uint8 value = SDL_GetJoystickHat(joy->joystick, hat);
-			const Uint8 hatValues[4] =
-			{
+			const Uint8 hatValues[4] = {
 				SDL_HAT_LEFT,
 				SDL_HAT_RIGHT,
 				SDL_HAT_UP,
 				SDL_HAT_DOWN
 			};
-			for (int valueIndex = 0; valueIndex < 4; valueIndex++)
-			{
-				if (value & hatValues[valueIndex])
-				{
+			for (int valueIndex = 0; valueIndex < 4; valueIndex++) {
+				if (value & hatValues[valueIndex]) {
 					if (++joy->hatsRepeat[hat*4 + valueIndex] == 1) APP_LastInputType = APP_INPUT_JOYSTICK;
 				}
-				else
-				{
+				else {
 					joy->hatsRepeat[hat*4 + valueIndex] = 0;
 				}
 			}
 		}
 
-		for (int button = 0; button < joy->numButtons; button++)
-		{
-			if (SDL_GetJoystickButton(joy->joystick, button))
-			{
+		for (int button = 0; button < joy->numButtons; button++) {
+			if (SDL_GetJoystickButton(joy->joystick, button)) {
 				if (++joy->buttonsRepeat[button] == 1) APP_LastInputType = APP_INPUT_JOYSTICK;
 			}
-			else
-			{
+			else {
 				joy->buttonsRepeat[button] = 0;
 			}
 		}
 	}
 }
 
-bool APP_IsPushJoyKey ( const APP_JoyKey* const key )
+bool APP_IsPushJoyKey(const APP_JoyKey* key)
 {
 	if (!APP_PlayerSlots || APP_NumPlayerSlots <= 0 || key == NULL || key->player >= APP_NumPlayerSlots) return false;
 
 	int player = 0;
 	int playerMax = 0;
-	if (key->player >= 0)
-	{
+	if (key->player >= 0) {
 		APP_JoyGUID checkGUID = APP_GetJoyGUID(key->player);
 		APP_JoyGUID zeroGUID = { 0 };
-		if (SDL_memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && SDL_memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
-		{
+		if (SDL_memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && SDL_memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0) {
 			player = key->player;
 			playerMax = key->player + 1;
 		}
 	}
-	else
-	{
+	else {
 		player = 0;
 		playerMax = APP_NumPlayerSlots;
 	}
-	for (; player < playerMax; player++)
-	{
+	for (; player < playerMax; player++) {
 		APP_Joy* const joy = &APP_PlayerSlots[player].joy;
 
-		switch (key->type)
-		{
+		switch (key->type) {
 		case APP_JOYKEY_ANY:
-			for (int axis = 0; axis < joy->numAxes; axis++)
-			{
+			for (int axis = 0; axis < joy->numAxes; axis++) {
 				if (joy->axesRepeat[axis*2 + 0] == 1) return true;
 				if (joy->axesRepeat[axis*2 + 1] == 1) return true;
 			}
-			for (int hat = 0; hat < joy->numHats; hat++)
-			{
+			for (int hat = 0; hat < joy->numHats; hat++) {
 				if (joy->hatsRepeat[hat] == 1) return true;
 			}
-			for (int button = 0; button < joy->numButtons; button++)
-			{
+			for (int button = 0; button < joy->numButtons; button++) {
 				if (joy->buttonsRepeat[button] == 1) return true;
 			}
 			break;
 		case APP_JOYKEY_AXIS:
-			if (key->setting.index < joy->numAxes)
-			{
-				if (key->setting.value == APP_DEADZONE_MIN)
-				{
+			if (key->setting.index < joy->numAxes) {
+				if (key->setting.value == APP_DEADZONE_MIN) {
 					return joy->axesRepeat[key->setting.index * 2 + 0] == 1;
 				}
-				else if (key->setting.value == APP_DEADZONE_MAX)
-				{
+				else if (key->setting.value == APP_DEADZONE_MAX) {
 					return joy->axesRepeat[key->setting.index * 2 + 1] == 1;
 				}
 			}
 			break;
 		case APP_JOYKEY_HAT:
-			if (key->setting.index < joy->numHats)
-			{
-				switch (key->setting.value)
-				{
+			if (key->setting.index < joy->numHats) {
+				switch (key->setting.value) {
 				case SDL_HAT_LEFT:
 					return joy->hatsRepeat[key->setting.index * 4 + 0] == 1;
 				case SDL_HAT_RIGHT:
@@ -569,66 +543,53 @@ bool APP_IsPushJoyKey ( const APP_JoyKey* const key )
 	return false;
 }
 
-bool APP_IsPressJoyKey ( const APP_JoyKey* const key )
+bool APP_IsPressJoyKey(const APP_JoyKey* key)
 {
 	if (!APP_PlayerSlots || APP_NumPlayerSlots <= 0 || key == NULL || key->player >= APP_NumPlayerSlots) return false;
 
 	int player = 0;
 	int playerMax = 0;
-	if (key->player >= 0)
-	{
+	if (key->player >= 0) {
 		APP_JoyGUID checkGUID = APP_GetJoyGUID(key->player);
 		APP_JoyGUID zeroGUID = { 0 };
-		if (SDL_memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && SDL_memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
-		{
+		if (SDL_memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && SDL_memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0) {
 			player = key->player;
 			playerMax = key->player + 1;
 		}
 	}
-	else
-	{
+	else {
 		player = 0;
 		playerMax = APP_NumPlayerSlots;
 	}
-	for (; player < playerMax; player++)
-	{
+	for (; player < playerMax; player++) {
 		APP_Joy* const joy = &APP_PlayerSlots[player].joy;
 
-		switch (key->type)
-		{
+		switch (key->type) {
 		case APP_JOYKEY_ANY:
-			for (int axis = 0; axis < joy->numAxes; axis++)
-			{
+			for (int axis = 0; axis < joy->numAxes; axis++) {
 				if (joy->axesRepeat[axis*2 + 0] != 0) return true;
 				if (joy->axesRepeat[axis*2 + 1] != 0) return true;
 			}
-			for (int hat = 0; hat < joy->numHats; hat++)
-			{
+			for (int hat = 0; hat < joy->numHats; hat++) {
 				if (joy->hatsRepeat[hat] != 0) return true;
 			}
-			for (int button = 0; button < joy->numButtons; button++)
-			{
+			for (int button = 0; button < joy->numButtons; button++) {
 				if (joy->buttonsRepeat[button] != 0) return true;
 			}
 			break;
 		case APP_JOYKEY_AXIS:
-			if (key->setting.index < joy->numAxes)
-			{
-				if (key->setting.value == APP_DEADZONE_MIN)
-				{
+			if (key->setting.index < joy->numAxes) {
+				if (key->setting.value == APP_DEADZONE_MIN) {
 					return joy->axesRepeat[key->setting.index * 2 + 0] != 0;
 				}
-				else if (key->setting.value == APP_DEADZONE_MAX)
-				{
+				else if (key->setting.value == APP_DEADZONE_MAX) {
 					return joy->axesRepeat[key->setting.index * 2 + 1] != 0;
 				}
 			}
 			break;
 		case APP_JOYKEY_HAT:
-			if (key->setting.index < joy->numHats)
-			{
-				switch (key->setting.value)
-				{
+			if (key->setting.index < joy->numHats) {
+				switch (key->setting.value) {
 				case SDL_HAT_LEFT:
 					return joy->hatsRepeat[key->setting.index * 4 + 0] != 0;
 				case SDL_HAT_RIGHT:
@@ -652,67 +613,53 @@ bool APP_IsPressJoyKey ( const APP_JoyKey* const key )
 	return false;
 }
 
-int APP_GetJoyKeyRepeat ( const APP_JoyKey* const key )
-{
+int APP_GetJoyKeyRepeat(const APP_JoyKey* key) {
 	if (!APP_PlayerSlots || APP_NumPlayerSlots <= 0 || key == NULL || key->player >= APP_NumPlayerSlots) return 0;
 
 	bool multi;
 	int player = 0;
 	int playerMax = 0;
 	int maxRepeat = 0;
-	if (key->player >= 0)
-	{
+	if (key->player >= 0) {
 		APP_JoyGUID checkGUID = APP_GetJoyGUID(key->player);
 		APP_JoyGUID zeroGUID = { 0 };
-		if (SDL_memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && SDL_memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0)
-		{
+		if (SDL_memcmp(checkGUID.data, zeroGUID.data, sizeof(checkGUID.data)) != 0 && SDL_memcmp(key->guid.data, checkGUID.data, sizeof(checkGUID.data)) == 0) {
 			player = key->player;
 			playerMax = key->player + 1;
 			multi = false;
 		}
 	}
-	else
-	{
+	else {
 		player = 0;
 		playerMax = APP_NumPlayerSlots;
 		multi = true;
 	}
-	for (; player < playerMax; player++)
-	{
+	for (; player < playerMax; player++) {
 		APP_Joy* const joy = &APP_PlayerSlots[player].joy;
 
-		switch (key->type)
-		{
+		switch (key->type) {
 		case APP_JOYKEY_ANY:
-			for (int axis = 0; axis < joy->numAxes; axis++)
-			{
+			for (int axis = 0; axis < joy->numAxes; axis++) {
 				if (joy->axesRepeat[axis*2 + 0] > maxRepeat) maxRepeat = joy->axesRepeat[axis*2 + 0];
 				if (joy->axesRepeat[axis*2 + 1] > maxRepeat) maxRepeat = joy->axesRepeat[axis*2 + 1];
 			}
-			for (int hat = 0; hat < joy->numHats; hat++)
-			{
+			for (int hat = 0; hat < joy->numHats; hat++) {
 				if (joy->hatsRepeat[hat] > maxRepeat) maxRepeat = joy->hatsRepeat[hat];
 			}
-			for (int button = 0; button < joy->numButtons; button++)
-			{
+			for (int button = 0; button < joy->numButtons; button++) {
 				if (joy->buttonsRepeat[button] > maxRepeat) maxRepeat = joy->buttonsRepeat[button];
 			}
 			break;
 		case APP_JOYKEY_AXIS:
-			if (key->setting.index < joy->numAxes)
-			{
-				if (key->setting.value == APP_DEADZONE_MIN)
-				{
-					if (multi)
-					{
+			if (key->setting.index < joy->numAxes) {
+				if (key->setting.value == APP_DEADZONE_MIN) {
+					if (multi) {
 						if (joy->axesRepeat[key->setting.index * 2 + 0] > maxRepeat) maxRepeat = joy->axesRepeat[key->setting.index * 2 + 0];
 					}
 					else return joy->axesRepeat[key->setting.index * 2 + 0];
 				}
-				else if (key->setting.value == APP_DEADZONE_MAX)
-				{
-					if (multi)
-					{
+				else if (key->setting.value == APP_DEADZONE_MAX) {
+					if (multi) {
 						if (joy->axesRepeat[key->setting.index * 2 + 1] > maxRepeat) maxRepeat = joy->axesRepeat[key->setting.index * 2 + 1];
 					}
 					else return joy->axesRepeat[key->setting.index * 2 + 1];
@@ -720,34 +667,28 @@ int APP_GetJoyKeyRepeat ( const APP_JoyKey* const key )
 			}
 			break;
 		case APP_JOYKEY_HAT:
-			if (key->setting.index < joy->numHats)
-			{
-				switch (key->setting.value)
-				{
+			if (key->setting.index < joy->numHats) {
+				switch (key->setting.value) {
 				case SDL_HAT_LEFT:
-					if (multi)
-					{
+					if (multi) {
 						if (joy->hatsRepeat[key->setting.index * 4 + 0] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 0];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 0];
 					break;
 				case SDL_HAT_RIGHT:
-					if (multi)
-					{
+					if (multi) {
 						if (joy->hatsRepeat[key->setting.index * 4 + 1] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 1];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 1];
 					break;
 				case SDL_HAT_UP:
-					if (multi)
-					{
+					if (multi) {
 						if (joy->hatsRepeat[key->setting.index * 4 + 2] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 2];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 2];
 					break;
 				case SDL_HAT_DOWN:
-					if (multi)
-					{
+					if (multi) {
 						if (joy->hatsRepeat[key->setting.index * 4 + 3] > maxRepeat) maxRepeat = joy->hatsRepeat[key->setting.index * 4 + 3];
 					}
 					else return joy->hatsRepeat[key->setting.index * 4 + 3];
@@ -758,10 +699,8 @@ int APP_GetJoyKeyRepeat ( const APP_JoyKey* const key )
 			}
 			break;
 		case APP_JOYKEY_BUTTON:
-			if (key->setting.button < joy->numButtons)
-			{
-				if (multi)
-				{
+			if (key->setting.button < joy->numButtons) {
+				if (multi) {
 					if (joy->buttonsRepeat[key->setting.button] > maxRepeat) maxRepeat = joy->buttonsRepeat[key->setting.button];
 				}
 				else return joy->buttonsRepeat[key->setting.button];
@@ -800,8 +739,7 @@ APP_JoyGUID APP_GetJoyGUID(int player)
 	sdlGUID = SDL_GetJoystickGUID(APP_PlayerSlots[player].joy.joystick);
 
 	APP_JoyGUID joyGUID = { 0 };
-	for (int32_t i = 0; i < 4; i++)
-	{
+	for (int i = 0; i < 4; i++) {
 		joyGUID.data[i] = 0;
 		for (int32_t j = 0; j < 4; j++)
 		{
@@ -813,57 +751,45 @@ APP_JoyGUID APP_GetJoyGUID(int player)
 
 int APP_GetMaxJoyAxis(int player)
 {
-	if (player >= 0 && APP_NumPlayerSlots > 0 && player < APP_NumPlayerSlots)
-	{
-		if (APP_PlayerSlots[player].type == APP_PLAYERSLOT_JOY)
-		{
+	if (player >= 0 && APP_NumPlayerSlots > 0 && player < APP_NumPlayerSlots) {
+		if (APP_PlayerSlots[player].type == APP_PLAYERSLOT_JOY) {
 			return APP_PlayerSlots[player].joy.numAxes;
 		}
-		else
-		{
+		else {
 			return -1;
 		}
 	}
-	else
-	{
+	else {
 		return -1;
 	}
 }
 
 int APP_GetMaxJoyHat(int player)
 {
-	if (player >= 0 && APP_NumPlayerSlots > 0 && player < APP_NumPlayerSlots)
-	{
-		if (APP_PlayerSlots[player].type == APP_PLAYERSLOT_JOY)
-		{
+	if (player >= 0 && APP_NumPlayerSlots > 0 && player < APP_NumPlayerSlots) {
+		if (APP_PlayerSlots[player].type == APP_PLAYERSLOT_JOY) {
 			return APP_PlayerSlots[player].joy.numHats;
 		}
-		else
-		{
+		else {
 			return -1;
 		}
 	}
-	else
-	{
+	else {
 		return -1;
 	}
 }
 
 int APP_GetMaxJoyButton(int player)
 {
-	if (player >= 0 && APP_NumPlayerSlots > 0 && player < APP_NumPlayerSlots)
-	{
-		if (APP_PlayerSlots[player].type == APP_PLAYERSLOT_JOY)
-		{
+	if (player >= 0 && APP_NumPlayerSlots > 0 && player < APP_NumPlayerSlots) {
+		if (APP_PlayerSlots[player].type == APP_PLAYERSLOT_JOY) {
 			return APP_PlayerSlots[player].joy.numButtons;
 		}
-		else
-		{
+		else {
 			return -1;
 		}
 	}
-	else
-	{
+	else {
 		return -1;
 	}
 }
@@ -871,7 +797,7 @@ int APP_GetMaxJoyButton(int player)
 
 #ifdef APP_ENABLE_GAME_CONTROLLER_INPUT
 
-static SDL_GamepadType APP_GetSDLGameControllerType(SDL_Gamepad * const controller)
+static SDL_GamepadType APP_GetSDLGameControllerType(SDL_Gamepad* const controller)
 {
 	#ifdef APP_ONLY_SDL_CONTROLLER_TYPE
 	return APP_ONLY_SDL_CONTROLLER_TYPE;
@@ -891,156 +817,126 @@ static void APP_ConInputsUpdate(void)
 		Sint16 axisValue;
 
 		axisValue = SDL_GetGamepadAxis(APP_BuiltinCon.controller, SDL_GAMEPAD_AXIS_LEFTX);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++APP_BuiltinCon.axesRepeat[0] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++APP_BuiltinCon.axesRepeat[0] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 			APP_BuiltinCon.axesRepeat[1] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			APP_BuiltinCon.axesRepeat[0] = 0;
-			if (++APP_BuiltinCon.axesRepeat[1] == 1)
-			{
+			if (++APP_BuiltinCon.axesRepeat[1] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 		}
-		else
-		{
+		else {
 			APP_BuiltinCon.axesRepeat[0] = 0;
 			APP_BuiltinCon.axesRepeat[1] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(APP_BuiltinCon.controller, SDL_GAMEPAD_AXIS_LEFTY);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++APP_BuiltinCon.axesRepeat[2] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++APP_BuiltinCon.axesRepeat[2] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 			APP_BuiltinCon.axesRepeat[3] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			APP_BuiltinCon.axesRepeat[2] = 0;
-			if (++APP_BuiltinCon.axesRepeat[3] == 1)
-			{
+			if (++APP_BuiltinCon.axesRepeat[3] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 		}
-		else
-		{
+		else {
 			APP_BuiltinCon.axesRepeat[2] = 0;
 			APP_BuiltinCon.axesRepeat[3] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(APP_BuiltinCon.controller, SDL_GAMEPAD_AXIS_RIGHTX);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++APP_BuiltinCon.axesRepeat[4] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++APP_BuiltinCon.axesRepeat[4] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 			APP_BuiltinCon.axesRepeat[5] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			APP_BuiltinCon.axesRepeat[4] = 0;
-			if (++APP_BuiltinCon.axesRepeat[5] == 1)
-			{
+			if (++APP_BuiltinCon.axesRepeat[5] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 		}
-		else
-		{
+		else {
 			APP_BuiltinCon.axesRepeat[4] = 0;
 			APP_BuiltinCon.axesRepeat[5] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(APP_BuiltinCon.controller, SDL_GAMEPAD_AXIS_RIGHTY);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++APP_BuiltinCon.axesRepeat[6] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++APP_BuiltinCon.axesRepeat[6] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 			APP_BuiltinCon.axesRepeat[7] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			APP_BuiltinCon.axesRepeat[6] = 0;
-			if (++APP_BuiltinCon.axesRepeat[7] == 1)
-			{
+			if (++APP_BuiltinCon.axesRepeat[7] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 		}
-		else
-		{
+		else {
 			APP_BuiltinCon.axesRepeat[6] = 0;
 			APP_BuiltinCon.axesRepeat[7] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(APP_BuiltinCon.controller, SDL_GAMEPAD_AXIS_LEFT_TRIGGER);
-		if (axisValue > APP_DEADZONE_MAX)
-		{
-			if (++APP_BuiltinCon.axesRepeat[8] == 1)
-			{
+		if (axisValue > APP_DEADZONE_MAX) {
+			if (++APP_BuiltinCon.axesRepeat[8] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 		}
-		else
-		{
+		else {
 			APP_BuiltinCon.axesRepeat[8] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(APP_BuiltinCon.controller, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
-		if (axisValue > APP_DEADZONE_MAX)
-		{
-			if (++APP_BuiltinCon.axesRepeat[9] == 1)
-			{
+		if (axisValue > APP_DEADZONE_MAX) {
+			if (++APP_BuiltinCon.axesRepeat[9] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = 0;
 				APP_LastInputBuiltinCon = true;
 			}
 		}
-		else
-		{
+		else {
 			APP_BuiltinCon.axesRepeat[9] = 0;
 		}
 
-		for (SDL_GamepadButton button = 0; button < SDL_GAMEPAD_BUTTON_COUNT; button++)
-		{
-			if (SDL_GetGamepadButton(APP_BuiltinCon.controller, button))
-			{
-				if (++APP_BuiltinCon.buttonsRepeat[button] == 1)
-				{
+		for (SDL_GamepadButton button = 0; button < SDL_GAMEPAD_BUTTON_COUNT; button++) {
+			if (SDL_GetGamepadButton(APP_BuiltinCon.controller, button)) {
+				if (++APP_BuiltinCon.buttonsRepeat[button] == 1) {
 					APP_LastInputType = inputType;
 					APP_LastActiveCon = 0;
 					APP_LastInputBuiltinCon = true;
 				}
 			}
-			else
-			{
+			else {
 				APP_BuiltinCon.buttonsRepeat[button] = 0;
 			}
 		}
@@ -1048,8 +944,7 @@ static void APP_ConInputsUpdate(void)
 
 	if (!APP_PlayerSlots) return;
 
-	for (int player = 0; player < APP_NumPlayerSlots; player++)
-	{
+	for (int player = 0; player < APP_NumPlayerSlots; player++) {
 		APP_PlayerSlot* const slot = &APP_PlayerSlots[player];
 		if (slot->type != APP_PLAYERSLOT_CON) {
 			continue;
@@ -1065,185 +960,150 @@ static void APP_ConInputsUpdate(void)
 		Sint16 axisValue;
 
 		axisValue = SDL_GetGamepadAxis(con->controller, SDL_GAMEPAD_AXIS_LEFTX);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++con->axesRepeat[0] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++con->axesRepeat[0] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 			con->axesRepeat[1] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			con->axesRepeat[0] = 0;
-			if (++con->axesRepeat[1] == 1)
-			{
+			if (++con->axesRepeat[1] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 		}
-		else
-		{
+		else {
 			con->axesRepeat[0] = 0;
 			con->axesRepeat[1] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(con->controller, SDL_GAMEPAD_AXIS_LEFTY);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++con->axesRepeat[2] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++con->axesRepeat[2] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 			con->axesRepeat[3] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			con->axesRepeat[2] = 0;
-			if (++con->axesRepeat[3] == 1)
-			{
+			if (++con->axesRepeat[3] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 		}
-		else
-		{
+		else {
 			con->axesRepeat[2] = 0;
 			con->axesRepeat[3] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(con->controller, SDL_GAMEPAD_AXIS_RIGHTX);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++con->axesRepeat[4] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++con->axesRepeat[4] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 			con->axesRepeat[5] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			con->axesRepeat[4] = 0;
-			if (++con->axesRepeat[5] == 1)
-			{
+			if (++con->axesRepeat[5] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 		}
-		else
-		{
+		else {
 			con->axesRepeat[4] = 0;
 			con->axesRepeat[5] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(con->controller, SDL_GAMEPAD_AXIS_RIGHTY);
-		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX)
-		{
-			if (++con->axesRepeat[6] == 1)
-			{
+		if (axisValue > 0 && axisValue > APP_DEADZONE_MAX) {
+			if (++con->axesRepeat[6] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 			con->axesRepeat[7] = 0;
 		}
-		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN)
-		{
+		else if (axisValue < 0 && axisValue < APP_DEADZONE_MIN) {
 			con->axesRepeat[6] = 0;
-			if (++con->axesRepeat[7] == 1)
-			{
+			if (++con->axesRepeat[7] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 		}
-		else
-		{
+		else {
 			con->axesRepeat[6] = 0;
 			con->axesRepeat[7] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(con->controller, SDL_GAMEPAD_AXIS_LEFT_TRIGGER);
-		if (axisValue > APP_DEADZONE_MAX)
-		{
-			if (++con->axesRepeat[8] == 1)
-			{
+		if (axisValue > APP_DEADZONE_MAX) {
+			if (++con->axesRepeat[8] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 		}
-		else
-		{
+		else {
 			con->axesRepeat[8] = 0;
 		}
 
 		axisValue = SDL_GetGamepadAxis(con->controller, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
-		if (axisValue > APP_DEADZONE_MAX)
-		{
-			if (++con->axesRepeat[9] == 1)
-			{
+		if (axisValue > APP_DEADZONE_MAX) {
+			if (++con->axesRepeat[9] == 1) {
 				APP_LastInputType = inputType;
 				APP_LastActiveCon = player;
 				if (player == 0) APP_LastInputBuiltinCon = false;
 			}
 		}
-		else
-		{
+		else {
 			con->axesRepeat[9] = 0;
 		}
 
-		for (SDL_GamepadButton button = 0; button < SDL_GAMEPAD_BUTTON_COUNT; button++)
-		{
-			if (SDL_GetGamepadButton(con->controller, button))
-			{
-				if (++con->buttonsRepeat[button] == 1)
-				{
+		for (SDL_GamepadButton button = 0; button < SDL_GAMEPAD_BUTTON_COUNT; button++) {
+			if (SDL_GetGamepadButton(con->controller, button)) {
+				if (++con->buttonsRepeat[button] == 1) {
 					APP_LastInputType = inputType;
 					APP_LastActiveCon = player;
 					if (player == 0) APP_LastInputBuiltinCon = false;
 				}
 			}
-			else
-			{
+			else {
 				con->buttonsRepeat[button] = 0;
 			}
 		}
 	}
 }
 
-static bool APP_IsPushConKeyPrivate ( const APP_Con* const con, const APP_ConKey* const key )
+static bool APP_IsPushConKeyPrivate(const APP_Con* con, const APP_ConKey* key)
 {
-	switch (key->type)
-	{
+	switch (key->type) {
 	case APP_CONKEY_ANY:
-		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++)
-		{
+		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++) {
 			if (con->axesRepeat[axis] == 1) return true;
 		}
-		for (int button = 0; button < APP_CONBUTTON_MAX; button++)
-		{
+		for (int button = 0; button < APP_CONBUTTON_MAX; button++) {
 			if (con->buttonsRepeat[button] == 1) return true;
 		}
 		break;
 	case APP_CONKEY_AXIS:
-		if (key->index < APP_CONAXIS_MAX)
-		{
+		if (key->index < APP_CONAXIS_MAX) {
 			if (con->axesRepeat[key->index] == 1) return true;
 		}
 		break;
 	case APP_CONKEY_BUTTON:
-		if (key->index < APP_CONBUTTON_MAX)
-		{
+		if (key->index < APP_CONBUTTON_MAX) {
 			if (con->buttonsRepeat[key->index] == 1) return true;
 		}
 		break;
@@ -1253,7 +1113,7 @@ static bool APP_IsPushConKeyPrivate ( const APP_Con* const con, const APP_ConKey
 	return false;
 }
 
-bool APP_IsPushConKey ( const int player, const APP_ConKey* const key )
+bool APP_IsPushConKey(int player, const APP_ConKey* key)
 {
 	if (!key) return false;
 	if (player <= 0 && APP_BuiltinCon.controller && APP_IsPushConKeyPrivate(&APP_BuiltinCon, key)) return true;
@@ -1261,18 +1121,15 @@ bool APP_IsPushConKey ( const int player, const APP_ConKey* const key )
 
 	int playerStart = 0;
 	int playerMax = 0;
-	if (player >= 0)
-	{
+	if (player >= 0) {
 		playerStart = player;
 		playerMax = player + 1;
 	}
-	else
-	{
+	else {
 		playerStart = 0;
 		playerMax = APP_NumPlayerSlots;
 	}
-	for (; playerStart < playerMax; playerStart++)
-	{
+	for (; playerStart < playerMax; playerStart++) {
 		if (APP_PlayerSlots[playerStart].type != APP_PLAYERSLOT_CON) continue;
 		APP_Con* const con = &APP_PlayerSlots[playerStart].con;
 		if (APP_IsPushConKeyPrivate(con, key)) return true;
@@ -1280,29 +1137,24 @@ bool APP_IsPushConKey ( const int player, const APP_ConKey* const key )
 	return false;
 }
 
-static bool APP_IsPressConKeyPrivate ( const APP_Con* const con, const APP_ConKey* const key)
+static bool APP_IsPressConKeyPrivate(const APP_Con* con, const APP_ConKey* key)
 {
-	switch (key->type)
-	{
+	switch (key->type) {
 	case APP_CONKEY_ANY:
-		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++)
-		{
+		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++) {
 			if (con->axesRepeat[axis] != 0) return true;
 		}
-		for (int button = 0; button < APP_CONBUTTON_MAX; button++)
-		{
+		for (int button = 0; button < APP_CONBUTTON_MAX; button++) {
 			if (con->buttonsRepeat[button] != 0) return true;
 		}
 		break;
 	case APP_CONKEY_AXIS:
-		if (key->index < APP_CONAXIS_MAX)
-		{
+		if (key->index < APP_CONAXIS_MAX) {
 			if (con->axesRepeat[key->index] != 0) return true;
 		}
 		break;
 	case APP_CONKEY_BUTTON:
-		if (key->index < APP_CONBUTTON_MAX)
-		{
+		if (key->index < APP_CONBUTTON_MAX) {
 			if (con->buttonsRepeat[key->index] != 0) return true;
 		}
 		break;
@@ -1312,7 +1164,7 @@ static bool APP_IsPressConKeyPrivate ( const APP_Con* const con, const APP_ConKe
 	return false;
 }
 
-bool APP_IsPressConKey ( const int player, const APP_ConKey* const key )
+bool APP_IsPressConKey(int player, const APP_ConKey* key)
 {
 	if (!key) return false;
 	if (player <= 0 && APP_BuiltinCon.controller && APP_IsPressConKeyPrivate(&APP_BuiltinCon, key)) return true;
@@ -1320,18 +1172,15 @@ bool APP_IsPressConKey ( const int player, const APP_ConKey* const key )
 
 	int playerStart = 0;
 	int playerMax = 0;
-	if (player >= 0)
-	{
+	if (player >= 0) {
 		playerStart = player;
 		playerMax = player + 1;
 	}
-	else
-	{
+	else {
 		playerStart = 0;
 		playerMax = APP_NumPlayerSlots;
 	}
-	for (; playerStart < playerMax; playerStart++)
-	{
+	for (; playerStart < playerMax; playerStart++) {
 		if (APP_PlayerSlots[playerStart].type != APP_PLAYERSLOT_CON) continue;
 		APP_Con* const con = &APP_PlayerSlots[playerStart].con;
 		if (APP_IsPressConKeyPrivate(con, key)) return true;
@@ -1339,29 +1188,24 @@ bool APP_IsPressConKey ( const int player, const APP_ConKey* const key )
 	return false;
 }
 
-static void APP_GetConKeyRepeatPrivate ( const APP_Con* const con, const APP_ConKey* const key, int* const maxRepeat)
+static void APP_GetConKeyRepeatPrivate(const APP_Con* con, const APP_ConKey* key, int* maxRepeat)
 {
-	switch (key->type)
-	{
+	switch (key->type) {
 	case APP_CONKEY_ANY:
-		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++)
-		{
+		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++) {
 			if (con->axesRepeat[axis] > *maxRepeat) *maxRepeat = con->axesRepeat[axis];
 		}
-		for (int button = 0; button < APP_CONBUTTON_MAX; button++)
-		{
+		for (int button = 0; button < APP_CONBUTTON_MAX; button++) {
 			if (con->buttonsRepeat[button] > *maxRepeat) *maxRepeat = con->buttonsRepeat[button];
 		}
 		break;
 	case APP_CONKEY_AXIS:
-		if (key->index < APP_CONAXIS_MAX)
-		{
+		if (key->index < APP_CONAXIS_MAX) {
 			*maxRepeat = con->axesRepeat[key->index];
 		}
 		break;
 	case APP_CONKEY_BUTTON:
-		if (key->index < APP_CONBUTTON_MAX)
-		{
+		if (key->index < APP_CONBUTTON_MAX) {
 			*maxRepeat = con->buttonsRepeat[key->index];
 		}
 		break;
@@ -1370,29 +1214,24 @@ static void APP_GetConKeyRepeatPrivate ( const APP_Con* const con, const APP_Con
 	}
 }
 
-static void APP_GetConKeyRepeatMultiPrivate ( const APP_Con* const con, const APP_ConKey* const key, int* const maxRepeat)
+static void APP_GetConKeyRepeatMultiPrivate(const APP_Con* con, const APP_ConKey* key, int* maxRepeat)
 {
-	switch (key->type)
-	{
+	switch (key->type) {
 	case APP_CONKEY_ANY:
-		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++)
-		{
+		for (int axis = 0; axis < APP_CONAXIS_MAX; axis++) {
 			if (con->axesRepeat[axis] > *maxRepeat) *maxRepeat = con->axesRepeat[axis];
 		}
-		for (int button = 0; button < APP_CONBUTTON_MAX; button++)
-		{
+		for (int button = 0; button < APP_CONBUTTON_MAX; button++) {
 			if (con->buttonsRepeat[button] > *maxRepeat) *maxRepeat = con->buttonsRepeat[button];
 		}
 		break;
 	case APP_CONKEY_AXIS:
-		if (key->index < APP_CONAXIS_MAX)
-		{
+		if (key->index < APP_CONAXIS_MAX) {
 			if (con->axesRepeat[key->index] > *maxRepeat) *maxRepeat = con->axesRepeat[key->index];
 		}
 		break;
 	case APP_CONKEY_BUTTON:
-		if (key->index < APP_CONBUTTON_MAX)
-		{
+		if (key->index < APP_CONBUTTON_MAX) {
 			if (con->buttonsRepeat[key->index] > *maxRepeat) *maxRepeat = con->buttonsRepeat[key->index];
 		}
 		break;
@@ -1401,13 +1240,12 @@ static void APP_GetConKeyRepeatMultiPrivate ( const APP_Con* const con, const AP
 	}
 }
 
-int APP_GetConKeyRepeat ( const int player, const APP_ConKey* const key )
+int APP_GetConKeyRepeat(int player, const APP_ConKey* key)
 {
 	if (!key) return false;
 
 	int maxRepeat = 0;
-	if (player <= 0 && APP_BuiltinCon.controller)
-	{
+	if (player <= 0 && APP_BuiltinCon.controller) {
 		APP_GetConKeyRepeatPrivate(&APP_BuiltinCon, key, &maxRepeat);
 	}
 	if (!APP_PlayerSlots || APP_NumPlayerSlots == 0 || player >= APP_NumPlayerSlots) return maxRepeat;
@@ -1415,20 +1253,17 @@ int APP_GetConKeyRepeat ( const int player, const APP_ConKey* const key )
 	bool multi;
 	int playerStart = 0;
 	int playerMax = 0;
-	if (player >= 0)
-	{
+	if (player >= 0) {
 		playerStart = player;
 		playerMax = player + 1;
 		multi = false;
 	}
-	else
-	{
+	else {
 		playerStart = 0;
 		playerMax = APP_NumPlayerSlots;
 		multi = true;
 	}
-	for (; playerStart < playerMax; playerStart++)
-	{
+	for (; playerStart < playerMax; playerStart++) {
 		if (APP_PlayerSlots[playerStart].type != APP_PLAYERSLOT_CON) continue;
 		APP_Con* const con = &APP_PlayerSlots[playerStart].con;
 		if (multi) APP_GetConKeyRepeatMultiPrivate(con, key, &maxRepeat);
@@ -1461,7 +1296,7 @@ int APP_GetLastActiveCon(void)
 	return APP_LastActiveCon;
 }
 
-APP_InputType APP_GetConType(const int player)
+APP_InputType APP_GetConType(int player)
 {
 	SDL_Gamepad * controller = NULL;
 	if (player <= 0 && APP_BuiltinCon.controller && APP_LastInputBuiltinCon) {
@@ -1482,33 +1317,33 @@ APP_InputType APP_GetConType(const int player)
 		return APP_INPUT_NULL;
 	}
 	#else
-	switch(APP_GetSDLGameControllerType(controller))
-	{
+	switch(APP_GetSDLGameControllerType(controller)) {
 	default:
-	case SDL_GAMEPAD_TYPE_STANDARD :
-	case SDL_GAMEPAD_TYPE_XBOX360 :
-	case SDL_GAMEPAD_TYPE_XBOXONE :
+	case SDL_GAMEPAD_TYPE_STANDARD:
+	case SDL_GAMEPAD_TYPE_XBOX360:
+	case SDL_GAMEPAD_TYPE_XBOXONE:
 		return APP_INPUT_XBOX;
 
-	case SDL_GAMEPAD_TYPE_PS3 :
-	case SDL_GAMEPAD_TYPE_PS4 :
-	case SDL_GAMEPAD_TYPE_PS5 :
+	case SDL_GAMEPAD_TYPE_PS3:
+	case SDL_GAMEPAD_TYPE_PS4:
+	case SDL_GAMEPAD_TYPE_PS5:
 		return APP_INPUT_PLAYSTATION;
 
-	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO :
-	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT :
-	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT :
-	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR :
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
+	case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 		return APP_INPUT_NINTENDO;
+
+	// TODO: SDL_GAMEPAD_TYPE_GAMECUBE
 	}
 	#endif
 }
 
-bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char** text, APP_Button* button)
+bool APP_GetConKeyDesc(int player, const APP_ConKey* key, const char** text, APP_Button* button)
 {
-	SDL_Gamepad * controller;
-	if (player == 0 && APP_BuiltinCon.controller && APP_LastInputBuiltinCon)
-	{
+	SDL_Gamepad* controller;
+	if (player == 0 && APP_BuiltinCon.controller && APP_LastInputBuiltinCon) {
 		controller = APP_BuiltinCon.controller;
 	}
 	else if (
@@ -1520,23 +1355,20 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 		key &&
 		text &&
 		button
-	)
-	{
+	) {
 		controller = APP_PlayerSlots[player].con.controller;
 	}
-	else
-	{
+	else {
 		return false;
 	}
 
 	*text = NULL;
 	*button = APP_BUTTON_NULL;
 	const SDL_GamepadType type = APP_GetSDLGameControllerType(controller);
-	switch (key->type)
-	{
+	// TODO: SDL_GAMEPAD_TYPE_GAMECUBE
+	switch (key->type) {
 	case APP_CONKEY_AXIS:
-		switch (key->index)
-		{
+		switch (key->index) {
 		case 0:
 			*text = "LS";
 			*button = APP_BUTTON_RIGHT;
@@ -1570,55 +1402,53 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 			*button = APP_BUTTON_UP;
 			break;
 		case 8:
-			switch(type)
-			{
+			switch(type) {
 			default:
-			case SDL_GAMEPAD_TYPE_STANDARD :
-			case SDL_GAMEPAD_TYPE_XBOX360 :
-			case SDL_GAMEPAD_TYPE_XBOXONE :
+			case SDL_GAMEPAD_TYPE_STANDARD:
+			case SDL_GAMEPAD_TYPE_XBOX360:
+			case SDL_GAMEPAD_TYPE_XBOXONE:
 				*text = "LT";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS3 :
-			case SDL_GAMEPAD_TYPE_PS4 :
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS3:
+			case SDL_GAMEPAD_TYPE_PS4:
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "L2";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 				*text = "ZL";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
 				*text = "SL";
 				break;
 			}
 			break;
 		case 9:
-			switch(type)
-			{
+			switch(type) {
 			default:
-			case SDL_GAMEPAD_TYPE_STANDARD :
-			case SDL_GAMEPAD_TYPE_XBOX360 :
-			case SDL_GAMEPAD_TYPE_XBOXONE :
+			case SDL_GAMEPAD_TYPE_STANDARD:
+			case SDL_GAMEPAD_TYPE_XBOX360:
+			case SDL_GAMEPAD_TYPE_XBOXONE:
 				*text = "RT";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS3 :
-			case SDL_GAMEPAD_TYPE_PS4 :
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS3:
+			case SDL_GAMEPAD_TYPE_PS4:
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "R2";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 				*text = "ZR";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_RIGHT:
 				*text = "SR";
 				break;
 			}
@@ -1628,46 +1458,44 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 		}
 		break;
 	case APP_CONKEY_BUTTON:
-		switch (key->index)
-		{
-		case SDL_GAMEPAD_BUTTON_BACK :
-		case SDL_GAMEPAD_BUTTON_START :
+		switch (key->index) {
+		case SDL_GAMEPAD_BUTTON_BACK:
+		case SDL_GAMEPAD_BUTTON_START:
 			// "Start" and "Back" are reserved for "Pause" and "Give Up", and may not be remapped.
 			break;
 
-		case SDL_GAMEPAD_BUTTON_GUIDE :
+		case SDL_GAMEPAD_BUTTON_GUIDE:
 			*text = "HOME";
 			break;
 
-		case SDL_GAMEPAD_BUTTON_SOUTH :
-		case SDL_GAMEPAD_BUTTON_EAST :
-		case SDL_GAMEPAD_BUTTON_WEST :
-		case SDL_GAMEPAD_BUTTON_NORTH :
+		case SDL_GAMEPAD_BUTTON_SOUTH:
+		case SDL_GAMEPAD_BUTTON_EAST:
+		case SDL_GAMEPAD_BUTTON_WEST:
+		case SDL_GAMEPAD_BUTTON_NORTH:
 			*button = APP_BUTTON_A + key->index;
 			break;
 
-		case SDL_GAMEPAD_BUTTON_DPAD_UP :
-		case SDL_GAMEPAD_BUTTON_DPAD_DOWN :
-		case SDL_GAMEPAD_BUTTON_DPAD_LEFT :
-		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT :
+		case SDL_GAMEPAD_BUTTON_DPAD_UP:
+		case SDL_GAMEPAD_BUTTON_DPAD_DOWN:
+		case SDL_GAMEPAD_BUTTON_DPAD_LEFT:
+		case SDL_GAMEPAD_BUTTON_DPAD_RIGHT:
 			*text = "DPAD";
 			*button = APP_BUTTON_UP + key->index - SDL_GAMEPAD_BUTTON_DPAD_UP;
 			break;
 
-		case SDL_GAMEPAD_BUTTON_MISC1 :
-			switch(type)
-			{
-			case SDL_GAMEPAD_TYPE_XBOXONE :
+		case SDL_GAMEPAD_BUTTON_MISC1:
+			switch(type) {
+			case SDL_GAMEPAD_TYPE_XBOXONE:
 				*text = "SHARE";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_LEFT:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 				*text = "CAPTURE";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "MICROPHONE";
 				break;
 
@@ -1676,83 +1504,79 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 				break;
 			}
 			break;
-		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1 :
+		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1:
 			*text = "P1";
 			break;
-		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE1 :
+		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE1:
 			*text = "P2";
 			break;
-		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2 :
+		case SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2:
 			*text = "P3";
 			break;
-		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE2 :
+		case SDL_GAMEPAD_BUTTON_LEFT_PADDLE2:
 			*text = "P4";
 			break;
-		case SDL_GAMEPAD_BUTTON_TOUCHPAD :
+		case SDL_GAMEPAD_BUTTON_TOUCHPAD:
 			*text = "TOUCHPAD";
 			break;
-		case SDL_GAMEPAD_BUTTON_LEFT_STICK :
-			switch(type)
-			{
+		case SDL_GAMEPAD_BUTTON_LEFT_STICK:
+			switch(type) {
 			default:
 				*text = "LS";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS3 :
-			case SDL_GAMEPAD_TYPE_PS4 :
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS3:
+			case SDL_GAMEPAD_TYPE_PS4:
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "L3";
 				break;
 			}
 			break;
-		case SDL_GAMEPAD_BUTTON_RIGHT_STICK :
-			switch(type)
-			{
+		case SDL_GAMEPAD_BUTTON_RIGHT_STICK:
+			switch(type) {
 			default:
 				*text = "RS";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS3 :
-			case SDL_GAMEPAD_TYPE_PS4 :
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS3:
+			case SDL_GAMEPAD_TYPE_PS4:
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "R3";
 				break;
 			}
 			break;
-		case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER :
-			switch(type)
-			{
+		case SDL_GAMEPAD_BUTTON_LEFT_SHOULDER:
+			switch(type) {
 			default:
 				*text = "LB";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS3 :
-			case SDL_GAMEPAD_TYPE_PS4 :
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS3:
+			case SDL_GAMEPAD_TYPE_PS4:
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "L1";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 				*text = "L";
 				break;
 			}
 			break;
-		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER :
-			switch(type)
-			{
+		case SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER:
+			switch(type) {
 			default:
 				*text = "RB";
 				break;
 
-			case SDL_GAMEPAD_TYPE_PS3 :
-			case SDL_GAMEPAD_TYPE_PS4 :
-			case SDL_GAMEPAD_TYPE_PS5 :
+			case SDL_GAMEPAD_TYPE_PS3:
+			case SDL_GAMEPAD_TYPE_PS4:
+			case SDL_GAMEPAD_TYPE_PS5:
 				*text = "R1";
 				break;
 
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO :
-			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR :
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_PRO:
+			case SDL_GAMEPAD_TYPE_NINTENDO_SWITCH_JOYCON_PAIR:
 				*text = "R";
 				break;
 			}
@@ -1771,15 +1595,13 @@ bool APP_GetConKeyDesc(const int player, const APP_ConKey* const key, const char
 void APP_OpenInputs(void)
 {
 	#ifdef ENABLE_LINUXGPIO
-	const char* chipName = "gpiochip0";
+	const char* const chipName = "gpiochip0";
 
 	APP_GPIOChip = gpiod_chip_open_by_name(chipName);
-	if ( !APP_GPIOChip )
-	{
+	if (!APP_GPIOChip) {
 		SDL_Log("Failed opening GPIO chip \"%s\". Continuing without GPIO input support", chipName);
 	}
-	else
-	{
+	else {
 		SDL_memset(APP_GPIORepeat, 0, sizeof(APP_GPIORepeat));
 		SDL_memset(APP_GPIOLines, 0, sizeof(APP_GPIOLines));
 		if (
@@ -1793,12 +1615,9 @@ void APP_OpenInputs(void)
 			!(APP_GPIOLines[7] = gpiod_chip_get_line(APP_GPIOChip, 20)) ||
 			!(APP_GPIOLines[8] = gpiod_chip_get_line(APP_GPIOChip, 21)) ||
 			!(APP_GPIOLines[9] = gpiod_chip_get_line(APP_GPIOChip,  4))
-		)
-		{
-			for (int line = 0; line < 10; line++)
-			{
-				if (APP_GPIOLines[line])
-				{
+		) {
+			for (int line = 0; line < 10; line++) {
+				if (APP_GPIOLines[line]) {
 					gpiod_line_release(APP_GPIOLines[line]);
 					APP_GPIOLines[line] = NULL;
 				}
@@ -1807,14 +1626,10 @@ void APP_OpenInputs(void)
 			APP_GPIOChip = NULL;
 			SDL_Log("Failed opening GPIO lines. Continuing without GPIO input support");
 		}
-		else
-		{
-			for (int line = 0; line < 10; line++)
-			{
-				if (gpiod_line_request_input(APP_GPIOLines[line], "input") < 0)
-				{
-					for (line = 0; line < 10; line++)
-					{
+		else {
+			for (int line = 0; line < 10; line++) {
+				if (gpiod_line_request_input(APP_GPIOLines[line], "input") < 0) {
+					for (line = 0; line < 10; line++) {
 						gpiod_line_release(APP_GPIOLines[line]);
 						APP_GPIOLines[line] = NULL;
 					}
@@ -1837,17 +1652,36 @@ void APP_OpenInputs(void)
 	// ゲームコントローラーデータベースの初期化
 	// Game controller database init
 	#ifdef APP_ENABLE_GAME_CONTROLLER_DB_FILE
-	SDL_IOStream* db = APP_OpenRead("gamecontrollerdb.txt");
 	// データベースがなくても問題ありません
 	// If we don't have the database, it's fine
+	if (!APP_FileExists("gamecontrollerdb.txt")) {
+		SDL_Log("Missing game controller configurations file gamecontrollerdb.txt");
+		return;
+	}
+
+	SDL_IOStream* const db = APP_OpenRead("gamecontrollerdb.txt");
 	if (db) {
-		if (SDL_GetIOSize(db) > 0) {
-			SDL_AddGamepadMappingsFromIO(db, false);
+		const Sint64 size = SDL_GetIOSize(db);
+		if (size > 0) {
+			if (SDL_AddGamepadMappingsFromIO(db, true) < 0) {
+				APP_SetError("Failed adding game controller configurations from file gamecontrollerdb.txt: %s", SDL_GetError());
+				APP_Exit(SDL_APP_FAILURE);
+			}
+			SDL_Log("Added game controller configurations from file gamecontrollerdb.txt");
 		}
-		SDL_CloseIO(db);
+		else if (size == 0) {
+			SDL_Log("No game controller configurations in file gamecontrollerdb.txt");
+			SDL_CloseIO(db);
+		}
+		else {
+			SDL_CloseIO(db);
+			APP_SetError("Failed getting size of game controller configurations file gamecontrollerdb.txt: %s", SDL_GetError());
+			APP_Exit(SDL_APP_FAILURE);
+		}
 	}
 	else {
-		SDL_Log("Missing game controller configurations file gamecontrollerdb.txt");
+		APP_SetError("Error opening file gamecontrollerdb.txt: %s", SDL_GetError());
+		APP_Exit(SDL_APP_FAILURE);
 	}
 	#endif
 }
@@ -1855,10 +1689,8 @@ void APP_OpenInputs(void)
 void APP_CloseInputs(void)
 {
 	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
-	if ( APP_GPIOChip )
-	{
-		for ( int i = 0 ; i < 10 ; i ++ )
-		{
+	if (APP_GPIOChip) {
+		for (int i = 0; i < 10; i++) {
 			gpiod_line_release(APP_GPIOLines[i]);
 		}
 		gpiod_chip_close(APP_GPIOChip);
@@ -1886,14 +1718,11 @@ void APP_CloseInputs(void)
 void APP_InputsUpdate(void)
 {
 	#ifdef APP_ENABLE_LINUX_GPIO_INPUT
-	for (int line = 0; line < 10; line++)
-	{
-		if (gpiod_line_get_value(APP_GPIOLines[line]) == 1)
-		{
+	for (int line = 0; line < 10; line++) {
+		if (gpiod_line_get_value(APP_GPIOLines[line]) == 1) {
 			if (++APP_GPIORepeat[line] == 1) LastControllerType = APP_INPUT_LINUXGPIO;
 		}
-		else
-		{
+		else {
 			APP_GPIORepeat[line] = 0;
 		}
 	}
@@ -1903,14 +1732,11 @@ void APP_InputsUpdate(void)
 	int numKeys = 0;
 	const bool* keyStates = SDL_GetKeyboardState(&numKeys);
 
-	for (int i = 0; i < APP_KEY_MAX; i++)
-	{
-		if (i < numKeys && keyStates[i])
-		{
+	for (int i = 0; i < APP_KEY_MAX; i++) {
+		if (i < numKeys && keyStates[i]) {
 			if (++APP_KeyRepeat[i] == 1) APP_LastInputType = APP_INPUT_KEYBOARD;
 		}
-		else
-		{
+		else {
 			APP_KeyRepeat[i] = 0;
 		}
 	}

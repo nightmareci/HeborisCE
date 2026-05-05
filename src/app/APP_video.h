@@ -3,7 +3,8 @@
 
 #include "APP_stdinc.h"
 
-typedef enum APP_ScreenModeFlag {
+typedef enum APP_ScreenModeFlag
+{
 	APP_SCREEN_MODE_WINDOW,
 	APP_SCREEN_MODE_WINDOW_MAXIMIZED,
 	APP_SCREEN_MODE_FULLSCREEN_DESKTOP,
@@ -16,7 +17,8 @@ typedef enum APP_ScreenModeFlag {
 	APP_SCREEN_MODE_RENDER_LEVEL = 0x20
 } APP_ScreenModeFlag;
 
-typedef enum APP_ScreenIndexMask {
+typedef enum APP_ScreenIndexMask
+{
 	APP_SCREEN_INDEX_DISPLAY = 0x0000FFFF,
 	APP_SCREEN_INDEX_MODE = 0xFFFF0000
 } APP_ScreenIndexMask;

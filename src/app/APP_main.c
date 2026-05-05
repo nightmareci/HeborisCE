@@ -193,7 +193,7 @@ static bool APP_FrameStep(void)
 	return skipped;
 }
 
-static void APP_LogOutput(void* userdata, int category, SDL_LogPriority priority, const char* message)
+static void SDLCALL APP_LogOutput(void* userdata, int category, SDL_LogPriority priority, const char* message)
 {
 	const char* priorityString;
 	switch (priority) {

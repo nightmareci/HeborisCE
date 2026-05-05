@@ -208,9 +208,11 @@ static void SDLCALL APP_LogOutput(void* userdata, int category, SDL_LogPriority 
     	case SDL_LOG_PRIORITY_VERBOSE:
      		priorityString = "VERBOSE";
        		break;
+
 	case SDL_LOG_PRIORITY_DEBUG:
 		priorityString = "DEBUG";
 	 	break;
+
 	case SDL_LOG_PRIORITY_INFO:
 		priorityString = "INFO";
 		break;

@@ -1,6 +1,7 @@
 # Data files generated when running a Current Directory package type build in-source
 /config/data
 /replay
+/log.txt
 
 # Build system generated/local config files
 /build*

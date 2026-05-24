@@ -3,7 +3,7 @@
 
 This version contains the source code for Heboris C.E. (Cross-platform
 Expansion). It requires a C compiler supporting C99 and the CMake utility, and
-the libraries for SDL 3.0 and SDL 3.0 image.
+the libraries for SDL 3.0, SDL\_image 3.0, and SDL\_mixer 3.0.
 
 ## Default Keyboard Controls
 The keyboard controls can be reset to defaults at any time by holding the
@@ -71,7 +71,7 @@ sudo apt-get install git
 
 Building dependencies:
 ```sh
-sudo apt-get install gcc cmake libsdl3-dev libsdl3-image-dev
+sudo apt-get install gcc cmake libsdl3-dev libsdl3-image-dev libsdl3-mixer-dev
 ```
 
 ## Setup in Windows MSYS2
@@ -83,7 +83,7 @@ pacman -Syu git
 
 Building dependencies:
 ```sh
-pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-SDL3 mingw-w64-x86_64-SDL3_image
+pacman -Syu mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-SDL3 mingw-w64-x86_64-SDL3_image mingw-w64-x86_64-SDL3_mixer
 ```
 
 ## Download, Build, and Run Without Installing
@@ -235,7 +235,7 @@ source root. This option isn't available in all IDEs, however.
    keyboard and joystick input.
  - Implement advanced joystick input, allowing any mapping of joystick inputs
    to game inputs.
- - Convert to exclusively use fully cross-platform APIs, like SDL_render for
+ - Convert to exclusively use fully cross-platform APIs, like SDL\_render for
    hardware-accelerated graphics.
  - Implement comprehensive display mode settings. Vsync is included in this.
    Also includes scaling to fill the display, with a correct 4:3 aspect ratio

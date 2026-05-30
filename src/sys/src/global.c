@@ -1,4 +1,4 @@
-#include "GLOBAL.h"
+#include "global.h"
 
 float GLOBAL_ScreenSubpixelOffset = 0.0f;
 SDL_Window* GLOBAL_ScreenWindow = NULL;

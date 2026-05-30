@@ -1,7 +1,7 @@
-#include <AUDIO.h>
-#include <FILESYSTEM.h>
-#include <MAIN.h>
-#include <ERROR.h>
+#include <audio.h>
+#include <filesystem.h>
+#include <main.h>
+#include <error.h>
 #include <SDL3_mixer/SDL_mixer.h>
 
 typedef struct AUDIO_Wave

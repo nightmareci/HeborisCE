@@ -1,7 +1,7 @@
-#ifndef MAIN_h_
-#define MAIN_h_
+#ifndef main_h_
+#define main_h_
 
-#include <STD.h>
+#include <stdinc.h>
 
 void MAIN_ResetFrameStep(void);
 

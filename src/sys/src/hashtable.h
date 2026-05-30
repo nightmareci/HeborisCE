@@ -1,5 +1,5 @@
-#ifndef HASHTABLE_h_
-#define HASHTABLE_h_
+#ifndef hashtable_h_
+#define hashtable_h_
 
 #include <SDL3/SDL.h>
 

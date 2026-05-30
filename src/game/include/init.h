@@ -1,7 +1,7 @@
 #ifndef init_h_
 #define init_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 extern int32_t english;
 extern int32_t last_ranking_type;

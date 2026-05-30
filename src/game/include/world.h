@@ -1,7 +1,7 @@
 #ifndef world_h_
 #define world_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 extern int32_t blockflash;
 extern int32_t sonicdrop;

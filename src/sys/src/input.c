@@ -1,11 +1,11 @@
 // TODO: Explicitly handle GameCube controllers. So, handle SDL_GAMEPAD_TYPE_GAMECUBE for input type. Rename INPUT_DEVICE_TYPE_NINTENDO => INPUT_DEVICE_TYPE_SNES, add INPUT_DEVICE_TYPE_GAMECUBE
 
-#include <INPUT.h>
-#include <ERROR.h>
+#include <input.h>
+#include <error.h>
 #ifdef INPUT_ENABLE_GAME_CONTROLLER_DB
-#include <FILESYSTEM.h>
+#include <filesystem.h>
 #endif
-#include <MAIN.h>
+#include <main.h>
 
 #ifdef INPUT_ONLY_DEVICE_TYPE
 static INPUT_DeviceType INPUT_LastDeviceType = INPUT_ONLY_DEVICE_TYPE;

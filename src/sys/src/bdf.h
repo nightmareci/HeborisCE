@@ -1,5 +1,5 @@
-#ifndef BDF_h_
-#define BDF_h_
+#ifndef bdf_h_
+#define bdf_h_
 
 #include <SDL3/SDL.h>
 

@@ -1,7 +1,7 @@
-#ifndef STD_h_
-#define STD_h_
+#ifndef stdinc_h_
+#define stdinc_h_
 
-#include <SYS_build_config.h>
+#include <build_config.h>
 #include <SDL3/SDL.h>
 #include <stdint.h>
 #include <inttypes.h>

@@ -1398,7 +1398,7 @@ int32_t fade_seed = 100;	// BGMフェードアウト用
 int32_t se_play[50];
 
 // 文字列定数
-const char*		version = SYS_PLATFORM " V" PROJECT_VERSION;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
+const char*		version = PLATFORM " V" PROJECT_VERSION;	// 現在のスクリプトのバージョン(ver+date形式、1.60は除く)
 const char*		RankString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ.,- 0123456789<=>?!#$%&'()=pq";
 
 /* 定数 */

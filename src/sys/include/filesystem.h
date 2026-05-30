@@ -1,7 +1,7 @@
-#ifndef FILESYSTEM_h_
-#define FILESYSTEM_h_
+#ifndef filesystem_h_
+#define filesystem_h_
 
-#include <STD.h>
+#include <stdinc.h>
 
 bool FILESYSTEM_Init(int argc, char** argv);
 

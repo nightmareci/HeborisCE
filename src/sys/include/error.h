@@ -1,5 +1,5 @@
-#ifndef ERROR_h_
-#define ERROR_h_
+#ifndef error_h_
+#define error_h_
 
 #include <stdbool.h>
 

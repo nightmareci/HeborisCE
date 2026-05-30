@@ -1,10 +1,10 @@
-#ifndef WORKER_h_
-#define WORKER_h_
+#ifndef worker_h_
+#define worker_h_
 
 // Worker functions may only be called for a worker on the thread that created
 // the worker.
 
-#include <STD.h>
+#include <stdinc.h>
 
 typedef struct WORKER_Object WORKER_Object;
 

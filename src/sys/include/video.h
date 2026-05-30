@@ -1,7 +1,7 @@
-#ifndef VIDEO_h_
-#define VIDEO_h_
+#ifndef video_h_
+#define video_h_
 
-#include <STD.h>
+#include <stdinc.h>
 
 typedef enum VIDEO_ScreenModeFlag
 {

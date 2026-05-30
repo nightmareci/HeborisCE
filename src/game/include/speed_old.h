@@ -1,7 +1,7 @@
 #ifndef speed_old_h_
 #define speed_old_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 extern int32_t waitt_HeboGB_tbl[15];
 extern int32_t waitt_HeboGB_tbl[15];

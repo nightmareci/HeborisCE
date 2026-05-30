@@ -1,5 +1,5 @@
-#ifndef SYS_build_config_h_
-#define SYS_build_config_h_
+#ifndef build_config_h_
+#define build_config_h_
 
 #define PROJECT_NAME "@PROJECT_NAME@"
 #define PROJECT_VERSION "@PROJECT_VERSION@"
@@ -7,7 +7,7 @@
 #define PROJECT_CREATOR "@PROJECT_CREATOR@"
 #define PROJECT_IDENTIFIER "@PROJECT_IDENTIFIER@"
 
-#define SYS_PLATFORM "@SYS_PLATFORM@"
+#define PLATFORM "@PLATFORM@"
 
 #define FILESYSTEM_ORG "@FILESYSTEM_ORG@"
 #define FILESYSTEM_APP "@FILESYSTEM_APP@"

@@ -4,7 +4,7 @@
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  外部ライブラリのインポート
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-#include <SYS.h>
+#include <sys.h>
 
 #define 	TEXT_LAYER_COUNT	16
 #define		STRING_LENGTH		512

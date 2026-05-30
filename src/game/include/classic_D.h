@@ -1,7 +1,7 @@
 #ifndef classic_D_h_
 #define classic_D_h_
 
-#include <SYS.h>
+#include <sys.h>
 #include "sound.h"
 
 void effect(int32_t player);

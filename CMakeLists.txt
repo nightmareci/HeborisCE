@@ -136,28 +136,28 @@ add_compile_options(
 )
 
 add_executable(${EXECUTABLE}
-	"src/sys/src/AUDIO.c"
-	"src/sys/src/BDF.c"
-	"src/sys/src/BDF.h"
-	"src/sys/src/ERROR.c"
-	"src/sys/src/FILESYSTEM.c"
-	"src/sys/src/GLOBAL.c"
-	"src/sys/src/GLOBAL.h"
-	"src/sys/src/HASHTABLE.c"
-	"src/sys/src/HASHTABLE.h"
-	"src/sys/src/INPUT.c"
-	"src/sys/src/MAIN.c"
-	"src/sys/src/VIDEO.c"
+	"src/sys/src/audio.c"
+	"src/sys/src/bdf.c"
+	"src/sys/src/bdf.h"
+	"src/sys/src/error.c"
+	"src/sys/src/filesystem.c"
+	"src/sys/src/global.c"
+	"src/sys/src/global.h"
+	"src/sys/src/hashtable.c"
+	"src/sys/src/hashtable.h"
+	"src/sys/src/input.c"
+	"src/sys/src/main.c"
+	"src/sys/src/video.c"
 
-	"src/sys/include/AUDIO.h"
-	"src/sys/include/ERROR.h"
-	"src/sys/include/FILESYSTEM.h"
-	"src/sys/include/INPUT.h"
-	"src/sys/include/MAIN.h"
-	"src/sys/include/STD.h"
-	"src/sys/include/SYS.h"
-	"src/sys/include/VIDEO.h"
-	"src/sys/include/WORKER.h"
+	"src/sys/include/audio.h"
+	"src/sys/include/error.h"
+	"src/sys/include/filesystem.h"
+	"src/sys/include/input.h"
+	"src/sys/include/main.h"
+	"src/sys/include/stdinc.h"
+	"src/sys/include/sys.h"
+	"src/sys/include/video.h"
+	"src/sys/include/worker.h"
 
 	"src/game/src/game.c"
 	"src/game/src/init.c"
@@ -225,9 +225,9 @@ if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
 endif()
 
 if(WORKER_MULTITHREADED)
-	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/WORKER_multithreaded.c")
+	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/worker_multithreaded.c")
 else()
-	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/WORKER_synchronous.c")
+	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/worker_synchronous.c")
 endif()
 
 # // The on-disk format is unheadered and uses file extension .dat
@@ -324,7 +324,7 @@ function(CopyResourcesToDestination DESTINATION_DIR)
 endfunction()
 
 if(VITA)
-	set(SYS_PLATFORM "VITA SDL3")
+	set(PLATFORM "VITA SDL3")
 
 	if(NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT DEFINED VITASDK)
 		message(FATAL_ERROR "Vita SDK CMake toolchain file must be provided to the CMake configure command.")
@@ -332,7 +332,7 @@ if(VITA)
 		include("${VITASDK}/share/vita.cmake" REQUIRED)
 	endif()
 
-	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/VITA.c")
+	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/vita.c")
 
 	# Adding to CMAKE_PREFIX_PATH like this fixes find_package commands in Vita SDK
 	# builds.
@@ -501,7 +501,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 		# However, if the emsdk SDL3 package doesn't have SDL_PTHREADS, then vendored will always be required
 	endif()
 
-	set(SYS_PLATFORM "WEB SDL3")
+	set(PLATFORM "WEB SDL3")
 
 	set(INPUT_ENABLE_JOYSTICK FALSE CACHE BOOL "" FORCE)
 	set(INPUT_ENABLE_GAME_CONTROLLER TRUE CACHE BOOL "" FORCE)
@@ -542,7 +542,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 
 	set_property(TARGET ${EXECUTABLE} PROPERTY SUFFIX ".html")
 elseif(WIN32 AND NOT MSYS)
-	set(SYS_PLATFORM "WINDOWS SDL3")
+	set(PLATFORM "WINDOWS SDL3")
 
 	if(CMAKE_BUILD_TYPE MATCHES "Debug")
 		set(WIN32_EXECUTABLE_DEFAULT OFF)
@@ -637,7 +637,7 @@ elseif(WIN32 AND NOT MSYS)
 		message(FATAL_ERROR "Package type \"${PACKAGE_TYPE}\" unsupported when building for Windows")
 	endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND PACKAGE_TYPE MATCHES "Mac App")
-	set(SYS_PLATFORM "MACOSX SDL3")
+	set(PLATFORM "MACOSX SDL3")
 
 	# Builds Mac application bundle, packaged into a DMG with CPack by default.
 
@@ -770,14 +770,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND PACKAGE_TYPE MATCHES "Mac App")
 	include(CPack)
 elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 	if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
-		set(SYS_PLATFORM "MACOSX SDL3")
+		set(PLATFORM "MACOSX SDL3")
 	else()
 		# It's probably a fair assumption that system names are always ASCII,
 		# so it's likely no conversion to ASCII is needed here; the framework
 		# version is displayed using the game font, not the Unicode font, so it
 		# must be ASCII.
-		string(TOUPPER "${CMAKE_SYSTEM_NAME}" SYS_SYSTEM_NAME)
-		set(SYS_PLATFORM "${SYS_SYSTEM_NAME} SDL3")
+		string(TOUPPER "${CMAKE_SYSTEM_NAME}" SYSTEM_NAME)
+		set(PLATFORM "${SYSTEM_NAME} SDL3")
 	endif()
 
 	# Builds commandline program for some Unix-type platforms. The "Portable" package type supports creating distributable packages with CPack.
@@ -911,18 +911,13 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 
 		set(SDLIMAGE_VENDORED ON)
-		set(SDLIMAGE_DEPS_SHARED ON)
-		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
-		set(SDLIMAGE_PNG_LIBPNG OFF)
-		set(SDLIMAGE_BACKEND_STB ON)
-		# TODO: Enable TIFF once vendored zlib builds for all platforms
-		set(SDLIMAGE_TIF OFF)
-		# TODO: Enable AVIF when it builds for all platforms
-		set(SDLIMAGE_AVIF OFF)
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_BACKEND_STB OFF)
+		set(SDLIMAGE_PNG_LIBPNG ON)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
-		set(SDLMIXER_DEPS_SHARED ON)
+		set(SDLMIXER_DEPS_SHARED OFF)
 		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
 		set(SDLMIXER_VORBIS_STB ON)
 		set(SDLMIXER_VORBIS_VORBISFILE OFF)
@@ -966,7 +961,7 @@ else()
 	message(FATAL_ERROR "The current build target is not supported")
 endif()
 
-set(BUILD_CONFIG_H "src/sys/include/SYS_build_config.h")
+set(BUILD_CONFIG_H "src/sys/include/build_config.h")
 set(INPUT_BUILD_CONFIG "${CMAKE_SOURCE_DIR}/${BUILD_CONFIG_H}.cmake")
 set(OUTPUT_BUILD_CONFIG "${OUTPUT_DIR}/${BUILD_CONFIG_H}")
 add_custom_command(
@@ -997,7 +992,7 @@ add_custom_command(
 		-DINPUT_JOY_KEY_ASSIGN_DEFAULT=${INPUT_JOY_KEY_ASSIGN_DEFAULT}
 		-DVIDEO_SCREEN_MODE_BASE=${VIDEO_SCREEN_MODE_BASE}
 		-DVIDEO_SCREEN_MODE_DEFAULT=${VIDEO_SCREEN_MODE_DEFAULT}
-		-DSYS_PLATFORM=${SYS_PLATFORM}
+		-DPLATFORM=${PLATFORM}
 		-DVIDEO_ENABLE_ALL_SETTINGS=${VIDEO_ENABLE_ALL_SETTINGS}
 		-DGAME_ENABLE_QUIT=${GAME_ENABLE_QUIT}
 		-DFILESYSTEM_USING_RESOURCE_DAT=${FILESYSTEM_USING_RESOURCE_DAT}

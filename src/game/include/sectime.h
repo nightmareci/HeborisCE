@@ -1,7 +1,7 @@
 #ifndef sectime_h_
 #define sectime_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 int32_t PlayerdataLoad(void);
 void PlayerdataSave(void);

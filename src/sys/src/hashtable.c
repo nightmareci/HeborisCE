@@ -1,6 +1,6 @@
-#include "HASHTABLE.h"
-#include <MAIN.h>
-#include <ERROR.h>
+#include "hashtable.h"
+#include <main.h>
+#include <error.h>
 #if defined(_M_X64) || defined(_M_ARM64)
 #include <intrin.h>
 #endif

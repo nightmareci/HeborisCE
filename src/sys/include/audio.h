@@ -1,7 +1,7 @@
-#ifndef AUDIO_h_
-#define AUDIO_h_
+#ifndef audio_h_
+#define audio_h_
 
-#include <stdbool.h>
+#include <stdinc.h>
 
 // Playable wave numbers must be 0 or greater; all negative wave numbers are
 // treated the same as AUDIO_WAVE_NUM_ALL.

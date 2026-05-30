@@ -1,6 +1,6 @@
-#include <WORKER.h>
-#include <ERROR.h>
-#include "HASHTABLE.h"
+#include <worker.h>
+#include <error.h>
+#include "hashtable.h"
 
 typedef struct WORKER_JobData
 {

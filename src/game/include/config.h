@@ -1,7 +1,7 @@
 #ifndef config_h_
 #define config_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 #define CFG_LENGTH 302
 

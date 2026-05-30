@@ -1,10 +1,10 @@
-#include <VIDEO.h>
-#include <SYS_build_config.h>
-#include <FILESYSTEM.h>
-#include <MAIN.h>
-#include "GLOBAL.h"
-#include "BDF.h"
-#include <ERROR.h>
+#include <video.h>
+#include <build_config.h>
+#include <filesystem.h>
+#include <main.h>
+#include "global.h"
+#include "bdf.h"
+#include <error.h>
 #include <SDL3_image/SDL_image.h>
 
 typedef struct VIDEO_TextLayer

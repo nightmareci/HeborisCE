@@ -1,10 +1,10 @@
-#include <MAIN.h>
-#include <VIDEO.h>
-#include <AUDIO.h>
-#include <FILESYSTEM.h>
-#include <INPUT.h>
-#include <ERROR.h>
-#include "GLOBAL.h"
+#include <main.h>
+#include <video.h>
+#include <audio.h>
+#include <filesystem.h>
+#include <input.h>
+#include <error.h>
+#include "global.h"
 #include <game.h>
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL_main.h>

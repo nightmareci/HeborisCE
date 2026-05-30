@@ -1,7 +1,7 @@
 #ifndef ranking3_h_
 #define ranking3_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 int32_t viewgrade(int32_t player);
 void viewbesttime3(int32_t player,int32_t x,int32_t y,int32_t type);

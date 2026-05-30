@@ -1,7 +1,7 @@
 #ifndef practice_h_
 #define practice_h_
 
-#include <SYS.h>
+#include <sys.h>
 #include "sound.h"
 
 void PracticeOver(void);

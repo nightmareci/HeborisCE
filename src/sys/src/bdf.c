@@ -1,6 +1,6 @@
-#include "BDF.h"
-#include "HASHTABLE.h"
-#include <ERROR.h>
+#include "bdf.h"
+#include "hashtable.h"
+#include <error.h>
 #include <limits.h>
 
 #define BDF_LINE_MAX 256

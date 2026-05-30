@@ -1,7 +1,7 @@
 #ifndef sound_h_
 #define sound_h_
 
-#include <SYS.h>
+#include <sys.h>
 
 typedef enum WaveNum
 {

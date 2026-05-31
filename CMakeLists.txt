@@ -912,18 +912,13 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 
 		set(SDLIMAGE_VENDORED ON)
 		set(SDLIMAGE_DEPS_SHARED OFF)
+		# This disables using stb_image for JPG
+		# libjpeg might be more secure, and might be more reliable with random images, which matters for us, as we support modding
 		set(SDLIMAGE_BACKEND_STB OFF)
-		set(SDLIMAGE_PNG_LIBPNG ON)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
 		set(SDLMIXER_DEPS_SHARED OFF)
-		# TODO: Remove these MP3 lines when mpg123 builds for all platforms
-		set(SDLMIXER_MP3_DRMP3 ON)
-		set(SDLMIXER_MP3_MPG123 OFF)
-		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
-		set(SDLMIXER_VORBIS_STB ON)
-		set(SDLMIXER_VORBIS_VORBISFILE OFF)
 		# TODO: Enable WavPack when it builds for all platforms
 		set(SDLMIXER_WAVPACK OFF)
 		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)

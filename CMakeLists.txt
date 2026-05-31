@@ -918,6 +918,9 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 
 		set(SDLMIXER_VENDORED ON)
 		set(SDLMIXER_DEPS_SHARED OFF)
+		# TODO: Remove these MP3 lines when mpg123 builds for all platforms
+		set(SDLMIXER_MP3_DRMP3 ON)
+		set(SDLMIXER_MP3_MPG123 OFF)
 		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
 		set(SDLMIXER_VORBIS_STB ON)
 		set(SDLMIXER_VORBIS_VORBISFILE OFF)

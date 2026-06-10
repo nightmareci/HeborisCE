@@ -27,4 +27,4 @@ LINUXDEPLOY="linuxdeploy-$(uname -m).AppImage"
 curl -L -O "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/$LINUXDEPLOY" || exit 1
 chmod +x "$LINUXDEPLOY" || exit 1
 
-"./$LINUXDEPLOY" --appdir AppDir --deploy-deps-only "AppDir/usr/lib" --output appimage --icon-file "$SOURCE_DIRECTORY/pkg/linux/$NAME.png" || exit 1
+"./$LINUXDEPLOY" --appdir AppDir --deploy-deps-only "AppDir/usr/lib" --output appimage --icon-file "$SOURCE_DIRECTORY/$NAME.png" || exit 1

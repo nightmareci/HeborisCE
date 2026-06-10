@@ -368,7 +368,6 @@ if(VITA)
 		set(SDLIMAGE_BACKEND_STB ON)
 		# TODO: Enable TIFF once vendored zlib builds for all platforms
 		set(SDLIMAGE_TIF OFF)
-		# TODO: Enable AVIF when it builds for all platforms
 		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
@@ -560,9 +559,7 @@ elseif(WIN32 AND NOT MSYS)
 
 		set(SDLIMAGE_VENDORED ON)
 		set(SDLIMAGE_DEPS_SHARED OFF)
-		set(SDLIMAGE_JXL ON)
 		set(SDLIMAGE_BACKEND_STB OFF)
-		# TODO: Enable AVIF when it builds
 		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
@@ -721,7 +718,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND PACKAGE_TYPE MATCHES "Mac App")
 		set(SDLIMAGE_BACKEND_STB ON)
 		# TODO: Enable TIFF once veondred zlib builds for all platforms
 		set(SDLIMAGE_TIF OFF)
-		# TODO: Enable AVIF when it builds for all platforms
 		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
@@ -908,14 +904,16 @@ elseif(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MSYS OR UNIX)
 
 		set(SDLIMAGE_VENDORED ON)
 		set(SDLIMAGE_DEPS_SHARED OFF)
-		# This disables using stb_image for JPG
-		# libjpeg might be more secure, and might be more reliable with random images, which matters for us, as we support modding
 		set(SDLIMAGE_BACKEND_STB OFF)
+		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
 		set(SDLMIXER_DEPS_SHARED OFF)
-		# TODO: Enable WavPack when it builds for all platforms
+		set(SDLMIXER_VORBIS_STB OFF)
+		set(SDLMIXER_FLAC_DRFLAC OFF)
+		set(SDLMIXER_MP3_DRMP3 OFF)
+		# TODO: Enable WavPack when it builds
 		set(SDLMIXER_WAVPACK OFF)
 		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
 

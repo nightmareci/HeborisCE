@@ -555,26 +555,22 @@ elseif(WIN32 AND NOT MSYS)
 
 	if(BUILD_VENDORED)
 		set(BUILD_SHARED_LIBS ON)
+
 		add_subdirectory(dep/SDL EXCLUDE_FROM_ALL)
 
 		set(SDLIMAGE_VENDORED ON)
-		set(SDLIMAGE_DEPS_SHARED ON)
-		# TODO: Use libpng instead of stb once vendored zlib builds for all platforms
-		set(SDLIMAGE_PNG_LIBPNG OFF)
-		set(SDLIMAGE_BACKEND_STB ON)
-		# TODO: Enable TIFF once vendored zlib builds for all platforms
-		set(SDLIMAGE_TIF OFF)
-		# TODO: Enable AVIF when it builds for all platforms
+		set(SDLIMAGE_DEPS_SHARED OFF)
+		set(SDLIMAGE_JXL ON)
+		set(SDLIMAGE_BACKEND_STB OFF)
+		# TODO: Enable AVIF when it builds
 		set(SDLIMAGE_AVIF OFF)
 		add_subdirectory(dep/SDL_image EXCLUDE_FROM_ALL)
 
 		set(SDLMIXER_VENDORED ON)
-		set(SDLMIXER_DEPS_SHARED ON)
-		# TODO: Use libvorbis instead of stb when libvorbis builds for all platforms
-		set(SDLMIXER_VORBIS_STB ON)
-		set(SDLMIXER_VORBIS_VORBISFILE OFF)
-		# TODO: Enable WavPack when it builds for all platforms
-		set(SDLMIXER_WAVPACK OFF)
+		set(SDLMIXER_DEPS_SHARED OFF)
+		set(SDLMIXER_VORBIS_STB OFF)
+		set(SDLMIXER_FLAC_DRFLAC OFF)
+		set(SDLMIXER_MP3_DRMP3 OFF)
 		add_subdirectory(dep/SDL_mixer EXCLUDE_FROM_ALL)
 
 		target_link_libraries(${EXECUTABLE} PRIVATE

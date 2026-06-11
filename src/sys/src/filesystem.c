@@ -14,12 +14,7 @@ static SDL_IOStream* FILESYSTEM_OpenFromPath(const char* path, const char* filen
 
 	SDL_IOStream* file = SDL_IOFromFile(fullPath, mode);
 	SDL_free(fullPath);
-	if (file) {
-		return file;
-	}
-	else {
-		return NULL;
-	}
+	return file;
 }
 
 #ifdef FILESYSTEM_USING_RESOURCE_DAT
@@ -123,65 +118,128 @@ bool FILESYSTEM_Init(int argc, char** argv)
 	}
 	int64_t filesCount;
 	if (!SDL_ReadS64LE(datFile, &filesCount)) {
-		return ERROR_Set("Error reading count of files in resource DAT: %s", SDL_GetError());
+		if (!SDL_CloseIO(datFile)) {
+			return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+		}
+		else {
+			return ERROR_Set("Error reading count of files in resource DAT: %s", SDL_GetError());
+		}
 	}
 	if (filesCount <= 0) {
-		return ERROR_Set("Invalid count of files in resource DAT");
+		if (!SDL_CloseIO(datFile)) {
+			return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+		}
+		else {
+			return ERROR_Set("Invalid count of files in resource DAT");
+		}
 	}
 	FILESYSTEM_FilesArray = SDL_malloc(filesCount * sizeof(FILESYSTEM_File));
 	if (!FILESYSTEM_FilesArray) {
-		return ERROR_Set("Error allocating array for resource DAT files metadata");
+		if (!SDL_CloseIO(datFile)) {
+			return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+		}
+		else {
+			return ERROR_Set("Error allocating array for resource DAT files metadata");
+		}
 	}
 	for (int64_t i = 0; i < filesCount; i++) {
 		const int64_t filenamePos = SDL_TellIO(datFile);
 		if (filenamePos < 0) {
-			return ERROR_Set("Error getting position of filename in resource DAT file: %s", SDL_GetError());
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error getting position of filename in resource DAT file: %s", SDL_GetError());
+			}
 		}
 		int64_t filenameSize = 0;
 		uint8_t c;
 		do {
 			if (!SDL_ReadU8(datFile, &c)) {
-				return ERROR_Set("Error getting filename byte in resource DAT file: %s", SDL_GetError());
+				if (!SDL_CloseIO(datFile)) {
+					return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+				}
+				else {
+					return ERROR_Set("Error getting filename byte in resource DAT file: %s", SDL_GetError());
+				}
 			}
 			filenameSize++;
 		} while (c != '\0');
 		if (SDL_SeekIO(datFile, filenamePos, SDL_IO_SEEK_SET) < 0) {
-			return ERROR_Set("Error seeking resource DAT file: %s", SDL_GetError());
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error seeking resource DAT file: %s", SDL_GetError());
+			}
 		}
 		char* const filename = SDL_malloc(filenameSize);
 		if (!filename) {
-			return ERROR_Set("Error allocating string for a file in resource DAT");
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error allocating string for a file in resource DAT");
+			}
 		}
 		if (!SDL_ReadIO(datFile, filename, filenameSize)) {
 			SDL_free(filename);
-			return ERROR_Set("Error reading filename of a file in resource DAT");
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error reading filename of a file in resource DAT");
+			}
 		}
 		if (!SDL_ReadS64LE(datFile, &FILESYSTEM_FilesArray[i].size)) {
 			SDL_free(filename);
-			return ERROR_Set("Error reading size of a file in resource DAT");
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error reading size of a file in resource DAT");
+			}
 		}
 		if (FILESYSTEM_FilesArray[i].size < 0) {
 			SDL_free(filename);
-			return ERROR_Set("Invalid size of a file in resource DAT");
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Invalid size of a file in resource DAT");
+			}
 		}
 		FILESYSTEM_FilesArray[i].start = SDL_TellIO(datFile);
 		if (FILESYSTEM_FilesArray[i].start < 0) {
 			SDL_free(filename);
-			return ERROR_Set("Error getting starting position of a file in resource DAT");
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error getting starting position of a file in resource DAT");
+			}
 		}
 		if (SDL_SeekIO(datFile, FILESYSTEM_FilesArray[i].size, SDL_IO_SEEK_CUR) < 0) {
 			SDL_free(filename);
-			return ERROR_Set("Error skipping over file data in resource DAT");
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error skipping over file data in resource DAT");
+			}
 		}
 		if (!SDL_SetPointerProperty(FILESYSTEM_FilesTable, filename, &FILESYSTEM_FilesArray[i])) {
 			SDL_free(filename);
-			return ERROR_Set("Error setting a property in the resource DAT files properties object: %s", SDL_GetError());
+			if (!SDL_CloseIO(datFile)) {
+				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error setting a property in the resource DAT files properties object: %s", SDL_GetError());
+			}
 		}
 		SDL_free(filename);
 	}
-	SDL_CloseIO(datFile);
-
-	return true;
+	return SDL_CloseIO(datFile);
 }
 
 bool FILESYSTEM_FileExists(const char* filename)
@@ -292,9 +350,9 @@ static bool SDLCALL FILESYSTEM_DATFileFlush(void* userdata, SDL_IOStatus* status
 static bool SDLCALL FILESYSTEM_DATFileClose(void* userdata)
 {
 	FILESYSTEM_FileUserdata* const fileUserdata = userdata;
-	SDL_CloseIO(fileUserdata->stream);
+	const bool success = SDL_CloseIO(fileUserdata->stream);
 	SDL_free(fileUserdata);
-	return true;
+	return success;
 }
 
 SDL_IOStream* FILESYSTEM_OpenRead(const char* filename)
@@ -317,11 +375,18 @@ SDL_IOStream* FILESYSTEM_OpenRead(const char* filename)
 	fileUserdata->file = file;
 	fileUserdata->stream = SDL_IOFromFile(FILESYSTEM_FilesDATPath, "rb");
 	if (!fileUserdata->stream) {
+		SDL_free(fileUserdata);
 		ERROR_Set("Failed opening resource DAT file for opening file \"%s\" for reading: %s", filename, SDL_GetError());
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_SeekIO(fileUserdata->stream, file->start, SDL_IO_SEEK_SET) < 0) {
-		ERROR_Set("Failed seeking resource DAT to open file \"%s\" for reading: %s", filename, SDL_GetError());
+		SDL_free(fileUserdata);
+		if (!SDL_CloseIO(fileUserdata->stream)) {
+			ERROR_Set("Failed closing resource DAT after failing to open file \"%s\" for reading: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Failed seeking resource DAT to open file \"%s\" for reading: %s", filename, SDL_GetError());
+		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 
@@ -336,8 +401,13 @@ SDL_IOStream* FILESYSTEM_OpenRead(const char* filename)
 
 	SDL_IOStream* datStream = SDL_OpenIO(&interface, fileUserdata);
 	if (!datStream) {
-		ERROR_Set("Failed creating a stream to read file \"%s\" in resource DAT: %s", filename, SDL_GetError());
 		SDL_free(fileUserdata);
+		if (!SDL_CloseIO(fileUserdata->stream)) {
+			ERROR_Set("Failed closing resource DAT after failing to open file \"%s\" for reading: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Failed creating a stream to open file \"%s\" in resource DAT for reading: %s", filename, SDL_GetError());
+		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	return datStream;
@@ -439,9 +509,14 @@ bool FILESYSTEM_FileExists(const char* filename)
 		ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
-	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+	else if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
 		SDL_free(path);
 		return true;
+	}
+	else if (info.type != SDL_PATHTYPE_NONE) {
+		SDL_free(path);
+		ERROR_Set("File path \"%s\" was expected to be a file but is not a file", path);
+		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	SDL_free(path);
 
@@ -449,9 +524,14 @@ bool FILESYSTEM_FileExists(const char* filename)
 		ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
-	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+	else if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
 		SDL_free(path);
 		return true;
+	}
+	else if (info.type != SDL_PATHTYPE_NONE) {
+		SDL_free(path);
+		ERROR_Set("File path \"%s\" was expected to be a file but is not a file", path);
+		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	SDL_free(path);
 
@@ -554,12 +634,44 @@ void FILESYSTEM_ReadFile32(const char* filename, int32_t* values, size_t count, 
 		return;
 	}
 
+	const int64_t srcSize = SDL_GetIOSize(src);
+	if (srcSize < 0) {
+		if (!SDL_CloseIO(src)) {
+			ERROR_Set("Error closing file \"%s\" after failing to get its size: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Error getting size of file \"%s\": %s", filename, SDL_GetError());
+		}
+		MAIN_Exit(SDL_APP_FAILURE);
+	}
+	else if (srcSize == 0) {
+		if (!SDL_CloseIO(src)) {
+			ERROR_Set("Error closing file \"%s\": %s", filename, SDL_GetError());
+			MAIN_Exit(SDL_APP_FAILURE);
+		}
+		return;
+	}
+
+	if (count > (srcSize / sizeof(int32_t)) - start) {
+		count = (srcSize / sizeof(int32_t)) - start;
+	}
+
 	if (SDL_SeekIO(src, start * sizeof(int32_t), SDL_IO_SEEK_SET) < 0) {
-		ERROR_Set("Error seeking file \"%s\": %s", filename, SDL_GetError());
+		if (!SDL_CloseIO(src)) {
+			ERROR_Set("Error closing file \"%s\" after failing to seek it for reading: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Error seeking file \"%s\": %s", filename, SDL_GetError());
+		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	else if (SDL_ReadIO(src, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
-		ERROR_Set("Error reading file \"%s\": %s", filename, SDL_GetError());
+		if (!SDL_CloseIO(src)) {
+			ERROR_Set("Error closing file \"%s\" after failing to read it: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Error reading file \"%s\": %s", filename, SDL_GetError());
+		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	else if (!SDL_CloseIO(src)) {
@@ -580,7 +692,12 @@ void FILESYSTEM_WriteFile32(const char* filename, int32_t* values, size_t count)
 	FILESYSTEM_Swap32ArrayNativeToLE(values, count);
 
 	if (SDL_WriteIO(dst, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
-		ERROR_Set("Error writing file \"%s\": %s", filename, SDL_GetError());
+		if (!SDL_CloseIO(dst)) {
+			ERROR_Set("Error closing file \"%s\" after failing to write to it: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Error writing file \"%s\": %s", filename, SDL_GetError());
+		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	else if (!SDL_CloseIO(dst)) {
@@ -601,7 +718,12 @@ void FILESYSTEM_AppendFile32(const char* filename, int32_t* values, size_t count
 	FILESYSTEM_Swap32ArrayNativeToLE(values, count);
 
 	if (SDL_WriteIO(dst, values, count * sizeof(int32_t)) != count * sizeof(int32_t)) {
-		ERROR_Set("Error writing file \"%s\": %s", filename, SDL_GetError());
+		if (!SDL_CloseIO(dst)) {
+			ERROR_Set("Error closing file \"%s\" after failing to append to it: %s", filename, SDL_GetError());
+		}
+		else {
+			ERROR_Set("Error appending to file \"%s\": %s", filename, SDL_GetError());
+		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	else if (!SDL_CloseIO(dst)) {

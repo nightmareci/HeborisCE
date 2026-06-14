@@ -15,12 +15,6 @@
 // A special wave number that causes operations to act upon all waves.
 #define AUDIO_WAVE_NUM_ALL -1
 
-// Init the audio system.
-bool AUDIO_Init(int wavesCount);
-
-// Quit the audio system.
-void AUDIO_Quit(void);
-
 // Load a wave. Does not support AUDIO_WAVE_NUM_ALL.
 void AUDIO_LoadWave(int num, const char* filename, bool looping);
 

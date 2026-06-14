@@ -55,12 +55,7 @@ typedef enum INPUT_DeviceType
 	#endif
 } INPUT_DeviceType;
 
-void INPUT_Open(void);
-void INPUT_Close(void);
-
 INPUT_DeviceType INPUT_GetLastDeviceType();
-
-void INPUT_Update(void);
 
 #define INPUT_REPEAT_MAX INT_MAX
 
@@ -89,7 +84,6 @@ typedef enum INPUT_PlayerSlotType
 
 int INPUT_GetNumPlayerSlots(void);
 INPUT_PlayerSlotType INPUT_GetPlayerSlotType(int player);
-bool INPUT_UpdatePlayerSlots(void);
 #endif
 
 #ifdef INPUT_ENABLE_JOYSTICK

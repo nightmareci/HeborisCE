@@ -5,8 +5,6 @@
 
 void MAIN_ResetFrameStep(void);
 
-bool MAIN_Update(void);
-
 void MAIN_SetFPS(uint32_t fps);
 
 int MAIN_GetFPS(void);
@@ -19,18 +17,12 @@ bool MAIN_RenderThisFrame(void);
 
 void MAIN_SetResourceSettings(
 	int waveCount,
-	const char* const* writeDirectories,
+	const char* restrict const* restrict writeDirectories,
 	size_t writeDirectoryCount,
 	int planeCount,
 	int textLayerCount
 );
 
 void MAIN_WaitToFinishLoading(void);
-
-void MAIN_Init(void);
-
-void MAIN_Quit(void);
-
-SDL_NORETURN void MAIN_Exit(SDL_AppResult result);
 
 #endif

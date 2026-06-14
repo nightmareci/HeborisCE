@@ -557,10 +557,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 	temp1 = pl * 60 * 60 * 20;
 
 	replayChunkCnt = ((saveBuf[4] / sizeof(int32_t) - 300) * 2 / REPLAY_PLAYER_CHUNK) + 1;
-	if (!(replayData = SDL_malloc(replayChunkCnt * sizeof(int32_t*)))) {
-		ERROR_Set("Failed allocating replay data");
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
+	replayData = MEM_Allocate(NULL, replayChunkCnt * sizeof(int32_t*), false);
 	for (int32_t j = 0; j < replayChunkCnt; j++) {
 		size_t count;
 		if (j < replayChunkCnt - 1) {
@@ -575,10 +572,7 @@ int32_t loadReplayData(int32_t pl, int32_t number) {
 			count,
 			(300 + j * (REPLAY_PLAYER_CHUNK / 2)) * 1
 		);
-		if (!(replayData[j] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
-			ERROR_Set("Failed allocating replay data");
-			MAIN_Exit(SDL_APP_FAILURE);
-		}
+		replayData[j] = MEM_Allocate(NULL, REPLAY_CHUNK_SIZE, true);
 
 		for(size_t i = 0; i < count; i++) {
 			replayData[j][(i << 1) + temp1    ] =  chunkBuf[i] & 0xFFFF;
@@ -777,15 +771,9 @@ int32_t loadReplay_VS(int32_t number) {
 	max = ((length % SAVEBUF_2P_CHUNK) + (length / (SAVEBUF_2P_CHUNK * 2)) * SAVEBUF_2P_CHUNK) * 2;
 
 	replayChunkCnt = ((max - 1) / REPLAY_PLAYER_CHUNK) + 1;
-	if (!(replayData = SDL_malloc(replayChunkCnt * sizeof(int32_t*)))) {
-		ERROR_Set("Failed allocating replay data");
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
+	replayData = MEM_Allocate(NULL, replayChunkCnt * sizeof(int32_t*), false);
 	for (i = 0; i < replayChunkCnt; i++) {
-		if (!(replayData[i] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
-			ERROR_Set("Failed allocating replay data");
-			MAIN_Exit(SDL_APP_FAILURE);
-		}
+		replayData[i] = MEM_Allocate(NULL, REPLAY_CHUNK_SIZE, true);
 	}
 
 	for (j = 0; j < (max - 1) / 2 / SAVEBUF_2P_CHUNK + 1; j++) {
@@ -817,9 +805,9 @@ int32_t loadReplay_VS(int32_t number) {
 void freeReplayData() {
 	if (replayData) {
 		for (int32_t i = 0u; i < replayChunkCnt; i++) {
-			SDL_free(replayData[i]);
+			MEM_Deallocate(replayData[i]);
 		}
-		SDL_free(replayData);
+		MEM_Deallocate(replayData);
 		replayData = NULL;
 		replayChunkCnt = 0;
 	}
@@ -904,10 +892,10 @@ void ReplaySelectProc(void) {
 			PlaySE(WAVE_SE_CHEER);//歓声
 			gflash[0]=120;
 		}
-		mainLoopState = MAIN_GAME_EXECUTE;
+		mainLoopState = MAIN_LOOP_GAME_EXECUTE;
 		init = true;
 	} else {
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 	}
 }
@@ -1103,7 +1091,7 @@ void ReplaySelect(void) {
 	// Cで詳細
 	if(getPushState(0, INPUT_BUTTON_C)) {
 		PlaySE(WAVE_SE_KETTEI);
-		mainLoopState = MAIN_REPLAY_DETAIL;
+		mainLoopState = MAIN_LOOP_REPLAY_DETAIL;
 		init = true;
 	}
 }
@@ -1510,7 +1498,7 @@ void ReplayDetail() {
 	if(flag < 0 || getPushState(0, INPUT_BUTTON_A) || getPushState(0, INPUT_BUTTON_B)) {
 		PlaySE(WAVE_SE_MOVE);
 		freeReplayData();
-		mainLoopState = MAIN_REPLAY_SELECT;
+		mainLoopState = MAIN_LOOP_REPLAY_SELECT;
 		init = true;
 	}
 }

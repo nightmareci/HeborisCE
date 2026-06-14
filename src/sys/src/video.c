@@ -1,10 +1,12 @@
 #include <video.h>
-#include <build_config.h>
+#include "video_private.h"
 #include <filesystem.h>
 #include <main.h>
+#include "main_private.h"
 #include "global.h"
 #include "bdf.h"
-#include <error.h>
+#include "error.h"
+#include <build_config.h>
 #include <SDL3_image/SDL_image.h>
 
 typedef struct VIDEO_TextLayer
@@ -42,7 +44,7 @@ static int VIDEO_LogicalHeight;
 static int VIDEO_TextLayerCount = 0;
 static VIDEO_TextLayer* VIDEO_TextLayers = NULL;
 
-static int32_t VIDEO_ScreenMode;
+static VIDEO_ScreenModeFlag VIDEO_ScreenMode;
 static int32_t VIDEO_ScreenIndex;
 
 static size_t VIDEO_TextDataLength = 0;
@@ -54,7 +56,7 @@ static int VIDEO_PlaneDrawOffsetY = 0;
 
 static SDL_IOStream* VIDEO_OpenImage(const char* filename, const char** type);
 
-static void VIDEO_InitBDFFonts(void)
+static bool VIDEO_InitBDFFonts(void)
 {
 	const char* const filenames[VIDEO_BDF_FONT_FILE_COUNT] = {
 		"res/font/font10.bdf",
@@ -72,17 +74,17 @@ static void VIDEO_InitBDFFonts(void)
 		}
 		SDL_IOStream* const src = FILESYSTEM_OpenRead(filenames[i]);
 		if (!src) {
-			ERROR_Set("Failed to open font file \"%s\": %s", SDL_GetError());
-			MAIN_Exit(SDL_APP_FAILURE);
+			return ERROR_Set("Failed to open font file \"%s\": %s", SDL_GetError());
 		}
 		VIDEO_BDFFonts[i] = BDF_OpenFont(src);
 		if (!VIDEO_BDFFonts[i]) {
 			SDL_CloseIO(src);
-			ERROR_Set("Failed to load font file \"%s\": %s", filenames[i], SDL_GetError());
-			MAIN_Exit(SDL_APP_FAILURE);
+			return ERROR_Set("Failed to load font file \"%s\": %s", filenames[i], SDL_GetError());
 		}
 		SDL_CloseIO(src);
 	}
+
+	return true;
 }
 
 static void VIDEO_CloseBDFFonts(void)
@@ -95,18 +97,16 @@ static void VIDEO_CloseBDFFonts(void)
 	}
 }
 
-void VIDEO_Init(int planeCount, int textLayerCount)
+bool VIDEO_Init(int planeCount, int textLayerCount)
 {
 	if (planeCount > 0) {
 		VIDEO_Planes = SDL_calloc(planeCount, sizeof(SDL_Texture*));
 		if (!VIDEO_Planes) {
-			ERROR_Set("Failed to allocate memory for planes");
-			MAIN_Exit(SDL_APP_FAILURE);
+			return ERROR_Set("Failed to allocate memory for planes");
 		}
 		VIDEO_PlanesLoadData = SDL_calloc(planeCount, sizeof(VIDEO_LoadPlaneData));
 		if (!VIDEO_PlanesLoadData) {
-			ERROR_Set("Failed to allocate memory for plane loading data");
-			MAIN_Exit(SDL_APP_FAILURE);
+			return ERROR_Set("Failed to allocate memory for plane loading data");
 		}
 		VIDEO_PlaneCount = planeCount;
 	}
@@ -119,8 +119,7 @@ void VIDEO_Init(int planeCount, int textLayerCount)
 	if (textLayerCount > 0) {
 		VIDEO_TextLayers = SDL_calloc(textLayerCount, sizeof(VIDEO_TextLayer));
 		if (!VIDEO_TextLayers) {
-			ERROR_Set("Failed to allocate memory for text layers");
-			MAIN_Exit(SDL_APP_FAILURE);
+			return ERROR_Set("Failed to allocate memory for text layers");
 		}
 		for (int i = 0; i < textLayerCount; i++) {
 			VIDEO_TextLayers[i].color.r = VIDEO_TextLayers[i].color.g = VIDEO_TextLayers[i].color.b = 255;
@@ -134,7 +133,7 @@ void VIDEO_Init(int planeCount, int textLayerCount)
 		VIDEO_TextLayerCount = 0;
 	}
 
-	VIDEO_InitBDFFonts();
+	return VIDEO_InitBDFFonts();
 }
 
 void VIDEO_Quit(void)
@@ -188,6 +187,13 @@ void VIDEO_SetScreen(VIDEO_ScreenModeFlag* screenMode, int32_t* screenIndex)
 	int logicalWidth, logicalHeight;
 	SDL_DisplayID* displays = NULL;
 	SDL_DisplayMode** displayModes = NULL;
+
+	if (!screenMode) {
+		screenMode = &VIDEO_ScreenMode;
+	}
+	if (!screenIndex) {
+		screenIndex = &VIDEO_ScreenIndex;
+	}
 
 	VIDEO_ScreenModeFlag windowType = *screenMode & VIDEO_SCREEN_MODE_WINDOW_TYPE;
 	if (windowType >= VIDEO_SCREEN_MODE_WINDOW_TYPES_COUNT) {
@@ -410,13 +416,6 @@ void VIDEO_SetScreen(VIDEO_ScreenModeFlag* screenMode, int32_t* screenIndex)
 			goto fail;
 		}
 	}
-	if (
-		!SDL_RenderClear(GLOBAL_ScreenRenderer) ||
-		!SDL_RenderPresent(GLOBAL_ScreenRenderer)
-	) {
-		ERROR_Set("Could not do initial render clear of screen: %s", SDL_GetError());
-		goto fail;
-	}
 
 	// Unset the render target, if currently set, for making renderer setting
 	// changes. The render target should only be set once all settings have been
@@ -484,14 +483,6 @@ void VIDEO_SetScreen(VIDEO_ScreenModeFlag* screenMode, int32_t* screenIndex)
 				ERROR_Set("Could not set render target to nearest neighbor texture filtering: %s", SDL_GetError());
 				goto fail;
 			}
-		}
-
-		if (
-			!SDL_SetRenderTarget(GLOBAL_ScreenRenderer, GLOBAL_ScreenRenderTarget) ||
-			!SDL_RenderClear(GLOBAL_ScreenRenderer)
-		) {
-			ERROR_Set("Could not set up render target: %s", SDL_GetError());
-			goto fail;
 		}
 	}
 	else if (GLOBAL_ScreenRenderTarget) {

@@ -1,6 +1,8 @@
 #include <filesystem.h>
+#include "filesystem_private.h"
 #include <main.h>
-#include <error.h>
+#include "main_private.h"
+#include "error.h"
 
 static char* FILESYSTEM_PrefPath = NULL;
 

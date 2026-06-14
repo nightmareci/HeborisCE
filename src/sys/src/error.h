@@ -1,7 +1,7 @@
 #ifndef error_h_
 #define error_h_
 
-#include <stdbool.h>
+#include <stdinc.h>
 
 bool ERROR_FunctionLineSet(const char* function, int line, const char* fmt, ...);
 

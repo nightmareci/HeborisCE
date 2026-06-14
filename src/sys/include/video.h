@@ -35,9 +35,6 @@ typedef enum VIDEO_ScreenIndexMask
 #define VIDEO_SCREEN_HEIGHT 240
 #define VIDEO_SCREEN_WIDE ((float)VIDEO_SCREEN_WIDTH / VIDEO_SCREEN_HEIGHT)
 
-void VIDEO_Init(int planeCount, int textLayerCount);
-void VIDEO_Quit(void);
-
 void VIDEO_SetScreen(VIDEO_ScreenModeFlag* screenMode, int32_t* screenIndex);
 int VIDEO_GetMaxDisplayIndex();
 int VIDEO_GetMaxDisplayMode(int displayIndex);
@@ -77,7 +74,5 @@ void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int src
 void VIDEO_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW);
 
 void VIDEO_SetPlaneDrawOffset(int x, int y);
-
-float VIDEO_GetScreenSubpixelOffset(void);
 
 #endif

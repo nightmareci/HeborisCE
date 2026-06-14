@@ -155,39 +155,38 @@ int quitNow();
 
 void title();
 void backupSetups();
-void gameUpdate();
 void gameExecute();
 void setGamePause(int32_t player, bool pauseSetting);
 
 typedef enum EMainLoopState {
-	MAIN_INIT,
-	MAIN_START,
-	MAIN_INIT_TEXT,
-	MAIN_INIT_LOAD_1,
-	MAIN_INIT_LOAD_2,
-	MAIN_INIT_LOAD_3,
-	MAIN_INIT_LOAD_4,
-	MAIN_INIT_END,
-	MAIN_TITLE,
-	MAIN_GAME_EXECUTE,
-	MAIN_REPLAY_SELECT,
-	MAIN_REPLAY_DETAIL,
-	MAIN_RANKING_1,
-	MAIN_RANKING_2,
-	MAIN_RANKING_3,
-	MAIN_RANKING2_1,
-	MAIN_RANKING2_2,
-	MAIN_RANKING2_3,
-	MAIN_ST_RANKING,
-	MAIN_CONFIG,
-	MAIN_SOUND_TEST,
-	MAIN_TEST_MENU,
+	MAIN_LOOP_START,
+	MAIN_LOOP_INIT_TEXT,
+	MAIN_LOOP_INIT_LOAD_1,
+	MAIN_LOOP_INIT_LOAD_2,
+	MAIN_LOOP_INIT_LOAD_3,
+	MAIN_LOOP_INIT_LOAD_4,
+	MAIN_LOOP_INIT_END,
+	MAIN_LOOP_TITLE,
+	MAIN_LOOP_GAME_EXECUTE,
+	MAIN_LOOP_REPLAY_SELECT,
+	MAIN_LOOP_REPLAY_DETAIL,
+	MAIN_LOOP_RANKING_1,
+	MAIN_LOOP_RANKING_2,
+	MAIN_LOOP_RANKING_3,
+	MAIN_LOOP_RANKING2_1,
+	MAIN_LOOP_RANKING2_2,
+	MAIN_LOOP_RANKING2_3,
+	MAIN_LOOP_ST_RANKING,
+	MAIN_LOOP_CONFIG,
+	MAIN_LOOP_SOUND_TEST,
+	MAIN_LOOP_TEST_MENU,
 	#ifdef INPUT_ENABLE_KEYBOARD
-	MAIN_RESET_KEYBOARD,
+	MAIN_LOOP_RESET_KEYBOARD,
 	#endif
-	MAIN_QUIT
+	MAIN_LOOP_QUIT
 } EMainLoopState;
 
+extern GAME_UpdateResult updateResult;
 extern bool init;
 extern EMainLoopState mainLoopState;
 extern EMainLoopState lastRankingMainLoopState;
@@ -799,7 +798,6 @@ extern int32_t ctime[2];
 extern int32_t gametime[2],timeOn[2];
 void shutDown();
 void spriteTime();
-extern bool loopFlag;
 extern bool quitNowFlag;
 
 #endif

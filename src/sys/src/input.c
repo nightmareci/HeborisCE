@@ -1,11 +1,10 @@
 // TODO: Explicitly handle GameCube controllers. So, handle SDL_GAMEPAD_TYPE_GAMECUBE for input type. Rename INPUT_DEVICE_TYPE_NINTENDO => INPUT_DEVICE_TYPE_SNES, add INPUT_DEVICE_TYPE_GAMECUBE
 
 #include <input.h>
-#include <error.h>
+#include "error.h"
 #ifdef INPUT_ENABLE_GAME_CONTROLLER_DB
 #include <filesystem.h>
 #endif
-#include <main.h>
 
 #ifdef INPUT_ONLY_DEVICE_TYPE
 static INPUT_DeviceType INPUT_LastDeviceType = INPUT_ONLY_DEVICE_TYPE;
@@ -1592,7 +1591,7 @@ bool INPUT_GetConKeyDesc(int player, const INPUT_ConKey* key, const char** text,
 }
 #endif
 
-void INPUT_Open(void)
+bool INPUT_Open(void)
 {
 	#ifdef ENABLE_LINUXGPIO
 	const char* const chipName = "gpiochip0";
@@ -1648,36 +1647,35 @@ void INPUT_Open(void)
 	#endif
 
 	#ifdef INPUT_ENABLE_GAME_CONTROLLER_DB
-	if (!FILESYSTEM_FileExists("gamecontrollerdb.txt")) {
-		SDL_Log("Missing game controller configurations file gamecontrollerdb.txt");
-		return;
-	}
-
-	SDL_IOStream* const db = FILESYSTEM_OpenRead("gamecontrollerdb.txt");
-	if (db) {
-		const Sint64 size = SDL_GetIOSize(db);
-		if (size > 0) {
-			if (SDL_AddGamepadMappingsFromIO(db, true) < 0) {
-				ERROR_Set("Failed adding game controller configurations from file gamecontrollerdb.txt: %s", SDL_GetError());
-				MAIN_Exit(SDL_APP_FAILURE);
+	if (FILESYSTEM_FileExists("gamecontrollerdb.txt")) {
+		SDL_IOStream* const db = FILESYSTEM_OpenRead("gamecontrollerdb.txt");
+		if (db) {
+			const Sint64 size = SDL_GetIOSize(db);
+			if (size > 0) {
+				if (SDL_AddGamepadMappingsFromIO(db, true) < 0) {
+					return ERROR_Set("Failed adding game controller configurations from file gamecontrollerdb.txt: %s", SDL_GetError());
+				}
+				SDL_Log("Added game controller configurations from file gamecontrollerdb.txt");
 			}
-			SDL_Log("Added game controller configurations from file gamecontrollerdb.txt");
-		}
-		else if (size == 0) {
-			SDL_Log("No game controller configurations in file gamecontrollerdb.txt");
-			SDL_CloseIO(db);
+			else if (size == 0) {
+				SDL_Log("No game controller configurations in file gamecontrollerdb.txt");
+				SDL_CloseIO(db);
+			}
+			else {
+				SDL_CloseIO(db);
+				return ERROR_Set("Failed getting size of game controller configurations file gamecontrollerdb.txt: %s", SDL_GetError());
+			}
 		}
 		else {
-			SDL_CloseIO(db);
-			ERROR_Set("Failed getting size of game controller configurations file gamecontrollerdb.txt: %s", SDL_GetError());
-			MAIN_Exit(SDL_APP_FAILURE);
+			return ERROR_Set("Error opening file gamecontrollerdb.txt: %s", SDL_GetError());
 		}
 	}
 	else {
-		ERROR_Set("Error opening file gamecontrollerdb.txt: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
+		SDL_Log("Missing game controller configurations file gamecontrollerdb.txt");
 	}
 	#endif
+
+	return true;
 }
 
 void INPUT_Close(void)

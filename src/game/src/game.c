@@ -362,8 +362,10 @@ C7U8EX YGS2K
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  グローバル変数の定義
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
+GAME_UpdateResult
+		updateResult = GAME_UPDATE_CONTINUE;
 bool		init = true;				// Indicates if the current frame should do initialization for its FSM state. Once initialization is done, the FSM state should set this false; when it's time to transition to the next state, this should be set to true.
-EMainLoopState	mainLoopState = MAIN_INIT;		// The FSM state controlling the main loop.
+EMainLoopState	mainLoopState = MAIN_LOOP_START;		// The FSM state controlling the main loop.
 
 int32_t		bgmteisiflg = 0;			//bgm teisi
 int32_t		count;					// グローバルカウンタ (フレーム単位、65535まで)
@@ -1407,7 +1409,6 @@ int32_t		fldisno = 44;		//fldiにおいてスクウェア用の画像がある�
 int32_t		fldigsno = 45;		//fldiにおいてGOLDENスクウェア用の画像がある場所
 int32_t		fldihardno = 43;	//fldiにおいてハードブロックの画像がある場所
 
-bool	loopFlag = true;			// false になると何もかも無理矢理抜ける
 bool	quitNowFlag = false;
 #ifdef INPUT_ENABLE_KEYBOARD
 bool	enterResetKeys = false;
@@ -1449,34 +1450,24 @@ static const char* const writeDirectories[] = {
 	"config/stage"
 };
 
-//▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
-//  The main game update function.
-//  One call does one frame update.
-//  Call repeatedly to run the game.
-//▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void gameUpdate() {
+void GAME_Init(void)
+{
+	MAIN_SetResourceSettings(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories), PLANE_COUNT, TEXT_LAYER_COUNT);
+}
+
+GAME_UpdateResult GAME_Update(void)
+{
 	static int x, y;
 
 	skipSpriteTime:
 
 	switch (mainLoopState) {
 	default:
-	case MAIN_INIT:
-		mainLoopState = MAIN_START;
-		MAIN_SetResourceSettings(WAVE_COUNT, writeDirectories, SDL_arraysize(writeDirectories), PLANE_COUNT, TEXT_LAYER_COUNT);
-		goto skipSpriteTime;
-
-	case MAIN_START: {
+	case MAIN_LOOP_START: {
 		restart = 0;
-		mainLoopState = MAIN_INIT_TEXT;
+		mainLoopState = MAIN_LOOP_INIT_TEXT;
 		init = true;
-		loopFlag = true;
 
-		if (load) {
-			MAIN_Quit();
-		}
-
-		MAIN_Init();
 		if (AUDIO_IsMusicPlaying()) AUDIO_StopMusic();
 		gameInit();
 		if(LoadConfig()) {	//CONFIG.SAVより設定をロード
@@ -1497,9 +1488,9 @@ void gameUpdate() {
 		break;
 	}
 
-	case MAIN_INIT_TEXT:
+	case MAIN_LOOP_INIT_TEXT:
 		MAIN_ResetFrameStep();
-		mainLoopState = MAIN_INIT_LOAD_1;
+		mainLoopState = MAIN_LOOP_INIT_LOAD_1;
 
 		for ( int layer = 1 ; layer <= 5 ; layer ++ )
 		{
@@ -1514,9 +1505,9 @@ void gameUpdate() {
 		}
 		break;
 
-	case MAIN_INIT_LOAD_1: {
+	case MAIN_LOOP_INIT_LOAD_1: {
 		MAIN_ResetFrameStep();
-		mainLoopState = MAIN_INIT_LOAD_2;
+		mainLoopState = MAIN_LOOP_INIT_LOAD_2;
 
 		hnext[0] = dispnext;	// #1.60c7o8
 		hnext[1] = dispnext;	// #1.60c7o8
@@ -1550,9 +1541,9 @@ void gameUpdate() {
 		break;
 	}
 
-	case MAIN_INIT_LOAD_2:
+	case MAIN_LOOP_INIT_LOAD_2:
 		MAIN_ResetFrameStep();
-		mainLoopState = MAIN_INIT_LOAD_3;
+		mainLoopState = MAIN_LOOP_INIT_LOAD_3;
 
 		loadGraphics(maxPlay);
 
@@ -1571,9 +1562,9 @@ void gameUpdate() {
 		}
 		break;
 
-	case MAIN_INIT_LOAD_3:
+	case MAIN_LOOP_INIT_LOAD_3:
 		MAIN_ResetFrameStep();
-		mainLoopState = MAIN_INIT_END;
+		mainLoopState = MAIN_LOOP_INIT_END;
 
 		// 効果音読み込み
 		if(se) {
@@ -1601,8 +1592,8 @@ void gameUpdate() {
 		}
 		break;
 
-	case MAIN_INIT_END: {
-		mainLoopState = MAIN_TITLE;
+	case MAIN_LOOP_INIT_END: {
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 
 		// BGM読み込み
@@ -1610,7 +1601,7 @@ void gameUpdate() {
 			loadBGM();	// #1.60c7s6
 		}
 		else {
-			memset(bgmload, 0, sizeof(bgmload));
+			SDL_memset(bgmload, 0, sizeof(bgmload));
 		}
 
 		for ( int32_t layer = 1 ; layer <= 5 ; layer ++ )
@@ -1669,65 +1660,65 @@ void gameUpdate() {
 		goto skipSpriteTime;
 	}
 
-	case MAIN_TITLE:
+	case MAIN_LOOP_TITLE:
 		load = 0;
 		title();
 		break;
 
-	case MAIN_GAME_EXECUTE:
+	case MAIN_LOOP_GAME_EXECUTE:
 		gameExecute();
 		break;
 
-	case MAIN_REPLAY_SELECT:
+	case MAIN_LOOP_REPLAY_SELECT:
 		ReplaySelectProc();
 		break;
 
-	case MAIN_REPLAY_DETAIL:
+	case MAIN_LOOP_REPLAY_DETAIL:
 		ReplayDetail();
 		break;
 
-	case MAIN_RANKING2_1:
+	case MAIN_LOOP_RANKING2_1:
 		RankingProc2_1();
 		break;
 
-	case MAIN_RANKING2_2:
+	case MAIN_LOOP_RANKING2_2:
 		RankingProc2_2();
 		break;
 
-	case MAIN_RANKING2_3:
+	case MAIN_LOOP_RANKING2_3:
 		RankingProc2_3();
 		break;
 
-	case MAIN_RANKING_1:
+	case MAIN_LOOP_RANKING_1:
 		RankingProc_1();
 		break;
 
-	case MAIN_RANKING_2:
+	case MAIN_LOOP_RANKING_2:
 		RankingProc_2();
 		break;
 
-	case MAIN_RANKING_3:
+	case MAIN_LOOP_RANKING_3:
 		RankingProc_3();
 		break;
 
-	case MAIN_ST_RANKING:
+	case MAIN_LOOP_ST_RANKING:
 		ST_RankingView();
 		break;
 
-	case MAIN_CONFIG:
+	case MAIN_LOOP_CONFIG:
 		ConfigMenu();
 		break;
 
-	case MAIN_SOUND_TEST:
+	case MAIN_LOOP_SOUND_TEST:
 		SoundTestProc();
 		break;
 
-	case MAIN_TEST_MENU:
+	case MAIN_LOOP_TEST_MENU:
 		testmenu();
 		break;
 
 	#ifdef INPUT_ENABLE_KEYBOARD
-	case MAIN_RESET_KEYBOARD: {
+	case MAIN_LOOP_RESET_KEYBOARD: {
 		const char* const lines[] = {
 			"RESET KEYBOARD INPUT SETTING?",
 			"ENTER  : YES",
@@ -1738,13 +1729,9 @@ void gameUpdate() {
 			2,
 			1
 		};
-		for (size_t i = 0; i < sizeof(lines) / sizeof(*lines); i++) {
+		for (size_t i = 0; i < SDL_arraysize(lines); i++) {
 			size_t len = SDL_strlen(lines[i]);
-			if (len > INT32_MIN + 40) {
-				ERROR_Set("lines[%zu] is too long", i);
-				MAIN_Exit(SDL_APP_FAILURE);
-			}
-			printFont((40 - (int32_t)len) / 2, (30 - (int32_t)(sizeof(lines) / sizeof(*lines)) * 2) / 2 + (int32_t)i * 2, lines[i], colors[i]);
+			printFont((40 - (int32_t)len) / 2, (30 - (int32_t)SDL_arraysize(lines) * 2) / 2 + (int32_t)i * 2, lines[i], colors[i]);
 		}
 
 		if (
@@ -1763,9 +1750,7 @@ void gameUpdate() {
 			quitNowFlag = false;
 			resetKeysFlag = false;
 			lastEscapeFrames = 0;
-			loopFlag = true;
-			restart = 1;
-			mainLoopState = MAIN_START;
+			mainLoopState = MAIN_LOOP_START;
 		}
 		if (enterResetKeys) {
 			if (!INPUT_IsPressKey(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL)) && !INPUT_IsPressKey(SDL_GetScancodeFromKey(SDLK_RETURN, NULL))) {
@@ -1780,12 +1765,19 @@ void gameUpdate() {
 	}
 	#endif
 
-	case MAIN_QUIT:
-		MAIN_Exit(SDL_APP_SUCCESS);
+	case MAIN_LOOP_QUIT:
+		updateResult = GAME_UPDATE_QUIT;
 		break;
 	}
 
 	spriteTime();
+	if (updateResult == GAME_UPDATE_RELOAD) {
+		updateResult = GAME_UPDATE_CONTINUE;
+		return GAME_UPDATE_RELOAD;
+	}
+	else {
+		return updateResult;
+	}
 }
 
 void gameExecute() {
@@ -1825,7 +1817,7 @@ void gameExecute() {
 			flag = 1;
 			freeReplayData();
 
-			mainLoopState = MAIN_TITLE;
+			mainLoopState = MAIN_LOOP_TITLE;
 			init = true;
 			// stop music.
 			if (AUDIO_IsMusicPlaying())
@@ -1886,7 +1878,7 @@ void gameExecute() {
 		hnext[0] = dispnext;
 		hnext[1] = dispnext;
 
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 		// stop music.
 		if (AUDIO_IsMusicPlaying())
@@ -2006,20 +1998,20 @@ bool lastProc(void) {
 			if(ranking_type==0){//demotimeはデモ表示回数
 				category = demotime;
 				resumeAfterRanking = 1;
-				mainLoopState = MAIN_RANKING_1;
+				mainLoopState = MAIN_LOOP_RANKING_1;
 				init = true;
 				return true;
 			}else if(ranking_type==1){
 				category = demotime;
 				resumeAfterRanking = 1;
-				mainLoopState = MAIN_RANKING_2;
+				mainLoopState = MAIN_LOOP_RANKING_2;
 				init = true;
 				return true;
 			}else{
 				category = demotime;
 				rkpages2 = 0;
 				resumeAfterRanking = 1;
-				mainLoopState = MAIN_RANKING_3;
+				mainLoopState = MAIN_LOOP_RANKING_3;
 				init = true;
 				return true;
 			}
@@ -2271,13 +2263,13 @@ void title(void) {
 
 		// HOLDボタンでサウンドテスト#1.60c7c
 		if(getPushState(0, INPUT_BUTTON_D)) {
-			mainLoopState = MAIN_SOUND_TEST;
+			mainLoopState = MAIN_LOOP_SOUND_TEST;
 			init = true;
 		}
 
 		// Cボタンでテストメニュー#1.60c7i4
 		if(getPushState(0, INPUT_BUTTON_C)) {
-			mainLoopState = MAIN_TEST_MENU;
+			mainLoopState = MAIN_LOOP_TEST_MENU;
 			//testmenu();
 			//if(restart) mode = 2;
 		}
@@ -2285,7 +2277,7 @@ void title(void) {
 		// 入力待ちの時だけデモ画面へ#1.60c7g4
 		if(democ > 1000) {
 			doDemoMode();
-			mainLoopState = MAIN_GAME_EXECUTE;
+			mainLoopState = MAIN_LOOP_GAME_EXECUTE;
 			init = true;
 		}
 	} else if(mode == 1) {
@@ -2420,7 +2412,7 @@ void title(void) {
 				// ソロモード
 				if(game == 0) {
 					enterSoloMode(player);
-					mainLoopState = MAIN_GAME_EXECUTE;
+					mainLoopState = MAIN_LOOP_GAME_EXECUTE;
 					init = true;
 					return;
 				// 対戦モード #1.60c7g1
@@ -2442,47 +2434,47 @@ void title(void) {
 					enterVersusMode();
 					setStartLevel(0);
 					setStartLevel(1);
-					mainLoopState = MAIN_GAME_EXECUTE;
+					mainLoopState = MAIN_LOOP_GAME_EXECUTE;
 					init = true;
 					return;
 				// プラクティスモード
 				} else if(game == 2) {
 					enterPracticeMode();
-					mainLoopState = MAIN_GAME_EXECUTE;
+					mainLoopState = MAIN_LOOP_GAME_EXECUTE;
 					init = true;
 					return;
 				// ミッションモード
 				} else if(game == 3) {
 					enterMissionMode();
-					mainLoopState = MAIN_GAME_EXECUTE;
+					mainLoopState = MAIN_LOOP_GAME_EXECUTE;
 					init = true;
 					return;
 				// リプレイ
 				} else if(game == 4) {
 					domirror = 0;	// 直後に選択画面に移行するため、鏡像を無効
-					mainLoopState = MAIN_REPLAY_SELECT;
+					mainLoopState = MAIN_LOOP_REPLAY_SELECT;
 					init = true;
 					return;
 				// ランキング
 				} else if(game == 5) {
 					rankingmode = 0;
 					if(ranking_type==0){
-						mainLoopState = MAIN_RANKING2_1;
+						mainLoopState = MAIN_LOOP_RANKING2_1;
 					}else if(ranking_type==1){
-						mainLoopState = MAIN_RANKING2_2;
+						mainLoopState = MAIN_LOOP_RANKING2_2;
 					}else{
-						mainLoopState = MAIN_RANKING2_3;
+						mainLoopState = MAIN_LOOP_RANKING2_3;
 					}
 					init = true;
 					return;
 				// セクションタイムランキング
 				} else if(game == 6) {
-					mainLoopState = MAIN_ST_RANKING;
+					mainLoopState = MAIN_LOOP_ST_RANKING;
 					init = true;
 					return;
 				// 設定
 				} else if(game == 7) {
-					mainLoopState = MAIN_CONFIG;
+					mainLoopState = MAIN_LOOP_CONFIG;
 					init = true;
 					return;
 #ifdef GAME_ENABLE_QUIT
@@ -2501,8 +2493,7 @@ void title(void) {
 		}
 	} else {
 		// モード2: ループから抜ける
-		loopFlag = 0;
-		mainLoopState = MAIN_QUIT;
+		mainLoopState = MAIN_LOOP_QUIT;
 	}
 }
 
@@ -4314,13 +4305,13 @@ bool playerExecute(void) {
 				if(ranking_type==0){
 					category = gameMode[0];
 					resumeAfterRanking = 1;
-					mainLoopState = MAIN_RANKING_1;
+					mainLoopState = MAIN_LOOP_RANKING_1;
 					init = true;
 					return true;
 				}else if(ranking_type==1){
 					category = gameMode[0];
 					resumeAfterRanking = 1;
-					mainLoopState = MAIN_RANKING_2;
+					mainLoopState = MAIN_LOOP_RANKING_2;
 					init = true;
 					return true;
 				}else{
@@ -4331,7 +4322,7 @@ bool playerExecute(void) {
 						rkpages2=0;
 					}
 					resumeAfterRanking = 1;
-					mainLoopState = MAIN_RANKING_3;
+					mainLoopState = MAIN_LOOP_RANKING_3;
 					init = true;
 					return true;
 				}
@@ -4601,19 +4592,8 @@ void increment_time(int32_t player) {
 				((gameMode[0] != 4 || gameMode[1] != 4) && time2[player] == replayChunkCnt * REPLAY_PLAYER_CHUNK) ||
 				(gameMode[0] == 4 && gameMode[1] == 4 && time2[0] == time2[1] && time2[0] == replayChunkCnt * REPLAY_PLAYER_CHUNK)
 			) {
-				int32_t** oldReplayData = replayData;
-				if (!(replayData = SDL_malloc(sizeof(int32_t*) * (replayChunkCnt + 1)))) {
-					ERROR_Set("Could not allocate memory for replay");
-					MAIN_Exit(SDL_APP_FAILURE);
-				}
-				if (oldReplayData) {
-					SDL_memcpy(replayData, oldReplayData, sizeof(int32_t*) * replayChunkCnt);
-					SDL_free(oldReplayData);
-				}
-				if (!(replayData[replayChunkCnt] = SDL_calloc(REPLAY_CHUNK_SIZE, 1u))) {
-					ERROR_Set("Could not allocate memory for replay");
-					MAIN_Exit(SDL_APP_FAILURE);
-				}
+				replayData = MEM_Allocate(replayData, sizeof(int32_t*) * (replayChunkCnt + 1), false);
+				replayData[replayChunkCnt] = MEM_Allocate(NULL, REPLAY_CHUNK_SIZE, true);
 				replayChunkCnt++;
 			}
 
@@ -16129,8 +16109,7 @@ int quitNow() {
 	if (lastEscapeFrames >= 60) {
 		enterResetKeys = true;
 		resetKeysFlag = true;
-		loopFlag = false;
-		mainLoopState = MAIN_RESET_KEYBOARD;
+		mainLoopState = MAIN_LOOP_RESET_KEYBOARD;
 	}
 	#ifdef GAME_ENABLE_QUIT
 	return quitNowFlag || (lastEscapeFrames > 0 && lastEscapeFrames < 60 && escapeFrames == 0);
@@ -16430,7 +16409,7 @@ void testmenu(void) {
 
 		// Bで戻る
 		if( getPushState(0, INPUT_BUTTON_B) ) {
-			mainLoopState = MAIN_TITLE;
+			mainLoopState = MAIN_LOOP_TITLE;
 			init = true;
 						// stop music.
 						if (AUDIO_IsMusicPlaying())
@@ -16547,7 +16526,7 @@ void testmenu(void) {
 		if( getPushState(0, INPUT_BUTTON_B) ) {
 			mode = 0;
 			if (param==1) {
-				mainLoopState = MAIN_TITLE;
+				mainLoopState = MAIN_LOOP_TITLE;
 				init = true;
 				// stop music.
 				if (AUDIO_IsMusicPlaying()) AUDIO_StopMusic();
@@ -17113,13 +17092,12 @@ void spriteTime() {
 	ClearSecondary();
 #endif
 
-	if (quitNow() || !MAIN_Update()) {
+	if (quitNow()) {
 		shutDown();
-		mainLoopState = MAIN_QUIT;
+		mainLoopState = MAIN_LOOP_QUIT;
 		init = true;
 		return;
 	}
-	INPUT_Update();
 
 	#ifdef INPUT_ENABLE_KEYBOARD
 	updateEscapeFrames();

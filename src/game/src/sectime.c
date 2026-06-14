@@ -406,7 +406,7 @@ void ST_RankingView() {
 
 	if(getPushState(0, INPUT_BUTTON_A) || getPushState(0, INPUT_BUTTON_B)) {
 		// AかBで戻る
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 		return;
 	}

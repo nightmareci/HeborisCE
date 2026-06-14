@@ -171,7 +171,7 @@ void RankingProc2_1(void) {
 
 		RankingView();
 	} else {
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 	}
 }

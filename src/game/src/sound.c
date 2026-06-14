@@ -418,7 +418,7 @@ void SoundTestProc(void) {
 			if(AUDIO_IsMusicPlaying()) AUDIO_ResumeMusic();
 		} else AUDIO_PlayWave(WAVE_BGM_TITLE);//タイトルBGM
 
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 	}
 }

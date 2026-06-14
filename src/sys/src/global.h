@@ -1,7 +1,7 @@
 #ifndef global_h_
 #define global_h_
 
-#include <worker.h>
+#include "worker.h"
 #include <SDL3/SDL_video.h>
 #include <SDL3/SDL_render.h>
 

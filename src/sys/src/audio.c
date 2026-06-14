@@ -1,7 +1,9 @@
 #include <audio.h>
+#include "audio_private.h"
 #include <filesystem.h>
 #include <main.h>
-#include <error.h>
+#include "error.h"
+#include "main_private.h"
 #include <SDL3_mixer/SDL_mixer.h>
 
 typedef struct AUDIO_Wave

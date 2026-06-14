@@ -1,7 +1,7 @@
 #include "common.h"
 
-VIDEO_ScreenModeFlag screenMode;	// スクリーンモード
-int32_t screenIndex;		// スクリーンインデックス
+VIDEO_ScreenModeFlag screenMode = 0;	// スクリーンモード
+int32_t screenIndex = 0;		// スクリーンインデックス
 int32_t nextblock;		// ツモ
 uint32_t cfgversion;		// 設定ファイルフォーマットのバージョン番号です。
 int32_t smooth;			// ブロック落下	0:ノーマル 1:スムーズ
@@ -867,6 +867,9 @@ void ConfigMenu() {
 
 				if(need_reset) {
 					restart = 1;	// 再起動フラグ
+					if (load) {
+						updateResult = GAME_UPDATE_RELOAD;
+					}
 				} else if(need_reloadBG==1){	//プレイする最大人数の変更があったら…
 					loadBG(maxPlay);			// 背景だけ再読み込み C7T2.5EX
 				}
@@ -1823,12 +1826,8 @@ void ConfigMenu() {
 							};
 							SDL_snprintf(string[0], STRING_LENGTH, "%" PRId32 "P:", conPlayer + 1);
 							printFont(5, 6 + i, string[0], digitc[rotspl[0]]);
-							size_t len = SDL_strlen(string[0]);
-							if (len > INT32_MAX - 5) {
-								ERROR_Set("string[0] too long");
-								MAIN_Exit(SDL_APP_FAILURE);
-							}
-							printConKey(5 + (int32_t)len, 6 + i, conPlayer, &key, digitc[rotspl[0]]);
+							int32_t len = (int32_t)SDL_strlen(string[0]);
+							printConKey(5 + len, 6 + i, conPlayer, &key, digitc[rotspl[0]]);
 						}
 					}
 					if(statusc[0] < INPUT_BUTTON_GAME_COUNT) {
@@ -2023,19 +2022,11 @@ void ConfigMenu() {
 					if (INPUT_GetPlayerSlotType(pl) == INPUT_PLAYER_SLOT_CON && (conKey.type == INPUT_CON_KEY_AXIS || conKey.type == INPUT_CON_KEY_BUTTON)) {
 						if (string[0][0] != '\0') printFont(5, 7 + i + pl * 10, string[0], 0);
 						SDL_snprintf(string[1], STRING_LENGTH, " CON%" PRId32 "P:", pl + 1);
-						size_t len = SDL_strlen(string[0]);
-						if (len > INT32_MAX - 5) {
-							ERROR_Set("string[0] too long");
-							MAIN_Exit(SDL_APP_FAILURE);
-						}
-						int32_t x = 5 + (int32_t)len;
+						int32_t len = (int32_t)SDL_strlen(string[0]);
+						int32_t x = 5 + len;
 						printFont(x, 7 + i + pl * 10, string[1], 0);
-						len = SDL_strlen(string[1]);
-						if (len > INT32_MAX - x) {
-							ERROR_Set("string[1] too long");
-							MAIN_Exit(SDL_APP_FAILURE);
-						}
-						printConKey(x + (int32_t)len, 7 + i + pl * 10, pl, &conKey, 0);
+						len = (int32_t)SDL_strlen(string[1]);
+						printConKey(x + len, 7 + i + pl * 10, pl, &conKey, 0);
 					}
 					else {
 						if (string[0][0] == '\0') SDL_snprintf(string[0], STRING_LENGTH, " NO ASSIGN");
@@ -2362,12 +2353,12 @@ void ConfigMenu() {
 	}
 
 	if(restart) {
-		mainLoopState = MAIN_START;
+		mainLoopState = MAIN_LOOP_START;
 		return;
 	}
 	// exit setting menu
 	else if(status[0] == -1) {
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 	}
 }

@@ -200,7 +200,7 @@ void RankingProc2_2() {
 
 	// AかBで戻る
 	if( getPushState(0, INPUT_BUTTON_A) || getPushState(0, INPUT_BUTTON_B) || getPushState(1, INPUT_BUTTON_A) || getPushState(1, INPUT_BUTTON_B) ) {
-		mainLoopState = MAIN_TITLE;
+		mainLoopState = MAIN_LOOP_TITLE;
 		init = true;
 	}
 

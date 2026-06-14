@@ -12,7 +12,7 @@
 // Increase by 1 if a format change breaks compatibility.
 #define CFG_VERSION 4u
 
-void ConfigMenu();
+void ConfigMenu(void);
 int32_t LoadConfig(void);
 int32_t SaveConfig(void);
 uint32_t ConfigChecksum(int32_t *cfgbuf);

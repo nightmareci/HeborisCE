@@ -802,7 +802,7 @@ int32_t loadReplay_VS(int32_t number) {
 	return (0);
 }
 
-void freeReplayData() {
+void freeReplayData(void) {
 	if (replayData) {
 		for (int32_t i = 0u; i < replayChunkCnt; i++) {
 			MEM_Deallocate(replayData[i]);
@@ -1097,7 +1097,7 @@ void ReplaySelect(void) {
 }
 
 // リプレイ詳細 #1.60c7p5
-void ReplayDetail() {
+void ReplayDetail(void) {
 	if (init) {
 		// リプレイデータ読み込み
 		loadReplayData(0, csr + 1);

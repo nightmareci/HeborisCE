@@ -375,7 +375,7 @@ uint32_t ConfigChecksum(int32_t *cfgbuf) {
 }
 
 
-void ConfigMenu() {
+void ConfigMenu(void) {
 	static int32_t m, conPlayer, n, pages;
 	static int32_t ncfg[CFG_LENGTH];
 	static int32_t need_reset;	// 設定保存時にリセットするか

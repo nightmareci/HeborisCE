@@ -55,7 +55,7 @@ typedef enum INPUT_DeviceType
 	#endif
 } INPUT_DeviceType;
 
-INPUT_DeviceType INPUT_GetLastDeviceType();
+INPUT_DeviceType INPUT_GetLastDeviceType(void);
 
 #define INPUT_REPEAT_MAX INT_MAX
 

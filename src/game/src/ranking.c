@@ -103,7 +103,7 @@ void RankingRegist(int32_t rmode, int32_t rtt, int32_t rsc, int32_t rli, int32_t
 	rkfl[temp] = end;
 }
 
-void RankingProc_1() {
+void RankingProc_1(void) {
 	if (init) {
 		count = 0;
 		flag = 0;

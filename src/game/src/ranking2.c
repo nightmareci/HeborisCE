@@ -23,7 +23,7 @@ int32_t		rkre[5 * 15 * 2];		// REメダル #LITE30.2
 int32_t		modecolor[15] = {4,1,1,1,1,5,5,2,2,3,3,0,0,2,9};		// モード名表示色
 
 // ランキング初期化
-void RankingInit2() {
+void RankingInit2(void) {
 	int32_t i;
 
 	for(i = 0; i < (5 * 15 * 2); i++) {
@@ -108,7 +108,7 @@ void RankingRegist2(int32_t rmode, int32_t rrots, int32_t rdata, int32_t rtime, 
 }
 
 // ランキング表示
-void RankingProc_2() {
+void RankingProc_2(void) {
 	if (init) {
 		count = 0;
 		flag = 0;
@@ -166,7 +166,7 @@ void RankingProc_2() {
 	RankingView2();
 }
 
-void RankingProc2_2() {
+void RankingProc2_2(void) {
 	if (init) {
 		category = 0;
 		init = false;
@@ -207,7 +207,7 @@ void RankingProc2_2() {
 	RankingView2();
 }
 
-void RankingView2() {//5位まで
+void RankingView2(void) {//5位まで
 	int32_t i, j;
 
 	// 背景描画
@@ -411,7 +411,7 @@ void RankingView2() {//5位まで
 
 }
 // ランキングを保存
-void RankingSave2() {
+void RankingSave2(void) {
 	int32_t i;
 
 	SDL_memset(saveBuf, 0, 5000 * 4);
@@ -457,7 +457,7 @@ void RankingSave2() {
 }
 
 // ランキングを読み込み
-int32_t RankingLoad2() {
+int32_t RankingLoad2(void) {
 	int32_t i;
 
 	// ヘッダだけ読み込み

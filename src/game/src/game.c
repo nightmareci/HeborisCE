@@ -1780,7 +1780,7 @@ GAME_UpdateResult GAME_Update(void)
 	}
 }
 
-void gameExecute() {
+void gameExecute(void) {
 	static int32_t i;
 
 	switch (resumeAfterRanking) {
@@ -4342,7 +4342,7 @@ bool playerExecute(void) {
 
 /* 捨てゲーする(した場合の戻り値は1、しなかったら0) */
 // playerExecuteから独立#1.60c7j6
-int32_t doGiveup() {
+int32_t doGiveup(void) {
 	int32_t i, tmp1, tmp2;
 
 	// giveup_safety修正 #1.60c7p4
@@ -13051,7 +13051,7 @@ void statVersusSelect(int32_t player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  勝敗決定 #1.60c7g1
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void winner() {
+void winner(void) {
 	int32_t		player, i, j, block, win, obji, c, kosa;
 
 	// BGM停止
@@ -13220,7 +13220,7 @@ void winner() {
 	}
 }
 
-void winner2() {
+void winner2(void) {
 	int32_t		player, j, block, win, obji, c, kosa, sbak[30];
 
 	StopSE(WAVE_SE_HURRYUP);
@@ -16098,13 +16098,13 @@ int IsPushPrompt(INPUT_Prompt prompt)
 }
 
 #ifdef INPUT_ENABLE_KEYBOARD
-void updateEscapeFrames() {
+void updateEscapeFrames(void) {
 	lastEscapeFrames = escapeFrames;
 	escapeFrames = INPUT_GetKeyRepeat(SDL_GetScancodeFromKey(SDLK_ESCAPE, NULL));
 }
 #endif
 
-int quitNow() {
+int quitNow(void) {
 	#ifdef INPUT_ENABLE_KEYBOARD
 	if (lastEscapeFrames >= 60) {
 		enterResetKeys = true;
@@ -16548,7 +16548,7 @@ void LoadGraphic(int32_t plane, const char *nameStr) {
 	VIDEO_LoadPlane(plane, string[0]);
 }
 
-void LoadTitle() {
+void LoadTitle(void) {
 	if (!title_mov_f) {
 		// タイトルは静止画
 		// Title is a still image
@@ -16955,7 +16955,7 @@ void loadBGM(void) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  設定内容をバックアップする
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void backupSetups() {
+void backupSetups(void) {
 	setupBak[0]  = smooth;
 	setupBak[1]  = nanameallow;
 	setupBak[2]  = sonicdrop;
@@ -16989,7 +16989,7 @@ void backupSetups() {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  設定内容をバックアップから戻す
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void restoreSetups() {
+void restoreSetups(void) {
 	smooth	= setupBak[0];
 	nanameallow   = setupBak[1];
 	sonicdrop     = setupBak[2];
@@ -17022,7 +17022,7 @@ void restoreSetups() {
 	use_item[1]   = 0;
 }
 
-void shutDown() {
+void shutDown(void) {
 	maxPlay = tmp_maxPlay;
 	if(playback){
 		restoreSetups();
@@ -17035,7 +17035,7 @@ void shutDown() {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  halt;
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void spriteTime() {
+void spriteTime(void) {
 #if		0
 	int32_t ReSize, i, j;
 

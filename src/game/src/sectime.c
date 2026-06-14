@@ -230,7 +230,7 @@ int32_t ST_rankingGet(int32_t rmode,bool grade3){
 }
 
 // セクションタイムランキング表示
-void ST_RankingView() {
+void ST_RankingView(void) {
 	static int32_t mode;
 
 	if (init) {

@@ -56,11 +56,11 @@ void ExTextLayerOn(int32_t n, int32_t x, int32_t y)
 	 VIDEO_EnableTextLayer(n, x * zoomRate, y * zoomRate);
 }
 
-int32_t getLastDrawRate() {
+int32_t getLastDrawRate(void) {
 	return lastZoomRate;
 }
 
-int32_t getDrawRate() {
+int32_t getDrawRate(void) {
 	return zoomRate;
 }
 

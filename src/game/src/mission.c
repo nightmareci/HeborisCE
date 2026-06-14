@@ -514,7 +514,7 @@ void statMissionEditor(int32_t player) {
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  問題の表示
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void viewMission() {
+void viewMission(void) {
 	int32_t i,tmp,c_tmp,c_tmp1,c_tmp2;
 	tmp = 0;
 
@@ -1174,7 +1174,7 @@ void missionNormUp(int32_t lines) {
 }
 
 /* 問題の設定（落下速度etc）をゲームに反映させる */
-void missionSetStatus() {
+void missionSetStatus(void) {
 	int32_t i;
 	// ノルマ
 	c_norm[0] = 0;
@@ -1459,7 +1459,7 @@ void missionSetStatus() {
 
 
 // イレイサー用初期化
-void setEraserLines() {
+void setEraserLines(void) {
 	int32_t i, tmp,max,min;
 	int32_t line[22];	// ラインの重複防止用
 
@@ -1506,7 +1506,7 @@ void setEraserLines() {
 }
 
 // イレイサーの線を表示
-void viewEraserLines() {
+void viewEraserLines(void) {
 	int32_t i;
 
 	for(i = 0; i < eraser_now_lines; i++) {
@@ -1520,7 +1520,7 @@ void viewEraserLines() {
 }
 
 // ターゲットでのステージ読み込み
-void loadTargetStage() {
+void loadTargetStage(void) {
 	int32_t tmp;
 statusc[0 * 10 + 6] = mission_opt_3[c_mission];
 	if(mission_opt_1[c_mission] == mission_opt_2[c_mission]){	//ステージが1つだけ

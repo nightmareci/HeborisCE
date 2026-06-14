@@ -228,5 +228,4 @@ const char* mission_info_en[42] =
 	"Erase 4 lines at once\non the highlighted line\n%d time(s)!",
 	"Make 4x4 square\n%d time(s)!",
 	"Make 4x4 square\nby only 1 kind block\n%d time(s)!",
-
 };

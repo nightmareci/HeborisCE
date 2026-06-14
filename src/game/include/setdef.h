@@ -4,6 +4,6 @@
 #include <sys.h>
 
 void SetDefaultKeyboardConfig(SDL_Scancode* keys);
-void SetDefaultConfig();
+void SetDefaultConfig(void);
 
 #endif

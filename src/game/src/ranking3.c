@@ -26,7 +26,7 @@ int32_t		rkpage;
 int32_t		rkpages2;
 
 // ランキング初期化
-void RankingInit3() {
+void RankingInit3(void) {
 	int32_t i;
 
 	for(i = 0; i < ( 6*14*2); i++) {
@@ -110,7 +110,7 @@ void RankingRegist3(int32_t rmode, int32_t rex,int32_t rrots, int32_t rdata, int
 
 // ランキング表示(デモ画面、プレイ後に表示)
 // 2pagesはランキング画面が2ページ目
-void RankingProc_3() {
+void RankingProc_3(void) {
 	if (init ) {
 		count = 0;
 		flag = 0;
@@ -161,7 +161,7 @@ void RankingProc_3() {
 	RankingView3();//3位まで表示
 }
 //ランキング表示（自分で項目選択して表示）
-void RankingProc2_3() {
+void RankingProc2_3(void) {
 	if (init) {
 		rkpage = 0;
 		init = false;
@@ -202,7 +202,7 @@ void RankingProc2_3() {
 	RankingView3();
 }
 
-void RankingView3() {//3位まで
+void RankingView3(void) {//3位まで
 	int32_t i, j, l;
 
 	// 背景描画
@@ -471,7 +471,7 @@ void RankingView3() {//3位まで
 	}
 }
 // ランキングを保存
-void RankingSave3() {
+void RankingSave3(void) {
 	int32_t i;
 
 	SDL_memset(saveBuf, 0, 5000 * 4);
@@ -517,7 +517,7 @@ void RankingSave3() {
 }
 
 // ランキングを読み込み
-int32_t RankingLoad3() {
+int32_t RankingLoad3(void) {
 	int32_t i;
 
 	// ヘッダだけ読み込み

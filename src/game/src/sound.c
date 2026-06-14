@@ -51,7 +51,7 @@ void StopSE(WaveNum no) {
 }
 
 // 予約された効果音を全て再生
-void PlayAllSE() {
+void PlayAllSE(void) {
 	int32_t i;
 
 	for(i = 0; i < WAVE_BGM_START; i++) {

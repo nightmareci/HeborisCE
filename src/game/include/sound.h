@@ -103,7 +103,7 @@ int32_t ReplaysetstartBGM(int32_t mode,int32_t pl);
 int32_t setstartBGM_debug(int32_t mode,int32_t pl);
 int32_t BgmModeDecide(int32_t pl,int32_t mode);
 int32_t setstartBGM(int32_t mode,int32_t pl);
-void PlayAllSE();
+void PlayAllSE(void);
 void StopSE(WaveNum no);
 void PlaySE(WaveNum no);
 void StopAllSE(void);

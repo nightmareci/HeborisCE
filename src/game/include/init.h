@@ -174,6 +174,6 @@ extern int32_t debug;
 extern int32_t max_fps_2;
 extern int32_t ccol[7];
 
-void gameInit();
+void gameInit(void);
 
 #endif

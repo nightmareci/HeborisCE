@@ -1078,7 +1078,7 @@ void loadWait(int32_t player, int32_t no) { // hoge heboris.iniで設定され�
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽
 //  プラクティスで死んだとき#1.60cd
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
-void PracticeDeath() {
+void PracticeDeath(void) {
 	int32_t i;
 
 	// FPSを戻す #1.60c7n7

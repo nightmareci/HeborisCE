@@ -36,7 +36,7 @@ typedef enum VIDEO_ScreenIndexMask
 #define VIDEO_SCREEN_WIDE ((float)VIDEO_SCREEN_WIDTH / VIDEO_SCREEN_HEIGHT)
 
 void VIDEO_SetScreen(VIDEO_ScreenModeFlag* screenMode, int32_t* screenIndex);
-int VIDEO_GetMaxDisplayIndex();
+int VIDEO_GetMaxDisplayIndex(void);
 int VIDEO_GetMaxDisplayMode(int displayIndex);
 void VIDEO_GetDisplayMode(int displayIndex, int modeIndex, SDL_DisplayMode* mode);
 const SDL_DisplayMode* VIDEO_GetDesktopDisplayMode(int displayIndex);

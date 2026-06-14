@@ -20,7 +20,7 @@
 
 void loadBG(int32_t players);
 void LoadBackground(int32_t plane,const char *nameStr);
-void LoadTitle();
+void LoadTitle(void);
 void loadBGM(void);
 void loadWaves(void);
 void loadGraphics(int32_t players);
@@ -105,9 +105,9 @@ void statBlockSutter(int32_t player);
 void statJoinwait(int32_t player);
 int32_t checkFieldTop(int32_t player);
 void recFaultTime(int32_t player);
-void winner2();
-void winner();
-int32_t doGiveup();
+void winner2(void);
+void winner(void);
+int32_t doGiveup(void);
 int32_t gameRand(int32_t max,int32_t player);
 int32_t isWRule(int32_t player);
 void tgmNextInit(int32_t player);
@@ -132,7 +132,7 @@ void doDemoMode(void);
 void testmenu(void);
 bool lastProc(void);
 bool playerExecute(void);
-void restoreSetups();
+void restoreSetups(void);
 
 int32_t getPressState(int32_t player, INPUT_Button key);
 int32_t getPushState(int32_t player, INPUT_Button key);
@@ -149,13 +149,13 @@ int IsPushConTypeKey(INPUT_DeviceType type, INPUT_ConKey* key);
 #endif
 
 #ifdef INPUT_ENABLE_KEYBOARD
-void updateEscapeFrames();
+void updateEscapeFrames(void);
 #endif
-int quitNow();
+int quitNow(void);
 
-void title();
-void backupSetups();
-void gameExecute();
+void title(void);
+void backupSetups(void);
+void gameExecute(void);
 void setGamePause(int32_t player, bool pauseSetting);
 
 typedef enum EMainLoopState {
@@ -796,8 +796,8 @@ extern int32_t wait1[2],wait2[2];
 extern int32_t stime[2];
 extern int32_t ctime[2];
 extern int32_t gametime[2],timeOn[2];
-void shutDown();
-void spriteTime();
+void shutDown(void);
+void spriteTime(void);
 extern bool quitNowFlag;
 
 #endif

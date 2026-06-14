@@ -6,7 +6,7 @@
 int32_t PlayerdataLoad(void);
 void PlayerdataSave(void);
 void getSTime(int32_t time);
-void ST_RankingView();
+void ST_RankingView(void);
 void printSMALLFont(int32_t fontX,int32_t fontY,const char *fontStr,int32_t fontColor);
 void viewbestSTtimes(int32_t player);
 void getTime(int32_t time);

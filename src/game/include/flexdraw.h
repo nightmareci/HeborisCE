@@ -20,8 +20,8 @@ void ExTextLayerSize(int32_t n,int32_t size);
 void ExTextLayerMove(int32_t n,int32_t x,int32_t y);
 void ExTextLayerOn(int32_t n,int32_t x,int32_t y);
 
-int32_t getLastDrawRate();
-int32_t getDrawRate();
+int32_t getLastDrawRate(void);
+int32_t getDrawRate(void);
 void setDrawRate(int32_t size);
 
 #endif

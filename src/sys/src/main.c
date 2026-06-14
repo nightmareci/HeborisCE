@@ -416,11 +416,12 @@ SDL_AppResult SDLCALL SDL_AppIterate(void* appstate)
 void SDLCALL SDL_AppQuit(void* appstate, SDL_AppResult result)
 {
 	(void)appstate;
-	MEM_Cleanup();
 	if (result == SDL_APP_FAILURE) {
 		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", SDL_GetError());
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, PROJECT_TITLE " Error", SDL_GetError(), GLOBAL_ScreenWindow);
 	}
+	MAIN_Unload();
+	MEM_Cleanup();
 }
 
 void MAIN_ResetFrameStep(void)

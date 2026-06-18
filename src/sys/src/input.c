@@ -3,7 +3,7 @@
 #include <input.h>
 #include "error.h"
 #ifdef INPUT_ENABLE_GAME_CONTROLLER_DB
-#include <filesystem.h>
+#include "filesystem_private.h"
 #endif
 
 #ifdef INPUT_ONLY_DEVICE_TYPE

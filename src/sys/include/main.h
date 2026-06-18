@@ -13,8 +13,6 @@ int MAIN_GetRealFPS(void);
 
 void MAIN_SetRenderWhileSkippingFrames(bool render);
 
-bool MAIN_RenderThisFrame(void);
-
 void MAIN_SetResourceSettings(
 	int waveCount,
 	const char* restrict const* restrict writeDirectories,

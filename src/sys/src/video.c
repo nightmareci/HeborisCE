@@ -1,6 +1,6 @@
 #include <video.h>
 #include "video_private.h"
-#include <filesystem.h>
+#include "filesystem_private.h"
 #include <main.h>
 #include "main_private.h"
 #include "global.h"

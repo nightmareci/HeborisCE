@@ -135,92 +135,11 @@ add_compile_options(
 	"$<$<CXX_COMPILER_ID:MSVC>:/utf-8>"
 )
 
-add_executable(${EXECUTABLE}
-	"src/sys/src/audio.c"
-	"src/sys/src/bdf.c"
-	"src/sys/src/error.c"
-	"src/sys/src/filesystem.c"
-	"src/sys/src/global.c"
-	"src/sys/src/hashtable.c"
-	"src/sys/src/input.c"
-	"src/sys/src/main.c"
-	"src/sys/src/mem.c"
-	"src/sys/src/video.c"
+if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
+	add_compile_definitions(_POSIX_VERSION=200112L)
+endif()
 
-	"src/sys/include/audio.h"
-	"src/sys/include/filesystem.h"
-	"src/sys/include/input.h"
-	"src/sys/include/main.h"
-	"src/sys/include/stdinc.h"
-	"src/sys/include/sys.h"
-	"src/sys/include/video.h"
-
-	"src/sys/src/audio_private.h"
-	"src/sys/src/bdf.h"
-	"src/sys/src/error.h"
-	"src/sys/src/filesystem_private.h"
-	"src/sys/src/global.h"
-	"src/sys/src/hashtable.h"
-	"src/sys/src/input_private.h"
-	"src/sys/src/main_private.h"
-	"src/sys/src/mem_private.h"
-	"src/sys/src/video_private.h"
-	"src/sys/src/worker.h"
-
-	"src/game/src/game.c"
-	"src/game/src/init.c"
-	"src/game/src/speed.c"
-	"src/game/src/mission_info.c"
-	"src/game/src/flexdraw.c"
-	"src/game/src/config.c"
-	"src/game/src/world.c"
-	"src/game/src/classic.c"
-	"src/game/src/ars.c"
-	"src/game/src/classic_D.c"
-	"src/game/src/effect.c"
-	"src/game/src/sound.c"
-	"src/game/src/practice.c"
-	"src/game/src/tomoyo.c"
-	"src/game/src/ranking.c"
-	"src/game/src/setdef.c"
-	"src/game/src/replay.c"
-	"src/game/src/staffroll.c"
-	"src/game/src/cpu.c"
-	"src/game/src/sectime.c"
-	"src/game/src/mission.c"
-	"src/game/src/view.c"
-	"src/game/src/grade.c"
-	"src/game/src/ranking2.c"
-	"src/game/src/ranking3.c"
-
-	"src/game/include/game.h"
-	"src/game/include/init.h"
-	"src/game/include/speed.h"
-	"src/game/include/ars.h"
-	"src/game/include/classic_D.h"
-	"src/game/include/classic.h"
-	"src/game/include/config.h"
-	"src/game/include/cpu.h"
-	"src/game/include/effect.h"
-	"src/game/include/flexdraw.h"
-	"src/game/include/grade.h"
-	"src/game/include/common.h"
-	"src/game/include/mission.h"
-	"src/game/include/mission_info.h"
-	"src/game/include/practice.h"
-	"src/game/include/ranking2.h"
-	"src/game/include/ranking3.h"
-	"src/game/include/ranking.h"
-	"src/game/include/replay.h"
-	"src/game/include/sectime.h"
-	"src/game/include/setdef.h"
-	"src/game/include/sound.h"
-	"src/game/include/staffroll.h"
-	"src/game/include/tomoyo.h"
-	"src/game/include/view.h"
-	"src/game/include/world.h"
-	"src/game/include/plane.h"
-)
+add_executable(${EXECUTABLE})
 
 set_target_properties(${EXECUTABLE}
 	PROPERTIES
@@ -228,15 +147,8 @@ set_target_properties(${EXECUTABLE}
 		C_STANDARD_REQUIRED TRUE
 )
 
-if(LINUX OR CMAKE_SYSTEM_NAME STREQUAL "Darwin" OR MINGW OR UNIX)
-	add_compile_definitions(_POSIX_VERSION=200112L)
-endif()
-
-if(WORKER_MULTITHREADED)
-	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/worker_multithreaded.c")
-else()
-	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/worker_synchronous.c")
-endif()
+add_subdirectory(include)
+add_subdirectory(src)
 
 # // The on-disk format is unheadered and uses file extension .dat
 # // At the start of the .dat, there's an int64_t for how many files there are (the array length of FILESYSTEM_FilesArray)
@@ -339,8 +251,6 @@ if(VITA)
 	else()
 		include("${VITASDK}/share/vita.cmake" REQUIRED)
 	endif()
-
-	target_sources(${EXECUTABLE} PRIVATE "src/sys/src/vita.c")
 
 	# Adding to CMAKE_PREFIX_PATH like this fixes find_package commands in Vita SDK
 	# builds.
@@ -961,7 +871,7 @@ else()
 	message(FATAL_ERROR "The current build target is not supported")
 endif()
 
-set(BUILD_CONFIG_H "src/sys/include/build_config.h")
+set(BUILD_CONFIG_H "include/framework/build_config.h")
 set(INPUT_BUILD_CONFIG "${CMAKE_SOURCE_DIR}/${BUILD_CONFIG_H}.cmake")
 set(OUTPUT_BUILD_CONFIG "${OUTPUT_DIR}/${BUILD_CONFIG_H}")
 add_custom_command(
@@ -1001,8 +911,8 @@ add_custom_command(
 		-P "${CMAKE_SOURCE_DIR}/cmake/ConfigureFile.cmake"
 )
 target_sources(${EXECUTABLE} PRIVATE "${OUTPUT_BUILD_CONFIG}")
+target_precompile_headers(${EXECUTABLE} PRIVATE "${OUTPUT_BUILD_CONFIG}")
 target_include_directories(${EXECUTABLE} PRIVATE
-	"src/game/include"
-	"src/sys/include"
-	"${OUTPUT_DIR}/src/sys/include"
+	"include"
+	"${OUTPUT_DIR}/include"
 )

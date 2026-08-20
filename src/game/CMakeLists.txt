@@ -1,0 +1,59 @@
+set(_HEADERS
+	game.h
+	init.h
+	speed.h
+	ars.h
+	classic_D.h
+	classic.h
+	config.h
+	cpu.h
+	effect.h
+	flexdraw.h
+	grade.h
+	common.h
+	mission.h
+	mission_info.h
+	practice.h
+	ranking2.h
+	ranking3.h
+	ranking.h
+	replay.h
+	sectime.h
+	setdef.h
+	sound.h
+	staffroll.h
+	tomoyo.h
+	view.h
+	world.h
+	plane.h
+)
+target_sources(${EXECUTABLE} PRIVATE
+	game.c
+	init.c
+	speed.c
+	mission_info.c
+	flexdraw.c
+	config.c
+	world.c
+	classic.c
+	ars.c
+	classic_D.c
+	effect.c
+	sound.c
+	practice.c
+	tomoyo.c
+	ranking.c
+	setdef.c
+	replay.c
+	staffroll.c
+	cpu.c
+	sectime.c
+	mission.c
+	view.c
+	grade.c
+	ranking2.c
+	ranking3.c
+
+	${_HEADERS}
+)
+target_precompile_headers(${EXECUTABLE} PRIVATE ${_HEADERS})

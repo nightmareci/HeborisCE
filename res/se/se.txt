@@ -10,13 +10,13 @@ use.
 
 A summary of the sound effects used in game are as follows:
 
-block1		: this sounds when a block is placed. (These block sounds cycle around)
-block2		: this sounds when a block is placed.
-block3		: this sounds when a block is placed.
-block4		: this sounds when a block is placed.
-block5		: this sounds when a block is placed.
-block6		: this sounds when a block is placed.
-block7		: this sounds when a block is placed.
+block1		: this sounds when an "I" block is next. (These block sounds cycle around)
+block2		: this sounds when an "L" block is next.
+block3		: this sounds when an "O" block is next.
+block4		: this sounds when a "Z" block is next.
+block5		: this sounds when a "T" block is next.
+block6		: this sounds when a "J" block is next.
+block7		: this sounds when an "S" block is next.
 erase1		: this sounds when you erase 1 line.
 erase2		: this sounds when you erase 2 lines.
 erase3		: this sounds when you erase 3 lines.

@@ -116,7 +116,8 @@ void objectExecute(void) {
 // objectStatBlock / objectStatBlock2
 // 破壊エフェクトの変更に伴い全面変更 #1.60c7h8
 void objectStatBlock(int32_t no) {
-	int32_t		zoom, offset, rate ,k, l;
+	int32_t		offset, rate ,k, l;
+	float		zoom;
 
 	if((objj[no] < 0) && (rotspl[objp[no]] == 6)){
 		ExBltRect(PLANE_HEBOBLK_OLD,objx[no] / 100, objy[no] / 100,0,0,8,8);
@@ -155,7 +156,7 @@ void objectStatBlock(int32_t no) {
 		offset = (objc[no] - 100) * 8 / 200;
 
 		if(objj[no] >= 10){
-			zoom = objc[no] * 65536 / 100;
+			zoom = objc[no] / 100.0f;
 
 			// 色がバグっていたのを修正 #1.60c7l1
 			ExBltRectScaled(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
@@ -166,7 +167,7 @@ void objectStatBlock(int32_t no) {
 				k = k-4;
 				l = 1;
 			}
-			zoom = objc[no] * 65536 / 200;
+			zoom = objc[no] / 200.0f;
 			ExBltRectScaled(PLANE_HEBOBLK_BIG, objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 16 + (l * 160), k * 112, 16, 16, zoom, zoom);
 		}
 
@@ -212,7 +213,8 @@ void objectStatBlock(int32_t no) {
 }
 
 void objectStatBlock2(int32_t no) {
-	int32_t		zoom, offset, k, l;
+	int32_t		offset, k, l;
+	float		zoom;
 
 	if((objj[no] < 0) && (rotspl[objp[no]] == 6)){
 		ExBltRect(PLANE_HEBOBLK_OLD,objx[no] / 100, objy[no] / 100,0,0,8,8);
@@ -247,7 +249,7 @@ void objectStatBlock2(int32_t no) {
 		offset = (objc[no] - 100) * 8 / 200;
 
 		if(objj[no] >= 10){
-			zoom = objc[no] * 65536 / 100;
+			zoom = objc[no] / 100.0f;
 
 			// 色がバグっていたのを修正 #1.60c7l1
 			ExBltRectScaled(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
@@ -258,7 +260,7 @@ void objectStatBlock2(int32_t no) {
 				k = k-4;
 				l = 1;
 			}
-			zoom = objc[no] * 65536 / 200;
+			zoom = objc[no] / 200.0f;
 			ExBltRectScaled(PLANE_HEBOBLK_BIG, objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 16 + (l * 160), k * 112, 16, 16, zoom, zoom);
 		}
 
@@ -294,7 +296,7 @@ void objectStatBlock2(int32_t no) {
 }
 // objp[no]:BtoB や T-Spin の判定に使用
 void objectStatLine(int32_t no) {
-	int32_t scale;
+	float scale;
 	if(!istimestop[(objy[no] / 100 == 132)]){
 		objw[no] = objw[no] + 50;
 		obja[no]++;
@@ -309,8 +311,8 @@ void objectStatLine(int32_t no) {
 //				objy[no] = objy[no] + objw[no];
 		}
 	}
-	if(objw[no] <= 3600) scale = 65536;
-	else scale = 65536 - ((objw[no] - 3600) * 64);
+	if(objw[no] <= 3600) scale = 1.0f;
+	else scale = 1.0f - (objw[no] - 3600) / 1024.0f;
 
 	if(scale < 0){
 		obj[no] = 0;
@@ -326,7 +328,7 @@ void objectStatLine(int32_t no) {
 	}
 */
 
-	ExBltRectScaled(PLANE_TEXT2, objx[no] / 100 - 3, objy[no] / 100 , 90 * objp[no], 320 + (objj[no] * 32), 90, 32, 65536, scale);
+	ExBltRectScaled(PLANE_TEXT2, objx[no] / 100 - 3, objy[no] / 100 , 90 * objp[no], 320 + (objj[no] * 32), 90, 32, 1.0f, scale);
 
 	if((objc[no] > 1) && (objw[no] <= 3600)) {
 		ExBltRect(PLANE_HEBOSPR, objx[no] / 100 +  8 + (objv[no] < 0) * 32, objy[no] / 100 + 32 , (objc[no] - 1) * 8, 112, 8, 8);
@@ -348,7 +350,8 @@ void objectAllCrear(int32_t no) {
 
 // 弾け飛ぶブロック #1.60c7o6
 void objectPopBlock(int32_t no) {
-	int32_t		zoom, offset, rate, k, l;
+	int32_t		offset, rate, k, l;
+	float		zoom;
 
 	if( (!breakeffect) || (objj[no] == 8) || (objj[no] == 9) || (objj[no] < 0)) {
 		obj[no] = 0;
@@ -364,7 +367,7 @@ void objectPopBlock(int32_t no) {
 	offset = (objc[no] - 100) * 8 / 200;
 
 		if(objj[no] >= 10){
-			zoom = objc[no] * 65536 / 100;
+			zoom = objc[no] / 100.0f;
 
 			// 色がバグっていたのを修正 #1.60c7l1
 			ExBltRectScaled(getBlockPlaneNo(objp[no], objj[no]), objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 8 - (objj[no] >= 10) * 80, 0, 8, 8, zoom, zoom);
@@ -375,7 +378,7 @@ void objectPopBlock(int32_t no) {
 				k = k-4;
 				l = 1;
 			}
-			zoom = objc[no] * 65536 / 200;
+			zoom = objc[no] / 200.0f;
 			ExBltRectScaled(PLANE_HEBOBLK_BIG, objx[no] / 100 - offset, objy[no] / 100 - offset, objj[no] * 16 + (l * 160), k * 112, 16, 16, zoom, zoom);
 		}
 
@@ -470,6 +473,7 @@ void objectItemWarning(int32_t no){
 //objc メダルの段階　0:銅 1:銀 2:金 3:プラ
 void objectGetmedal(int32_t no){
 	int32_t i,j,k;
+	float scale;
 	if(medaltype >= 2){
 		obj[no] = 0;
 		return;
@@ -480,30 +484,30 @@ void objectGetmedal(int32_t no){
 			k = obja[no] * (8 / 5);
 			i = (16 * k / 2 - 16) / 2;
 			j = (12 * k / 2 - 12) / 2;
-			k = 65536 * k / 2;
+			scale = k / 2.0f;
 		} else {
 			k = (16 - obja[no]) * (8 / 5);
 			i = (16 * k / 3 - 16) / 2;
 			j = (12 * k / 3 - 12) / 2;
-			k = 65536 * k / 3;
-			if(k < 65536){
-				k = 65536;
+			scale = k / 3.0f;
+			if(scale < 1.0f){
+				scale = 1.0f;
 				i=0;
 				j=0;
 			}
 		}
-		ExBltRectScaled(PLANE_MEDAL_TI, objx[no] - i, objy[no] - j, objv[no] * 16, (3 - objc[no]) * 12, 16, 12, k, k);
+		ExBltRectScaled(PLANE_MEDAL_TI, objx[no] - i, objy[no] - j, objv[no] * 16, (3 - objc[no]) * 12, 16, 12, scale, scale);
 	} else{	//TAPメダル（拡大した状態から縮小）
 		k = 16 - obja[no];
 		i = (15 * k / 3 - 15) / 2;
 		j = (12 * k / 3 - 12) / 2;
-		k = 65536 * k / 3;
-		if(k < 65536){
-			k = 65536;
+		scale = k / 3.0f;
+		if(scale < 1.0f){
+			scale = 1.0f;
 			i=0;
 			j=0;
 		}
-		ExBltRectScaled( PLANE_MEDAL, objx[no] - i, objy[no] - j, objv[no] * 16, (3 - objc[no]) * 13, 15, 12, k, k);
+		ExBltRectScaled( PLANE_MEDAL, objx[no] - i, objy[no] - j, objv[no] * 16, (3 - objc[no]) * 13, 15, 12, scale, scale);
 	}
 	obja[no]++;
 	if(obja[no] >= 16) obj[no] = 0;

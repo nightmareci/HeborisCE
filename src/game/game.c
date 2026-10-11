@@ -6592,8 +6592,8 @@ void statReady(int32_t player) {
 			ExBltRect(PLANE_HEBOSPR, 121 + player * 192 - 96 * maxPlay, 119 - ((statusc[player * 10] - g_start[player]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 8, 0, 0, 78, 17);
 			ExBltRectScaled(PLANE_HEBOSPR, 117 + player * 192 - ((g_end[player] - statusc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 86 / 16 - 96 * maxPlay,
 				119 - ((g_end[player] - statusc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 17 / 16, 0, 17, 86, 17,
-				65536 + ((g_end[player] - statusc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 8192,
-				65536 + ((g_end[player] - statusc[player * 10]) * (1500 / (g_end[player] - g_start[player]))) / 100 * 8192);
+				1.0f + (((g_end[player] - statusc[player * 10]) * (1500.0f / (g_end[player] - g_start[player]))) / 800.0f),
+				1.0f + ((g_end[player] - statusc[player * 10]) * (1500.0f / (g_end[player] - g_start[player]))) / 800.0f);
 		}
 	} else {					// LITE
 		if(statusc[player * 10] < r_start[player]) {
@@ -11738,6 +11738,7 @@ void statNameEntry(int32_t player) {
 //▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲△▲
 void statEnding(int32_t player) {
 	int32_t	i, j, k;
+	float scale;
 //SDL_snprintf(string[0], STRING_LENGTH,"END %2d %2d",ending[player],gameMode[player]);
 //printFont(0, 0, string[0], (count % 4 / 2) * digitc[rots[i]]);
 	if ( (ending[player] == 1) || (ending[player] == 4) ){
@@ -11907,8 +11908,8 @@ fadelv[player] = 0;
 				k = 128 - statusc[player * 10];
 				i = (80 * k / 64 - 80) / 2;
 				j = (36 * k / 64 - 36) / 2;
-				k = 65536 * k / 64;
-				ExBltRectScaled(PLANE_HEBOSPR, 120 - i + 192 * player - 96 * maxPlay, 102 - j, 208, 126, 80, 36, k, k);
+				scale = k / 64.0f;
+				ExBltRectScaled(PLANE_HEBOSPR, 120 - i + 192 * player - 96 * maxPlay, 102 - j, 208, 126, 80, 36, scale, scale);
 			}
 			else{
 				ExBltRect(PLANE_HEBOSPR, 120 + 192 * player - 96 * maxPlay, 102, 208, 126, 80, 36);
@@ -11919,8 +11920,8 @@ fadelv[player] = 0;
 				k = 128 - statusc[player * 10];
 				i = (112 * k / 64 - 112) / 2;
 				j = (66 * k / 64 - 66) / 2;
-				k = 65536 * k / 64;
-				ExBltRectScaled(PLANE_HEBOSPR, 105 - i + 192 * player - 96 * maxPlay, 70 - j, 191, 163, 112, 66, k, k);
+				scale = k / 64.0f;
+				ExBltRectScaled(PLANE_HEBOSPR, 105 - i + 192 * player - 96 * maxPlay, 70 - j, 191, 163, 112, 66, scale, scale);
 			}
 			else{
 				ExBltRect(PLANE_HEBOSPR, 105 + 192 * player - 96 * maxPlay, 70, 191, 163, 112, 66);
@@ -11933,8 +11934,8 @@ fadelv[player] = 0;
 				k = 10 - statusc[player * 10];
 				i = (75 * k / 5 - 75) / 2;
 				j = (9 * k / 5 - 9) / 2;
-				k = 65536 * k / 5;
-				ExBltRectScaled(PLANE_HEBOSPR, 122 - i + 192 * player - 96 * maxPlay, 96 - j, 212, 73, 75, 9, k, k);
+				scale = k / 5.0f;
+				ExBltRectScaled(PLANE_HEBOSPR, 122 - i + 192 * player - 96 * maxPlay, 96 - j, 212, 73, 75, 9, scale, scale);
 			} else {
 				ExBltRect(PLANE_HEBOSPR, 122 + 192 * player - 96 * maxPlay, 96, 212, 73, 75, 9);
 			}
@@ -11986,8 +11987,8 @@ fadelv[player] = 0;
 					k = 10 - statusc[player * 10];
 					i = (75 * k / 5 - 75) / 2;
 					j = (9 * k / 5 - 9) / 2;
-					k = 65536 * k / 5;
-					ExBltRectScaled(PLANE_HEBOSPR, 122 - i + 192 * player - 96 * maxPlay, 96 - j, 212, 73, 75, 9, k, k);
+					scale = k / 5.0f;
+					ExBltRectScaled(PLANE_HEBOSPR, 122 - i + 192 * player - 96 * maxPlay, 96 - j, 212, 73, 75, 9, scale, scale);
 				} else {
 					ExBltRect(PLANE_HEBOSPR, 122 + 192 * player - 96 * maxPlay, 96, 212, 73, 75, 9);
 				}
@@ -12103,8 +12104,8 @@ fadelv[player] = 0;
 				k = 10 - (statusc[player * 10] - 133);
 				i = (75 * k / 5 - 75) / 2;
 				j = (9 * k / 5 - 9) / 2;
-				k = 65536 * k / 5;
-				ExBltRectScaled(PLANE_HEBOSPR, 122 - i + 192 * player - 96 * maxPlay, 96 - j, 212, 73, 75, 9, k, k);
+				scale = k / 5.0f;
+				ExBltRectScaled(PLANE_HEBOSPR, 122 - i + 192 * player - 96 * maxPlay, 96 - j, 212, 73, 75, 9, scale, scale);
 			} else {
 				ExBltRect(PLANE_HEBOSPR, 122 + 192 * player - 96 * maxPlay, 96, 212, 73, 75, 9);
 			}
@@ -14415,6 +14416,7 @@ void statExchangefield(int32_t player) {
 
 void statExamination(int32_t player){
 	int32_t i,k;
+	float scale;
 	if(statusc[player * 10 + 1] == 0){		//開始宣言
 		if(statusc[player * 10 + 0] == 0){//プルプル
 			PlaySE(WAVE_SE_TUMAGARI);
@@ -14429,16 +14431,16 @@ void statExamination(int32_t player){
 			ofs_x2[player] = 0;
 		} else if(statusc[player * 10 + 0] > 110){		//試験ですよ〜
 			if(statusc[player * 10 + 0] < 170)
-				ExBltRectScaled(PLANE_TEXT2, 110 - ((100 * 22 / 12 - 100) / 2) +192 * player -96 * maxPlay , 80 , 200, 100 + 25 * (count % 4 / 2), 100, 25,65536 * 22 / 12,65536 * 22 / 12);
+				ExBltRectScaled(PLANE_TEXT2, 110 - ((100 * 22 / 12 - 100) / 2) +192 * player -96 * maxPlay , 80 , 200, 100 + 25 * (count % 4 / 2), 100, 25,22.0f / 12.0f,22.0f / 12.0f);
 			else if(statusc[player * 10 + 0] < 192){
 				k = 192 - statusc[player * 10 + 0];
 				i = (100 * k / 12 - 100) / 2;
-				k = 65536 * k / 12;
-				if(k < 65536){
-					k = 65536;
+				scale = k / 12.0f;
+				if(k < 1.0f){
+					scale = 1.0f;
 					i=0;
 				}
-				ExBltRectScaled(PLANE_TEXT2, 110 - i + 192 * player -96 * maxPlay , 48 + 192 - statusc[player * 10 + 0] , 200, 100 + 25 * (count % 4 / 2), 100, 25,k,k);
+				ExBltRectScaled(PLANE_TEXT2, 110 - i + 192 * player -96 * maxPlay , 48 + 192 - statusc[player * 10 + 0] , 200, 100 + 25 * (count % 4 / 2), 100, 25,scale,scale);
 			}else
 				ExBltRect(PLANE_TEXT2, 110+192 * player -96 * maxPlay , 48 , 200, 100 + 25 * (count % 4 / 2), 100, 25);
 			if(statusc[player * 10 + 0] > 210){		//目標段位の表示
@@ -17066,7 +17068,7 @@ void spriteTime(void) {
 		else if(screenMode == 6) { ReSize = 40; }
 		else { ReSize = 10; }
 		SwapToSecondary(PLANE_TEMP);		// セカンダリプレーンを、ダミーでプレーン9と入れ替える
-		ExBltRectScaled(PLANE_TEMP, 0, 0, 0, 0, 320, 240, (65536 * ReSize) / 10 / getDrawRate(), (65536 * ReSize) / 10 / getDrawRate());
+		ExBltRectScaled(PLANE_TEMP, 0, 0, 0, 0, 320, 240, ReSize / 10.0f / getDrawRate(), ReSize / 10.0f / getDrawRate());
 		SwapToSecondary(PLANE_TEMP);
 		ExBltFast(PLANE_TEMP, 0, 0);
 	}

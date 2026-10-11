@@ -16,7 +16,7 @@ void ExBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int3
 	VIDEO_DrawPlaneRect(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate);
 }
 
-void ExBltRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t scx, int32_t scy)
+void ExBltRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, float scx, float scy)
 {
 	VIDEO_DrawPlaneRectScaled(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, scx, scy);
 }
@@ -31,7 +31,7 @@ void ExBlendBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy,
 	VIDEO_DrawPlaneRectTransparent(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, a);
 }
 
-void ExBlendBltRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t a, int32_t scx, int32_t scy)
+void ExBlendBltRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t a, float scx, float scy)
 {
 	VIDEO_DrawPlaneRectTransparentScaled(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, a, scx, scy);
 }

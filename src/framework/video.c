@@ -1016,12 +1016,12 @@ void VIDEO_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int
 	}
 }
 
-void VIDEO_DrawPlaneScaled(int plane, int dstX, int dstY, int scaleW, int scaleH)
+void VIDEO_DrawPlaneScaled(int plane, int dstX, int dstY, float scaleW, float scaleH)
 {
 	VIDEO_DrawPlaneRectScaled(plane, dstX, dstY, 0, 0, VIDEO_LogicalWidth, VIDEO_LogicalHeight, scaleW, scaleH);
 }
 
-void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int scaleW, int scaleH)
+void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, float scaleW, float scaleH)
 {
 	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || w == 0 || h == 0 || !MAIN_RenderThisFrame()) {
 		return;
@@ -1031,8 +1031,8 @@ void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY
 	SDL_FRect dst = {
 		dstX + VIDEO_PlaneDrawOffsetX,
 		dstY + VIDEO_PlaneDrawOffsetY,
-		(int)(w * (scaleW / 65536.0f)),
-		(int)(h * (scaleH / 65536.0f))
+		w * scaleW,
+		h * scaleH
 	};
 	if (!GLOBAL_ScreenRenderTarget) {
 		dst.x += GLOBAL_ScreenSubpixelOffset;
@@ -1044,12 +1044,12 @@ void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY
 	}
 }
 
-void VIDEO_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, int scaleW, int scaleH)
+void VIDEO_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, float scaleW, float scaleH)
 {
 	VIDEO_DrawPlaneRectTransparentScaled(plane, dstX, dstY, 0, 0, VIDEO_LogicalWidth, VIDEO_LogicalHeight, a, scaleW, scaleH);
 }
 
-void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, int scaleW, int scaleH)
+void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, float scaleW, float scaleH)
 {
 	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || w == 0 || h == 0 || !MAIN_RenderThisFrame()) {
 		return;
@@ -1059,8 +1059,8 @@ void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int src
 	SDL_FRect dst = {
 		dstX + VIDEO_PlaneDrawOffsetX,
 		dstY + VIDEO_PlaneDrawOffsetX,
-		w * (scaleW / 65536.0f),
-		h * (scaleH / 65536.0f)
+		w * scaleW,
+		h * scaleH
 	};
 	if (!GLOBAL_ScreenRenderTarget) {
 		dst.x += GLOBAL_ScreenSubpixelOffset;

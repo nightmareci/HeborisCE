@@ -65,11 +65,11 @@ void VIDEO_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int 
 void VIDEO_DrawPlaneTransparent(int plane, int dstX, int dstY, uint8_t a);
 void VIDEO_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a);
 
-void VIDEO_DrawPlaneScaled(int plane, int dstX, int dstY, int scaleW, int scaleH);
-void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, int scaleW, int scaleH);
+void VIDEO_DrawPlaneScaled(int plane, int dstX, int dstY, float scaleW, float scaleH);
+void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, float scaleW, float scaleH);
 
-void VIDEO_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, int scaleW, int scaleH);
-void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, int scaleW, int scaleH);
+void VIDEO_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, float scaleW, float scaleH);
+void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, float scaleW, float scaleH);
 
 void VIDEO_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW);
 

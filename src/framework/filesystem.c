@@ -4,273 +4,338 @@
 #include "main_private.h"
 #include "error.h"
 
-static char* FILESYSTEM_PrefPath = NULL;
-
-static SDL_IOStream* FILESYSTEM_OpenFromPath(const char* path, const char* filename, const char* mode)
-{
-	char* fullPath;
-	if (SDL_asprintf(&fullPath, "%s%s", path, filename) < 0) {
-		ERROR_Set("Error allocating string to open a file");
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-
-	SDL_IOStream* file = SDL_IOFromFile(fullPath, mode);
-	SDL_free(fullPath);
-	return file;
-}
-
-#ifdef FILESYSTEM_USING_RESOURCE_DAT
-
-typedef struct FILESYSTEM_File
+typedef struct FILESYSTEM_DATFile
 {
 	int64_t start;
 	int64_t size;
-} FILESYSTEM_File;
+} FILESYSTEM_DATFile;
 
-typedef struct FILESYSTEM_FileUserdata
+typedef struct FILESYSTEM_DATFileUserdata
 {
-	FILESYSTEM_File* file;
+	FILESYSTEM_DATFile* file;
 	SDL_IOStream* stream;
-} FILESYSTEM_FileUserdata;
+} FILESYSTEM_DATFileUserdata;
 
-static char* FILESYSTEM_FilesDATPath = NULL;
-static FILESYSTEM_File* FILESYSTEM_FilesArray = NULL;
-static SDL_PropertiesID FILESYSTEM_FilesTable = 0;
+static char* FILESYSTEM_PrefPath = NULL;
+static char* FILESYSTEM_DATPrefPath = NULL;
+static SDL_PropertiesID FILESYSTEM_DATPrefFiles = 0;
+static FILESYSTEM_DATFile* FILESYSTEM_DATPrefFilesArray = NULL;
+
+static char* FILESYSTEM_BasePath = NULL;
+static char* FILESYSTEM_DATBasePath = NULL;
+static SDL_PropertiesID FILESYSTEM_DATBaseFiles = 0;
+static FILESYSTEM_DATFile* FILESYSTEM_DATBaseFilesArray = NULL;
+
+static SDL_IOStream* FILESYSTEM_OpenFromPath(const char* path, const char* pathName, const char* filename, const char* mode)
+{
+	char* fullPath;
+	if (SDL_asprintf(&fullPath, "%s%s", path, filename) < 0) {
+		ERROR_Set("Error allocating string to open a file from %s path", pathName);
+		MAIN_Exit(SDL_APP_FAILURE);
+	}
+	SDL_PathInfo info;
+	if (SDL_strchr(mode, 'w') == NULL && SDL_strchr(mode, 'a') == NULL && (!SDL_GetPathInfo(fullPath, &info) || info.type != SDL_PATHTYPE_FILE)) {
+		SDL_free(fullPath);
+		return NULL;
+	}
+
+	SDL_IOStream* const stream = SDL_IOFromFile(fullPath, mode);
+	SDL_free(fullPath);
+	if (!stream) {
+		ERROR_Set("Error opening file from %s path: %s", pathName, SDL_GetError());
+		MAIN_Exit(SDL_APP_FAILURE);
+	}
+	return stream;
+}
+
+static bool FILESYSTEM_InitDATFiles(SDL_PropertiesID* files, FILESYSTEM_DATFile** filesArray, const char* path, const char* pathName)
+{
+	*files = SDL_CreateProperties();
+	if (!*files) {
+		return ERROR_Set("Failed creating properties object for files in %s path resource DAT: %s", pathName, SDL_GetError());
+	}
+	SDL_IOStream* const DATFile = SDL_IOFromFile(path, "rb");
+	if (!DATFile) {
+		return ERROR_Set("Error opening %s path resource DAT: %s", pathName, SDL_GetError());
+	}
+	int64_t filesCount;
+	if (!SDL_ReadS64LE(DATFile, &filesCount)) {
+		if (!SDL_CloseIO(DATFile)) {
+			return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+		}
+		else {
+			return ERROR_Set("Error reading count of files in %s path resource DAT: %s", pathName, SDL_GetError());
+		}
+	}
+	if (filesCount <= 0) {
+		if (!SDL_CloseIO(DATFile)) {
+			return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+		}
+		else {
+			return ERROR_Set("Invalid count of files in %s path resource DAT", pathName);
+		}
+	}
+	*filesArray = SDL_malloc(filesCount * sizeof(FILESYSTEM_DATFile));
+	if (!*filesArray) {
+		if (!SDL_CloseIO(DATFile)) {
+			return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+		}
+		else {
+			return ERROR_Set("Error allocating array for %s path resource DAT files metadata", pathName);
+		}
+	}
+	for (int64_t i = 0; i < filesCount; i++) {
+		const int64_t filenamePos = SDL_TellIO(DATFile);
+		if (filenamePos < 0) {
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error getting position of filename in %s path resource DAT file: %s", pathName, SDL_GetError());
+			}
+		}
+		int64_t filenameSize = 0;
+		uint8_t c;
+		do {
+			if (!SDL_ReadU8(DATFile, &c)) {
+				if (!SDL_CloseIO(DATFile)) {
+					return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+				}
+				else {
+					return ERROR_Set("Error getting filename byte in %s path resource DAT file: %s", pathName, SDL_GetError());
+				}
+			}
+			filenameSize++;
+		} while (c != '\0');
+		if (SDL_SeekIO(DATFile, filenamePos, SDL_IO_SEEK_SET) < 0) {
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error seeking %s path resource DAT file: %s", pathName, SDL_GetError());
+			}
+		}
+		char* const filename = SDL_malloc(filenameSize);
+		if (!filename) {
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error allocating string for a file in %s path resource DAT", pathName);
+			}
+		}
+		if (!SDL_ReadIO(DATFile, filename, filenameSize)) {
+			SDL_free(filename);
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error reading filename of a file in %s path resource DAT", pathName);
+			}
+		}
+		if (!SDL_ReadS64LE(DATFile, &(*filesArray)[i].size)) {
+			SDL_free(filename);
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error reading size of a file in %s path resource DAT", pathName);
+			}
+		}
+		if ((*filesArray)[i].size < 0) {
+			SDL_free(filename);
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Invalid size of a file in %s path resource DAT", pathName);
+			}
+		}
+		(*filesArray)[i].start = SDL_TellIO(DATFile);
+		if ((*filesArray)[i].start < 0) {
+			SDL_free(filename);
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error getting starting position of a file in %s path resource DAT", pathName);
+			}
+		}
+		if (SDL_SeekIO(DATFile, (*filesArray)[i].size, SDL_IO_SEEK_CUR) < 0) {
+			SDL_free(filename);
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error skipping over file data in %s path resource DAT", pathName);
+			}
+		}
+		if (!SDL_SetPointerProperty(*files, filename, &(*filesArray)[i])) {
+			SDL_free(filename);
+			if (!SDL_CloseIO(DATFile)) {
+				return ERROR_Set("Error closing %s path resource DAT: %s", pathName, SDL_GetError());
+			}
+			else {
+				return ERROR_Set("Error setting a property in the %s path resource DAT files properties object: %s", pathName, SDL_GetError());
+			}
+		}
+		SDL_free(filename);
+	}
+	return SDL_CloseIO(DATFile);
+}
 
 bool FILESYSTEM_Init(int argc, char** argv)
 {
 	if (argc > 1 && SDL_strlen(argv[1]) > 0) {
-		if (SDL_asprintf(&FILESYSTEM_FilesDATPath, "%s%s", argv[1], PROJECT_NAME ".dat") < 0) {
-			FILESYSTEM_FilesDATPath = NULL;
-			return ERROR_Set("Error creating resource DAT path string");
+		SDL_PathInfo info;
+		if (!SDL_GetPathInfo(argv[1], &info) || info.type != SDL_PATHTYPE_DIRECTORY) {
+			return ERROR_Set("Directory provided as a program argument isn't valid");
 		}
 		FILESYSTEM_PrefPath = SDL_strdup(argv[1]);
 		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Error duplicating pref path string");
+			return ERROR_Set("Error creating pref path string");
+		}
+		if (SDL_asprintf(&FILESYSTEM_DATPrefPath, "%s%s", argv[1], PROJECT_NAME ".dat") < 0) {
+			FILESYSTEM_DATPrefPath = NULL;
+			return ERROR_Set("Error creating resource DAT pref path string");
 		}
 	}
 #if FILESYSTEM_TYPE == FILESYSTEM_CURRENT_DIRECTORY
 	else {
-		FILESYSTEM_PrefPath = SDL_GetCurrentDirectory();
-		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Error getting current directory: %s", SDL_GetError());
+		char* const currentDirectory = SDL_GetCurrentDirectory();
+		if (!currentDirectory) {
+			return ERROR_Set("Error getting current directory string");
 		}
-		if (SDL_asprintf(&FILESYSTEM_FilesDATPath, "%s%s", FILESYSTEM_PrefPath, PROJECT_NAME ".dat") < 0) {
-			FILESYSTEM_FilesDATPath = NULL;
-			return ERROR_Set("Error creating resource DAT path string");
-		}
+
+		FILESYSTEM_PrefPath = currentDirectory;
+
 		SDL_PathInfo info;
-		if (!SDL_GetPathInfo(FILESYSTEM_FilesDATPath, &info) || info.type != SDL_PATHTYPE_FILE) {
-			SDL_free(FILESYSTEM_FilesDATPath);
-			const char* basePath = SDL_GetBasePath();
-			if (!basePath) {
-				return ERROR_Set("Failed getting base path: %s", SDL_GetError());
-			}
-			if (SDL_asprintf(&FILESYSTEM_FilesDATPath, "%s%s", basePath, PROJECT_NAME ".dat") < 0) {
-				FILESYSTEM_FilesDATPath = NULL;
-				return ERROR_Set("Error creating resource DAT path string");
-			}
-			if (!SDL_GetPathInfo(FILESYSTEM_FilesDATPath, &info) || info.type != SDL_PATHTYPE_FILE) {
-				return ERROR_Set("Resource DAT file was not found");
-			}
+		char* DATFile;
+		if (SDL_asprintf(&DATFile, "%s%s", currentDirectory, PROJECT_NAME ".dat") < 0) {
+			return ERROR_Set("Error creating resource DAT file current directory string");
+		}
+		if (SDL_GetPathInfo(DATFile, &info) && info.type == SDL_PATHTYPE_FILE) {
+			FILESYSTEM_DATPrefPath = DATFile;
+		}
+		else {
+			SDL_free(DATFile);
 		}
 	}
 #elif FILESYSTEM_TYPE == FILESYSTEM_PORTABLE
 	else {
-		const char* basePath = SDL_GetBasePath();
+		const char* const basePath = SDL_GetBasePath();
 		if (!basePath) {
 			return ERROR_Set("Failed getting base path: %s", SDL_GetError());
 		}
-		if (SDL_asprintf(&FILESYSTEM_FilesDATPath, "%s%s", basePath, PROJECT_NAME ".dat") < 0) {
-			FILESYSTEM_FilesDATPath = NULL;
-			return ERROR_Set("Error creating resource DAT path string");
-		}
+
 		FILESYSTEM_PrefPath = SDL_strdup(basePath);
 		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Error duplicating base path string");
+			return ERROR_Set("Error creating pref path string");
+		}
+
+		SDL_PathInfo info;
+		char* DATFile;
+		if (SDL_asprintf(&DATFile, "%s%s", basePath, PROJECT_NAME ".dat") < 0) {
+			return ERROR_Set("Error creating resource DAT file string");
+		}
+		if (SDL_GetPathInfo(DATFile, &info) && info.type == SDL_PATHTYPE_FILE) {
+			FILESYSTEM_DATPrefPath = DATFile;
+		}
+		else {
+			SDL_free(DATFile);
 		}
 	}
 #elif FILESYSTEM_TYPE == FILESYSTEM_INSTALLABLE
 	else {
-		const char* basePath = SDL_GetBasePath();
-		if (!basePath) {
-			return ERROR_Set("Failed getting base path: %s", SDL_GetError());
-		}
-		if (SDL_asprintf(&FILESYSTEM_FilesDATPath, "%s%s%s", basePath, FILESYSTEM_BASE_PATH_APPEND, PROJECT_NAME ".dat") < 0) {
-			FILESYSTEM_FilesDATPath = NULL;
-			return ERROR_Set("Error creating resource DAT path string");
-		}
 		FILESYSTEM_PrefPath = SDL_GetPrefPath(FILESYSTEM_ORG, FILESYSTEM_APP);
 		if (!FILESYSTEM_PrefPath) {
 			return ERROR_Set("Failed getting pref path: %s", SDL_GetError());
+		}
+		const char* const basePath = SDL_GetBasePath();
+		if (!basePath) {
+			return ERROR_Set("Failed getting base path: %s", SDL_GetError());
+		}
+		if (SDL_asprintf(&FILESYSTEM_BasePath, "%s%s", basePath, FILESYSTEM_BASE_PATH_APPEND) < 0) {
+			FILESYSTEM_BasePath = NULL;
+			return ERROR_Set("Error creating base path string");
+		}
+
+		SDL_PathInfo info;
+		char* DATFile;
+		if (SDL_asprintf(&DATFile, "%s%s", FILESYSTEM_PrefPath, PROJECT_NAME ".dat") < 0) {
+			return ERROR_Set("Error creating resource DAT file pref path string");
+		}
+		if (SDL_GetPathInfo(DATFile, &info) && info.type == SDL_PATHTYPE_FILE) {
+			FILESYSTEM_DATPrefPath = DATFile;
+		}
+		else {
+			SDL_free(DATFile);
+		}
+		if (SDL_asprintf(&DATFile, "%s%s", FILESYSTEM_BasePath, PROJECT_NAME ".dat") < 0) {
+			return ERROR_Set("Error creating resource DAT file base path string");
+		}
+		if (SDL_GetPathInfo(DATFile, &info) && info.type == SDL_PATHTYPE_FILE) {
+			FILESYSTEM_DATBasePath = DATFile;
+		}
+		else {
+			SDL_free(DATFile);
 		}
 	}
 #else
 	#error FILESYSTEM_TYPE must be defined as FILESYSTEM_CURRENT_DIRECTORY, FILESYSTEM_PORTABLE, or FILESYSTEM_INSTALLABLE.
 #endif
 
-	FILESYSTEM_FilesTable = SDL_CreateProperties();
-	if (!FILESYSTEM_FilesTable) {
-		return ERROR_Set("Failed creating properties object for files in resource DAT: %s", SDL_GetError());
-	}
-	SDL_IOStream* datFile = SDL_IOFromFile(FILESYSTEM_FilesDATPath, "rb");
-	if (!datFile) {
-		ERROR_Set("Error opening resource DAT: %s", FILESYSTEM_FilesDATPath, SDL_GetError());
+	if (FILESYSTEM_DATPrefPath && !FILESYSTEM_InitDATFiles(&FILESYSTEM_DATPrefFiles, &FILESYSTEM_DATPrefFilesArray, FILESYSTEM_DATPrefPath, "pref")) {
 		return false;
 	}
-	int64_t filesCount;
-	if (!SDL_ReadS64LE(datFile, &filesCount)) {
-		if (!SDL_CloseIO(datFile)) {
-			return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-		}
-		else {
-			return ERROR_Set("Error reading count of files in resource DAT: %s", SDL_GetError());
-		}
+	if (FILESYSTEM_DATBasePath && !FILESYSTEM_InitDATFiles(&FILESYSTEM_DATBaseFiles, &FILESYSTEM_DATBaseFilesArray, FILESYSTEM_DATBasePath, "base")) {
+		return false;
 	}
-	if (filesCount <= 0) {
-		if (!SDL_CloseIO(datFile)) {
-			return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-		}
-		else {
-			return ERROR_Set("Invalid count of files in resource DAT");
-		}
-	}
-	FILESYSTEM_FilesArray = SDL_malloc(filesCount * sizeof(FILESYSTEM_File));
-	if (!FILESYSTEM_FilesArray) {
-		if (!SDL_CloseIO(datFile)) {
-			return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-		}
-		else {
-			return ERROR_Set("Error allocating array for resource DAT files metadata");
-		}
-	}
-	for (int64_t i = 0; i < filesCount; i++) {
-		const int64_t filenamePos = SDL_TellIO(datFile);
-		if (filenamePos < 0) {
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error getting position of filename in resource DAT file: %s", SDL_GetError());
-			}
-		}
-		int64_t filenameSize = 0;
-		uint8_t c;
-		do {
-			if (!SDL_ReadU8(datFile, &c)) {
-				if (!SDL_CloseIO(datFile)) {
-					return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-				}
-				else {
-					return ERROR_Set("Error getting filename byte in resource DAT file: %s", SDL_GetError());
-				}
-			}
-			filenameSize++;
-		} while (c != '\0');
-		if (SDL_SeekIO(datFile, filenamePos, SDL_IO_SEEK_SET) < 0) {
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error seeking resource DAT file: %s", SDL_GetError());
-			}
-		}
-		char* const filename = SDL_malloc(filenameSize);
-		if (!filename) {
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error allocating string for a file in resource DAT");
-			}
-		}
-		if (!SDL_ReadIO(datFile, filename, filenameSize)) {
-			SDL_free(filename);
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error reading filename of a file in resource DAT");
-			}
-		}
-		if (!SDL_ReadS64LE(datFile, &FILESYSTEM_FilesArray[i].size)) {
-			SDL_free(filename);
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error reading size of a file in resource DAT");
-			}
-		}
-		if (FILESYSTEM_FilesArray[i].size < 0) {
-			SDL_free(filename);
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Invalid size of a file in resource DAT");
-			}
-		}
-		FILESYSTEM_FilesArray[i].start = SDL_TellIO(datFile);
-		if (FILESYSTEM_FilesArray[i].start < 0) {
-			SDL_free(filename);
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error getting starting position of a file in resource DAT");
-			}
-		}
-		if (SDL_SeekIO(datFile, FILESYSTEM_FilesArray[i].size, SDL_IO_SEEK_CUR) < 0) {
-			SDL_free(filename);
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error skipping over file data in resource DAT");
-			}
-		}
-		if (!SDL_SetPointerProperty(FILESYSTEM_FilesTable, filename, &FILESYSTEM_FilesArray[i])) {
-			SDL_free(filename);
-			if (!SDL_CloseIO(datFile)) {
-				return ERROR_Set("Error closing resource DAT: %s", SDL_GetError());
-			}
-			else {
-				return ERROR_Set("Error setting a property in the resource DAT files properties object: %s", SDL_GetError());
-			}
-		}
-		SDL_free(filename);
-	}
-	return SDL_CloseIO(datFile);
+
+	return true;
 }
 
 bool FILESYSTEM_FileExists(const char* filename)
 {
 	char* path;
 	SDL_PathInfo info;
-
-	if (SDL_asprintf(&path, "%s%s", FILESYSTEM_PrefPath, filename) < 0) {
-		ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+	if (FILESYSTEM_PrefPath) {
+		if (SDL_asprintf(&path, "%s%s", FILESYSTEM_PrefPath, filename) < 0) {
+			ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
+			MAIN_Exit(SDL_APP_FAILURE);
+		}
+		if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+			SDL_free(path);
+			return true;
+		}
 		SDL_free(path);
+	}
+	if (FILESYSTEM_DATPrefFiles != 0 && SDL_HasProperty(FILESYSTEM_DATPrefFiles, filename)) {
 		return true;
 	}
-	SDL_free(path);
-
-	return SDL_HasProperty(FILESYSTEM_FilesTable, filename);
+	if (FILESYSTEM_BasePath) {
+		if (SDL_asprintf(&path, "%s%s", FILESYSTEM_BasePath, filename) < 0) {
+			ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
+			MAIN_Exit(SDL_APP_FAILURE);
+		}
+		if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
+			SDL_free(path);
+			return true;
+		}
+		SDL_free(path);
+	}
+	return FILESYSTEM_DATBaseFiles != 0 && SDL_HasProperty(FILESYSTEM_DATBaseFiles, filename);
 }
 
 static int64_t SDLCALL FILESYSTEM_DATFileSize(void* userdata)
 {
-	FILESYSTEM_FileUserdata* const fileUserdata = userdata;
+	FILESYSTEM_DATFileUserdata* const fileUserdata = userdata;
 	return fileUserdata->file->size;
 }
 
 static int64_t SDLCALL FILESYSTEM_DATFileSeek(void* userdata, int64_t offset, SDL_IOWhence whence)
 {
-	FILESYSTEM_FileUserdata* const fileUserdata = userdata;
+	FILESYSTEM_DATFileUserdata* const fileUserdata = userdata;
 	int64_t pos;
 	switch (whence) {
 	default:
@@ -316,7 +381,7 @@ static int64_t SDLCALL FILESYSTEM_DATFileSeek(void* userdata, int64_t offset, SD
 
 static size_t SDLCALL FILESYSTEM_DATFileRead(void* userdata, void* ptr, size_t size, SDL_IOStatus* status)
 {
-	FILESYSTEM_FileUserdata* const fileUserdata = userdata;
+	FILESYSTEM_DATFileUserdata* const fileUserdata = userdata;
 	const int64_t pos = SDL_TellIO(fileUserdata->stream);
 	if (pos < 0) {
 		*status = SDL_GetIOStatus(fileUserdata->stream);
@@ -351,43 +416,38 @@ static bool SDLCALL FILESYSTEM_DATFileFlush(void* userdata, SDL_IOStatus* status
 
 static bool SDLCALL FILESYSTEM_DATFileClose(void* userdata)
 {
-	FILESYSTEM_FileUserdata* const fileUserdata = userdata;
+	FILESYSTEM_DATFileUserdata* const fileUserdata = userdata;
 	const bool success = SDL_CloseIO(fileUserdata->stream);
 	SDL_free(fileUserdata);
 	return success;
 }
 
-SDL_IOStream* FILESYSTEM_OpenRead(const char* filename)
+static SDL_IOStream* FILESYSTEM_OpenFromDAT(SDL_PropertiesID files, const char* filesPath, const char* pathName, const char* filename)
 {
-	SDL_IOStream* prefStream = FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, filename, "rb");
-	if (prefStream) {
-		return prefStream;
-	}
-
-	FILESYSTEM_File* const file = SDL_GetPointerProperty(FILESYSTEM_FilesTable, filename, NULL);
+	FILESYSTEM_DATFile* const file = SDL_GetPointerProperty(files, filename, NULL);
 	if (!file) {
 		return NULL;
 	}
 
-	FILESYSTEM_FileUserdata* const fileUserdata = SDL_malloc(sizeof(FILESYSTEM_FileUserdata));
+	FILESYSTEM_DATFileUserdata* const fileUserdata = SDL_malloc(sizeof(FILESYSTEM_DATFileUserdata));
 	if (!fileUserdata) {
-		ERROR_Set("Failed allocating data to open file \"%s\" for reading from resource DAT", filename);
+		ERROR_Set("Failed allocating data to open file \"%s\" for reading from %s path resource DAT", pathName, filename);
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	fileUserdata->file = file;
-	fileUserdata->stream = SDL_IOFromFile(FILESYSTEM_FilesDATPath, "rb");
+	fileUserdata->stream = SDL_IOFromFile(filesPath, "rb");
 	if (!fileUserdata->stream) {
 		SDL_free(fileUserdata);
-		ERROR_Set("Failed opening resource DAT file for opening file \"%s\" for reading: %s", filename, SDL_GetError());
+		ERROR_Set("Failed opening %s path resource DAT file for opening file \"%s\" for reading: %s", pathName, filename, SDL_GetError());
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	if (SDL_SeekIO(fileUserdata->stream, file->start, SDL_IO_SEEK_SET) < 0) {
 		SDL_free(fileUserdata);
 		if (!SDL_CloseIO(fileUserdata->stream)) {
-			ERROR_Set("Failed closing resource DAT after failing to open file \"%s\" for reading: %s", filename, SDL_GetError());
+			ERROR_Set("Failed closing %s path resource DAT after failing to open file \"%s\" for reading: %s", pathName, filename, SDL_GetError());
 		}
 		else {
-			ERROR_Set("Failed seeking resource DAT to open file \"%s\" for reading: %s", filename, SDL_GetError());
+			ERROR_Set("Failed seeking %s path resource DAT to open file \"%s\" for reading: %s", pathName, filename, SDL_GetError());
 		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
@@ -405,167 +465,61 @@ SDL_IOStream* FILESYSTEM_OpenRead(const char* filename)
 	if (!datStream) {
 		SDL_free(fileUserdata);
 		if (!SDL_CloseIO(fileUserdata->stream)) {
-			ERROR_Set("Failed closing resource DAT after failing to open file \"%s\" for reading: %s", filename, SDL_GetError());
+			ERROR_Set("Failed closing %s path resource DAT after failing to open file \"%s\" for reading: %s", pathName, filename, SDL_GetError());
 		}
 		else {
-			ERROR_Set("Failed creating a stream to open file \"%s\" in resource DAT for reading: %s", filename, SDL_GetError());
+			ERROR_Set("Failed creating a stream to open file \"%s\" in %s path resource DAT for reading: %s", filename, pathName, SDL_GetError());
 		}
 		MAIN_Exit(SDL_APP_FAILURE);
 	}
 	return datStream;
 }
 
-void FILESYSTEM_Quit(void)
-{
-	SDL_free(FILESYSTEM_FilesDATPath);
-	FILESYSTEM_FilesDATPath = NULL;
-	SDL_free(FILESYSTEM_FilesArray);
-	FILESYSTEM_FilesArray = NULL;
-	SDL_DestroyProperties(FILESYSTEM_FilesTable);
-	FILESYSTEM_FilesTable = 0;
-
-	SDL_free(FILESYSTEM_PrefPath);
-	FILESYSTEM_PrefPath = NULL;
-}
-
-#else
-
-static char* FILESYSTEM_BasePath = NULL;
-
-bool FILESYSTEM_Init(int argc, char** argv)
-{
-	if (argc > 1 && SDL_strlen(argv[1]) > 0) {
-		FILESYSTEM_BasePath = SDL_strdup(argv[1]);
-		if (!FILESYSTEM_BasePath) {
-			return ERROR_Set("Error duplicating base path string");
-		}
-		FILESYSTEM_PrefPath = SDL_strdup(argv[1]);
-		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Error duplicating pref path string");
-		}
-	}
-#if FILESYSTEM_TYPE == FILESYSTEM_CURRENT_DIRECTORY
-	else {
-		FILESYSTEM_BasePath = SDL_GetCurrentDirectory();
-		if (!FILESYSTEM_BasePath) {
-			return ERROR_Set("Error getting current directory: %s", SDL_GetError());
-		}
-		FILESYSTEM_PrefPath = SDL_strdup(FILESYSTEM_BasePath);
-		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Error duplicating current directory string");
-		}
-	}
-#elif FILESYSTEM_TYPE == FILESYSTEM_PORTABLE
-	else {
-		const char* basePath = SDL_GetBasePath();
-		if (!basePath) {
-			return ERROR_Set("Failed getting base path: %s", SDL_GetError());
-		}
-		FILESYSTEM_BasePath = SDL_strdup(basePath);
-		if (!FILESYSTEM_BasePath) {
-			return ERROR_Set("Error duplicating base path string");
-		}
-		FILESYSTEM_PrefPath = SDL_strdup(FILESYSTEM_BasePath);
-		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Error duplicating base path string");
-		}
-	}
-#elif FILESYSTEM_TYPE == FILESYSTEM_INSTALLABLE
-	else {
-		const char* basePath = SDL_GetBasePath();
-		if (!basePath) {
-			return ERROR_Set("Failed getting base path: %s", SDL_GetError());
-		}
-		if (SDL_asprintf(&FILESYSTEM_BasePath, "%s%s", basePath, FILESYSTEM_BASE_PATH_APPEND) < 0) {
-			FILESYSTEM_BasePath = NULL;
-			return ERROR_Set("Failed creating full base path");
-		}
-		FILESYSTEM_PrefPath = SDL_GetPrefPath(FILESYSTEM_ORG, FILESYSTEM_APP);
-		if (!FILESYSTEM_PrefPath) {
-			return ERROR_Set("Failed getting pref path: %s", SDL_GetError());
-		}
-	}
-
-#else
-	#error FILESYSTEM_TYPE must be defined as FILESYSTEM_CURRENT_DIRECTORY, FILESYSTEM_PORTABLE, or FILESYSTEM_INSTALLABLE.
-
-#endif
-
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-		EM_ASM({
-			FS.syncfs(function (err) {
-				assert(!err);
-			});
-		});
-#endif
-
-	return true;
-}
-
-bool FILESYSTEM_FileExists(const char* filename)
-{
-	char* path;
-	SDL_PathInfo info;
-
-	if (SDL_asprintf(&path, "%s%s", FILESYSTEM_PrefPath, filename) < 0) {
-		ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	else if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
-		SDL_free(path);
-		return true;
-	}
-	else if (info.type != SDL_PATHTYPE_NONE) {
-		SDL_free(path);
-		ERROR_Set("File path \"%s\" was expected to be a file but is not a file", path);
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	SDL_free(path);
-
-	if (SDL_asprintf(&path, "%s%s", FILESYSTEM_BasePath, filename) < 0) {
-		ERROR_Set("Error allocating string to check if file \"%s\" exists", filename);
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	else if (SDL_GetPathInfo(path, &info) && info.type == SDL_PATHTYPE_FILE) {
-		SDL_free(path);
-		return true;
-	}
-	else if (info.type != SDL_PATHTYPE_NONE) {
-		SDL_free(path);
-		ERROR_Set("File path \"%s\" was expected to be a file but is not a file", path);
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	SDL_free(path);
-
-	return false;
-}
-
 SDL_IOStream* FILESYSTEM_OpenRead(const char* filename)
 {
-	SDL_IOStream* file = FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, filename, "rb");
-	if (file) {
-		return file;
+	SDL_IOStream* stream;
+
+	stream = FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, "pref", filename, "rb");
+	if (stream) {
+		return stream;
 	}
-	return FILESYSTEM_OpenFromPath(FILESYSTEM_BasePath, filename, "rb");
+
+	stream = FILESYSTEM_OpenFromDAT(FILESYSTEM_DATPrefFiles, FILESYSTEM_DATPrefPath, "pref", filename);
+	if (stream) {
+		return stream;
+	}
+
+	stream = FILESYSTEM_OpenFromPath(FILESYSTEM_BasePath, "base", filename, "rb");
+	if (stream) {
+		return stream;
+	}
+
+	stream = FILESYSTEM_OpenFromDAT(FILESYSTEM_DATBaseFiles, FILESYSTEM_DATBasePath, "base", filename);
+	if (stream) {
+		return stream;
+	}
+
+	return NULL;
 }
 
 void FILESYSTEM_Quit(void)
 {
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-	EM_ASM({
-		FS.syncfs(function (err) {
-			assert(!err);
-		});
-	});
-#endif
-
-	SDL_free(FILESYSTEM_BasePath);
-	FILESYSTEM_BasePath = NULL;
 	SDL_free(FILESYSTEM_PrefPath);
 	FILESYSTEM_PrefPath = NULL;
-}
 
-#endif
+	SDL_free(FILESYSTEM_DATBasePath);
+	FILESYSTEM_DATBasePath = NULL;
+
+	SDL_free(FILESYSTEM_DATPrefFilesArray);
+	FILESYSTEM_DATPrefFilesArray = NULL;
+	SDL_DestroyProperties(FILESYSTEM_DATPrefFiles);
+	FILESYSTEM_DATPrefFiles = 0;
+
+	SDL_free(FILESYSTEM_DATBaseFilesArray);
+	FILESYSTEM_DATBaseFilesArray = NULL;
+	SDL_DestroyProperties(FILESYSTEM_DATBaseFiles);
+	FILESYSTEM_DATBaseFiles = 0;
+}
 
 bool FILESYSTEM_CreateDirectory(const char* directory)
 {
@@ -580,25 +534,17 @@ bool FILESYSTEM_CreateDirectory(const char* directory)
 	}
 	SDL_free(path);
 
-#ifdef SDL_PLATFORM_EMSCRIPTEN
-		EM_ASM({
-			FS.syncfs(function (err) {
-				assert(!err);
-			});
-		});
-#endif
-
 	return true;
 }
 
 SDL_IOStream* FILESYSTEM_OpenWrite(const char* filename)
 {
-	return FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, filename, "wb");
+	return FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, "pref", filename, "wb");
 }
 
 SDL_IOStream* FILESYSTEM_OpenAppend(const char* filename)
 {
-	return FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, filename, "ab");
+	return FILESYSTEM_OpenFromPath(FILESYSTEM_PrefPath, "pref", filename, "ab");
 }
 
 static void FILESYSTEM_Swap32ArrayNativeToLE(int32_t* arrayNative, size_t count)
@@ -631,7 +577,7 @@ static void FILESYSTEM_Swap32ArrayLEToNative(int32_t* arrayLE, size_t count)
 
 void FILESYSTEM_ReadFile32(const char* filename, int32_t* values, size_t count, size_t start)
 {
-	SDL_IOStream* src = FILESYSTEM_OpenRead(filename);
+	SDL_IOStream* const src = FILESYSTEM_OpenRead(filename);
 	if (!src) {
 		return;
 	}
@@ -686,7 +632,7 @@ void FILESYSTEM_ReadFile32(const char* filename, int32_t* values, size_t count, 
 
 void FILESYSTEM_WriteFile32(const char* filename, int32_t* values, size_t count)
 {
-	SDL_IOStream* dst = FILESYSTEM_OpenWrite(filename);
+	SDL_IOStream* const dst = FILESYSTEM_OpenWrite(filename);
 	if (!dst) {
 		return;
 	}
@@ -712,7 +658,7 @@ void FILESYSTEM_WriteFile32(const char* filename, int32_t* values, size_t count)
 
 void FILESYSTEM_AppendFile32(const char* filename, int32_t* values, size_t count)
 {
-	SDL_IOStream* dst = FILESYSTEM_OpenAppend(filename);
+	SDL_IOStream* const dst = FILESYSTEM_OpenAppend(filename);
 	if (!dst) {
 		return;
 	}

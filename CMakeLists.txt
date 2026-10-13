@@ -151,34 +151,37 @@ add_subdirectory(include)
 add_subdirectory(src)
 
 # // The on-disk format is unheadered and uses file extension .dat
-# // At the start of the .dat, there's an int64_t for how many files there are (the array length of FILESYSTEM_FilesArray)
-# // After the file count, there's a list of FILESYSTEM_FileData entries
+# // At the start of the .dat, there's an int64_t for how many files there are (the length of FILESYSTEM_DATFile arrays)
+# // After the file count, there's a list of FILESYSTEM_DATFileData entries
 # // This isn't actual code, just a description of the on-disk format
-# typedef struct FILESYSTEM_FileData
+# typedef struct FILESYSTEM_DATFileData
 # {
 # 	char filename[]; // UTF-8 string
 # 	int64_t fileSize; // int64_t to correspond to file sizes in SDL3
 # 	uint8_t file[fileSize];
-# } FILESYSTEM_FileData;
+# } FILESYSTEM_DATFileData;
 #
-# typedef struct FILESYSTEM_File
+# typedef struct FILESYSTEM_DATFile
 # {
-# 	int64_t start; // Starting offset into the .dat where FILESYSTEM_FileData::file is located
-# 	int64_t size; // FILESYSTEM_FileData::fileSize
-# } FILESYSTEM_File;
+# 	int64_t start; // Starting offset into the .dat where FILESYSTEM_DATFileData::file is located
+# 	int64_t size; // FILESYSTEM_DATFileData::fileSize
+# } FILESYSTEM_DATFile;
 #
-# // All the FILESYSTEM_File objects are represented as one contiguous array, simplifies memory management
-# FILESYSTEM_File* FILESYSTEM_FilesArray;
+# // All the FILESYSTEM_DATFile objects are represented as one contiguous array, simplifies memory management
+# FILESYSTEM_DATFile* FILESYSTEM_DATFilesArray;
 #
-# // FILESYSTEM_FilesTable is indexed by the filename (FILESYSTEM_FileData::filename), e.g.
-# // "res/graphics/highDetail/title.png"
+# // The SDL Properties objects representing the files are indexed by the
+# // filename (FILESYSTEM_DATFileData::filename), e.g.
+# // "res/graphics/highDetail/title.png". The code doesn't canonicalize the path
+# // string, it must be exactly correct in the code; we're in full control of
+# // all path strings, so it's a free optimization
 # //
-# // Each entry in FILESYSTEM_FilesTable stores a pointer to an
-# // FILESYSTEM_File. When a file is requested to be opened, a custom-interface
+# // Each entry in the SDL Properties objects stores a pointer to a
+# // FILESYSTEM_DATFile. When a file is requested to be opened, a custom-interface
 # // SDL_IOStream is created, which internally handles bounds checking etc., so
 # // the stream can be used as if it only represents a single file with
 # // ordinary stream functions, not a normal interface stream of the .dat
-# SDL_PropertiesID FILESYSTEM_FilesTable;
+# SDL_PropertiesID FILESYSTEM_DATFiles;
 function(GenerateResourceDAT DAT_FILE)
 	set(RES_FILES)
 	foreach(FILE_TYPE "png" "ogg" "bdf" "wav")

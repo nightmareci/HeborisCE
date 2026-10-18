@@ -946,130 +946,51 @@ bool VIDEO_HavePlane(int plane)
 	}
 }
 
-void VIDEO_DrawPlane(int plane, int dstX, int dstY)
+void VIDEO_DrawPlane(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, float scaleW, float scaleH)
 {
-	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || !MAIN_RenderThisFrame()) {
-		return;
-	}
-	float w, h;
-	if (!SDL_GetTextureSize(VIDEO_Planes[plane], &w, &h)) {
-		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	VIDEO_DrawPlaneRect(plane, dstX, dstY, 0, 0, (int)w, (int)h);
-}
-
-void VIDEO_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h)
-{
-	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || w == 0 || h == 0 || !MAIN_RenderThisFrame()) {
+	if (
+		plane < 0 ||
+		plane >= VIDEO_PlaneCount ||
+		!VIDEO_HavePlane(plane) ||
+		dstX >= VIDEO_LogicalWidth ||
+		dstY >= VIDEO_LogicalHeight ||
+		!(scaleW > 0.0f && scaleW <= FLT_MAX) ||
+		!(scaleH > 0.0f && scaleH <= FLT_MAX) ||
+		!MAIN_RenderThisFrame()
+	) {
 		return;
 	}
 
-	const SDL_FRect src = { srcX, srcY, w, h };
+	SDL_FRect src = { .x = srcX, .y = srcY };
+	if (w <= 0 || h <= 0) {
+		float textureW, textureH;
+		if (!SDL_GetTextureSize(VIDEO_Planes[plane], &textureW, &textureH)) {
+			ERROR_Set("Error rendering graphics: %s", SDL_GetError());
+			MAIN_Exit(SDL_APP_FAILURE);
+		}
+		src.w = w <= 0 ? textureW : w;
+		src.h = h <= 0 ? textureH : h;
+	}
+	else {
+		src.w = w;
+		src.h = h;
+	}
 	SDL_FRect dst = {
-		dstX + VIDEO_PlaneDrawOffsetX,
-		dstY + VIDEO_PlaneDrawOffsetY,
-		w,
-		h
+		.x = dstX + VIDEO_PlaneDrawOffsetX,
+		.y = dstY + VIDEO_PlaneDrawOffsetX,
+		.w = src.w * scaleW,
+		.h = src.h * scaleH
 	};
 	if (!GLOBAL_ScreenRenderTarget) {
 		dst.x += GLOBAL_ScreenSubpixelOffset;
 		dst.y += GLOBAL_ScreenSubpixelOffset;
 	}
-
-	if (!SDL_RenderTexture(GLOBAL_ScreenRenderer, VIDEO_Planes[plane], &src, &dst)) {
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-}
-
-void VIDEO_DrawPlaneTransparent(int plane, int dstX, int dstY, uint8_t a)
-{
-	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || !MAIN_RenderThisFrame()) {
+	if (dst.x + dst.w <= 0 || dst.y + dst.h <= 0) {
 		return;
-	}
-
-	if (!SDL_SetTextureAlphaMod(VIDEO_Planes[plane], a)) {
-		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	VIDEO_DrawPlane(plane, dstX, dstY);
-	if (!SDL_SetTextureAlphaMod(VIDEO_Planes[plane], SDL_ALPHA_OPAQUE)) {
-		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-}
-
-void VIDEO_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, Uint8 a)
-{
-	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || w == 0 || h == 0 || !MAIN_RenderThisFrame()) {
-		return;
-	}
-
-	if (!SDL_SetTextureAlphaMod(VIDEO_Planes[plane], a)) {
-		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-	VIDEO_DrawPlaneRect(plane, dstX, dstY, srcX, srcY, w, h);
-	if (!SDL_SetTextureAlphaMod(VIDEO_Planes[plane], SDL_ALPHA_OPAQUE)) {
-		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-}
-
-void VIDEO_DrawPlaneScaled(int plane, int dstX, int dstY, float scaleW, float scaleH)
-{
-	VIDEO_DrawPlaneRectScaled(plane, dstX, dstY, 0, 0, VIDEO_LogicalWidth, VIDEO_LogicalHeight, scaleW, scaleH);
-}
-
-void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, float scaleW, float scaleH)
-{
-	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || w == 0 || h == 0 || !MAIN_RenderThisFrame()) {
-		return;
-	}
-
-	const SDL_FRect src = { srcX, srcY, w, h };
-	SDL_FRect dst = {
-		dstX + VIDEO_PlaneDrawOffsetX,
-		dstY + VIDEO_PlaneDrawOffsetY,
-		w * scaleW,
-		h * scaleH
-	};
-	if (!GLOBAL_ScreenRenderTarget) {
-		dst.x += GLOBAL_ScreenSubpixelOffset;
-		dst.y += GLOBAL_ScreenSubpixelOffset;
-	}
-	if (!SDL_RenderTexture(GLOBAL_ScreenRenderer, VIDEO_Planes[plane], &src, &dst)) {
-		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
-		MAIN_Exit(SDL_APP_FAILURE);
-	}
-}
-
-void VIDEO_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, float scaleW, float scaleH)
-{
-	VIDEO_DrawPlaneRectTransparentScaled(plane, dstX, dstY, 0, 0, VIDEO_LogicalWidth, VIDEO_LogicalHeight, a, scaleW, scaleH);
-}
-
-void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, float scaleW, float scaleH)
-{
-	if (plane < 0 || plane >= VIDEO_PlaneCount || !VIDEO_HavePlane(plane) || w == 0 || h == 0 || !MAIN_RenderThisFrame()) {
-		return;
-	}
-
-	const SDL_FRect src = { srcX, srcY, w, h };
-	SDL_FRect dst = {
-		dstX + VIDEO_PlaneDrawOffsetX,
-		dstY + VIDEO_PlaneDrawOffsetX,
-		w * scaleW,
-		h * scaleH
-	};
-	if (!GLOBAL_ScreenRenderTarget) {
-		dst.x += GLOBAL_ScreenSubpixelOffset;
-		dst.y += GLOBAL_ScreenSubpixelOffset;
 	}
 	if (
 		!SDL_SetTextureAlphaMod(VIDEO_Planes[plane], a) ||
-		!SDL_RenderTexture(GLOBAL_ScreenRenderer, VIDEO_Planes[plane], &src, &dst) ||
-		!SDL_SetTextureAlphaMod(VIDEO_Planes[plane], SDL_ALPHA_OPAQUE)
+		!SDL_RenderTexture(GLOBAL_ScreenRenderer, VIDEO_Planes[plane], &src, &dst)
 	) {
 		ERROR_Set("Error rendering graphics: %s", SDL_GetError());
 		MAIN_Exit(SDL_APP_FAILURE);

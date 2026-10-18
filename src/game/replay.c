@@ -993,17 +993,19 @@ void ReplaySelect(void) {
 	// 背景描画
 	if(background == 0) {
 		for(i = 0; i <= 4; i++) {
-			if(getDrawRate() == 1)
-				VIDEO_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
-			else
-				VIDEO_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+			if(GetDrawScale() == 1) {
+				VIDEO_DrawPlane(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240, 0xFF, 1.0f, 1.0f);
+			}
+			else {
+				VIDEO_DrawPlane(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480, 0xFF, 1.0f, 1.0f);
+			}
 		}
 	} else if(background == 1) {
 		for(i = 0; i <= 4; i++) {
-			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
+			DrawPlaneRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(PLANE_UNUSED, 0, 0);
+		DrawPlane(PLANE_UNUSED, 0, 0);
 	}
 
 	// Bで戻る
@@ -1022,11 +1024,11 @@ void ReplaySelect(void) {
 		return;
 	}
 
-	ExBltRect(PLANE_LINE, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(PLANE_LINE, 320 - (count % 320), 232,  0, 20, count % 320, 8);
+	DrawPlaneRect(PLANE_LINE, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
+	DrawPlaneRect(PLANE_LINE, 320 - (count % 320), 232,  0, 20, count % 320, 8);
 
-	ExBltRect(PLANE_LINE, count % 320, 0,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(PLANE_LINE, 0, 0, 320 - (count % 320), 28, count % 320, 8);
+	DrawPlaneRect(PLANE_LINE, count % 320, 0,  0, 28, 320 - (count % 320), 8);
+	DrawPlaneRect(PLANE_LINE, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 
 	printFont(9, 2, "- SELECT REPLAY DATA -", 4);
 	printMenuButton(12, 3, INPUT_BUTTON_C, -1);
@@ -1064,13 +1066,13 @@ void ReplaySelect(void) {
 	}
 
 //	printFont(1, 5, "FILE   SCORE  LV LINES TIME     MODE", 2);
-	ExBltRect(PLANE_HEBOSPR,  48, 40, 154, 112, 26, 7);//SCOREの文字
-	ExBltRect(PLANE_HEBOSPR,  95, 40, 180, 112, 26, 7);
-	ExBltRect(PLANE_HEBOSPR, 134, 40, 154, 119, 26, 7);
-	ExBltRect(PLANE_HEBOSPR, 180, 40, 180, 119, 26, 7);
-	ExBltRect(PLANE_HEBOSPR, 232, 40, 206, 119, 22, 7);//Mode
+	DrawPlaneRect(PLANE_HEBOSPR,  48, 40, 154, 112, 26, 7);//SCOREの文字
+	DrawPlaneRect(PLANE_HEBOSPR,  95, 40, 180, 112, 26, 7);
+	DrawPlaneRect(PLANE_HEBOSPR, 134, 40, 154, 119, 26, 7);
+	DrawPlaneRect(PLANE_HEBOSPR, 180, 40, 180, 119, 26, 7);
+	DrawPlaneRect(PLANE_HEBOSPR, 232, 40, 206, 119, 22, 7);//Mode
 
-	for(i = 0; i < 40; i++) ExBltRect(PLANE_HEBOSPR, 8 * i, (csr - (20 * (csr >= 20))) * 9 + 53, 20, 34, 8, 4);
+	for(i = 0; i < 40; i++) DrawPlaneRect(PLANE_HEBOSPR, 8 * i, (csr - (20 * (csr >= 20))) * 9 + 53, 20, 34, 8, 4);
 
 	if(csr >= 20) {
 		printFont(7, 29, "PAGE 2/2 (NO.21 - NO.40)", 7);
@@ -1084,7 +1086,7 @@ void ReplaySelect(void) {
 	for(i = startNo; i < endNo; i++) {
 		printSMALLFont(25, 48 + 9 * (i - 20 * (i >= 20)), string[10 + i], 0); // 番号表示に従い変更 #1.60c7i5
 		if(enable[i] > -1){
-			ExBltRect(PLANE_GAMEMODEFONT, 232, 48 + 9 * (i - 20 * (i >= 20)), 72 * enable[i + 40], enable[i] * 9, 72, 9);
+			DrawPlaneRect(PLANE_GAMEMODEFONT, 232, 48 + 9 * (i - 20 * (i >= 20)), 72 * enable[i + 40], enable[i] * 9, 72, 9);
 		}
 	}
 
@@ -1108,23 +1110,25 @@ void ReplayDetail(void) {
 	count++;
 	if(background == 0) {
 		for(int32_t i = 0; i <= 4; i++) {
-			if(getDrawRate() == 1)
-				VIDEO_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240);
-			else
-				VIDEO_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480);
+			if(GetDrawScale() == 1) {
+				VIDEO_DrawPlane(PLANE_HEBOFLB1, 96 * i - (count % 96) / 3, 0, 0, 0, 96, 240, 0xFF, 1.0f, 1.0f);
+			}
+			else {
+				VIDEO_DrawPlane(PLANE_HEBOFLB1, 192 * i - (count % 32), 0, 0, 0, 192, 480, 0xFF, 1.0f, 1.0f);
+			}
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
+			DrawPlaneRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(PLANE_UNUSED, 0, 0);
+		DrawPlane(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(PLANE_LINE, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
-	ExBltRect(PLANE_LINE, 320 - (count % 320), 232,  0, 20, count % 320, 8);
+	DrawPlaneRect(PLANE_LINE, 0, 232,  count % 320, 20, 320 - (count % 320), 8);
+	DrawPlaneRect(PLANE_LINE, 320 - (count % 320), 232,  0, 20, count % 320, 8);
 
-	ExBltRect(PLANE_LINE, count % 320, 0,  0, 28, 320 - (count % 320), 8);
-	ExBltRect(PLANE_LINE, 0, 0, 320 - (count % 320), 28, count % 320, 8);
+	DrawPlaneRect(PLANE_LINE, count % 320, 0,  0, 28, 320 - (count % 320), 8);
+	DrawPlaneRect(PLANE_LINE, 0, 0, 320 - (count % 320), 28, count % 320, 8);
 	// 詳細を表示
 	printFont(1, 1,  "REPLAY DETAIL", 5);
 

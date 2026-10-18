@@ -535,23 +535,23 @@ void ConfigMenu(void) {
 	// 背景描画
 	if(background == 0) {
 		for(int32_t i = 0; i <= 4; i++) {
-			if(getDrawRate() == 1)
-				VIDEO_DrawPlaneRect(PLANE_HEBOFLB1, 96 * i - (n % 96) / 3, 0, 0, 0, 96, 240);
+			if(GetDrawScale() == 1)
+				VIDEO_DrawPlane(PLANE_HEBOFLB1, 96 * i - (n % 96) / 3, 0, 0, 0, 96, 240, 0xFF, 1.0f, 1.0f);
 			else
-				VIDEO_DrawPlaneRect(PLANE_HEBOFLB1, 192 * i - (n % 32), 0, 0, 0, 192, 480);
+				VIDEO_DrawPlane(PLANE_HEBOFLB1, 192 * i - (n % 32), 0, 0, 0, 192, 480, 0xFF, 1.0f, 1.0f);
 		}
 	} else if(background == 1) {
 		for(int32_t i = 0; i <= 4; i++) {
-			ExBltRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
+			DrawPlaneRect(PLANE_HEBOFLB1, 96 * i, 0, 0, 0, 96, 240);
 		}
 	} else {
-		ExBlt(PLANE_UNUSED, 0, 0);
+		DrawPlane(PLANE_UNUSED, 0, 0);
 	}
-	ExBltRect(PLANE_LINE, 0, 212,  n % 320, 20, 320 - (n % 320), 8);
-	ExBltRect(PLANE_LINE, 320 - (n % 320), 212,  0, 20, n % 320, 8);
+	DrawPlaneRect(PLANE_LINE, 0, 212,  n % 320, 20, 320 - (n % 320), 8);
+	DrawPlaneRect(PLANE_LINE, 320 - (n % 320), 212,  0, 20, n % 320, 8);
 
-	ExBltRect(PLANE_LINE, n % 320, 36,  0, 28, 320 - (n % 320), 8);
-	ExBltRect(PLANE_LINE, 0, 36, 320 - (n % 320), 28, n % 320, 8);
+	DrawPlaneRect(PLANE_LINE, n % 320, 36,  0, 28, 320 - (n % 320), 8);
+	DrawPlaneRect(PLANE_LINE, 0, 36, 320 - (n % 320), 28, n % 320, 8);
 
 	printFont(1, 1, "HEBORIS SETTING MENU", fontc[rotspl[0]]);
 

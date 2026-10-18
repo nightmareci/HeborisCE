@@ -17,10 +17,12 @@ void staffExecute(int32_t player) {
 	if(!onRecord[player]) return;
 
 	// 描画する
-	if ( getDrawRate() != 1 )
-		VIDEO_DrawPlaneRect(PLANE_STAFFROLL,240 + 384 * player - 192 * maxPlay,80,0,staffroll_y_ex[player],160,320);
-	else
-		VIDEO_DrawPlaneRect(PLANE_STAFFROLL,120 + 192 * player - 96 * maxPlay,40,0,staffroll_y_ex[player] / 2,80,160);
+	if ( GetDrawScale() != 1 ) {
+		VIDEO_DrawPlane(PLANE_STAFFROLL, 240 + 384 * player - 192 * maxPlay, 80, 0, staffroll_y_ex[player], 160, 320, 0xFF, 1.0f, 1.0f);
+	}
+	else {
+		VIDEO_DrawPlane(PLANE_STAFFROLL, 120 + 192 * player - 96 * maxPlay, 40, 0, staffroll_y_ex[player] / 2, 80, 160, 0xFF, 1.0f, 1.0f);
+	}
 }
 
 //▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽▼▽

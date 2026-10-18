@@ -1,70 +1,67 @@
-// 描画倍率を可変できるようになった関数群。
-// 通常の描画関数の頭に Ex をつけます。
-
 #include "flexdraw.h"
 
-int32_t lastZoomRate = 1;
-int32_t zoomRate = 1;			/* 描画倍率 */
+static int32_t lastDrawScale = 1;
+static int32_t drawScale = 1;
 
-void ExBlt(int32_t pno, int32_t dx, int32_t dy)
+void DrawPlane(int32_t pno, int32_t dx, int32_t dy)
 {
-	VIDEO_DrawPlane(pno, dx * zoomRate, dy * zoomRate);
+	VIDEO_DrawPlane(pno, dx * drawScale, dy * drawScale, 0, 0, 0, 0, 0xFF, 1.0f, 1.0f);
 }
 
-void ExBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy)
+void DrawPlaneRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy)
 {
-	VIDEO_DrawPlaneRect(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate);
+	VIDEO_DrawPlane(pno, dx * drawScale, dy * drawScale, sx * drawScale, sy * drawScale, hx * drawScale, hy * drawScale, 0xFF, 1.0f, 1.0f);
 }
 
-void ExBltRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, float scx, float scy)
+void DrawPlaneRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, float scx, float scy)
 {
-	VIDEO_DrawPlaneRectScaled(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, scx, scy);
+	VIDEO_DrawPlane(pno, dx * drawScale, dy * drawScale, sx * drawScale, sy * drawScale, hx * drawScale, hy * drawScale, 0xFF, scx, scy);
 }
 
-void ExBlendBlt(int32_t pno, int32_t dx, int32_t dy, int32_t a)
+void DrawPlaneTransparent(int32_t pno, int32_t dx, int32_t dy, int32_t a)
 {
-	VIDEO_DrawPlaneTransparent(pno, dx * zoomRate, dy * zoomRate, a);
+	VIDEO_DrawPlane(pno, dx * drawScale, dy * drawScale, 0, 0, 0, 0, a, 1.0f, 1.0f);
 }
 
-void ExBlendBltRect(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t a)
+void DrawPlaneRectTransparent(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t a)
 {
-	VIDEO_DrawPlaneRectTransparent(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, a);
+	VIDEO_DrawPlane(pno, dx * drawScale, dy * drawScale, sx * drawScale, sy * drawScale, hx * drawScale, hy * drawScale, a, 1.0f, 1.0f);
 }
 
-void ExBlendBltRectScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t a, float scx, float scy)
+void DrawPlaneRectTransparentScaled(int32_t pno, int32_t dx, int32_t dy, int32_t sx, int32_t sy, int32_t hx, int32_t hy, int32_t a, float scx, float scy)
 {
-	VIDEO_DrawPlaneRectTransparentScaled(pno, dx * zoomRate, dy * zoomRate, sx * zoomRate, sy * zoomRate, hx * zoomRate, hy * zoomRate, a, scx, scy);
+	VIDEO_DrawPlane(pno, dx * drawScale, dy * drawScale, sx * drawScale, sy * drawScale, hx * drawScale, hy * drawScale, a, scx, scy);
 }
 
-void ExBltText(int32_t pno, const char* str, int32_t cf, int32_t cw, int32_t ch, int32_t dx, int32_t dy, int32_t shx, int32_t shy, int32_t shw)
+void DrawPlaneText(int32_t pno, const char* str, int32_t cf, int32_t cw, int32_t ch, int32_t dx, int32_t dy, int32_t shx, int32_t shy, int32_t shw)
 {
-	VIDEO_DrawPlaneText(pno, str, cf, cw * zoomRate, ch * zoomRate, dx * zoomRate, dy * zoomRate, shx * zoomRate, shy * zoomRate, shw * zoomRate);
+	VIDEO_DrawPlaneText(pno, str, cf, cw * drawScale, ch * drawScale, dx * drawScale, dy * drawScale, shx * drawScale, shy * drawScale, shw * drawScale);
 }
 
-void ExTextLayerSize(int32_t n, int32_t size)
+void SetTextLayerSize(int32_t n, int32_t size)
 {
-	 VIDEO_SetTextLayerSize(n, size * zoomRate);
+	 VIDEO_SetTextLayerSize(n, size * drawScale);
 }
 
-void ExTextLayerMove(int32_t n, int32_t x, int32_t y)
+void SetTextLayerDrawPosition(int32_t n, int32_t x, int32_t y)
 {
-	 VIDEO_SetTextLayerDrawPosition(n, x * zoomRate, y * zoomRate);
+	 VIDEO_SetTextLayerDrawPosition(n, x * drawScale, y * drawScale);
 }
 
-void ExTextLayerOn(int32_t n, int32_t x, int32_t y)
+void EnableTextLayer(int32_t n, int32_t x, int32_t y)
 {
-	 VIDEO_EnableTextLayer(n, x * zoomRate, y * zoomRate);
+	 VIDEO_EnableTextLayer(n, x * drawScale, y * drawScale);
 }
 
-int32_t getLastDrawRate(void) {
-	return lastZoomRate;
+int32_t GetLastDrawScale(void) {
+	return lastDrawScale;
 }
 
-int32_t getDrawRate(void) {
-	return zoomRate;
+int32_t GetDrawScale(void) {
+	return drawScale;
 }
 
-void setDrawRate(int32_t size) {
-	lastZoomRate = zoomRate;
-	zoomRate = size;
+void SetDrawScale(int32_t scale) {
+	lastDrawScale = drawScale;
+	drawScale = scale;
 }

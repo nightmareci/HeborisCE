@@ -5,6 +5,7 @@
 #include <SDL3/SDL.h>
 #include <inttypes.h>
 #include <limits.h>
+#include <float.h>
 #ifdef INPUT_ENABLE_LINUX_GPIO
 #include <gpiod.h>
 #endif

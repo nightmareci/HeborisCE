@@ -59,20 +59,13 @@ void VIDEO_LoadPlane(int plane, const char* filename);
 // If plane < 0, returns whether at least one plane is loaded.
 bool VIDEO_HavePlane(int plane);
 
-void VIDEO_DrawPlane(int plane, int dstX, int dstY);
-void VIDEO_DrawPlaneRect(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h);
+// Draw part of a drawing plane.
+void VIDEO_DrawPlane(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, float scaleW, float scaleH);
 
-void VIDEO_DrawPlaneTransparent(int plane, int dstX, int dstY, uint8_t a);
-void VIDEO_DrawPlaneRectTransparent(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a);
-
-void VIDEO_DrawPlaneScaled(int plane, int dstX, int dstY, float scaleW, float scaleH);
-void VIDEO_DrawPlaneRectScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, float scaleW, float scaleH);
-
-void VIDEO_DrawPlaneTransparentScaled(int plane, int dstX, int dstY, uint8_t a, float scaleW, float scaleH);
-void VIDEO_DrawPlaneRectTransparentScaled(int plane, int dstX, int dstY, int srcX, int srcY, int w, int h, uint8_t a, float scaleW, float scaleH);
-
+// Draw text with characters sourced from a sprite sheet in a drawing plane.
 void VIDEO_DrawPlaneText(int plane, const char* text, char firstChar, int charW, int charH, int dstX, int dstY, int sheetX, int sheetY, int sheetW);
 
+// Set the drawing plane draw offset.
 void VIDEO_SetPlaneDrawOffset(int x, int y);
 
 #endif
